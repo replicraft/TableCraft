@@ -1,18 +1,28 @@
 mod editing;
 mod navigation;
+mod saved;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, Field, RecordTarget, Schema, State, Table,
+    Action, ContentsTarget, Data, Database, Field, RecordTarget, SavedQuery, SavedQueryTarget,
+    Schema, State, Table,
 };
 use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
     Query,
+    SavedInspection {
+        target: SavedQueryTarget,
+        request_id: u64,
+    },
+    SavedRun {
+        target: SavedQueryTarget,
+        request_id: u64,
+    },
     Record {
         target: RecordTarget,
         request_id: u64,
@@ -151,6 +161,9 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::SavedQuery { target, parameters }) => {
+                    self.publish_saved_query(generation, target, parameters);
+                }
                 Ok(Response::EditDraft(draft)) => self.publish_edit_draft(generation, draft),
                 Ok(Response::EditReviewed { review, capability }) => {
                     self.publish_edit_review(generation, review, capability);
@@ -184,11 +197,20 @@ impl Desktop {
                     title,
                     format,
                     tables,
+                    queries,
                 }) => {
                     self.state.database = Some(Database {
                         document_revision,
                         title,
                         format,
+                        queries: queries
+                            .into_iter()
+                            .map(|query| SavedQuery {
+                                object_id: query.object_id,
+                                name: query.name,
+                                system: query.system,
+                            })
+                            .collect(),
                         tables: tables
                             .into_iter()
                             .map(|table| Table {
@@ -219,6 +241,10 @@ impl Desktop {
                     };
                     match &self.pending {
                         PendingOperation::Query => self.state.set_query_data(data),
+                        PendingOperation::SavedRun { target, request_id } => {
+                            self.state
+                                .set_saved_query_data(*request_id, target.clone(), data);
+                        }
                         PendingOperation::Record { target, request_id } => {
                             self.state
                                 .set_record_data(*request_id, target.clone(), data);
@@ -253,6 +279,11 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::SavedInspection { target, request_id }
+                    | PendingOperation::SavedRun { target, request_id } => {
+                        self.state
+                            .fail_saved_query(*request_id, target.clone(), error.to_string());
+                    }
                     PendingOperation::Record { request_id, .. } => {
                         self.state
                             .fail_record_navigation(*request_id, error.to_string());
@@ -321,6 +352,10 @@ impl eframe::App for Desktop {
                     },
                 }),
                 Action::CloseContents { request_id } => self.close_contents(request_id),
+                Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
+                Action::RunSavedQuery { target, parameters } => {
+                    self.run_saved_query(target, parameters);
+                }
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
@@ -342,11 +377,22 @@ impl eframe::App for Desktop {
                     } else {
                         self.worker.cancel();
                         self.state.busy = false;
-                        if let PendingOperation::Record { request_id, .. } = &self.pending {
-                            self.state
-                                .fail_record_navigation(*request_id, "Operation cancelled.".into());
-                        } else {
-                            self.state.error = Some("Operation cancelled.".into());
+                        match &self.pending {
+                            PendingOperation::Record { request_id, .. } => {
+                                self.state.fail_record_navigation(
+                                    *request_id,
+                                    "Operation cancelled.".into(),
+                                );
+                            }
+                            PendingOperation::SavedInspection { target, request_id }
+                            | PendingOperation::SavedRun { target, request_id } => {
+                                self.state.fail_saved_query(
+                                    *request_id,
+                                    target.clone(),
+                                    "Operation cancelled.".into(),
+                                );
+                            }
+                            _ => self.state.error = Some("Operation cancelled.".into()),
                         }
                     }
                 }

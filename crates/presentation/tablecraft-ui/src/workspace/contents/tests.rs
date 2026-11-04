@@ -7,6 +7,7 @@ fn state() -> State {
             document_revision: 7,
             title: "Sample".into(),
             format: "ACE16".into(),
+            queries: vec![],
             tables: vec![],
         }),
         ..Default::default()

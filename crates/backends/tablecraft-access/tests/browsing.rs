@@ -4,6 +4,8 @@ mod attachments;
 mod cursor;
 #[path = "browsing/history.rs"]
 mod history;
+#[path = "browsing/inventory.rs"]
+mod inventory;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
@@ -46,11 +48,11 @@ fn library_inventory_and_pages_are_usable_without_cli_or_query_evaluation() {
         ResourceBudget::new(16 * 1024 * 1024, 100, 1_000_000),
         &|| false,
     );
-    let inventory = browser.tables().unwrap();
+    let inventory = browser.inventory().unwrap();
     assert_eq!(
         inventory
             .tables()
-            .map(|t| t.name().as_str())
+            .map(|entry| entry.object().name().as_str())
             .collect::<Vec<_>>(),
         ["MSysObjects", "MSysRelationships", "Items"]
     );
@@ -74,7 +76,7 @@ fn operations_share_budget_and_cancellation_instead_of_resetting_controls() {
         ResourceBudget::new(16 * 1024 * 1024, 4, 1_000_000),
         &|| false,
     );
-    browser.tables().unwrap();
+    browser.inventory().unwrap();
     assert!(matches!(
         browser.page("Items", TablePageRequest::new(0, 1).unwrap()),
         Err(InspectError::Limit(_))
@@ -85,7 +87,10 @@ fn operations_share_budget_and_cancellation_instead_of_resetting_controls() {
         ResourceBudget::new(16 * 1024 * 1024, 100, 1_000_000),
         &|| true,
     );
-    assert!(matches!(cancelled.tables(), Err(InspectError::Cancelled)));
+    assert!(matches!(
+        cancelled.inventory(),
+        Err(InspectError::Cancelled)
+    ));
     assert!(matches!(
         cancelled.page("Items", TablePageRequest::new(0, 1).unwrap()),
         Err(InspectError::Cancelled)
@@ -120,10 +125,10 @@ fn inventory_exposes_storage_and_never_follows_linked_definitions() {
         ResourceBudget::new(16 * 1024 * 1024, 100, 1_000_000),
         &|| false,
     );
-    let inventory = browser.tables().unwrap();
+    let inventory = browser.inventory().unwrap();
     assert_eq!(
         inventory
-            .entries()
+            .tables()
             .map(|entry| (entry.object().name().as_str(), entry.storage()))
             .collect::<Vec<_>>(),
         [
@@ -284,9 +289,9 @@ fn system_classification_uses_either_catalog_bit_and_not_names_or_hidden_bit() {
     );
     assert_eq!(
         browser
-            .tables()
+            .inventory()
             .unwrap()
-            .entries()
+            .tables()
             .map(|e| e.is_system())
             .collect::<Vec<_>>(),
         [true, true, false, false, false]

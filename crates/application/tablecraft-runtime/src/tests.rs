@@ -5,6 +5,7 @@ mod contents;
     any(target_os = "macos", target_os = "linux")
 ))]
 mod editing;
+mod saved;
 mod schema;
 mod stored;
 
@@ -302,6 +303,7 @@ fn explicit_cancel_discards_a_late_result() {
             title: String::new(),
             format: String::new(),
             tables: Vec::new(),
+            queries: Vec::new(),
         })
     });
     worker.request(query("running"));

@@ -170,6 +170,55 @@ return an explicit unsupported result. This reviewed-cell workflow is a bounded
 offline workflow, not Access autosave, record navigation or query-result
 updateability parity.
 
+## Native saved queries and declared parameters
+
+Open now publishes table and saved-query declarations from one inert
+`NativeBrowser::inventory` capture. The native adapter retains all catalog kinds
+and original identities; the current UI presents Tables and Queries. Opening
+reconstructs no query body and executes no query or user code. Both catalog-to-DTO
+passes charge/check every entry, including kinds omitted from these two lists.
+
+`InspectSavedQuery` supplies a worker-local document revision, full scoped object
+ID and original name. It reconstructs the supported owned read syntax through
+`NativeSource::read_saved_query` and returns declared parameter specifications.
+Revision is checked before native loading, then both ID and exact name are
+checked against the reconstructed definition. Inspection does not bind sources,
+scan user records or establish execution readiness. Unsupported action,
+pass-through or malformed definitions remain visible catalog declarations and
+return explicit errors when inspected.
+
+`RunSavedQuery` is a separate request with literal named inputs. The query-owned
+`resolve_parameter_type` supplies carrier and length/precision constraints, so
+prompts do not duplicate SQL type lowering. Declared scalar kinds stay fixed;
+VALUE requires an explicit concrete kind. NULL is an independent flag. Missing,
+duplicate, unknown or mismatched inputs fail; unknown column errors do not invent
+parameter prompts. Text is literal data, with no SQL interpolation or VBA call.
+The same shared scalar conversion service supports editing and these inputs;
+editing retains its exact unchanged DATE/float-carrier rule separately.
+
+Input admission is at most 256 parameters and 1 MiB of cumulative UTF-8 names,
+kinds and text, including retained text beside NULL. The UI checks before cloning
+an action; runtime checks independently. Metadata/input conversion has its own
+bounded scratch allowance, separate from query execution and final display
+publication. A single native source and cumulative native allowance cover saved
+reconstruction and subsequent execution/schema discovery. Query and display
+limits remain the existing controls below.
+
+Execution uses the existing SELECT/UNION/crosstab profile and schema-discovery
+service. No external source registry, stored connection, provider, clock, random
+state or VBA authority is added. Required unsupported policies remain explicit
+errors; the host does not guess a collation, locale or LIKE mode. Stored field
+formatting and general Access query updateability remain separate work.
+
+Saved results are complete buffered query results with no native source revision,
+zero offset and no progressive suffix. The shared UI rejects a native/partial or
+wrong-offset response instead of removing its provenance. Success/error replies
+must still match the selected query, request and exact submitted inputs. Dirty
+inputs clear their old result; a failed rerun with unchanged inputs retains and
+labels the previous successful output. Saved and ad-hoc SQL text/results retain
+separate selection slots. None of these results grants native edit, record or
+collection-target capability.
+
 ## Limits and verification
 
 Each native operation currently receives 512 MiB of charged bytes, 100,000 rows

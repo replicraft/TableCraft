@@ -63,6 +63,9 @@ impl State {
                 }
                 let data = match self.view {
                     DocumentView::Table => self.data.as_ref(),
+                    DocumentView::Query if self.saved_query.active => {
+                        self.saved_query.data.as_ref()
+                    }
                     DocumentView::Query => self.query_data.as_ref(),
                     DocumentView::Design => None,
                 };
@@ -118,13 +121,19 @@ impl State {
                     } else {
                         let selection = if self.view == DocumentView::Table {
                             &mut self.table_selection
+                        } else if self.saved_query.active {
+                            &mut self.saved_query.selection
                         } else {
                             &mut self.query_selection
                         };
                         actions.extend(datasheet::show(ui, data, selection));
                     }
                 } else if self.view == DocumentView::Query {
-                    ui.weak("Run a query to see its results.");
+                    ui.weak(if self.saved_query.active {
+                        "Run the saved query to see its results."
+                    } else {
+                        "Run a query to see its results."
+                    });
                 } else {
                     ui.add_space(80.0);
                     ui.vertical_centered(|ui| {

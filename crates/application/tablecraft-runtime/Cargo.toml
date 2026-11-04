@@ -14,10 +14,6 @@ workspace = true
 offline-edit = [
     "tablecraft-access/offline-write-session",
     "dep:tablecraft-db",
-    "dep:tablecraft-schema",
-    "dep:tablecraft-expressions",
-    "dep:jiff",
-    "dep:uuid",
 ]
 
 [dependencies]
@@ -33,10 +29,10 @@ tablecraft-sql.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 tablecraft-db = { workspace = true, optional = true }
-tablecraft-schema = { workspace = true, optional = true }
-tablecraft-expressions = { workspace = true, optional = true }
-jiff = { workspace = true, optional = true }
-uuid = { workspace = true, optional = true }
+tablecraft-schema.workspace = true
+tablecraft-expressions.workspace = true
+jiff.workspace = true
+uuid.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

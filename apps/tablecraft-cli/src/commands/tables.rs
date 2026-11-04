@@ -36,7 +36,7 @@ pub(crate) fn run(
     }
     let source = native::open(path, password, &mut budget).map_err(Error::Input)?;
     let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
-    let inventory = browser.tables().map_err(Error::Read)?;
+    let inventory = browser.inventory().map_err(Error::Read)?;
     let mut output = TableOutput::new();
     output.header(Some("Name"), 1).map_err(Error::Output)?;
     output.separator().map_err(Error::Output)?;
@@ -52,10 +52,7 @@ pub(crate) fn run(
         output.header(Some("Rows"), 4).map_err(Error::Output)?;
     }
     output.newline().map_err(Error::Output)?;
-    for entry in inventory
-        .entries()
-        .filter(|e| show_system || !e.is_system())
-    {
+    for entry in inventory.tables().filter(|e| show_system || !e.is_system()) {
         let object = entry.object();
         output
             .header(Some(object.name().as_str()), 1)

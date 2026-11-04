@@ -1,7 +1,8 @@
 //! Stable, bounded file capture and read-session ownership.
 use super::{
-    Error, Response, Table,
+    Error, Response, SavedQuery, Table,
     controls::{SCOPE, budget, check},
+    display::Presentation,
     source::Source,
 };
 #[cfg(feature = "offline-edit")]
@@ -15,6 +16,7 @@ use tablecraft_access::NativeBrowser;
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
+use tablecraft_model::ObjectKind;
 use zeroize::Zeroizing;
 
 const SNAPSHOT_BYTES: u64 = 64 * 1024 * 1024;
@@ -79,15 +81,40 @@ impl Document {
             edits,
         };
         let mut browser = NativeBrowser::new(&mut document.source, SCOPE, work, cancelled);
-        let inventory = browser.tables()?;
-        let tables = inventory
-            .entries()
-            .map(|entry| Table {
-                name: entry.object().name().as_str().to_owned(),
-                system: entry.is_system(),
-                storage: format!("{:?}", entry.storage()),
-            })
-            .collect();
+        let inventory = browser.inventory()?;
+        let mut output = Presentation::new(cancelled);
+        let mut table_count = 0_usize;
+        let mut query_count = 0_usize;
+        for entry in inventory.entries() {
+            output.work(1)?;
+            match entry.object().kind() {
+                ObjectKind::Table => table_count += 1,
+                ObjectKind::Query => query_count += 1,
+                _ => {}
+            }
+        }
+        output.allocation(table_count, size_of::<Table>())?;
+        output.allocation(query_count, size_of::<SavedQuery>())?;
+        let mut tables = Vec::new();
+        tables.try_reserve_exact(table_count)?;
+        let mut queries = Vec::new();
+        queries.try_reserve_exact(query_count)?;
+        for entry in inventory.entries() {
+            output.work(1)?;
+            match entry.object().kind() {
+                ObjectKind::Table => tables.push(Table {
+                    name: output.text(entry.object().name().as_str())?,
+                    system: entry.is_system(),
+                    storage: output.text(&format!("{:?}", entry.storage()))?,
+                }),
+                ObjectKind::Query => queries.push(SavedQuery {
+                    name: output.text(entry.object().name().as_str())?,
+                    object_id: entry.object().id().as_u128(),
+                    system: entry.is_system(),
+                }),
+                _ => {}
+            }
+        }
         check(cancelled)?;
         let title = path
             .file_name()
@@ -101,6 +128,7 @@ impl Document {
                 title,
                 format,
                 tables,
+                queries,
             },
         ))
     }

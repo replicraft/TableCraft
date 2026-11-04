@@ -28,6 +28,12 @@ impl<'a> Presentation<'a> {
         Ok(())
     }
 
+    pub(super) fn allocation(&mut self, count: usize, bytes: usize) -> Result<(), Error> {
+        self.work(1)?;
+        self.work.charge_allocation(count as u64, bytes as u64)?;
+        Ok(())
+    }
+
     pub(super) fn columns(&mut self, count: usize) -> Result<Vec<String>, Error> {
         self.work(1)?;
         self.work
@@ -89,10 +95,6 @@ impl<'a> Presentation<'a> {
         Ok(owned)
     }
 
-    #[cfg(all(
-        feature = "offline-edit",
-        any(target_os = "macos", target_os = "linux")
-    ))]
     pub(crate) fn binary(&mut self, count: usize) -> Result<Vec<u8>, Error> {
         self.work(1)?;
         self.work.charge_allocation(count as u64, 1)?;

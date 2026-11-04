@@ -10,10 +10,10 @@ pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
     request: CollectionPageRequest,
     format: Format,
 ) -> Result<String, Error> {
-    let inventory = browser.tables().map_err(Error::Read)?;
+    let inventory = browser.inventory().map_err(Error::Read)?;
     let mut output = TableOutput::new();
     for (index, entry) in inventory
-        .entries()
+        .tables()
         .filter(|entry| !entry.is_system())
         .enumerate()
     {

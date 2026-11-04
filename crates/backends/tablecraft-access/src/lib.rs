@@ -12,10 +12,10 @@ pub use input::{AccessInput, AccessInputError};
 mod browsing;
 pub use browsing::{
     AttachmentColumn, BrowsePage, BrowserCursor, CollectionPageRequest, MultivaluePageCell,
-    MultivaluePageValue, MultivalueTablePage, NativeBrowser, NativeTableStorage, StoredAttachment,
-    StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageCell,
-    StoredCollectionPageValue, StoredCollectionTablePage, StoredTablePage, StoredVersion,
-    TableBatch, TableDescription, TableEntry, TableInventory, TablePage, TablePageRequest,
+    MultivaluePageValue, MultivalueTablePage, NativeBrowser, NativeTableStorage, ObjectEntry,
+    ObjectInventory, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
+    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage,
+    StoredTablePage, StoredVersion, TableBatch, TableDescription, TablePage, TablePageRequest,
     VersionHistoryColumn,
 };
 mod source;

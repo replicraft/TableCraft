@@ -60,9 +60,11 @@ have their own allocations; sharing the capture does not eliminate them or
 establish an exact process-memory ceiling. No native page cache, core Binary
 carrier, CLI dependency or transaction policy is replaced.
 
-The optional runtime `offline-edit` feature also reuses the existing DB/schema,
-expression, civil Jiff and UUID dependencies for actual typed native editing.
-Desktop enables that feature. The runtime stays GUI-free, the UI stays backend-free,
+The runtime now directly consumes the existing schema, expression, civil Jiff
+and UUID dependencies for saved-query parameter entry as well as typed editing.
+Those edges are normal runtime dependencies; `offline-edit` keeps only the DB
+edit contracts and native offline-session feature optional. Desktop enables
+that feature. Registry versions and shared feature defaults are unchanged. The runtime stays GUI-free, the UI stays backend-free,
 and the CLI remains independent of this application feature. There is no new
 Tokio executor, clipboard owner or designer/report dependency.
 

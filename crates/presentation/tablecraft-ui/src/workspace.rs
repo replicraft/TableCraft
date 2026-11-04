@@ -7,11 +7,13 @@ mod home;
 mod navigation;
 mod query;
 mod records;
+mod saved_query;
 mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
 pub use records::RecordTarget;
+pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, Schema};
 
 use super::{Cell, keyboard};
@@ -31,6 +33,7 @@ pub struct Database {
     pub title: String,
     pub format: String,
     pub tables: Vec<Table>,
+    pub queries: Vec<SavedQuery>,
 }
 
 /// One bounded buffered page or query result supplied by the host.
@@ -50,6 +53,13 @@ pub enum Action {
     Page {
         table: String,
         offset: u32,
+    },
+    InspectSavedQuery {
+        target: SavedQueryTarget,
+    },
+    RunSavedQuery {
+        target: SavedQueryTarget,
+        parameters: Vec<ParameterInput>,
     },
     NavigateRecord {
         target: RecordTarget,
@@ -118,6 +128,7 @@ pub struct State {
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
     records: records::RecordNavigation,
+    saved_query: saved_query::SavedQueryState,
     selected_field: usize,
     schema_activation_pending: bool,
     pub busy: bool,
@@ -158,6 +169,7 @@ impl State {
         let data = self.visible_data()?;
         match self.view {
             DocumentView::Table => self.table_selection.text(data),
+            DocumentView::Query if self.saved_query.active => self.saved_query.selection.text(data),
             DocumentView::Query => self.query_selection.text(data),
             DocumentView::Design => None,
         }
@@ -184,6 +196,7 @@ impl State {
         self.schema = Some(schema);
         self.selected_field = 0;
         if std::mem::take(&mut self.schema_activation_pending) {
+            self.interrupt_saved_query();
             self.view = DocumentView::Design;
         }
     }
@@ -194,6 +207,7 @@ impl State {
         }
         self.invalidate_edit();
         self.reset_record_navigation();
+        self.interrupt_saved_query();
         self.close_contents();
         self.schema_activation_pending = false;
         self.view = view;
@@ -201,6 +215,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.reset_saved_query();
         self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
@@ -221,6 +236,7 @@ impl State {
         }
         self.invalidate_edit();
         self.reset_record_navigation();
+        self.interrupt_saved_query();
         self.backstage = backstage::Backstage::Open;
     }
 
@@ -239,6 +255,7 @@ impl State {
 
     fn query_ready(&self) -> bool {
         self.view == DocumentView::Query
+            && !self.saved_query.active
             && !self.backstage_visible()
             && self.database.is_some()
             && !self.busy
@@ -248,6 +265,7 @@ impl State {
     fn visible_data(&self) -> Option<&Data> {
         match self.view {
             DocumentView::Table => self.data.as_ref(),
+            DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
             DocumentView::Query => self.query_data.as_ref(),
             DocumentView::Design => None,
         }
@@ -266,10 +284,14 @@ impl State {
         let shortcuts = if modal_open {
             keyboard::Shortcuts::default()
         } else {
-            keyboard::consume(ui.ctx(), self.query_ready(), self.busy)
+            keyboard::consume(
+                ui.ctx(),
+                self.query_ready() || self.saved_query_run_ready(),
+                self.busy,
+            )
         };
         if shortcuts.query {
-            actions.push(Action::Query);
+            actions.push(self.saved_query_run_action().unwrap_or(Action::Query));
         }
         if shortcuts.cancel {
             actions.push(Action::Cancel);
@@ -343,6 +365,7 @@ mod tests {
             document_revision: 1,
             title: "Sample".into(),
             format: "ACE16".into(),
+            queries: vec![],
             tables: vec![],
         });
         assert!(!state.query_ready());

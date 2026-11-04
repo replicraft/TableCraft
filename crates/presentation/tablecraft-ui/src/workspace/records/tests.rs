@@ -26,6 +26,7 @@ fn state() -> State {
         document_revision: 7,
         title: "Example".into(),
         format: "ACE16".into(),
+        queries: vec![],
         tables: vec![],
     });
     state.set_table_data(page(100, 100, true));

@@ -615,3 +615,55 @@ caught the toolkit's focus surrender on submission; navigation now accepts that
 field's own lost-focus Return as well as focused Return, with exact modifier
 checks. Strict selected-package Clippy, native build, formatting, dependency
 boundaries and documentation links pass. No full engine-suite rerun is claimed.
+
+## Saved-query objects and typed parameters
+
+The object pane now lists Tables and Queries from a single inert native catalog
+capture. Search and the system-object switch apply to both groups. Selecting a
+query inspects its supported read definition and declared prompts; it does not
+execute it. **Run saved query** explicitly executes the selected definition with
+its typed literal inputs. VALUE prompts require a concrete type choice, and NULL
+is independent from retained text. Prompt/type/NULL controls expose their actual
+label relationships and purposes through AccessKit.
+
+The selected saved query and the ad-hoc SQL editor retain separate inputs,
+results and cell selections. Their Run shortcut follows the visible mode.
+Changing parameter input invalidates its old result; an unchanged-input failed
+rerun retains and labels the previous successful result. Late replies must match
+source, object, request and submitted inputs. Native/partial/wrong-offset result
+envelopes are refused. Query results remain outside native cell-edit, collection
+and record-navigation capabilities.
+
+This is a bounded explicit-inspection/run workflow. It is not a pixel-qualified
+copy of Access's sequential parameter dialogs or general query updateability.
+Microsoft's [parameter prompt guidance](https://support.microsoft.com/en-us/access/use-parameters-to-ask-for-input-when-running-a-query)
+and [PARAMETERS contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql)
+supply the name/type behavior; the retained Access captures continue to govern
+workspace density, grouping and selection. Action/pass-through/unsupported query
+declarations remain visible and report errors, without provider or VBA execution.
+See the [runtime boundaries](../application/RUNTIME.md#native-saved-queries-and-declared-parameters).
+
+On macOS, the native preview was exercised against an independently built raw
+ACE-shaped database with two user saved queries. Opening listed the objects
+without execution. A declared Long prompt returned the expected two filtered
+rows; invalid numeric text was refused. A VALUE prompt required an explicit type,
+returned SQL-looking text literally, and retained a separate explicit NULL choice.
+Switching between saved and SQL modes preserved their respective input/result
+slots. The final rebuilt binary also passed the Long query, and its parameter
+field boundary was visibly present. The complete input database remained
+byte-for-byte unchanged. The preview requested 1280 by 820 logical content points;
+the observed 2560 by 1700 screenshot includes native title chrome at 2x scale.
+This qualifies neither Windows behavior nor pixel fidelity
+of Access's uncaptured parameter dialogs.
+
+Focused checks cover the shared parameter resolver, independent fixture extraction,
+native inventory, runtime parameter admission and stale replies, and the desktop
+bridge. The shared UI includes actual rendered prompt/type/NULL accessibility
+relationships and same-name replacement focus behavior. Strict selected-package
+Clippy, native build, formatting, dependency boundaries and documentation links
+pass. The standalone read-only runtime profile also passes; an obsolete binary
+display-helper feature gate was removed after that check exposed it. The original
+aggregate lint invocation's Cargo feature-closure failure and subsequent valid
+explicit-testkit run are distinguished in the
+[development guide](../development/DEVELOPMENT.md). No full engine-suite rerun or
+native Access comparison is claimed.

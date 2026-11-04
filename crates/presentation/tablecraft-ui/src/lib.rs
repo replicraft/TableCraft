@@ -9,7 +9,8 @@ pub use cells::{Cell, CellKind, DisplayControl};
 pub use theme::configure;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, EditDraft, EditInput, EditReview,
-    EditSaveOutcome, EditTarget, Field, RecordTarget, Schema, State, Table,
+    EditSaveOutcome, EditTarget, Field, ParameterInput, ParameterSpec, RecordTarget, SavedQuery,
+    SavedQueryTarget, Schema, State, Table,
 };
 
 #[cfg(test)]
@@ -27,6 +28,7 @@ mod tests {
                     document_revision: 1,
                     title: "Sample.accdb".into(),
                     format: "Ace2016".into(),
+                    queries: vec![],
                     tables: vec![Table {
                         name: "Customers".into(),
                         system: false,
