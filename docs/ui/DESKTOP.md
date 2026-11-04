@@ -1,7 +1,8 @@
 # Native desktop preview
 
 The first implementation provides native startup, Selawik workspace, table
-navigation, bounded scalar datasheets and explicit read-only SQL. Runtime tests
+navigation, bounded datasheets with scalar/stored-field cells and explicit
+read-only SQL. Runtime tests
 exercise real reads/queries and cancellation; headless rendering covers empty and
 populated states. Native visual/platform verification is recorded below. Broader
 editing and application designers remain work.
@@ -310,3 +311,46 @@ navigation or source reset clears that intent. The reply still updates the
 metadata slot, but activates Design only while that original intent remains.
 The focused regression covers tab changes, normal completion and source reset;
 source identity remains enforced by the host/worker generation checks.
+
+## Stored cells and complete collection summaries
+
+The shared [runtime read contract](../application/RUNTIME.md) now supplies typed
+cells through the existing Page command. Metadata selects ordinary scalar paging
+or qualified stored-field browsing once, without retrying failures. Calculated
+results retain cached provenance, including NULL results; no formula runs.
+Multivalue, attachment and history summaries distinguish absent and assigned-empty
+collections, and complete counts include duplicate/NULL items and NULL FileData.
+Current Memo text remains a separate scalar from history membership. The native
+reader eagerly validates complete bounded collections; this is not lazy loading.
+Child contents, attachment decoding/export/opening and history expansion are not
+yet exposed by this slice.
+
+Cells render their value before a compact annotation. Tooltips and accessible
+context retain the full provenance/membership description. Copy publishes the
+complete display text without its badge; a literal text NULL keeps ordinary
+scalar facts. Runtime output accounting includes typed cell/row/header envelopes
+and collection iteration under its independent presentation budget.
+
+A temporary copy of the privately supplied sample now opened and displayed all
+sixteen Table1 fields in the native macOS window. Its attachment count and stored
+calculated result were present alongside the scalar/date/currency fields, rather
+than refusing the table through the earlier scalar-only path. No private database
+or screenshot is added to the public repository. Formatting properties, checkbox
+widgets, child inspection and broader Access interaction parity remain work; raw
+value display is not a claim to reproduce those native presentation rules.
+
+Native observation found that a one-row table's horizontal scrollbar overlapped
+the row. The datasheet now reserves a full-height viewport with solid scrollbar
+space. An actual-widget test exercises horizontal wheel movement and scrollbar
+dragging for both one-row and hundred-row tables, using logical response bounds
+rather than Retina screenshot coordinates. Its initial geometry failure was due
+to the headless clock not advancing visibility animation; the settled strict
+geometry assertion and both input paths pass with a deterministic frame clock.
+
+The final rebuilt macOS preview visibly reserves the scrollbar below the full
+datasheet. Clicking its right-hand track revealed the final attachment and cached
+calculation columns with value-first annotations; the one-row data remained
+uncovered. All 39 focused checks pass: fourteen runtime unit tests, one isolated
+diagnostics test, eighteen shared UI tests and six desktop tests. Strict Clippy
+and the native build pass. The shared-fixture refactor separately passed strict
+checks for 43 consumers and 77 representative engine/adapter/CLI tests.

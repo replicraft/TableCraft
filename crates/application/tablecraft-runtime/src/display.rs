@@ -1,7 +1,7 @@
 //! Bounded renderer-neutral text cells for read-only host views.
 //! Native scalar representation remains in the immutable session; this is not
 //! an edit carrier, native field-format evaluator, or lossless export protocol.
-use super::{Error, controls::check};
+use super::{Cell, CellKind, Error, controls::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -20,6 +20,62 @@ impl<'a> Presentation<'a> {
             work: ResourceBudget::new(OUTPUT_BYTES, 0, 100_000),
             cancelled,
         }
+    }
+
+    pub(super) fn work(&mut self, steps: u64) -> Result<(), Error> {
+        check(self.cancelled)?;
+        self.work.charge(Resource::Steps, steps)?;
+        Ok(())
+    }
+
+    pub(super) fn columns(&mut self, count: usize) -> Result<Vec<String>, Error> {
+        self.work(1)?;
+        self.work
+            .charge_allocation(count as u64, size_of::<String>() as u64)?;
+        let mut columns = Vec::new();
+        columns.try_reserve_exact(count)?;
+        Ok(columns)
+    }
+
+    pub(super) fn rows(&mut self, count: usize) -> Result<Vec<Vec<Cell>>, Error> {
+        self.work(1)?;
+        self.work
+            .charge_allocation(count as u64, size_of::<Vec<Cell>>() as u64)?;
+        let mut rows = Vec::new();
+        rows.try_reserve_exact(count)?;
+        Ok(rows)
+    }
+
+    pub(super) fn row(&mut self, count: usize) -> Result<Vec<Cell>, Error> {
+        self.work(1)?;
+        self.work
+            .charge_allocation(count as u64, size_of::<Cell>() as u64)?;
+        let mut row = Vec::new();
+        row.try_reserve_exact(count)?;
+        Ok(row)
+    }
+
+    pub(super) fn flags(&mut self, count: usize) -> Result<Vec<bool>, Error> {
+        self.work(1)?;
+        self.work
+            .charge_allocation(count as u64, size_of::<bool>() as u64)?;
+        let mut flags = Vec::new();
+        flags.try_reserve_exact(count)?;
+        Ok(flags)
+    }
+
+    pub(super) fn scalar(
+        &mut self,
+        value: &Value,
+        stored_calculation: bool,
+    ) -> Result<Cell, Error> {
+        Ok(Cell {
+            text: self.value(value)?,
+            kind: CellKind::Scalar {
+                is_null: matches!(value, Value::Null),
+                stored_calculation,
+            },
+        })
     }
 
     pub(super) fn text(&mut self, text: &str) -> Result<String, Error> {
@@ -106,3 +162,6 @@ impl<'a> Presentation<'a> {
         self.text(&text)
     }
 }
+
+#[cfg(test)]
+mod tests;

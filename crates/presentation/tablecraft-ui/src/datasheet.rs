@@ -1,18 +1,28 @@
-use super::Data;
+use super::{Cell, Data};
 use crate::theme::{GRID_HEADER, GRID_LINE};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
+use std::borrow::Cow;
 
 pub(super) fn show(ui: &mut Ui, data: &Data) {
     show_rows(ui, data, |_| {});
 }
 
-fn show_rows(ui: &mut Ui, data: &Data, mut row_drawn: impl FnMut(usize)) {
+fn show_rows(
+    ui: &mut Ui,
+    data: &Data,
+    mut row_drawn: impl FnMut(usize),
+) -> egui::scroll_area::ScrollAreaOutput<()> {
     ui.push_id((&data.table, data.offset), |ui| {
+        // Reserve scrollbar space below the viewport, including one-row pages.
+        // The style change is scoped to this datasheet and its nested table.
+        ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
         ScrollArea::horizontal()
             .id_salt("datasheet_horizontal")
+            .auto_shrink([false, false])
             .show(ui, |ui| {
                 TableBuilder::new(ui)
+                    .auto_shrink([false, false])
                     .striped(false)
                     .resizable(true)
                     .column(Column::exact(28.0))
@@ -46,8 +56,9 @@ fn show_rows(ui: &mut Ui, data: &Data, mut row_drawn: impl FnMut(usize)) {
                             }
                         });
                     });
-            });
-    });
+            })
+    })
+    .inner
 }
 
 fn grid_cell(ui: &Ui, header: bool) {
@@ -62,9 +73,15 @@ fn grid_cell(ui: &Ui, header: bool) {
         .line_segment([rect.left_bottom(), rect.right_bottom()], stroke);
 }
 
-fn cell(ui: &mut Ui, text: &str, column: &str, row: u64) -> Response {
+fn cell(ui: &mut Ui, value: &Cell, column: &str, row: u64) -> Response {
+    let text = value.text.as_str();
+    let context = value.context();
+    let display = match value.badge() {
+        Some(badge) => Cow::Owned(format!("{text}  [{badge}]")),
+        None => Cow::Borrowed(text),
+    };
     let response = ui.add(
-        egui::Label::new(text)
+        egui::Label::new(display.as_ref())
             .selectable(true)
             .sense(Sense::focusable_noninteractive())
             .truncate(),
@@ -76,7 +93,10 @@ fn cell(ui: &mut Ui, text: &str, column: &str, row: u64) -> Response {
         WidgetInfo::labeled(
             WidgetType::Label,
             ui.is_enabled(),
-            format!("{column}, row {row}: {text}"),
+            match &context {
+                Some(context) => format!("{column}, row {row}: {text}; {context}"),
+                None => format!("{column}, row {row}: {text}"),
+            },
         )
     });
 
@@ -98,10 +118,18 @@ fn cell(ui: &mut Ui, text: &str, column: &str, row: u64) -> Response {
         }
         egui::Tooltip::for_widget(&response).show(|ui| {
             ui.label(text);
+            if let Some(context) = &context {
+                ui.small(context);
+            }
             ui.small("Copy copies the full cell value.");
         });
     }
-    response.on_hover_text(text)
+    response.on_hover_ui(|ui| {
+        ui.label(text);
+        if let Some(context) = &context {
+            ui.small(context);
+        }
+    })
 }
 
 #[cfg(test)]

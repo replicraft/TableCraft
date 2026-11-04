@@ -1,6 +1,6 @@
 //! Buffered query execution over the retained native source, without provider opens.
 use super::{
-    Error, Response,
+    Cell, Error, Response,
     controls::{SCOPE, budget, check},
     display::Presentation,
     document::Document,
@@ -39,28 +39,29 @@ impl Document {
             },
         )?;
         let mut output = Presentation::new(cancelled);
-        let columns = result
-            .columns()
-            .iter()
-            .map(|name| output.text(name))
-            .collect::<Result<_, _>>()?;
-        let rows = result
-            .rows()
-            .iter()
-            .map(|row| {
-                row.iter()
-                    .map(|value| match value {
-                        ExpressionValue::Value(value) => output.value(value),
-                        ExpressionValue::Empty => output.text("Empty"),
-                        ExpressionValue::Missing => output.text("Missing"),
-                        ExpressionValue::Error(code) => output.text(&format!("#ERROR({code})")),
-                        ExpressionValue::StringBytes(_) => Err(Error::UnpublishedString),
-                    })
-                    .collect::<Result<Vec<_>, _>>()
-            })
-            .collect::<Result<_, _>>()?;
+        let mut columns = output.columns(result.columns().len())?;
+        for name in result.columns() {
+            columns.push(output.text(name)?);
+        }
+        let mut rows = output.rows(result.rows().len())?;
+        for values in result.rows() {
+            let mut row = output.row(values.len())?;
+            for value in values {
+                let cell = match value {
+                    ExpressionValue::Value(value) => output.scalar(value, false)?,
+                    ExpressionValue::Empty => Cell::expression(output.text("Empty")?),
+                    ExpressionValue::Missing => Cell::expression(output.text("Missing")?),
+                    ExpressionValue::Error(code) => {
+                        Cell::expression(output.text(&format!("#ERROR({code})"))?)
+                    }
+                    ExpressionValue::StringBytes(_) => return Err(Error::UnpublishedString),
+                };
+                row.push(cell);
+            }
+            rows.push(row);
+        }
         Ok(Response::Data {
-            table: "Query results".to_owned(),
+            table: output.text("Query results")?,
             offset: 0,
             columns,
             rows,

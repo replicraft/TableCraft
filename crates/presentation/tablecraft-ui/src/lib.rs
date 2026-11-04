@@ -1,9 +1,11 @@
 //! Shared database workspace presentation; hosts own files, tasks and services.
+mod cells;
 mod datasheet;
 mod keyboard;
 mod theme;
 mod workspace;
 
+pub use cells::{Cell, CellKind};
 pub use theme::configure;
 pub use workspace::{Action, Data, Database, Field, Schema, State, Table};
 

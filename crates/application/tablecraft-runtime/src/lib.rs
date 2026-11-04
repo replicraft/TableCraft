@@ -1,4 +1,5 @@
 //! Shared application sessions and cancellable native read tasks for hosts.
+mod cell;
 mod controls;
 mod display;
 mod document;
@@ -8,6 +9,7 @@ mod schema;
 mod source;
 mod worker;
 
+pub use cell::{Cell, CellKind};
 pub use schema::Field;
 pub use worker::Worker;
 
@@ -90,7 +92,7 @@ pub enum Response {
         table: String,
         offset: u32,
         columns: Vec<String>,
-        rows: Vec<Vec<String>>,
+        rows: Vec<Vec<Cell>>,
         has_more: bool,
     },
 }

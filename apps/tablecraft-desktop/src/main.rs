@@ -1,6 +1,7 @@
 //! Native TableCraft workspace. Database work is isolated from the event thread.
 mod diagnostics;
 mod file_dialog;
+mod view_models;
 mod workspace;
 
 use clap::Parser;

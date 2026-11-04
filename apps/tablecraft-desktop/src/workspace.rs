@@ -135,7 +135,10 @@ impl Desktop {
                         table,
                         offset,
                         columns,
-                        rows,
+                        rows: rows
+                            .into_iter()
+                            .map(|row| row.into_iter().map(crate::view_models::cell).collect())
+                            .collect(),
                         has_more,
                     };
                     if self.query_pending {
@@ -252,5 +255,38 @@ mod tests {
         finish(&mut desktop, &context, &mut frame);
         assert!(desktop.state.database.is_some());
         assert!(desktop.state.schema.is_none());
+    }
+
+    #[test]
+    fn query_null_and_literal_null_keep_distinct_cell_facts_through_the_host() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/examples/Access_Example_VBA.accdb");
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), Some(path));
+        let mut frame = eframe::Frame::_new_kittest();
+        finish(&mut desktop, &context, &mut frame);
+        desktop.submit(Command::Query {
+            sql: "SELECT NULL AS [Absent], 'NULL' AS [Label]".into(),
+        });
+        finish(&mut desktop, &context, &mut frame);
+
+        let data = desktop.state.query_data.as_ref().expect("query result");
+        assert_eq!(data.rows[0][0].text, "NULL");
+        assert_eq!(data.rows[0][1].text, "NULL");
+        assert!(matches!(
+            data.rows[0][0].kind,
+            tablecraft_ui::CellKind::Scalar {
+                is_null: true,
+                stored_calculation: false
+            }
+        ));
+        assert!(matches!(
+            data.rows[0][1].kind,
+            tablecraft_ui::CellKind::Scalar {
+                is_null: false,
+                stored_calculation: false
+            }
+        ));
+        assert!(desktop.state.data.is_none());
     }
 }

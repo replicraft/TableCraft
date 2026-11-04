@@ -18,6 +18,7 @@ native Access behavior; SQLite and native-project implementation are paused.
 | [Development](development/README.md) | Toolchain, dependencies, tracing and releasing |
 | [Other backends](backends/README.md) | SQLite integration |
 | [Application features](features/README.md) | Application and interoperability contracts |
+| [Application services](application/README.md) | Document sessions, commands, worker tasks and typed read cells |
 | [Testing](testing/README.md) | Acceptance scope, fixture provenance and verification evidence |
 
 Project container specifications remain in [formats](formats/), accepted decisions
