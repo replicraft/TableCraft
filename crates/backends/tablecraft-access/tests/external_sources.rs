@@ -4,10 +4,7 @@ use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 mod linked_fixture;
 use tablecraft_testkit::fixtures::access as support;
 
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod collection_fixture;
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
+use tablecraft_testkit::fixtures::access::complex_links as collection_fixture;
 use tablecraft_testkit::fixtures::access::version_history as history_fixture;
 #[path = "external_sources/named.rs"]
 mod named;

@@ -1,10 +1,6 @@
 use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
 #[path = "attachment_data_source/limits.rs"]
 mod limits;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
 #[path = "attachment_data_source/metadata.rs"]
 mod metadata;
 #[path = "attachment_data_source/modern.rs"]

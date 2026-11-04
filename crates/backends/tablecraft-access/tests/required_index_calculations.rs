@@ -1,9 +1,6 @@
 //! Original indexed stored caches, independent of expression evaluation.
-use base as fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
 #[path = "required_index_calculations/fixture.rs"]
 mod indexed_fixture;
 use tablecraft_testkit::fixtures::access as support;

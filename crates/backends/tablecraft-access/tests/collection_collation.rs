@@ -1,9 +1,7 @@
 //! Original synthetic layouts test composition; these are not Access SQL goldens.
-use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
 use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 use std::{
     cell::{Cell, RefCell},

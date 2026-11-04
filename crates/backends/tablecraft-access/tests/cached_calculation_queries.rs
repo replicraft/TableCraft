@@ -1,9 +1,6 @@
-#[allow(dead_code)]
-#[path = "../../../engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 #[path = "cached_calculation_queries/carriers.rs"]
 mod carriers;
-use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "cached_calculation_queries/hyperlink.rs"]
 mod hyperlink;
 #[allow(dead_code)]

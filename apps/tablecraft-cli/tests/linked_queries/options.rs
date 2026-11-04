@@ -2,14 +2,10 @@
 #[allow(dead_code)]
 #[path = "../../../../crates/engines/tablecraft-ace/tests/support/agile.rs"]
 mod agile_fixture;
-#[allow(dead_code)]
-#[path = "../../../../crates/engines/tablecraft-ace/tests/calculated_storage/fixture.rs"]
-mod calculated_fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 use tablecraft_testkit::fixtures::access::version_history as history_fixture;
 
-use super::{
-    CLI, Database, linked_fixture, support, target_fixture as base, target_fixture as fixture,
-};
+use super::{CLI, Database, linked_fixture, support, target_fixture as base};
 
 const PAGE_BYTES: usize = 4096;
 const HEADER_SORT_OFFSET: usize = 110;

@@ -7,6 +7,18 @@ it as a normal dependency. The crate has no application-package dependency.
 
 ## Ownership
 
+`fixtures::access::{calculated_storage, complex_links}` now own the independent
+stored-cache and populated multivalue builders previously source-included from
+ACE tests. Engine, Access adapter and CLI tests import the actual owners directly;
+the modules are also available for runtime tests. The raw bodies are byte-identical after reversing only the first import
+line; no production codec or subsystem dependency was added. Existing native/API
+assertions remain in their original feature tests. Strict Clippy passes all 43
+affected integration targets across ACE, Access and CLI; 77 representative test
+functions pass across the six stored-cache, complex-link, browser and CLI targets.
+The minimal default-free testkit build also passes. Initial lint runs exposed
+obsolete parent/child import aliases after source-included modules were removed;
+those aliases were deleted rather than suppressed.
+
 ```text
 src/
 ├── fixtures/

@@ -1,6 +1,3 @@
-use tablecraft_testkit::fixtures::access::complex_schema as complex_fixture;
-#[path = "../../../engines/tablecraft-ace/tests/complex_links/fixture.rs"]
-mod links_fixture;
 use std::{
     cell::Cell,
     io::{Cursor, Read, Seek, SeekFrom},
@@ -11,7 +8,7 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
-use tablecraft_testkit::fixtures::access as support;
+use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 const PAGE_BYTES: usize = 4096;
 const CHILD_PAGE: usize = 22;

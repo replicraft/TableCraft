@@ -1,7 +1,4 @@
-#[path = "calculated_storage/fixture.rs"]
-mod calculated_fixture;
-use tablecraft_testkit::fixtures::access as support;
-use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
+use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 
 use std::{
     cell::Cell,

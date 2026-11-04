@@ -1,4 +1,4 @@
-use super::{fixture, support};
+use super::{self as support, mutation_fixture as fixture};
 
 // Original synthetic format bytes. Uses a real inline MR2 property carrier from
 // the shared golden builder; no Java or third-party binary fixture is required.
