@@ -1,16 +1,20 @@
 //! Buffered query execution over the retained native source, without provider opens.
 use super::{
     Cell, Error, Response,
-    controls::{SCOPE, budget, check},
+    controls::{SCOPE, budget, check, comparison_budget},
     display::Presentation,
     document::Document,
 };
-use tablecraft_access::NativeSource;
+use std::cell::RefCell;
+use tablecraft_access::{NativeCollationResolver, NativeSource};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_query::{ExecutionOptions, QueryLimits, Source, execute_with_schema_discovery};
 use tablecraft_sql::{ParseLimits, parse_query, query::Query};
 
 const SQL_BYTES: usize = 64 * 1024;
+const QUERY_BYTES: u64 = 16 * 1024 * 1024;
+const QUERY_ROWS: u64 = 10_000;
+const QUERY_STEPS: u64 = 1_000_000;
 
 impl Document {
     pub(super) fn query(
@@ -24,13 +28,24 @@ impl Document {
         }
         let parsed = parse_query(sql, ParseLimits::default())?;
         let source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
-        execute(parsed.query(), &source, &[], "Query results", cancelled)
+        let comparison_pool = RefCell::new(comparison_budget());
+        let (source, resolver) =
+            source.with_deferred_database_collation_resolver(&comparison_pool)?;
+        execute(
+            parsed.query(),
+            &source,
+            &resolver,
+            &[],
+            "Query results",
+            cancelled,
+        )
     }
 }
 
 pub(super) fn execute(
     query: &Query,
     source: &dyn Source,
+    resolver: &NativeCollationResolver<'_>,
     parameters: &[(&str, Value)],
     title: &str,
     cancelled: &dyn Fn() -> bool,
@@ -42,10 +57,12 @@ pub(super) fn execute(
         ExecutionOptions {
             cancelled: Some(cancelled),
             limits: QueryLimits {
-                bytes: 16 * 1024 * 1024,
-                rows: 10_000,
-                steps: 1_000_000,
+                bytes: QUERY_BYTES,
+                rows: QUERY_ROWS,
+                steps: QUERY_STEPS,
             },
+            collation: Some(resolver.default_collation()),
+            collation_resolver: Some(resolver),
             ..Default::default()
         },
     )?;

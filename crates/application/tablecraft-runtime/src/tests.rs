@@ -8,6 +8,7 @@ mod editing;
 mod saved;
 mod schema;
 mod stored;
+mod text_policy;
 
 use super::{Command, Error, Response, Worker};
 use std::{

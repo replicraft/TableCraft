@@ -3,10 +3,11 @@ mod parameters;
 
 use crate::{
     Error, Response,
-    controls::{SCOPE, budget, check},
+    controls::{SCOPE, budget, check, comparison_budget},
     display::Presentation,
     document::Document,
 };
+use std::cell::RefCell;
 use tablecraft_access::{NativeSource, SavedRead};
 use tablecraft_sql::ParseLimits;
 
@@ -74,11 +75,21 @@ impl Document {
         require_revision(self, target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
-        let mut source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
+        let source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
+        let comparison_pool = RefCell::new(comparison_budget());
+        let (mut source, resolver) =
+            source.with_deferred_database_collation_resolver(&comparison_pool)?;
         let saved = source.read_saved_query(&target.name, ParseLimits::default())?;
         require_object(&saved, target, &mut output)?;
         let bindings = parameters::bindings(saved.query(), inputs, &mut output)?;
-        crate::query::execute(saved.query(), &source, &bindings, &target.name, cancelled)
+        crate::query::execute(
+            saved.query(),
+            &source,
+            &resolver,
+            &bindings,
+            &target.name,
+            cancelled,
+        )
     }
 }
 

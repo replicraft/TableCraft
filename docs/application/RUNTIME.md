@@ -207,8 +207,9 @@ limits remain the existing controls below.
 Execution uses the existing SELECT/UNION/crosstab profile and schema-discovery
 service. No external source registry, stored connection, provider, clock, random
 state or VBA authority is added. Required unsupported policies remain explicit
-errors; the host does not guess a collation, locale or LIKE mode. Stored field
-formatting and general Access query updateability remain separate work.
+errors. Text comparison uses the stored policies described below; the host does
+not guess unsupported policies, a locale or LIKE mode. General Access query
+updateability remains separate work.
 
 Saved results are complete buffered query results with no native source revision,
 zero offset and no progressive suffix. The shared UI rejects a native/partial or
@@ -218,6 +219,35 @@ inputs clear their old result; a failed rerun with unchanged inputs retains and
 labels the previous successful output. Saved and ad-hoc SQL text/results retain
 separate selection slots. None of these results grants native edit, record or
 collection-target capability.
+
+## Native query text policies
+
+Both ad-hoc SQL and explicit saved-query runs configure the Access adapter's
+deferred database-default resolver before schema discovery. Available Text fields
+retain their exact native policy identities; literal/default expressions use the
+actual stored database descriptor. The existing General legacy/2010 and
+comparison-only French legacy providers remain provisional native-weight models,
+not Windows Access SQL qualification.
+
+An unsupported default does not block numeric execution or plain projection.
+Supported field policies remain usable independently. An operation that requires
+an unsupported field/default policy fails explicitly, with no ordinal, system
+locale or another-family fallback. Corrupt metadata, cancellation and resource
+errors still fail during configuration. The same source/native allowance covers
+saved reconstruction and execution; inspection alone configures no text policy.
+
+One separate cumulative comparison pool allows 16 MiB and 1,000,000 steps per
+query, shared by all resolved families and nested execution. It is independent
+of native I/O, query execution and display quotas. The host supplies no omitted
+VBA module Option Compare setting; explicit binary and supported database string
+comparison modes retain their own contracts.
+
+LIKE grammar remains a separate setting. Microsoft documents a
+[per-database ANSI-89/ANSI-92 choice](https://support.microsoft.com/en-us/access/access-wildcard-character-reference).
+Until that setting is read or explicitly supplied through a shared application
+contract, GUI LIKE evaluation refuses instead of assuming wildcard syntax.
+Database sort order, application version and operating-system locale do not
+establish this option. See [native policy admission](../access/queries/NATIVE_QUERIES.md).
 
 ## Limits and verification
 
