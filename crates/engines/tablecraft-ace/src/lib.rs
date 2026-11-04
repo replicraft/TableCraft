@@ -174,7 +174,8 @@ pub use transaction::{
 };
 
 pub use properties::{
-    NativeProperty, PropertyGroup, PropertyGroupKind, TableProperties, inspect_table_properties,
+    DatabaseProperties, DatabaseQueryMode, NativeProperty, PropertyGroup, PropertyGroupKind,
+    TableProperties, inspect_database_properties, inspect_table_properties,
 };
 
 pub use relationships::{NativeRelationship, inspect_relationships};

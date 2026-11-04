@@ -81,3 +81,40 @@ Access comparison remain unfinished.
 
 [ACE 16-family comparisons](../profiles/NATIVE_ACE16.md) now exercise these bounded reads on
 original V2016/V2019 fixtures. Native Access comparison and ACE writes remain unqualified.
+
+## Stored database query mode
+
+`inspect_database_properties` reads the `MSysDb` object's LvProp through its
+unique native `Databases` container. The reader validates native container/type
+roles, system markers, the actual parent identity and the exact catalog Id-to-
+LvProp association. It reuses the same MR2 decoder and cumulative native budget
+as table-property inspection. No arbitrary object body is treated as a table.
+No `MSysDb` record returns `None`; an orphan, ambiguous role, malformed property
+stream, cancellation or resource failure returns an error. Ordinary non-system
+user objects in other native roles may share these names; a user table named
+`Databases` does not shadow the actual database container.
+
+`DatabaseProperties` retains the original object identity, raw stream and maps.
+Its budgeted `query_mode` observation reads only `ANSI Query Mode` in the unnamed
+default map. Exact DDL flag 1, native LONG tag 4, four-byte signed values 0 and 1
+produce `Ansi89` and `Ansi92`. Missing keys remain `Absent`; other flags, types or
+values remain `Unknown`. An invalid LONG width is malformed. Absence and unknown
+metadata do not silently select ANSI-89, and arbitrary nonzero values are not
+coerced to ANSI-92.
+
+Microsoft distinguishes the current database's `ANSI Query Mode` option from
+`ANSI Query Mode Default`, which controls newly created databases. The checked
+“This database” option selects ANSI-92 and the unchecked option selects ANSI-89.
+See [Microsoft's option names](https://learn.microsoft.com/en-us/office/vba/access/concepts/settings/set-options-from-visual-basic)
+and [wildcard setting contract](https://support.microsoft.com/en-us/access/access-wildcard-character-reference).
+[Jackcess's property registration](https://jackcess.sourceforge.io/jacoco/com.healthmarketscience.jackcess.impl/PropertyMapImpl.java.html)
+records the native LONG/DDL representation; its database-properties reader uses
+MSysDb's default property map.
+
+The retained public example contains the exact LONG zero representation. Tests
+for LONG one, absent/unknown metadata and corruption use independently authored
+raw fixtures. This establishes reader behavior and reference-supported mapping,
+not a native Access ANSI-92 save/reopen or query comparison. No database setting
+is written. Hosts may supply the observed mode to the existing LIKE evaluator;
+this observation does not broaden the SQL parser, select collation, infer a VBA
+module's Option Compare, or emulate ADO/provider-specific query modes.

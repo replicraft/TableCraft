@@ -87,3 +87,6 @@ fn properties_share_catalog_row_work_byte_and_cancellation_limits() {
         Err(InspectError::UnknownTable)
     ));
 }
+
+#[path = "properties/database.rs"]
+mod database;
