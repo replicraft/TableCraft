@@ -262,3 +262,41 @@ fn equality_key_work_shares_provider_quotas_cancellation_and_borrow_refusals() {
     ));
     drop(locked);
 }
+
+#[test]
+fn deferred_unknown_default_refuses_with_original_quota_and_cancellation() {
+    let cancelled = Cell::new(false);
+    let cancellation = || cancelled.get();
+    // Known-family construction consumes two Steps, leaving one refusal lookup.
+    let budget = RefCell::new(ResourceBudget::new(1000, 0, 3));
+    let resolver = NativeCollationResolver::new_deferred_default(
+        NativeSortOrder::from_native_bytes([31, 4, 0, 1]),
+        &budget,
+        &cancellation,
+    )
+    .unwrap()
+    .with_option_compare(StringCompareMode::Database);
+    let policy = resolver.default_collation();
+    assert_eq!(policy.option_compare(), Some(StringCompareMode::Database));
+
+    {
+        let _borrow = budget.borrow_mut();
+        assert_eq!(policy.compare("a", "A"), Err(EvalError::CollationFailed));
+    }
+    assert_eq!(policy.compare("a", "A"), Err(EvalError::CollationRequired));
+    assert!(matches!(
+        policy.compare_utf16(&[97], &[65]),
+        Err(EvalError::Limit(_))
+    ));
+    cancelled.set(true);
+    assert_eq!(policy.compare("a", "A"), Err(EvalError::Cancelled));
+    assert_eq!(
+        policy.find(
+            "a",
+            "a",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Database
+        ),
+        Err(EvalError::Cancelled)
+    );
+}

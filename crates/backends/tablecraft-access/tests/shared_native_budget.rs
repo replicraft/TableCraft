@@ -377,3 +377,40 @@ fn native_and_comparison_pools_cannot_alias_but_distinct_pools_remain_independen
     assert_eq!(read(&source), Ok(38));
     assert_eq!(remaining(&comparisons), comparison_after);
 }
+
+#[test]
+fn deferred_policy_keeps_native_and_comparison_admission_separate() {
+    let pool = RefCell::new(allowance(MAX_STEPS));
+    let cancelled = Cell::new(false);
+    let cancellation = || cancelled.get();
+    let source = open(&pool, &cancellation);
+    let before = remaining(&pool);
+    assert!(matches!(
+        source.with_deferred_database_collation_resolver(&pool),
+        Err(InspectError::Unsupported)
+    ));
+    assert_eq!(remaining(&pool), before);
+
+    let comparisons = RefCell::new(allowance(MAX_STEPS));
+    let source = open(&pool, &cancellation);
+    cancelled.set(true);
+    assert!(matches!(
+        source.with_deferred_database_collation_resolver(&comparisons),
+        Err(InspectError::Cancelled)
+    ));
+
+    cancelled.set(false);
+    let source = open(&pool, &cancellation);
+    let (source, resolver) = source
+        .with_deferred_database_collation_resolver(&comparisons)
+        .unwrap();
+    let native_before = remaining(&pool);
+    assert_eq!(
+        resolver.default_collation().compare("A", "a").unwrap(),
+        std::cmp::Ordering::Equal
+    );
+    assert_eq!(remaining(&pool), native_before);
+    let comparison_before = remaining(&comparisons);
+    assert_eq!(read(&source), Ok(38));
+    assert_eq!(remaining(&comparisons), comparison_before);
+}

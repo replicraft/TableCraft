@@ -48,8 +48,35 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
     /// resolver borrows a separate cumulative comparison quota and shares the
     /// source cancellation callback. This is not native SQL qualification.
     pub fn with_database_collation_resolver<'b>(
+        self,
+        comparison_budget: &'b RefCell<ResourceBudget>,
+    ) -> Result<(Self, NativeCollationResolver<'b>), InspectError>
+    where
+        'a: 'b,
+    {
+        self.configure_database_collation_resolver(comparison_budget, false)
+    }
+
+    /// Configure exact field policies while deferring unsupported database-default
+    /// refusal until a query actually requires that policy. Numeric operations and
+    /// plain projections do not require a supported default. Metadata I/O failures,
+    /// cancellation and resource errors still propagate during configuration.
+    /// Configure before discovery, with a distinct cumulative comparison budget.
+    /// This does not select a module string mode or an ANSI LIKE grammar.
+    pub fn with_deferred_database_collation_resolver<'b>(
+        self,
+        comparison_budget: &'b RefCell<ResourceBudget>,
+    ) -> Result<(Self, NativeCollationResolver<'b>), InspectError>
+    where
+        'a: 'b,
+    {
+        self.configure_database_collation_resolver(comparison_budget, true)
+    }
+
+    fn configure_database_collation_resolver<'b>(
         mut self,
         comparison_budget: &'b RefCell<ResourceBudget>,
+        defer_default: bool,
     ) -> Result<(Self, NativeCollationResolver<'b>), InspectError>
     where
         'a: 'b,
@@ -69,7 +96,11 @@ impl<'a, R: tablecraft_ace::NativeReadSource> NativeSource<'a, R> {
                 .map_err(|_| InspectError::Unsupported)?;
             inspect_database_sort_order(self.source.get_mut(), &mut budget, self.cancelled)?
         };
-        let resolver = NativeCollationResolver::new(order, comparison_budget, self.cancelled)?;
+        let resolver = if defer_default {
+            NativeCollationResolver::new_deferred_default(order, comparison_budget, self.cancelled)?
+        } else {
+            NativeCollationResolver::new(order, comparison_budget, self.cancelled)?
+        };
         self.text_policy_scope = TextPolicyScope::PerField;
         Ok((self, resolver))
     }

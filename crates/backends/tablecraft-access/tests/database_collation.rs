@@ -598,3 +598,6 @@ fn per_field_configuration_and_binding_remain_metadata_only_with_mixed_orders() 
     );
     assert!(attempts.get() > 0);
 }
+
+#[path = "database_collation/deferred.rs"]
+mod deferred;
