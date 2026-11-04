@@ -8,7 +8,7 @@ populated states. Native visual/platform verification is recorded below. Broader
 editing and application designers remain work.
 
 Run with `cargo run -p tablecraft-desktop -- path/to/example.accdb`, or omit the
-path and enter it in the window. Password input is masked and is consumed/erased
+path and use File → Open. Password input is masked and is consumed/erased
 when opening. Original database files are opened for bounded snapshot reads;
 close other writers before opening. The preview does not provide a live shared
 file editing session. It opens files up to 64 MiB, buffers pages of 100 rows and
@@ -387,3 +387,41 @@ test, twenty-four shared UI tests and seven desktop tests. Strict Clippy and the
 native binary build pass; dependency guard checks and its twenty-three tests pass.
 No full engine-suite rerun, Windows/Linux run or platform screen-reader claim is
 made for this slice.
+
+## File/Open Backstage
+
+File opens a full-page surface beneath the retained title and status areas,
+replacing the object navigation and document content while it is visible. The
+left rail and red selected-section accent follow the retained Access Account
+capture. Open contains the actual local path, masked password and native picker;
+About contains TableCraft information and the bundled font notice. The reference
+does not establish the exact layout of Access's Open page.
+
+These controls submit the same host actions and runtime commands as before.
+Successful Open completion dismisses Backstage; a failed Open remains visible
+with its error. Existing failed-open source clearing is unchanged. Native picker
+cancellation leaves the selected source, input and result state intact; actual
+selection retains its exact native path before explicit opening. There is no new
+file-reading or provider path inside the UI.
+
+Back and Escape navigate away without cancelling the current task or clearing
+table/query/design state. Query execution shortcuts apply only to the visible
+query workspace. Command/Control+O retains the host's native picker route where
+available; hosts without one show Open and focus its path. Task cancellation
+remains an explicit command. Unsupported Save, Print, account/cloud and designer
+commands are not represented as working controls.
+
+Native macOS observation passed missing-file error display, successful retry and
+success-only return to the workspace, table loading, File entry, native picker
+cancellation and Escape returning to the retained table. Computer-use transport
+briefly disconnected; resetting that tool restored observation without changing
+application behavior. The rail's initial toolkit blue selection was corrected to
+the reference's pale background and red accent.
+
+All 57 focused checks pass: twenty runtime unit tests, one diagnostics integration
+test, twenty-seven shared UI tests and nine desktop tests. The three Backstage
+action/layout checks also pass after the rail-color adjustment. Strict Clippy,
+native build, formatting, dependency boundaries and documentation links pass.
+Open layout checks include the desktop minimum 900 × 580 and default 1280 × 820
+logical sizes, with long path/error text. Actual Windows/Linux and platform
+screen-reader qualification remain unrun.

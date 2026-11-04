@@ -31,6 +31,7 @@ fn state() -> State {
         declared_rows: 101,
         fields: vec![],
     });
+    state.dismiss_backstage();
     state
 }
 

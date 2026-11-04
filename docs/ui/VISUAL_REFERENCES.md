@@ -36,8 +36,11 @@ Only working commands remain interactive. File opening, passwords, cancellation,
 table pages and read queries retain their current paths. No mock Create ribbon,
 editable new-record row, Click to Add field, checkbox editing, query designer or
 Microsoft account service is introduced to fill the screenshot layout. The
-current file controls remain directly accessible; a complete File/Backstage
-workflow is further work.
+File/Open presentation uses the Backstage reference's full-page structure and
+narrow left navigation. That capture shows Account, not Open: the implemented
+Open form is TableCraft's working file-selection surface, not a measured copy of
+Access's Open page. Only working Open/About sections are exposed; account/cloud,
+Save, Print and other unsupported commands are not simulated.
 
 The read-only schema inspector now follows the observed Design-view organization,
 with a central fields grid and lower selected-field pane. Native rendering and

@@ -1,3 +1,4 @@
+mod backstage;
 mod chrome;
 mod content;
 mod contents;
@@ -77,7 +78,7 @@ pub struct State {
     filter: String,
     view: DocumentView,
     show_system: bool,
-    about: bool,
+    backstage: backstage::Backstage,
 }
 
 impl State {
@@ -124,12 +125,27 @@ impl State {
         }
     }
 
+    /// Enter File/Open without changing the current session or running task.
+    pub fn show_open(&mut self) {
+        self.backstage = backstage::Backstage::Open;
+    }
+
+    /// The host dismisses File/Open only after a successful Opened response.
+    pub fn dismiss_backstage(&mut self) {
+        self.backstage = backstage::Backstage::Closed;
+    }
+
+    pub fn backstage_visible(&self) -> bool {
+        self.backstage != backstage::Backstage::Closed
+    }
+
     fn file_picker_ready(&self) -> bool {
         self.file_picker_available && !self.busy
     }
 
     fn query_ready(&self) -> bool {
         self.view == DocumentView::Query
+            && !self.backstage_visible()
             && self.database.is_some()
             && !self.busy
             && !self.sql.trim().is_empty()
@@ -147,6 +163,12 @@ impl State {
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         let mut actions = Vec::new();
         let modal_open = self.contents_request_id().is_some();
+        if !modal_open
+            && self.backstage_visible()
+            && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
+        {
+            self.dismiss_backstage();
+        }
         let shortcuts = if modal_open {
             keyboard::Shortcuts::default()
         } else {
@@ -163,14 +185,18 @@ impl State {
             if self.file_picker_ready() {
                 actions.push(Action::ChooseFile);
             } else if !self.file_picker_available {
+                self.show_open();
                 ui.memory_mut(|memory| memory.request_focus(path_id));
             }
         }
         ui.add_enabled_ui(!modal_open, |ui| {
-            self.chrome(ui, &mut actions, path_id);
-            self.navigation(ui, &mut actions);
-            self.content(ui, &mut actions);
-            self.about_window(ui);
+            self.chrome(ui, &mut actions);
+            if self.backstage_visible() {
+                self.backstage(ui, &mut actions, path_id);
+            } else {
+                self.navigation(ui, &mut actions);
+                self.content(ui, &mut actions);
+            }
         });
         self.contents_dialog(ui.ctx(), &mut actions);
         actions
@@ -226,6 +252,7 @@ mod tests {
         });
         assert!(!state.query_ready());
         state.view = DocumentView::Query;
+        state.dismiss_backstage();
         assert!(state.query_ready());
         state.busy = true;
         assert!(!state.query_ready());
