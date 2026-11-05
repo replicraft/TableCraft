@@ -12,6 +12,10 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+pub use utf16::search::PreparedLikeSearch;
+
+const HIGH_SURROGATES: std::ops::RangeInclusive<u16> = 0xd800..=0xdbff;
+const LOW_SURROGATES: std::ops::RangeInclusive<u16> = 0xdc00..=0xdfff;
 
 /// The host selects the database/query wildcard convention; it is not inferred.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -20,6 +24,82 @@ pub enum LikeMode {
     Ansi89,
     /// SQL-compatible wildcards: `%`, `_` and `[^list]`.
     Ansi92,
+}
+
+/// Find alignment within one value, independent from SQL LIKE's whole operand.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LikeMatch {
+    /// Match at any source boundary.
+    Any,
+    /// Consume the entire source value.
+    Whole,
+    /// Begin at the source value's first boundary.
+    Start,
+}
+
+/// An explicit provider capability, independent from SQL/module comparison mode.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LikeCase {
+    /// Existing database-weighted literal and class policy.
+    Database,
+    /// Separately admitted case-sensitive provider callbacks.
+    Sensitive,
+}
+
+/// Locate a consumed UTF-16 span using one compiled wildcard frontier.
+/// Earliest start wins forward; latest start wins reverse. For that start,
+/// choose the shortest nonempty span, or an empty span if none exists.
+/// Bounds and returned endpoints never split a valid surrogate pair.
+/// Empty spans are retained; consumers must advance with `next_like_offset`.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "matching, bounds and comparison policies are independent"
+)]
+pub fn find_like_utf16(
+    text: LikeString<'_>,
+    pattern: LikeString<'_>,
+    mode: LikeMode,
+    matching: LikeMatch,
+    search: crate::comparison::StringSearch,
+    case: LikeCase,
+    collation: &dyn Collation,
+    budget: &mut ResourceBudget,
+    cancelled: Option<&dyn Fn() -> bool>,
+) -> Result<Option<std::ops::Range<usize>>, EvalError> {
+    PreparedLikeSearch::new(pattern, mode, matching, case, budget, cancelled)?
+        .find(text, search, collation, budget, cancelled)
+}
+
+/// Advance past a zero-width match without bisecting a valid surrogate pair.
+pub fn next_like_offset(units: &[u16], offset: usize) -> Option<usize> {
+    let first = *units.get(offset)?;
+    let width = if HIGH_SURROGATES.contains(&first)
+        && units
+            .get(offset + 1)
+            .is_some_and(|next| LOW_SURROGATES.contains(next))
+    {
+        2
+    } else {
+        1
+    };
+    Some(offset + width)
+}
+
+/// Move before a zero-width match without bisecting a valid surrogate pair.
+pub fn previous_like_offset(units: &[u16], offset: usize) -> Option<usize> {
+    if offset == 0 || offset > units.len() {
+        return None;
+    }
+    let last = units[offset - 1];
+    let width = if offset >= 2
+        && LOW_SURROGATES.contains(&last)
+        && HIGH_SURROGATES.contains(&units[offset - 2])
+    {
+        2
+    } else {
+        1
+    };
+    Some(offset - width)
 }
 
 pub(super) struct Work<'a> {

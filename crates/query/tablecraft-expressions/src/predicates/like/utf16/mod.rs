@@ -1,6 +1,7 @@
 //! Explicit UTF-16 wildcard counts and weighted literal/element transitions.
 mod classes;
 mod pattern;
+pub(super) mod search;
 use super::{LikeMode, LikeString, Work, reachable};
 use crate::{
     EvalError,
@@ -17,6 +18,13 @@ pub(super) struct States {
     previous: Vec<u8>,
     current: Vec<u8>,
     candidates: Vec<u8>,
+    origins: Option<Origins>,
+}
+
+pub(super) struct Origins {
+    previous: Vec<usize>,
+    current: Vec<usize>,
+    reverse: bool,
 }
 
 pub(super) fn matches(
@@ -34,6 +42,7 @@ pub(super) fn matches(
         previous: work.buffer(width)?,
         current: work.buffer(width)?,
         candidates: work.buffer(width)?,
+        origins: None,
     };
     states.previous.resize(width, 0);
     states.current.resize(width, 0);
@@ -49,49 +58,8 @@ pub(super) fn matches(
             *flag = 0;
         }
         let last = number + 1 == pattern.tokens.len();
-        match token {
-            Token::Invalid => {
-                if reachable(&states.previous[..units.len()], work)? {
-                    return Err(EvalError::InvalidPattern);
-                }
-                return Ok(Truth::False);
-            }
-            Token::Many => {
-                if malformed {
-                    return Err(EvalError::InvalidPattern);
-                }
-                for at in 0..width {
-                    work.tick()?;
-                    states.current[at] = u8::from(
-                        states.previous[at] != 0 || (at > 0 && states.current[at - 1] != 0),
-                    );
-                }
-            }
-            Token::One | Token::Digit => {
-                for (at, unit) in units.iter().enumerate() {
-                    work.tick()?;
-                    states.current[at + 1] = u8::from(
-                        states.previous[at] != 0
-                            && (matches!(token, Token::One) || (ZERO..=NINE).contains(unit)),
-                    );
-                }
-            }
-            Token::Literal(range) => {
-                states.literal(&units, &pattern.literals[range.clone()], last, col, work)?
-            }
-            Token::Class(range, negated) => {
-                if !reachable(&states.previous[..units.len()], work)? {
-                    return Ok(Truth::False);
-                }
-                let list = &pattern.units[range.clone()];
-                for range in pattern::ranges(list) {
-                    let (low, high) = range?;
-                    if compare(&[low], &[high], col, work)? == Ordering::Greater {
-                        return Err(EvalError::InvalidPattern);
-                    }
-                }
-                states.class(&units, list, *negated, last, col, work)?;
-            }
+        if !states.advance(&units, &pattern, token, malformed, last, col, work)? {
+            return Ok(Truth::False);
         }
         std::mem::swap(&mut states.previous, &mut states.current);
     }
@@ -104,6 +72,98 @@ pub(super) fn matches(
 }
 
 impl States {
+    fn merge(origins: &Origins, old: usize, incoming: usize) -> usize {
+        if old == usize::MAX {
+            incoming
+        } else if origins.reverse {
+            old.max(incoming)
+        } else {
+            old.min(incoming)
+        }
+    }
+
+    fn mark(&mut self, end: usize, start: usize) {
+        self.current[end] = 1;
+        if let Some(origins) = &mut self.origins {
+            origins.current[end] =
+                Self::merge(origins, origins.current[end], origins.previous[start]);
+        }
+    }
+
+    fn extend_many(&mut self, end: usize, previous_end: usize) {
+        self.current[end] = 1;
+        if let Some(origins) = &mut self.origins {
+            origins.current[end] =
+                Self::merge(origins, origins.current[end], origins.current[previous_end]);
+        }
+    }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "SQL timing, pattern state and host comparison controls remain independent"
+    )]
+    fn advance(
+        &mut self,
+        units: &[u16],
+        pattern: &pattern::Pattern,
+        token: &Token,
+        malformed: bool,
+        last: bool,
+        col: &dyn Collation,
+        work: &mut Work<'_>,
+    ) -> Result<bool, EvalError> {
+        let width = units.len() + 1;
+        match token {
+            Token::Invalid => {
+                if reachable(&self.previous[..units.len()], work)? {
+                    return Err(EvalError::InvalidPattern);
+                }
+                return Ok(false);
+            }
+            Token::Many => {
+                if malformed {
+                    return Err(EvalError::InvalidPattern);
+                }
+                for at in 0..width {
+                    work.tick()?;
+                    if self.previous[at] != 0 {
+                        self.mark(at, at);
+                    }
+                    if at > 0 && self.current[at - 1] != 0 {
+                        self.extend_many(at, at - 1);
+                    }
+                }
+            }
+            Token::One | Token::Digit => {
+                for (at, unit) in units.iter().enumerate() {
+                    work.tick()?;
+                    if self.previous[at] != 0
+                        && (matches!(token, Token::One) || (ZERO..=NINE).contains(unit))
+                    {
+                        self.mark(at + 1, at);
+                    }
+                }
+            }
+            Token::Literal(range) => {
+                self.literal(units, &pattern.literals[range.clone()], last, col, work)?
+            }
+            Token::Class(range, negated) => {
+                if !reachable(&self.previous[..units.len()], work)? {
+                    return Ok(false);
+                }
+                let list = &pattern.units[range.clone()];
+                for range in pattern::ranges(list) {
+                    let (low, high) = range?;
+                    if compare(&[low], &[high], col, work)? == Ordering::Greater {
+                        return Err(EvalError::InvalidPattern);
+                    }
+                }
+                self.class(units, list, *negated, last, col, work)?;
+            }
+        }
+        Ok(true)
+    }
+
     fn literal(
         &mut self,
         text: &[u16],
@@ -124,7 +184,7 @@ impl States {
                 let state = col.like_literal_step(&text[start..end], literal)?;
                 work.tick()?;
                 match state {
-                    LikeSpanState::Match => self.current[end] = 1,
+                    LikeSpanState::Match => self.mark(end, start),
                     LikeSpanState::Possible => {}
                     LikeSpanState::Impossible => break,
                 }

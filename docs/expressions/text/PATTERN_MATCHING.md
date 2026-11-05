@@ -243,6 +243,25 @@ not a complete compilation manifest. Native Microsoft Access execution and
 locale qualification remain unrun; this replay establishes the explicit
 TableCraft profile over original native stored values.
 
+## Explicit wildcard occurrence search
+
+`PreparedLikeSearch` compiles one explicit ANSI-89/ANSI-92 pattern and searches
+successive UTF-16 values under caller-owned cumulative quotas and cancellation.
+It returns a consumed source span for Any, Whole or Start matching, with explicit
+forward or reverse bounds. This is a host search primitive; it does not change
+SQL LIKE truth evaluation. A bounded frontier retains source origins rather than
+rerunning the matcher for every possible substring.
+At the selected earliest/latest start, it chooses the shortest nonempty match;
+an empty match is returned only when no nonempty match at that start is available.
+
+Database-case matching uses the supplied LIKE provider. Sensitive matching
+requires separate provider callbacks and refuses when they are absent. The
+General and French providers currently expose an ordinal UTF-16 sensitive
+profile; this is not qualified Windows linguistic case-sensitive behavior.
+Selection boundaries and zero-width continuation do not split a valid surrogate
+pair. Native Find occurrence selection, wildcard greediness and interactive
+highlight parity still require Microsoft Access comparison.
+
 ## Primary references
 
 Reviewed 19 October 2026:
