@@ -7,9 +7,11 @@ pub(super) fn document_title(path: &Path, filename: &str, format: &str) -> Strin
         .unwrap_or(path.as_os_str())
         .to_string_lossy();
     // These labels describe file compatibility, not the application that last
-    // saved the file. A header cannot identify the producing Access release.
+    // saved the file. Both ACE 16 format families use the Access 2016 title
+    // convention; their distinct raw format codes remain in database metadata.
+    // A header cannot identify the producing Access release.
     let profile = match format.split(" · ").next().unwrap_or(format) {
-        "Ace2016" => "Access 2016",
+        "Ace2016" | "Ace2019" => "Access 2016",
         "Ace2010" => "Access 2010",
         "Ace2007" => "Access 2007",
         "Jet4" => "Access 2000–2003",
@@ -31,6 +33,18 @@ mod tests {
                 "Ace2016"
             ),
             "TestDatabase : Database | TestDatabase.accdb (Access 2016)"
+        );
+        assert_eq!(
+            document_title(
+                Path::new("/data/Client Records.v2.accdb"),
+                "Client Records.v2.accdb",
+                "Ace2019 · deployment package"
+            ),
+            "Client Records.v2 : Database | Client Records.v2.accdb (Access 2016)"
+        );
+        assert_eq!(
+            document_title(Path::new("/data/New.accdb"), "New.accdb", "UnknownProfile"),
+            "New : Database | New.accdb (UnknownProfile)"
         );
         assert_eq!(
             document_title(Path::new("/data/Old.mdb"), "Old.mdb", "Jet4"),

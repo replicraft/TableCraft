@@ -10,6 +10,11 @@ reparsing rendered strings. Display has no egui, window or database dependency.
 
 ## Regional display
 
+The System locale currency option includes its resolved regional code, for
+example `System locale (USD)`. The code follows the explicit host regional locale;
+UI language and a stored field-specific Euro format do not select that default.
+An unresolved regional engine does not invent a currency code.
+
 Options separates Date format, Time format and Currency. Each starts with System
 locale. The desktop discovers the regional locale independently of the selected
 translation language. ICU4X/CLDR supplies regional patterns and currency formatting;
