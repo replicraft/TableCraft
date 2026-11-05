@@ -1,6 +1,6 @@
 //! Strict relational keys over retained scalar, String and standard Error data.
-mod numeric;
 use super::{Environment, Runtime};
+use crate::keys::numeric;
 use crate::{QueryError, execution::cell::CellValue, plan::Expr, source::TextPolicy};
 use std::cmp::Ordering;
 use tablecraft_core::values::{ExpressionValue, Value};

@@ -18,17 +18,14 @@ const _: () = assert!(
 const _: () = assert!(Decimal::COEFFICIENT_BITS <= u128::BITS);
 const _: () = assert!(Currency::SCALE <= Decimal::MAX_SCALE);
 
-pub(in crate::execution::keys) struct FixedBinary {
+pub(crate) struct FixedBinary {
     coefficient: i128,
     scale: u8,
     binary: f64,
     reversed: bool,
 }
 
-pub(in crate::execution::keys) fn mixed_fixed_pair(
-    left: &Value,
-    right: &Value,
-) -> Option<FixedBinary> {
+pub(crate) fn mixed_fixed_pair(left: &Value, right: &Value) -> Option<FixedBinary> {
     let (coefficient, scale, binary, reversed) =
         if let (Some((coefficient, scale)), Some(binary)) = (fixed(left), binary(right)) {
             (coefficient, scale, binary, false)
@@ -47,7 +44,7 @@ pub(in crate::execution::keys) fn mixed_fixed_pair(
 }
 
 impl FixedBinary {
-    pub(in crate::execution::keys) fn compare(&self) -> Result<Ordering, EvalError> {
+    pub(crate) fn compare(&self) -> Result<Ordering, EvalError> {
         if !self.binary.is_finite() {
             return Err(EvalError::NonFinite);
         }
