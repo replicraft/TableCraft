@@ -1,5 +1,5 @@
 use super::*;
-use crate::Action;
+use crate::{Action, RecordTarget};
 
 #[test]
 fn long_service_reports_preserve_complete_sources_and_retry_inputs() {
@@ -81,5 +81,68 @@ fn successful_mock_read_and_query_retries_clear_the_previous_global_report() {
             assert!(!table.rows.is_empty());
             assert!(preview.state.mock_preview);
         }
+    }
+}
+
+#[test]
+fn admitted_mock_retries_clear_cancel_reports_but_stale_targets_preserve_them() {
+    for retry in ["saved run", "saved inspection", "record"] {
+        let mut preview = Preview::new(if retry == "record" {
+            Scene::Datasheet
+        } else {
+            Scene::SavedRunning
+        });
+        preview.dispatch(Action::Cancel);
+        let report = preview.state.error.clone();
+        assert!(report.is_some());
+        let sql = preview.state.sql.clone();
+        if retry == "record" {
+            let data = preview.state.data.as_ref().unwrap();
+            let target = RecordTarget {
+                document_revision: data.source_revision.unwrap(),
+                table: data.table.clone(),
+                parent_ordinal: data.offset + 7,
+                column: data.columns[0].name.clone(),
+            };
+            let mut stale = target.clone();
+            stale.document_revision += 1;
+            preview.dispatch(Action::NavigateRecord { target: stale });
+            assert_eq!(preview.state.error, report);
+            let ordinal = target.parent_ordinal;
+            preview.dispatch(Action::NavigateRecord { target });
+            assert_eq!(
+                preview.state.data.as_ref().unwrap().offset,
+                ordinal,
+                "mock publication starts at the requested non-page-boundary record"
+            );
+            assert_eq!(preview.state.data.as_ref().unwrap().rows[0][0].text, "1008");
+        } else {
+            let Some(Action::RunSavedQuery { target, parameters }) =
+                preview.state.saved_query_run_action()
+            else {
+                panic!("cancelled saved run retains its ready inputs");
+            };
+            let mut stale = target.clone();
+            stale.document_revision += 1;
+            if retry == "saved run" {
+                preview.dispatch(Action::RunSavedQuery {
+                    target: stale,
+                    parameters: parameters.clone(),
+                });
+                assert_eq!(preview.state.error, report);
+                preview.dispatch(Action::RunSavedQuery { target, parameters });
+            } else {
+                preview.dispatch(Action::InspectSavedQuery { target: stale });
+                assert_eq!(preview.state.error, report);
+                preview.dispatch(Action::InspectSavedQuery { target });
+            }
+        }
+        assert!(
+            preview.state.error.is_none(),
+            "admitted {retry} replaces the cancellation report"
+        );
+        assert_eq!(preview.state.sql, sql);
+        assert!(!preview.state.data.as_ref().unwrap().rows.is_empty());
+        assert_eq!(preview.state.localizer.diagnostics(), Default::default());
     }
 }
