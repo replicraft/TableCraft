@@ -31,15 +31,15 @@ impl Preview {
     }
 
     pub(super) fn prepare_saved_error(&mut self) {
+        self.prepare_saved_error_message(self.state.localizer.text("query-mock-error"));
+    }
+
+    pub(super) fn prepare_saved_error_message(&mut self, message: String) {
         let (target, inputs) = self.successful_saved_result();
         let request = self.request();
         self.state
             .begin_saved_query_run(target.clone(), inputs, request);
-        self.state.fail_saved_query(
-            request,
-            target,
-            self.state.localizer.text("query-mock-error"),
-        );
+        self.state.fail_saved_query(request, target, message);
     }
 
     pub(super) fn prepare_saved_parameters(&mut self) {
