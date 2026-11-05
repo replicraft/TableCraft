@@ -94,10 +94,17 @@ impl<'a> NativeCollationResolver<'a> {
         self.deferred = self.deferred.with_option_compare(mode);
         self
     }
+
+    /// Resolve an exact native field descriptor without exposing its query ID encoding.
+    /// Unknown descriptors never fall back to the database default or ordinal policy.
+    pub fn resolve_native(&self, order: NativeSortOrder) -> Result<&dyn Collation, QueryError> {
+        self.resolve(identity(order))
+    }
+
     /// Borrow the configured database/default policy. A deferred unknown default
     /// supplies a refusing provider, never a guessed family or ordinal fallback.
-    /// The trait return replaces the previous GeneralCollation reference so a
-    /// French default retains its exact provider instead of a General fallback.
+    /// The trait return lets a French default retain its exact provider instead
+    /// of a General fallback.
     pub fn default_collation(&self) -> &dyn Collation {
         if self.default == self.legacy.order {
             &self.legacy

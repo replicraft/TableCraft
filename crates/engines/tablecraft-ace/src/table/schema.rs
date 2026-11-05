@@ -27,6 +27,11 @@ pub struct NativeColumn {
     profile: ReadProfile,
 }
 impl NativeColumn {
+    /// Whether this is the native OLE Object carrier, independent of scalar support.
+    pub const fn is_ole_object(&self) -> bool {
+        self.field.kind == data_type::OLE
+    }
+
     /// Stored text sort descriptor for Short/Long Text only. Unknown/zero values
     /// remain explicit; this does not change query collation or qualify text indexes.
     pub const fn text_sort_order(&self) -> Option<crate::NativeSortOrder> {

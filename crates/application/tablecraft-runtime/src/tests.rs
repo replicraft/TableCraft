@@ -11,6 +11,7 @@ mod deleting;
     any(target_os = "macos", target_os = "linux")
 ))]
 mod editing;
+mod find;
 mod formatting;
 #[cfg(all(
     feature = "offline-edit",

@@ -31,6 +31,7 @@ file-open/read call must return before a cooperative cancellation check can run.
 | InspectCollection | Complete stored children of one revision-bound native parent cell |
 | Query | Explicit read-query result over the selected source; no implicit provider opens |
 | SortTable | Revision-bound table/field identifiers composed into an owned SELECT/ORDER BY model; complete buffered read-only result under the same query budgets |
+| FindNext | Revision-bound native table/field search returning an exact source ordinal, field name and consumed UTF-16 span; no rows are filtered or reordered |
 
 The desktop follows a successful Open with Page for the first non-system local
 table, unless restoring an acknowledged save. This is a host workflow, not a
@@ -328,6 +329,70 @@ Query/sorted output, system tables and absent records cannot issue the UI intent
 The existing plain-source, offline and macOS/Linux save limits apply. This route
 adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
 validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
+
+## Native table Find
+
+`FindNext` captures the exact document revision, local table, field/table scope,
+pattern, match mode, direction, previous source position and regional display
+options. It searches the immutable native session through one `NativeBrowser`
+projected cursor, including records beyond the currently loaded 100-row page.
+It does not construct SQL, filter rows or interpret a query result's position as
+an original native record. All scoped declarations, format/control capabilities
+and comparison descriptors qualify before user-record traversal. Failure never
+silently drops an unsupported field.
+
+The scan reads complete batches through checked EOF before publishing either a
+match or a negative result. A declared-count mismatch, later malformed record,
+cancellation, missing source anchor or exhausted allowance returns an error,
+including when an earlier prefix contained a match. Only candidate positions are
+retained; the service does not materialize a complete table. Up chooses a prior
+occurrence, Down stops at the end, and All searches forward then wraps. Continued
+searches consume further occurrences within the same cell. Positions contain the
+original row ordinal and exact field name plus a consumed UTF-16 range; valid
+surrogate pairs are not bisected, including zero-width continuation.
+
+Pattern compilation happens once per command. Any/Whole/Start matching uses the
+shared bounded wildcard frontier and stored ANSI-89/ANSI-92 query setting.
+Successfully inspected absence selects the documented ANSI-89 default; an unknown
+setting refuses. Match-case off uses the exact qualified native field/default
+weight provider. Match-case on uses a separately admitted provisional exact
+UTF-16 literal/class policy for supported General/French descriptors. It does not
+reuse insensitive LIKE or claim Windows linguistic case-sensitive parity. The
+selected-start rule prefers the shortest nonempty consumed span, falling back to
+an empty span only when necessary. Wildcard selection greediness and native
+substring highlighting remain unqualified; the desktop currently selects the
+matching cell rather than claiming Access-identical substring highlighting.
+
+Formatted date/currency searches use the same renderer-neutral
+`tablecraft-display::Engine`, captured `Options` and qualified native facts as the
+UI. Native masks, lookup controls and unsupported custom formats refuse; they
+never become approximate raw searches. Unformatted date searches require a real
+regional typed-input policy and currently refuse. Unformatted Single, Double,
+Decimal and Currency likewise refuse instead of guessing locale-dependent decimal
+syntax. A table-wide unformatted search therefore refuses if its scope includes
+such declarations, even when another field might match. Integer/text searches
+retain the current explicit carrier presentation. Documented Find exclusions for
+Yes/No and OLE Object are explicit; other unsupported fields refuse. Whole-field,
+unformatted `Null`/`Is Null` criteria search typed NULL, and `""` searches actual
+zero-length text; neither searches the UI's synthetic NULL badge.
+
+The command has a 64 KiB UTF-8 pattern ceiling. Metadata and cursor reads share
+one native allowance (512 MiB, 100,000 rows, five million steps), with a separate
+cumulative native-comparison pool (16 MiB and one million steps). Pattern/span
+work has a separate cumulative 64 MiB/ten-million-step pool; presentation uses
+its existing 8 MiB/100,000-step allowance, including the once-captured request
+and every retained candidate name. None resets per batch or field. Resource
+failure is an error, not a completed negative search. The host retrieves the
+matching page with a second explicit command and its own operation allowance;
+publication requires the same source revision, ordinal and original field.
+
+Microsoft's [Find dialog contract](https://support.microsoft.com/en-us/access/use-the-find-and-replace-dialog-box-to-change-data),
+[FindRecord behavior](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/findrecord-macro-action)
+and [wildcard reference](https://support.microsoft.com/en-us/access/access-wildcard-character-reference)
+provide the behavioral target. Local tests establish full-cursor traversal,
+repeated occurrences, wrap/reverse navigation, typed NULL, captured EUR display,
+mandatory EOF validation and failure boundaries. These are headless implementation
+checks, not native Access or cross-platform GUI qualification.
 
 ## Native saved queries and declared parameters
 
