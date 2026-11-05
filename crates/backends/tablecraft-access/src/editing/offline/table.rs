@@ -87,7 +87,7 @@ impl OfflineWriteSession {
     }
 }
 
-fn require_original(
+pub(super) fn require_original(
     actual: &[u8],
     expected: &[u8],
     budget: &mut ResourceBudget,

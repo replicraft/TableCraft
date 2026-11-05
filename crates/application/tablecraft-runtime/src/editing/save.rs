@@ -5,6 +5,8 @@ mod native;
 pub use native::SaveWorker;
 
 use super::ReviewedEdit;
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+use super::ReviewedInsert;
 use std::fmt;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 use std::path::PathBuf;
@@ -122,18 +124,18 @@ pub enum SaveStartFailure {
 }
 
 /// A rejected start returns its unconsumed capability to the caller.
-pub struct SaveStartError {
+pub struct SaveStartError<T = ReviewedEdit> {
     pub kind: SaveStartFailure,
-    pub(super) reviewed: Option<ReviewedEdit>,
+    pub(super) reviewed: Option<T>,
 }
 
-impl SaveStartError {
-    pub fn into_reviewed(self) -> Option<ReviewedEdit> {
+impl<T> SaveStartError<T> {
+    pub fn into_reviewed(self) -> Option<T> {
         self.reviewed
     }
 }
 
-impl fmt::Debug for SaveStartError {
+impl<T> fmt::Debug for SaveStartError<T> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("SaveStartError")
@@ -142,13 +144,13 @@ impl fmt::Debug for SaveStartError {
     }
 }
 
-impl fmt::Display for SaveStartError {
+impl<T> fmt::Display for SaveStartError<T> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "save request was not accepted ({:?})", self.kind)
     }
 }
 
-impl std::error::Error for SaveStartError {}
+impl<T> std::error::Error for SaveStartError<T> {}
 
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 pub struct SaveWorker;
@@ -159,6 +161,16 @@ impl SaveWorker {
         Self
     }
     pub fn start(&self, reviewed: ReviewedEdit, _bundle: PathBuf) -> Result<u64, SaveStartError> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+    pub fn start_insert(
+        &self,
+        reviewed: ReviewedInsert,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedInsert>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

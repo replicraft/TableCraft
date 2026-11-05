@@ -6,6 +6,7 @@ mod collections;
 mod editing;
 mod errors;
 mod fixtures;
+mod insertion;
 mod queries;
 
 use super::{DocumentView, State};
@@ -31,6 +32,8 @@ pub enum Scene {
     Multivalue,
     History,
     Edit,
+    NewRecord,
+    InsertReview,
     Review,
     Recovery,
     Backstage,
@@ -62,7 +65,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 44] = [
+    pub const ALL: [Self; 46] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
@@ -79,6 +82,8 @@ impl Scene {
         Self::Multivalue,
         Self::History,
         Self::Edit,
+        Self::NewRecord,
+        Self::InsertReview,
         Self::Review,
         Self::Recovery,
         Self::Backstage,
@@ -144,6 +149,8 @@ impl Scene {
             Self::Multivalue => "multivalue",
             Self::History => "history",
             Self::Edit => "edit",
+            Self::NewRecord => "new-record",
+            Self::InsertReview => "insert-review",
             Self::Review => "review",
             Self::Recovery => "recovery",
             Self::Backstage => "backstage",
@@ -263,6 +270,8 @@ impl Preview {
             Scene::Multivalue => self.open_collection("Categories", CollectionKind::Multivalue),
             Scene::History => self.open_collection("Notes", CollectionKind::VersionHistory),
             Scene::Edit => self.open_edit(),
+            Scene::NewRecord => self.prepare_insert_scene(false),
+            Scene::InsertReview => self.prepare_insert_scene(true),
             Scene::Review | Scene::Recovery => {
                 self.open_edit();
                 let input = EditInput {

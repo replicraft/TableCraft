@@ -1,5 +1,25 @@
 # Implementation status
 
+## Reviewed desktop row insertion — 5 November 2026
+
+Home and the record navigator now expose New row for a native user table,
+including empty tables. The shared dialog preserves explicit Omitted/NULL/Value
+intent, requires native review and consumes an opaque insertion capability through
+the existing single save worker. Exact-source checks, ordinary INSERT admission,
+journal recovery, retained outcomes and acknowledgement remain enforced. The
+workflow is explicit offline editing; it does not claim Access inline autosave.
+Current platform/default limits are in the [runtime contract](application/RUNTIME.md#reviewed-offline-row-insertion).
+
+The final headless gate passed 143 UI, 62 runtime and 29 desktop tests plus the
+runtime documentation example. The UI matrix covers 46 scenes × eight languages
+× two themes (736 draw combinations). Actual widget tests perform a qualified
+native INSERT, retain the completed outcome/close veto until acknowledgement,
+and reopen the same table. Invalid/stale inputs and source drift remain refused.
+Two adapter original-image tests and the minimal runtime build also passed;
+selected strict Clippy, formatting and dependency boundaries passed. English
+light review and compact Korean dark draft exports were inspected without
+opening an application window.
+
 ## Regional datasheets and window chrome — 5 November 2026
 
 The desktop now opens the first local user table after a successful file capture,

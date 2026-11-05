@@ -6,6 +6,7 @@ mod diagnostics;
 mod editing;
 pub(crate) mod focus;
 mod home;
+mod insertion;
 mod navigation;
 pub mod preview;
 mod query;
@@ -16,6 +17,7 @@ mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
+pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use records::RecordTarget;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
@@ -92,6 +94,20 @@ pub enum Action {
     BeginEdit {
         target: EditTarget,
     },
+    BeginInsert {
+        target: InsertTarget,
+    },
+    ReviewInsert {
+        draft_id: u64,
+        inputs: Vec<InsertInput>,
+    },
+    ApplyInsert {
+        review_id: u64,
+    },
+    CloseInsert {
+        request_id: u64,
+        draft_id: Option<u64>,
+    },
     ReviewEdit {
         draft_id: u64,
         input: EditInput,
@@ -150,6 +166,7 @@ pub struct State {
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
+    insertion: Option<insertion::Dialog>,
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
     selected_field: usize,
@@ -449,6 +466,7 @@ impl State {
         });
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
+        self.insertion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() {
             self.finish_pane_focus(ui);

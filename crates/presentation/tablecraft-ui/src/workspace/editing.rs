@@ -108,6 +108,7 @@ impl State {
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
         if self.view != DocumentView::Table
+            || self.insertion_dialog_open()
             || self.table_selection.row_selected()
             || self.backstage_visible()
             || self.contents_request_id().is_some()
@@ -323,17 +324,18 @@ impl State {
     }
 
     pub fn edit_save_pending(&self) -> bool {
-        matches!(
-            &self.edit,
-            Some(EditDialog::Saving { .. })
-                | Some(EditDialog::Finished {
-                    outcome: EditSaveOutcome::Retained { .. },
-                    ..
-                })
-        )
+        self.insert_save_pending()
+            || matches!(
+                &self.edit,
+                Some(EditDialog::Saving { .. })
+                    | Some(EditDialog::Finished {
+                        outcome: EditSaveOutcome::Retained { .. },
+                        ..
+                    })
+            )
     }
     pub fn edit_dialog_open(&self) -> bool {
-        self.edit.is_some()
+        self.edit.is_some() || self.insertion_dialog_open()
     }
 
     /// Saving is nonreplaceable: close/cancel must wait for a terminal outcome.
@@ -346,6 +348,18 @@ impl State {
     }
 
     pub(super) fn edit_status(&self) -> String {
+        if self.insertion_dialog_open() {
+            return self.localizer.text(
+                if matches!(
+                    self.insertion,
+                    Some(super::insertion::Dialog::Saving { .. })
+                ) {
+                    "shell-saving-offline"
+                } else {
+                    "insertion-title"
+                },
+            );
+        }
         match &self.edit {
             Some(EditDialog::Saving { .. }) => self.localizer.text("shell-saving-offline"),
             Some(_) => self.localizer.text("shell-offline-edit"),
@@ -354,6 +368,7 @@ impl State {
     }
 
     pub(super) fn invalidate_edit(&mut self) {
+        self.invalidate_insert();
         if matches!(
             &self.edit,
             Some(EditDialog::Checking { .. } | EditDialog::Draft { .. })

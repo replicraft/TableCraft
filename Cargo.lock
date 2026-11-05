@@ -4407,6 +4407,7 @@ dependencies = [
  "clap",
  "eframe",
  "egui",
+ "egui_kittest",
  "rfd",
  "sys-locale",
  "tablecraft-runtime",

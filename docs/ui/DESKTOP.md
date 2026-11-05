@@ -842,3 +842,27 @@ The new renderer uses the actual full viewport instead of the harness's eight-po
 outer frame. These exports do not verify Windows/Linux window-manager behavior
 or constitute a native Access comparison. Native UI checks remain suspended.
 The [display contract](DISPLAY_PREFERENCES.md) records deliberate current differences.
+
+
+## Reviewed row insertion headless gate — 5 November 2026
+
+New row now uses a separate revision/table target and explicit field intent,
+without fabricating an existing native row handle. The runtime issues consuming
+reviews through the ordinary native INSERT planner. The desktop sends both cell
+updates and insertion through one save owner, preserving cancellation, retained
+resources, receipts, close veto, acknowledgement and source refresh.
+
+The final selected gate passed 143 UI tests (including 736 scene/locale/theme
+draw combinations), 62 runtime tests, 29 desktop tests and the runtime documentation
+example. Two adapter original-image tests cover the shared UPDATE/INSERT check;
+the optional-feature-free runtime build, selected strict Clippy, formatting,
+dependency guard and documentation links also passed. New host tests interact
+with real headless field widgets and apply/reopen an independently authored,
+fully qualified native fixture. No native application was opened.
+
+Offscreen image review used a macOS build with Windows input conventions:
+English light insertion review at 1280×820 logical / 1× and Korean dark new-row
+draft at 900×580 / 1.5×. Fields occupy available width and the measured footer
+aligns right while retaining keyboard order. No native Access capture exists for
+this explicit offline new-row dialog; it remains a provisional workflow.
+See [runtime bounds](../application/RUNTIME.md#reviewed-offline-row-insertion).

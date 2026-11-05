@@ -1,4 +1,5 @@
 //! Source-bound preparation and ordinary planning without a file lease.
+use super::ids::issue_id;
 use super::{
     EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, ReviewedState, input,
 };
@@ -8,23 +9,11 @@ use crate::{
     display::Presentation,
     document::Document,
 };
-use std::sync::{
-    Arc,
-    atomic::{AtomicU64, Ordering},
-};
+use std::sync::Arc;
 use tablecraft_access::editing::journal::NativeJournalEditor;
 use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
-
-static NEXT_EDIT: AtomicU64 = AtomicU64::new(0);
-
-fn issue_id() -> Result<u64, Error> {
-    NEXT_EDIT
-        .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
-        .map(|previous| previous + 1)
-        .map_err(|_| Error::RevisionExhausted)
-}
 
 fn copy_target(target: &EditTarget, output: &mut Presentation<'_>) -> Result<EditTarget, Error> {
     Ok(EditTarget {

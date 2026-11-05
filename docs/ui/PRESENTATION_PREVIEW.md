@@ -67,7 +67,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 44 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 46 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -557,3 +557,18 @@ Regional formatting in exported previews is selected independently with
 Fluent translation locale. The exporter uses a full-viewport root UI instead of
 the test harness's artificial eight-point demonstration frame. Record logical
 size, pixel scale, build platform and chosen regional locale with reviewed images.
+
+## Explicit new-row presentation
+
+The `new-record` and `insert-review` scenes show the same bounded row-insertion
+modal used by the desktop host, with clearly labeled synthetic fields and no
+file persistence. Home and the record toolbar expose New row without adding an
+invented stored row, generated value or native row ordinal to the datasheet.
+
+Each field distinguishes Omitted, NULL and Value. Changing the choice retains
+its text; an accepted review binds the exact current inputs before applying.
+Save cancellation, retained resources and acknowledgement use the existing
+single save owner. Backend admission remains responsible for supported types,
+constraints and native insertion; the dialog does not assume defaults or skip
+required programs. This explicit offline dialog is a provisional application
+workflow, not a verified replica of Access's inline new-record row.

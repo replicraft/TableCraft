@@ -148,6 +148,19 @@ impl State {
     }
 
     pub(super) fn record_navigator(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        let target = self.current_insert_target();
+        if super::ribbon::command(
+            ui,
+            super::ribbon::Icon::Add,
+            &tr(ui, "insertion-title"),
+            target.is_some(),
+            super::ribbon::CommandSize::Small,
+        )
+        .clicked()
+            && let Some(target) = target
+        {
+            actions.push(Action::BeginInsert { target });
+        }
         let Some(current) = self.selected_record_target() else {
             return;
         };

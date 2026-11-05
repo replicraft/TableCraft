@@ -11,6 +11,12 @@ impl Preview {
         let save_owner = matches!(
             self.state.edit,
             Some(EditDialog::Saving { .. } | EditDialog::Finished { .. })
+        ) || matches!(
+            self.state.insertion,
+            Some(
+                crate::workspace::insertion::Dialog::Saving { .. }
+                    | crate::workspace::insertion::Dialog::Finished { .. }
+            )
         );
         if save_owner
             && !matches!(
@@ -25,6 +31,9 @@ impl Preview {
             return;
         }
 
+        if self.insertion_save_action(&action) {
+            return;
+        }
         match action {
             Action::ChooseFile | Action::Open => {
                 self.state.password.clear();
@@ -105,6 +114,13 @@ impl Preview {
                     self.state.error = Some(self.state.localizer.text("ribbon-mock-sort-disabled"));
                 }
             }
+            Action::BeginInsert { target } => self.mock_begin_insert(target),
+            Action::ReviewInsert { draft_id, inputs } => self.mock_review_insert(draft_id, inputs),
+            Action::ApplyInsert { review_id } => self.mock_apply_insert(review_id),
+            Action::CloseInsert {
+                request_id,
+                draft_id,
+            } => self.mock_close_insert(request_id, draft_id),
             Action::BeginEdit { target } => self.edit(target),
             Action::ReviewEdit { draft_id, input } => {
                 if self.state.can_review_edit(draft_id, &input) {
