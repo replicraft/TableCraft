@@ -1,9 +1,20 @@
 //! Move owned runtime cell facts into the renderer-neutral presentation model.
 use tablecraft_runtime::{
     Cell as RuntimeCell, CellKind as RuntimeKind, CollectionKind as RuntimeCollectionKind,
-    ContentsTarget as RuntimeContentsTarget, DisplayControl as RuntimeDisplayControl,
+    Column as RuntimeColumn, ContentsTarget as RuntimeContentsTarget,
+    DisplayControl as RuntimeDisplayControl,
 };
-use tablecraft_ui::{Cell, CellKind, CollectionKind, ContentsTarget, DisplayControl};
+use tablecraft_ui::{Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl};
+
+pub(super) fn columns(columns: Vec<RuntimeColumn>) -> Vec<Column> {
+    columns
+        .into_iter()
+        .map(|column| Column {
+            name: column.name,
+            caption: column.caption,
+        })
+        .collect()
+}
 
 pub(super) fn rows(rows: Vec<Vec<RuntimeCell>>) -> Vec<Vec<Cell>> {
     rows.into_iter()

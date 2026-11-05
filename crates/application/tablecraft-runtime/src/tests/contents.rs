@@ -72,7 +72,13 @@ fn multivalue_contents_preserve_duplicates_null_and_global_parent_presence() {
     assert!(actual == original_target);
     assert_eq!(kind, CollectionKind::Multivalue);
     assert!(assigned);
-    assert_eq!(columns, ["Value"]);
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Value"]
+    );
     assert_eq!(rows.len(), 3);
     assert_eq!(rows[0][0].text, "100");
     assert_eq!(rows[1][0].text, "100");

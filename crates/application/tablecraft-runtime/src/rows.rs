@@ -38,7 +38,11 @@ impl Document {
                 controls::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.columns().len())?;
                 for column in page.columns() {
-                    columns.push(output.text(column.name())?);
+                    columns.push(crate::column::native(
+                        column.name(),
+                        properties.as_ref(),
+                        &mut output,
+                    )?);
                 }
                 let mut rows = output.rows(page.rows().len())?;
                 for values in page.rows() {
@@ -55,7 +59,11 @@ impl Document {
                 controls::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.schema().columns().len())?;
                 for column in page.schema().columns() {
-                    columns.push(output.text(column.name())?);
+                    columns.push(crate::column::native(
+                        column.name(),
+                        properties.as_ref(),
+                        &mut output,
+                    )?);
                 }
                 let rows = collections::rows(&page, &mut output)?;
                 (columns, rows, page.reached_end())

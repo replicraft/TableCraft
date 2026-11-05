@@ -45,13 +45,13 @@ pub(super) fn require_binding(
 
 pub(super) fn enrich(
     properties: Option<&TableProperties>,
-    columns: &[String],
+    columns: &[crate::Column],
     rows: &mut [Vec<Cell>],
     output: &mut Presentation<'_>,
 ) -> Result<(), Error> {
     for (index, name) in columns.iter().enumerate() {
         output.work(1)?;
-        let control = field(properties, name, output)?;
+        let control = field(properties, &name.name, output)?;
         for row in rows.iter_mut() {
             output.work(1)?;
             let cell = row.get_mut(index).ok_or(InspectError::Malformed)?;

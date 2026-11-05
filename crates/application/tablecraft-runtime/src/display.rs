@@ -1,7 +1,7 @@
 //! Bounded renderer-neutral text cells for read-only host views.
 //! Native scalar representation remains in the immutable session; this is not
 //! an edit carrier, native field-format evaluator, or lossless export protocol.
-use super::{Cell, CellKind, Error, controls::check};
+use super::{Cell, CellKind, Column, Error, controls::check};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -34,10 +34,10 @@ impl<'a> Presentation<'a> {
         Ok(())
     }
 
-    pub(super) fn columns(&mut self, count: usize) -> Result<Vec<String>, Error> {
+    pub(super) fn columns(&mut self, count: usize) -> Result<Vec<Column>, Error> {
         self.work(1)?;
         self.work
-            .charge_allocation(count as u64, size_of::<String>() as u64)?;
+            .charge_allocation(count as u64, size_of::<Column>() as u64)?;
         let mut columns = Vec::new();
         columns.try_reserve_exact(count)?;
         Ok(columns)

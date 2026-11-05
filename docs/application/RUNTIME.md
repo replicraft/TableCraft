@@ -110,11 +110,28 @@ No formatted string is reparsed into a stored value or replacement input.
 
 The shared UI copies the full resulting display text. Native property bytes and
 stored values remain unchanged; queries and explicit collection contents do not
-inherit a parent field format. Custom format sections, numeric/date formats,
-DecimalPlaces and Caption headers are outside this slice. See Microsoft's
+inherit a parent field format. Custom format sections, numeric/date formats and
+DecimalPlaces remain outside this Format slice; Caption headers are described below. See Microsoft's
 [Yes/No formatting contract](https://support.microsoft.com/en-us/access/format-a-yes-no-data-type).
 This is a documented presentation policy with synthetic native-property tests,
 not a new Microsoft Access differential or locale-compatibility claim.
+
+## Native Caption headers
+
+Result columns carry an exact `name` separately from an optional native
+`caption`. Native page captions use the already object-bound Column property
+map, explicit DDL flag and native Text or Memo carrier, under the same publication
+budget.
+Missing or unsupported declarations leave the caption absent; native metadata
+read/framing errors still fail the operation. Explicit empty captions remain
+`Some("")` metadata. The current header presentation falls back to the true name
+for empty captions until native empty-caption behavior is qualified.
+
+Captions are presentation only. Edit, collection and record navigation targets
+retain the original field name, including when captions duplicate another field
+name or each other. Query aliases and synthetic collection child headings carry
+no inherited native caption. Both column envelopes and allocated name/caption
+text count against the output allowance.
 
 ## Explicit collection inspection
 

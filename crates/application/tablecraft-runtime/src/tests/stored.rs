@@ -144,7 +144,13 @@ fn stored_history_summary_remains_separate_from_visible_current_memo() {
     let Response::Data { rows, columns, .. } = page(&worker, 0).unwrap() else {
         panic!("expected history summaries");
     };
-    assert_eq!(columns, ["Id", "Score", "Notes"]);
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id", "Score", "Notes"]
+    );
     for (row, members) in rows.iter().zip([2, 2, 0]) {
         assert_eq!(
             row[1].kind,

@@ -82,7 +82,7 @@ impl Document {
         let assigned = cell.key().is_some();
         let mut columns = output.columns(items::headers(kind).len())?;
         for name in items::headers(kind) {
-            columns.push(output.text(name)?);
+            columns.push(crate::column::plain(name, &mut output)?);
         }
         let children = cell.items()?;
         let mut rows = output.rows(children.len())?;
