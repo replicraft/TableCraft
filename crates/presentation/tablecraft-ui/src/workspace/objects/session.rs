@@ -2,8 +2,8 @@
 use super::{ObjectKind, ObjectTab};
 use crate::datasheet::Selection;
 use crate::workspace::{
-    Data, DocumentView, Schema, State, filtering::TableFilter, records::RecordNavigation,
-    saved_query::SavedQueryState, totals::Totals,
+    Data, DocumentView, Schema, State, filtering::TableFilter, query_design::QueryDesign,
+    records::RecordNavigation, saved_query::SavedQueryState, totals::Totals,
 };
 use std::mem;
 
@@ -37,6 +37,7 @@ pub(super) enum Session {
         error: Option<String>,
     },
     Sql {
+        design: QueryDesign,
         data: Option<Data>,
         selection: Selection,
         error: Option<String>,
@@ -62,6 +63,7 @@ impl Session {
                 error: None,
             },
             ObjectKind::Sql => Self::Sql {
+                design: QueryDesign::default(),
                 data: None,
                 selection: Selection::default(),
                 error: None,
@@ -87,6 +89,7 @@ impl Session {
                 error: state.error.take(),
             },
             ObjectKind::Sql => Self::Sql {
+                design: mem::take(&mut state.query_design),
                 data: state.query_data.take(),
                 selection: mem::take(&mut state.query_selection),
                 error: state.error.take(),
@@ -132,10 +135,12 @@ impl Session {
                 state.error = error;
             }
             Self::Sql {
+                design,
                 data,
                 selection,
                 error,
             } => {
+                state.query_design = design;
                 state.query_data = data;
                 state.query_selection = selection;
                 state.view = DocumentView::Query;

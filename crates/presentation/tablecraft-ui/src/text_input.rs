@@ -6,12 +6,7 @@ use egui::{Event, Id, ImeEvent, Key, Ui};
 // can reject an insertion below this scalar ceiling; neither accepts a prefix.
 pub(crate) const MAX_EDITOR_SCALARS: usize = 64 * 1024;
 
-pub(crate) fn reject_oversized_events(
-    ui: &mut Ui,
-    id: Id,
-    text: &str,
-    max_bytes: usize,
-) -> bool {
+pub(crate) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str, max_bytes: usize) -> bool {
     if !ui.memory(|memory| memory.has_focus(id)) {
         return false;
     }

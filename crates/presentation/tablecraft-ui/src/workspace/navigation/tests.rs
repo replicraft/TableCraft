@@ -18,6 +18,7 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         tables: ["First", "Second"]
             .into_iter()
             .map(|name| Table {
+                local: true,
                 name: name.into(),
                 system: false,
                 storage: "Local".into(),

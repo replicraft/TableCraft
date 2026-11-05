@@ -43,6 +43,41 @@ multivalue/history, offline-edit/recovery or native platform interaction evidenc
 Viewing the images does not establish validation timing, parameter ordering,
 focus traversal or native save behavior.
 
+## Published Query Design references — 5 November 2026
+
+The private reference directory contains no Query Design capture. Four public
+Microsoft images were downloaded to ignored local cache and opened headlessly
+before considering that surface. The exact rendered build, platform and scale
+are unknown; filenames and supported-release lists alone do not establish them.
+
+| Viewed image | Observed composition | SHA-256 |
+| --- | --- | --- |
+| [AND criteria](https://support.microsoft.com/en-us/access/media/city-dob.gif) | An upper Contacts field-list card, a horizontal splitter and a lower column-oriented grid with Field, Table, Sort, Show, Criteria and or rows. Criteria occupy the same grid row. Green numbered callouts are article annotations. | `951ed0bb5e231485cce3c4df43073ae2c50617d3769070c7342b0e6188f24712` |
+| [OR criteria](https://support.microsoft.com/en-us/access/media/city-or-dob.gif) | The same upper/lower composition, with alternative criteria on different rows and checked Show cells. | `5786b7f7a362ab722959983eb69d8c94cae61a87dc0b48de0b66aaf82ec9b2e0` |
+| [Show Table dialog](https://support.microsoft.com/en-us/access/media/access2016-show-table-dialog.png) | Tables, Queries and Both tabs above a list; Add and Close at the lower right. Only implemented source kinds may be offered by TableCraft. | `e640e79673502f1f7a5a20b92a4ffd85153367b2e64cf554c2b96d4db058090f` |
+| [Join line](https://support.microsoft.com/en-us/access/media/join-line.jpg) | Two source cards connected at their field rows; the red ellipse is an article annotation. This is not evidence that TableCraft implements join editing. | `54153d6a4e87d37f3aeeb937818fa11f4abe3ac10785429e7f775eae65a068ea` |
+
+Microsoft's [select-query procedure](https://support.microsoft.com/en-us/access/create-a-simple-select-query)
+separates adding sources, selecting fields and running the query. Its
+[criteria examples](https://support.microsoft.com/en-us/access/examples-of-query-criteria)
+combine cells within a criteria row with AND and alternative rows with OR.
+Clearing Show hides an output field while retaining its criteria. The visible
+grid must preserve that structure rather than substitute an unrelated form.
+
+[Join behavior](https://support.microsoft.com/en-us/access/join-tables-and-queries)
+uses real relationships or qualified primary-key metadata for automatic joins;
+matching names alone do not authorize a fabricated join or key glyph. Design
+constructs SQL, but not every SQL query has a visual representation: Microsoft's
+[SQL-specific query guidance](https://support.microsoft.com/en-us/access/run-a-query)
+excludes UNION, pass-through and data-definition queries from Design view, and
+unequal joins also require SQL view. A bounded TableCraft designer must refuse
+unsupported conversions while preserving the original SQL and existing results.
+Changing views or inspecting source metadata must not silently run a query.
+
+These references establish selected light-layout and documented workflow facts,
+not a native TableCraft interaction pass, dark-mode match or complete QBE support.
+The existing explicit saved-query inspection/Run boundary remains in force.
+
 ## Published datasheet Totals references — 5 November 2026
 
 Microsoft's [Totals-row article](https://support.microsoft.com/en-us/access/display-column-totals-in-a-datasheet-using-a-totals-row)

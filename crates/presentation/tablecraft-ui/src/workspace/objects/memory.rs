@@ -117,8 +117,12 @@ impl Session {
                 count.optional(error);
             }
             Self::Sql {
-                data: page, error, ..
+                data: page,
+                error,
+                design,
+                ..
             } => {
+                count.add(design.retained_bytes()?);
                 if let Some(page) = page {
                     count.add(data(page)?);
                 }
@@ -172,6 +176,7 @@ impl State {
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.table_filter.retained_bytes()?);
         count.add(self.totals.retained_bytes()?);
+        count.add(self.query_design.retained_bytes()?);
         count.add(self.records.retained_bytes()?);
         count.optional(&self.error);
         count.finish()

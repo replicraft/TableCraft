@@ -29,6 +29,7 @@ pub(super) fn workspace() -> State {
                 .into_iter()
                 .map(|name| Table {
                     name: name.into(),
+                    local: true,
                     system: name == "MSysObjects",
                     storage: "Local".into(),
                 })

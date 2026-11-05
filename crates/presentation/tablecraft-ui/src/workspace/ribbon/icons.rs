@@ -4,6 +4,8 @@ use egui::{Image, Ui};
 #[derive(Clone, Copy)]
 pub(crate) enum Icon {
     Application,
+    Run,
+    AddTables,
     FolderOpen,
     Settings,
     Info,
@@ -101,6 +103,8 @@ impl Icon {
         };
         let (uri, bytes) = match self {
             Self::Application => asset!("application", variant),
+            Self::Run => asset!("run", variant),
+            Self::AddTables => asset!("add_tables", variant),
             Self::FolderOpen => asset!("folder_open", variant),
             Self::Settings => asset!("settings", variant),
             Self::Info => asset!("info", variant),
@@ -155,8 +159,10 @@ impl Icon {
     }
 
     #[cfg(test)]
-    const ALL: [Self; 50] = [
+    const ALL: [Self; 52] = [
         Self::Application,
+        Self::Run,
+        Self::AddTables,
         Self::FolderOpen,
         Self::Settings,
         Self::Info,

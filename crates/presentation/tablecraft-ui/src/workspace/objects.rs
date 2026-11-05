@@ -547,6 +547,7 @@ impl State {
         self.table_selection = Default::default();
         self.query_selection = Default::default();
         self.table_filter = Default::default();
+        self.query_design = Default::default();
         self.totals = Default::default();
         self.records = Default::default();
         self.selected_field = 0;

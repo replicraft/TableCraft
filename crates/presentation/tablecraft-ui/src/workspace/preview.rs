@@ -13,6 +13,7 @@ mod fixtures;
 mod insertion;
 mod object_status;
 mod queries;
+mod query_design;
 mod totals;
 
 mod zoom;
@@ -33,6 +34,9 @@ pub enum Scene {
     FieldFilterError,
     Totals,
     TotalsError,
+    QueryDesign,
+    QueryDesignTables,
+    QueryDesignError,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -91,7 +95,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 63] = [
+    pub const ALL: [Self; 66] = [
         Self::Datasheet,
         Self::Objects,
         Self::ObjectLoading,
@@ -100,6 +104,9 @@ impl Scene {
         Self::FieldFilterError,
         Self::Totals,
         Self::TotalsError,
+        Self::QueryDesign,
+        Self::QueryDesignTables,
+        Self::QueryDesignError,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -187,6 +194,9 @@ impl Scene {
             Self::FieldFilterError => "field-filter-error",
             Self::Totals => "totals",
             Self::TotalsError => "totals-error",
+            Self::QueryDesign => "query-design",
+            Self::QueryDesignTables => "query-design-tables",
+            Self::QueryDesignError => "query-design-error",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -335,6 +345,9 @@ impl Preview {
             Scene::FieldFilterError => self.prepare_field_filter_scene(true),
             Scene::Totals => self.prepare_totals_scene(false),
             Scene::TotalsError => self.prepare_totals_scene(true),
+            Scene::QueryDesign => self.prepare_query_design(false, false),
+            Scene::QueryDesignTables => self.prepare_query_design(true, false),
+            Scene::QueryDesignError => self.prepare_query_design(false, true),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError

@@ -14,6 +14,7 @@ mod navigation;
 mod objects;
 pub mod preview;
 mod query;
+mod query_design;
 mod records;
 pub(crate) mod ribbon;
 mod row_identity;
@@ -36,6 +37,7 @@ pub use find::{
 };
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
+pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
@@ -52,6 +54,7 @@ use tablecraft_display::Options;
 /// One inert catalog entry. A visible declaration does not imply readable rows.
 pub struct Table {
     pub name: String,
+    pub local: bool,
     pub system: bool,
     pub storage: String,
 }
@@ -218,6 +221,22 @@ pub enum Action {
     AcknowledgeEditSave {
         save_id: u64,
     },
+    DescribeQueryDesign {
+        request: QueryDesignRequest,
+        table: String,
+    },
+    BuildQueryDesign {
+        request: QueryDesignRequest,
+        draft: tablecraft_builders::query::QueryDesignDraft,
+        completion: QueryDesignCompletion,
+    },
+    ImportQueryDesign {
+        request: QueryDesignRequest,
+        sql: String,
+    },
+    CancelQueryDesign {
+        request_id: u64,
+    },
     Query,
     Cancel,
 }
@@ -273,6 +292,7 @@ pub struct State {
     pub busy: bool,
     pub error: Option<String>,
     pub sql: String,
+    query_design: query_design::QueryDesign,
     filter: String,
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
@@ -334,17 +354,17 @@ impl State {
     }
 
     /// Publish a query result into the one scratch SQL object.
-    pub fn set_query_data(&mut self, mut data: Data) {
+    pub fn set_query_data(&mut self, mut data: Data) -> bool {
         if data.source_revision.is_some() || data.row_ordinals.is_some() {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
-            return;
+            return false;
         }
         if !self.admit_object_data(&data) {
-            return;
+            return false;
         }
         self.prepare_display(&mut data);
         if !self.admit_object_data(&data) || !self.adopt_sql_publication() {
-            return;
+            return false;
         }
 
         self.bump_focus_publication();
@@ -352,6 +372,7 @@ impl State {
         self.invalidate_edit();
         self.query_selection.reset(&data);
         self.query_data = Some(data);
+        true
     }
 
     /// Full text of the visible single-cell selection; record selection is separate.
@@ -398,7 +419,8 @@ impl State {
     }
 
     fn record_selected(&self) -> bool {
-        if self.total_selection_active()
+        if self.query_design_visible()
+            || self.total_selection_active()
             || self.backstage_visible()
             || self.edit_dialog_open()
             || self.contents_request_id().is_some()
@@ -416,7 +438,7 @@ impl State {
     }
 
     pub fn copy_selected(&mut self, ctx: &egui::Context) -> bool {
-        if self.backstage_visible() || self.edit_dialog_open() {
+        if self.backstage_visible() || self.edit_dialog_open() || self.query_design_visible() {
             return false;
         }
         if self.contents_request_id().is_some() {
@@ -534,6 +556,8 @@ impl State {
     fn query_ready(&self) -> bool {
         self.view == DocumentView::Query
             && !self.saved_query.active
+            && !self.query_design_visible()
+            && !self.query_design_results_visible()
             && !self.backstage_visible()
             && self.database.is_some()
             && !self.busy
@@ -541,6 +565,9 @@ impl State {
     }
 
     fn visible_data(&self) -> Option<&Data> {
+        if self.query_design_visible() {
+            return None;
+        }
         match self.view {
             DocumentView::Table => self.data.as_ref(),
             DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
@@ -581,7 +608,9 @@ impl State {
             keyboard::consume(
                 ui.ctx(),
                 !self.find_window_open()
-                    && (self.query_ready() || self.saved_query_command_ready()),
+                    && (self.query_ready()
+                        || self.query_design_run_action().is_some()
+                        || self.saved_query_command_ready()),
                 self.busy && !self.find_window_open(),
                 self.can_open_find(),
             )
@@ -594,6 +623,8 @@ impl State {
                 if let Some(action) = self.request_saved_query_run() {
                     actions.push(action);
                 }
+            } else if let Some(action) = self.query_design_run_action() {
+                actions.push(action);
             } else {
                 actions.push(Action::Query);
             }
@@ -638,6 +669,7 @@ impl State {
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);
         self.field_filter_dialog(ui.ctx(), &mut actions);
+        self.query_design_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
             self.finish_pane_focus(ui);
         }

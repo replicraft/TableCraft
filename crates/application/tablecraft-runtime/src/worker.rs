@@ -55,6 +55,18 @@ impl Worker {
                 base.as_ref(),
                 cancelled,
             ),
+            Command::DescribeQueryDesign { target, table } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .describe_query_design(target, table, cancelled),
+            Command::BuildQueryDesign { target, draft } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .build_query_design(target, draft, cancelled),
+            Command::ImportQueryDesign { target, sql } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .import_query_design(target, sql, cancelled),
             Command::Page { table, offset } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -232,6 +244,9 @@ impl Worker {
                     Command::SortView { .. } => "sort_view",
                     Command::ClearFilter { .. } => "clear_filter",
                     Command::ReapplyFilter { .. } => "reapply_filter",
+                    Command::DescribeQueryDesign { .. } => "describe_query_design",
+                    Command::BuildQueryDesign { .. } => "build_query_design",
+                    Command::ImportQueryDesign { .. } => "import_query_design",
                     Command::DescribeTotals { .. } => "describe_totals",
                     Command::Totals { .. } => "totals",
                     Command::DescribeFieldFilter { .. } => "describe_field_filter",

@@ -18,6 +18,7 @@ fn state() -> (State, FieldFilterTarget) {
         title: "Field filters".into(),
         format: "ACE16".into(),
         tables: vec![Table {
+            local: true,
             name: "Items".into(),
             system: false,
             storage: "Local".into(),

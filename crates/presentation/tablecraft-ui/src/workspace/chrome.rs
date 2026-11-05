@@ -17,6 +17,9 @@ const STATUS_VIEW_ICON_SIZE: f32 = 16.0;
 
 impl State {
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        if self.ribbon_tab == ribbon::Tab::QueryDesign && !self.query_design_context() {
+            self.ribbon_tab = ribbon::Tab::Home;
+        }
         let colors = palette(ui.ctx());
         let t = self.localizer.clone();
         egui::Panel::top("title")
@@ -156,7 +159,20 @@ impl State {
                                             .on_disabled_hover_text(t.text("ribbon-preview-only"));
                                     }
                                 }
-                                if self.view == DocumentView::Design {
+                                if self.query_design_context() {
+                                    if tab(
+                                        ui,
+                                        "qbe-ribbon-design",
+                                        &t.text("qbe-ribbon-design"),
+                                        self.ribbon_tab == ribbon::Tab::QueryDesign,
+                                        true,
+                                        true,
+                                    )
+                                    .clicked()
+                                    {
+                                        self.ribbon_tab = ribbon::Tab::QueryDesign;
+                                    }
+                                } else if self.view == DocumentView::Design {
                                     if tab(
                                         ui,
                                         "ribbon-table-design",

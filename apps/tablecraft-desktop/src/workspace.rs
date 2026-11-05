@@ -4,6 +4,7 @@ mod find;
 mod navigation;
 mod objects;
 mod opening;
+mod query_design;
 mod saved;
 #[cfg(test)]
 mod test_support;
@@ -17,14 +18,30 @@ use tablecraft_runtime::{
 };
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
-    ObjectKind, ObjectTarget, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
-    TotalSpec, TotalsTarget,
+    ObjectKind, ObjectTarget, QueryDesignRequest, RecordTarget, SavedQuery, SavedQueryTarget,
+    Schema, State, Table, TotalSpec, TotalsTarget,
 };
 use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
     Query,
+    QueryDesignDescribe {
+        request_id: u64,
+        request: QueryDesignRequest,
+        table: String,
+    },
+    QueryDesignBuild {
+        request_id: u64,
+        request: QueryDesignRequest,
+    },
+    QueryDesignImport {
+        request_id: u64,
+        request: QueryDesignRequest,
+    },
+    QueryDesignRun {
+        request_id: u64,
+    },
     TotalsDescribe {
         request_id: u64,
         target: TotalsTarget,
@@ -230,6 +247,14 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::QueryDesignTable { target, metadata }) => {
+                    self.publish_query_design_table(generation, target, metadata);
+                }
+                Ok(Response::QueryDesignBuilt {
+                    target,
+                    built,
+                    metadata,
+                }) => self.publish_query_design_built(generation, target, built, metadata),
                 Ok(Response::TotalsDescription(description)) => {
                     self.publish_totals_description(generation, description);
                 }
@@ -293,6 +318,7 @@ impl Desktop {
                             .into_iter()
                             .map(|table| Table {
                                 name: table.name,
+                                local: table.local,
                                 system: table.system,
                                 storage: table.storage,
                             })
@@ -326,7 +352,17 @@ impl Desktop {
                         has_more,
                     };
                     match &self.pending {
-                        PendingOperation::Query => self.state.set_query_data(data),
+                        PendingOperation::QueryDesignRun { request_id } => {
+                            if !self.state.set_query_design_results(*request_id, data) {
+                                self.state.fail_query_design(
+                                    *request_id,
+                                    self.state.localizer.text("qbe-invalid-result"),
+                                );
+                            }
+                        }
+                        PendingOperation::Query => {
+                            self.state.set_query_data(data);
+                        }
                         PendingOperation::SavedRun { target, request_id } => {
                             self.state
                                 .set_saved_query_data(*request_id, target.clone(), data);
@@ -390,6 +426,12 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::QueryDesignDescribe { request_id, .. }
+                    | PendingOperation::QueryDesignBuild { request_id, .. }
+                    | PendingOperation::QueryDesignImport { request_id, .. }
+                    | PendingOperation::QueryDesignRun { request_id } => {
+                        self.state.fail_query_design(*request_id, error.to_string());
+                    }
                     PendingOperation::TotalsDescribe { request_id, .. }
                     | PendingOperation::TotalsCompute { request_id, .. } => {
                         self.state.fail_totals(*request_id, error.to_string());
@@ -480,6 +522,18 @@ impl eframe::App for Desktop {
         }
         for action in actions {
             match action {
+                Action::DescribeQueryDesign { request, table } => {
+                    self.describe_query_design(request, table);
+                }
+                Action::BuildQueryDesign {
+                    request,
+                    draft,
+                    completion,
+                } => self.build_query_design(request, draft, completion),
+                Action::ImportQueryDesign { request, sql } => {
+                    self.import_query_design(request, sql);
+                }
+                Action::CancelQueryDesign { request_id } => self.cancel_query_design(request_id),
                 Action::DescribeTotals { target } => self.describe_totals(target),
                 Action::ComputeTotals { target, specs } => self.compute_totals(target, specs),
                 Action::CancelTotals { request_id } => self.cancel_totals(request_id),
@@ -588,6 +642,15 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::QueryDesignDescribe { request_id, .. }
+                            | PendingOperation::QueryDesignBuild { request_id, .. }
+                            | PendingOperation::QueryDesignImport { request_id, .. }
+                            | PendingOperation::QueryDesignRun { request_id } => {
+                                self.state.fail_query_design(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::TotalsDescribe { request_id, .. }
                             | PendingOperation::TotalsCompute { request_id, .. } => {
                                 self.state.fail_totals(

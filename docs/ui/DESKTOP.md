@@ -8,6 +8,11 @@ target construction without a contiguous fallback. Visible numbering remains a
 separate display position. Selection filtering uses dedicated scoped paging and
 Find routes; generic unfiltered navigation never bypasses a mapped view.
 
+The scratch query object also has a bounded [visual SELECT designer](QUERY_DESIGN.md).
+Its metadata requests and SQL build/import are inert; Run explicitly invokes the
+existing query service. Unsupported imports retain the original SQL and previous
+results. Saved-query editing and broader designer parity remain unfinished.
+
 For the current presentation-only mock mode, light/dark themes and bundled
 Fluent languages, see [presentation preview](PRESENTATION_PREVIEW.md). The native
 interaction records below retain the scope and state observed at their capture.
@@ -1293,8 +1298,9 @@ menu chevron. Stored empty text remains empty; it is not converted to NULL.
 The final native page now offers a separate New row action when the existing
 insertion workflow is admitted. This is a command, not an appended record or a
 new native row identity. Home already exposes supported Copy/Paste, filtering,
-sorting, Refresh, New/Delete, Find, navigation and Zoom. General Cut, Replace,
-Totals, spelling and text-formatting services remain unfinished.
+sorting, Refresh, New/Delete, Find, navigation and Zoom. The later
+[Totals implementation](DATASHEET_TOTALS.md) adds complete-view aggregates.
+General Cut, Replace, spelling and text-formatting services remain unfinished.
 
 Save, Undo and Redo are visible in the title strip with explicit unavailable
 explanations. There is no document undo history or inline dirty-record Save

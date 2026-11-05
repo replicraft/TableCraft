@@ -20,6 +20,7 @@ fn harness(width: f32) -> Harness<'static, (State, bool, Vec<Action>)> {
         title: "Tab observations".into(),
         format: "ACE 16".into(),
         tables: vec![Table {
+            local: true,
             name: name.into(),
             system: false,
             storage: "Local".into(),

@@ -1,5 +1,35 @@
 # Implementation status
 
+## Visual SELECT design — 5 November 2026
+
+The scratch SQL object now exposes source cards and a Field/Table/Sort/Show/
+Criteria/OR grid. The working headless `tablecraft-builders` crate owns its
+bounded model, criteria composition, conservative SQL import and canonical SQL
+construction. Runtime supplies revision-bound native metadata; the shared UI
+renders the owner model and desktop dispatches explicit requests.
+
+SQL-to-Design import preserves literal SQL and prior results when unsupported.
+Build and Import inspect metadata only. Run separately invokes the existing
+query executor; exact object/source/draft/request receipts prevent a cancelled
+or reopened object from accepting late results. Design results have no native
+row-edit identity. Saved-query definitions are unchanged.
+
+The first profile supports explicit inner/left/right joins and row-local SELECT
+criteria, hidden projections and sorting. Grouping, totals, action queries,
+arbitrary SQL round trips and native drag/drop join editing remain unfinished.
+See the [designer contract](ui/QUERY_DESIGN.md) for scope and current visual
+approximations. No native Windows/Access comparison qualifies this slice.
+
+The coordinated batch passed five builder, 103 runtime, one runtime diagnostics,
+60 desktop and 199 functional UI tests. The added typed inner/left/right join
+acceptance also passed in the three-test runtime designer group. Final focused
+UI checks cover the 900 × 580 layout and whole-event input rejection; the final
+66 × eight × two preview matrix passed all 1,056 combinations. Six German
+light/dark designer, chooser and error PNGs were inspected offscreen at
+1000 × 680 logical points, scale 1.25. Strict nine-package and minimal
+builder/runtime Clippy, workspace formatting, documentation links and dependency
+checks passed. No native window opened.
+
 ## Native datasheet Totals — 5 November 2026
 
 Home Totals now exposes per-field aggregate choices over a complete native view,

@@ -15,6 +15,7 @@ fn state() -> (State, DeleteTarget) {
         title: "Deletion".into(),
         format: "ACE 16".into(),
         tables: vec![Table {
+            local: true,
             name: "People".into(),
             system: false,
             storage: "Local".into(),

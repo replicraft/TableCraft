@@ -19,6 +19,7 @@ pub(super) fn state() -> State {
                 .into_iter()
                 .map(|name| Table {
                     name: name.into(),
+                    local: true,
                     system: false,
                     storage: "Local".into(),
                 })
@@ -223,6 +224,7 @@ fn tab_and_full_capacity_limits_refuse_without_eviction_or_replacing_the_current
     let mut state = state();
     state.database.as_mut().unwrap().tables = (0..17)
         .map(|index| Table {
+            local: true,
             name: format!("T{index}"),
             system: false,
             storage: "Local".into(),

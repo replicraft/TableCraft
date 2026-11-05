@@ -1,7 +1,7 @@
 //! Native type metadata determines the available common-filter controls.
 use super::{FieldFilterPatternMode, MAX_INPUT_BYTES};
-use crate::text_input;
 use crate::localization::tr;
+use crate::text_input;
 use crate::workspace::{Action, State, diagnostics};
 use egui::{ComboBox, Id, Label, Popup, TextEdit, TextStyle, Ui};
 

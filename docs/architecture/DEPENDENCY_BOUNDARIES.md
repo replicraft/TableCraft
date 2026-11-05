@@ -22,12 +22,17 @@ this owner directly; neither runtime nor UI re-exports its types as compatibilit
 aliases. The guard rejects GUI/window registry dependencies in display, including
 optional, target-specific and test/build declarations.
 
-`tablecraft-ui` owns egui widgets, styling and accessibility. Its only normal local
-dependency is display; it receives owned state and emits typed actions without
-opening databases. `tablecraft-runtime` owns headless backend workers, document
+`tablecraft-builders` owns headless query-design models and checked SQL
+construction/import. Its local dependencies are SQL syntax and schema; the guard
+rejects GUI/window dependencies, including optional, target-specific and test/build
+edges. Native metadata and execution remain runtime services.
+
+`tablecraft-ui` owns egui widgets, styling and accessibility. Its normal local
+dependencies are display and the headless builders model; it receives owned state
+and emits typed actions without opening databases. `tablecraft-runtime` owns headless backend workers, document
 reads and application operations, and can share the pure formatter without
 importing UI or desktop. Testkit remains development-only. The binary-only
-`tablecraft-desktop` composes runtime, UI and display directly; backend services
+`tablecraft-desktop` composes runtime, UI, display and builders directly; backend services
 remain behind runtime. Neither runtime nor desktop imports CLI or SQLite. These
 edges grant no permission for foundation, engine, adapter, query or CLI packages
 to import UI/runtime. Libraries still cannot depend on application packages.
