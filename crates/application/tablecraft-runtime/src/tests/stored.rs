@@ -35,7 +35,7 @@ fn page(worker: &Worker, offset: u32) -> Result<Response, Error> {
 #[test]
 fn cached_values_and_null_keep_stored_provenance_without_evaluating_formula() {
     let bytes = calculated_storage::database_with_expression(&[Some(77), None], "1/0");
-    let (_directory, path, worker, _revision) = opened(&bytes);
+    let (_directory, path, worker, revision) = opened(&bytes);
     let Response::Data { rows, has_more, .. } = page(&worker, 0).unwrap() else {
         panic!("expected stored values");
     };
@@ -70,6 +70,18 @@ fn cached_values_and_null_keep_stored_provenance_without_evaluating_formula() {
         }
     );
     assert!(!has_more);
+    assert!(matches!(
+        request(
+            &worker,
+            Command::SortTable {
+                document_revision: revision,
+                table: "Items".into(),
+                column: "Id".into(),
+                descending: false,
+            }
+        ),
+        Err(Error::Query(tablecraft_query::QueryError::Unsupported))
+    ));
     assert_eq!(std::fs::read(path).unwrap(), bytes);
 }
 

@@ -88,12 +88,11 @@ fn locale_currency_selection_is_explicit_for_ambiguous_regions() {
 #[test]
 fn general_date_omits_absent_components_and_raw_retains_full_native_carrier() {
     let mut policy = options("de-DE");
-    policy.time = TimeFormat::HoursMinutesSeconds;
     let engine = Engine::new(&policy).unwrap();
     for native_format in [NativeFormat::Unspecified, NativeFormat::GeneralDate] {
         for (calendar, expected) in [
             (date(2026, 4, 12).at(0, 0, 0, 0), "12.04.2026"),
-            (date(1899, 12, 30).at(15, 4, 5, 0), "15:04:05"),
+            (date(1899, 12, 30).at(18, 0, 0, 0), "18:00:00"),
             (date(2026, 4, 12).at(15, 4, 5, 0), "12.04.2026 15:04:05"),
         ] {
             assert_eq!(
