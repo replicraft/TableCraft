@@ -10,6 +10,7 @@ use tablecraft_ui::{
 const ANIMATED_SCENE_STEPS: usize = 3;
 const MIN_SCALE: f32 = 1.0;
 const MAX_SCALE: f32 = 2.0;
+const MAX_F6_STEPS: u8 = 5;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let directory = env::var_os("TABLECRAFT_PREVIEW_DIR")
@@ -38,6 +39,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         format!("@{scale}x")
     };
+    let focus_steps = setting("TABLECRAFT_PREVIEW_F6_STEPS", "0")?.parse::<u8>()?;
+    if focus_steps > MAX_F6_STEPS {
+        return Err(io::Error::other("preview F6 steps must be between 0 and 5").into());
+    }
+    let focus_suffix = if focus_steps == 0 {
+        String::new()
+    } else {
+        format!("-f6-{focus_steps}")
+    };
     fs::create_dir_all(&directory)?;
 
     let mut preview = Preview::new(Scene::Datasheet);
@@ -60,12 +70,21 @@ fn main() -> Result<(), Box<dyn Error>> {
         } else {
             harness.run();
         }
+        for _ in 0..focus_steps {
+            harness.key_press(egui::Key::F6);
+            if scene.is_animated() {
+                harness.run_steps(ANIMATED_SCENE_STEPS);
+            } else {
+                harness.run();
+            }
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}.png",
+            "{}-{}-{}{}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
+            focus_suffix,
             scale_suffix,
         ));
         image.save_with_format(&path, ImageFormat::Png)?;
