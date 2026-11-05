@@ -87,7 +87,7 @@ fn checkbox_unqualified_and_non_column_formats_keep_original_full_value_text() {
 
 #[test]
 fn complete_table_sort_preserves_qualified_column_display_without_native_row_identity() {
-    use crate::{NativeFormat, ScalarPresentation};
+    use tablecraft_display::{NativeFormat, ScalarPresentation};
 
     for (kind, format, values) in [
         (1, "Yes/No", [0, 1]),

@@ -2,15 +2,13 @@
 use tablecraft_runtime::{
     Cell as RuntimeCell, CellKind as RuntimeKind, CollectionKind as RuntimeCollectionKind,
     Column as RuntimeColumn, ContentsTarget as RuntimeContentsTarget,
-    DateRepresentation as RuntimeDateRepresentation, DisplayControl as RuntimeDisplayControl,
-    Field as RuntimeField, FieldPropertyValue as RuntimeFieldPropertyValue,
-    HorizontalAlignment as RuntimeAlignment, InputHint as RuntimeHint,
-    NativeFormat as RuntimeFormat, ScalarPresentation as RuntimePresentation,
+    DisplayControl as RuntimeDisplayControl, Field as RuntimeField,
+    FieldPropertyValue as RuntimeFieldPropertyValue, HorizontalAlignment as RuntimeAlignment,
+    InputHint as RuntimeHint,
 };
 use tablecraft_ui::{
     Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl, Field, FieldProperty,
     FieldPropertyValue, HorizontalAlignment, InputHint,
-    formatting::{DateRepresentation, NativeFormat, ScalarPresentation},
 };
 
 pub(super) fn fields(fields: Vec<RuntimeField>) -> Vec<Field> {
@@ -110,55 +108,13 @@ pub(super) fn cell(cell: RuntimeCell) -> Cell {
         }
     };
     Cell {
-        presentation: cell.presentation.map(presentation),
+        presentation: cell.presentation,
         alignment: match cell.alignment {
             RuntimeAlignment::Left => HorizontalAlignment::Left,
             RuntimeAlignment::Right => HorizontalAlignment::Right,
         },
         text: cell.text,
         kind,
-    }
-}
-
-// Move validated facts one-to-one. Regional text is exclusively shared-UI policy.
-fn presentation(value: RuntimePresentation) -> ScalarPresentation {
-    match value {
-        RuntimePresentation::Currency {
-            scaled,
-            native_format: format,
-        } => ScalarPresentation::Currency {
-            scaled,
-            native_format: native_format(format),
-        },
-        RuntimePresentation::DateTime {
-            calendar,
-            representation,
-            native_format: format,
-        } => ScalarPresentation::DateTime {
-            calendar,
-            representation: match representation {
-                RuntimeDateRepresentation::LegacyBits(bits) => DateRepresentation::LegacyBits(bits),
-                RuntimeDateRepresentation::Extended => DateRepresentation::Extended,
-            },
-            native_format: native_format(format),
-        },
-    }
-}
-
-fn native_format(value: RuntimeFormat) -> NativeFormat {
-    match value {
-        RuntimeFormat::Unspecified => NativeFormat::Unspecified,
-        RuntimeFormat::GeneralDate => NativeFormat::GeneralDate,
-        RuntimeFormat::ShortDate => NativeFormat::ShortDate,
-        RuntimeFormat::MediumDate => NativeFormat::MediumDate,
-        RuntimeFormat::LongDate => NativeFormat::LongDate,
-        RuntimeFormat::ShortTime => NativeFormat::ShortTime,
-        RuntimeFormat::MediumTime => NativeFormat::MediumTime,
-        RuntimeFormat::LongTime => NativeFormat::LongTime,
-        RuntimeFormat::Currency => NativeFormat::Currency,
-        RuntimeFormat::Euro => NativeFormat::Euro,
-        RuntimeFormat::EuroPrefixTwoDecimals => NativeFormat::EuroPrefixTwoDecimals,
-        RuntimeFormat::Unsupported => NativeFormat::Unsupported,
     }
 }
 

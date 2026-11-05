@@ -28,6 +28,7 @@ pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
 use egui::Ui;
+use tablecraft_display::Options;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
 pub struct Table {
@@ -160,7 +161,7 @@ enum DocumentView {
 pub struct State {
     pub localizer: crate::Localizer,
     pub theme: crate::Theme,
-    pub formatting: crate::formatting::Options,
+    pub formatting: Options,
     format_cache: crate::formatting::Cache,
     /// Synthetic presentation only; never grants database capabilities.
     pub mock_preview: bool,

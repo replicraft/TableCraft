@@ -1,5 +1,18 @@
 # Implementation status
 
+## Shared headless display formatter — 5 November 2026
+
+`tablecraft-display` now owns regional formatting, options and validated scalar
+presentation facts. Runtime, UI and desktop import this renderer-neutral owner
+directly; no compatibility re-exports retain the former UI/runtime type paths.
+The package has no GUI, window, I/O or database dependency. UI keeps its options
+widgets and a development-only locale parser for the preview example.
+
+The coordinated gate passed 5 display, 148 UI, 67 runtime and 32 desktop tests,
+plus the runtime documentation example. Five formatter tests moved out of UI;
+the lower UI count does not represent removed coverage. Selected strict Clippy
+passed. This extraction adds no native Access compatibility claim.
+
 ## Bounded long-value presentation — 5 November 2026
 
 Datasheet paint, tooltips and accessibility now use a bounded Unicode preview

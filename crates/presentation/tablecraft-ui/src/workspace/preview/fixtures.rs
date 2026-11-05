@@ -6,6 +6,8 @@ use crate::{
     Table,
 };
 
+use tablecraft_display::{DateRepresentation, NativeFormat, ScalarPresentation};
+
 pub(super) const REVISION: u64 = 1;
 pub(super) const PAGE_ROWS: u32 = 100;
 pub(super) const TOTAL_ROWS: u32 = 205;
@@ -404,19 +406,19 @@ fn boolean(value: bool) -> Cell {
 
 fn currency_cell(scaled: i64) -> Cell {
     let mut cell = right_aligned(String::new());
-    cell.presentation = Some(crate::formatting::ScalarPresentation::Currency {
+    cell.presentation = Some(ScalarPresentation::Currency {
         scaled,
-        native_format: crate::formatting::NativeFormat::Currency,
+        native_format: NativeFormat::Currency,
     });
     cell
 }
 
 fn date_cell(year: i16, month: i8, day: i8) -> Cell {
     let mut cell = right_aligned(String::new());
-    cell.presentation = Some(crate::formatting::ScalarPresentation::DateTime {
+    cell.presentation = Some(ScalarPresentation::DateTime {
         calendar: jiff::civil::date(year, month, day).at(0, 0, 0, 0),
-        representation: crate::formatting::DateRepresentation::Extended,
-        native_format: crate::formatting::NativeFormat::ShortDate,
+        representation: DateRepresentation::Extended,
+        native_format: NativeFormat::ShortDate,
     });
     cell
 }

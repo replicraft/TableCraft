@@ -122,7 +122,7 @@ introduction. The target map includes implemented and prospective owners across
 | `formats/` | `tablecraft-formats`: working inert Access package/template codecs; future `tablecraft-project`: paused native `.tcraft` serialization and internal migrations |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-edit`: future reusable typed application mutations, changesets, semantic diffs and validation coordination; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
-| `presentation/` | `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
+| `presentation/` | `tablecraft-display`: working renderer-neutral regional formatting, options and typed scalar facts, shared directly by runtime/UI/desktop; `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: visual form/report/query builders and editing workflows; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
 | `interfaces/` | `tablecraft-mcp`: thin rmcp-based protocol adapter over authorized shared services; application state stays with its owners |
 | `extensibility/` | `tablecraft-plugins`: capability-scoped plugin hosting |
@@ -135,6 +135,9 @@ Application hosts remain under `apps/`: existing `tablecraft-cli` and the workin
 `tablecraft-ui` shared presentation under `presentation/` and the headless
 `tablecraft-runtime` document/read-task service under `application/`. An eventual
 `tablecraft-web` may reuse the UI with its own host and platform capabilities.
+`tablecraft-display` supplies pure formatting and validated presentation facts to
+runtime, UI and desktop directly, without GUI or database dependencies. UI owns
+widgets and the formatting-options editor; runtime owns native fact qualification.
 Fonts reside at `assets/ui/fonts`. No platform file/window/runtime service lives
 in the presentation crate. Desktop implementation began at the user's explicit
 request; the [desktop scope](../ui/DESKTOP.md) owns its acceptance status.

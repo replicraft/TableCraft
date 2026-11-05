@@ -1,7 +1,6 @@
 //! Typed read-only presentation cells; no child payload or executable action.
 
-mod presentation;
-pub use presentation::{DateRepresentation, NativeFormat, ScalarPresentation};
+use tablecraft_display::ScalarPresentation;
 
 /// Default type-directed presentation; stored TextAlign overrides are uninspected.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]

@@ -15,6 +15,7 @@ path = "src/main.rs"
 workspace = true
 
 [dependencies]
+tablecraft-display.workspace = true
 rfd = { workspace = true, features = ["xdg-portal", "wayland"] }
 eframe = { workspace = true, features = ["glow", "default_fonts", "accesskit", "wayland", "x11"] }
 egui.workspace = true

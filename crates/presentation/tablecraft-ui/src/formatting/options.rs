@@ -1,6 +1,7 @@
-use super::{Cache, CurrencyChoice, DateFormat, Options, TimeFormat};
+use super::Cache;
 use crate::Localizer;
 use egui::Ui;
+use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
 
 pub(crate) fn show_options(
     ui: &mut Ui,
@@ -15,14 +16,14 @@ pub(crate) fn show_options(
     let examples = cache.system_examples();
     let date_label = |choice: DateFormat| {
         example_label(
-            localizer.text(choice.key()),
+            localizer.text(date_key(choice)),
             choice == DateFormat::SystemLocale,
             examples.as_ref().map(|pair| pair.0.as_str()),
         )
     };
     let time_label = |choice: TimeFormat| {
         example_label(
-            localizer.text(choice.key()),
+            localizer.text(time_key(choice)),
             choice == TimeFormat::SystemLocale,
             examples.as_ref().map(|pair| pair.1.as_str()),
         )
@@ -102,5 +103,28 @@ fn example_label(label: String, system: bool, sample: Option<&str>) -> String {
     match (system, sample) {
         (true, Some(sample)) => format!("{label} ({sample})"),
         _ => label,
+    }
+}
+
+fn date_key(choice: DateFormat) -> &'static str {
+    match choice {
+        DateFormat::SystemLocale => "settings-format-system",
+        DateFormat::Iso => "settings-date-iso",
+        DateFormat::DayMonthYear => "settings-date-dmy",
+        DateFormat::MonthDayYear => "settings-date-mdy",
+        DateFormat::Short => "settings-format-short",
+        DateFormat::Long => "settings-format-long",
+        DateFormat::Raw => "settings-format-raw",
+    }
+}
+
+fn time_key(choice: TimeFormat) -> &'static str {
+    match choice {
+        TimeFormat::SystemLocale => "settings-format-system",
+        TimeFormat::HoursMinutes => "settings-time-hm",
+        TimeFormat::HoursMinutesSeconds => "settings-time-hms",
+        TimeFormat::TwelveHour => "settings-time-twelve",
+        TimeFormat::Fractional => "settings-time-fractional",
+        TimeFormat::Raw => "settings-format-raw",
     }
 }

@@ -1,5 +1,6 @@
 use super::*;
 use crate::{Action, EditSaveOutcome};
+use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
 
 #[test]
 fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
@@ -7,11 +8,11 @@ fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
     context.enable_accesskit();
     crate::configure(&context);
     let mut preview = Preview::new(Scene::Datasheet);
-    let formatting = crate::formatting::Options {
+    let formatting = Options {
         system_locale: Some("de-DE".into()),
-        date: crate::formatting::DateFormat::Iso,
-        time: crate::formatting::TimeFormat::HoursMinutesSeconds,
-        currency: crate::formatting::CurrencyChoice::Eur,
+        date: DateFormat::Iso,
+        time: TimeFormat::HoursMinutesSeconds,
+        currency: CurrencyChoice::Eur,
     };
     preview.state_mut().formatting = formatting.clone();
     for locale in crate::Locale::ALL {

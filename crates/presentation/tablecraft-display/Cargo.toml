@@ -1,0 +1,23 @@
+[package]
+name = "tablecraft-display"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+jiff.workspace = true
+icu_datetime.workspace = true
+icu_calendar.workspace = true
+icu_decimal.workspace = true
+icu_experimental.workspace = true
+icu_locale.workspace = true
+icu_locale_core.workspace = true
+iso_currency.workspace = true
+writeable.workspace = true
+thiserror.workspace = true

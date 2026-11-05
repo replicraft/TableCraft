@@ -134,7 +134,7 @@ fn alignment_uses_typed_carriers_without_changing_text_or_provenance() {
 
 #[test]
 fn typed_display_facts_preserve_exact_currency_date_bits_and_extended_ticks() {
-    use crate::{DateRepresentation, NativeFormat, ScalarPresentation};
+    use tablecraft_display::{DateRepresentation, NativeFormat, ScalarPresentation};
     let mut output = Presentation::new(&|| false);
     for scaled in [i64::MIN, -1, 0, 1, i64::MAX] {
         let cell = output

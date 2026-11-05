@@ -4,6 +4,7 @@ members = [
     "apps/tablecraft-desktop",
     "crates/application/tablecraft-runtime",
     "crates/presentation/tablecraft-ui",
+    "crates/presentation/tablecraft-display",
     "crates/foundation/tablecraft-core",
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
@@ -38,6 +39,7 @@ egui = { version = "0.36.2", default-features = false }
 egui_extras = { version = "0.36.2", default-features = false }
 tablecraft-runtime = { path = "crates/application/tablecraft-runtime", default-features = false }
 tablecraft-ui = { path = "crates/presentation/tablecraft-ui", default-features = false }
+tablecraft-display = { path = "crates/presentation/tablecraft-display", default-features = false }
 
 # CLI arguments, table presentation and host diagnostics
 csv = "1.4"

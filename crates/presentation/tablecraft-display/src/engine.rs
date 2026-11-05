@@ -22,9 +22,9 @@ const ACCESS_TIME_ONLY_DATE: jiff::civil::Date = jiff::civil::date(1899, 12, 30)
 
 #[derive(Debug, thiserror::Error)]
 #[error("locale display data could not be prepared")]
-pub(crate) struct FormatError;
+pub struct FormatError;
 
-pub(crate) struct Engine {
+pub struct Engine {
     options: Options,
     pub locale: String,
     pub fallback_locale: bool,
@@ -304,7 +304,7 @@ impl Engine {
     }
 }
 
-pub(crate) fn raw(presentation: ScalarPresentation) -> String {
+pub fn raw(presentation: ScalarPresentation) -> String {
     match presentation {
         ScalarPresentation::Currency { scaled, .. } => {
             let mut amount = Decimal::from(scaled);

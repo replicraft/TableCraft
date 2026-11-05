@@ -81,7 +81,13 @@ operation rather than disappearing from the page or becoming empty collections.
 Checked page EOF controls the Next action; page size and declared row count do
 not substitute for it.
 
-Each cell owns its display text and explicit reader facts:
+Each cell owns its display text and explicit reader facts. Shared regional
+options, validated `ScalarPresentation` facts and the renderer-neutral formatter
+belong to `tablecraft-display`, imported directly by runtime, UI and desktop.
+Runtime qualifies native facts; formatting does not authorize native edits or
+change invariant edit inputs. Display has no GUI or database dependency.
+
+The cell facts remain explicit:
 
 - Scalar cells carry independent NULL and stored-calculation flags. Literal text
   `NULL` does not acquire NULL semantics from its spelling. Cached NULL results

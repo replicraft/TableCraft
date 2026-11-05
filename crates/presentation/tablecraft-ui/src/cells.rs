@@ -1,6 +1,7 @@
 //! Host-owned cell facts; presentation never infers native storage or membership.
 
 use crate::{CollectionKind, FluentArgs, Localizer};
+use tablecraft_display::ScalarPresentation;
 
 /// Default type-directed presentation; stored TextAlign overrides are uninspected.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -12,7 +13,7 @@ pub enum HorizontalAlignment {
 
 pub struct Cell {
     /// Validated typed facts; never reconstructed from `text`.
-    pub presentation: Option<crate::formatting::ScalarPresentation>,
+    pub presentation: Option<ScalarPresentation>,
     pub alignment: HorizontalAlignment,
     pub text: String,
     pub kind: CellKind,
