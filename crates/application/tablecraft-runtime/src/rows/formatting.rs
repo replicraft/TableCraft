@@ -36,6 +36,10 @@ pub(super) fn apply(
                         native_format: target,
                         ..
                     }
+                    | ScalarPresentation::CurrencyAverage {
+                        native_format: target,
+                        ..
+                    }
                     | ScalarPresentation::DateTime {
                         native_format: target,
                         ..

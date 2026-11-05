@@ -31,6 +31,12 @@ pub enum ScalarPresentation {
         scaled: i64,
         native_format: NativeFormat,
     },
+    /// Derived Avg(Currency) retains the query's finite binary64 carrier.
+    /// This is neither a stored Currency value nor a four-decimal conversion.
+    CurrencyAverage {
+        bits: u64,
+        native_format: NativeFormat,
+    },
     DateTime {
         calendar: DateTime,
         representation: DateRepresentation,

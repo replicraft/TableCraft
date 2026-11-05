@@ -7,7 +7,7 @@ use tablecraft_ace::{
     InspectError, NativeReadSource, TableProperties, TableSchema, inspect_table_schema,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_display::NativeFormat;
+use tablecraft_display::{NativeFormat, ScalarPresentation};
 use tablecraft_schema::ScalarType;
 
 const INPUT_MASK: &str = "InputMask";
@@ -109,6 +109,39 @@ impl Metadata {
                 {
                     return Err(FindError::UnsupportedFormat.into());
                 }
+            }
+        }
+        Ok(())
+    }
+
+    /// Apply a known field's display format to a derived value, without row
+    /// identity, checkbox controls or stored-calculation provenance.
+    pub(crate) fn format_derived(
+        &self,
+        position: usize,
+        name: &str,
+        cell: &mut Cell,
+        output: &mut Presentation<'_>,
+    ) -> Result<(), Error> {
+        self.column(position, name, output)?;
+        let native_format = match &self.properties {
+            Some(properties) => formatting::native_format(properties, name, output)?,
+            None => NativeFormat::Unspecified,
+        };
+        if let Some(presentation) = &mut cell.presentation {
+            match presentation {
+                ScalarPresentation::Currency {
+                    native_format: target,
+                    ..
+                }
+                | ScalarPresentation::CurrencyAverage {
+                    native_format: target,
+                    ..
+                }
+                | ScalarPresentation::DateTime {
+                    native_format: target,
+                    ..
+                } => *target = native_format,
             }
         }
         Ok(())

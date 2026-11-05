@@ -479,6 +479,57 @@ failed/canceled candidates preserving old handles, cross-worker witness rejectio
 EOF failure and explicit fresh-source reapplication. These headless checks do not
 establish native Access filtering or cross-platform GUI parity.
 
+## Native datasheet totals
+
+`DescribeTotals` returns native headings and their eligible aggregate operations
+without reading user records. This metadata is informational. `Totals` accepts an
+exact document revision, table, optional issued view ID, enabled/off mode and
+opaque base handle. Another worker's handle refuses even if its public revision
+counter matches. At most 32 distinct fields may be requested; omission means no
+aggregate, rather than an invented count or default operation.
+
+The service reads one projected native cursor through checked EOF, using the
+active filter membership or the complete source when filtering is off. It checks
+source cardinality and every retained selected ordinal before publication,
+including for a request with no aggregate fields. Sorting does not turn the
+operation into visible-page arithmetic. A failed, canceled or superseded request
+publishes no partial total and leaves prior view handles valid.
+
+One typed SELECT aggregate model is composed directly, without SQL interpolation,
+and evaluated through the existing query-owned kernels. Count ignores NULL but
+counts present-empty Text; there is no Count(*) or distinct-count substitution.
+Numbers support Count, Sum, Average, Minimum, Maximum, sample Standard Deviation
+and Variance. Legacy Date/Time supports Count, Average, Minimum and Maximum.
+Date/Time Extended currently supports Count, Minimum and Maximum; its mean is
+not qualified by the existing kernel. Ordinary Text/Boolean/Binary/Guid fields
+are Count-only. Complex, calculated and unqualified physical layouts have no
+advertised operations. Empty or all-NULL inputs yield zero for Count and NULL
+for the other aggregates; sample statistics with fewer than two values yield
+NULL. These are current implemented boundaries, not a complete ACE 16 claim.
+
+Derived cells have no native row or edit identity. Native date/Currency Format
+lineage remains explicit. Legacy date means deliberately project the query's
+Automation-serial mean into a validated derived date display. Currency means
+retain the query's Double result in a separate `CurrencyAverage` display fact;
+ICU formats its shortest decimal spelling directly to the selected currency's
+minor units. There is no intermediate CCur/four-place write conversion or double
+rounding. Raw retains that Double's shortest spelling. Stored Currency and its
+Sum/Minimum/Maximum retain the original exact scaled-integer representation.
+
+Each operation keeps the existing native allowance (512 MiB, 100,000 rows and
+five million steps) separate from retained projected input (16 MiB/one million
+steps), query execution (16 MiB, 10,000 rows and one million steps), native
+comparisons (16 MiB/one million steps) and normal presentation output
+(8 MiB/100,000 steps). The projection is retained once for all requested fields,
+not separately for each column. Copies, names, vector growth and traversal are
+charged; none of these pools resets per batch or field. Native admission of
+100,000 rows does not override the smaller query-row ceiling: larger complete
+inputs explicitly refuse rather than returning a prefix total.
+
+Microsoft's [datasheet Totals-row contract](https://support.microsoft.com/en-us/access/display-column-totals-in-a-datasheet-using-a-totals-row)
+provides the operation/type target. Headless acceptance does not establish native
+Access formatting, numeric promotion or platform interaction parity.
+
 ## Native table sorting
 
 Following Microsoft's [native sorting workflow](https://support.microsoft.com/en-us/access/sort-records-on-text-numeric-or-date-values),

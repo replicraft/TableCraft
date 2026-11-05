@@ -41,6 +41,20 @@ impl Worker {
                 document = Some(opened);
                 Ok(response)
             }
+            Command::DescribeTotals { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .describe_totals(target, cancelled),
+            Command::Totals {
+                target,
+                specs,
+                base,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.totals(
+                target,
+                specs,
+                base.as_ref(),
+                cancelled,
+            ),
             Command::Page { table, offset } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -218,6 +232,8 @@ impl Worker {
                     Command::SortView { .. } => "sort_view",
                     Command::ClearFilter { .. } => "clear_filter",
                     Command::ReapplyFilter { .. } => "reapply_filter",
+                    Command::DescribeTotals { .. } => "describe_totals",
+                    Command::Totals { .. } => "totals",
                     Command::DescribeFieldFilter { .. } => "describe_field_filter",
                     Command::ApplyFieldFilter { .. } => "apply_field_filter",
                     Command::FilterSelection { .. } => "filter_selection",

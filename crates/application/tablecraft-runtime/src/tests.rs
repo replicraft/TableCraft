@@ -23,6 +23,7 @@ mod saved;
 mod schema;
 mod stored;
 mod text_policy;
+mod totals;
 
 use super::{Command, Error, Response, SortSpec, SortTarget, Worker};
 use std::{
