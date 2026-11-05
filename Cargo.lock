@@ -4330,6 +4330,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "tablecraft-builders"
+version = "0.1.0"
+dependencies = [
+ "tablecraft-schema",
+ "tablecraft-sql",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "tablecraft-cli"
 version = "0.1.0"
 dependencies = [
