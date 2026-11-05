@@ -2,7 +2,7 @@
 use super::{Action, DocumentView, State};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
-use egui::{RichText, TextEdit, Ui};
+use egui::{Frame, Margin, RichText, TextEdit, Ui};
 
 const MAX_SQL_EDITOR_HEIGHT: f32 = 150.0;
 const MIN_SQL_EDITOR_HEIGHT: f32 = 24.0;
@@ -10,7 +10,27 @@ const MIN_RESULTS_HEIGHT: f32 = 60.0;
 
 impl State {
     pub(super) fn query_editor(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        if self.view != DocumentView::Query {
+            return;
+        }
+        Frame::new()
+            .inner_margin(Margin::same(10))
+            .show(ui, |ui| self.query_editor_contents(ui, actions));
+    }
+
+    fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
+            if self.sorted_query && self.query_data.is_some() {
+                ui.heading(tr(ui, "ribbon-sorted-results"));
+                ui.small(tr(ui, "ribbon-sort-query-help"));
+                if ui.button(tr(ui, "query-title")).clicked() {
+                    self.sorted_query = false;
+                    self.query_data = None;
+                    self.query_selection.clear();
+                }
+                ui.separator();
+                return;
+            }
             ui.horizontal(|ui| {
                 if ui
                     .selectable_label(!self.saved_query.active, tr(ui, "query-title"))

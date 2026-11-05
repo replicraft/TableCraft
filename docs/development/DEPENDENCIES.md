@@ -923,8 +923,8 @@ feature trees matched before/after migration. See the
 [Cargo workspace reference](https://doc.rust-lang.org/cargo/reference/workspaces.html#the-dependencies-table)
 for inheritance and additive features.
 
-`sys-locale` remains a future-use candidate in [LIBRARY_POLICY.md](LIBRARY_POLICY.md).
-It is not added to manifests or Cargo.lock; this is not an adoption/target review.
+`sys-locale` was a future-use candidate at this migration; its later desktop
+regional display adoption is recorded below.
 
 ## Structured tracing
 
@@ -1569,3 +1569,53 @@ light/dark/disabled palettes and a complete hash inventory. No new dependency,
 SVG text/font loading or network resource is introduced. The earlier Fluent
 subset and its MIT notice remain together as inert source provenance; current
 About credits describe the repository-owned Apache-2.0 artwork.
+
+
+## Typed regional UI formatting — 5 November 2026
+
+The shared UI consumes Jiff civil DateTime facts, ICU4X date/time and exact decimal
+currency formatting, and ISO country/currency relationships. The desktop host
+alone consumes sys-locale at live/mock startup. The runtime publishes inert typed
+facts and qualified stored Format hints; it does not infer a locale or format
+regional text. Desktop view-model conversion mirrors those facts without parsing
+rendered strings. CLI and query execution retain their existing policies.
+
+| Direct dependency | Selected registry version | License | Working consumer |
+| --- | --- | --- | --- |
+| jiff | existing workspace selection | MIT OR Unlicense | Shared UI civil values; existing runtime carrier conversion |
+| icu_datetime | 2.3.0 | Unicode-3.0 | Gregorian date and time formatting |
+| icu_calendar | 2.3.0 | Unicode-3.0 | Gregorian input; no runtime multi-calendar selection |
+| icu_decimal | 2.3.0 | Unicode-3.0 | Exact scaled-integer decimal inputs |
+| icu_experimental | 0.6.0 | Unicode-3.0 | CLDR currency symbols, patterns and minor-unit precision |
+| icu_locale | 2.3.1 | Unicode-3.0 | Likely-subtag region expansion |
+| icu_locale_core | existing 2.3.0 | Unicode-3.0 | Validated regional identifiers |
+| iso_currency | 0.7.1 | MIT | Regular ISO currency candidates for the selected region |
+| writeable | existing workspace selection | Unicode-3.0 | Formatter output |
+| sys-locale | 0.3.2 | MIT OR Apache-2.0 | Desktop host preferred regional identifier |
+
+Workspace declarations disable registry default features. UI enables compiled
+ICU data through the shared declarations; static Gregorian YMD/time field sets
+avoid activating other calendar selections. ICU currency currently lives in the
+pre-stable experimental package, isolated behind the UI formatting module.
+Its compiled-data feature also resolves supporting ICU provider/data packages;
+this is not a dependency of the CLI or native engine. Formatter construction is
+cached by display policy and prepares selected/system and stored-Euro currency
+conventions only, rather than constructing the full dropdown inventory each frame.
+No floating-point conversion is used for Currency; signed i64 scale-four values
+become exact Decimal inputs, then CLDR supplies currency precision and rounding.
+Unknown symbols use the upstream ISO-code fallback, preserving currency identity.
+
+`iso_currency` depends on `iso_country` 0.1.4 and generates its static mapping from
+bundled ISO data (upstream documents its Wikipedia-derived source). This mapping
+is a versioned display default, not a claim about the unit of native Currency or
+an exchange-rate service. Superseded/fund/special entries are excluded; ambiguous
+regions require an explicit choice. sys-locale provides identifiers only; custom
+OS regional format overrides are not queried. There is no network or exchange-rate
+lookup in this consumer. Explicit Raw retains four Currency decimals, legacy
+DATE bits or all seven Extended Date/Time fraction digits; Copy uses display text.
+
+Sources: [ICU4X date/time](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
+[exact currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html),
+[ISO mapping](https://docs.rs/iso_currency/0.7.1/iso_currency/),
+[sys-locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html)
+and [platform/features](https://docs.rs/crate/sys-locale/0.3.2/source/README.md).

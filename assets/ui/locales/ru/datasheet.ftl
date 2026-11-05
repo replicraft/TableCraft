@@ -46,3 +46,7 @@ datasheet-control-lookup = Отображение подстановки ещё 
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = Перейти
+
+datasheet-null-value = NULL
+datasheet-close-table = Закрыть таблицу
+datasheet-sort-column = Сортировать { $column }

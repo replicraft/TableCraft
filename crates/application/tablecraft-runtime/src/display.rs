@@ -2,12 +2,13 @@
 //! Native scalar representation remains in the immutable session; this is not
 //! an edit carrier, native field-format evaluator, or lossless export protocol.
 use super::{Cell, CellKind, Column, Error, controls::check};
-use crate::HorizontalAlignment;
+use crate::{DateRepresentation, HorizontalAlignment, NativeFormat, ScalarPresentation};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
 
+const NANOS_PER_EXTENDED_TICK: u32 = 100;
 const OUTPUT_BYTES: u64 = 8 * 1024 * 1024;
 
 pub(super) struct Presentation<'a> {
@@ -76,7 +77,39 @@ impl<'a> Presentation<'a> {
         value: &Value,
         stored_calculation: bool,
     ) -> Result<Cell, Error> {
+        let presentation = match value {
+            Value::Currency(value) => Some(ScalarPresentation::Currency {
+                scaled: value.scaled(),
+                native_format: NativeFormat::Unspecified,
+            }),
+            Value::DateTime(value) => Some(ScalarPresentation::DateTime {
+                calendar: value.calendar_rounded_to_nanos()?,
+                representation: DateRepresentation::LegacyBits(value.to_bits()),
+                native_format: NativeFormat::Unspecified,
+            }),
+            Value::DateTimeExtended(value) => {
+                let (year, month, day) = value.date();
+                let (hour, minute, second, fraction) = value.time();
+                let calendar = jiff::civil::DateTime::new(
+                    year as i16,
+                    month as i8,
+                    day as i8,
+                    hour as i8,
+                    minute as i8,
+                    second as i8,
+                    (fraction * NANOS_PER_EXTENDED_TICK) as i32,
+                )
+                .map_err(|_| tablecraft_core::values::ValueError::InvalidExtendedDateTime)?;
+                Some(ScalarPresentation::DateTime {
+                    calendar,
+                    representation: DateRepresentation::Extended,
+                    native_format: NativeFormat::Unspecified,
+                })
+            }
+            _ => None,
+        };
         Ok(Cell {
+            presentation,
             alignment: match value {
                 Value::Byte(_)
                 | Value::Int16(_)

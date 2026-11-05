@@ -11,6 +11,7 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
+        title_path: None,
         document_revision: 17,
         title: "Synthetic navigation".into(),
         format: "ACE 16".into(),
@@ -36,6 +37,21 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         );
     crate::configure(&harness.ctx);
     harness.run();
+    assert!(harness.query_by_label("All Objects").is_some());
+    assert!(harness.query_by_label("All Access Objects").is_none());
+    let search = harness.get_by_role_and_label(Role::TextInput, "Search objects");
+    assert!(search.rect().height() >= SEARCH_HEIGHT);
+    assert!(
+        harness.output().shapes.iter().any(|shape| {
+            let egui::Shape::Rect(image) = &shape.shape else {
+                return false;
+            };
+            image.brush.is_some()
+                && search.rect().contains_rect(image.rect)
+                && (image.rect.width() - SEARCH_ICON_SIZE).abs() < 1.0
+        }),
+        "the taller search field contains its magnifier artwork"
+    );
 
     let rows: Vec<_> = harness
         .get_all_by_role_and_label(Role::Button, "Second")

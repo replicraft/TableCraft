@@ -6,20 +6,47 @@ pub(crate) use selection::Selection;
 use super::{Action, Cell, Data, HorizontalAlignment};
 use crate::localization::{for_context, message, tr};
 use crate::workspace::focus::{self, Pane};
-use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
+use egui::{Response, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 
 const RECORD_SELECTOR_WIDTH: f32 = 18.0;
 const CELL_TEXT_PADDING: f32 = 3.0;
 const BOOLEAN_BOX_SIZE: f32 = 14.0;
+const HEADER_ROW_HEIGHT: f32 = 22.0;
+const DATA_ROW_HEIGHT: f32 = 20.0;
+const SORT_CONTROL_WIDTH: f32 = 18.0;
+const SORT_CHEVRON_HALF_WIDTH: f32 = 3.0;
 
-pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection, pane: Pane) -> Vec<Action> {
+struct RowView {
+    collection: bool,
+    pane: Pane,
+    sort_revision: Option<u64>,
+}
+
+pub(super) fn show(
+    ui: &mut Ui,
+    data: &Data,
+    selection: &mut Selection,
+    pane: Pane,
+    sort_revision: Option<u64>,
+) -> Vec<Action> {
     let mut actions = Vec::new();
     if let Some(error) = selection.copy_error(ui.ctx()) {
         ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
     }
-    show_rows(ui, data, |_| {}, &mut actions, selection, pane);
+    render_rows(
+        ui,
+        data,
+        |_| {},
+        &mut actions,
+        selection,
+        RowView {
+            collection: false,
+            pane,
+            sort_revision,
+        },
+    );
     actions
 }
 
@@ -35,11 +62,15 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         |_| {},
         &mut Vec::new(),
         selection,
-        true,
-        Pane::Document,
+        RowView {
+            collection: true,
+            pane: Pane::Document,
+            sort_revision: None,
+        },
     );
 }
 
+#[cfg(test)]
 fn show_rows(
     ui: &mut Ui,
     data: &Data,
@@ -48,7 +79,18 @@ fn show_rows(
     selection: &mut Selection,
     pane: Pane,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
-    render_rows(ui, data, row_drawn, actions, selection, false, pane)
+    render_rows(
+        ui,
+        data,
+        row_drawn,
+        actions,
+        selection,
+        RowView {
+            collection: false,
+            pane,
+            sort_revision: None,
+        },
+    )
 }
 
 fn render_rows(
@@ -57,12 +99,20 @@ fn render_rows(
     mut row_drawn: impl FnMut(usize),
     actions: &mut Vec<Action>,
     selection: &mut Selection,
-    collection_layout: bool,
-    pane: Pane,
+    view: RowView,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
+    let collection_layout = view.collection;
+    let pane = view.pane;
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
     ui.push_id((&data.table, data.offset), |ui| {
+        let scale = crate::theme::datasheet_scale(ui.ctx());
+        for text_style in [egui::TextStyle::Body, egui::TextStyle::Button] {
+            if let Some(font) = ui.style_mut().text_styles.get_mut(&text_style) {
+                font.size *= scale;
+            }
+        }
+        ui.spacing_mut().icon_width = BOOLEAN_BOX_SIZE * scale;
         // Reserve scrollbar space below the viewport, including one-row pages.
         // The style change is scoped to this datasheet and its nested table.
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
@@ -81,7 +131,7 @@ fn render_rows(
                     .auto_shrink([false, false])
                     .striped(false)
                     .resizable(true)
-                    .column(Column::exact(RECORD_SELECTOR_WIDTH));
+                    .column(Column::exact(RECORD_SELECTOR_WIDTH * scale));
                 for index in 0..data.columns.len() {
                     let column = if collection_layout && index + 1 == data.columns.len() {
                         Column::remainder().at_least(128.0)
@@ -94,7 +144,7 @@ fn render_rows(
                     table = table.column(column);
                 }
                 table
-                    .header(22.0, |mut header| {
+                    .header(HEADER_ROW_HEIGHT * scale, |mut header| {
                         header.col(|ui| {
                             grid_cell(ui, true);
                         });
@@ -108,9 +158,8 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                let label = ui
-                                    .add(egui::Label::new(RichText::new(column.label())).truncate())
-                                    .on_hover_text(&column.name);
+                                let label =
+                                    column_header(ui, data, index, view.sort_revision, actions);
                                 let description = message(
                                     ui,
                                     "datasheet-field-name",
@@ -123,7 +172,7 @@ fn render_rows(
                         }
                     })
                     .body(|body| {
-                        body.rows(20.0, data.rows.len(), |mut row| {
+                        body.rows(DATA_ROW_HEIGHT * scale, data.rows.len(), |mut row| {
                             let index = row.index();
                             row_drawn(index);
                             let number = u64::from(data.offset) + index as u64 + 1;
@@ -200,6 +249,76 @@ fn render_rows(
             })
     })
     .inner
+}
+
+fn column_header(
+    ui: &mut Ui,
+    data: &Data,
+    index: usize,
+    sort_revision: Option<u64>,
+    actions: &mut Vec<Action>,
+) -> Response {
+    let column = &data.columns[index];
+    let rect = ui.max_rect();
+    let sort_width = sort_revision.map_or(0.0, |_| SORT_CONTROL_WIDTH);
+    let caption = rect.shrink2(egui::vec2(sort_width, 0.0));
+    let label = ui
+        .put(
+            caption,
+            egui::Label::new(column.label())
+                .halign(egui::Align::Center)
+                .truncate(),
+        )
+        .on_hover_text(&column.name);
+    if let Some(document_revision) = sort_revision {
+        let control = egui::Rect::from_min_max(
+            egui::pos2(rect.right() - sort_width, rect.top()),
+            rect.right_bottom(),
+        );
+        let id =
+            ui.make_persistent_id(("column_sort", document_revision, &data.table, &column.name));
+        let response = ui.interact(control, id, Sense::click());
+        let name = message(
+            ui,
+            "datasheet-sort-column",
+            &[("column", column.name.clone())],
+        );
+        response
+            .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), name.clone()));
+        let center = control.center();
+        let half = SORT_CHEVRON_HALF_WIDTH;
+        ui.painter()
+            .with_clip_rect(control.intersect(ui.clip_rect()))
+            .add(egui::Shape::line(
+                vec![
+                    center + egui::vec2(-half, -half * 0.5),
+                    center + egui::vec2(0.0, half * 0.5),
+                    center + egui::vec2(half, -half * 0.5),
+                ],
+                egui::Stroke::new(1.0, crate::theme::palette(ui.ctx()).ink),
+            ));
+        if response.enabled() {
+            egui::Popup::menu(&response).show(|ui| {
+                ui.small(tr(ui, "ribbon-sort-query-help"));
+                for (descending, key) in [(false, "ribbon-ascending"), (true, "ribbon-descending")]
+                {
+                    if ui.button(tr(ui, key)).clicked() {
+                        actions.push(Action::SortTable {
+                            document_revision,
+                            table: data.table.clone(),
+                            column: column.name.clone(),
+                            descending,
+                        });
+                        ui.close();
+                    }
+                }
+            });
+        } else {
+            egui::Popup::close_id(ui.ctx(), egui::Popup::default_response_id(&response));
+        }
+        response.on_hover_text(tr(ui, "ribbon-sort-query-help"));
+    }
+    label
 }
 
 fn row_selector(
@@ -336,6 +455,35 @@ pub(crate) fn cell(
     let checkbox = value.checkbox_value();
     if let Some(checked) = checkbox {
         paint_boolean(ui, response.rect, checked, badge.as_deref());
+    } else if matches!(value.kind, crate::CellKind::Scalar { is_null: true, .. }) {
+        let mut marker = localizer.text("datasheet-null-value");
+        if matches!(
+            value.kind,
+            crate::CellKind::Scalar {
+                stored_calculation: true,
+                ..
+            }
+        ) && let Some(badge) = badge
+        {
+            marker.push_str(&format!(" [{badge}]"));
+        }
+        let text = egui::RichText::new(marker)
+            .italics()
+            .color(crate::theme::palette(ui.ctx()).muted);
+        let galley = egui::WidgetText::from(text).into_galley(
+            ui,
+            Some(egui::TextWrapMode::Truncate),
+            response.rect.width() - 2.0 * CELL_TEXT_PADDING,
+            egui::FontSelection::Style(egui::TextStyle::Body),
+        );
+        ui.painter().galley(
+            egui::pos2(
+                response.rect.left() + CELL_TEXT_PADDING,
+                response.rect.center().y - galley.size().y * 0.5,
+            ),
+            galley,
+            crate::theme::palette(ui.ctx()).muted,
+        );
     } else {
         paint_cell_text(ui, response.rect, display.as_ref(), value.alignment);
     }
@@ -429,7 +577,8 @@ pub(crate) fn cell(
 }
 
 fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalAlignment) {
-    let width = (rect.width() - 2.0 * CELL_TEXT_PADDING).max(0.0);
+    let padding = CELL_TEXT_PADDING * ui.spacing().icon_width / BOOLEAN_BOX_SIZE;
+    let width = (rect.width() - 2.0 * padding).max(0.0);
     let galley = egui::WidgetText::from(text).into_galley(
         ui,
         Some(egui::TextWrapMode::Truncate),
@@ -438,8 +587,8 @@ fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalA
     );
     let position = egui::pos2(
         match alignment {
-            HorizontalAlignment::Left => rect.left() + CELL_TEXT_PADDING,
-            HorizontalAlignment::Right => rect.right() - CELL_TEXT_PADDING - galley.size().x,
+            HorizontalAlignment::Left => rect.left() + padding,
+            HorizontalAlignment::Right => rect.right() - padding - galley.size().x,
         },
         rect.center().y - galley.size().y * 0.5,
     );
@@ -448,14 +597,8 @@ fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalA
 }
 
 fn paint_boolean(ui: &Ui, rect: egui::Rect, checked: bool, badge: Option<&str>) {
-    let size = BOOLEAN_BOX_SIZE.min(rect.height());
-    let check = egui::Rect::from_center_size(
-        egui::pos2(
-            rect.left() + CELL_TEXT_PADDING + size * 0.5,
-            rect.center().y,
-        ),
-        egui::Vec2::splat(size),
-    );
+    let size = ui.spacing().icon_width.min(rect.height());
+    let check = egui::Rect::from_center_size(rect.center(), egui::Vec2::splat(size));
     let color = crate::theme::palette(ui.ctx()).checkbox_accent;
     let fill = if checked {
         color

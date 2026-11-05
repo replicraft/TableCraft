@@ -22,3 +22,14 @@ shell-supported-files = MDB と ACCDB · テーブルと対応する SELECT ク�
 shell-translation-unavailable = 翻訳を利用できません
 
 shell-operation-cancelled = 操作はキャンセルされました。
+
+shell-view-datasheet = データシート ビュー
+shell-view-design = デザイン ビュー
+shell-view-query = クエリ ビュー
+shell-window-minimize = 最小化
+shell-window-maximize = 最大化
+shell-window-restore = 元に戻す
+shell-window-close = ウィンドウを閉じる
+shell-zoom = ズーム
+shell-zoom-out = 縮小
+shell-zoom-in = 拡大

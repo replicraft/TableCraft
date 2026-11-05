@@ -1,13 +1,16 @@
 //! Shared database workspace presentation; hosts own files, tasks and services.
+mod application_icon;
 mod cells;
 mod columns;
 mod datasheet;
 mod fonts;
+pub mod formatting;
 mod keyboard;
 pub mod localization;
 mod theme;
 mod workspace;
 
+pub use application_icon::{ApplicationIconError, application_icon};
 pub use cells::{Cell, CellKind, DisplayControl, HorizontalAlignment};
 pub use columns::Column;
 pub use fluent_bundle::FluentArgs;
@@ -32,6 +35,7 @@ mod tests {
         for populated in [false, true] {
             if populated {
                 state.database = Some(Database {
+                    title_path: None,
                     document_revision: 1,
                     title: "Sample.accdb".into(),
                     format: "Ace2016".into(),

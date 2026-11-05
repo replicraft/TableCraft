@@ -1,9 +1,11 @@
-//! Qualified native Boolean Format labels under the English presentation policy.
+//! Qualified native Format hints and existing English Boolean display labels.
 //!
 //! This is display/copy text only. Native values, edit input and query execution
 //! retain their original typed carriers. No locale is inferred from the database
 //! LCID or host environment, and custom formats are not evaluated.
-use crate::{Cell, CellKind, DisplayControl, Error, display::Presentation};
+use crate::{
+    Cell, CellKind, DisplayControl, Error, NativeFormat, ScalarPresentation, display::Presentation,
+};
 use tablecraft_ace::{PropertyGroupKind, TableProperties};
 
 const FORMAT: &str = "Format";
@@ -22,15 +24,30 @@ pub(super) fn apply(
     };
     for (column, name) in columns.iter().enumerate() {
         output.work(1)?;
-        let Some((yes, no)) = labels(properties, &name.name, output)? else {
-            continue;
-        };
+        let native_format = native_format(properties, &name.name, output)?;
+        let boolean_labels = labels(properties, &name.name, output)?;
         for row in rows.iter_mut() {
             output.work(1)?;
             let Some(cell) = row.get_mut(column) else {
                 return Err(tablecraft_ace::InspectError::Malformed.into());
             };
-            format_cell(cell, yes, no, output)?;
+            if let Some(presentation) = &mut cell.presentation {
+                match presentation {
+                    ScalarPresentation::Currency {
+                        native_format: target,
+                        ..
+                    }
+                    | ScalarPresentation::DateTime {
+                        native_format: target,
+                        ..
+                    } => {
+                        *target = native_format;
+                    }
+                }
+            }
+            if let Some((yes, no)) = boolean_labels {
+                format_cell(cell, yes, no, output)?;
+            }
         }
     }
     Ok(())
@@ -52,6 +69,48 @@ fn format_cell(
         cell.text = output.text(if value { yes } else { no })?;
     }
     Ok(())
+}
+
+fn native_format(
+    properties: &TableProperties,
+    column: &str,
+    output: &mut Presentation<'_>,
+) -> Result<NativeFormat, Error> {
+    for group in properties.groups() {
+        output.work(1 + group.name().len() as u64 + column.len() as u64)?;
+        if group.kind() != PropertyGroupKind::Column || !group.name().eq_ignore_ascii_case(column) {
+            continue;
+        }
+        for property in group.properties() {
+            output.work(1 + property.name().len() as u64 + FORMAT.len() as u64)?;
+            if !property.name().eq_ignore_ascii_case(FORMAT) {
+                continue;
+            }
+            if property.flags() != DECLARATION_FLAGS || property.native_type() != NATIVE_TEXT {
+                return Ok(NativeFormat::Unsupported);
+            }
+            let format = property.text()?;
+            return Ok([
+                ("General Date", NativeFormat::GeneralDate),
+                ("Short Date", NativeFormat::ShortDate),
+                ("Medium Date", NativeFormat::MediumDate),
+                ("Long Date", NativeFormat::LongDate),
+                ("Short Time", NativeFormat::ShortTime),
+                ("Medium Time", NativeFormat::MediumTime),
+                ("Long Time", NativeFormat::LongTime),
+                ("Currency", NativeFormat::Currency),
+                ("Euro", NativeFormat::Euro),
+                (
+                    "€ #,##0.00;-€ #,##0.00",
+                    NativeFormat::EuroPrefixTwoDecimals,
+                ),
+            ]
+            .into_iter()
+            .find_map(|(name, kind)| format.eq_ignore_ascii_case(name).then_some(kind))
+            .unwrap_or(NativeFormat::Unsupported));
+        }
+    }
+    Ok(NativeFormat::Unspecified)
 }
 
 fn labels(
@@ -92,38 +151,4 @@ fn labels(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use tablecraft_core::values::Value;
-
-    #[test]
-    fn typed_boolean_labels_preserve_null_and_cached_facts_without_parsing_text() {
-        let mut output = Presentation::new(&|| false);
-        for value in [
-            Value::Boolean(false),
-            Value::Boolean(true),
-            Value::Null,
-            Value::Text("true".into()),
-        ] {
-            let mut cell = output.scalar(&value, true).unwrap();
-            if let CellKind::Scalar {
-                display_control, ..
-            } = &mut cell.kind
-            {
-                *display_control = DisplayControl::Native(TEXT_BOX);
-            }
-            let original_kind = cell.kind;
-            let original_text = cell.text.clone();
-            format_cell(&mut cell, "Yes", "No", &mut output).unwrap();
-            assert_eq!(cell.kind, original_kind);
-            assert_eq!(
-                cell.text,
-                match value {
-                    Value::Boolean(true) => "Yes".to_owned(),
-                    Value::Boolean(false) => "No".to_owned(),
-                    _ => original_text,
-                }
-            );
-        }
-    }
-}
+mod tests;

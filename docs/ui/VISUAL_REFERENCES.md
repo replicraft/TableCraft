@@ -198,3 +198,26 @@ compositions. Builder and Insert/Delete Rows remain explicitly disabled mock
 previews placed like the Design capture. Each icon has light/dark and neutral
 disabled artwork; original geometry and hashes live with the root assets. None
 copies Microsoft logos, upstream glyph paths or PaintCraft artwork.
+
+
+## Datasheet display and condensed chrome — 5 November 2026
+
+The retained Home/datasheet capture was reopened for the current corrections,
+alongside the user's date/time/currency and table-close comparison. The shared
+UI now centers headers and checkbox controls, distinguishes typed NULL from empty
+text, supplies a table-tab Close action, and uses All Objects with a taller search
+field. The condensed title/Ribbon organization is retained. A red database
+cylinder and regular settings gear replace the prior app mark and irregular gear.
+
+The title exposes a captured path on hover; its Access version is a file-profile
+compatibility label. Status has a left view label and right view/zoom controls.
+Windows/Linux decoration is replaced by explicit viewport requests; macOS keeps
+native decoration. Headless viewport-command tests do not verify a native window
+manager. The renderer removes the test harness's artificial eight-point outer
+frame instead of offsetting production layout to compensate.
+
+Regional formatting and read-action limits are described in
+[display preferences](DISPLAY_PREFERENCES.md). The explicit offline editing
+workflow, read-only sorted query results and visible NULL marker remain deliberate
+current presentation differences from Access's inline editing and blank NULLs.
+They do not establish general Access interaction or database compatibility.

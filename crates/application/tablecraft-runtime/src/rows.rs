@@ -2,6 +2,7 @@
 mod collections;
 mod controls;
 mod formatting;
+pub(crate) mod sorting;
 
 use super::{
     Error, Response,

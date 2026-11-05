@@ -148,6 +148,7 @@ fn file_back_and_escape_preserve_document_inputs_and_running_work() {
         ..Default::default()
     };
     state.database = Some(Database {
+        title_path: None,
         document_revision: 4,
         title: "Original".into(),
         format: "ACE16".into(),
@@ -200,6 +201,7 @@ fn about_suppresses_hidden_query_shortcut_and_keeps_explicit_cancel_available() 
         ..Default::default()
     };
     state.database = Some(Database {
+        title_path: None,
         document_revision: 1,
         title: "Source".into(),
         format: "ACE16".into(),

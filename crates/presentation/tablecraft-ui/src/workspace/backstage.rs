@@ -131,6 +131,11 @@ impl State {
         ui.horizontal(|ui| {
             ui.selectable_value(
                 &mut self.theme,
+                Theme::System,
+                localizer.text("settings-theme-system"),
+            );
+            ui.selectable_value(
+                &mut self.theme,
                 Theme::Light,
                 localizer.text("settings-light"),
             );
@@ -159,6 +164,7 @@ impl State {
             }
             ui.ctx().request_repaint();
         }
+        crate::formatting::show_options(ui, &mut self.formatting, &self.format_cache, &localizer);
         if self.mock_preview {
             ui.add_space(18.0);
             ui.label(localizer.text("settings-preview-help"));

@@ -22,3 +22,14 @@ shell-supported-files = MDB и ACCDB · таблицы и поддерживае
 shell-translation-unavailable = Перевод недоступен
 
 shell-operation-cancelled = Операция отменена.
+
+shell-view-datasheet = Режим таблицы
+shell-view-design = Конструктор
+shell-view-query = Режим запроса
+shell-window-minimize = Свернуть
+shell-window-maximize = Развернуть
+shell-window-restore = Восстановить
+shell-window-close = Закрыть окно
+shell-zoom = Масштаб
+shell-zoom-out = Уменьшить
+shell-zoom-in = Увеличить

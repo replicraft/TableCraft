@@ -252,12 +252,14 @@ impl Desktop {
         }
     }
 
-    pub(super) fn refresh_after_save(&mut self, generation: u64) {
+    pub(super) fn refresh_after_save(&mut self, generation: u64) -> bool {
         if let Some((expected, table, offset)) = self.editing.refresh.take()
             && generation == expected
         {
             self.submit(Command::Page { table, offset });
+            return true;
         }
+        false
     }
 
     pub(super) fn guard_save_close(&mut self, ctx: &egui::Context) {

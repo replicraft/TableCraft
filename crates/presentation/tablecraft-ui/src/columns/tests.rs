@@ -19,6 +19,7 @@ fn data() -> Data {
         rows: vec![vec![
             Cell::scalar("stored value"),
             Cell {
+                presentation: None,
                 alignment: crate::HorizontalAlignment::Left,
                 text: "2 items".into(),
                 kind: CellKind::Multivalue {
@@ -60,6 +61,7 @@ fn duplicate_captions_never_bind_edit_contents_or_record_targets() {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
+        title_path: None,
         document_revision: 7,
         title: "Example".into(),
         format: "ACE16".into(),
@@ -105,7 +107,8 @@ fn actual_headers_show_captions_and_accessible_context_keeps_original_names() {
                     ui,
                     &data,
                     &mut selection,
-                    crate::workspace::focus::Pane::Document
+                    crate::workspace::focus::Pane::Document,
+                    None,
                 )
                 .is_empty()
             );

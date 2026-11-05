@@ -67,3 +67,9 @@ ribbon-redo = 重做
 ribbon-builder = 生成器
 ribbon-insert-rows = 插入行
 ribbon-delete-rows = 删除行
+
+ribbon-sort-query-help = 对整个表排序并显示为只读查询结果，不会重新排列当前页。
+ribbon-refresh-table = 刷新
+ribbon-refresh-table-help = 重新加载当前表页。
+ribbon-sorted-results = 已排序的表结果（只读）
+ribbon-mock-sort-disabled = 此合成预览不支持整表排序，未重新排列任何行。

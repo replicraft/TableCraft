@@ -67,3 +67,9 @@ ribbon-redo = Refazer
 ribbon-builder = Construtor
 ribbon-insert-rows = Inserir linhas
 ribbon-delete-rows = Excluir linhas
+
+ribbon-sort-query-help = Ordenar a tabela inteira em resultados de consulta somente leitura. A página atual não é reordenada.
+ribbon-refresh-table = Atualizar
+ribbon-refresh-table-help = Recarregar a página atual da tabela.
+ribbon-sorted-results = Resultados da tabela ordenados (somente leitura)
+ribbon-mock-sort-disabled = A ordenação da tabela inteira não está disponível nesta prévia sintética. Nenhuma linha foi reordenada.

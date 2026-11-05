@@ -23,11 +23,7 @@ fn opened() -> (tempfile::TempDir, egui::Context, Desktop) {
     let context = egui::Context::default();
     let mut desktop = Desktop::new(context.clone(), Some(path));
     finish(&mut desktop, &context);
-    desktop.submit(Command::Page {
-        table: "Items".into(),
-        offset: 0,
-    });
-    finish(&mut desktop, &context);
+    assert_eq!(desktop.state.data.as_ref().unwrap().table, "Items");
     assert_eq!(desktop.state.data.as_ref().unwrap().rows.len(), 100);
     (directory, context, desktop)
 }
@@ -102,4 +98,31 @@ fn stale_and_hidden_record_requests_cannot_replace_a_new_open() {
     desktop.state.show_open();
     desktop.navigate_record(target(&desktop, 100));
     assert_eq!(desktop.generation, generation);
+}
+
+#[test]
+fn automatic_first_table_and_title_belong_to_the_successfully_opened_file() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("TestDatabase.mdb");
+    std::fs::write(&path, mutation_fixture::database()).unwrap();
+    let context = egui::Context::default();
+    let mut desktop = Desktop::new(context.clone(), Some(path.clone()));
+    // Editable Open text must not retitle an in-flight successful capture.
+    desktop.state.path = "different.accdb".into();
+    finish(&mut desktop, &context);
+
+    let database = desktop.state.database.as_ref().unwrap();
+    assert_eq!(
+        database.title,
+        "TestDatabase : Database | TestDatabase.mdb (Access 2000–2003)"
+    );
+    assert_eq!(
+        database.title_path.as_deref(),
+        Some(path.to_string_lossy().as_ref())
+    );
+    let data = desktop.state.data.as_ref().unwrap();
+    assert_eq!(data.table, "Items");
+    assert_eq!(data.offset, 0);
+    assert_eq!(data.rows.len(), 3);
+    assert_eq!(data.source_revision, Some(database.document_revision));
 }

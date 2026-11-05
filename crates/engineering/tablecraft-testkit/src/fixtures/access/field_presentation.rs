@@ -93,3 +93,28 @@ pub fn single(key: &str, flags: u8, native_type: u8, text: &str, boolean: bool) 
         boolean,
     )
 }
+
+/// Replace Score with an independently encoded fixed eight-byte native carrier.
+/// Values are raw little-endian payloads, not production Currency/DATE codecs.
+pub fn score64(blocks: &[Vec<u8>], native_type: u8, values: &[u64]) -> Vec<u8> {
+    let mut bytes = database(blocks, false);
+    let definition = mutation_fixture::definition(
+        &[("Id", 4, 0, 4), ("Score", native_type, 4, 8)],
+        u32::try_from(values.len()).unwrap(),
+        11 << 8,
+    );
+    bytes[10 * PAGE..11 * PAGE].copy_from_slice(&definition);
+    let rows = values
+        .iter()
+        .enumerate()
+        .map(|(index, value)| {
+            let mut row = 2_u16.to_le_bytes().to_vec();
+            row.extend(i32::try_from(index + 1).unwrap().to_le_bytes());
+            row.extend(value.to_le_bytes());
+            row.push(3);
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    bytes[12 * PAGE..13 * PAGE].copy_from_slice(&raw::data_page(10, &rows));
+    bytes
+}

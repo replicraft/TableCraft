@@ -1,5 +1,9 @@
 use super::*;
 use crate::Database;
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 #[test]
 fn long_workspace_title_retains_full_identity_without_displacing_status() {
@@ -9,6 +13,7 @@ fn long_workspace_title_retains_full_identity_without_displacing_status() {
     let title = "Quarterly international customer and supplier reconciliation workspace ".repeat(8);
     let mut state = State {
         database: Some(Database {
+            title_path: None,
             document_revision: 7,
             title: title.clone(),
             format: "ACE16".into(),
@@ -17,7 +22,8 @@ fn long_workspace_title_retains_full_identity_without_displacing_status() {
         }),
         ..Default::default()
     };
-    let status = state.edit_status();
+    state.busy = true;
+    let status = state.localizer.text("shell-working");
     for _ in 0..3 {
         let mut output = context.run_ui(
             egui::RawInput {
@@ -80,6 +86,7 @@ fn short_workspace_title_keeps_the_same_left_edge_as_a_truncated_title() {
     let mut starts = Vec::new();
     for title in ["Long workspace identity ".repeat(40), "Sample.accdb".into()] {
         state.database = Some(Database {
+            title_path: None,
             document_revision: 7,
             title: title.clone(),
             format: "ACE16".into(),
@@ -235,4 +242,131 @@ fn mock_quick_access_is_compact_and_inert_above_the_separate_ribbon_tabs() {
     }
     assert!(!preview.state().edit_dialog_open());
     assert_eq!(preview.state().localizer.diagnostics(), Default::default());
+}
+
+#[test]
+fn custom_window_controls_emit_real_viewport_requests_including_restore() {
+    for (label, maximized, command) in [
+        ("Minimize", false, egui::ViewportCommand::Minimized(true)),
+        ("Maximize", false, egui::ViewportCommand::Maximized(true)),
+        ("Restore", true, egui::ViewportCommand::Maximized(false)),
+        ("Close window", false, egui::ViewportCommand::Close),
+    ] {
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        crate::configure(&context);
+        let localizer = Localizer::default();
+        let mut input = egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(
+                egui::Pos2::ZERO,
+                egui::vec2(400.0, 80.0),
+            )),
+            ..Default::default()
+        };
+        input
+            .viewports
+            .get_mut(&egui::ViewportId::ROOT)
+            .unwrap()
+            .maximized = Some(maximized);
+        let mut output = context.run_ui(input.clone(), |ui| {
+            ui.horizontal(|ui| window::show(ui, &localizer));
+        });
+        output.textures_delta.clear();
+        let id = output
+            .platform_output
+            .accesskit_update
+            .as_ref()
+            .unwrap()
+            .nodes
+            .iter()
+            .find_map(|(id, node)| {
+                (node.role() == egui::accesskit::Role::Button && node.label() == Some(label))
+                    .then_some(*id)
+            })
+            .expect("actual window control");
+        input.events.push(egui::Event::AccessKitActionRequest(
+            egui::accesskit::ActionRequest {
+                action: egui::accesskit::Action::Click,
+                target_tree: egui::accesskit::TreeId::ROOT,
+                target_node: id,
+                data: None,
+            },
+        ));
+        let mut output = context.run_ui(input, |ui| {
+            ui.horizontal(|ui| window::show(ui, &localizer));
+        });
+        output.textures_delta.clear();
+        assert!(
+            output.viewport_output[&egui::ViewportId::ROOT]
+                .commands
+                .contains(&command)
+        );
+    }
+}
+
+#[test]
+fn status_zoom_scales_the_datasheet_and_view_buttons_use_existing_actions() {
+    let mut preview = crate::preview::Preview::new(crate::preview::Scene::Datasheet);
+    preview.state_mut().theme = crate::Theme::Light;
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, preview: &mut crate::preview::Preview| preview.show(ui),
+            preview,
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    let row_height = harness
+        .get_all_by_role(egui::accesskit::Role::RowHeader)
+        .next()
+        .unwrap()
+        .rect()
+        .height();
+    harness
+        .get_by_role_and_label(egui::accesskit::Role::Button, "Zoom in")
+        .click();
+    harness.run();
+    assert_eq!(crate::theme::datasheet_zoom(&harness.ctx), 110);
+    assert_eq!(harness.ctx.zoom_factor(), 1.0);
+    let zoomed_height = harness
+        .get_all_by_role(egui::accesskit::Role::RowHeader)
+        .next()
+        .unwrap()
+        .rect()
+        .height();
+    assert!(
+        zoomed_height > row_height,
+        "zoom changes actual datasheet metrics"
+    );
+    harness
+        .get_by_role_and_label(egui::accesskit::Role::Button, "Design view")
+        .click();
+    harness.run();
+    assert!(harness.state().state().view == DocumentView::Design);
+    assert!(harness.state().state().schema.is_some());
+    harness
+        .get_by_role_and_label(egui::accesskit::Role::Button, "Datasheet view")
+        .click();
+    harness.run();
+    assert!(harness.state().state().view == DocumentView::Table);
+    assert!(
+        harness
+            .state()
+            .state()
+            .database
+            .as_ref()
+            .unwrap()
+            .title_path
+            .is_some()
+    );
+    assert!(
+        !harness
+            .get_by_role_and_label(egui::accesskit::Role::Button, "Zoom in")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert_eq!(
+        harness.state().state().localizer.diagnostics(),
+        Default::default()
+    );
 }

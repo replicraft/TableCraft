@@ -6,6 +6,11 @@ use super::{Action, DocumentView, SavedQueryTarget, State, ribbon::Icon};
 use crate::localization::tr;
 use egui::{RichText, ScrollArea, TextEdit, Ui};
 
+const SEARCH_HEIGHT: f32 = 28.0;
+const SEARCH_ICON_SIZE: f32 = 16.0;
+const SEARCH_PADDING: f32 = 6.0;
+const SEARCH_VERTICAL_PADDING: i8 = 5;
+
 impl State {
     pub(super) fn navigation(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         let mut selected_table = false;
@@ -18,8 +23,28 @@ impl State {
                 ui.add(egui::Label::new(RichText::new(&heading).strong().size(15.0)).truncate())
                     .on_hover_text(heading);
                 let search_label = tr(ui, "navigation-search-objects");
-                let search =
-                    ui.add(TextEdit::singleline(&mut self.filter).hint_text(&search_label));
+                let search = ui.add_sized(
+                    [ui.available_width(), SEARCH_HEIGHT],
+                    TextEdit::singleline(&mut self.filter)
+                        .hint_text(&search_label)
+                        .margin(egui::Margin {
+                            left: SEARCH_PADDING as i8,
+                            right: (SEARCH_ICON_SIZE + SEARCH_PADDING * 2.0) as i8,
+                            top: SEARCH_VERTICAL_PADDING,
+                            bottom: SEARCH_VERTICAL_PADDING,
+                        }),
+                );
+                let icon_rect = egui::Rect::from_center_size(
+                    egui::pos2(
+                        search.rect.right() - SEARCH_PADDING - SEARCH_ICON_SIZE * 0.5,
+                        search.rect.center().y,
+                    ),
+                    egui::Vec2::splat(SEARCH_ICON_SIZE),
+                );
+                Icon::Search
+                    .image(ui, SEARCH_ICON_SIZE)
+                    .paint_at(ui, icon_rect);
+                crate::theme::input_border(ui, &search);
                 focus::register(ui, Pane::Navigation, &search, false);
                 ui.ctx().accesskit_node_builder(search.id, |node| {
                     node.set_label(search_label);

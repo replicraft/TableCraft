@@ -1,6 +1,6 @@
 # TableCraft UI: navigation.
 
-navigation-all-objects = Alle Access-Objekte
+navigation-all-objects = Alle Objekte
 navigation-search-objects = Objekte suchen
 navigation-show-system = Systemobjekte anzeigen
 navigation-tables = Tabellen

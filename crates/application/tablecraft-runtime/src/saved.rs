@@ -88,6 +88,7 @@ impl Document {
             &resolver,
             &bindings,
             &target.name,
+            None,
             cancelled,
         )
     }

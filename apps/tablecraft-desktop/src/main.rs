@@ -42,9 +42,8 @@ fn main() -> eframe::Result {
     let args = Args::parse();
     diagnostics::init(args.verbose).map_err(eframe::Error::AppCreation)?;
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1280.0, 820.0])
-            .with_min_inner_size([900.0, 580.0]),
+        viewport: desktop_viewport()
+            .map_err(|error| eframe::Error::AppCreation(Box::new(error)))?,
         ..Default::default()
     };
     eframe::run_native(
@@ -58,7 +57,7 @@ fn main() -> eframe::Result {
                 let theme = if args.mock_dark {
                     Theme::Dark
                 } else {
-                    Theme::Light
+                    Theme::System
                 };
                 Ok(Box::new(mock::MockApp::new(
                     args.mock_view,
@@ -75,9 +74,44 @@ fn main() -> eframe::Result {
     )
 }
 
+fn desktop_viewport() -> Result<egui::ViewportBuilder, tablecraft_ui::ApplicationIconError> {
+    Ok(egui::ViewportBuilder::default()
+        .with_icon(tablecraft_ui::application_icon()?)
+        .with_inner_size([1280.0, 820.0])
+        .with_min_inner_size([900.0, 580.0])
+        .with_decorations(!cfg!(any(target_os = "windows", target_os = "linux"))))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn desktop_decorations_follow_platform_ownership() {
+        let viewport = desktop_viewport().unwrap();
+        assert_eq!(
+            viewport.decorations,
+            Some(!cfg!(any(target_os = "windows", target_os = "linux")))
+        );
+        assert_eq!(viewport.min_inner_size, Some(egui::vec2(900.0, 580.0)));
+        let icon = viewport.icon.as_ref().expect("bundled application icon");
+        assert_eq!((icon.width, icon.height), (32, 32));
+        assert_eq!(icon.rgba.len(), 32 * 32 * 4);
+        assert!(
+            icon.rgba
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .any(|pixel| pixel[3] == 0)
+        );
+        assert!(
+            icon.rgba
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .any(|pixel| pixel[0] > pixel[1] && pixel[3] == 255)
+        );
+    }
 
     #[test]
     fn mock_mode_requires_explicit_selection_and_cannot_open_a_database_path() {

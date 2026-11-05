@@ -46,3 +46,7 @@ datasheet-control-lookup = Lookup display is not supported yet; showing the stor
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = Go
+
+datasheet-null-value = NULL
+datasheet-close-table = Close table
+datasheet-sort-column = Sort { $column }

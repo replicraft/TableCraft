@@ -64,6 +64,7 @@ fn focused_cell_copies_the_complete_value_and_exposes_row_and_column_context() {
 #[test]
 fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
     let cached_null = Cell {
+        presentation: None,
         alignment: crate::HorizontalAlignment::Left,
         text: "NULL".into(),
         kind: CellKind::Scalar {
@@ -78,6 +79,7 @@ fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
         "Description, row 7: NULL; Stored NULL calculated result; no formula evaluated; freshness unknown",
     );
     let attachment = Cell {
+        presentation: None,
         alignment: crate::HorizontalAlignment::Left,
         text: "1 attachment".into(),
         kind: CellKind::Attachments {
@@ -168,6 +170,7 @@ fn tab_moves_between_cells_without_changing_their_text() {
 fn narrow_cached_result_cell_paints_the_value_before_its_annotation() {
     let context = Context::default();
     let value = Cell {
+        presentation: None,
         alignment: crate::HorizontalAlignment::Left,
         text: "77".into(),
         kind: CellKind::Scalar {
@@ -329,6 +332,7 @@ fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_ente
         offset: 100,
         columns: vec!["Items".into()],
         rows: vec![vec![Cell {
+            presentation: None,
             alignment: crate::HorizontalAlignment::Left,
             text: "2 items".into(),
             kind: CellKind::Multivalue {
@@ -647,6 +651,7 @@ fn same_identity_publication_surrenders_old_grid_focus_before_contents_enter() {
     data.rows[0] = vec![
         Cell::scalar("NEW"),
         Cell {
+            presentation: None,
             alignment: crate::HorizontalAlignment::Left,
             text: "1 item".into(),
             kind: CellKind::Multivalue {
@@ -715,6 +720,7 @@ fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
         let context = Context::default();
         context.enable_accesskit();
         let value = Cell {
+            presentation: None,
             alignment: crate::HorizontalAlignment::Left,
             text: if checked { "-1".into() } else { "0".into() },
             kind: CellKind::Scalar {
@@ -731,6 +737,20 @@ fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
             bounds = Some(response.rect);
             response.request_focus();
         });
+        let cell_bounds = bounds.unwrap();
+        let checkbox = first
+            .shapes
+            .iter()
+            .find_map(|shape| {
+                let egui::Shape::Rect(rectangle) = &shape.shape else {
+                    return None;
+                };
+                (rectangle.stroke.color == crate::theme::palette(&context).checkbox_accent
+                    && rectangle.rect.width() == BOOLEAN_BOX_SIZE)
+                    .then_some(rectangle.rect)
+            })
+            .expect("actual readonly checkbox artwork");
+        assert_eq!(checkbox.center(), cell_bounds.center());
         first.textures_delta.clear();
         let pointer = bounds.unwrap().center();
         for events in [
@@ -822,6 +842,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
             vec![
                 "0:0".into(),
                 Cell {
+                    presentation: None,
                     alignment: crate::HorizontalAlignment::Left,
                     text: "NULL".into(),
                     kind: CellKind::Scalar {
@@ -832,6 +853,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
                     },
                 },
                 Cell {
+                    presentation: None,
                     alignment: crate::HorizontalAlignment::Left,
                     text: "2 items".into(),
                     kind: CellKind::Multivalue {
@@ -931,7 +953,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
             egui::Modifiers::NONE,
         )]),
         |ui| {
-            assert!(show(ui, &data, &mut selection, Pane::Document).is_empty());
+            assert!(show(ui, &data, &mut selection, Pane::Document, None).is_empty());
         },
     );
     output.textures_delta.clear();
@@ -973,7 +995,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     let mut output = context.run_ui(input(vec![]), |ui| {
         ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")))
             .request_focus();
-        let _ = show(ui, &data, &mut selection, Pane::Document);
+        let _ = show(ui, &data, &mut selection, Pane::Document, None);
     });
     output.textures_delta.clear();
     let mut output = context.run_ui(
@@ -983,7 +1005,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         ]),
         |ui| {
             ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")));
-            let _ = show(ui, &data, &mut selection, Pane::Document);
+            let _ = show(ui, &data, &mut selection, Pane::Document, None);
         },
     );
     output.textures_delta.clear();
@@ -1038,4 +1060,94 @@ fn explicit_alignment_changes_paint_position_without_inference_or_copy_changes()
     assert_eq!(left.alignment, crate::HorizontalAlignment::Left);
     assert_eq!(left.text, right.text);
     assert_focused_copy(&right, "Description, row 7: 123.00");
+}
+
+#[test]
+fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
+    let context = Context::default();
+    context.enable_accesskit();
+    crate::configure(&context);
+    let mut null = Cell::scalar("");
+    null.kind = CellKind::Scalar {
+        is_null: true,
+        stored_calculation: false,
+        boolean: None,
+        display_control: crate::DisplayControl::Absent,
+    };
+    let data = Data {
+        source_revision: Some(7),
+        table: "Null and empty text".into(),
+        offset: 0,
+        columns: vec!["Value".into()],
+        rows: vec![
+            vec![null],
+            vec![Cell::scalar("")],
+            vec![Cell::scalar("NULL")],
+        ],
+        has_more: false,
+    };
+    let mut selection = Selection::default();
+    let mut output = context.run_ui(input(vec![]), |ui| {
+        assert!(show(ui, &data, &mut selection, Pane::Document, None).is_empty());
+        assert!(selection.copy(&data, ui.ctx()));
+    });
+    output.textures_delta.clear();
+    let nulls: Vec<_> = output
+        .shapes
+        .iter()
+        .filter_map(|shape| {
+            let egui::Shape::Text(text) = &shape.shape else {
+                return None;
+            };
+            (text.galley.job.text == "NULL").then_some(text)
+        })
+        .collect();
+    assert_eq!(
+        nulls.len(),
+        2,
+        "empty text does not invent a NULL marker or new row"
+    );
+    assert!(nulls[0].galley.job.sections[0].format.italics);
+    assert_eq!(
+        nulls[0].fallback_color,
+        crate::theme::palette(&context).muted
+    );
+    assert!(!nulls[1].galley.job.sections[0].format.italics);
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&OutputCommand::CopyText(String::new()))
+    );
+    assert!(data.rows[0][0].text.is_empty());
+    assert!(data.rows[1][0].text.is_empty());
+
+    let header = output
+        .shapes
+        .iter()
+        .find_map(|shape| {
+            let egui::Shape::Text(text) = &shape.shape else {
+                return None;
+            };
+            (text.galley.job.text == "Value").then_some(text)
+        })
+        .expect("actual column caption");
+    // Center-aligned galleys have a negative local x origin; pos is their anchor.
+    let caption_center = header.galley.rect.translate(header.pos.to_vec2()).center();
+    let header_rect = output
+        .shapes
+        .iter()
+        .find_map(|shape| {
+            let egui::Shape::Rect(rectangle) = &shape.shape else {
+                return None;
+            };
+            (rectangle.fill == crate::theme::palette(&context).grid_header
+                && rectangle.rect.contains(caption_center))
+            .then_some(rectangle.rect)
+        })
+        .expect("actual column header background");
+    assert!(
+        (caption_center.x - header_rect.center().x).abs() <= 1.0,
+        "caption={caption_center:?}, header={header_rect:?}"
+    );
 }

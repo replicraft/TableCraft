@@ -22,3 +22,14 @@ shell-supported-files = MDB 和 ACCDB · 表及支持的 SELECT 查询
 shell-translation-unavailable = 翻译不可用
 
 shell-operation-cancelled = 操作已取消。
+
+shell-view-datasheet = 数据表视图
+shell-view-design = 设计视图
+shell-view-query = 查询视图
+shell-window-minimize = 最小化
+shell-window-maximize = 最大化
+shell-window-restore = 还原
+shell-window-close = 关闭窗口
+shell-zoom = 缩放
+shell-zoom-out = 缩小
+shell-zoom-in = 放大

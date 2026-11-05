@@ -17,6 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(".cache/ui-previews"));
     let locale = setting("TABLECRAFT_PREVIEW_LOCALE", "en-US")?.parse::<Locale>()?;
+    let regional_locale = setting("TABLECRAFT_PREVIEW_REGIONAL_LOCALE", "en-US")?;
+    regional_locale.parse::<icu_locale_core::Locale>()?;
     let theme_name = setting("TABLECRAFT_PREVIEW_THEME", "light")?;
     let theme = match theme_name.as_str() {
         "light" => Theme::Light,
@@ -53,13 +55,35 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut preview = Preview::new(Scene::Datasheet);
     preview.state_mut().localizer = Localizer::new(locale)?;
     preview.state_mut().theme = theme;
+    preview.state_mut().formatting.system_locale = Some(regional_locale);
     let mut harness = Harness::builder()
         .with_size(egui::vec2(width, height))
         .with_pixels_per_point(scale)
         .with_os(egui::os::OperatingSystem::Windows)
         .with_max_steps(32)
-        .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
+        .build_ui_state(
+            |ui, preview: &mut Preview| {
+                // kittest adds an eight-point demonstration frame around UiState.
+                // The real desktop receives a full-viewport root Ui without it.
+                let viewport = ui.ctx().viewport_rect();
+                let mut root = egui::Ui::new(
+                    ui.ctx().clone(),
+                    egui::Id::new("tablecraft_preview_root"),
+                    egui::UiBuilder::new()
+                        .layer_id(egui::LayerId::background())
+                        .max_rect(viewport),
+                );
+                root.set_clip_rect(viewport);
+                preview.show(&mut root);
+            },
+            preview,
+        );
     tablecraft_ui::configure(&harness.ctx);
+    assert_eq!(
+        harness.ctx.viewport_rect().size(),
+        egui::vec2(width, height)
+    );
+    assert_eq!(harness.ctx.pixels_per_point(), scale);
 
     for scene in scenes {
         harness.state_mut().set_scene(scene);

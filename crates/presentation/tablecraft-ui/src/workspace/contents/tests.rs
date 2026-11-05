@@ -4,6 +4,7 @@ use crate::{Cell, Database, Schema};
 fn state() -> State {
     let mut state = State {
         database: Some(Database {
+            title_path: None,
             document_revision: 7,
             title: "Sample".into(),
             format: "ACE16".into(),
@@ -18,6 +19,7 @@ fn state() -> State {
         offset: 100,
         columns: vec!["Original column".into()],
         rows: vec![vec![Cell {
+            presentation: None,
             alignment: crate::HorizontalAlignment::Left,
             text: "Not an identity".into(),
             kind: CellKind::Multivalue {
@@ -44,6 +46,7 @@ fn data() -> Data {
         offset: 0,
         columns: vec!["Value".into()],
         rows: vec![vec![Cell {
+            presentation: None,
             alignment: crate::HorizontalAlignment::Left,
             text: "NULL".into(),
             kind: CellKind::Scalar {
@@ -541,6 +544,7 @@ fn collection_widths_are_shared_by_parent_rows_but_isolated_between_fields() {
     for _ in 0..2 {
         let cells = (0..2)
             .map(|_| Cell {
+                presentation: None,
                 alignment: crate::HorizontalAlignment::Left,
                 text: "One member".into(),
                 kind: CellKind::Multivalue {

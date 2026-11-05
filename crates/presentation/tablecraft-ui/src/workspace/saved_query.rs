@@ -198,7 +198,7 @@ impl State {
         &mut self,
         request_id: u64,
         target: SavedQueryTarget,
-        data: Data,
+        mut data: Data,
     ) -> bool {
         if !self.accepts_saved_reply(request_id, &target)
             || !self.saved_query.pending.as_ref().is_some_and(|pending| {
@@ -212,6 +212,7 @@ impl State {
             self.saved_query.error = Some(self.localizer.text("saved-query-incomplete-reply"));
             return false;
         }
+        self.prepare_display(&mut data);
         self.saved_query.selection.reset(&data);
         self.saved_query.data = Some(data);
         self.saved_query.pending = None;

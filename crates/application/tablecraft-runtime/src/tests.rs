@@ -15,7 +15,7 @@ mod text_policy;
 use super::{Command, Error, Response, Worker};
 use std::{
     io::Cursor,
-    path::Path,
+    path::{Path, PathBuf},
     sync::{
         Arc, Barrier, Mutex,
         atomic::{AtomicBool, Ordering},
@@ -71,10 +71,17 @@ fn native_sample_pages_and_queries_use_real_services() {
     let original = mutation_fixture::database();
     std::fs::write(&path, &original).unwrap();
     let worker = Worker::new(|| {});
-    let Response::Opened { title, tables, .. } = request(&worker, open(&path, "")).unwrap() else {
+    let Response::Opened {
+        title,
+        source_path,
+        tables,
+        ..
+    } = request(&worker, open(&path, "")).unwrap()
+    else {
         panic!("expected opened database");
     };
     assert_eq!(title, "sample.mdb");
+    assert_eq!(source_path, std::path::absolute(&path).unwrap());
     assert!(
         tables
             .iter()
@@ -315,6 +322,7 @@ fn explicit_cancel_discards_a_late_result() {
         observed_tx.send(cancelled()).unwrap();
         Ok(Response::Opened {
             document_revision: 1,
+            source_path: PathBuf::new(),
             title: String::new(),
             format: String::new(),
             tables: Vec::new(),
@@ -378,4 +386,58 @@ fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
         assert_eq!(table, expected.1);
         assert!(worker.poll().is_none());
     }
+}
+
+#[test]
+fn sorting_reads_the_complete_relation_and_returns_no_native_edit_identity() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("sorted.mdb");
+    let records = (1..=105).map(|id| (id, id * 10)).collect::<Vec<_>>();
+    std::fs::write(&path, mutation_fixture::with_rows(&records)).unwrap();
+    let worker = Worker::new(|| {});
+    let Response::Opened {
+        document_revision, ..
+    } = request(&worker, open(&path, "")).unwrap()
+    else {
+        panic!("expected document");
+    };
+    let Response::Data {
+        source_revision,
+        rows,
+        has_more,
+        ..
+    } = request(
+        &worker,
+        Command::SortTable {
+            document_revision,
+            table: "Items".into(),
+            column: "Score".into(),
+            descending: true,
+        },
+    )
+    .unwrap()
+    else {
+        panic!("expected sorted result");
+    };
+    assert_eq!(source_revision, None);
+    assert_eq!(rows.len(), 105);
+    assert_eq!(rows[0][1].text, "1050");
+    assert_eq!(rows[104][1].text, "10");
+    assert!(!has_more);
+    assert!(matches!(
+        request(
+            &worker,
+            Command::SortTable {
+                document_revision: document_revision + 1,
+                table: "Items".into(),
+                column: "Score".into(),
+                descending: false,
+            }
+        ),
+        Err(Error::StaleDocument)
+    ));
+    assert_eq!(
+        std::fs::read(path).unwrap(),
+        mutation_fixture::with_rows(&records)
+    );
 }

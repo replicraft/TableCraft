@@ -1,5 +1,6 @@
 mod editing;
 mod navigation;
+mod opening;
 mod saved;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
@@ -15,6 +16,7 @@ use zeroize::Zeroize;
 enum PendingOperation {
     Read,
     Query,
+    Sort,
     SavedInspection {
         target: SavedQueryTarget,
         request_id: u64,
@@ -62,6 +64,7 @@ impl Desktop {
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
+        app.state.formatting.system_locale = sys_locale::get_locale();
         if let Some(path) = path {
             app.select_file(path);
             app.open();
@@ -90,7 +93,8 @@ impl Desktop {
         if matches!(&command, Command::Describe { .. }) {
             self.state.prepare_schema_view();
         }
-        let query = matches!(&command, Command::Query { .. });
+        let sort = matches!(&command, Command::SortTable { .. });
+        let query = matches!(&command, Command::Query { .. } | Command::SortTable { .. });
         self.generation = self.worker.request(command);
         self.pending = if let Some(target) = contents {
             self.state.begin_contents(target.clone(), self.generation);
@@ -98,6 +102,8 @@ impl Desktop {
                 target,
                 request_id: self.generation,
             }
+        } else if sort {
+            PendingOperation::Sort
         } else if query {
             PendingOperation::Query
         } else {
@@ -181,14 +187,20 @@ impl Desktop {
                 }),
                 Ok(Response::Opened {
                     document_revision,
+                    source_path,
                     title,
                     format,
                     tables,
                     queries,
                 }) => {
+                    let first_table = tables
+                        .iter()
+                        .find(|table| !table.system && table.local)
+                        .map(|table| table.name.clone());
                     self.state.database = Some(Database {
                         document_revision,
-                        title,
+                        title: opening::document_title(&source_path, &title, &format),
+                        title_path: Some(source_path.to_string_lossy().into_owned()),
                         format,
                         queries: queries
                             .into_iter()
@@ -208,7 +220,11 @@ impl Desktop {
                             .collect(),
                     });
                     self.state.dismiss_backstage();
-                    self.refresh_after_save(generation);
+                    if !self.refresh_after_save(generation)
+                        && let Some(table) = first_table
+                    {
+                        self.submit(Command::Page { table, offset: 0 });
+                    }
                 }
                 Ok(Response::Data {
                     source_revision,
@@ -228,6 +244,9 @@ impl Desktop {
                     };
                     match &self.pending {
                         PendingOperation::Query => self.state.set_query_data(data),
+                        PendingOperation::Sort => {
+                            self.state.set_sorted_query_data(data);
+                        }
                         PendingOperation::SavedRun { target, request_id } => {
                             self.state
                                 .set_saved_query_data(*request_id, target.clone(), data);
@@ -337,6 +356,32 @@ impl eframe::App for Desktop {
                 }
                 Action::Open => self.open(),
                 Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
+                Action::SortTable {
+                    document_revision,
+                    table,
+                    column,
+                    descending,
+                } => {
+                    if self
+                        .state
+                        .can_sort_table(document_revision, &table, &column)
+                    {
+                        self.submit(Command::SortTable {
+                            document_revision,
+                            table,
+                            column,
+                            descending,
+                        });
+                    }
+                }
+                Action::CloseTable {
+                    document_revision,
+                    table,
+                } => {
+                    if !self.editing.has_save() {
+                        self.state.close_table(document_revision, &table);
+                    }
+                }
                 Action::NavigateRecord { target } => self.navigate_record(target),
                 Action::ViewSchema { table } => self.submit(Command::Describe { table }),
                 Action::ViewContents { target } => self.submit(Command::InspectCollection {
@@ -605,7 +650,10 @@ mod tests {
         assert_eq!(schema.table, "tblContacts");
         assert_eq!(schema.fields[0].name, "ID");
         assert_eq!(schema.fields[0].scalar_type.as_deref(), Some("Int32"));
-        assert!(desktop.state.data.is_none());
+        assert!(
+            desktop.state.data.is_some(),
+            "automatic first table remains available"
+        );
 
         // Reopening clears the old schema before the next request completes.
         desktop.submit(Command::Describe {
@@ -626,6 +674,7 @@ mod tests {
         let mut desktop = Desktop::new(context.clone(), Some(path));
         let mut frame = eframe::Frame::_new_kittest();
         finish(&mut desktop, &context, &mut frame);
+        let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
         desktop.submit(Command::Query {
             sql: "SELECT NULL AS [Absent], 'NULL' AS [Label], True AS [Yes], False AS [No], 'false' AS [Text]".into(),
         });
@@ -664,7 +713,10 @@ mod tests {
             ));
         }
         assert_eq!(data.rows[0][3].text, data.rows[0][4].text);
-        assert!(desktop.state.data.is_none());
+        assert_eq!(
+            desktop.state.data.as_ref().unwrap().rows.as_ptr(),
+            table_rows
+        );
     }
 
     #[test]
