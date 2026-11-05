@@ -2,7 +2,7 @@
 mod tabs;
 
 use super::focus::{self, Pane};
-use super::{Action, DocumentView, State};
+use super::{Action, DocumentView, State, diagnostics};
 use crate::datasheet;
 use crate::localization::{message, tr};
 use egui::{Frame, Margin, RichText, Ui};
@@ -25,7 +25,7 @@ impl State {
                         .fill(ui.visuals().extreme_bg_color)
                         .inner_margin(12)
                         .show(ui, |ui| {
-                            ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
+                            diagnostics::show(ui, ui.make_persistent_id("workspace_error"), error);
                         });
                     ui.add_space(10.0);
                 }
@@ -167,3 +167,6 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
 
 #[cfg(test)]
 mod pane_focus_tests;
+
+#[cfg(test)]
+mod error_tests;

@@ -504,3 +504,99 @@ fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
     assert_eq!(state.saved_query.inputs, original_inputs);
     assert!(state.saved_query.pending.is_none());
 }
+
+#[test]
+fn long_failure_keeps_saved_controls_results_inputs_and_existing_navigation_focus() {
+    use egui::accesskit::Role;
+    use egui_kittest::{Harness, kittest::Queryable};
+
+    let (mut state, target) = state();
+    state.begin_saved_query_inspection(target.clone(), 1);
+    assert!(
+        state.set_saved_query_details(
+            1,
+            target.clone(),
+            (1..=12)
+                .map(|index| ParameterSpec {
+                    name: format!("Exact search text {index}"),
+                    kind: "text".into(),
+                    label: "TEXT".into(),
+                    nullable: true,
+                })
+                .collect()
+        )
+    );
+    state.saved_query.inputs[0].text = "literal input kept on failure".into();
+    let inputs = state.saved_query.inputs.clone();
+    state.begin_saved_query_run(target.clone(), inputs.clone(), 2);
+    assert!(state.set_saved_query_data(
+        2,
+        target.clone(),
+        data("Saved result", "previous complete result")
+    ));
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::TextInput, "Search objects")
+        .focus();
+    harness.run();
+
+    let diagnosis = "Literal provider failure retained without interpretation: ".repeat(200);
+    harness
+        .state_mut()
+        .0
+        .begin_saved_query_run(target.clone(), inputs.clone(), 3);
+    harness
+        .state_mut()
+        .0
+        .fail_saved_query(3, target.clone(), diagnosis.clone());
+    harness.run();
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Search objects")
+            .is_focused()
+    );
+    for label in ["Run saved query", "Inspect again"] {
+        let button = harness.get_by_role_and_label(Role::Button, label);
+        assert!(button.rect().bottom() < 550.0, "{label} remains reachable");
+    }
+    let literal = harness
+        .output()
+        .shapes
+        .iter()
+        .find(|shape| {
+            matches!(&shape.shape, egui::Shape::Text(text) if text.galley.job.text == diagnosis)
+        })
+        .expect("the complete literal diagnosis is retained for presentation");
+    assert!(literal.clip_rect.height() <= 100.0);
+    let previous = harness
+        .output()
+        .shapes
+        .iter()
+        .find_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) if text.galley.job.text == "previous complete result" => {
+                Some((
+                    shape.clip_rect,
+                    egui::Rect::from_min_size(text.pos, text.galley.size()),
+                ))
+            }
+            _ => None,
+        })
+        .expect("the previous complete result remains visibly rendered");
+    assert!(previous.0.contains_rect(previous.1));
+    let state = &harness.state().0;
+    assert_eq!(state.saved_query.error.as_deref(), Some(diagnosis.as_str()));
+    assert_eq!(state.saved_query.inputs, inputs);
+    assert_eq!(
+        state.visible_data().unwrap().rows[0][0].text,
+        "previous complete result"
+    );
+    assert!(state.can_run_saved_query(&target, &inputs));
+    assert!(harness.state().1.is_empty());
+}

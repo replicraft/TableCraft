@@ -2,6 +2,7 @@ mod backstage;
 mod chrome;
 mod content;
 mod contents;
+mod diagnostics;
 mod editing;
 pub(crate) mod focus;
 mod home;
