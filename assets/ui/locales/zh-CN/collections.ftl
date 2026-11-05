@@ -15,3 +15,5 @@ collections-history-context = { $context }；保留存储顺序；当前 Memo �
 collections-stored-version = 存储版本
 
 collections-mock-error = 模拟集合读取错误。未打开或导出任何载荷。
+
+collections-stale-view = 此集合已不再属于当前视图。

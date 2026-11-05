@@ -20,3 +20,5 @@ shell-welcome = Your data. A familiar workspace.
 shell-welcome-help = Open an Access database, then choose a table to browse its contents.
 shell-supported-files = MDB and ACCDB · tables and supported SELECT queries
 shell-translation-unavailable = Translation unavailable
+
+shell-operation-cancelled = Operation cancelled.

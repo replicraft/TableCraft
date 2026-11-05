@@ -20,3 +20,5 @@ shell-welcome = Ваши данные. Знакомая рабочая сред�
 shell-welcome-help = Откройте базу данных Access и выберите таблицу для просмотра её содержимого.
 shell-supported-files = MDB и ACCDB · таблицы и поддерживаемые запросы SELECT
 shell-translation-unavailable = Перевод недоступен
+
+shell-operation-cancelled = Операция отменена.

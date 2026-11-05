@@ -15,3 +15,5 @@ collections-history-context = { $context }; 저장된 순서를 유지하며 현
 collections-stored-version = 저장된 버전
 
 collections-mock-error = 컬렉션 읽기 오류 시뮬레이션입니다. 페이로드를 열거나 내보내지 않았습니다.
+
+collections-stale-view = 이 컬렉션은 더 이상 이 보기에 속하지 않습니다.

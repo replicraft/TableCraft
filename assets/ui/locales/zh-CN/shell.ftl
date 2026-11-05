@@ -20,3 +20,5 @@ shell-welcome = 你的数据，熟悉的工作区。
 shell-welcome-help = 打开 Access 数据库，然后选择表以浏览其内容。
 shell-supported-files = MDB 和 ACCDB · 表及支持的 SELECT 查询
 shell-translation-unavailable = 翻译不可用
+
+shell-operation-cancelled = 操作已取消。

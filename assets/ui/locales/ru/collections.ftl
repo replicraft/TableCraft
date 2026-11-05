@@ -15,3 +15,5 @@ collections-history-context = { $context }; сохранён исходный п
 collections-stored-version = сохранённая версия
 
 collections-mock-error = Смоделированная ошибка чтения коллекции. Содержимое не открывалось и не экспортировалось.
+
+collections-stale-view = Коллекция больше не относится к этому представлению.
