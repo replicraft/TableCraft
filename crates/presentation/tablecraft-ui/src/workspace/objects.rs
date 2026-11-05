@@ -2,6 +2,7 @@
 mod layout;
 pub(super) mod memory;
 mod session;
+mod shortcuts;
 
 pub use layout::WorkspaceLayout;
 
@@ -258,6 +259,35 @@ impl State {
         self.finish_object_activation();
         self.schema_activation_pending = self.schema.is_none();
         self.active_object_load()
+    }
+
+    /// Remember a requested page position without creating any row identity.
+    pub fn set_object_load_offset(&mut self, tab: &ObjectTab, offset: u32) -> bool {
+        if !matches!(tab.target.kind, ObjectKind::Table { .. })
+            || !self.can_activate_object(tab)
+            || self.active_object().as_ref() != Some(tab)
+            || self.data.is_some()
+        {
+            return false;
+        }
+        let Some(entry) = self
+            .objects
+            .entries
+            .iter_mut()
+            .find(|entry| entry.tab == *tab)
+        else {
+            return false;
+        };
+        entry.offset = offset;
+        true
+    }
+
+    pub fn can_retry_object(&self, tab: &ObjectTab) -> bool {
+        self.can_activate_object(tab)
+            && self.active_object().as_ref() == Some(tab)
+            && self
+                .active_object_load()
+                .is_some_and(|open| open.needs_load)
     }
 
     pub fn can_close_object(&self, tab: &ObjectTab) -> bool {

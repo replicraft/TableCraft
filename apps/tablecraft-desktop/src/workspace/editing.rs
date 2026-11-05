@@ -315,17 +315,14 @@ impl Desktop {
             save.report.map(|report| report.outcome),
             Some(SaveOutcome::Saved { .. })
         ) {
-            let filter_restore = self.retained_filter_after_save(&save.table);
             self.select_file(save.path);
             self.open();
             if let Some(restore) = workspace_restore {
                 self.retain_workspace_restore(restore);
             }
-            self.filter_restore = filter_restore;
             self.editing.refresh = Some((self.generation, save.table, save.offset));
         } else {
             self.filter = None;
-            self.filter_restore = None;
             self.objects = Sessions::default();
             self.state.database = None;
             self.state.data = None;
@@ -342,10 +339,7 @@ impl Desktop {
             if !self.restore_workspace_after_save(&table) {
                 return true;
             }
-            if self.restore_filter_after_save(&table) {
-                return true;
-            }
-            self.submit(Command::Page { table, offset });
+            self.load_active_object(offset);
             return true;
         }
         false

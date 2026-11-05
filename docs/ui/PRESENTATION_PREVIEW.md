@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 57 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 59 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -640,3 +640,19 @@ The retained actual Home capture was reopened. Compact tab placement and close
 controls were compared; no exact retained mixed-object or dark-mode Access
 capture exists. No native window was opened, and these images do not establish
 platform interaction or native database compatibility.
+
+## Unloaded object states — 5 November 2026
+
+The `object-loading` and `object-error` scenes have a real opened synthetic Orders
+tab without a row publication. They distinguish that state from loaded-empty
+results and retain the complete existing diagnostic renderer. Retry dispatches
+only synthetic responses in mock mode; it has no database worker. Loading is
+explicitly animated for bounded offscreen frame export. The current matrix is
+59 scenes × eight locales × two themes (944 combinations).
+
+German/de-DE light/dark loading/error images were rendered and inspected at
+1000 × 680 logical pixels, scale 1.25, using macOS offscreen GPU output. PNGs stay
+ignored under `.cache/ui-object-status-review/`. There is no matching retained
+Access state capture; the exact presentation is provisional. No native window
+was opened. The preview-only animated classification was verified by successful
+bounded loading-frame export after the full functional/matrix gate.

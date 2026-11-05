@@ -1187,3 +1187,59 @@ retain the reference's large Paste placement. Images remain untracked at
 `de-dark-datasheet@1.25x.png`. No native window was opened. The exact text-Paste
 label and reviewed dialog workflow have no corresponding retained Access capture;
 these renders establish local visual approximation, not platform clipboard parity.
+
+## Object loading, retry and shortcuts — 5 November 2026
+
+A table or Design object awaiting its first publication shows an object-specific
+loading status while its read is busy. Idle or failed reads expose a Retry
+control bound to that exact ObjectTab instance. Complete diagnostics retain their
+existing selectable report; a failed fresh filter restore uses that report and
+the failed status without creating a second error store. Existing published rows
+remain visible during refresh, and a loaded zero-row result keeps its real
+headings instead of becoming an unloaded object.
+
+The host admits Retry only for the current unloaded object under the normal
+modal, busy and save-owner guards. It dispatches the existing native read or
+inert saved-query inspection, never query execution implicitly. A failed or
+canceled retained filter/sort reapplication keeps its source-free definition;
+only a matching accepted result removes it. Repeated retries cannot silently
+become ordinary page reads. New-source post-save plain-page cursor preferences
+are recorded separately from retained filtered view ranks, without assigning
+row rights to an unloaded offset.
+
+Microsoft's [Access shortcut reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents Ctrl+F6 / Ctrl+Shift+F6 database-window switching and Ctrl+W closing.
+TableCraft maps these to its retained object tabs on Windows/Linux and supports
+Ctrl+F4 there using the [general Windows document-window contract](https://support.microsoft.com/en-us/accessibility/windows/keyboard-shortcuts-in-windows).
+Ctrl+Tab retains its separate dialog/pane meaning. The macOS Cmd+F6 / Cmd+Shift+F6
+and Cmd+W mapping is a TableCraft adaptation; plain macOS Control+W remains text
+word deletion. Exact modifiers are required.
+
+Recognized object chords are captured before text widgets. Source/publication,
+active instance and readiness are checked again after drawing before emitting
+one host action. Held-key repeats do not successively close or cycle newly active
+objects in this engineering profile. Refused recognized close chords are consumed
+and issue CancelClose, preventing a key event from becoming an application-window
+close. A platform that sends only a native menu/CloseRequested event without the
+corresponding key cannot be classified by this shared layer. Native OS/menu
+behavior remains unqualified; this is not a claim of complete Access shortcut or
+window-manager parity.
+
+All 189 UI and 48 desktop tests passed. New checks cover actual controls for
+loading/empty/error states, exact Windows/Linux/macOS key conventions with live
+TextEdit ownership, guarded close behavior, native cancellation followed by
+same-tab recovery, repeated corrupt-page failure, stale/loaded-empty refusal and
+repeated filter-declaration failure while an ordinary page would be readable.
+These tests reuse existing independent fixtures. The 59-scene × eight-locale ×
+two-theme matrix passed (944 combinations); strict seven-package Clippy passed.
+
+Four German/de-DE `object-loading` / `object-error` PNGs were opened and inspected
+in light and dark themes at 1000 × 680 logical pixels, 1.25 scale (1250 × 850
+physical pixels), using the macOS offscreen GPU renderer. They remain ignored
+under `.cache/ui-object-status-review/`. Loading exposes the actual object name,
+spinner and existing Cancel; failure exposes the complete diagnosis and Retry.
+The retained actual Home capture was reopened for placement. No matching Access
+loading/error capture exists, so these status surfaces remain provisional visual
+approximations. No native application window was opened. The loading scene is
+classified as animated and exports a bounded frame sequence without waiting for
+an intentionally perpetual spinner to settle.

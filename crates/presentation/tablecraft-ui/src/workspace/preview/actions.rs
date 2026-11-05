@@ -175,6 +175,14 @@ impl Preview {
             Action::CloseObject { tab } => {
                 self.state.close_object(&tab);
             }
+            Action::RetryObject { tab } => {
+                if self.state.can_retry_object(&tab)
+                    && let Some(open) = self.state.active_object_load()
+                {
+                    self.state.error = None;
+                    self.mock_load_object(open);
+                }
+            }
             Action::ViewObjectDatasheet { tab } => {
                 if let Some(open) = self.state.prepare_object_datasheet(&tab)
                     && open.needs_load

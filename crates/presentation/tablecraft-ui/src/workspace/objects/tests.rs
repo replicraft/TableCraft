@@ -1,14 +1,14 @@
 use super::*;
 use crate::{Cell, Data, Database, Table};
 
-fn table(name: &str) -> ObjectTarget {
+pub(super) fn table(name: &str) -> ObjectTarget {
     ObjectTarget {
         document_revision: 7,
         kind: ObjectKind::Table { name: name.into() },
     }
 }
 
-fn state() -> State {
+pub(super) fn state() -> State {
     let mut state = State {
         database: Some(Database {
             document_revision: 7,
@@ -53,15 +53,22 @@ fn switching_objects_moves_rows_and_rejects_closed_instance_ids() {
     let a = state.prepare_object_open(table("A")).unwrap().tab;
     assert!(state.set_table_data(data("A", "first")));
     let pointer = state.data.as_ref().unwrap().rows.as_ptr();
+    assert!(!state.set_object_load_offset(&a, 23));
     let b = state.prepare_object_open(table("B")).unwrap().tab;
     assert!(state.data.is_none());
-    assert!(state.set_table_data(data("B", "second")));
+    assert!(!state.set_object_load_offset(&a, 23));
+    assert!(state.set_object_load_offset(&b, 23));
+    assert_eq!(state.active_object_load().unwrap().offset, 23);
+    let mut second = data("B", "second");
+    second.offset = 23;
+    assert!(state.set_table_data(second));
     assert!(state.activate_object(&a));
     assert_eq!(state.data.as_ref().unwrap().rows.as_ptr(), pointer);
     assert_eq!(state.data.as_ref().unwrap().rows[0][0].text, "first");
     assert!(state.close_object(&b));
     let reopened = state.prepare_object_open(table("B")).unwrap().tab;
     assert_ne!(b.id, reopened.id);
+    assert!(!state.set_object_load_offset(&b, 99));
     assert!(!state.close_object(&b));
     assert_eq!(state.active_object(), Some(reopened));
 }

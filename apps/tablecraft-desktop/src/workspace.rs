@@ -85,7 +85,6 @@ pub(super) struct Desktop {
     selected_file: Option<SelectedFile>,
     editing: Editing,
     filter: Option<FilterHandle>,
-    filter_restore: Option<filtering::RestoreFilter>,
     objects: objects::Sessions,
     startup_visibility_pending: bool,
 }
@@ -103,7 +102,6 @@ impl Desktop {
             selected_file: None,
             editing,
             filter: None,
-            filter_restore: None,
             objects: objects::Sessions::default(),
             startup_visibility_pending: true,
         };
@@ -199,7 +197,6 @@ impl Desktop {
         let password = std::mem::take(&mut self.state.password);
         self.state.database = None;
         self.filter = None;
-        self.filter_restore = None;
         self.objects = objects::Sessions::default();
         self.state.data = None;
         self.state.query_data = None;
@@ -483,6 +480,7 @@ impl eframe::App for Desktop {
                     self.sort_view(target, sort, enabled);
                 }
                 Action::OpenObject { target } => self.open_object(target),
+                Action::RetryObject { tab } => self.retry_object(tab),
                 Action::ActivateObject { tab } => self.activate_object(tab),
                 Action::CloseObject { tab } => self.close_object(tab),
                 Action::ViewObjectDatasheet { tab } => self.view_object_datasheet(tab),

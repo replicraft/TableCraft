@@ -10,6 +10,7 @@ mod filtering;
 mod find;
 mod fixtures;
 mod insertion;
+mod object_status;
 mod queries;
 
 mod zoom;
@@ -24,6 +25,8 @@ pub enum Scene {
     #[default]
     Datasheet,
     Objects,
+    ObjectLoading,
+    ObjectError,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -82,9 +85,11 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 57] = [
+    pub const ALL: [Self; 59] = [
         Self::Datasheet,
         Self::Objects,
+        Self::ObjectLoading,
+        Self::ObjectError,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -147,6 +152,7 @@ impl Scene {
         matches!(
             self,
             Self::Loading
+                | Self::ObjectLoading
                 | Self::QueryRunning
                 | Self::SavedInspecting
                 | Self::SavedRunning
@@ -165,6 +171,8 @@ impl Scene {
         match self {
             Self::Datasheet => "datasheet",
             Self::Objects => "objects",
+            Self::ObjectLoading => "object-loading",
+            Self::ObjectError => "object-error",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -307,6 +315,8 @@ impl Preview {
         match scene {
             Scene::Datasheet => {}
             Scene::Objects => self.prepare_objects_scene(),
+            Scene::ObjectLoading => self.prepare_unloaded_object(true),
+            Scene::ObjectError => self.prepare_unloaded_object(false),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError

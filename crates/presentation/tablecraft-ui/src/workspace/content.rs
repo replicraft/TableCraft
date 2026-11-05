@@ -1,4 +1,5 @@
 //! Active table/query result presentation, preserving each slot's paging state.
+mod object_status;
 mod tabs;
 
 #[cfg(test)]
@@ -43,12 +44,15 @@ impl State {
                 });
             ui.add_space(10.0);
         }
+        if self.view == DocumentView::Table {
+            self.filter_report(ui);
+        }
+        if self.unloaded_object_status(ui, actions) {
+            return;
+        }
         if self.view == DocumentView::Design {
             self.design(ui);
             return;
-        }
-        if self.view == DocumentView::Table {
-            self.filter_report(ui);
         }
         self.query_editor(ui, actions);
         if self.view == DocumentView::Table {
