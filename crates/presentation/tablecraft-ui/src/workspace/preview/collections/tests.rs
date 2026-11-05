@@ -207,3 +207,79 @@ fn null_members_remain_members_and_literal_text_is_not_reinterpreted() {
         assert_eq!(preview.state.selected_contents_text(), Some(selected));
     }
 }
+
+#[test]
+fn closing_and_reopening_collection_scenes_retains_membership_and_literal_payloads() {
+    for scene in [
+        Scene::CollectionLoading,
+        Scene::CollectionError,
+        Scene::CollectionUnassigned,
+        Scene::CollectionEmpty,
+        Scene::CollectionNull,
+        Scene::AttachmentNull,
+        Scene::HistoryNull,
+    ] {
+        let mut preview = Preview::new(scene);
+        let collection_scene = collection_scene(scene).unwrap();
+        let (_, column) = collection_scene.source();
+        let parent = preview.state.data.as_ref().unwrap();
+        let column_index = parent.column_index(column).unwrap();
+        let target = parent.contents_target(0, column_index).unwrap();
+        let parent_cell = (
+            parent.rows[0][column_index].text.clone(),
+            parent.rows[0][column_index].kind,
+        );
+        let selection = preview.state.table_selection.position();
+        let selected_child = preview.state.selected_contents_text().map(str::to_owned);
+        let (mut before_text, mut before_accessible) = rendered_text(&mut preview);
+        before_text.sort();
+        before_accessible.sort();
+        let request_id = preview.state.contents_request_id().unwrap();
+        preview.dispatch(Action::CloseContents { request_id });
+        assert!(preview.state.contents_request_id().is_none());
+        preview.dispatch(Action::ViewContents { target });
+        assert!(preview.state.contents_request_id().is_some());
+        let (mut after_text, mut after_accessible) = rendered_text(&mut preview);
+        after_text.sort();
+        after_accessible.sort();
+        assert_eq!(
+            after_text, before_text,
+            "scene {scene:?} preserves displayed contents"
+        );
+        assert_eq!(
+            after_accessible, before_accessible,
+            "scene {scene:?} preserves typed NULL observations"
+        );
+        assert_eq!(
+            preview.state.selected_contents_text(),
+            selected_child.as_deref()
+        );
+        assert_eq!(preview.state.table_selection.position(), selection);
+        let parent = preview.state.data.as_ref().unwrap();
+        assert_eq!(parent.rows[0][column_index].text, parent_cell.0);
+        assert!(parent.rows[0][column_index].kind == parent_cell.1);
+    }
+}
+
+#[test]
+fn nullable_collection_fixture_does_not_replace_another_parent_rows_members() {
+    let mut preview = Preview::new(Scene::CollectionNull);
+    let parent = preview.state.data.as_ref().unwrap();
+    let column = parent.column_index("Categories").unwrap();
+    let target = parent.contents_target(1, column).unwrap();
+    let request_id = preview.state.contents_request_id().unwrap();
+    preview.dispatch(Action::CloseContents { request_id });
+    preview.dispatch(Action::ViewContents { target });
+    let (text, accessible) = rendered_text(&mut preview);
+    assert!(
+        text.iter()
+            .map(|text| plain(text))
+            .any(|text| { text.starts_with("Assigned multivalue collection; 2 complete members") })
+    );
+    assert!(
+        !accessible
+            .iter()
+            .map(|text| plain(text))
+            .any(|text| { text.starts_with("Value, row 1: NULL; NULL value") })
+    );
+}

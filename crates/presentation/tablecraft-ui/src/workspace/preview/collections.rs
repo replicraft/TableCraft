@@ -1,6 +1,6 @@
 //! Synthetic collection lifecycle states use the existing source-bound UI contract.
-use super::{Preview, fixtures};
-use crate::{CellKind, CollectionKind, Data};
+use super::{Preview, Scene, fixtures};
+use crate::{CellKind, CollectionKind, ContentsTarget, Data};
 
 #[derive(Clone, Copy)]
 pub(super) enum CollectionScene {
@@ -14,16 +14,66 @@ pub(super) enum CollectionScene {
 }
 
 impl Preview {
-    pub(super) fn prepare_collection_scene(&mut self, scene: CollectionScene) {
-        let (kind, column) = match scene {
-            CollectionScene::Loading | CollectionScene::Error | CollectionScene::AttachmentNull => {
-                (CollectionKind::Attachments, "Documents")
-            }
-            CollectionScene::HistoryNull => (CollectionKind::VersionHistory, "Notes"),
-            CollectionScene::Unassigned | CollectionScene::Empty | CollectionScene::Null => {
-                (CollectionKind::Multivalue, "Categories")
-            }
+    pub(super) fn collection(&mut self, target: ContentsTarget, kind: CollectionKind) {
+        if !self.state.can_view_contents(&target) {
+            return;
+        }
+        let Some(parent) = &self.state.data else {
+            return;
         };
+        let Some(column) = parent.column_index(&target.column) else {
+            return;
+        };
+        let Some(row) = target.parent_ordinal.checked_sub(parent.offset) else {
+            return;
+        };
+        let Some(cell) = parent
+            .rows
+            .get(row as usize)
+            .and_then(|row| row.get(column))
+        else {
+            return;
+        };
+        let (assigned, members) = match cell.kind {
+            CellKind::Multivalue { assigned, members }
+            | CellKind::Attachments { assigned, members }
+            | CellKind::VersionHistory { assigned, members } => (assigned, members),
+            CellKind::Scalar { .. } => return,
+        };
+        let scene = collection_scene(self.scene).filter(|scene| {
+            let (expected_kind, expected_column) = scene.source();
+            target.table == "Customers"
+                && target.parent_ordinal == 0
+                && target.column == expected_column
+                && kind == expected_kind
+                && assigned == !matches!(scene, CollectionScene::Unassigned)
+                && members == collection_data(*scene, kind).rows.len()
+        });
+        let mut child = scene.map_or_else(
+            || fixtures::contents(kind),
+            |scene| collection_data(scene, kind),
+        );
+        if members == 0 {
+            child.rows.clear();
+        }
+
+        let request = self.request();
+        self.state.begin_contents(target.clone(), request);
+        match scene {
+            Some(CollectionScene::Loading) => {}
+            Some(CollectionScene::Error) => self.state.fail_contents(
+                request,
+                target,
+                self.state.localizer.text("collections-mock-error"),
+            ),
+            _ => self
+                .state
+                .set_contents(request, target, kind, assigned, child),
+        }
+    }
+
+    pub(super) fn prepare_collection_scene(&mut self, scene: CollectionScene) {
+        let (kind, column) = scene.source();
         let assigned = !matches!(scene, CollectionScene::Unassigned);
         let child = collection_data(scene, kind);
         let mut parent = fixtures::page("Customers", 0);
@@ -79,6 +129,33 @@ impl Preview {
                 .state
                 .set_contents(request, target, kind, assigned, child),
         }
+    }
+}
+
+impl CollectionScene {
+    fn source(self) -> (CollectionKind, &'static str) {
+        match self {
+            Self::Loading | Self::Error | Self::AttachmentNull => {
+                (CollectionKind::Attachments, "Documents")
+            }
+            Self::HistoryNull => (CollectionKind::VersionHistory, "Notes"),
+            Self::Unassigned | Self::Empty | Self::Null => {
+                (CollectionKind::Multivalue, "Categories")
+            }
+        }
+    }
+}
+
+fn collection_scene(scene: Scene) -> Option<CollectionScene> {
+    match scene {
+        Scene::CollectionLoading => Some(CollectionScene::Loading),
+        Scene::CollectionError => Some(CollectionScene::Error),
+        Scene::CollectionUnassigned => Some(CollectionScene::Unassigned),
+        Scene::CollectionEmpty => Some(CollectionScene::Empty),
+        Scene::CollectionNull => Some(CollectionScene::Null),
+        Scene::AttachmentNull => Some(CollectionScene::AttachmentNull),
+        Scene::HistoryNull => Some(CollectionScene::HistoryNull),
+        _ => None,
     }
 }
 

@@ -2,8 +2,8 @@
 use super::{Preview, fixtures};
 use crate::workspace::editing::EditDialog;
 use crate::{
-    Action, Cell, CellKind, CollectionKind, ContentsTarget, EditDraft, EditInput, EditReview,
-    EditSaveOutcome, EditTarget, SavedQueryTarget,
+    Action, Cell, CellKind, CollectionKind, EditDraft, EditInput, EditReview, EditSaveOutcome,
+    EditTarget, SavedQueryTarget,
 };
 
 impl Preview {
@@ -15,13 +15,16 @@ impl Preview {
                 self.state.show_open();
             }
             Action::Page { table, offset } => {
+                self.state.error = None;
                 self.state.set_table_data(fixtures::page(&table, offset));
             }
             Action::ViewSchema { table } => {
+                self.state.error = None;
                 self.state.prepare_schema_view();
                 self.state.set_schema(fixtures::schema(&table));
             }
             Action::Query => {
+                self.state.error = None;
                 if self.state.sql == fixtures::SQL {
                     self.state.set_query_data(fixtures::query());
                 } else {
@@ -88,12 +91,22 @@ impl Preview {
                     ),
                 );
             }
-            Action::RecoverEditSave { save_id } | Action::ReleaseEditSave { save_id } => {
+            Action::RecoverEditSave { save_id } => {
                 let operation_id = self.request();
                 self.state.begin_edit_resolution(save_id, operation_id);
                 self.state.set_edit_save_outcome(
                     operation_id,
                     EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-resolved")),
+                );
+            }
+            Action::ReleaseEditSave { save_id } => {
+                let operation_id = self.request();
+                self.state.begin_edit_resolution(save_id, operation_id);
+                // Releasing resources is not a completed save. The native host
+                // also publishes released resources as a terminal Failed outcome.
+                self.state.set_edit_save_outcome(
+                    operation_id,
+                    EditSaveOutcome::Failed(self.state.localizer.text("settings-mock-resolved")),
                 );
             }
             Action::Cancel => {
@@ -114,16 +127,6 @@ impl Preview {
         let parameters = fixtures::parameters(&target);
         self.state
             .set_saved_query_details(request, target, parameters);
-    }
-
-    pub(super) fn collection(&mut self, target: ContentsTarget, kind: CollectionKind) {
-        if !self.state.can_view_contents(&target) {
-            return;
-        }
-        let request = self.request();
-        self.state.begin_contents(target.clone(), request);
-        self.state
-            .set_contents(request, target, kind, true, fixtures::contents(kind));
     }
 
     pub(super) fn edit(&mut self, target: EditTarget) {
