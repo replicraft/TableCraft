@@ -1,21 +1,23 @@
-//! Shared application title, working Home ribbon and task status.
-use super::{Action, State};
-use crate::theme::{ACCENT, INK, TITLE_FILL};
-use egui::{Color32, Frame, Margin, RichText, Ui};
+//! Shared title, contextual ribbon and status; no file or database services.
+use super::{Action, DocumentView, State, ribbon};
+use crate::theme::palette;
+use egui::{Frame, Margin, RichText, Ui};
 
 impl State {
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        let colors = palette(ui.ctx());
+        let t = self.localizer.clone();
         egui::Panel::top("title")
             .frame(
                 Frame::new()
-                    .fill(TITLE_FILL)
+                    .fill(colors.title_fill)
                     .inner_margin(Margin::symmetric(10, 5)),
             )
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
                     ui.label(
-                        RichText::new("TableCraft")
-                            .color(ACCENT)
+                        RichText::new(t.text("shell-app-name"))
+                            .color(colors.accent)
                             .strong()
                             .size(13.0),
                     );
@@ -24,12 +26,16 @@ impl State {
                         RichText::new(
                             self.database
                                 .as_ref()
-                                .map_or("Database workspace", |db| db.title.as_str()),
+                                .map_or_else(|| t.text("shell-workspace"), |db| db.title.clone()),
                         )
-                        .color(INK),
+                        .color(colors.ink),
                     );
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(RichText::new(self.edit_status()).color(INK).size(11.0));
+                        ui.label(
+                            RichText::new(self.edit_status())
+                                .color(colors.muted)
+                                .size(11.0),
+                        );
                     });
                 });
             });
@@ -37,50 +43,117 @@ impl State {
             egui::Panel::top("ribbon")
                 .frame(
                     Frame::new()
-                        .fill(Color32::WHITE)
-                        .inner_margin(Margin::symmetric(8, 5)),
+                        .fill(colors.surface)
+                        .inner_margin(Margin::symmetric(8, 3)),
                 )
                 .show(ui, |ui| {
-                    ui.horizontal(|ui| {
-                        if ui
-                            .add(egui::Button::new("File").fill(Color32::WHITE))
-                            .clicked()
-                        {
-                            self.show_open();
-                        }
-                        let home = ui.add(
-                            egui::Button::new("Home")
-                                .selected(true)
-                                .fill(Color32::WHITE),
-                        );
-                        ui.painter().line_segment(
-                            [home.rect.left_bottom(), home.rect.right_bottom()],
-                            egui::Stroke::new(2.0, ACCENT),
-                        );
-                    });
+                    egui::ScrollArea::horizontal()
+                        .id_salt("ribbon_tabs")
+                        .auto_shrink([false, true])
+                        .show(ui, |ui| {
+                            ui.horizontal(|ui| {
+                                if ui
+                                    .add(egui::Button::new(t.text("ribbon-file")).frame(false))
+                                    .clicked()
+                                {
+                                    self.show_open();
+                                }
+                                if tab(
+                                    ui,
+                                    &t.text("ribbon-home"),
+                                    self.ribbon_tab == ribbon::Tab::Home,
+                                    true,
+                                )
+                                .clicked()
+                                {
+                                    self.ribbon_tab = ribbon::Tab::Home;
+                                }
+                                if self.mock_preview {
+                                    for key in [
+                                        "ribbon-create",
+                                        "ribbon-external-data",
+                                        "ribbon-database-tools",
+                                        "ribbon-help",
+                                    ] {
+                                        tab(ui, &t.text(key), false, false)
+                                            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                                    }
+                                }
+                                if self.view == DocumentView::Design {
+                                    if tab(
+                                        ui,
+                                        &t.text("ribbon-table-design"),
+                                        self.ribbon_tab == ribbon::Tab::TableDesign,
+                                        true,
+                                    )
+                                    .clicked()
+                                    {
+                                        self.ribbon_tab = ribbon::Tab::TableDesign;
+                                    }
+                                } else if self.mock_preview && self.data.is_some() {
+                                    for key in ["ribbon-table-fields", "ribbon-table"] {
+                                        tab(ui, &t.text(key), false, false)
+                                            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                                    }
+                                }
+                            });
+                        });
                     ui.separator();
                     self.home(ui, actions);
                 });
         }
-        egui::Panel::bottom("status").show(ui, |ui| {
-            ui.horizontal(|ui| {
-                ui.small(if self.busy { "Working…" } else { "Ready" });
-                if self.busy {
-                    ui.spinner();
-                    if ui.button("Cancel").clicked() {
-                        actions.push(Action::Cancel);
+        egui::Panel::bottom("status")
+            .frame(
+                Frame::new()
+                    .fill(colors.title_fill)
+                    .inner_margin(Margin::symmetric(8, 3)),
+            )
+            .show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    ui.small(t.text(if self.busy {
+                        "shell-working"
+                    } else {
+                        "shell-ready"
+                    }));
+                    if self.busy {
+                        ui.spinner();
+                        if ui.button(t.text("shell-cancel")).clicked() {
+                            actions.push(Action::Cancel);
+                        }
                     }
-                }
-                ui.separator();
-                ui.small(
-                    self.database
-                        .as_ref()
-                        .map_or("Local Access databases", |db| db.format.as_str()),
-                );
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                    ui.small("Snapshot browsing");
+                    ui.separator();
+                    ui.small(
+                        self.database.as_ref().map_or_else(
+                            || t.text("shell-local-databases"),
+                            |db| db.format.clone(),
+                        ),
+                    );
+                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                        ui.small(t.text("shell-snapshot-browsing"));
+                    });
                 });
             });
-        });
     }
+}
+
+fn tab(ui: &mut Ui, label: &str, selected: bool, enabled: bool) -> egui::Response {
+    let colors = palette(ui.ctx());
+    let response = ui.add_enabled(
+        enabled,
+        egui::Button::selectable(selected, label)
+            .fill(colors.surface)
+            .frame(false),
+    );
+    ui.ctx().accesskit_node_builder(response.id, |node| {
+        node.set_role(egui::accesskit::Role::Tab);
+        node.clear_toggled();
+        node.set_selected(selected);
+    });
+    if selected {
+        ui.painter().line_segment(
+            [response.rect.left_bottom(), response.rect.right_bottom()],
+            egui::Stroke::new(2.0, colors.accent),
+        );
+    }
+    response
 }

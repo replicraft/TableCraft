@@ -124,7 +124,7 @@ impl State {
         }
         if parameters.len() > MAX_PARAMETERS {
             self.saved_query.pending = None;
-            self.saved_query.error = Some("The query exceeds the 256-parameter UI limit.".into());
+            self.saved_query.error = Some(self.localizer.text("saved-query-declaration-limit"));
             return false;
         }
         self.saved_query.inputs = parameters
@@ -211,7 +211,7 @@ impl State {
         }
         if data.source_revision.is_some() || data.offset != 0 || data.has_more {
             self.saved_query.pending = None;
-            self.saved_query.error = Some("The reply is not a complete saved-query result.".into());
+            self.saved_query.error = Some(self.localizer.text("saved-query-incomplete-reply"));
             return false;
         }
         self.saved_query.selection.reset(&data);
@@ -241,8 +241,7 @@ impl State {
 
     pub(super) fn interrupt_saved_query(&mut self) {
         if self.saved_query.pending.take().is_some() {
-            self.saved_query.error =
-                Some("The request was interrupted. Inspect or run the query again.".into());
+            self.saved_query.error = Some(self.localizer.text("saved-query-interrupted"));
         }
     }
 

@@ -122,7 +122,9 @@ fn assert_focused_copy(value: &Cell, accessible_value: &str) {
     assert!(
         tree.nodes
             .iter()
-            .any(|(_, node)| node.value() == Some(accessible_value))
+            .any(|(_, node)| node.value().is_some_and(|value| {
+                value.replace(['\u{2068}', '\u{2069}'], "") == accessible_value
+            }))
     );
 }
 
@@ -526,7 +528,7 @@ fn click_grid_cell(
     context.enable_accesskit();
     let (row, column) = position;
     let name = format!(
-        "{}, row {}: {}",
+        "\u{2068}{}\u{2069}, row \u{2068}{}\u{2069}: \u{2068}{}\u{2069}",
         data.columns[column].name,
         u64::from(data.offset) + row as u64 + 1,
         data.rows[row][column].text
@@ -569,7 +571,14 @@ fn click_grid_cell(
         (left - rect.left() - 3.0).abs() < 0.5,
         "text is not at the cell's left inset: text={left}, cell={rect:?}"
     );
-    let pointer = egui::pos2(rect.right() - 3.0, rect.center().y);
+    // The table's full-height resize handle overlaps the column boundary.
+    // With no intercell gutter, click beyond its grab radius while retaining
+    // the trailing blank-cell-area check below.
+    let resize_grab_radius = context
+        .style_of(context.theme())
+        .interaction
+        .resize_grab_radius_side;
+    let pointer = egui::pos2(rect.right() - resize_grab_radius - 2.0, rect.center().y);
     assert!(rect.contains(pointer));
     if data.rows[row][column].text == "0:1" {
         assert!(
@@ -818,7 +827,10 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         .accesskit_update
         .as_ref()
         .expect("actual selector accessibility tree");
-    for label in ["Select record 1", "Select record 2"] {
+    for label in [
+        "Select record \u{2068}1\u{2069}",
+        "Select record \u{2068}2\u{2069}",
+    ] {
         let selector = tree
             .nodes
             .iter()

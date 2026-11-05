@@ -5,8 +5,10 @@ mod contents;
 mod editing;
 mod home;
 mod navigation;
+pub mod preview;
 mod query;
 mod records;
+mod ribbon;
 mod saved_query;
 mod schema;
 
@@ -114,6 +116,10 @@ enum DocumentView {
 /// Presentation state shared by potential native and browser hosts.
 #[derive(Default)]
 pub struct State {
+    pub localizer: crate::Localizer,
+    pub theme: crate::Theme,
+    /// Synthetic presentation only; never grants database capabilities.
+    pub mock_preview: bool,
     pub path: String,
     pub password: String,
     /// The host has an actual file-selection implementation.
@@ -136,6 +142,7 @@ pub struct State {
     pub sql: String,
     filter: String,
     view: DocumentView,
+    ribbon_tab: ribbon::Tab,
     show_system: bool,
     backstage: backstage::Backstage,
 }
@@ -252,6 +259,7 @@ impl State {
         if std::mem::take(&mut self.schema_activation_pending) {
             self.interrupt_saved_query();
             self.view = DocumentView::Design;
+            self.ribbon_tab = ribbon::Tab::TableDesign;
         }
     }
 
@@ -265,6 +273,10 @@ impl State {
         self.close_contents();
         self.schema_activation_pending = false;
         self.view = view;
+        self.ribbon_tab = match view {
+            DocumentView::Design => ribbon::Tab::TableDesign,
+            DocumentView::Table | DocumentView::Query => ribbon::Tab::Home,
+        };
     }
 
     /// Remove metadata when the host replaces or closes its source.
@@ -280,6 +292,7 @@ impl State {
         self.schema_activation_pending = false;
         if self.view == DocumentView::Design {
             self.view = DocumentView::Table;
+            self.ribbon_tab = ribbon::Tab::Home;
         }
     }
 
@@ -327,6 +340,9 @@ impl State {
 
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
+        crate::localization::install(ui.ctx(), &self.localizer);
+        crate::theme::set_theme(ui.ctx(), self.theme);
+        crate::fonts::configure(ui.ctx(), self.localizer.locale());
         let mut actions = Vec::new();
         let modal_open = self.contents_request_id().is_some() || self.edit_dialog_open();
         if !modal_open

@@ -1,8 +1,7 @@
 //! Object navigation emits page intents without owning a database source.
-use super::{Action, DocumentView, SavedQueryTarget, State};
-use egui::{Color32, RichText, ScrollArea, Sense, Stroke, StrokeKind, TextEdit, Ui};
-
-const TABLE_ICON_COLOR: Color32 = Color32::from_rgb(66, 96, 144);
+use super::{Action, DocumentView, SavedQueryTarget, State, ribbon::Icon};
+use crate::localization::tr;
+use egui::{RichText, ScrollArea, TextEdit, Ui};
 
 impl State {
     pub(super) fn navigation(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
@@ -12,14 +11,21 @@ impl State {
             .resizable(true)
             .show(ui, |ui| {
                 ui.add_space(5.0);
-                ui.label(RichText::new("All Access Objects").strong().size(15.0));
-                ui.add(TextEdit::singleline(&mut self.filter).hint_text("Search objects"));
-                ui.checkbox(&mut self.show_system, "Show system objects");
+                ui.label(
+                    RichText::new(tr(ui, "datasheet-all-objects"))
+                        .strong()
+                        .size(15.0),
+                );
+                ui.add(
+                    TextEdit::singleline(&mut self.filter)
+                        .hint_text(tr(ui, "datasheet-search-objects")),
+                );
+                ui.checkbox(&mut self.show_system, tr(ui, "datasheet-show-system"));
                 ui.separator();
                 if let Some(db) = &self.database {
                     let filter = self.filter.to_lowercase();
                     ScrollArea::vertical().show(ui, |ui| {
-                        ui.label(RichText::new("Tables").strong());
+                        ui.label(RichText::new(tr(ui, "datasheet-tables")).strong());
                         for table in &db.tables {
                             if (!self.show_system && table.system)
                                 || !table.name.to_lowercase().contains(&filter)
@@ -38,7 +44,10 @@ impl State {
                                     .on_hover_text(&table.storage);
                                 response.context_menu(|ui| {
                                     if ui
-                                        .add_enabled(!self.busy, egui::Button::new("View schema"))
+                                        .add_enabled(
+                                            !self.busy,
+                                            egui::Button::new(tr(ui, "datasheet-view-schema")),
+                                        )
                                         .clicked()
                                     {
                                         actions.push(Action::ViewSchema {
@@ -55,12 +64,12 @@ impl State {
                                     });
                                 }
                                 if table.system {
-                                    ui.weak("system");
+                                    ui.weak(tr(ui, "datasheet-system"));
                                 }
                             });
                         }
                         ui.separator();
-                        ui.label(RichText::new("Queries").strong());
+                        ui.label(RichText::new(tr(ui, "datasheet-queries")).strong());
                         for query in &db.queries {
                             if (!self.show_system && query.system)
                                 || !query.name.to_lowercase().contains(&filter)
@@ -90,7 +99,7 @@ impl State {
                         }
                     });
                 } else {
-                    ui.weak("Open a database to see its objects.");
+                    ui.weak(tr(ui, "datasheet-open-first"));
                 }
             });
         if selected_table {
@@ -99,21 +108,7 @@ impl State {
     }
 }
 
-// Decorative geometry avoids relying on a table-symbol glyph absent from the
-// bundled fonts. The adjacent table-name control supplies the accessible name.
+// The adjacent table-name control supplies the accessible name and action.
 fn table_icon(ui: &mut Ui) {
-    let (rect, _) = ui.allocate_exact_size(egui::vec2(14.0, 14.0), Sense::hover());
-    let rect = rect.shrink(1.0);
-    let stroke = Stroke::new(1.0, TABLE_ICON_COLOR);
-    ui.painter()
-        .rect_stroke(rect, 0.0, stroke, StrokeKind::Inside);
-    for fraction in [1.0 / 3.0, 2.0 / 3.0] {
-        let y = rect.top() + rect.height() * fraction;
-        ui.painter().line_segment(
-            [egui::pos2(rect.left(), y), egui::pos2(rect.right(), y)],
-            stroke,
-        );
-    }
-    ui.painter()
-        .line_segment([rect.center_top(), rect.center_bottom()], stroke);
+    ui.add(Icon::Table.image(crate::theme::palette(ui.ctx()).ink, 16.0));
 }

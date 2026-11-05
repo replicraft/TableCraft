@@ -386,7 +386,11 @@ fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
         tree.nodes
             .iter()
             .find_map(|(id, node)| {
-                (node.role() == Role::Label && node.value() == Some(text)).then_some(*id)
+                (node.role() == Role::Label
+                    && node
+                        .value()
+                        .is_some_and(|value| value.replace(['\u{2068}', '\u{2069}'], "") == text))
+                .then_some(*id)
             })
             .expect("actual visible parameter prompt")
     };

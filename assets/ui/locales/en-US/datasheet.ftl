@@ -52,3 +52,5 @@ datasheet-control-unsupported = Field display settings are unsupported; showing 
 datasheet-control-textbox = This field uses a text box
 datasheet-control-lookup = Lookup display is not supported yet; showing the stored value
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = Go

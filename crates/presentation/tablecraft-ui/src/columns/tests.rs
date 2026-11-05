@@ -112,11 +112,11 @@ fn actual_headers_show_captions_and_accessible_context_keeps_original_names() {
         .as_ref()
         .expect("actual accessible tree");
     for name in ["RawValue", "RawItems"] {
-        let description = format!("Field name: {name}");
+        let description = format!("Field name: \u{2068}{name}\u{2069}");
         assert!(tree.nodes.iter().any(|(_, node)| {
             node.value() == Some("Friendly") && node.description() == Some(description.as_str())
         }));
-        let cell = format!("{name}, row 1:");
+        let cell = format!("\u{2068}{name}\u{2069}, row \u{2068}1\u{2069}:");
         assert!(
             tree.nodes
                 .iter()

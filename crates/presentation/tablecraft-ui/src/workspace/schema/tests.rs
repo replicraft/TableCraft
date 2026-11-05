@@ -13,6 +13,8 @@ fn field(name: &str, number: usize, scalar_type: Option<&str>) -> Field {
         flags: 3,
         extended_flags: 0,
         scalar_type: scalar_type.map(str::to_owned),
+        display_type: None,
+        field_size: None,
         reader_nullable: None,
         decimal_parameters: None,
         complex_type_id: None,

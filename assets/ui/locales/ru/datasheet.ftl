@@ -52,3 +52,5 @@ datasheet-control-unsupported = Параметры отображения пол
 datasheet-control-textbox = Это поле использует текстовое поле
 datasheet-control-lookup = Отображение подстановки ещё не поддерживается; показано сохранённое значение
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = Перейти

@@ -25,16 +25,35 @@ fn render(
 }
 
 fn click(state: &mut State, context: &egui::Context, label: &str) -> (Vec<Action>, FullOutput) {
+    context.enable_accesskit();
     render(state, context, Vec::new());
     let (_, output) = render(state, context, Vec::new());
-    let position = output
-        .shapes
-        .iter()
-        .find_map(|shape| match &shape.shape {
-            egui::epaint::Shape::Text(text) if text.galley.job.text == label => {
-                Some(text.pos + text.galley.size() * 0.5)
-            }
-            _ => None,
+    let button_position = output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .and_then(|tree| {
+            tree.nodes.iter().find_map(|(_, node)| {
+                if node.role() == egui::accesskit::Role::Button && node.label() == Some(label) {
+                    node.bounds().map(|bounds| {
+                        egui::pos2(
+                            ((bounds.x0 + bounds.x1) * 0.5) as f32,
+                            ((bounds.y0 + bounds.y1) * 0.5) as f32,
+                        )
+                    })
+                } else {
+                    None
+                }
+            })
+        });
+    let position = button_position
+        .or_else(|| {
+            output.shapes.iter().find_map(|shape| match &shape.shape {
+                egui::epaint::Shape::Text(text) if text.galley.job.text == label => {
+                    Some(text.pos + text.galley.size() * 0.5)
+                }
+                _ => None,
+            })
         })
         .expect("painted command or cell label");
     click_at(state, context, position)
@@ -208,7 +227,7 @@ fn row_selector_and_home_copy_share_complete_displayed_record_and_publication_re
         .iter()
         .find_map(|(_, node)| {
             if node.role() == egui::accesskit::Role::RowHeader
-                && node.label() == Some("Select record 101")
+                && node.label() == Some("Select record \u{2068}101\u{2069}")
             {
                 node.bounds()
             } else {

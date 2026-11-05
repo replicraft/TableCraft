@@ -22,6 +22,8 @@ pub(super) fn fields(fields: Vec<RuntimeField>) -> Vec<Field> {
             flags: field.flags,
             extended_flags: field.extended_flags,
             scalar_type: field.scalar_type,
+            display_type: None,
+            field_size: None,
             reader_nullable: field.reader_nullable,
             decimal_parameters: field.decimal_parameters,
             complex_type_id: field.complex_type_id,

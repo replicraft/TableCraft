@@ -52,3 +52,5 @@ datasheet-control-unsupported = Die Feldanzeige wird nicht unterstützt; der ges
 datasheet-control-textbox = Dieses Feld verwendet ein Textfeld
 datasheet-control-lookup = Nachschlageanzeigen werden noch nicht unterstützt; der gespeicherte Wert wird angezeigt
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = Los

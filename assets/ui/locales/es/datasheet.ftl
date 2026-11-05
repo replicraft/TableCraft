@@ -52,3 +52,5 @@ datasheet-control-unsupported = Presentación del campo no compatible; se muestr
 datasheet-control-textbox = Este campo utiliza un cuadro de texto
 datasheet-control-lookup = La presentación de búsqueda aún no es compatible; se muestra el valor almacenado
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = Ir

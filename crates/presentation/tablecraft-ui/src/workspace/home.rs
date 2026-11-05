@@ -1,63 +1,118 @@
-//! Working read-only Home commands, grouped beside the File tab.
-use super::{Action, DocumentView, State};
-use crate::theme::MUTED;
-use egui::{Button, RichText, Ui};
+//! Working commands share the dense ribbon with explicitly disabled previews.
+use super::{Action, DocumentView, State, ribbon};
+use ribbon::{CommandSize, Icon, command, group};
 
 impl State {
-    pub(super) fn home(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
-        ui.horizontal(|ui| {
-            ui.spacing_mut().item_spacing.x = 12.0;
-            ui.vertical(|ui| {
-                ui.add_enabled_ui(!self.busy, |ui| {
-                    let datasheet_available = match self.view {
-                        DocumentView::Table => self.data.is_some(),
-                        DocumentView::Design => self.schema.as_ref().is_some_and(|schema| {
-                            self.data
-                                .as_ref()
-                                .is_some_and(|data| data.table == schema.table)
-                        }),
-                        DocumentView::Query => false,
-                    };
-                    if ui
-                        .add_enabled(datasheet_available, Button::new("Datasheet"))
-                        .clicked()
-                    {
-                        self.select_view(DocumentView::Table);
-                    }
-                    let table = match self.view {
-                        DocumentView::Table => self.data.as_ref().map(|data| data.table.as_str()),
-                        DocumentView::Design => {
-                            self.schema.as_ref().map(|schema| schema.table.as_str())
-                        }
-                        DocumentView::Query => None,
-                    };
-                    if ui
-                        .add_enabled(table.is_some(), Button::new("Table Design"))
-                        .clicked()
-                    {
+    pub(super) fn home(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        let t = self.localizer.clone();
+        ribbon::strip(ui, |ui| {
+            group(ui, &t.text("ribbon-views"), |ui| {
+                let datasheet_available = match self.view {
+                    DocumentView::Table => self.data.is_some(),
+                    DocumentView::Design => self.schema.as_ref().is_some_and(|schema| {
+                        self.data
+                            .as_ref()
+                            .is_some_and(|data| data.table == schema.table)
+                    }),
+                    DocumentView::Query => false,
+                };
+                if command(
+                    ui,
+                    Icon::Table,
+                    &t.text("ribbon-datasheet"),
+                    !self.busy && datasheet_available,
+                    CommandSize::Small,
+                )
+                .clicked()
+                {
+                    self.select_view(DocumentView::Table);
+                }
+                let table = match self.view {
+                    DocumentView::Table => self.data.as_ref().map(|data| data.table.clone()),
+                    DocumentView::Design => self.schema.as_ref().map(|schema| schema.table.clone()),
+                    DocumentView::Query => None,
+                };
+                let design_available = table.as_ref().is_some_and(|table| {
+                    !self.mock_preview
+                        || self
+                            .schema
+                            .as_ref()
+                            .is_some_and(|schema| schema.table == *table)
+                });
+                if command(
+                    ui,
+                    Icon::TableEdit,
+                    &t.text("ribbon-table-design"),
+                    !self.busy && design_available,
+                    CommandSize::Small,
+                )
+                .clicked()
+                {
+                    if self.mock_preview {
+                        self.select_view(DocumentView::Design);
+                    } else {
                         actions.push(Action::ViewSchema {
-                            table: table.expect("enabled for an existing table").to_owned(),
+                            table: table.expect("enabled for an existing table"),
                         });
                     }
-                });
-                ui.label(RichText::new("Views").small().color(MUTED));
-            });
-            ui.separator();
-            ui.vertical(|ui| {
-                if ui
-                    .add_enabled(self.can_copy_selection(), Button::new("Copy"))
-                    .on_hover_text(if self.record_selected() {
-                        "Copy the complete displayed record as tab-delimited text, including collection summaries."
-                    } else {
-                        "Copy the full active cell text."
-                    })
-                    .clicked()
-                {
-                    self.copy_selected(ui.ctx());
                 }
-                ui.add_space(ui.spacing().interact_size.y + ui.spacing().item_spacing.y);
-                ui.label(RichText::new("Clipboard").small().color(MUTED));
             });
+            if self.ribbon_tab == ribbon::Tab::TableDesign && self.mock_preview {
+                ribbon::design(ui, &t);
+                return;
+            }
+            group(ui, &t.text("ribbon-clipboard"), |ui| {
+                ui.horizontal(|ui| {
+                    if self.mock_preview {
+                        ribbon::mock_command(
+                            ui,
+                            &t,
+                            Icon::Paste,
+                            "ribbon-paste",
+                            CommandSize::Large,
+                        );
+                    }
+                    ui.vertical(|ui| {
+                        if self.mock_preview {
+                            ribbon::mock_command(
+                                ui,
+                                &t,
+                                Icon::Cut,
+                                "ribbon-cut",
+                                CommandSize::Small,
+                            );
+                        }
+                        if command(
+                            ui,
+                            Icon::Copy,
+                            &t.text("ribbon-copy"),
+                            self.can_copy_selection(),
+                            CommandSize::Small,
+                        )
+                        .on_hover_text(t.text(if self.record_selected() {
+                            "ribbon-copy-record-help"
+                        } else {
+                            "ribbon-copy-cell-help"
+                        }))
+                        .clicked()
+                        {
+                            self.copy_selected(ui.ctx());
+                        }
+                        if self.mock_preview {
+                            ribbon::mock_command(
+                                ui,
+                                &t,
+                                Icon::PaintBrush,
+                                "ribbon-format-painter",
+                                CommandSize::Small,
+                            );
+                        }
+                    });
+                });
+            });
+            if self.mock_preview {
+                ribbon::home(ui, &t);
+            }
         });
     }
 }
