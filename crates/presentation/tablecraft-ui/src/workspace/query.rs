@@ -51,6 +51,8 @@ impl State {
                         "query_sql",
                         self.database.as_ref().map(|db| db.document_revision),
                     ))
+                    // Egui otherwise enforces a 64-point minimum over this dynamic maximum.
+                    .min_scrolled_height(MIN_SQL_EDITOR_HEIGHT)
                     .max_height(editor_height)
                     .scroll_bar_visibility(
                         egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded,
