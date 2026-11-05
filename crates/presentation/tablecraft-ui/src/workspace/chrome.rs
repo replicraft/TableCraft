@@ -22,21 +22,44 @@ impl State {
                             .size(13.0),
                     );
                     ui.separator();
-                    ui.label(
-                        RichText::new(
-                            self.database
-                                .as_ref()
-                                .map_or_else(|| t.text("shell-workspace"), |db| db.title.clone()),
+                    let title = self
+                        .database
+                        .as_ref()
+                        .map_or_else(|| t.text("shell-workspace"), |db| db.title.clone());
+                    let status = RichText::new(self.edit_status())
+                        .color(colors.muted)
+                        .size(11.0);
+                    let status_width = egui::WidgetText::from(status.clone())
+                        .into_galley(
+                            ui,
+                            Some(egui::TextWrapMode::Extend),
+                            f32::INFINITY,
+                            egui::TextStyle::Body,
                         )
-                        .color(colors.ink),
-                    );
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(
-                            RichText::new(self.edit_status())
-                                .color(colors.muted)
-                                .size(11.0),
-                        );
+                        .size()
+                        .x;
+                    let title_width =
+                        (ui.available_width() - status_width - ui.spacing().item_spacing.x)
+                            .max(0.0);
+                    let response = ui
+                        .allocate_ui_with_layout(
+                            egui::vec2(title_width, ui.text_style_height(&egui::TextStyle::Body)),
+                            egui::Layout::centered_and_justified(egui::Direction::TopDown)
+                                .with_cross_align(egui::Align::LEFT),
+                            |ui| {
+                                ui.add(
+                                    egui::Label::new(RichText::new(&title).color(colors.ink))
+                                        .halign(egui::Align::LEFT)
+                                        .truncate(),
+                                )
+                            },
+                        )
+                        .inner
+                        .on_hover_text(&title);
+                    ui.ctx().accesskit_node_builder(response.id, |node| {
+                        node.set_label(title);
                     });
+                    ui.label(status);
                 });
             });
         if !self.backstage_visible() {
@@ -164,3 +187,6 @@ fn tab(ui: &mut Ui, label: &str, selected: bool, enabled: bool) -> egui::Respons
     }
     response
 }
+
+#[cfg(test)]
+mod tests;
