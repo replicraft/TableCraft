@@ -35,3 +35,35 @@ editing-outcome-saved = Salvamento concluído
 editing-outcome-cancelled = Salvamento cancelado
 
 editing-outcome-failed = É necessário verificar o salvamento
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = confirmado
+editing-save-known-rolled-back = revertido
+editing-save-known-original = imagem original verificada
+editing-save-known-replacement = imagem substituta verificada
+editing-save-known-unknown = não estabelecido
+editing-save-completion-applied = aplicada
+editing-save-completion-recovered = recuperada
+editing-save-completion-confirmed = confirmada
+editing-save-completed = O salvamento foi concluído e a liberação do bloqueio foi confirmada.
+editing-save-released = Recursos liberados. Arquivos de recuperação podem permanecer; resolva-os antes de usar este arquivo. { $details }
+editing-save-current = Resultado da operação atual: { $outcome }.
+editing-save-no-receipt = Não há comprovante de operação concluída.
+editing-save-prior = Última operação concluída: { $completion }; resultado: { $outcome }.
+editing-save-matched = Linhas correspondentes: { $count }.
+editing-save-changed = Linhas alteradas: { $count }.
+editing-save-failure = O salvamento não terminou normalmente ({ $reason }). { $details } Não tente novamente automaticamente.
+editing-save-reason-stale = o documento exibido foi substituído
+editing-save-reason-open = não foi possível abrir o arquivo para edição exclusiva
+editing-save-reason-source = o arquivo foi alterado após a visualização
+editing-save-reason-cancelled = o cancelamento foi solicitado
+editing-save-reason-resource = um limite da operação foi atingido
+editing-save-reason-planning = não foi possível validar a edição
+editing-save-reason-intent = não foi possível preparar o registro da alteração
+editing-save-reason-setup = não foi possível configurar os arquivos de recuperação
+editing-save-reason-prepare = não foi possível preparar o salvamento
+editing-save-reason-commit = a confirmação não terminou normalmente
+editing-save-reason-recovery = a recuperação não terminou normalmente
+editing-save-reason-finalization = a finalização do salvamento não terminou normalmente
+editing-save-reason-release = a liberação do bloqueio não foi confirmada
+editing-save-reason-state = a sessão de salvamento requer diagnóstico

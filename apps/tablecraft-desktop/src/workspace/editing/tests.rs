@@ -210,7 +210,7 @@ fn close_is_vetoed_until_the_real_terminal_save_is_acknowledged() {
 
 #[test]
 fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_outcome() {
-    let outcome = save_outcome(SaveOutcome::Failed(SaveFailure {
+    let failure = SaveFailure {
         kind: tablecraft_runtime::SaveFailureKind::Release,
         phase: Some(tablecraft_runtime::SavePhase::Release),
         state: Some(tablecraft_runtime::SaveSessionState::ReleaseUncertain),
@@ -223,21 +223,33 @@ fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_o
         }),
         can_recover: false,
         can_release: false,
-    }));
-    let EditSaveOutcome::Retained {
-        message,
-        can_recover,
-        can_release,
-    } = outcome
-    else {
-        panic!("release failure must remain retained");
     };
-    assert!(!can_recover);
-    assert!(!can_release);
-    assert!(message.contains("Current operation outcome: not established."));
-    assert!(message.contains("Last completed operation: applied; outcome: committed."));
-    assert!(message.contains("Matched rows: 3. Changed rows: 2."));
-    assert!(message.contains("Do not retry automatically."));
+    for (locale, expected) in [
+        (
+            tablecraft_ui::Locale::EnUs,
+            "Save did not finish normally (lock release was not acknowledged). Current operation outcome: not established. Last completed operation: applied; outcome: committed. Matched rows: 3. Changed rows: 2. Do not retry automatically.",
+        ),
+        (
+            tablecraft_ui::Locale::De,
+            "Das Speichern wurde nicht ordnungsgemäß abgeschlossen (die Freigabe der Sperre wurde nicht bestätigt). Ergebnis des aktuellen Vorgangs: nicht festgestellt. Letzter abgeschlossener Vorgang: angewendet; Ergebnis: übernommen. Übereinstimmende Zeilen: 3. Geänderte Zeilen: 2. Nicht automatisch erneut versuchen.",
+        ),
+    ] {
+        let localizer = Localizer::new(locale).unwrap();
+        let outcome = save_outcome(&localizer, SaveOutcome::Failed(failure));
+        let EditSaveOutcome::Retained {
+            message,
+            can_recover,
+            can_release,
+        } = outcome
+        else {
+            panic!("release failure must remain retained");
+        };
+        assert!(!can_recover);
+        assert!(!can_release);
+        // Fluent isolation controls surround typed substitutions without changing receipt text.
+        assert_eq!(message.replace(['\u{2068}', '\u{2069}'], ""), expected);
+        assert_eq!(localizer.diagnostics(), Default::default());
+    }
 }
 
 #[test]
@@ -254,22 +266,26 @@ fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
             SaveKnownOutcome::ReplacementVerified,
         ),
     ] {
-        let outcome = save_outcome(SaveOutcome::Released {
-            current_outcome: Some(SaveKnownOutcome::RolledBack),
-            last_completed: Some(SaveReceipt {
-                completion,
-                known,
-                matched_rows: None,
-                changed_rows: None,
-            }),
-        });
+        let outcome = save_outcome(
+            &Localizer::default(),
+            SaveOutcome::Released {
+                current_outcome: Some(SaveKnownOutcome::RolledBack),
+                last_completed: Some(SaveReceipt {
+                    completion,
+                    known,
+                    matched_rows: None,
+                    changed_rows: None,
+                }),
+            },
+        );
         let EditSaveOutcome::Failed(message) = outcome else {
             panic!("release alone must not become a successful save");
         };
+        let message = message.replace(['\u{2068}', '\u{2069}'], "");
         assert!(message.contains("Recovery files may remain"));
         assert!(message.contains("Current operation outcome: rolled back."));
         assert!(message.contains(&format!("Last completed operation: {label};")));
-        assert!(message.contains(known_result(Some(known))));
+        assert!(message.contains(&known_result(&Localizer::default(), Some(known))));
         assert!(!message.contains("Matched rows:"));
         assert!(!message.contains("Changed rows:"));
     }
@@ -277,13 +293,17 @@ fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
 
 #[test]
 fn absent_receipt_does_not_invent_completed_operations_or_counts() {
-    let outcome = save_outcome(SaveOutcome::Released {
-        current_outcome: None,
-        last_completed: None,
-    });
+    let outcome = save_outcome(
+        &Localizer::default(),
+        SaveOutcome::Released {
+            current_outcome: None,
+            last_completed: None,
+        },
+    );
     let EditSaveOutcome::Failed(message) = outcome else {
         panic!("released unknown result is not a save receipt");
     };
+    let message = message.replace(['\u{2068}', '\u{2069}'], "");
     assert!(message.contains("Current operation outcome: not established."));
     assert!(message.contains("No completed-operation receipt is available."));
     assert!(!message.contains("Last completed operation:"));

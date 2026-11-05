@@ -35,3 +35,35 @@ editing-outcome-saved = Guardado completado
 editing-outcome-cancelled = Guardado cancelado
 
 editing-outcome-failed = El guardado requiere atención
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = confirmado
+editing-save-known-rolled-back = revertido
+editing-save-known-original = imagen original verificada
+editing-save-known-replacement = imagen de reemplazo verificada
+editing-save-known-unknown = no establecido
+editing-save-completion-applied = aplicada
+editing-save-completion-recovered = recuperada
+editing-save-completion-confirmed = confirmada
+editing-save-completed = El guardado finalizó y se confirmó la liberación del bloqueo.
+editing-save-released = Recursos liberados. Pueden quedar archivos de recuperación; resuélvalos antes de usar este archivo. { $details }
+editing-save-current = Resultado de la operación actual: { $outcome }.
+editing-save-no-receipt = No hay recibo de una operación completada.
+editing-save-prior = Última operación completada: { $completion }; resultado: { $outcome }.
+editing-save-matched = Filas coincidentes: { $count }.
+editing-save-changed = Filas modificadas: { $count }.
+editing-save-failure = El guardado no finalizó normalmente ({ $reason }). { $details } No reintente automáticamente.
+editing-save-reason-stale = se reemplazó el documento mostrado
+editing-save-reason-open = no se pudo abrir el archivo para edición exclusiva
+editing-save-reason-source = el archivo cambió después de visualizarlo
+editing-save-reason-cancelled = se solicitó la cancelación
+editing-save-reason-resource = se alcanzó un límite de operación
+editing-save-reason-planning = no se pudo validar la edición
+editing-save-reason-intent = no se pudo preparar el registro del cambio
+editing-save-reason-setup = no se pudieron configurar los archivos de recuperación
+editing-save-reason-prepare = no se pudo preparar el guardado
+editing-save-reason-commit = la confirmación no finalizó normalmente
+editing-save-reason-recovery = la recuperación no finalizó normalmente
+editing-save-reason-finalization = la finalización del guardado no terminó normalmente
+editing-save-reason-release = no se confirmó la liberación del bloqueo
+editing-save-reason-state = la sesión de guardado requiere diagnóstico

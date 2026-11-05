@@ -35,3 +35,35 @@ editing-outcome-saved = 保存完了
 editing-outcome-cancelled = 保存のキャンセル
 
 editing-outcome-failed = 保存状態の確認が必要です
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = コミット済み
+editing-save-known-rolled-back = ロールバック済み
+editing-save-known-original = 元のイメージを検証済み
+editing-save-known-replacement = 置換イメージを検証済み
+editing-save-known-unknown = 未確定
+editing-save-completion-applied = 適用
+editing-save-completion-recovered = 復旧
+editing-save-completion-confirmed = 確認
+editing-save-completed = 保存が完了し、ロックの解放が確認されました。
+editing-save-released = リソースを解放しました。復旧ファイルが残っている可能性があります。このファイルを使用する前に対処してください。{ $details }
+editing-save-current = 現在の操作の結果: { $outcome }。
+editing-save-no-receipt = 完了した操作の受領記録はありません。
+editing-save-prior = 最後に完了した操作: { $completion }、結果: { $outcome }。
+editing-save-matched = 一致した行数: { $count }。
+editing-save-changed = 変更する行数: { $count }。
+editing-save-failure = 保存が正常に完了しませんでした（{ $reason }）。{ $details } 自動的に再試行しないでください。
+editing-save-reason-stale = 表示中のドキュメントが置き換えられました
+editing-save-reason-open = 排他編集用にファイルを開けませんでした
+editing-save-reason-source = 表示後にファイルが変更されました
+editing-save-reason-cancelled = キャンセルが要求されました
+editing-save-reason-resource = 操作の制限に達しました
+editing-save-reason-planning = 編集内容を検証できませんでした
+editing-save-reason-intent = 変更記録を準備できませんでした
+editing-save-reason-setup = 復旧ファイルを設定できませんでした
+editing-save-reason-prepare = 保存を準備できませんでした
+editing-save-reason-commit = コミットが正常に完了しませんでした
+editing-save-reason-recovery = 復旧が正常に完了しませんでした
+editing-save-reason-finalization = 保存の終了処理が正常に完了しませんでした
+editing-save-reason-release = ロックの解放が確認されませんでした
+editing-save-reason-state = 保存セッションの診断が必要です

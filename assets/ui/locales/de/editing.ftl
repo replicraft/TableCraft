@@ -35,3 +35,35 @@ editing-outcome-saved = Speichern abgeschlossen
 editing-outcome-cancelled = Speichern abgebrochen
 
 editing-outcome-failed = Speichervorgang erfordert Aufmerksamkeit
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = übernommen
+editing-save-known-rolled-back = zurückgesetzt
+editing-save-known-original = Originalabbild geprüft
+editing-save-known-replacement = Ersatzabbild geprüft
+editing-save-known-unknown = nicht festgestellt
+editing-save-completion-applied = angewendet
+editing-save-completion-recovered = wiederhergestellt
+editing-save-completion-confirmed = bestätigt
+editing-save-completed = Speichern abgeschlossen und Freigabe der Sperre bestätigt.
+editing-save-released = Ressourcen freigegeben. Wiederherstellungsdateien können noch vorhanden sein; klären Sie dies, bevor Sie diese Datei verwenden. { $details }
+editing-save-current = Ergebnis des aktuellen Vorgangs: { $outcome }.
+editing-save-no-receipt = Es liegt kein Beleg für einen abgeschlossenen Vorgang vor.
+editing-save-prior = Letzter abgeschlossener Vorgang: { $completion }; Ergebnis: { $outcome }.
+editing-save-matched = Übereinstimmende Zeilen: { $count }.
+editing-save-changed = Geänderte Zeilen: { $count }.
+editing-save-failure = Das Speichern wurde nicht ordnungsgemäß abgeschlossen ({ $reason }). { $details } Nicht automatisch erneut versuchen.
+editing-save-reason-stale = das angezeigte Dokument wurde ersetzt
+editing-save-reason-open = die Datei konnte nicht zur exklusiven Bearbeitung geöffnet werden
+editing-save-reason-source = die Datei wurde nach dem Anzeigen geändert
+editing-save-reason-cancelled = Abbruch wurde angefordert
+editing-save-reason-resource = eine Vorgangsgrenze wurde erreicht
+editing-save-reason-planning = die Änderung konnte nicht validiert werden
+editing-save-reason-intent = der Änderungsdatensatz konnte nicht vorbereitet werden
+editing-save-reason-setup = die Wiederherstellungsdateien konnten nicht eingerichtet werden
+editing-save-reason-prepare = das Speichern konnte nicht vorbereitet werden
+editing-save-reason-commit = die Übernahme wurde nicht ordnungsgemäß abgeschlossen
+editing-save-reason-recovery = die Wiederherstellung wurde nicht ordnungsgemäß abgeschlossen
+editing-save-reason-finalization = der Speicherabschluss wurde nicht ordnungsgemäß beendet
+editing-save-reason-release = die Freigabe der Sperre wurde nicht bestätigt
+editing-save-reason-state = die Speichersitzung muss untersucht werden

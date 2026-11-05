@@ -7,7 +7,9 @@ use tablecraft_runtime::{
     EditTarget as RuntimeTarget, ReviewedEdit, SaveCompletion, SaveFailure, SaveFailureKind,
     SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
-use tablecraft_ui::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
+use tablecraft_ui::{
+    EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
+};
 
 pub(super) struct Editing {
     worker: SaveWorker,
@@ -188,7 +190,7 @@ impl Desktop {
             return;
         }
         save.report = Some(report);
-        let outcome = save_outcome(report.outcome);
+        let outcome = save_outcome(&self.state.localizer, report.outcome);
         self.state.set_edit_save_outcome(report.id, outcome);
     }
 
@@ -275,99 +277,142 @@ fn ui_target(target: RuntimeTarget) -> EditTarget {
     }
 }
 
-fn known_result(outcome: Option<SaveKnownOutcome>) -> &'static str {
-    match outcome {
-        Some(SaveKnownOutcome::Committed) => "committed",
-        Some(SaveKnownOutcome::RolledBack) => "rolled back",
-        Some(SaveKnownOutcome::OriginalVerified) => "original image verified",
-        Some(SaveKnownOutcome::ReplacementVerified) => "replacement image verified",
-        None => "not established",
+fn message(localizer: &Localizer, key: &str, values: &[(&str, String)]) -> String {
+    let mut arguments = FluentArgs::new();
+    for (name, value) in values {
+        arguments.set(*name, value.as_str());
     }
+    localizer.format(key, &arguments)
 }
 
-fn save_outcome(outcome: SaveOutcome) -> EditSaveOutcome {
+fn known_result(localizer: &Localizer, outcome: Option<SaveKnownOutcome>) -> String {
+    let key = match outcome {
+        Some(SaveKnownOutcome::Committed) => "editing-save-known-committed",
+        Some(SaveKnownOutcome::RolledBack) => "editing-save-known-rolled-back",
+        Some(SaveKnownOutcome::OriginalVerified) => "editing-save-known-original",
+        Some(SaveKnownOutcome::ReplacementVerified) => "editing-save-known-replacement",
+        None => "editing-save-known-unknown",
+    };
+    localizer.text(key)
+}
+
+fn save_outcome(localizer: &Localizer, outcome: SaveOutcome) -> EditSaveOutcome {
     match outcome {
         SaveOutcome::Saved { receipt } => {
-            let mut message = String::from("Save completed and lock release was acknowledged.");
+            let mut report = localizer.text("editing-save-completed");
             if let Some(changed) = receipt.changed_rows {
-                message.push_str(&format!(" Changed rows: {changed}."));
+                report.push(' ');
+                report.push_str(&message(
+                    localizer,
+                    "editing-save-changed",
+                    &[("count", changed.to_string())],
+                ));
             }
-            EditSaveOutcome::Saved(message)
+            EditSaveOutcome::Saved(report)
         }
         SaveOutcome::Released {
             current_outcome,
             last_completed,
-        } => EditSaveOutcome::Failed(format!(
-            "Resources released. Recovery files may remain; resolve them before using this file. {}",
-            outcome_details(current_outcome, last_completed),
+        } => EditSaveOutcome::Failed(message(
+            localizer,
+            "editing-save-released",
+            &[(
+                "details",
+                outcome_details(localizer, current_outcome, last_completed),
+            )],
         )),
-        SaveOutcome::Failed(failure) => failure_outcome(failure),
+        SaveOutcome::Failed(failure) => failure_outcome(localizer, failure),
     }
 }
 
 fn outcome_details(
+    localizer: &Localizer,
     current_outcome: Option<SaveKnownOutcome>,
     last_completed: Option<SaveReceipt>,
 ) -> String {
-    let mut message = format!(
-        "Current operation outcome: {}.",
-        known_result(current_outcome),
+    let mut report = message(
+        localizer,
+        "editing-save-current",
+        &[("outcome", known_result(localizer, current_outcome))],
     );
     let Some(receipt) = last_completed else {
-        message.push_str(" No completed-operation receipt is available.");
-        return message;
+        report.push(' ');
+        report.push_str(&localizer.text("editing-save-no-receipt"));
+        return report;
     };
-    let completion = match receipt.completion {
-        SaveCompletion::Applied => "applied",
-        SaveCompletion::Recovered => "recovered",
-        SaveCompletion::Confirmed => "confirmed",
-    };
-    message.push_str(&format!(
-        " Last completed operation: {completion}; outcome: {}.",
-        known_result(Some(receipt.known)),
+    let completion = localizer.text(match receipt.completion {
+        SaveCompletion::Applied => "editing-save-completion-applied",
+        SaveCompletion::Recovered => "editing-save-completion-recovered",
+        SaveCompletion::Confirmed => "editing-save-completion-confirmed",
+    });
+    report.push(' ');
+    report.push_str(&message(
+        localizer,
+        "editing-save-prior",
+        &[
+            ("completion", completion),
+            ("outcome", known_result(localizer, Some(receipt.known))),
+        ],
     ));
     if let Some(matched) = receipt.matched_rows {
-        message.push_str(&format!(" Matched rows: {matched}."));
+        report.push(' ');
+        report.push_str(&message(
+            localizer,
+            "editing-save-matched",
+            &[("count", matched.to_string())],
+        ));
     }
     if let Some(changed) = receipt.changed_rows {
-        message.push_str(&format!(" Changed rows: {changed}."));
+        report.push(' ');
+        report.push_str(&message(
+            localizer,
+            "editing-save-changed",
+            &[("count", changed.to_string())],
+        ));
     }
-    message
+    report
 }
 
-fn failure_reason(kind: SaveFailureKind) -> &'static str {
-    match kind {
-        SaveFailureKind::StaleDocument => "the viewed document was replaced",
-        SaveFailureKind::Open => "the file could not be opened for exclusive editing",
-        SaveFailureKind::SourceChanged => "the file changed after it was viewed",
-        SaveFailureKind::Cancelled => "cancellation was requested",
-        SaveFailureKind::Resource => "an operation limit was reached",
-        SaveFailureKind::Planning => "the edit could not be validated",
-        SaveFailureKind::Intent => "the change record could not be prepared",
-        SaveFailureKind::Setup => "the recovery files could not be set up",
-        SaveFailureKind::Prepare => "the save could not be prepared",
-        SaveFailureKind::Commit => "the commit did not finish normally",
-        SaveFailureKind::Recovery => "recovery did not finish normally",
-        SaveFailureKind::Finalization => "save finalization did not finish normally",
-        SaveFailureKind::Release => "lock release was not acknowledged",
-        SaveFailureKind::InvalidState => "the save session requires diagnosis",
-    }
+fn failure_reason(localizer: &Localizer, kind: SaveFailureKind) -> String {
+    let key = match kind {
+        SaveFailureKind::StaleDocument => "editing-save-reason-stale",
+        SaveFailureKind::Open => "editing-save-reason-open",
+        SaveFailureKind::SourceChanged => "editing-save-reason-source",
+        SaveFailureKind::Cancelled => "editing-save-reason-cancelled",
+        SaveFailureKind::Resource => "editing-save-reason-resource",
+        SaveFailureKind::Planning => "editing-save-reason-planning",
+        SaveFailureKind::Intent => "editing-save-reason-intent",
+        SaveFailureKind::Setup => "editing-save-reason-setup",
+        SaveFailureKind::Prepare => "editing-save-reason-prepare",
+        SaveFailureKind::Commit => "editing-save-reason-commit",
+        SaveFailureKind::Recovery => "editing-save-reason-recovery",
+        SaveFailureKind::Finalization => "editing-save-reason-finalization",
+        SaveFailureKind::Release => "editing-save-reason-release",
+        SaveFailureKind::InvalidState => "editing-save-reason-state",
+    };
+    localizer.text(key)
 }
 
-fn failure_outcome(failure: SaveFailure) -> EditSaveOutcome {
-    let message = format!(
-        "Save did not finish normally ({}). {} Do not retry automatically.",
-        failure_reason(failure.kind),
-        outcome_details(failure.current_outcome, failure.last_completed),
+fn failure_outcome(localizer: &Localizer, failure: SaveFailure) -> EditSaveOutcome {
+    let report = message(
+        localizer,
+        "editing-save-failure",
+        &[
+            ("reason", failure_reason(localizer, failure.kind)),
+            (
+                "details",
+                outcome_details(localizer, failure.current_outcome, failure.last_completed),
+            ),
+        ],
     );
     if failure.state.is_some() {
         EditSaveOutcome::Retained {
-            message,
+            message: report,
             can_recover: failure.can_recover,
             can_release: failure.can_release,
         }
     } else {
-        EditSaveOutcome::Failed(message)
+        EditSaveOutcome::Failed(report)
     }
 }
 

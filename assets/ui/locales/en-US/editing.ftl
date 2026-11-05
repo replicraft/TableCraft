@@ -35,3 +35,35 @@ editing-outcome-saved = Save completed
 editing-outcome-cancelled = Save cancelled
 
 editing-outcome-failed = Save needs attention
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = committed
+editing-save-known-rolled-back = rolled back
+editing-save-known-original = original image verified
+editing-save-known-replacement = replacement image verified
+editing-save-known-unknown = not established
+editing-save-completion-applied = applied
+editing-save-completion-recovered = recovered
+editing-save-completion-confirmed = confirmed
+editing-save-completed = Save completed and lock release was acknowledged.
+editing-save-released = Resources released. Recovery files may remain; resolve them before using this file. { $details }
+editing-save-current = Current operation outcome: { $outcome }.
+editing-save-no-receipt = No completed-operation receipt is available.
+editing-save-prior = Last completed operation: { $completion }; outcome: { $outcome }.
+editing-save-matched = Matched rows: { $count }.
+editing-save-changed = Changed rows: { $count }.
+editing-save-failure = Save did not finish normally ({ $reason }). { $details } Do not retry automatically.
+editing-save-reason-stale = the viewed document was replaced
+editing-save-reason-open = the file could not be opened for exclusive editing
+editing-save-reason-source = the file changed after it was viewed
+editing-save-reason-cancelled = cancellation was requested
+editing-save-reason-resource = an operation limit was reached
+editing-save-reason-planning = the edit could not be validated
+editing-save-reason-intent = the change record could not be prepared
+editing-save-reason-setup = the recovery files could not be set up
+editing-save-reason-prepare = the save could not be prepared
+editing-save-reason-commit = the commit did not finish normally
+editing-save-reason-recovery = recovery did not finish normally
+editing-save-reason-finalization = save finalization did not finish normally
+editing-save-reason-release = lock release was not acknowledged
+editing-save-reason-state = the save session requires diagnosis

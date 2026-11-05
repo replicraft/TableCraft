@@ -35,3 +35,35 @@ editing-outcome-saved = 저장 완료
 editing-outcome-cancelled = 저장 취소됨
 
 editing-outcome-failed = 저장 상태 확인 필요
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = 커밋됨
+editing-save-known-rolled-back = 롤백됨
+editing-save-known-original = 원본 이미지 확인됨
+editing-save-known-replacement = 대체 이미지 확인됨
+editing-save-known-unknown = 확정되지 않음
+editing-save-completion-applied = 적용됨
+editing-save-completion-recovered = 복구됨
+editing-save-completion-confirmed = 확인됨
+editing-save-completed = 저장이 완료되었으며 잠금 해제가 확인되었습니다.
+editing-save-released = 리소스가 해제되었습니다. 복구 파일이 남아 있을 수 있습니다. 이 파일을 사용하기 전에 해결하세요. { $details }
+editing-save-current = 현재 작업 결과: { $outcome }.
+editing-save-no-receipt = 완료된 작업의 확인 기록이 없습니다.
+editing-save-prior = 마지막으로 완료된 작업: { $completion }; 결과: { $outcome }.
+editing-save-matched = 일치한 행: { $count }.
+editing-save-changed = 변경된 행 수: { $count }.
+editing-save-failure = 저장이 정상적으로 완료되지 않았습니다({ $reason }). { $details } 자동으로 다시 시도하지 마세요.
+editing-save-reason-stale = 표시 중인 문서가 교체되었습니다
+editing-save-reason-open = 단독 편집을 위해 파일을 열 수 없었습니다
+editing-save-reason-source = 표시한 후 파일이 변경되었습니다
+editing-save-reason-cancelled = 취소가 요청되었습니다
+editing-save-reason-resource = 작업 한도에 도달했습니다
+editing-save-reason-planning = 편집 내용을 검증할 수 없었습니다
+editing-save-reason-intent = 변경 기록을 준비할 수 없었습니다
+editing-save-reason-setup = 복구 파일을 설정할 수 없었습니다
+editing-save-reason-prepare = 저장을 준비할 수 없었습니다
+editing-save-reason-commit = 커밋이 정상적으로 완료되지 않았습니다
+editing-save-reason-recovery = 복구가 정상적으로 완료되지 않았습니다
+editing-save-reason-finalization = 저장 마무리 처리가 정상적으로 완료되지 않았습니다
+editing-save-reason-release = 잠금 해제가 확인되지 않았습니다
+editing-save-reason-state = 저장 세션의 진단이 필요합니다
