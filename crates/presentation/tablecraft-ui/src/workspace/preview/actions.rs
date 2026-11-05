@@ -97,6 +97,7 @@ impl Preview {
                 );
             }
             Action::Cancel => {
+                self.state.interrupt_saved_query();
                 self.state.busy = false;
                 self.state.error = Some(self.state.localizer.text("settings-mock-cancelled"));
             }

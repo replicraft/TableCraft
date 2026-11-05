@@ -23,3 +23,15 @@ editing-release = 저장 리소스 해제
 editing-diagnosis-required = 진단이 필요합니다. 자동 복구 및 해제를 사용할 수 없습니다.
 editing-target = { $table } · { $column } · 행 { $row }
 editing-stored-value = 저장된 값
+
+editing-mock-rejected = 검증 시뮬레이션에서 이 샘플 값을 거부했습니다. 데이터베이스를 열거나 변경하지 않았습니다.
+
+editing-mock-failed = 저장 시뮬레이션이 실패했습니다. 데이터베이스를 열거나 변경하지 않았습니다.
+
+editing-mock-diagnosis = 시뮬레이션 결과에 진단이 필요합니다. 이 미리 보기에는 데이터베이스 파일이나 저널이 없습니다.
+
+editing-outcome-saved = 저장 완료
+
+editing-outcome-cancelled = 저장 취소됨
+
+editing-outcome-failed = 저장 상태 확인 필요

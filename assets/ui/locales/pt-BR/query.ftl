@@ -9,3 +9,5 @@ query-saved-empty = Execute a consulta salva para ver seus resultados.
 query-results = Resultados da consulta
 query-sql-view = Modo SQL
 query-design-view = Modo Design
+
+query-mock-error = Erro de consulta simulado. Os resultados de exemplo anteriores continuam visíveis. Nenhum SQL foi executado e nenhum banco de dados foi aberto.

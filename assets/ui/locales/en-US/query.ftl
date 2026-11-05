@@ -9,3 +9,5 @@ query-saved-empty = Run the saved query to see its results.
 query-results = Query results
 query-sql-view = SQL View
 query-design-view = Design View
+
+query-mock-error = Synthetic query error. Previous sample results remain visible. No SQL was executed and no database was opened.

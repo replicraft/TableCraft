@@ -9,3 +9,5 @@ query-saved-empty = 保存済みクエリを実行すると結果が表示され
 query-results = クエリの結果
 query-sql-view = SQL ビュー
 query-design-view = デザイン ビュー
+
+query-mock-error = クエリ エラーのシミュレーションです。前回のサンプル結果は引き続き表示されます。SQL は実行されず、データベースも開かれていません。

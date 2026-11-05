@@ -23,3 +23,15 @@ editing-release = 释放保存资源
 editing-diagnosis-required = 需要诊断；无法自动恢复或释放资源。
 editing-target = { $table } · { $column } · 第 { $row } 行
 editing-stored-value = 存储值
+
+editing-mock-rejected = 模拟验证拒绝了此示例值。未打开或更改任何数据库。
+
+editing-mock-failed = 模拟保存失败。未打开或更改任何数据库。
+
+editing-mock-diagnosis = 模拟结果需要诊断。此预览中不存在数据库文件或日志。
+
+editing-outcome-saved = 保存完成
+
+editing-outcome-cancelled = 保存已取消
+
+editing-outcome-failed = 保存需要检查

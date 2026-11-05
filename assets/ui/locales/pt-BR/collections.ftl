@@ -13,3 +13,5 @@ collections-unassigned = Nenhuma coleção atribuída: { $kind }
 collections-encoded-context = { $context }; os dados permanecem codificados e não são abertos
 collections-history-context = { $context }; a ordem armazenada é preservada; o texto Memo atual é separado
 collections-stored-version = versão armazenada
+
+collections-mock-error = Erro simulado na leitura da coleção. Nenhum conteúdo foi aberto ou exportado.

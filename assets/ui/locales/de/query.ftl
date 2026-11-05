@@ -9,3 +9,5 @@ query-saved-empty = Führen Sie die gespeicherte Abfrage aus, um ihre Ergebnisse
 query-results = Abfrageergebnisse
 query-sql-view = SQL-Ansicht
 query-design-view = Entwurfsansicht
+
+query-mock-error = Simulierter Abfragefehler. Die bisherigen Beispieldaten bleiben sichtbar. Es wurde kein SQL ausgeführt und keine Datenbank geöffnet.

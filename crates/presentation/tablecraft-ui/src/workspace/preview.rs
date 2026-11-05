@@ -2,7 +2,10 @@
 //!
 //! No file, database, query evaluator or task service is available to this host.
 mod actions;
+mod collections;
+mod editing;
 mod fixtures;
+mod queries;
 
 use super::{DocumentView, State};
 use crate::{CollectionKind, ContentsTarget, EditInput, EditSaveOutcome, EditTarget};
@@ -27,10 +30,33 @@ pub enum Scene {
     Backstage,
     Options,
     About,
+    QueryRunning,
+    QueryError,
+    SavedInspecting,
+    SavedRunning,
+    SavedError,
+    SavedParameters,
+    CollectionLoading,
+    CollectionError,
+    CollectionUnassigned,
+    CollectionEmpty,
+    CollectionNull,
+    AttachmentNull,
+    HistoryNull,
+    EditChecking,
+    EditValidating,
+    EditRejected,
+    SaveApplying,
+    SaveCancelling,
+    SaveResolving,
+    SaveSaved,
+    SaveCancelled,
+    SaveFailed,
+    RecoveryDiagnosis,
 }
 
 impl Scene {
-    pub const ALL: [Self; 16] = [
+    pub const ALL: [Self; 39] = [
         Self::Datasheet,
         Self::Empty,
         Self::Loading,
@@ -47,7 +73,47 @@ impl Scene {
         Self::Backstage,
         Self::Options,
         Self::About,
+        Self::QueryRunning,
+        Self::QueryError,
+        Self::SavedInspecting,
+        Self::SavedRunning,
+        Self::SavedError,
+        Self::SavedParameters,
+        Self::CollectionLoading,
+        Self::CollectionError,
+        Self::CollectionUnassigned,
+        Self::CollectionEmpty,
+        Self::CollectionNull,
+        Self::AttachmentNull,
+        Self::HistoryNull,
+        Self::EditChecking,
+        Self::EditValidating,
+        Self::EditRejected,
+        Self::SaveApplying,
+        Self::SaveCancelling,
+        Self::SaveResolving,
+        Self::SaveSaved,
+        Self::SaveCancelled,
+        Self::SaveFailed,
+        Self::RecoveryDiagnosis,
     ];
+
+    /// Animated mock states cannot settle while their existing spinner is visible.
+    pub const fn is_animated(self) -> bool {
+        matches!(
+            self,
+            Self::Loading
+                | Self::QueryRunning
+                | Self::SavedInspecting
+                | Self::SavedRunning
+                | Self::CollectionLoading
+                | Self::EditChecking
+                | Self::EditValidating
+                | Self::SaveApplying
+                | Self::SaveCancelling
+                | Self::SaveResolving
+        )
+    }
 
     pub const fn as_str(self) -> &'static str {
         match self {
@@ -67,14 +133,35 @@ impl Scene {
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
+            Self::QueryRunning => "query-running",
+            Self::QueryError => "query-error",
+            Self::SavedInspecting => "saved-inspecting",
+            Self::SavedRunning => "saved-running",
+            Self::SavedError => "saved-error",
+            Self::SavedParameters => "saved-parameters",
+            Self::CollectionLoading => "collection-loading",
+            Self::CollectionError => "collection-error",
+            Self::CollectionUnassigned => "collection-unassigned",
+            Self::CollectionEmpty => "collection-empty",
+            Self::CollectionNull => "collection-null",
+            Self::AttachmentNull => "attachment-null",
+            Self::HistoryNull => "history-null",
+            Self::EditChecking => "edit-checking",
+            Self::EditValidating => "edit-validating",
+            Self::EditRejected => "edit-rejected",
+            Self::SaveApplying => "save-applying",
+            Self::SaveCancelling => "save-cancelling",
+            Self::SaveResolving => "save-resolving",
+            Self::SaveSaved => "save-saved",
+            Self::SaveCancelled => "save-cancelled",
+            Self::SaveFailed => "save-failed",
+            Self::RecoveryDiagnosis => "recovery-diagnosis",
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, thiserror::Error)]
-#[error(
-    "unknown mock view; use datasheet, empty, loading, error, design, query, saved-query, attachments, multivalue, history, edit, review, recovery, backstage, options or about"
-)]
+#[error("unknown mock view; use {}", Scene::ALL.map(Scene::as_str).join(", "))]
 pub struct UnknownScene;
 
 impl FromStr for Scene {
@@ -176,6 +263,43 @@ impl Preview {
                     );
                 }
             }
+            Scene::QueryRunning => self.prepare_query_running(),
+            Scene::QueryError => self.prepare_query_error(),
+            Scene::SavedInspecting => self.prepare_saved_inspecting(),
+            Scene::SavedRunning => self.prepare_saved_running(),
+            Scene::SavedError => self.prepare_saved_error(),
+            Scene::SavedParameters => self.prepare_saved_parameters(),
+            Scene::CollectionLoading => {
+                self.prepare_collection_scene(collections::CollectionScene::Loading)
+            }
+            Scene::CollectionError => {
+                self.prepare_collection_scene(collections::CollectionScene::Error)
+            }
+            Scene::CollectionUnassigned => {
+                self.prepare_collection_scene(collections::CollectionScene::Unassigned)
+            }
+            Scene::CollectionEmpty => {
+                self.prepare_collection_scene(collections::CollectionScene::Empty)
+            }
+            Scene::CollectionNull => {
+                self.prepare_collection_scene(collections::CollectionScene::Null)
+            }
+            Scene::AttachmentNull => {
+                self.prepare_collection_scene(collections::CollectionScene::AttachmentNull)
+            }
+            Scene::HistoryNull => {
+                self.prepare_collection_scene(collections::CollectionScene::HistoryNull)
+            }
+            Scene::EditChecking => self.show_editing_scene(scene),
+            Scene::EditValidating => self.show_editing_scene(scene),
+            Scene::EditRejected => self.show_editing_scene(scene),
+            Scene::SaveApplying => self.show_editing_scene(scene),
+            Scene::SaveCancelling => self.show_editing_scene(scene),
+            Scene::SaveResolving => self.show_editing_scene(scene),
+            Scene::SaveSaved => self.show_editing_scene(scene),
+            Scene::SaveCancelled => self.show_editing_scene(scene),
+            Scene::SaveFailed => self.show_editing_scene(scene),
+            Scene::RecoveryDiagnosis => self.show_editing_scene(scene),
             Scene::Backstage => self.state.show_open(),
             Scene::Options => self.state.backstage = super::backstage::Backstage::Options,
             Scene::About => self.state.backstage = super::backstage::Backstage::About,

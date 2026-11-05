@@ -16,3 +16,5 @@ collections-unassigned = No assigned { $kind } collection
 collections-encoded-context = { $context }; payloads remain encoded and are not opened
 collections-history-context = { $context }; stored order retained; current Memo text is separate
 collections-stored-version = stored version
+
+collections-mock-error = Synthetic collection read error. No payload was opened or exported.

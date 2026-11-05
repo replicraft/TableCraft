@@ -23,3 +23,15 @@ editing-release = Liberar recursos de salvamento
 editing-diagnosis-required = É necessário diagnosticar; a recuperação e a liberação automáticas não estão disponíveis.
 editing-target = { $table } · { $column } · linha { $row }
 editing-stored-value = Valor armazenado
+
+editing-mock-rejected = A validação simulada rejeitou este valor de exemplo. Nenhum banco de dados foi aberto ou alterado.
+
+editing-mock-failed = O salvamento simulado falhou. Nenhum banco de dados foi aberto ou alterado.
+
+editing-mock-diagnosis = O resultado simulado exige diagnóstico. Não existe arquivo de banco de dados nem diário nesta prévia.
+
+editing-outcome-saved = Salvamento concluído
+
+editing-outcome-cancelled = Salvamento cancelado
+
+editing-outcome-failed = É necessário verificar o salvamento

@@ -23,3 +23,15 @@ editing-release = Release save resources
 editing-diagnosis-required = Diagnosis is required; automatic recovery and release are unavailable.
 editing-target = { $table } · { $column } · row { $row }
 editing-stored-value = Stored value
+
+editing-mock-rejected = Mock validation rejected this sample value. No database was opened or changed.
+
+editing-mock-failed = Mock save failed. No database was opened or changed.
+
+editing-mock-diagnosis = Mock outcome requires diagnosis. No database file or journal exists in this preview.
+
+editing-outcome-saved = Save completed
+
+editing-outcome-cancelled = Save cancelled
+
+editing-outcome-failed = Save needs attention
