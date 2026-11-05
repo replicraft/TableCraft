@@ -181,21 +181,26 @@ impl Desktop {
                 request_id: current,
                 ..
             } => *current == request_id,
+            PendingOperation::ReplaceFind {
+                request_id: current,
+            } => *current == request_id,
             _ => false,
         };
         if active {
             self.worker.cancel();
             self.state.busy = false;
-            self.state.fail_find(
-                request_id,
-                self.state.localizer.text("shell-operation-cancelled"),
-            );
+            let message = self.state.localizer.text("shell-operation-cancelled");
+            if matches!(self.pending, PendingOperation::ReplaceFind { .. }) {
+                self.state.fail_replace_find(request_id, message);
+            } else {
+                self.state.fail_find(request_id, message);
+            }
             self.pending = PendingOperation::Read;
         }
     }
 }
 
-fn runtime_request(request: FindRequest) -> RuntimeRequest {
+pub(super) fn runtime_request(request: FindRequest) -> RuntimeRequest {
     RuntimeRequest {
         target: runtime::FindTarget {
             document_revision: request.target.document_revision,

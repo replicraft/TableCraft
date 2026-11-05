@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = 查找
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = 查找和替换
 find-what = 查找内容：
 find-look-in = 查找范围：
 find-match = 匹配：
@@ -22,3 +22,13 @@ find-mock-help = 仅显示合成查找控件。不会打开或搜索数据库文
 find-unavailable = 此主机尚不支持原生查找。
 find-pattern-limit = 搜索模式超过 UTF-8 的 64 KiB 限制。请缩短后再搜索。
 find-query-unavailable = 尚未实现查询结果中的查找。
+find-tab = 查找
+find-replace-tab = 替换
+find-replace-with = 替换为:
+find-replace-all = 全部替换
+find-replace-all-unavailable = 全部替换需要安全的原子批处理服务，目前尚不可用。
+find-replace-review-help = 先查找匹配项。替换会打开编辑以供审阅，应用之前不会保存。
+find-replace-unavailable = 此宿主不支持审阅后替换。
+find-replacement-limit = 替换文本超出 64 KiB UTF-8 限制。已保留先前输入。
+find-replacing = 正在准备替换…
+find-replace-mock-help = 仅为合成替换控件，不验证匹配项，也不准备编辑。

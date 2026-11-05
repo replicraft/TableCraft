@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = 찾기
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = 찾기 및 바꾸기
 find-what = 찾을 내용:
 find-look-in = 찾는 위치:
 find-match = 일치:
@@ -22,3 +22,13 @@ find-mock-help = 합성 찾기 컨트롤만 표시합니다. 데이터베이스 
 find-unavailable = 이 호스트에서는 아직 네이티브 찾기를 사용할 수 없습니다.
 find-pattern-limit = 검색 패턴이 UTF-8 기준 64 KiB 제한을 초과합니다. 검색 전에 줄이세요.
 find-query-unavailable = 쿼리 결과 찾기는 아직 구현되지 않았습니다.
+find-tab = 찾기
+find-replace-tab = 바꾸기
+find-replace-with = 바꿀 내용:
+find-replace-all = 모두 바꾸기
+find-replace-all-unavailable = 모두 바꾸기에는 안전한 원자적 일괄 처리 서비스가 필요하며 아직 사용할 수 없습니다.
+find-replace-review-help = 일치 항목을 찾으세요. 바꾸기는 검토할 편집을 엽니다. 적용 전까지 저장하지 않습니다.
+find-replace-unavailable = 이 호스트에서는 검토 후 바꾸기를 사용할 수 없습니다.
+find-replacement-limit = 바꿀 텍스트가 UTF-8 64 KiB 한도를 초과했습니다. 이전 입력을 유지했습니다.
+find-replacing = 바꾸기 준비 중…
+find-replace-mock-help = 합성 바꾸기 컨트롤입니다. 일치 항목을 검증하거나 편집을 준비하지 않습니다.

@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = Поиск
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = Поиск и замена
 find-what = Образец:
 find-look-in = Поиск в:
 find-match = Совпадение:
@@ -22,3 +22,13 @@ find-mock-help = Только синтетические элементы пои
 find-unavailable = Собственный поиск пока недоступен в этом приложении.
 find-pattern-limit = Шаблон превышает ограничение 64 КиБ в UTF-8. Сократите его перед поиском.
 find-query-unavailable = Поиск в результатах запросов пока не реализован.
+find-tab = Найти
+find-replace-tab = Заменить
+find-replace-with = Заменить на:
+find-replace-all = Заменить всё
+find-replace-all-unavailable = Для замены всех значений нужна безопасная атомарная пакетная служба. Она ещё недоступна.
+find-replace-review-help = Найдите совпадение. Замена откроет изменение для проверки. Сохранение выполняется только после применения.
+find-replace-unavailable = Замена с проверкой недоступна в этом приложении.
+find-replacement-limit = Текст замены превышает предел UTF-8 в 64 КиБ. Предыдущий ввод сохранён.
+find-replacing = Подготовка замены…
+find-replace-mock-help = Синтетические элементы замены. Совпадения не проверяются, изменения не подготавливаются.

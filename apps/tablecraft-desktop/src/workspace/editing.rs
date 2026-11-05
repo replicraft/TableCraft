@@ -132,20 +132,7 @@ impl Desktop {
     }
 
     pub(super) fn publish_edit_draft(&mut self, request_id: u64, draft: RuntimeDraft) {
-        self.state.set_edit_draft(
-            request_id,
-            EditDraft {
-                id: draft.id,
-                target: ui_target(draft.target),
-                original: cell(draft.original),
-                initial: EditInput {
-                    text: draft.initial.text,
-                    is_null: draft.initial.is_null,
-                },
-                input_hint: crate::view_models::input_hint(draft.input_hint),
-                nullable: draft.nullable,
-            },
-        );
+        self.state.set_edit_draft(request_id, ui_draft(draft));
     }
 
     pub(super) fn publish_edit_review(
@@ -350,6 +337,20 @@ impl Desktop {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             self.cancel_current_save();
         }
+    }
+}
+
+pub(super) fn ui_draft(draft: RuntimeDraft) -> EditDraft {
+    EditDraft {
+        id: draft.id,
+        target: ui_target(draft.target),
+        original: cell(draft.original),
+        initial: EditInput {
+            text: draft.initial.text,
+            is_null: draft.initial.is_null,
+        },
+        input_hint: crate::view_models::input_hint(draft.input_hint),
+        nullable: draft.nullable,
     }
 }
 

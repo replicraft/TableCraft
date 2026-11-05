@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = Buscar
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = Buscar y reemplazar
 find-what = Buscar:
 find-look-in = Buscar en:
 find-match = Coincidir:
@@ -22,3 +22,13 @@ find-mock-help = Solo controles de búsqueda sintéticos. No se abre ni busca ni
 find-unavailable = La búsqueda nativa aún no está disponible en este host.
 find-pattern-limit = El patrón supera el límite de 64 KiB en UTF-8. Acórtelo antes de buscar.
 find-query-unavailable = La búsqueda en resultados de consultas aún no está implementada.
+find-tab = Buscar
+find-replace-tab = Reemplazar
+find-replace-with = Reemplazar con:
+find-replace-all = Reemplazar todos
+find-replace-all-unavailable = Reemplazar todos requiere un servicio de lotes atómico seguro y aún no está disponible.
+find-replace-review-help = Busque una coincidencia. Reemplazar abre una edición para revisar. Nada se guarda hasta Aplicar.
+find-replace-unavailable = El reemplazo con revisión no está disponible en este anfitrión.
+find-replacement-limit = El texto de reemplazo supera el límite UTF-8 de 64 KiB. Se conservó la entrada anterior.
+find-replacing = Preparando reemplazo…
+find-replace-mock-help = Controles sintéticos. No se verifica ninguna coincidencia ni se prepara una edición.

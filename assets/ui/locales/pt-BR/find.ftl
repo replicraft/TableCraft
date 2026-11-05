@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = Localizar
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = Localizar e Substituir
 find-what = Localizar:
 find-look-in = Examinar:
 find-match = Coincidir:
@@ -22,3 +22,13 @@ find-mock-help = Somente controles de pesquisa sintéticos. Nenhum arquivo de ba
 find-unavailable = A pesquisa nativa ainda não está disponível neste host.
 find-pattern-limit = O padrão excede o limite de 64 KiB em UTF-8. Reduza-o antes de pesquisar.
 find-query-unavailable = A pesquisa em resultados de consultas ainda não foi implementada.
+find-tab = Localizar
+find-replace-tab = Substituir
+find-replace-with = Substituir por:
+find-replace-all = Substituir Tudo
+find-replace-all-unavailable = Substituir Tudo exige um serviço de lote atômico seguro e ainda não está disponível.
+find-replace-review-help = Localize uma ocorrência. Substituir abre uma edição para revisão. Nada é salvo até Aplicar.
+find-replace-unavailable = A substituição revisada não está disponível neste aplicativo.
+find-replacement-limit = O texto de substituição excede o limite UTF-8 de 64 KiB. A entrada anterior foi mantida.
+find-replacing = Preparando substituição…
+find-replace-mock-help = Controles sintéticos de substituição. Nenhuma ocorrência é verificada e nenhuma edição é preparada.

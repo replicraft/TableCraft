@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = 検索
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = 検索と置換
 find-what = 検索する文字列:
 find-look-in = 検索対象:
 find-match = 検索条件:
@@ -22,3 +22,13 @@ find-mock-help = 合成の検索コントロールのみです。データベー
 find-unavailable = このホストではネイティブ検索はまだ利用できません。
 find-pattern-limit = 検索パターンがUTF-8の64 KiB制限を超えています。検索する前に短くしてください。
 find-query-unavailable = クエリ結果の検索はまだ実装されていません。
+find-tab = 検索
+find-replace-tab = 置換
+find-replace-with = 置換後の文字列:
+find-replace-all = すべて置換
+find-replace-all-unavailable = すべて置換には安全なアトミック一括処理が必要です。まだ利用できません。
+find-replace-review-help = 一致する箇所を検索してください。置換で確認用の編集を開きます。適用するまで保存しません。
+find-replace-unavailable = このホストでは確認付きの置換を利用できません。
+find-replacement-limit = 置換テキストが UTF-8 の 64 KiB 制限を超えています。前の入力を保持しました。
+find-replacing = 置換を準備しています…
+find-replace-mock-help = 合成の置換操作です。一致箇所の検証や編集の準備は行いません。

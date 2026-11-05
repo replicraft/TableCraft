@@ -1300,7 +1300,9 @@ insertion workflow is admitted. This is a command, not an appended record or a
 new native row identity. Home already exposes supported Copy/Paste, filtering,
 sorting, Refresh, New/Delete, Find, navigation and Zoom. The later
 [Totals implementation](DATASHEET_TOTALS.md) adds complete-view aggregates.
-General Cut, Replace, spelling and text-formatting services remain unfinished.
+The later current-occurrence Replace workflow below enters the normal reviewed
+edit service. General Cut, Replace All, spelling and text-formatting services
+remain unfinished.
 
 Save, Undo and Redo are visible in the title strip with explicit unavailable
 explanations. There is no document undo history or inline dirty-record Save
@@ -1314,3 +1316,26 @@ and Raw. Options now previews each alternative and the current currency's symbol
 and minor units. System locale uses captured host regional CLDR conventions;
 custom OS date/time overrides are not read. Interface translation does not select
 the regional locale, and display choices do not alter storage, query or edit rules.
+
+## Reviewed current-occurrence Replace — 5 November 2026
+
+Home Replace opens the modeless Find and Replace window. Find Next searches the
+complete admitted native view. Replace requires the still-selected successful
+match with unchanged search options and view. Runtime rechecks that occurrence
+against raw source data and creates a normal offline edit draft; the UI does not
+splice displayed strings. The draft then requires Review change and Apply to
+original file through the existing journaled save worker. This extra review is a
+current workflow difference from Access's immediate Replace command.
+
+Raw Text and unformatted invariant integers are supported subject to native write
+admission. Replacement characters are literal. Empty replacement can remove a
+matched text span; literal NULL does not select typed NULL. Lookup controls,
+stored NULL matches and unsupported regional numeric/date conversions visibly
+refuse. Replace All still requires a separate complete-view batch review and
+transaction; this command never loops independent saves.
+
+A successful draft hands its request to the ordinary edit owner, so Cancel before
+Review closes it without saving. Closed or superseded Find windows cannot accept
+a late replacement draft. The original file stays unchanged until explicit
+Apply succeeds. The macOS/Linux host advertises this capability; unsupported
+platforms retain an explicit boundary. Native Access interaction is unverified.
