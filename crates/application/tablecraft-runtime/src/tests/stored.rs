@@ -1,5 +1,5 @@
 use super::{open, request};
-use crate::{CellKind, Command, Error, Response, Worker};
+use crate::{CellKind, Command, Error, Response, SortSpec, SortTarget, Worker};
 use std::path::PathBuf;
 use tablecraft_ace::InspectError;
 use tablecraft_testkit::fixtures::access::{
@@ -70,18 +70,30 @@ fn cached_values_and_null_keep_stored_provenance_without_evaluating_formula() {
         }
     );
     assert!(!has_more);
-    assert!(matches!(
-        request(
-            &worker,
-            Command::SortTable {
+    let Response::FilteredData(sorted) = request(
+        &worker,
+        Command::SortView {
+            target: SortTarget {
                 document_revision: revision,
                 table: "Items".into(),
+                filter_id: None,
+            },
+            sort: Some(SortSpec {
                 column: "Id".into(),
-                descending: false,
-            }
-        ),
-        Err(Error::Query(tablecraft_query::QueryError::Unsupported))
-    ));
+                descending: true,
+            }),
+            base: None,
+            enabled: false,
+        },
+    )
+    .unwrap() else {
+        panic!("native sorting preserves stored calculated values");
+    };
+    assert_eq!(sorted.source_ordinals, [1, 0]);
+    assert_eq!(sorted.rows[0][1].kind, rows[1][1].kind);
+    assert_eq!(sorted.rows[0][1].text, "NULL");
+    assert_eq!(sorted.rows[1][1].kind, rows[0][1].kind);
+    assert_eq!(sorted.rows[1][1].text, "77");
     assert_eq!(std::fs::read(path).unwrap(), bytes);
 }
 

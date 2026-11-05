@@ -30,6 +30,38 @@ const MATCH_STEPS: u64 = 10_000_000;
 const HIGH_SURROGATES: std::ops::RangeInclusive<u16> = 0xd800..=0xdbff;
 const LOW_SURROGATES: std::ops::RangeInclusive<u16> = 0xdc00..=0xdfff;
 
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+struct CandidateKey {
+    row: u32,
+    column: usize,
+    start_utf16: u32,
+    end_utf16: u32,
+}
+
+impl CandidateKey {
+    fn new(row: u32, column: usize, span: &FindSpan) -> Self {
+        Self {
+            row,
+            column,
+            start_utf16: span.start_utf16,
+            end_utf16: span.end_utf16,
+        }
+    }
+
+    fn cell(self) -> (u32, usize) {
+        (self.row, self.column)
+    }
+}
+
+fn display_rank(filter: Option<(&FilterHandle, bool)>, ordinal: u32) -> Result<u32, Error> {
+    match filter {
+        Some((handle, enabled)) => handle
+            .display_offset_for_ordinal(enabled, ordinal)
+            .ok_or(FindError::InvalidTarget.into()),
+        None => Ok(ordinal),
+    }
+}
+
 fn boundary(units: &[u16], offset: usize) -> bool {
     offset <= units.len()
         && !(offset > 0
@@ -104,6 +136,9 @@ impl Document {
     ) -> Result<Response, Error> {
         check(cancelled)?;
         self.check_filter(handle)?;
+        if !handle.mode_cached(enabled) {
+            return Err(FindError::InvalidTarget.into());
+        }
         if request.target.table != handle.target().table
             || request.target.document_revision != handle.target().document_revision
         {
@@ -245,7 +280,14 @@ impl Document {
         let mut browser = NativeBrowser::new(&mut self.source, SCOPE, native_work, cancelled);
         let mut cursor = browser.projected_cursor(&request.target.table, &names)?;
         let mut primary = None;
+        let mut primary_key: Option<CandidateKey> = None;
         let mut wrapped = None;
+        let mut wrapped_key: Option<CandidateKey> = None;
+        let anchor_rank = request
+            .start
+            .as_ref()
+            .map(|anchor| display_rank(filter, anchor.parent_ordinal))
+            .transpose()?;
         let mut anchor_seen = request.start.is_none();
         let membership = filter.and_then(|(handle, enabled)| enabled.then(|| handle.ordinals()));
         let mut membership_index = 0;
@@ -269,6 +311,7 @@ impl Document {
                     }
                     membership_index += 1;
                 }
+                let rank = display_rank(filter, ordinal)?;
                 if request
                     .start
                     .as_ref()
@@ -290,10 +333,8 @@ impl Document {
                     .enumerate()
                 {
                     check(cancelled)?;
-                    let relation = match (&request.start, anchor_column) {
-                        (Some(anchor), Some(column)) => {
-                            (ordinal, position).cmp(&(anchor.parent_ordinal, column))
-                        }
+                    let relation = match (anchor_rank, anchor_column) {
+                        (Some(anchor), Some(column)) => (rank, position).cmp(&(anchor, column)),
                         _ => {
                             if request.direction == FindDirection::Up {
                                 Ordering::Less
@@ -351,8 +392,17 @@ impl Document {
                             None => matcher.find(text, search, policy, &mut work, cancelled),
                         }
                     };
+                    let can_improve_primary = primary_key.is_none_or(|best| {
+                        if request.direction == FindDirection::Up {
+                            (rank, position) > best.cell()
+                        } else {
+                            (rank, position) < best.cell()
+                        }
+                    });
                     let hit = match request.direction {
-                        FindDirection::Up if relation != Ordering::Greater => {
+                        FindDirection::Up
+                            if relation != Ordering::Greater && can_improve_primary =>
+                        {
                             if special.is_some() && continuation.is_some() {
                                 None
                             } else {
@@ -363,7 +413,7 @@ impl Document {
                             }
                         }
                         FindDirection::Down | FindDirection::All
-                            if relation != Ordering::Less && primary.is_none() =>
+                            if relation != Ordering::Less && can_improve_primary =>
                         {
                             if special.is_some() && continuation.is_some() {
                                 None
@@ -377,22 +427,37 @@ impl Document {
                         _ => None,
                     };
                     if let Some(span) = hit {
-                        primary = Some(FindPosition {
-                            parent_ordinal: ordinal,
-                            column: output.text(&columns[projected].name)?,
-                            span: Some(span),
+                        let candidate = CandidateKey::new(rank, position, &span);
+                        let improves = primary_key.is_none_or(|best| {
+                            if request.direction == FindDirection::Up {
+                                candidate > best
+                            } else {
+                                candidate < best
+                            }
                         });
+                        if improves {
+                            primary_key = Some(candidate);
+                            primary = Some(FindPosition {
+                                parent_ordinal: ordinal,
+                                column: output.text(&columns[projected].name)?,
+                                span: Some(span),
+                            });
+                        }
                     }
                     if request.direction == FindDirection::All
                         && relation != Ordering::Greater
-                        && wrapped.is_none()
+                        && wrapped_key.is_none_or(|best| (rank, position) < best.cell())
                         && let Some(span) = find(StringSearch::ForwardFrom(0))?
                     {
-                        wrapped = Some(FindPosition {
-                            parent_ordinal: ordinal,
-                            column: output.text(&columns[projected].name)?,
-                            span: Some(span),
-                        });
+                        let candidate = CandidateKey::new(rank, position, &span);
+                        if wrapped_key.is_none_or(|best| candidate < best) {
+                            wrapped_key = Some(candidate);
+                            wrapped = Some(FindPosition {
+                                parent_ordinal: ordinal,
+                                column: output.text(&columns[projected].name)?,
+                                span: Some(span),
+                            });
+                        }
                     }
                 }
             }

@@ -55,13 +55,15 @@ it. Editing the Open input cannot retitle an in-flight successful open.
 
 Table tabs have a source-bound Close action. Closing a table keeps the database
 and independent query workspace open. Refresh rereads the current native page.
-Header sorting and Home Ascending/Descending execute a complete bounded query
-with database comparison rules and publish a separate, read-only sorted result.
-They do not sort only the visible page or assign native edit ordinals to reordered
-rows. Tables with fields outside the scalar query profile, including calculated
-fields requiring an explicit cache policy, currently refuse a whole-table sort.
-SQL text is preserved separately; sort identifiers are composed as owned
-query nodes rather than interpolated into SQL.
+Header sorting and Home Ascending/Descending request a complete native view,
+retaining original native row identities and active or temporarily disabled
+filter criteria. They keep the table editable through existing reviewed workflows
+rather than publishing an unrelated query result or sorting the visible page.
+Remove Sort retains filter criteria; Clear All Filters retains the sort. A view
+with zero filter criteria is shown as unfiltered and cannot toggle a nonexistent
+filter. The first profile has one sort field; sort values and native comparison
+policy remain runtime-owned. Ordinary SQL ORDER BY and query results retain their
+separate contracts, and query-result Ribbon sorting is not implemented.
 
 ## Window and status
 
@@ -210,9 +212,9 @@ criteria on different fields combine with AND.
 
 Toggle Filter temporarily switches between matched and complete source membership
 while retaining criteria. Applying a new Selection while the retained filter is
-turned off starts a fresh filter rather than extending inactive criteria.
-Advanced > Clear All Filters removes them only after a
-matching ordinary native page arrives. Both counts come from checked complete
+turned off starts fresh criteria rather than extending inactive criteria, while
+retaining the sort. Advanced > Clear All Filters removes the criteria only after
+a matching runtime-issued native view arrives. Both counts come from checked complete
 runtime membership, and an empty result keeps its columns and clear/toggle actions.
 Page and record navigation use visible offsets with the same retained filter;
 explicit original ordinals continue to identify native edit and collection targets.
@@ -221,3 +223,20 @@ retains the table's filter; a plain new-table publication or Close table clears 
 These controls follow Microsoft's [filter workflow](https://support.microsoft.com/en-us/access/apply-a-filter-to-view-select-records-in-an-access-database).
 Custom common filters, partial-text selection filters and Filter by Form remain
 unimplemented; synthetic scenes supply no native Access comparison evidence.
+
+
+## Native view sorting
+
+An issued native view handle can own filter criteria, a single sort field, or
+both. Its immutable physical row map may follow arbitrary display order; original
+ordinals continue to identify review and collection targets. A non-source-ordered
+map is admitted only with the requested or retained sort witness. Sort metadata,
+filter count, mode and cardinalities are checked before publication; failed reads
+keep the previous page and view. A new sort replaces the current sort field.
+
+After an acknowledged save, the host can reapply the opaque definition to the
+freshly opened source, with a new handle and checked sort/filter metadata. This is
+an explicit read after save, not persisted native OrderBy/FilterOnLoad support.
+Microsoft's [typed sorting guidance](https://support.microsoft.com/en-us/access/sort-records-on-text-numeric-or-date-values)
+and the retained Home screenshot guide the controls. Native application ordering,
+selection and save/reopen comparisons remain separate qualification work.

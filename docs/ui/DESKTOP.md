@@ -996,3 +996,46 @@ offscreen on macOS at 1000×680 logical / 1.25× (1250×850 pixels), retained pr
 under `.cache/filtering-review-final/`. Empty headers stay aligned with populated
 headers, and preview exports settle layout without a synthetic pointer. No native
 application window, system clipboard or Windows interaction was exercised.
+
+## Native editable sorting — 5 November 2026
+
+The header menu and Home Ascending/Descending use the runtime's explicit native
+SortView service. A complete stable order carries a checked mapping to original
+records; this is neither a sort of the visible page nor an SQL result substituted
+for the table. Current native edits, deletion and collection targets retain those
+physical identities. Equal keys retain source order, NULL sorts first ascending,
+and typed values use the strict key service and qualified native text policy.
+
+Clear All Filters keeps the sort. Remove Sort keeps filter criteria. An off-state
+filter keeps its definition while displaying sorted source membership. Reopening
+a reviewed save rebinds both preferences against the new native source before
+publishing another page. Failed or canceled candidates leave the old handle and
+page intact. Only admitted records have their sort values compared; explicitly
+turning filtering off can therefore fail when previously excluded values enter
+the requested order. The old filtered view remains usable after such a failure.
+
+The combined headless batch passed 174 UI, 88 runtime and 38 desktop checks plus
+the runtime exporter test. Desktop scenarios cover complete regional value
+presentation, reverse physical lookup, filtered descending Find across pages,
+clear/remove composition, and a reviewed edit/save/reopen that removes the edited
+record from the retained filter. Runtime cases separately cover stable equal
+keys, hidden nonfinite keys and fresh source rights. These checks establish local
+service/host behavior, not native Windows Access comparison or window-manager
+parity. One selected sort field is supported; multi-field ordering, query-result
+Ribbon sorting and persisted Access OrderBy properties remain outside this slice.
+
+Final strict seven-package Clippy, the minimal runtime Clippy build, formatting,
+19-package dependency boundaries with 25 guard tests, and 7,741 local documentation
+target checks passed. Follow-up filtering and uncached-mode Find checks passed
+after the final admission/allocation corrections.
+
+The retained private Home capture was reopened for comparison. Sorted synthetic
+light/dark exports were inspected at 1000 × 680 logical pixels, 1.25 scale
+(1250 × 850 physical pixels), German UI and `de-DE` regional settings, using a
+macOS offscreen GPU build with Windows keyboard conventions. Both show the
+centered header's descending indicator, enabled Remove Sort, disabled filter
+controls when no predicates exist, and the unfiltered count with current sort.
+The images are `.cache/ui-native-sort-review/de-light-sorted@1.25x.png` and
+`de-dark-sorted@1.25x.png`; they remain untracked. No native application window
+was opened. No retained Access capture shows this exact sorted synthetic dataset,
+so this is visual approximation and headless interaction evidence only.

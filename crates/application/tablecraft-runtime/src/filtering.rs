@@ -4,6 +4,7 @@ mod definition;
 mod page;
 mod scan;
 mod service;
+mod sorting;
 
 use crate::{Cell, Column, Error};
 use std::sync::{
@@ -33,12 +34,26 @@ pub struct FilterSelectionTarget {
     pub parent_ordinal: u32,
     pub column: String,
     pub filter_id: Option<u64>,
+    pub enabled: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FilterComparison {
     Equal,
     NotEqual,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SortTarget {
+    pub document_revision: u64,
+    pub table: String,
+    pub filter_id: Option<u64>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SortSpec {
+    pub column: String,
+    pub descending: bool,
 }
 
 /// A read-only issued capability. Cloning shares its immutable map and criteria.
@@ -60,6 +75,8 @@ pub struct FilteredData {
     pub matched_rows: u32,
     pub source_rows: u32,
     pub has_more: bool,
+    pub sort: Option<SortSpec>,
+    pub filter_count: u32,
 }
 
 /// Captured typed filter preferences, with no row map or source capability.
@@ -71,6 +88,7 @@ pub struct FilterDefinition {
 struct DefinitionState {
     table: String,
     criteria: Vec<Criterion>,
+    sort: Option<BoundSort>,
 }
 
 impl FilterDefinition {
@@ -85,6 +103,18 @@ struct FilterState {
     definition: FilterDefinition,
     ordinals: Vec<u32>,
     source_rows: u32,
+    order: Option<DisplayOrder>,
+}
+
+struct BoundSort {
+    spec: SortSpec,
+    declaration: TypeDescriptor,
+}
+
+struct DisplayOrder {
+    enabled: bool,
+    ordinals: Vec<u32>,
+    ranks: Vec<Option<u32>>,
 }
 
 struct Criterion {
@@ -121,8 +151,46 @@ impl FilterHandle {
         &self.state.ordinals
     }
 
+    pub fn sort(&self) -> Option<&SortSpec> {
+        self.state
+            .definition
+            .state
+            .sort
+            .as_ref()
+            .map(|sort| &sort.spec)
+    }
+
+    pub fn filter_count(&self) -> u32 {
+        self.state.definition.state.criteria.len() as u32
+    }
+
+    pub(crate) fn mode_cached(&self, enabled: bool) -> bool {
+        self.state
+            .order
+            .as_ref()
+            .is_none_or(|order| order.enabled == enabled)
+    }
+
+    fn display_ordinal(&self, enabled: bool, offset: u32) -> Option<u32> {
+        if let Some(order) = &self.state.order {
+            if order.enabled != enabled {
+                return None;
+            }
+            order.ordinals.get(offset as usize).copied()
+        } else if enabled {
+            self.state.ordinals.get(offset as usize).copied()
+        } else {
+            (offset < self.state.source_rows).then_some(offset)
+        }
+    }
+
     pub fn display_offset_for_ordinal(&self, enabled: bool, ordinal: u32) -> Option<u32> {
-        if enabled {
+        if let Some(order) = &self.state.order {
+            if order.enabled != enabled {
+                return None;
+            }
+            order.ranks.get(ordinal as usize).copied().flatten()
+        } else if enabled {
             self.state
                 .ordinals
                 .binary_search(&ordinal)

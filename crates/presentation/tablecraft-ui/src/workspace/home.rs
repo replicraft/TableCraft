@@ -5,21 +5,6 @@ use super::{Action, DocumentView, State, ribbon};
 use ribbon::{CommandSize, Icon, command, group};
 
 impl State {
-    pub fn set_sorted_query_data(&mut self, data: super::Data) -> bool {
-        if data.source_revision.is_some()
-            || data.row_ordinals.is_some()
-            || data.offset != 0
-            || data.has_more
-        {
-            return false;
-        }
-        self.set_query_data(data);
-        self.sorted_query = true;
-        self.saved_query.active = false;
-        self.select_view(DocumentView::Query);
-        true
-    }
-
     pub(super) fn home(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let t = self.localizer.clone();
         ribbon::strip(ui, |ui| {
@@ -148,39 +133,6 @@ impl State {
         });
     }
 
-    pub fn can_sort_table(&self, document_revision: u64, table: &str, column: &str) -> bool {
-        self.view == DocumentView::Table
-            && !self.busy
-            && !self.zoom_dialog_open()
-            && !self.backstage_visible()
-            && !self.edit_dialog_open()
-            && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
-            && self
-                .database
-                .as_ref()
-                .is_some_and(|database| database.document_revision == document_revision)
-            && self.data.as_ref().is_some_and(|data| {
-                data.source_revision == Some(document_revision)
-                    && data.row_ordinals.is_none()
-                    && data.table == table
-                    && data.columns.iter().any(|field| field.name == column)
-            })
-    }
-
-    fn selected_sort(&self, descending: bool) -> Option<Action> {
-        let data = self.data.as_ref()?;
-        let document_revision = data.source_revision?;
-        let column = &data.columns.get(self.table_selection.position()?.1)?.name;
-        self.can_sort_table(document_revision, &data.table, column)
-            .then(|| Action::SortTable {
-                document_revision,
-                table: data.table.clone(),
-                column: column.clone(),
-                descending,
-            })
-    }
-
     fn read_commands(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-sort-filter"), |ui| {
@@ -189,28 +141,7 @@ impl State {
                     ribbon::mock_command(ui, &t, Icon::Filter, "ribbon-filter", CommandSize::Large);
                 }
                 ui.vertical(|ui| {
-                    for (descending, icon, key) in [
-                        (false, Icon::Ascending, "ribbon-ascending"),
-                        (true, Icon::Descending, "ribbon-descending"),
-                    ] {
-                        let action = self.selected_sort(descending);
-                        if command(ui, icon, &t.text(key), action.is_some(), CommandSize::Small)
-                            .on_hover_text(t.text("ribbon-sort-query-help"))
-                            .clicked()
-                            && let Some(action) = action
-                        {
-                            actions.push(action);
-                        }
-                    }
-                    if self.mock_preview {
-                        ribbon::mock_command(
-                            ui,
-                            &t,
-                            Icon::RemoveSort,
-                            "ribbon-remove-sort",
-                            CommandSize::Small,
-                        );
-                    }
+                    self.sort_commands(ui, actions);
                 });
                 ui.vertical(|ui| self.filter_commands(ui, actions));
             });

@@ -24,7 +24,7 @@ pub use workspace::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
     InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
     ParameterSpec, RecordTarget, RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget,
-    Schema, State, Table,
+    Schema, SortSpec, SortTarget, State, Table,
 };
 
 #[cfg(test)]

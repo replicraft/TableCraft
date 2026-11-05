@@ -6,13 +6,15 @@ use tablecraft_runtime::{
 };
 use tablecraft_ui::{
     Data, FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
-    RowOrdinals,
+    RowOrdinals, SortSpec, SortTarget,
 };
 
 pub(super) struct RestoreFilter {
     definition: FilterDefinition,
     enabled: bool,
     offset: u32,
+    sort: Option<SortSpec>,
+    filter_count: u32,
 }
 
 impl Desktop {
@@ -26,6 +28,8 @@ impl Desktop {
             definition: handle.definition(),
             enabled: self.state.table_filter_enabled(),
             offset: self.state.data.as_ref()?.offset,
+            sort: self.state.table_sort(),
+            filter_count: self.state.table_filter_count(),
         })
     }
 
@@ -45,6 +49,8 @@ impl Desktop {
             table: table.to_owned(),
             enabled: retained.enabled,
             offset: retained.offset,
+            sort: retained.sort,
+            filter_count: retained.filter_count,
         };
         let request_id = self.worker.request(Command::ReapplyFilter {
             definition: retained.definition,
@@ -93,6 +99,7 @@ impl Desktop {
                 parent_ordinal: target.parent_ordinal,
                 column: target.column.clone(),
                 filter_id: target.filter_id,
+                enabled: target.enabled,
             },
             comparison: match comparison {
                 FilterComparison::Equal => runtime::FilterComparison::Equal,
@@ -132,20 +139,62 @@ impl Desktop {
     }
 
     pub(super) fn clear_table_filter(&mut self, target: FilterTarget) {
+        if self.editing.has_save() || self.state.busy || !self.state.can_clear_filter(&target) {
+            return;
+        }
+        let Some(handle) = self.filter_handle(&target) else {
+            return;
+        };
+        let request_id = self.worker.request(Command::ClearFilter { handle });
+        self.generation = request_id;
+        self.state.begin_clear_filter(request_id, target.clone());
+        self.pending = PendingOperation::ClearFilter { request_id };
+        self.state.busy = true;
+    }
+
+    pub(super) fn sort_view(&mut self, target: SortTarget, sort: Option<SortSpec>, enabled: bool) {
         if self.editing.has_save()
             || self.state.busy
-            || !self.state.can_clear_filter(&target)
-            || self.filter_handle(&target).is_none()
+            || !self.state.can_sort_view(&target, sort.as_ref(), enabled)
         {
             return;
         }
-        let request_id = self.worker.request(Command::Page {
-            table: target.table.clone(),
-            offset: 0,
+        let base = if let Some(filter_id) = target.filter_id {
+            let expected = FilterTarget {
+                document_revision: target.document_revision,
+                table: target.table.clone(),
+                filter_id,
+            };
+            let Some(handle) = self.filter_handle(&expected) else {
+                self.state.error = Some(self.state.localizer.text("filtering-stale"));
+                return;
+            };
+            Some(handle)
+        } else {
+            None
+        };
+        let request_id = self.worker.request(Command::SortView {
+            target: runtime::SortTarget {
+                document_revision: target.document_revision,
+                table: target.table.clone(),
+                filter_id: target.filter_id,
+            },
+            sort: sort.as_ref().map(|sort| runtime::SortSpec {
+                column: sort.column.clone(),
+                descending: sort.descending,
+            }),
+            base,
+            enabled,
         });
         self.generation = request_id;
-        self.state.begin_clear_filter(request_id, target.clone());
-        self.pending = PendingOperation::ClearFilter { request_id, target };
+        if !self
+            .state
+            .begin_sort_view(request_id, target, sort, enabled)
+        {
+            self.worker.cancel();
+            return;
+        }
+        self.pending = PendingOperation::SortView { request_id };
         self.state.busy = true;
     }
 
@@ -164,7 +213,9 @@ impl Desktop {
         let request_id = match &self.pending {
             PendingOperation::FilterSelection { request_id }
             | PendingOperation::FilterPage { request_id }
-            | PendingOperation::FilterRestore { request_id } => *request_id,
+            | PendingOperation::FilterRestore { request_id }
+            | PendingOperation::SortView { request_id }
+            | PendingOperation::ClearFilter { request_id } => *request_id,
             _ => return,
         };
         if request_id != generation || !self.state.accepts_filter_reply(request_id) {
@@ -197,6 +248,8 @@ pub(super) fn filtered_publication(
     if result.handle.target() != &result.target
         || result.handle.matched_rows() != result.matched_rows
         || result.handle.source_rows() != result.source_rows
+        || result.handle.sort() != result.sort.as_ref()
+        || result.handle.filter_count() != result.filter_count
         || result
             .source_ordinals
             .iter()
@@ -214,8 +267,12 @@ pub(super) fn filtered_publication(
     {
         return Err(InvalidFilterPublication);
     }
-    let ordinals =
-        RowOrdinals::new(result.source_ordinals).map_err(|_| InvalidFilterPublication)?;
+    let ordinals = if result.sort.is_some() {
+        RowOrdinals::from_display_order(result.source_ordinals)
+    } else {
+        RowOrdinals::new(result.source_ordinals)
+    }
+    .map_err(|_| InvalidFilterPublication)?;
     let target = ui_target(&result.target);
     let data = Data {
         source_revision: Some(target.document_revision),
@@ -230,6 +287,11 @@ pub(super) fn filtered_publication(
         result.handle,
         FilterPublication {
             target,
+            sort: result.sort.map(|sort| SortSpec {
+                column: sort.column,
+                descending: sort.descending,
+            }),
+            filter_count: result.filter_count,
             enabled: result.enabled,
             matched_rows: result.matched_rows,
             source_rows: result.source_rows,

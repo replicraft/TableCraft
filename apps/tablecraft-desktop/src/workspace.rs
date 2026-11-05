@@ -14,15 +14,17 @@ use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, FilterHandle, Response, Worker,
 };
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, FilterTarget, FindPosition, FindRequest, RecordTarget,
-    SavedQuery, SavedQueryTarget, Schema, State, Table,
+    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, RecordTarget, SavedQuery,
+    SavedQueryTarget, Schema, State, Table,
 };
 use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
     Query,
-    Sort,
+    SortView {
+        request_id: u64,
+    },
     FilterSelection {
         request_id: u64,
     },
@@ -34,7 +36,6 @@ enum PendingOperation {
     },
     ClearFilter {
         request_id: u64,
-        target: FilterTarget,
     },
     Find {
         request_id: u64,
@@ -135,8 +136,7 @@ impl Desktop {
         if matches!(&command, Command::Describe { .. }) {
             self.state.prepare_schema_view();
         }
-        let sort = matches!(&command, Command::SortTable { .. });
-        let query = matches!(&command, Command::Query { .. } | Command::SortTable { .. });
+        let query = matches!(&command, Command::Query { .. });
         self.generation = self.worker.request(command);
         self.pending = if let Some(target) = contents {
             self.state.begin_contents(target.clone(), self.generation);
@@ -144,8 +144,6 @@ impl Desktop {
                 target,
                 request_id: self.generation,
             }
-        } else if sort {
-            PendingOperation::Sort
         } else if query {
             PendingOperation::Query
         } else {
@@ -299,21 +297,7 @@ impl Desktop {
                         has_more,
                     };
                     match &self.pending {
-                        PendingOperation::ClearFilter { request_id, target } => {
-                            if self
-                                .state
-                                .set_cleared_filter(*request_id, target.clone(), data)
-                            {
-                                self.filter = None;
-                            }
-                        }
                         PendingOperation::Query => self.state.set_query_data(data),
-                        PendingOperation::Sort => {
-                            if !self.state.set_sorted_query_data(data) {
-                                self.state.error =
-                                    Some(self.state.localizer.text("datasheet-wrong-source"));
-                            }
-                        }
                         PendingOperation::SavedRun { target, request_id } => {
                             self.state
                                 .set_saved_query_data(*request_id, target.clone(), data);
@@ -379,7 +363,8 @@ impl Desktop {
                     PendingOperation::FilterSelection { request_id }
                     | PendingOperation::FilterPage { request_id }
                     | PendingOperation::FilterRestore { request_id }
-                    | PendingOperation::ClearFilter { request_id, .. } => {
+                    | PendingOperation::SortView { request_id }
+                    | PendingOperation::ClearFilter { request_id } => {
                         self.state.fail_filter(*request_id, error.to_string());
                     }
                     PendingOperation::Find { request_id, .. }
@@ -482,23 +467,12 @@ impl eframe::App for Desktop {
                     enabled,
                 } => self.filter_page(target, offset, enabled),
                 Action::ClearTableFilter { target } => self.clear_table_filter(target),
-                Action::SortTable {
-                    document_revision,
-                    table,
-                    column,
-                    descending,
+                Action::SortView {
+                    target,
+                    sort,
+                    enabled,
                 } => {
-                    if self
-                        .state
-                        .can_sort_table(document_revision, &table, &column)
-                    {
-                        self.submit(Command::SortTable {
-                            document_revision,
-                            table,
-                            column,
-                            descending,
-                        });
-                    }
+                    self.sort_view(target, sort, enabled);
                 }
                 Action::CloseTable {
                     document_revision,
@@ -558,7 +532,8 @@ impl eframe::App for Desktop {
                             PendingOperation::FilterSelection { request_id }
                             | PendingOperation::FilterPage { request_id }
                             | PendingOperation::FilterRestore { request_id }
-                            | PendingOperation::ClearFilter { request_id, .. } => {
+                            | PendingOperation::SortView { request_id }
+                            | PendingOperation::ClearFilter { request_id } => {
                                 self.state.fail_filter(
                                     *request_id,
                                     self.state.localizer.text("shell-operation-cancelled"),

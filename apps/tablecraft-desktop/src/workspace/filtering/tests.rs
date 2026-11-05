@@ -103,17 +103,18 @@ fn selection_pages_toggle_and_clear_keep_physical_membership_and_original_bytes(
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(&mut harness);
-    assert!(harness.state().filter.is_none());
-    assert!(harness.state().state.active_filter_target().is_none());
-    assert!(
+    assert_eq!(harness.state().state.table_filter_count(), 0);
+    assert!(!harness.state().state.table_filter_enabled());
+    assert_eq!(harness.state().filter.as_ref().unwrap().filter_count(), 0);
+    assert_eq!(
         harness
             .state()
             .state
             .data
             .as_ref()
             .unwrap()
-            .row_ordinals
-            .is_none()
+            .parent_ordinal(0),
+        Some(0)
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
@@ -123,12 +124,31 @@ fn selection_pages_toggle_and_clear_keep_physical_membership_and_original_bytes(
 fn reviewed_edit_reopens_with_fresh_filter_identity_and_removes_the_changed_record() {
     let (_directory, path, original, mut harness) = opened(source());
     select_even_rows(&mut harness);
+    let sort = SortSpec {
+        column: "Id".into(),
+        descending: true,
+    };
+    let target = harness.state().state.current_sort_target().unwrap();
+    harness
+        .state_mut()
+        .sort_view(target, Some(sort.clone()), true);
+    finish_reads(&mut harness);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .data
+            .as_ref()
+            .unwrap()
+            .parent_ordinal(0),
+        Some(203)
+    );
     let old = harness.state().state.active_filter_target().unwrap();
     let target = EditTarget {
         document_revision: old.document_revision,
         table: old.table.clone(),
         column: "Score".into(),
-        parent_ordinal: 1,
+        parent_ordinal: 203,
     };
     harness.state_mut().begin_edit(target);
     finish_reads(&mut harness);
@@ -166,8 +186,9 @@ fn reviewed_edit_reopens_with_fresh_filter_identity_and_removes_the_changed_reco
     assert!(harness.state().state.table_filter_enabled());
     assert_eq!(harness.state().filter.as_ref().unwrap().matched_rows(), 101);
     let data = harness.state().state.data.as_ref().unwrap();
-    assert_eq!(data.parent_ordinal(0), Some(3));
-    assert_eq!(data.rows[0][0].text, "4");
+    assert_eq!(data.parent_ordinal(0), Some(201));
+    assert_eq!(data.rows[0][0].text, "202");
+    assert_eq!(harness.state().state.table_sort(), Some(sort));
     assert!(data.rows.iter().all(|row| row[1].text == "0"));
     assert_ne!(std::fs::read(path).unwrap(), original);
 }
@@ -197,5 +218,61 @@ fn find_searches_filtered_members_and_keeps_the_filter_when_loading_a_later_hit(
     assert_eq!(harness.state().state.active_filter_target(), Some(target));
     assert!(harness.state().state.table_filter_enabled());
     assert!(harness.state().state.find_window_open());
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn native_sort_pages_find_and_clear_retain_exact_physical_rows() {
+    let (_directory, path, original, mut harness) = opened(source());
+    select_even_rows(&mut harness);
+    let target = harness.state().state.current_sort_target().unwrap();
+    let sort = SortSpec {
+        column: "Id".into(),
+        descending: true,
+    };
+    harness
+        .state_mut()
+        .sort_view(target, Some(sort.clone()), true);
+    finish_reads(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.parent_ordinal(0), Some(203));
+    assert_eq!(data.parent_ordinal(99), Some(5));
+    assert_eq!(data.row_index(203), Some(0));
+    assert_eq!(harness.state().state.table_sort(), Some(sort.clone()));
+
+    focus_cell(&mut harness, "Id", "1", "204");
+    request_find(&mut harness, "2");
+    finish_reads(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.offset, 101);
+    assert_eq!(data.parent_ordinal(0), Some(1));
+    assert_eq!(data.rows[0][0].text, "2");
+    harness.state_mut().state.close_find();
+    harness.run_steps(2);
+
+    let target = harness.state().state.active_filter_target().unwrap();
+    harness.state_mut().clear_table_filter(target);
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.table_sort(), Some(sort));
+    assert_eq!(harness.state().state.table_filter_count(), 0);
+    assert!(!harness.state().state.table_filter_enabled());
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.parent_ordinal(0), Some(204));
+    assert_eq!(data.rows[0][0].text, "205");
+
+    let target = harness.state().state.current_sort_target().unwrap();
+    harness.state_mut().sort_view(target, None, false);
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.table_sort(), None);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .data
+            .as_ref()
+            .unwrap()
+            .parent_ordinal(0),
+        Some(0)
+    );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }

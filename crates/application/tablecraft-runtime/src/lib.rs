@@ -31,7 +31,7 @@ pub use editing::{
 };
 pub use filtering::{
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
-    FilterTarget, FilteredData, MAX_FILTER_FIELDS,
+    FilterTarget, FilteredData, MAX_FILTER_FIELDS, SortSpec, SortTarget,
 };
 pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
@@ -144,6 +144,15 @@ pub enum Command {
     ReviewDelete {
         target: DeleteTarget,
     },
+    SortView {
+        target: SortTarget,
+        sort: Option<SortSpec>,
+        base: Option<FilterHandle>,
+        enabled: bool,
+    },
+    ClearFilter {
+        handle: FilterHandle,
+    },
     ReapplyFilter {
         definition: FilterDefinition,
         document_revision: u64,
@@ -180,13 +189,6 @@ pub enum Command {
     },
     Query {
         sql: String,
-    },
-    /// Complete bounded sorting through the query evaluator; results are read-only.
-    SortTable {
-        document_revision: u64,
-        table: String,
-        column: String,
-        descending: bool,
     },
     InspectSavedQuery {
         target: SavedQueryTarget,

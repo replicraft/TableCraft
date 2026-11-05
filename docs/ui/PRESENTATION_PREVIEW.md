@@ -67,7 +67,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 55 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 56 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -604,3 +604,20 @@ predetermined synthetic memberships over the invented fixture. They show retaine
 counts, original native ordinals, empty results, temporarily disabled criteria and
 failed reads that preserve the previous view. Their explicit synthetic notice is
 not a native filtering or mutation result.
+
+
+The `sorted` scene shows predetermined descending Customer ID membership over the
+complete invented fixture. It exercises an editable native-view presentation,
+original physical identities, zero filter criteria, the heading sort glyph and
+real Remove Sort intent. Its explicit synthetic notice supplies no native
+sorting, editing or save/reopen comparison evidence.
+
+The German light and dark `sorted` frames were exported and opened on macOS at
+1000 × 680 logical points and 1.25 pixel scale (1250 × 850 pixels), using `de-DE`
+regional formatting. The local review files are
+`.cache/ui-native-sort-review/de-light-sorted@1.25x.png` and
+`.cache/ui-native-sort-review/de-dark-sorted@1.25x.png`. Both show descending
+Customer ID values, the header direction glyph, enabled Remove Sort and disabled
+filter controls for the zero-criterion view. The unfiltered count and sort status
+remain readable in both themes. Rendering used the offscreen GPU exporter; no
+native application window or Access comparison was involved.

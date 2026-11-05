@@ -85,6 +85,22 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .review_delete(target, cancelled),
+            Command::SortView {
+                target,
+                sort,
+                base,
+                enabled,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.sort_view(
+                target,
+                sort.as_ref(),
+                base.as_ref(),
+                *enabled,
+                cancelled,
+            ),
+            Command::ClearFilter { handle } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .clear_filter(handle, cancelled),
             Command::ReapplyFilter {
                 definition,
                 document_revision,
@@ -133,18 +149,6 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .run_saved_query(target, parameters, cancelled),
-            Command::SortTable {
-                document_revision,
-                table,
-                column,
-                descending,
-            } => document.as_mut().ok_or(Error::NoDatabase)?.sort_table(
-                *document_revision,
-                table,
-                column,
-                *descending,
-                cancelled,
-            ),
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -198,6 +202,8 @@ impl Worker {
                     Command::ReviewInsert { .. } => "review_insert",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewDelete { .. } => "review_delete",
+                    Command::SortView { .. } => "sort_view",
+                    Command::ClearFilter { .. } => "clear_filter",
                     Command::ReapplyFilter { .. } => "reapply_filter",
                     Command::FilterSelection { .. } => "filter_selection",
                     Command::FilterPage { .. } => "filter_page",
@@ -207,7 +213,6 @@ impl Worker {
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",
                     Command::Query { .. } => "query",
-                    Command::SortTable { .. } => "sort_table",
                     Command::InspectSavedQuery { .. } => "inspect_saved_query",
                     Command::RunSavedQuery { .. } => "run_saved_query",
                 };

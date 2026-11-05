@@ -2,7 +2,7 @@
 use egui::{Image, Ui};
 
 #[derive(Clone, Copy)]
-pub(in crate::workspace) enum Icon {
+pub(crate) enum Icon {
     Application,
     FolderOpen,
     Settings,
@@ -92,7 +92,7 @@ macro_rules! asset {
 }
 
 impl Icon {
-    pub(in crate::workspace) fn image(self, ui: &Ui, size: f32) -> Image<'static> {
+    pub(crate) fn image(self, ui: &Ui, size: f32) -> Image<'static> {
         let variant = match (ui.ctx().theme(), ui.is_enabled()) {
             (egui::Theme::Light, true) => Variant::Light,
             (egui::Theme::Dark, true) => Variant::Dark,

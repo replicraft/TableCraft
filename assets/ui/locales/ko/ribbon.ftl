@@ -68,10 +68,7 @@ ribbon-builder = 작성기
 ribbon-insert-rows = 행 삽입
 ribbon-delete-rows = 행 삭제
 
-ribbon-sort-query-help = 전체 테이블을 정렬하여 읽기 전용 쿼리 결과로 표시합니다. 현재 페이지의 순서는 바뀌지 않습니다.
 ribbon-refresh-table = 새로 고침
 ribbon-refresh-table-help = 현재 테이블 페이지를 다시 불러옵니다.
-ribbon-sorted-results = 정렬된 테이블 결과(읽기 전용)
-ribbon-mock-sort-disabled = 이 합성 미리 보기에서는 전체 테이블 정렬을 사용할 수 없습니다. 행 순서는 변경되지 않았습니다.
 
 ribbon-select-record = 레코드 선택
