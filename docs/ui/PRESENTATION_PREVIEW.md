@@ -53,7 +53,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 43 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 44 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -400,3 +400,33 @@ The coordinated batch passes 117 UI tests and 23 desktop tests, including all
 688 scene/locale/theme drawing combinations, strict selected-package Clippy,
 formatting, documentation links and dependency boundaries. No native window or
 file dialog was opened for this work, and no new database capability was added.
+
+## Complete mock retry admission and Open render — 5 November 2026
+
+Admitted saved-query inspection/execution and record navigation clear a previous
+global cancellation report, matching the other synthetic read routes. Stale
+source targets preserve the report and do not initiate a retry. Record navigation
+now publishes from the exact requested ordinal rather than a rounded page
+boundary. A request for record 8 first reproduced the old offset-0 failure, then
+returned offset 7 with CustomerID 1008 after the correction.
+
+The resource-free `long-open-error` scene adds a populated synthetic path, masked
+synthetic password and long literal failure report to Backstage Open. The current
+inventory is 44 scenes. Two current-source PNGs were exported and opened: German
+light long names and Russian dark Open failure, both at 900 by 580 logical points
+and 1.25x (1125 by 725 physical pixels). The Open frame keeps Copy details, path,
+masked password, Open and Back visible; the diagnostic body scrolls separately.
+The long-name frame retains distinct title/status areas, truncated object names
+and scrollable Ribbon/record commands. These are offscreen macOS observations,
+not native window, Windows or assistive-technology qualification.
+
+The sandbox initially had no GPU adapter; the same offscreen renderer succeeded
+with GPU access outside that restriction. It created no application window and
+used no native UI automation. The user's suspension of non-headless checks
+remains in effect.
+
+The final coordinated batch passes 118 UI tests and 23 desktop tests, with all
+704 scene/locale/theme drawing combinations and zero localization diagnostics.
+Strict selected-package Clippy, formatting, documentation links and dependency
+boundaries pass. No new backend functionality or native interaction qualification
+is implied.
