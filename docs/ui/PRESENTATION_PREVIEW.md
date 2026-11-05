@@ -18,6 +18,12 @@ loading and read errors. They review existing
 presentation states; simulated validation/save outcomes are not engine evidence.
 The normal optional database path conflicts with mock mode.
 
+Saved-query Run now collects declared parameters in staged dialogs, one value at
+a time. The `saved-parameters` scene starts at the first prompt for visual review;
+normal inspection stays inert. Earlier inline-parameter-pane records below refer
+to the preceding presentation. The current original icon inventory is 50 designs
+with 200 themed/disabled SVGs, including the attachment paperclip.
+
 File → Options selects Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
 Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
@@ -501,3 +507,45 @@ draw combinations, and actual decoding of every icon variant at command sizes.
 Strict selected-package Clippy, formatting, documentation links and dependency
 boundaries pass. No native application window was opened or manipulated. These
 are offscreen macOS observations; native Windows fidelity remains unqualified.
+
+
+## Published parameter and attachment dialog alignment — 5 November 2026
+
+The additional Microsoft reference images were opened and their source URLs and
+hashes recorded in the [visual reference record](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026).
+Shared saved-query Run now starts a source-bound staged session. Each OK advances
+one declaration; only the final confirmation commits changed inputs and emits
+the existing typed run action. Parameterless runs remain direct. Cancel/Escape
+preserve original inputs, complete results and selections. Publication, target,
+declaration and original-input witnesses refuse stale acquisition.
+
+Literal prompt labels, one input and a right-aligned OK/Cancel footer follow the
+published layout. Explicit VALUE type and NULL controls retain the current typed
+profile. Numeric/date content validation still happens at query run; no prompt-time
+validator, implicit unresolved-name parameter behavior or Help action is added.
+An over-limit draft retains the existing input-limit explanation and reachable
+Cancel. Enter belongs to the actual focused widget: value submission advances,
+Cancel dismisses, and the type chooser owns its popup keys. Background F6 and
+query shortcuts stay gated while acquiring input; backdrop clicks keep it open.
+
+The attachment metadata viewer now has a localized heading and original paperclip.
+Its existing filename-first metadata, NULL/assignment distinctions and Close action
+are unchanged. Loading-to-Ready checks reproduced a shifted Close identity and a
+stale short body clip. An explicit request-bound Close scope preserves focus, and
+bounded body remeasurement keeps declared headers and rows visible. Attachment
+opening, exporting and mutation remain outside this metadata-only view.
+
+Six final offscreen PNGs were opened: English light unprompted saved query,
+parameter acquisition and attachments at 1280 by 820 / 1x; German dark prompts at
+900 by 580 / 1.25x; Japanese light prompts at 900 by 580 / 2x; Russian dark
+attachments at 900 by 580 / 1.5x. Initial prompt frames exposed ineffective footer
+alignment. Measured localized button widths and a flexible spacer now align the
+painted footer with the input while retaining OK-to-Cancel keyboard order. The
+three prompt frames were regenerated after that fix; initial local frames remain
+separate. Literal synthetic parameter names and file metadata stay untranslated.
+
+The final batch passes 127 UI tests and 23 desktop tests, with all 704 scene /
+locale / theme combinations and the 50-design icon decode inventory. Formatting,
+strict selected-package Clippy, documentation links and dependency boundaries
+pass. All source changes remain in presentation; host service contracts and
+backend operation scope are unchanged. No native window or UI automation was used.
