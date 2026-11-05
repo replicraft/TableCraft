@@ -3,6 +3,7 @@ mod batch;
 mod complete_batch;
 
 use super::plan::MutationPlan;
+use super::table::require_original;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SessionState};
 use crate::editing::{
     journal::{NativeJournalInsertPlan, NativeJournalInserter},
@@ -65,8 +66,31 @@ impl OfflineWriteSession {
     /// Inspect the complete insertion schema from the SAME retained descriptor.
     /// This does not scan target rows or create a journal.
     pub fn insert_table(
+        self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<OfflineTableInserter, Failure> {
+        self.insert_table_with_original(table, None, budget, cancelled)
+    }
+
+    /// Require the complete reviewed image before native insertion metadata is
+    /// constructed. Equality and the inserter use the same exclusively retained
+    /// descriptor capture; a mismatch creates no journal and retains its owner.
+    pub fn insert_table_if_original(
+        self,
+        table: &str,
+        expected: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<OfflineTableInserter, Failure> {
+        self.insert_table_with_original(table, Some(expected), budget, cancelled)
+    }
+
+    fn insert_table_with_original(
         mut self,
         table: &str,
+        expected: Option<&[u8]>,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<OfflineTableInserter, Failure> {
@@ -84,6 +108,9 @@ impl OfflineWriteSession {
             )
             .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
+            if let Some(expected) = expected {
+                require_original(image.as_bytes(), expected, budget, cancelled)?;
+            }
             NativeJournalInserter::new(image, table, budget, cancelled).map_err(Cause::Editor)
         })();
         match result {

@@ -24,10 +24,10 @@ pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
-    EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, SaveCompletion,
-    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase,
-    SaveReceipt, SaveReport, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
-    journal_path,
+    EditDraft, EditError, EditInput, EditReview, EditTarget, InsertDraft, InsertField, InsertInput,
+    InsertReview, InsertTarget, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt,
+    SaveReport, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
 pub use saved::{
     MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
@@ -119,6 +119,15 @@ pub enum Command {
         draft_id: u64,
         input: EditInput,
     },
+    #[cfg(feature = "offline-edit")]
+    BeginInsert {
+        target: InsertTarget,
+    },
+    #[cfg(feature = "offline-edit")]
+    ReviewInsert {
+        draft_id: u64,
+        inputs: Vec<InsertInput>,
+    },
     Page {
         table: String,
         offset: u32,
@@ -175,6 +184,13 @@ pub enum Response {
     EditReviewed {
         review: EditReview,
         capability: ReviewedEdit,
+    },
+    #[cfg(feature = "offline-edit")]
+    InsertDraft(InsertDraft),
+    #[cfg(feature = "offline-edit")]
+    InsertReviewed {
+        review: InsertReview,
+        capability: ReviewedInsert,
     },
     /// A complete explicit read of one parent's stored collection. There are no
     /// executable attachment actions or borrowed native values in this response.

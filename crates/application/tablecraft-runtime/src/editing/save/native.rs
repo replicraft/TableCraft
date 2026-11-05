@@ -1,15 +1,20 @@
 //! The actual offline owner lives on this worker until released or diagnosed.
 mod apply;
+mod apply_insert;
 mod outcomes;
 
 use self::{
     apply::apply,
+    apply_insert::apply_insert,
     outcomes::{finish, known, no_session, receipt, retain},
 };
 use super::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
 };
-use crate::{controls::budget, editing::ReviewedEdit};
+use crate::{
+    controls::budget,
+    editing::{ReviewedEdit, ReviewedInsert},
+};
 use std::{
     path::PathBuf,
     sync::{
@@ -21,6 +26,7 @@ use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
     Apply(ReviewedEdit, PathBuf),
+    ApplyInsert(ReviewedInsert, PathBuf),
     Recover,
     Release,
 }
@@ -91,7 +97,7 @@ impl SaveWorker {
                 drop(mailbox);
                 let cancelled = || owner.cancelled.load(Ordering::Acquire);
                 let operation = match &task {
-                    Task::Apply(..) => SaveOperation::Apply,
+                    Task::Apply(..) | Task::ApplyInsert(..) => SaveOperation::Apply,
                     Task::Recover => SaveOperation::Recover,
                     Task::Release => SaveOperation::Release,
                 };
@@ -107,6 +113,9 @@ impl SaveWorker {
                 let outcome = match task {
                     Task::Apply(reviewed, bundle) => {
                         apply(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::ApplyInsert(reviewed, bundle) => {
+                        apply_insert(reviewed, bundle, &mut retained, &cancelled)
                     }
                     Task::Recover => match retained.take().map(RetainedOwner::into_session) {
                         Some(session) => finish(
@@ -150,7 +159,27 @@ impl SaveWorker {
     }
 
     pub fn start(&self, reviewed: ReviewedEdit, bundle: PathBuf) -> Result<u64, SaveStartError> {
-        if !reviewed.state.valid.load(Ordering::Acquire) {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::Apply)
+    }
+
+    pub fn start_insert(
+        &self,
+        reviewed: ReviewedInsert,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedInsert>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyInsert)
+    }
+
+    fn start_reviewed<T>(
+        &self,
+        reviewed: T,
+        bundle: PathBuf,
+        valid: bool,
+        task: fn(T, PathBuf) -> Task,
+    ) -> Result<u64, SaveStartError<T>> {
+        if !valid {
             return Err(SaveStartError {
                 kind: SaveStartFailure::StaleDocument,
                 reviewed: Some(reviewed),
@@ -171,7 +200,7 @@ impl SaveWorker {
         };
         mailbox.next = id;
         mailbox.active = true;
-        mailbox.pending = Some((id, Task::Apply(reviewed, bundle)));
+        mailbox.pending = Some((id, task(reviewed, bundle)));
         self.shared.cancelled.store(false, Ordering::Release);
         drop(mailbox);
         self.shared.ready.notify_one();

@@ -82,3 +82,19 @@ Preview exports use a full-viewport root UI. They deliberately remove the test
 harness's eight-point demonstration frame, which is absent from the native host.
 The rendered platform, logical dimensions and scale belong in verification
 records. No native application activation is needed for those exports.
+
+
+## New row
+
+Home and the record navigator expose New row for a current native user table,
+including an empty table. The dialog separates Omitted, NULL and Value for each
+field, requires a successful runtime review, and consumes that review through
+the same save worker as cell editing. Changing input invalidates the review.
+Cancellation does not claim rollback; retained save resources require resolution
+and acknowledgement before source replacement or window closure.
+
+This is an explicit offline workflow, rather than Access's inline blank record.
+It adds no fake row to the datasheet or generated-value placeholder. Actual native
+admission may refuse a table or input. See the [runtime insertion contract](../application/RUNTIME.md#reviewed-offline-row-insertion)
+for platform, default, input and preservation limits. Unsupported Home editing or
+history commands remain unavailable.

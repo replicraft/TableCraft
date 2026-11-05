@@ -249,6 +249,42 @@ return an explicit unsupported result. This reviewed-cell workflow is a bounded
 offline workflow, not Access autosave, record navigation or query-result
 updateability parity.
 
+## Reviewed offline row insertion
+
+The same `offline-edit` worker now accepts BeginInsert/ReviewInsert. InsertTarget
+contains a document revision and table name, with no invented existing row handle.
+The metadata draft supplies original field names, input carrier descriptions and
+reader nullability; it does not promise that a complete row will pass native
+admission. Each field retains explicit Omitted or Value intent, with NULL separate
+from literal text. The UI keeps text while toggling those choices.
+
+Review parses supplied text against actual declared types and runs the normal
+presence-bearing native INSERT planner over the captured image. It returns exact
+reviewed inputs, a one-row count and an opaque consuming ReviewedInsert capability.
+No native file lease is held while the user types or considers the review.
+Formatting preferences never alter these inputs or substitute displayed values.
+
+SaveWorker accepts either a cell update or insertion under one nonreplaceable
+owner. Insertion apply captures the same exclusively retained descriptor used for
+its exact original-image comparison, then reconstructs the normal plan with the
+retained omissions/values. It uses the existing journal, receipt, cancellation,
+recovery, release and acknowledgement lifecycle. Source drift refuses before a
+journal is created; any retained session still requires explicit release.
+
+The desktop's matching save owner routes outcomes back to the insertion dialog.
+An acknowledged successful insertion reopens the actual source and refreshes the
+same table from its first page. It does not invent an inserted native row identity
+or promise that a later-page row is visible on that first page.
+
+Current bounds are one row, at most 256 fields, 1 MiB per supplied input and 8 MiB
+of total input text. The normal planner decides actual format/schema/index and
+required-program eligibility. Qualified constant defaults, NULL fallback and
+Increment AutoNumber use ordinary admission. This service supplies no clock or
+random provider, so defaults needing those capabilities remain refused. Encrypted
+and packaged sources are read-only here; native saves are currently macOS/Linux
+only. This adds no general create-table, multirow, external-source or inline
+Access autosave guarantee. See [normal INSERT](../access/writes/NORMAL_ACE_INSERT.md).
+
 ## Native saved queries and declared parameters
 
 Open now publishes table and saved-query declarations from one inert

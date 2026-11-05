@@ -70,6 +70,16 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .review_edit(*draft_id, input, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::BeginInsert { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .begin_insert(target, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::ReviewInsert { draft_id, inputs } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_insert(*draft_id, inputs, cancelled),
             Command::InspectSavedQuery { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -137,6 +147,10 @@ impl Worker {
                     Command::BeginEdit { .. } => "begin_edit",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewEdit { .. } => "review_edit",
+                    #[cfg(feature = "offline-edit")]
+                    Command::BeginInsert { .. } => "begin_insert",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReviewInsert { .. } => "review_insert",
                     Command::Page { .. } => "page",
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",

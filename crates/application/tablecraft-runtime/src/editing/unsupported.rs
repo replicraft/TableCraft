@@ -1,5 +1,5 @@
 //! Native offline leases currently have no implementation on this platform.
-use super::{EditError, EditInput, EditTarget};
+use super::{EditError, EditInput, EditTarget, InsertInput, InsertTarget};
 use crate::{Error, Response, document::Document};
 
 impl Document {
@@ -15,6 +15,22 @@ impl Document {
         &mut self,
         _draft_id: u64,
         _input: &EditInput,
+        _cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        Err(EditError::UnsupportedPlatform.into())
+    }
+    pub(crate) fn begin_insert(
+        &mut self,
+        _target: &InsertTarget,
+        _cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        Err(EditError::UnsupportedPlatform.into())
+    }
+
+    pub(crate) fn review_insert(
+        &mut self,
+        _draft_id: u64,
+        _inputs: &[InsertInput],
         _cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         Err(EditError::UnsupportedPlatform.into())

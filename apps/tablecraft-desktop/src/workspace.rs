@@ -36,6 +36,9 @@ enum PendingOperation {
     Edit {
         request_id: u64,
     },
+    Insert {
+        request_id: u64,
+    },
 }
 
 pub(super) struct Desktop {
@@ -172,6 +175,10 @@ impl Desktop {
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
                 }
+                Ok(Response::InsertDraft(draft)) => self.publish_insert_draft(generation, draft),
+                Ok(Response::InsertReviewed { review, capability }) => {
+                    self.publish_insert_review(generation, review, capability);
+                }
                 Ok(Response::EditDraft(draft)) => self.publish_edit_draft(generation, draft),
                 Ok(Response::EditReviewed { review, capability }) => {
                     self.publish_edit_review(generation, review, capability);
@@ -245,7 +252,10 @@ impl Desktop {
                     match &self.pending {
                         PendingOperation::Query => self.state.set_query_data(data),
                         PendingOperation::Sort => {
-                            self.state.set_sorted_query_data(data);
+                            if !self.state.set_sorted_query_data(data) {
+                                self.state.error =
+                                    Some(self.state.localizer.text("datasheet-wrong-source"));
+                            }
                         }
                         PendingOperation::SavedRun { target, request_id } => {
                             self.state
@@ -296,6 +306,9 @@ impl Desktop {
                     }
                     PendingOperation::Edit { request_id } => {
                         self.state.fail_edit(*request_id, error.to_string());
+                    }
+                    PendingOperation::Insert { request_id } => {
+                        self.state.fail_insert(*request_id, error.to_string());
                     }
                     PendingOperation::Contents { target, request_id } => {
                         self.state
@@ -400,6 +413,10 @@ impl eframe::App for Desktop {
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
+                Action::BeginInsert { target } => self.begin_insert(target),
+                Action::ReviewInsert { draft_id, inputs } => self.review_insert(draft_id, inputs),
+                Action::ApplyInsert { review_id } => self.apply_insert(review_id),
+                Action::CloseInsert { request_id, .. } => self.close_insert(request_id),
                 Action::BeginEdit { target } => self.begin_edit(target),
                 Action::ReviewEdit { draft_id, input } => self.review_edit(draft_id, input),
                 Action::ApplyEdit { review_id } => self.apply_edit(review_id),
@@ -419,6 +436,18 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::Insert { request_id } => {
+                                self.state.fail_insert(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
+                            PendingOperation::Edit { request_id } => {
+                                self.state.fail_edit(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::Record { request_id, .. } => {
                                 self.state.fail_record_navigation(
                                     *request_id,

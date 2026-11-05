@@ -1,8 +1,7 @@
 use super::*;
 use std::{cell::Cell, fs};
-use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::fixtures::access::mutation_fixture;
+use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)
@@ -10,8 +9,10 @@ fn budget() -> ResourceBudget {
 
 #[test]
 fn viewed_image_precondition_retains_the_same_offline_editor_and_refuses_other_bytes() {
-    let original = mutation_fixture::database();
-    for change_tail in [false, true] {
+    let original = canonical_native17_creation::source(
+        canonical_creation::source(canonical_creation::Case::One).bytes,
+    );
+    for (insert, change_tail) in [(false, false), (false, true), (true, false), (true, true)] {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("source.mdb");
         let mut current = original.clone();
@@ -23,24 +24,31 @@ fn viewed_image_precondition_retains_the_same_offline_editor_and_refuses_other_b
             OfflineWriteSession::open(&path, CatalogScope::new(1), &mut budget(), &|| false)
                 .unwrap();
 
-        let session =
-            match session.edit_table_if_original("Items", &original, &mut budget(), &|| false) {
-                Ok(editor) => {
-                    assert!(!change_tail);
-                    assert_eq!(editor.snapshot().rows()[0][1], Value::Int32(10));
-                    editor.into_session()
-                }
-                Err(failure) => {
-                    assert!(change_tail);
-                    assert!(matches!(failure.cause(), Cause::SourceChanged));
-                    assert_eq!(failure.phase(), Phase::Planning);
-                    assert!(failure.invalid_input());
-                    assert!(failure.current_outcome().is_none());
-                    assert!(failure.pair_state().is_none());
-                    assert!(failure.setup_failure().is_none());
-                    failure.into_session()
-                }
-            };
+        let admitted = if insert {
+            session
+                .insert_table_if_original("Items", &original, &mut budget(), &|| false)
+                .map(|inserter| inserter.into_session())
+        } else {
+            session
+                .edit_table_if_original("Items", &original, &mut budget(), &|| false)
+                .map(|editor| editor.into_session())
+        };
+        let session = match admitted {
+            Ok(session) => {
+                assert!(!change_tail);
+                session
+            }
+            Err(failure) => {
+                assert!(change_tail);
+                assert!(matches!(failure.cause(), Cause::SourceChanged));
+                assert_eq!(failure.phase(), Phase::Planning);
+                assert!(failure.invalid_input());
+                assert!(failure.current_outcome().is_none());
+                assert!(failure.pair_state().is_none());
+                assert!(failure.setup_failure().is_none());
+                failure.into_session()
+            }
+        };
         session.release().unwrap();
         assert_eq!(fs::read(&path).unwrap(), current);
         assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);

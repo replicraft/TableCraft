@@ -7,6 +7,11 @@ mod contents;
 ))]
 mod editing;
 mod formatting;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
+mod inserting;
 mod saved;
 mod schema;
 mod stored;

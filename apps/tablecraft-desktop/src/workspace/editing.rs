@@ -1,11 +1,13 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
+mod inserting;
 use super::{Desktop, PendingOperation};
 use crate::view_models::cell;
 use std::path::PathBuf;
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
-    EditTarget as RuntimeTarget, ReviewedEdit, SaveCompletion, SaveFailure, SaveFailureKind,
-    SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
+    EditTarget as RuntimeTarget, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker,
+    journal_path,
 };
 use tablecraft_ui::{
     EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
@@ -14,11 +16,19 @@ use tablecraft_ui::{
 pub(super) struct Editing {
     worker: SaveWorker,
     review: Option<(u64, ReviewedEdit)>,
+    insert_review: Option<(u64, ReviewedInsert)>,
     save: Option<ActiveSave>,
     refresh: Option<(u64, String, u32)>,
 }
 
+#[derive(Clone, Copy)]
+enum SaveOwner {
+    Cell,
+    Insert,
+}
+
 struct ActiveSave {
+    owner: SaveOwner,
     id: u64,
     path: PathBuf,
     table: String,
@@ -31,6 +41,7 @@ impl Editing {
         Self {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             review: None,
+            insert_review: None,
             save: None,
             refresh: None,
         }
@@ -46,6 +57,7 @@ impl Editing {
 
     pub(super) fn clear_review(&mut self) {
         self.review = None;
+        self.insert_review = None;
     }
 }
 
@@ -162,6 +174,7 @@ impl Desktop {
         match self.editing.worker.start(reviewed, journal_path(&path)) {
             Ok(save_id) => {
                 self.editing.save = Some(ActiveSave {
+                    owner: SaveOwner::Cell,
                     id: save_id,
                     path,
                     table,
@@ -191,7 +204,10 @@ impl Desktop {
         }
         save.report = Some(report);
         let outcome = save_outcome(&self.state.localizer, report.outcome);
-        self.state.set_edit_save_outcome(report.id, outcome);
+        match save.owner {
+            SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
+            SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
+        }
     }
 
     pub(super) fn cancel_current_save(&mut self) {
@@ -222,7 +238,10 @@ impl Desktop {
             Ok(next) => {
                 save.id = next;
                 save.report = None;
-                self.state.begin_edit_resolution(id, next);
+                match save.owner {
+                    SaveOwner::Cell => self.state.begin_edit_resolution(id, next),
+                    SaveOwner::Insert => self.state.begin_insert_resolution(id, next),
+                }
             }
             Err(error) => self.state.error = Some(error.to_string()),
         }
@@ -235,7 +254,14 @@ impl Desktop {
             return;
         }
         let save = self.editing.save.take().unwrap();
-        self.state.close_edit();
+        match save.owner {
+            SaveOwner::Cell => {
+                self.state.close_edit();
+            }
+            SaveOwner::Insert => {
+                self.state.close_insert();
+            }
+        }
         if matches!(
             save.report.map(|report| report.outcome),
             Some(SaveOutcome::Saved { .. })

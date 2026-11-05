@@ -182,16 +182,29 @@ impl State {
                         offset: data.offset,
                     });
                 }
-                if self.mock_preview {
-                    ui.vertical(|ui| {
-                        for (icon, key) in [
-                            (Icon::Add, "ribbon-new"),
-                            (Icon::Save, "ribbon-save"),
-                            (Icon::Delete, "ribbon-delete"),
-                        ] {
+                ui.vertical(|ui| {
+                    let target = self.current_insert_target();
+                    if command(
+                        ui,
+                        Icon::Add,
+                        &t.text("insertion-title"),
+                        target.is_some(),
+                        CommandSize::Small,
+                    )
+                    .clicked()
+                        && let Some(target) = target
+                    {
+                        actions.push(Action::BeginInsert { target });
+                    }
+                    if self.mock_preview {
+                        for (icon, key) in
+                            [(Icon::Save, "ribbon-save"), (Icon::Delete, "ribbon-delete")]
+                        {
                             ribbon::mock_command(ui, &t, icon, key, CommandSize::Small);
                         }
-                    });
+                    }
+                });
+                if self.mock_preview {
                     ui.vertical(|ui| {
                         for (icon, key) in [
                             (Icon::Sum, "ribbon-totals"),

@@ -2,11 +2,17 @@
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod draft;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
+mod ids;
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 mod input;
+mod inserting;
 mod save;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 mod unsupported;
 
+pub use inserting::{
+    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedInsert,
+};
 pub use save::{
     SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome,
     SavePhase, SaveReceipt, SaveReport, SaveSessionState, SaveStartError, SaveStartFailure,
@@ -87,6 +93,7 @@ pub(crate) struct DocumentEdits {
     original: Bytes,
     valid: Arc<AtomicBool>,
     draft: Option<(u64, EditTarget)>,
+    insert_draft: Option<(u64, InsertTarget)>,
 }
 
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -97,6 +104,7 @@ impl DocumentEdits {
             original,
             valid: Arc::new(AtomicBool::new(true)),
             draft: None,
+            insert_draft: None,
         }
     }
 }
@@ -145,7 +153,7 @@ pub enum EditError {
     StaleDraft,
     #[error("the original row or column was not found")]
     TargetMissing,
-    #[error("no ordinary update service is available for this table")]
+    #[error("no ordinary native editing service is available for this table")]
     Unavailable,
     #[error("the exact replacement value is invalid for this field")]
     InvalidInput,

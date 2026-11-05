@@ -1619,3 +1619,14 @@ Sources: [ICU4X date/time](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
 [ISO mapping](https://docs.rs/iso_currency/0.7.1/iso_currency/),
 [sys-locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html)
 and [platform/features](https://docs.rs/crate/sys-locale/0.3.2/source/README.md).
+
+
+## Headless desktop insertion acceptance
+
+The desktop package now inherits the existing workspace `egui_kittest` version
+as a development-only dependency, with default features disabled and no GPU,
+snapshot or eframe feature requested. Tests drive actual shared insertion widgets
+and desktop action dispatch into the existing runtime/save workers, using the
+shared independent native INSERT fixture. This adds no production dependency,
+new registry version or native-window automation. Review, stale-input refusal,
+terminal owner acknowledgement and same-table refresh remain distinct observations.
