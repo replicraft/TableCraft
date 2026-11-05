@@ -1,5 +1,14 @@
 # Development baseline
 
+## Native page presentation
+
+Normal native pages use one runtime presenter for scalar cells, stored collection
+summaries, calculation provenance and native display/control hints. Its checked
+selection path presents only requested page-local rows, without decoding values
+again or inventing native record identities. Existing stored-field regressions
+passed in the selected runtime gate; filtered consumer integration is documented
+separately in the runtime contract.
+
 Original repository code uses the Apache-2.0 license in [LICENSE](../../LICENSE). Implemented behavior and its
 verification are recorded in [IMPLEMENTATION.md](../IMPLEMENTATION.md). Repository
 working guidance lives in [AGENTS.md](../../AGENTS.md). Private planning materials

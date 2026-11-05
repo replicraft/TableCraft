@@ -8,6 +8,7 @@ use tablecraft_ace::InspectError;
 
 pub(super) fn rows(
     page: &StoredCollectionTablePage,
+    selected: Option<&[usize]>,
     output: &mut Presentation<'_>,
 ) -> Result<Vec<Vec<Cell>>, Error> {
     let columns = page.schema().columns();
@@ -45,8 +46,14 @@ pub(super) fn rows(
     if cached.len() != columns.len() {
         return Err(InspectError::Malformed.into());
     }
-    let mut rows = output.rows(page.row_count())?;
-    for parent in 0..page.row_count() {
+    let count = selected.map_or(page.row_count(), <[usize]>::len);
+    let mut rows = output.rows(count)?;
+    for index in 0..count {
+        output.work(1)?;
+        let parent = selected.map_or(index, |selected| selected[index]);
+        if parent >= page.row_count() {
+            return Err(InspectError::Malformed.into());
+        }
         let mut row = output.row(columns.len())?;
         for (column, stored_calculation) in cached.iter().copied().enumerate() {
             // cell() performs a bounded collection-column lookup. Parent is the
