@@ -10,6 +10,7 @@ use std::borrow::Cow;
 
 const ACTIVE_HEADER: egui::Color32 = egui::Color32::from_rgb(255, 225, 102);
 const ACTIVE_ROW: egui::Color32 = egui::Color32::from_rgb(166, 205, 234);
+const RECORD_SELECTOR_WIDTH: f32 = 18.0;
 const CELL_TEXT_PADDING: f32 = 3.0;
 const BOOLEAN_BOX_SIZE: f32 = 14.0;
 
@@ -47,12 +48,11 @@ fn show_rows(
                     .auto_shrink([false, false])
                     .striped(false)
                     .resizable(true)
-                    .column(Column::exact(28.0))
+                    .column(Column::exact(RECORD_SELECTOR_WIDTH))
                     .columns(Column::initial(128.0).at_least(60.0), data.columns.len())
                     .header(22.0, |mut header| {
                         header.col(|ui| {
                             grid_cell(ui, true);
-                            ui.label(RichText::new("#"));
                         });
                         for (index, column) in data.columns.iter().enumerate() {
                             header.col(|ui| {
@@ -131,7 +131,6 @@ fn show_rows(
 
 fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &mut Selection) {
     let response = ui.allocate_response(ui.available_size(), Sense::click());
-    paint_cell_text(ui, response.rect, &number.to_string());
     selection.observe_row(ui, data, row, &response);
     response.widget_info(|| {
         WidgetInfo::labeled(
@@ -163,9 +162,9 @@ fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &m
         }
     });
     response.on_hover_text(if selection.row_selected() && selection.row() == Some(row) {
-        "Selected record. Copy uses all displayed fields, including collection summaries; it does not copy child payloads."
+        format!("Record {number} is selected. Copy uses all displayed fields, including collection summaries; it does not copy child payloads.")
     } else {
-        "Select this record. Copy uses all displayed fields, including collection summaries; it does not copy child payloads."
+        format!("Select record {number}. Copy uses all displayed fields, including collection summaries; it does not copy child payloads.")
     });
 }
 
