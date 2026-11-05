@@ -216,26 +216,61 @@ fn dialog_renders_assigned_empty_absent_and_null_member_states_without_actions()
             data.rows.clear();
         }
         state.set_contents(19, target.clone(), kind, assigned, data);
-        let mut output = context.run_ui(
-            egui::RawInput {
-                screen_rect: Some(egui::Rect::from_min_size(
-                    egui::Pos2::ZERO,
-                    egui::vec2(1280.0, 820.0),
-                )),
-                ..Default::default()
-            },
-            |ui| {
-                assert!(state.show(ui).is_empty());
-            },
-        );
-        assert!(!output.shapes.is_empty());
-        output.textures_delta.clear();
+        for _ in 0..3 {
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(1280.0, 820.0),
+                    )),
+                    ..Default::default()
+                },
+                |ui| {
+                    assert!(state.show(ui).is_empty());
+                },
+            );
+            output.textures_delta.clear();
+            assert!(!output.shapes.is_empty());
+            if empty {
+                let header = output
+                    .shapes
+                    .iter()
+                    .find_map(|shape| match &shape.shape {
+                        egui::epaint::Shape::Text(text) if text.galley.job.text == "Value" => {
+                            Some((
+                                egui::Rect::from_min_size(text.pos, text.galley.size()),
+                                shape.clip_rect,
+                            ))
+                        }
+                        _ => None,
+                    })
+                    .expect("ready empty collections retain their declared header");
+                assert!(header.1.contains_rect(header.0));
+                assert!(!state.can_copy_contents_selection());
+                assert!(state.selected_contents_text().is_none());
+                let dialog = state.contents.as_ref().unwrap();
+                let ContentsResult::Ready {
+                    assigned: actual_assigned,
+                    data,
+                    ..
+                } = &dialog.result
+                else {
+                    panic!("expected ready empty collection");
+                };
+                assert_eq!(*actual_assigned, assigned);
+                assert!(data.rows.is_empty(), "headers do not create a member");
+                assert_eq!(data.columns[0].name, "Value");
+                assert_eq!(data.source_revision, None);
+                assert!(dialog.selection.position().is_none());
+            }
+        }
     }
 }
 
 #[test]
 fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
     let context = egui::Context::default();
+    context.enable_accesskit();
     let mut state = state();
     state.data.as_mut().unwrap().rows[0][0].kind = CellKind::Attachments {
         assigned: true,
@@ -244,7 +279,16 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
     let target = target(&state);
     state.begin_contents(target.clone(), 23);
     let mut contents = data();
-    contents.columns[0] = "Child metadata header".into();
+    contents.columns = vec![
+        "Child metadata header".into(),
+        "FileType".into(),
+        "Encoded bytes".into(),
+    ];
+    contents.rows = vec![vec![
+        Cell::scalar("example.bin"),
+        Cell::scalar("application/octet-stream"),
+        Cell::scalar("128,400"),
+    ]];
     state.set_contents(23, target, CollectionKind::Attachments, true, contents);
 
     for frame in 0..4 {
@@ -282,6 +326,43 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
                 .find(|(text, _, _)| text == "Child metadata header")
                 .expect("actual datasheet header painted")
                 .1;
+            let mime = output
+                .shapes
+                .iter()
+                .find_map(|shape| match &shape.shape {
+                    egui::epaint::Shape::Text(text)
+                        if text.galley.job.text == "application/octet-stream" =>
+                    {
+                        Some((text, shape.clip_rect))
+                    }
+                    _ => None,
+                })
+                .expect("literal attachment media type");
+            assert!(
+                !mime.0.galley.elided,
+                "bounded initial sizing fits the MIME value"
+            );
+            assert!(
+                mime.1
+                    .contains_rect(egui::Rect::from_min_size(mime.0.pos, mime.0.galley.size()))
+            );
+            let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+            let last_column = tree
+                .nodes
+                .iter()
+                .find_map(|(_, node)| {
+                    let value = node.value()?.replace(['\u{2068}', '\u{2069}'], "");
+                    value
+                        .starts_with("Encoded bytes, row 1:")
+                        .then(|| node.bounds())
+                        .flatten()
+                })
+                .expect("actual remaining-width collection field");
+            assert!(
+                last_column.x1 - last_column.x0 > 400.0,
+                "the final collection column still consumes remaining width"
+            );
+            assert_eq!(state.selected_contents_text(), Some("example.bin"));
             for label in [
                 "Collection contents",
                 "Close",
@@ -303,4 +384,120 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
         }
         output.textures_delta.clear();
     }
+}
+
+#[test]
+fn collection_widths_are_shared_by_parent_rows_but_isolated_between_fields() {
+    fn frame(context: &egui::Context, state: &mut State, events: Vec<egui::Event>) -> egui::Rect {
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1280.0, 820.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                assert!(state.show(ui).is_empty());
+            },
+        );
+        output.textures_delta.clear();
+        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+        let bounds = tree
+            .nodes
+            .iter()
+            .find_map(|(_, node)| {
+                let value = node.value()?.replace(['\u{2068}', '\u{2069}'], "");
+                value
+                    .starts_with("Metadata, row 1:")
+                    .then(|| node.bounds())
+                    .flatten()
+            })
+            .expect("visible child metadata field");
+        egui::Rect::from_min_max(
+            egui::pos2(bounds.x0 as f32, bounds.y0 as f32),
+            egui::pos2(bounds.x1 as f32, bounds.y1 as f32),
+        )
+    }
+
+    fn open(state: &mut State, row: usize, column: usize, request: u64) {
+        state.close_contents();
+        let target = state
+            .data
+            .as_ref()
+            .unwrap()
+            .contents_target(row, column)
+            .unwrap();
+        state.begin_contents(target.clone(), request);
+        let mut contents = data();
+        contents.columns = vec!["Metadata".into(), "Value".into()];
+        contents.rows = vec![vec![Cell::scalar("short"), Cell::scalar("tail")]];
+        state.set_contents(request, target, CollectionKind::Multivalue, true, contents);
+    }
+
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    let mut state = state();
+    let parent = state.data.as_mut().unwrap();
+    parent.columns.push("Other column".into());
+    for _ in 0..2 {
+        let cells = (0..2)
+            .map(|_| Cell {
+                text: "One member".into(),
+                kind: CellKind::Multivalue {
+                    assigned: true,
+                    members: 1,
+                },
+            })
+            .collect();
+        parent.rows.push(cells);
+    }
+    parent.rows.remove(0);
+
+    open(&mut state, 0, 0, 31);
+    for _ in 0..3 {
+        frame(&context, &mut state, vec![]);
+    }
+    let original = frame(&context, &mut state, vec![]);
+    let start = egui::pos2(original.right(), original.center().y);
+    frame(&context, &mut state, vec![egui::Event::PointerMoved(start)]);
+    frame(
+        &context,
+        &mut state,
+        vec![egui::Event::PointerButton {
+            pos: start,
+            button: egui::PointerButton::Primary,
+            pressed: true,
+            modifiers: egui::Modifiers::NONE,
+        }],
+    );
+    let end = start + egui::vec2(90.0, 0.0);
+    frame(&context, &mut state, vec![egui::Event::PointerMoved(end)]);
+    frame(
+        &context,
+        &mut state,
+        vec![egui::Event::PointerButton {
+            pos: end,
+            button: egui::PointerButton::Primary,
+            pressed: false,
+            modifiers: egui::Modifiers::NONE,
+        }],
+    );
+    let resized = frame(&context, &mut state, vec![]);
+    assert!(resized.width() > original.width() + 60.0);
+
+    open(&mut state, 0, 1, 32);
+    for _ in 0..3 {
+        frame(&context, &mut state, vec![]);
+    }
+    let other = frame(&context, &mut state, vec![]);
+    assert!((other.width() - original.width()).abs() < 1.0);
+
+    open(&mut state, 1, 0, 33);
+    for _ in 0..3 {
+        frame(&context, &mut state, vec![]);
+    }
+    let revisited = frame(&context, &mut state, vec![]);
+    assert!((revisited.width() - resized.width()).abs() < 1.0);
 }
