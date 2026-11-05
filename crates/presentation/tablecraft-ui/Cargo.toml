@@ -12,5 +12,13 @@ workspace = true
 
 [dependencies]
 csv.workspace = true
+fluent-bundle.workspace = true
+unic-langid.workspace = true
+thiserror.workspace = true
 egui = { workspace = true, features = ["default_fonts"] }
-egui_extras.workspace = true
+egui_extras = { workspace = true, features = ["svg"] }
+
+[dev-dependencies]
+fluent-syntax.workspace = true
+egui_kittest = { workspace = true, features = ["wgpu"] }
+image = { workspace = true, features = ["png"] }

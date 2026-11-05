@@ -1,5 +1,7 @@
 //! Host-owned cell facts; presentation never infers native storage or membership.
 
+use crate::{CollectionKind, FluentArgs, Localizer};
+
 pub struct Cell {
     pub text: String,
     pub kind: CellKind,
@@ -53,23 +55,19 @@ impl Cell {
         }
     }
 
-    pub(crate) fn badge(&self) -> Option<&'static str> {
-        match self.kind {
-            CellKind::Scalar {
-                is_null: true,
-                stored_calculation: true,
-                ..
-            } => Some("stored"),
+    pub(crate) fn badge(&self, localizer: &Localizer) -> Option<String> {
+        let key = match self.kind {
             CellKind::Scalar {
                 stored_calculation: true,
                 ..
-            } => Some("stored"),
-            CellKind::Scalar { is_null: true, .. } => Some("NULL"),
-            CellKind::Scalar { .. } => None,
-            CellKind::Multivalue { .. } => Some("list"),
-            CellKind::Attachments { .. } => Some("encoded"),
-            CellKind::VersionHistory { .. } => Some("history"),
-        }
+            } => "datasheet-badge-stored",
+            CellKind::Scalar { is_null: true, .. } => "datasheet-badge-null",
+            CellKind::Scalar { .. } => return None,
+            CellKind::Multivalue { .. } => "datasheet-badge-list",
+            CellKind::Attachments { .. } => "datasheet-badge-encoded",
+            CellKind::VersionHistory { .. } => "datasheet-badge-history",
+        };
+        Some(localizer.text(key))
     }
 
     pub(crate) fn checkbox_value(&self) -> Option<bool> {
@@ -84,62 +82,72 @@ impl Cell {
         }
     }
 
-    pub(crate) fn context(&self) -> Option<String> {
+    pub(crate) fn context(&self, localizer: &Localizer) -> Option<String> {
         let base = match self.kind {
             CellKind::Scalar {
                 is_null,
                 stored_calculation,
                 ..
-            } => match (is_null, stored_calculation) {
-                (false, false) => None,
-                (true, false) => Some("NULL value".into()),
-                (false, true) => {
-                    Some("Stored calculated result; no formula evaluated; freshness unknown".into())
-                }
-                (true, true) => Some(
-                    "Stored NULL calculated result; no formula evaluated; freshness unknown".into(),
-                ),
-            },
-            CellKind::Multivalue { assigned, members } => {
-                Some(membership("multivalue", assigned, members))
+            } => {
+                let key = match (is_null, stored_calculation) {
+                    (false, false) => None,
+                    (true, false) => Some("datasheet-null-context"),
+                    (false, true) => Some("datasheet-stored-context"),
+                    (true, true) => Some("datasheet-stored-null-context"),
+                };
+                key.map(|key| localizer.text(key))
             }
-            CellKind::Attachments { assigned, members } => Some(format!(
-                "{}; payloads remain encoded and are not opened",
-                membership("attachment", assigned, members),
+            CellKind::Multivalue { assigned, members } => Some(membership(
+                localizer,
+                CollectionKind::Multivalue,
+                assigned,
+                members,
             )),
-            CellKind::VersionHistory { assigned, members } => Some(format!(
-                "{}; stored order retained; current Memo text is separate",
-                membership("stored version", assigned, members),
-            )),
+            CellKind::Attachments { assigned, members } => {
+                let mut arguments = FluentArgs::new();
+                arguments.set(
+                    "context",
+                    membership(localizer, CollectionKind::Attachments, assigned, members),
+                );
+                Some(localizer.format("collections-encoded-context", &arguments))
+            }
+            CellKind::VersionHistory { assigned, members } => {
+                let mut arguments = FluentArgs::new();
+                arguments.set(
+                    "context",
+                    membership(localizer, CollectionKind::VersionHistory, assigned, members),
+                );
+                Some(localizer.format("collections-history-context", &arguments))
+            }
         };
+
         let presentation = match self.kind {
             CellKind::Scalar {
                 boolean: Some(_),
                 display_control,
                 ..
-            } => match display_control {
-                DisplayControl::Uninspected => Some(
-                    "Field display settings are not inspected; showing the stored value".to_owned(),
-                ),
-                DisplayControl::Absent => {
-                    Some("No display control is declared; showing the stored value".to_owned())
-                }
-                DisplayControl::Unsupported => Some(
-                    "Field display settings are unsupported; showing the stored value".to_owned(),
-                ),
-                DisplayControl::Native(CHECKBOX_DISPLAY_CONTROL) => None,
-                DisplayControl::Native(109) => Some("This field uses a text box".to_owned()),
-                DisplayControl::Native(111) => {
-                    Some("Lookup display is not supported yet; showing the stored value".to_owned())
-                }
-                DisplayControl::Native(_) => Some(
-                    "Field display settings are unsupported; showing the stored value".to_owned(),
-                ),
-            },
+            } => {
+                let key = match display_control {
+                    DisplayControl::Uninspected => Some("datasheet-control-uninspected"),
+                    DisplayControl::Absent => Some("datasheet-control-absent"),
+                    DisplayControl::Unsupported => Some("datasheet-control-unsupported"),
+                    DisplayControl::Native(CHECKBOX_DISPLAY_CONTROL) => None,
+                    DisplayControl::Native(109) => Some("datasheet-control-textbox"),
+                    DisplayControl::Native(111) => Some("datasheet-control-lookup"),
+                    DisplayControl::Native(_) => Some("datasheet-control-unsupported"),
+                };
+                key.map(|key| localizer.text(key))
+            }
             _ => None,
         };
+
         match (base, presentation) {
-            (Some(base), Some(presentation)) => Some(format!("{base}; {presentation}")),
+            (Some(base), Some(presentation)) => {
+                let mut arguments = FluentArgs::new();
+                arguments.set("base", base);
+                arguments.set("presentation", presentation);
+                Some(localizer.format("datasheet-context-pair", &arguments))
+            }
             (base, presentation) => base.or(presentation),
         }
     }
@@ -157,15 +165,26 @@ impl From<&str> for Cell {
     }
 }
 
-pub(crate) fn membership(kind: &str, assigned: bool, members: usize) -> String {
-    if assigned {
-        let unit = if members == 1 { "member" } else { "members" };
-        format!(
-            "Assigned {kind} collection; {members} complete {unit}. NULL payloads count as members"
-        )
+pub(crate) fn membership(
+    localizer: &Localizer,
+    kind: CollectionKind,
+    assigned: bool,
+    members: usize,
+) -> String {
+    let kind_key = match kind {
+        CollectionKind::Multivalue => "collections-multivalue",
+        CollectionKind::Attachments => "collections-attachment",
+        CollectionKind::VersionHistory => "collections-stored-version",
+    };
+    let key = if assigned {
+        "collections-assigned"
     } else {
-        format!("No assigned {kind} collection")
-    }
+        "collections-unassigned"
+    };
+    let mut arguments = FluentArgs::new();
+    arguments.set("kind", localizer.text(kind_key));
+    arguments.set("count", members);
+    localizer.format(key, &arguments)
 }
 
 #[cfg(test)]
@@ -184,10 +203,18 @@ mod tests {
                 display_control: DisplayControl::Uninspected,
             },
         };
-        assert!(plain.badge().is_none());
-        assert!(plain.context().is_none());
-        assert_eq!(stored.badge(), Some("stored"));
-        assert!(stored.context().unwrap().contains("freshness unknown"));
+        assert!(plain.badge(&Localizer::default()).is_none());
+        assert!(plain.context(&Localizer::default()).is_none());
+        assert_eq!(
+            stored.badge(&Localizer::default()),
+            Some("stored".to_owned())
+        );
+        assert!(
+            stored
+                .context(&Localizer::default())
+                .unwrap()
+                .contains("freshness unknown")
+        );
     }
 
     #[test]
@@ -213,10 +240,27 @@ mod tests {
                 members: 1,
             },
         };
-        assert!(absent.context().unwrap().starts_with("No assigned"));
-        assert!(empty.context().unwrap().contains("0 complete members"));
-        let context = null_payload.context().unwrap();
-        assert!(context.contains("1 complete member"));
+        assert!(
+            absent
+                .context(&Localizer::default())
+                .unwrap()
+                .replace(['\u{2068}', '\u{2069}'], "")
+                .starts_with("No assigned")
+        );
+        // Ignore only Fluent direction-isolation marks for English prose
+        // checks; count, membership, plurality and provenance remain distinct.
+        let empty_context = empty
+            .context(&Localizer::default())
+            .unwrap()
+            .replace(['\u{2068}', '\u{2069}'], "");
+        assert!(empty_context.contains('0'));
+        assert!(empty_context.contains("complete members"));
+        let context = null_payload
+            .context(&Localizer::default())
+            .unwrap()
+            .replace(['\u{2068}', '\u{2069}'], "");
+        assert!(context.contains('1'));
+        assert!(context.contains("complete member."));
         assert!(context.contains("NULL payloads"));
         assert!(context.contains("not opened"));
     }
@@ -251,7 +295,7 @@ mod boolean_tests {
                 (display_control == DisplayControl::Native(106)).then_some(true)
             );
             if display_control != DisplayControl::Native(106) {
-                let context = value.context().unwrap();
+                let context = value.context(&Localizer::default()).unwrap();
                 assert!(!context.contains("DisplayControl"));
                 assert!(!context.contains("Native"));
                 assert!(!context.contains("109"));

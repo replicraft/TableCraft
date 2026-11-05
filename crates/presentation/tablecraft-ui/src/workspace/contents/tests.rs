@@ -182,8 +182,25 @@ fn modal_owns_parent_shortcuts_and_escape_closes_only_its_request() {
 
 #[test]
 fn dialog_renders_assigned_empty_absent_and_null_member_states_without_actions() {
-    assert!(membership(CollectionKind::Attachments, false, 0).starts_with("No assigned"));
-    assert!(membership(CollectionKind::Attachments, true, 0).contains("0 complete members"));
+    assert!(
+        crate::cells::membership(
+            &crate::Localizer::default(),
+            CollectionKind::Attachments,
+            false,
+            0,
+        )
+        .starts_with("No assigned")
+    );
+    assert!(
+        crate::cells::membership(
+            &crate::Localizer::default(),
+            CollectionKind::Attachments,
+            true,
+            0,
+        )
+        .replace(['\u{2068}', '\u{2069}'], "")
+        .contains("0 complete members")
+    );
     let context = egui::Context::default();
     let mut state = state();
     let target = target(&state);
@@ -251,7 +268,7 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
                 .filter_map(|shape| {
                     if let egui::epaint::Shape::Text(text) = &shape.shape {
                         Some((
-                            text.galley.job.text.as_str(),
+                            text.galley.job.text.replace(['\u{2068}', '\u{2069}'], ""),
                             text.pos.y,
                             text.pos.y + text.galley.size().y,
                         ))
@@ -262,7 +279,7 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
                 .collect();
             let header_top = texts
                 .iter()
-                .find(|(text, _, _)| *text == "Child metadata header")
+                .find(|(text, _, _)| text == "Child metadata header")
                 .expect("actual datasheet header painted")
                 .1;
             for label in [

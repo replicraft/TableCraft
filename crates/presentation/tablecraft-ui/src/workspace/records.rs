@@ -1,5 +1,6 @@
 //! Record positions are native snapshot ordinals, never stored row identities.
 use super::{Action, Data, DocumentView, State};
+use crate::localization::tr;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordTarget {
@@ -62,17 +63,15 @@ impl State {
         }
         self.records.pending = None;
         if data.source_revision != Some(target.document_revision) || data.table != target.table {
-            self.records.error = Some("The returned page belongs to another source.".into());
+            self.records.error = Some(self.localizer.text("datasheet-wrong-source"));
             return false;
         }
         if data.offset != target.parent_ordinal {
-            self.records.error =
-                Some("The returned page starts at another record position.".into());
+            self.records.error = Some(self.localizer.text("datasheet-wrong-offset"));
             return false;
         }
         if data.column_index(&target.column).is_none() {
-            self.records.error =
-                Some("The requested column is absent from the returned page.".into());
+            self.records.error = Some(self.localizer.text("datasheet-missing-column"));
             return false;
         }
         let position = target
@@ -85,9 +84,9 @@ impl State {
             });
         let Some((row, column)) = position else {
             self.records.error = Some(if !data.has_more {
-                "There is no record at that position in this snapshot.".into()
+                self.localizer.text("datasheet-missing-record")
             } else {
-                "The returned page does not contain the requested record.".into()
+                self.localizer.text("datasheet-incomplete-page")
             });
             return false;
         };
@@ -160,11 +159,11 @@ impl State {
         let mut destination = None;
 
         ui.horizontal(|ui| {
-            ui.label("Record:");
+            ui.label(tr(ui, "datasheet-record"));
             if ui
                 .add_enabled(
                     idle && current.parent_ordinal > 0,
-                    egui::Button::new("First"),
+                    egui::Button::new(tr(ui, "datasheet-first")),
                 )
                 .clicked()
             {
@@ -173,7 +172,7 @@ impl State {
             if ui
                 .add_enabled(
                     idle && current.parent_ordinal > 0,
-                    egui::Button::new("Previous"),
+                    egui::Button::new(tr(ui, "datasheet-previous")),
                 )
                 .clicked()
             {
@@ -181,13 +180,16 @@ impl State {
             }
             ui.label((u64::from(current.parent_ordinal) + 1).to_string());
             if ui
-                .add_enabled(idle && next_exists, egui::Button::new("Next"))
+                .add_enabled(
+                    idle && next_exists,
+                    egui::Button::new(tr(ui, "datasheet-next")),
+                )
                 .clicked()
             {
                 destination = next;
             }
             ui.separator();
-            let label = ui.label("Go to record");
+            let label = ui.label(tr(ui, "datasheet-go-record"));
 
             let input = ui
                 .add_enabled(
@@ -217,12 +219,16 @@ impl State {
                     });
                     enter
                 });
-            if ui.add_enabled(idle, egui::Button::new("Go")).clicked() || idle && enter {
+            if ui
+                .add_enabled(idle, egui::Button::new(tr(ui, "datasheet-go")))
+                .clicked()
+                || idle && enter
+            {
                 match parse_record(&self.records.input) {
                     Some(ordinal) => destination = Some(ordinal),
                     None => {
                         self.records.error =
-                            Some("Enter a whole record number from 1 to 4294967296.".into());
+                            Some(self.localizer.text("datasheet-record-input-help"));
                     }
                 }
             }

@@ -335,11 +335,11 @@ impl State {
         true
     }
 
-    pub(super) fn edit_status(&self) -> &'static str {
+    pub(super) fn edit_status(&self) -> String {
         match &self.edit {
-            Some(EditDialog::Saving { .. }) => "SAVING OFFLINE",
-            Some(_) => "OFFLINE EDIT",
-            None => "SNAPSHOT · PREVIEW",
+            Some(EditDialog::Saving { .. }) => self.localizer.text("shell-saving-offline"),
+            Some(_) => self.localizer.text("shell-offline-edit"),
+            None => self.localizer.text("shell-snapshot-browsing"),
         }
     }
 

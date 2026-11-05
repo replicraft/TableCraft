@@ -52,3 +52,5 @@ datasheet-control-unsupported = このフィールド表示設定は未対応で
 datasheet-control-textbox = このフィールドはテキスト ボックスを使用します
 datasheet-control-lookup = ルックアップ表示は未対応です。保存値を表示しています
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = 移動

@@ -52,3 +52,5 @@ datasheet-control-unsupported = 不支持此字段显示设置；显示存储值
 datasheet-control-textbox = 此字段使用文本框
 datasheet-control-lookup = 尚不支持查阅显示；显示存储值
 datasheet-context-pair = { $base }；{ $presentation }
+
+datasheet-go = 转到

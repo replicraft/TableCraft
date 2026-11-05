@@ -1,5 +1,5 @@
 //! Displayed-record TSV; no native record, NULL or attachment transport.
-use crate::{Cell, Data};
+use crate::{Cell, Data, Localizer};
 use std::io::{self, Write};
 
 const MAX_CLIPBOARD_BYTES: usize = 1_048_576;
@@ -14,13 +14,14 @@ pub(super) enum CopyError {
 }
 
 impl CopyError {
-    pub(super) fn message(self) -> &'static str {
-        match self {
-            Self::IncompleteRow => "The selected record does not contain every displayed field.",
-            Self::Limit => "The displayed record exceeds the 1 MiB clipboard limit.",
-            Self::Allocation => "The clipboard buffer could not be allocated.",
-            Self::Encoding => "The displayed record could not be encoded for the clipboard.",
-        }
+    pub(super) fn message(self, localizer: &Localizer) -> String {
+        let key = match self {
+            Self::IncompleteRow => "datasheet-copy-incomplete",
+            Self::Limit => "datasheet-copy-limit",
+            Self::Allocation => "datasheet-copy-allocation",
+            Self::Encoding => "datasheet-copy-encoding",
+        };
+        localizer.text(key)
     }
 }
 
@@ -112,7 +113,7 @@ mod tests {
                 },
                 0
             )
-            .unwrap_or_else(|error| panic!("{}", error.message())),
+            .unwrap_or_else(|error| panic!("{}", error.message(&Localizer::default()))),
             "\tNULL\t2 attachments\t\"tab\there\"\t\"line\r\nnext\"\t\"a\"\"b\"\n"
         );
     }
@@ -121,7 +122,7 @@ mod tests {
     fn quote_expansion_and_record_terminator_count_toward_the_clipboard_bound() {
         assert_eq!(
             encode(&[Cell::scalar("x".repeat(MAX_CLIPBOARD_BYTES - 1))])
-                .unwrap_or_else(|error| panic!("{}", error.message()))
+                .unwrap_or_else(|error| panic!("{}", error.message(&Localizer::default())))
                 .len(),
             MAX_CLIPBOARD_BYTES
         );

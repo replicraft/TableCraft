@@ -3,32 +3,50 @@ mod selection;
 pub(crate) use selection::Selection;
 
 use super::{Action, Cell, Data};
-use crate::theme::{GRID_HEADER, GRID_LINE};
+use crate::localization::{for_context, message, tr};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 
-const ACTIVE_HEADER: egui::Color32 = egui::Color32::from_rgb(255, 225, 102);
-const ACTIVE_ROW: egui::Color32 = egui::Color32::from_rgb(166, 205, 234);
 const RECORD_SELECTOR_WIDTH: f32 = 18.0;
 const CELL_TEXT_PADDING: f32 = 3.0;
 const BOOLEAN_BOX_SIZE: f32 = 14.0;
 
 pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection) -> Vec<Action> {
     let mut actions = Vec::new();
-    if let Some(error) = selection.copy_error() {
-        ui.colored_label(crate::theme::ACCENT, error);
+    if let Some(error) = selection.copy_error(ui.ctx()) {
+        ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
     }
     show_rows(ui, data, |_| {}, &mut actions, selection);
     actions
 }
 
+/// Collection metadata has a bounded dialog viewport, so its final field can
+/// use the remaining width without changing native table column proportions.
+pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selection) {
+    if let Some(error) = selection.copy_error(ui.ctx()) {
+        ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
+    }
+    render_rows(ui, data, |_| {}, &mut Vec::new(), selection, true);
+}
+
 fn show_rows(
+    ui: &mut Ui,
+    data: &Data,
+    row_drawn: impl FnMut(usize),
+    actions: &mut Vec<Action>,
+    selection: &mut Selection,
+) -> egui::scroll_area::ScrollAreaOutput<()> {
+    render_rows(ui, data, row_drawn, actions, selection, false)
+}
+
+fn render_rows(
     ui: &mut Ui,
     data: &Data,
     mut row_drawn: impl FnMut(usize),
     actions: &mut Vec<Action>,
     selection: &mut Selection,
+    fill_last_column: bool,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
@@ -36,6 +54,7 @@ fn show_rows(
         // Reserve scrollbar space below the viewport, including one-row pages.
         // The style change is scoped to this datasheet and its nested table.
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
+        ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
         ScrollArea::horizontal()
             .id_salt("datasheet_horizontal")
             .auto_shrink([false, false])
@@ -44,12 +63,20 @@ fn show_rows(
                 if let Some(row) = scroll_to {
                     table = table.scroll_to_row(row, Some(egui::Align::Center));
                 }
-                table
+                table = table
                     .auto_shrink([false, false])
                     .striped(false)
                     .resizable(true)
-                    .column(Column::exact(RECORD_SELECTOR_WIDTH))
-                    .columns(Column::initial(128.0).at_least(60.0), data.columns.len())
+                    .column(Column::exact(RECORD_SELECTOR_WIDTH));
+                for index in 0..data.columns.len() {
+                    let column = if fill_last_column && index + 1 == data.columns.len() {
+                        Column::remainder().at_least(128.0)
+                    } else {
+                        Column::initial(128.0).at_least(60.0)
+                    };
+                    table = table.column(column);
+                }
+                table
                     .header(22.0, |mut header| {
                         header.col(|ui| {
                             grid_cell(ui, true);
@@ -58,13 +85,22 @@ fn show_rows(
                             header.col(|ui| {
                                 grid_cell(ui, true);
                                 if ui.is_enabled() && selection.column() == Some(index) {
-                                    ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
+                                    ui.painter().rect_filled(
+                                        ui.max_rect(),
+                                        0.0,
+                                        crate::theme::palette(ui.ctx()).active_header,
+                                    );
                                 }
                                 let label = ui
                                     .add(egui::Label::new(RichText::new(column.label())).truncate())
                                     .on_hover_text(&column.name);
+                                let description = message(
+                                    ui,
+                                    "datasheet-field-name",
+                                    &[("name", column.name.clone())],
+                                );
                                 ui.ctx().accesskit_node_builder(label.id, |node| {
-                                    node.set_description(format!("Field name: {}", column.name));
+                                    node.set_description(description);
                                 });
                             });
                         }
@@ -77,7 +113,11 @@ fn show_rows(
                             row.col(|ui| {
                                 grid_cell(ui, true);
                                 if ui.is_enabled() && selection.row() == Some(index) {
-                                    ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
+                                    ui.painter().rect_filled(
+                                        ui.max_rect(),
+                                        0.0,
+                                        crate::theme::palette(ui.ctx()).active_header,
+                                    );
                                 }
                                 row_selector(ui, data, index, number, selection);
                             });
@@ -89,9 +129,9 @@ fn show_rows(
                                     let active = selection.selected(index, position);
                                     if ui.is_enabled() && selection.row() == Some(index) {
                                         let fill = if active {
-                                            egui::Color32::WHITE
+                                            crate::theme::palette(ui.ctx()).active_cell
                                         } else {
-                                            ACTIVE_ROW
+                                            crate::theme::palette(ui.ctx()).active_row
                                         };
                                         ui.painter().rect_filled(ui.max_rect(), 0.0, fill);
                                     }
@@ -101,7 +141,10 @@ fn show_rows(
                                         ui.painter().rect_stroke(
                                             ui.max_rect(),
                                             0.0,
-                                            egui::Stroke::new(1.0, crate::theme::ACCENT),
+                                            egui::Stroke::new(
+                                                1.0,
+                                                crate::theme::palette(ui.ctx()).accent,
+                                            ),
                                             egui::StrokeKind::Inside,
                                         );
                                     }
@@ -132,13 +175,13 @@ fn show_rows(
 fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &mut Selection) {
     let response = ui.allocate_response(ui.available_size(), Sense::click());
     selection.observe_row(ui, data, row, &response);
-    response.widget_info(|| {
-        WidgetInfo::labeled(
-            WidgetType::Button,
-            ui.is_enabled(),
-            format!("Select record {number}"),
-        )
-    });
+    let label = message(
+        ui,
+        "datasheet-select-record",
+        &[("number", number.to_string())],
+    );
+    response
+        .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label.clone()));
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_role(egui::accesskit::Role::RowHeader);
         node.set_selected(selection.row_selected() && selection.row() == Some(row));
@@ -156,16 +199,17 @@ fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &m
         });
     }
     response.context_menu(|ui| {
-        if ui.button("Copy displayed record").clicked() {
+        if ui.button(tr(ui, "datasheet-copy-record")).clicked() {
             selection.copy(data, ui.ctx());
             ui.close();
         }
     });
-    response.on_hover_text(if selection.row_selected() && selection.row() == Some(row) {
-        format!("Record {number} is selected. Copy uses all displayed fields, including collection summaries; it does not copy child payloads.")
+    let key = if selection.row_selected() && selection.row() == Some(row) {
+        "datasheet-record-selected-help"
     } else {
-        format!("Select record {number}. Copy uses all displayed fields, including collection summaries; it does not copy child payloads.")
-    });
+        "datasheet-select-record-help"
+    };
+    response.on_hover_text(message(ui, key, &[("number", number.to_string())]));
 }
 
 fn collect_contents_action(
@@ -187,11 +231,11 @@ fn collect_contents_action(
     let mut view_contents = false;
     let mut edit_cell = false;
     response.context_menu(|ui| {
-        if contents.is_some() && ui.button("View contents").clicked() {
+        if contents.is_some() && ui.button(tr(ui, "datasheet-view-contents")).clicked() {
             view_contents = true;
             ui.close();
         }
-        if edit.is_some() && ui.button("Edit cell…").clicked() {
+        if edit.is_some() && ui.button(tr(ui, "datasheet-edit-cell")).clicked() {
             edit_cell = true;
             ui.close();
         }
@@ -220,9 +264,10 @@ fn collect_contents_action(
 fn grid_cell(ui: &Ui, header: bool) {
     let rect = ui.max_rect();
     if header {
-        ui.painter().rect_filled(rect, 0.0, GRID_HEADER);
+        ui.painter()
+            .rect_filled(rect, 0.0, crate::theme::palette(ui.ctx()).grid_header);
     }
-    let stroke = egui::Stroke::new(0.5, GRID_LINE);
+    let stroke = egui::Stroke::new(0.5, crate::theme::palette(ui.ctx()).grid_line);
     ui.painter()
         .line_segment([rect.right_top(), rect.right_bottom()], stroke);
     ui.painter()
@@ -237,15 +282,17 @@ pub(crate) fn cell(
     allow_copy: bool,
 ) -> Response {
     let text = value.text.as_str();
-    let context = value.context();
-    let display = match value.badge() {
+    let localizer = for_context(ui.ctx());
+    let context = value.context(&localizer);
+    let badge = value.badge(&localizer);
+    let display = match badge.as_deref() {
         Some(badge) => Cow::Owned(format!("{text}  [{badge}]")),
         None => Cow::Borrowed(text),
     };
     let response = ui.allocate_response(ui.available_size(), Sense::click());
     let checkbox = value.checkbox_value();
     if let Some(checked) = checkbox {
-        paint_boolean(ui, response.rect, checked, value.badge());
+        paint_boolean(ui, response.rect, checked, badge.as_deref());
     } else {
         paint_cell_text(ui, response.rect, display.as_ref());
     }
@@ -264,15 +311,37 @@ pub(crate) fn cell(
             );
         });
     }
+    let accessible_label = match &context {
+        Some(context) => message(
+            ui,
+            "datasheet-cell-details",
+            &[
+                ("column", column.to_owned()),
+                ("row", row.to_string()),
+                ("text", text.to_owned()),
+                ("context", context.clone()),
+            ],
+        ),
+        None => message(
+            ui,
+            "datasheet-cell-context",
+            &[
+                ("column", column.to_owned()),
+                ("row", row.to_string()),
+                ("text", text.to_owned()),
+            ],
+        ),
+    };
     response.widget_info(|| {
-        let label = match &context {
-            Some(context) => format!("{column}, row {row}: {text}; {context}"),
-            None => format!("{column}, row {row}: {text}"),
-        };
         if let Some(checked) = checkbox {
-            WidgetInfo::selected(WidgetType::Checkbox, ui.is_enabled(), checked, label)
+            WidgetInfo::selected(
+                WidgetType::Checkbox,
+                ui.is_enabled(),
+                checked,
+                accessible_label.clone(),
+            )
         } else {
-            WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), label)
+            WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), accessible_label.clone())
         }
     });
     if checkbox.is_some() {
@@ -305,7 +374,7 @@ pub(crate) fn cell(
             if let Some(context) = &context {
                 ui.small(context);
             }
-            ui.small("Copy copies the full cell value.");
+            ui.small(tr(ui, "datasheet-copy-cell-help"));
         });
     }
     response.on_hover_ui(|ui| {
@@ -341,8 +410,12 @@ fn paint_boolean(ui: &Ui, rect: egui::Rect, checked: bool, badge: Option<&str>) 
         ),
         egui::Vec2::splat(size),
     );
-    let color = egui::Color32::from_rgb(44, 107, 159);
-    let fill = if checked { color } else { egui::Color32::WHITE };
+    let color = crate::theme::palette(ui.ctx()).checkbox_accent;
+    let fill = if checked {
+        color
+    } else {
+        crate::theme::palette(ui.ctx()).surface
+    };
     ui.painter().rect_filled(check, 2.0, fill);
     ui.painter().rect_stroke(
         check,
@@ -358,7 +431,7 @@ fn paint_boolean(ui: &Ui, rect: egui::Rect, checked: bool, badge: Option<&str>) 
                 egui::pos2(inner.center().x - 1.0, inner.bottom()),
                 inner.right_top(),
             ],
-            egui::Stroke::new(1.5, egui::Color32::WHITE),
+            egui::Stroke::new(1.5, crate::theme::palette(ui.ctx()).surface),
         ));
     }
     if let Some(badge) = badge {

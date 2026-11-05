@@ -2,13 +2,18 @@
 mod cells;
 mod columns;
 mod datasheet;
+mod fonts;
 mod keyboard;
+pub mod localization;
 mod theme;
 mod workspace;
 
 pub use cells::{Cell, CellKind, DisplayControl};
 pub use columns::Column;
-pub use theme::configure;
+pub use fluent_bundle::FluentArgs;
+pub use localization::{Locale, Localizer};
+pub use theme::{Theme, configure};
+pub use workspace::preview;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, EditDraft, EditInput, EditReview,
     EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue, ParameterInput,

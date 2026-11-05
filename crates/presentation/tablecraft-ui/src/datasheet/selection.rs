@@ -106,8 +106,9 @@ impl Selection {
         true
     }
 
-    pub(super) fn copy_error(&self) -> Option<&'static str> {
-        self.copy_error.map(clipboard::CopyError::message)
+    pub(super) fn copy_error(&self, ctx: &egui::Context) -> Option<String> {
+        let localizer = crate::localization::for_context(ctx);
+        self.copy_error.map(|error| error.message(&localizer))
     }
 
     pub(super) fn observe_row(
@@ -330,7 +331,7 @@ mod tests {
         let mut output = context.run_ui(egui::RawInput::default(), |ui| {
             assert!(!selection.copy(&data, ui.ctx()));
         });
-        assert!(selection.copy_error().is_some());
+        assert!(selection.copy_error(&context).is_some());
         assert!(
             !output
                 .platform_output

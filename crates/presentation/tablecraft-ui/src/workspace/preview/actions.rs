@@ -1,0 +1,208 @@
+//! Local presentation responses. No action escapes to a runtime host.
+use super::{Preview, fixtures};
+use crate::workspace::editing::EditDialog;
+use crate::{
+    Action, Cell, CellKind, CollectionKind, ContentsTarget, EditDraft, EditInput, EditReview,
+    EditSaveOutcome, EditTarget, SavedQueryTarget,
+};
+
+impl Preview {
+    pub(super) fn dispatch(&mut self, action: Action) {
+        match action {
+            Action::ChooseFile | Action::Open => {
+                self.state.password.clear();
+                self.state.error = Some(self.state.localizer.text("settings-mock-open-disabled"));
+                self.state.show_open();
+            }
+            Action::Page { table, offset } => {
+                self.state.set_table_data(fixtures::page(&table, offset));
+            }
+            Action::ViewSchema { table } => {
+                self.state.prepare_schema_view();
+                self.state.set_schema(fixtures::schema(&table));
+            }
+            Action::Query => {
+                if self.state.sql == fixtures::SQL {
+                    self.state.set_query_data(fixtures::query());
+                } else {
+                    self.state.error =
+                        Some(self.state.localizer.text("settings-mock-sql-disabled"));
+                }
+            }
+            Action::InspectSavedQuery { target } => self.inspect_saved(target),
+            Action::RunSavedQuery { target, parameters } => {
+                if self.state.can_run_saved_query(&target, &parameters) {
+                    let request = self.request();
+                    self.state
+                        .begin_saved_query_run(target.clone(), parameters, request);
+                    let mut data = fixtures::query();
+                    data.table = target.name.clone();
+                    self.state.set_saved_query_data(request, target, data);
+                }
+            }
+            Action::NavigateRecord { target } => {
+                if self.state.can_navigate_record(&target) {
+                    let request = self.request();
+                    self.state.begin_record_navigation(target.clone(), request);
+                    let offset = target.parent_ordinal / fixtures::PAGE_ROWS * fixtures::PAGE_ROWS;
+                    self.state.set_record_data(
+                        request,
+                        target.clone(),
+                        fixtures::page(&target.table, offset),
+                    );
+                }
+            }
+            Action::ViewContents { target } => {
+                let kind = match target.column.as_str() {
+                    "Categories" => CollectionKind::Multivalue,
+                    "Notes" => CollectionKind::VersionHistory,
+                    _ => CollectionKind::Attachments,
+                };
+                self.collection(target, kind);
+            }
+            Action::CloseContents { .. } => self.state.close_contents(),
+            Action::BeginEdit { target } => self.edit(target),
+            Action::ReviewEdit { draft_id, input } => {
+                if self.state.can_review_edit(draft_id, &input) {
+                    self.preview_review(input);
+                }
+            }
+            Action::ApplyEdit { review_id } => {
+                if self.state.can_apply_edit(review_id) {
+                    let save_id = self.request();
+                    self.state.begin_edit_save(review_id, save_id);
+                    self.state.set_edit_save_outcome(
+                        save_id,
+                        EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-saved")),
+                    );
+                }
+            }
+            Action::CloseEdit { .. } | Action::AcknowledgeEditSave { .. } => {
+                self.state.close_edit();
+            }
+            Action::CancelEditSave { save_id } => {
+                self.state.set_edit_save_outcome(
+                    save_id,
+                    EditSaveOutcome::Cancelled(
+                        self.state.localizer.text("settings-mock-save-cancelled"),
+                    ),
+                );
+            }
+            Action::RecoverEditSave { save_id } | Action::ReleaseEditSave { save_id } => {
+                let operation_id = self.request();
+                self.state.begin_edit_resolution(save_id, operation_id);
+                self.state.set_edit_save_outcome(
+                    operation_id,
+                    EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-resolved")),
+                );
+            }
+            Action::Cancel => {
+                self.state.busy = false;
+                self.state.error = Some(self.state.localizer.text("settings-mock-cancelled"));
+            }
+        }
+    }
+
+    pub(super) fn inspect_saved(&mut self, target: SavedQueryTarget) {
+        if !self.state.can_inspect_saved_query(&target) {
+            return;
+        }
+        let request = self.request();
+        self.state
+            .begin_saved_query_inspection(target.clone(), request);
+        let parameters = fixtures::parameters(&target);
+        self.state
+            .set_saved_query_details(request, target, parameters);
+    }
+
+    pub(super) fn collection(&mut self, target: ContentsTarget, kind: CollectionKind) {
+        if !self.state.can_view_contents(&target) {
+            return;
+        }
+        let request = self.request();
+        self.state.begin_contents(target.clone(), request);
+        self.state
+            .set_contents(request, target, kind, true, fixtures::contents(kind));
+    }
+
+    pub(super) fn edit(&mut self, target: EditTarget) {
+        if !self.state.can_edit_cell(&target) {
+            return;
+        }
+        let Some(data) = &self.state.data else {
+            return;
+        };
+        let Some(column) = data.column_index(&target.column) else {
+            return;
+        };
+        let Some(row) = target.parent_ordinal.checked_sub(data.offset) else {
+            return;
+        };
+        let Some(original) = data.rows.get(row as usize).and_then(|row| row.get(column)) else {
+            return;
+        };
+        let original = copy_cell(original);
+        let initial = EditInput {
+            text: if target.column == "Balance" {
+                "1245.50".into()
+            } else {
+                original.text.clone()
+            },
+            is_null: matches!(original.kind, CellKind::Scalar { is_null: true, .. }),
+        };
+        let request = self.request();
+        self.state.begin_edit(target.clone(), request);
+        self.state.set_edit_draft(
+            request,
+            EditDraft {
+                id: request,
+                target,
+                original,
+                initial,
+                input_kind: "text".into(),
+                nullable: true,
+            },
+        );
+    }
+
+    pub(super) fn preview_review(&mut self, input: EditInput) -> Option<u64> {
+        let Some(EditDialog::Draft {
+            draft,
+            input: current,
+            ..
+        }) = &mut self.state.edit
+        else {
+            return None;
+        };
+        *current = input.clone();
+        let draft_id = draft.id;
+        let target = draft.target.clone();
+        let before = copy_cell(&draft.original);
+        let after = if input.is_null {
+            fixtures::null()
+        } else {
+            fixtures::text(&input.text)
+        };
+        let request = self.request();
+        self.state.begin_edit_review(draft_id, input, request);
+        self.state.set_edit_review(
+            request,
+            EditReview {
+                id: request,
+                draft_id,
+                target,
+                before,
+                after,
+                changed_rows: 1,
+            },
+        );
+        Some(request)
+    }
+}
+
+fn copy_cell(cell: &Cell) -> Cell {
+    Cell {
+        text: cell.text.clone(),
+        kind: cell.kind,
+    }
+}

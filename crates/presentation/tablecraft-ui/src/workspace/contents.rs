@@ -1,5 +1,6 @@
 //! Revision-bound read-only collection dialogs; no database or payload decoding.
 use super::{Action, Data, DocumentView, State};
+use crate::localization::{for_context, message, tr};
 use crate::{CellKind, datasheet};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -197,14 +198,20 @@ impl State {
         let response = egui::Modal::new(egui::Id::new("collection_contents")).show(ctx, |ui| {
             ui.set_width((ctx.content_rect().width() - 80.0).clamp(320.0, 880.0));
             ui.horizontal(|ui| {
-                ui.heading("Collection contents");
-                close = ui.button("Close").clicked();
+                ui.heading(tr(ui, "collections-title"));
+                close = ui.button(tr(ui, "backstage-close")).clicked();
             });
-            ui.label(format!(
-                "{} · {} · parent {}",
-                dialog.target.table,
-                dialog.target.column,
-                u64::from(dialog.target.parent_ordinal) + 1,
+            ui.label(message(
+                ui,
+                "collections-target",
+                &[
+                    ("table", dialog.target.table.clone()),
+                    ("column", dialog.target.column.clone()),
+                    (
+                        "parent",
+                        (u64::from(dialog.target.parent_ordinal) + 1).to_string(),
+                    ),
+                ],
             ));
             ui.separator();
 
@@ -212,19 +219,28 @@ impl State {
                 ContentsResult::Loading => {
                     ui.horizontal(|ui| {
                         ui.spinner();
-                        ui.label("Reading stored contents…");
+                        ui.label(tr(ui, "collections-reading"));
                     });
                 }
                 ContentsResult::Failed(message) => {
                     ui.label(message);
                 }
-                ContentsResult::Ready { kind, assigned, data } => {
-                    ui.label(membership(*kind, *assigned, data.rows.len()));
+                ContentsResult::Ready {
+                    kind,
+                    assigned,
+                    data,
+                } => {
+                    ui.label(crate::cells::membership(
+                        &for_context(ui.ctx()),
+                        *kind,
+                        *assigned,
+                        data.rows.len(),
+                    ));
                     if *kind == CollectionKind::Attachments {
-                        ui.small("Stored metadata only. Attachment bytes remain encoded; nothing is opened or exported.");
+                        ui.small(tr(ui, "collections-attachment-help"));
                     }
                     if *kind == CollectionKind::VersionHistory {
-                        ui.small("Stored order and original timestamp bits; current Memo text is separate.");
+                        ui.small(tr(ui, "collections-history-help"));
                     }
                     if !data.rows.is_empty() {
                         ui.add_space(4.0);
@@ -238,7 +254,7 @@ impl State {
                             egui::Layout::top_down(egui::Align::LEFT),
                             |ui| {
                                 ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                                let _ = datasheet::show(ui, data, &mut dialog.selection);
+                                datasheet::show_collection(ui, data, &mut dialog.selection);
                             },
                         );
                     }
@@ -250,15 +266,6 @@ impl State {
             actions.push(Action::CloseContents { request_id });
         }
     }
-}
-
-fn membership(kind: CollectionKind, assigned: bool, count: usize) -> String {
-    let name = match kind {
-        CollectionKind::Multivalue => "multivalue",
-        CollectionKind::Attachments => "attachment",
-        CollectionKind::VersionHistory => "stored history",
-    };
-    crate::cells::membership(name, assigned, count)
 }
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 //! Query editor admission is shared with keyboard command handling.
 use super::{Action, DocumentView, State};
-use crate::theme::MUTED;
+use crate::localization::tr;
 use egui::{RichText, TextEdit, Ui};
 
 impl State {
@@ -8,7 +8,7 @@ impl State {
         if self.view == DocumentView::Query {
             ui.horizontal(|ui| {
                 if ui
-                    .selectable_label(!self.saved_query.active, "SQL query")
+                    .selectable_label(!self.saved_query.active, tr(ui, "query-title"))
                     .clicked()
                 {
                     self.interrupt_saved_query();
@@ -26,20 +26,22 @@ impl State {
                 self.saved_query_editor(ui, actions);
                 return;
             }
-            let sql_label = ui.heading("SQL query");
+            let sql_label = ui.heading(tr(ui, "query-title"));
             ui.label(
-                RichText::new("Run a supported SELECT against the opened snapshot.").color(MUTED),
+                RichText::new(tr(ui, "query-help")).color(crate::theme::palette(ui.ctx()).muted),
             );
-            ui.add(
-                TextEdit::multiline(&mut self.sql)
-                    .code_editor()
-                    .desired_rows(5)
-                    .desired_width(f32::INFINITY)
-                    .hint_text("SELECT TOP 100 * FROM [Customers]"),
-            )
-            .labelled_by(sql_label.id);
+            let sql = ui
+                .add(
+                    TextEdit::multiline(&mut self.sql)
+                        .code_editor()
+                        .desired_rows(5)
+                        .desired_width(f32::INFINITY)
+                        .hint_text(tr(ui, "query-placeholder")),
+                )
+                .labelled_by(sql_label.id);
+            crate::theme::input_border(ui, &sql);
             if ui
-                .add_enabled(self.query_ready(), egui::Button::new("Run query"))
+                .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))
                 .clicked()
             {
                 actions.push(Action::Query);

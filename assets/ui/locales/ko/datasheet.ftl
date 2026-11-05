@@ -52,3 +52,5 @@ datasheet-control-unsupported = 지원되지 않는 필드 표시 설정이므�
 datasheet-control-textbox = 이 필드는 텍스트 상자를 사용합니다
 datasheet-control-lookup = 조회 표시는 아직 지원되지 않으므로 저장된 값을 표시합니다
 datasheet-context-pair = { $base }; { $presentation }
+
+datasheet-go = 이동

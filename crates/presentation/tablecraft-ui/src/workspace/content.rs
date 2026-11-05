@@ -1,35 +1,39 @@
 //! Active table/query result presentation, preserving each slot's paging state.
 use super::{Action, DocumentView, State};
-use crate::{
-    datasheet,
-    theme::{ACCENT, MUTED},
-};
-use egui::{Color32, Frame, RichText, Ui};
+use crate::datasheet;
+use crate::localization::{message, tr};
+use egui::{Frame, RichText, Ui};
 
 impl State {
     pub(super) fn content(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         egui::CentralPanel::default()
-            .frame(Frame::central_panel(ui.style()).fill(Color32::WHITE))
+            .frame(Frame::central_panel(ui.style()).fill(crate::theme::palette(ui.ctx()).surface))
             .show(ui, |ui| {
                 let mut selected_view = None;
                 ui.horizontal(|ui| {
                     let table_title = self
                         .data
                         .as_ref()
-                        .map_or("Table", |data| data.table.as_str());
+                        .map(|data| data.table.clone())
+                        .unwrap_or_else(|| tr(ui, "shell-table"));
                     for (view, title) in [
                         (DocumentView::Table, table_title),
-                        (DocumentView::Query, "Query"),
-                        (DocumentView::Design, "Table Design"),
+                        (DocumentView::Query, tr(ui, "shell-query")),
+                        (DocumentView::Design, tr(ui, "shell-table-design")),
                     ] {
                         if view == DocumentView::Design && self.schema.is_none() {
                             continue;
                         }
                         let response = ui.selectable_label(self.view == view, title);
+                        ui.ctx().accesskit_node_builder(response.id, |node| {
+                            node.set_role(egui::accesskit::Role::Tab);
+                            node.clear_toggled();
+                            node.set_selected(self.view == view);
+                        });
                         if self.view == view {
                             ui.painter().line_segment(
                                 [response.rect.left_bottom(), response.rect.right_bottom()],
-                                egui::Stroke::new(2.0, ACCENT),
+                                egui::Stroke::new(2.0, crate::theme::palette(ui.ctx()).accent),
                             );
                         }
                         if response.clicked() {
@@ -44,10 +48,10 @@ impl State {
                 ui.separator();
                 if let Some(error) = &self.error {
                     Frame::new()
-                        .fill(Color32::from_rgb(255, 237, 237))
+                        .fill(ui.visuals().extreme_bg_color)
                         .inner_margin(12)
                         .show(ui, |ui| {
-                            ui.colored_label(ACCENT, error);
+                            ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
                         });
                     ui.add_space(10.0);
                 }
@@ -58,7 +62,17 @@ impl State {
                 self.query_editor(ui, actions);
                 if self.view == DocumentView::Table {
                     egui::Panel::bottom("record_navigation").show(ui, |ui| {
-                        self.record_navigator(ui, actions);
+                        egui::ScrollArea::horizontal()
+                            .id_salt("record_toolbar")
+                            .show(ui, |ui| {
+                                ui.horizontal(|ui| {
+                                    self.record_navigator(ui, actions);
+                                    if let Some(data) = &self.data {
+                                        ui.separator();
+                                        page_navigator(ui, data, self.busy, actions);
+                                    }
+                                });
+                            });
                     });
                 }
                 let data = match self.view {
@@ -70,54 +84,8 @@ impl State {
                     DocumentView::Design => None,
                 };
                 if let Some(data) = data {
-                    ui.horizontal(|ui| {
-                        ui.heading(&data.table);
-                        ui.label(
-                            RichText::new(format!("{} columns", data.columns.len())).color(MUTED),
-                        );
-                    });
-                    if self.view == DocumentView::Table {
-                        ui.horizontal(|ui| {
-                            if ui
-                                .add_enabled(
-                                    !self.busy && data.offset > 0,
-                                    egui::Button::new("‹ Previous page"),
-                                )
-                                .clicked()
-                            {
-                                actions.push(Action::Page {
-                                    table: data.table.clone(),
-                                    offset: data.offset.saturating_sub(100),
-                                });
-                            }
-                            ui.label(format!(
-                                "Rows {}–{}",
-                                if data.rows.is_empty() {
-                                    0
-                                } else {
-                                    u64::from(data.offset) + 1
-                                },
-                                u64::from(data.offset) + data.rows.len() as u64
-                            ));
-                            let next_offset = data.offset.checked_add(100);
-                            if ui
-                                .add_enabled(
-                                    !self.busy && data.has_more && next_offset.is_some(),
-                                    egui::Button::new("Next page ›"),
-                                )
-                                .clicked()
-                            {
-                                actions.push(Action::Page {
-                                    table: data.table.clone(),
-                                    offset: next_offset
-                                        .expect("enabled only for a valid next page"),
-                                });
-                            }
-                        });
-                    }
-                    ui.separator();
                     if data.rows.is_empty() {
-                        ui.weak("No rows.");
+                        ui.weak(tr(ui, "datasheet-no-rows"));
                     } else {
                         let selection = if self.view == DocumentView::Table {
                             &mut self.table_selection
@@ -129,23 +97,73 @@ impl State {
                         actions.extend(datasheet::show(ui, data, selection));
                     }
                 } else if self.view == DocumentView::Query {
-                    ui.weak(if self.saved_query.active {
-                        "Run the saved query to see its results."
-                    } else {
-                        "Run a query to see its results."
-                    });
+                    ui.weak(tr(
+                        ui,
+                        if self.saved_query.active {
+                            "query-saved-empty"
+                        } else {
+                            "query-empty"
+                        },
+                    ));
                 } else {
                     ui.add_space(80.0);
                     ui.vertical_centered(|ui| {
-                        ui.label(RichText::new("Your data. A familiar workspace.").size(29.0));
+                        ui.label(RichText::new(tr(ui, "shell-welcome")).size(29.0));
                         ui.add_space(12.0);
-                        ui.label(
-                            "Open an Access database, then choose a table to browse its contents.",
-                        );
+                        ui.label(tr(ui, "shell-welcome-help"));
                         ui.add_space(8.0);
-                        ui.weak("MDB and ACCDB · tables and supported SELECT queries");
+                        ui.weak(tr(ui, "shell-supported-files"));
                     });
                 }
             });
     }
+}
+
+fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec<Action>) {
+    ui.horizontal(|ui| {
+        if ui
+            .add_enabled(
+                !busy && data.offset > 0,
+                egui::Button::new(tr(ui, "datasheet-previous-page")),
+            )
+            .clicked()
+        {
+            actions.push(Action::Page {
+                table: data.table.clone(),
+                offset: data.offset.saturating_sub(100),
+            });
+        }
+        ui.label(message(
+            ui,
+            "datasheet-row-range",
+            &[
+                (
+                    "first",
+                    if data.rows.is_empty() {
+                        0
+                    } else {
+                        u64::from(data.offset) + 1
+                    }
+                    .to_string(),
+                ),
+                (
+                    "last",
+                    (u64::from(data.offset) + data.rows.len() as u64).to_string(),
+                ),
+            ],
+        ));
+        let next_offset = data.offset.checked_add(100);
+        if ui
+            .add_enabled(
+                !busy && data.has_more && next_offset.is_some(),
+                egui::Button::new(tr(ui, "datasheet-next-page")),
+            )
+            .clicked()
+        {
+            actions.push(Action::Page {
+                table: data.table.clone(),
+                offset: next_offset.expect("enabled only for a valid next page"),
+            });
+        }
+    });
 }

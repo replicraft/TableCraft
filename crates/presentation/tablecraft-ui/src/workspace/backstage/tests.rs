@@ -224,3 +224,26 @@ fn about_suppresses_hidden_query_shortcut_and_keeps_explicit_cancel_available() 
         [Action::Cancel]
     ));
 }
+
+#[test]
+fn options_changes_the_actual_theme_and_language_without_database_actions() {
+    let context = egui::Context::default();
+    crate::configure(&context);
+    let mut state = State {
+        backstage: Backstage::Options,
+        ..Default::default()
+    };
+
+    assert!(click(&mut state, "Dark", &context).is_empty());
+    assert_eq!(state.theme, Theme::Dark);
+    render(&mut state, egui::vec2(1280.0, 820.0), vec![], &context);
+    assert_eq!(context.theme(), egui::Theme::Dark);
+
+    assert!(click(&mut state, "English (US)", &context).is_empty());
+    assert!(click(&mut state, "日本語", &context).is_empty());
+    assert_eq!(state.localizer.locale(), Locale::Ja);
+    let (actions, painted) = render(&mut state, egui::vec2(1280.0, 820.0), vec![], &context);
+    assert!(actions.is_empty());
+    assert!(painted.iter().any(|(text, _)| text == "外観"));
+    assert_eq!(state.localizer.diagnostics(), Default::default());
+}
