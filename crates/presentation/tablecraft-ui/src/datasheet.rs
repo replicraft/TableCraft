@@ -4,7 +4,7 @@ mod preview;
 mod selection;
 pub(crate) use selection::Selection;
 
-use super::{Action, Cell, Data, HorizontalAlignment, SortSpec, SortTarget};
+use super::{Action, Cell, Data, HorizontalAlignment, InsertTarget, SortSpec, SortTarget};
 use crate::localization::{for_context, message, tr};
 use crate::workspace::focus::{self, Pane};
 use crate::workspace::ribbon::Icon;
@@ -31,6 +31,7 @@ struct RowView {
     collection: bool,
     pane: Pane,
     sort_header: Option<SortHeader>,
+    insert_target: Option<InsertTarget>,
 }
 
 pub(super) fn show(
@@ -39,6 +40,7 @@ pub(super) fn show(
     selection: &mut Selection,
     pane: Pane,
     sort_header: Option<SortHeader>,
+    insert_target: Option<InsertTarget>,
 ) -> Vec<Action> {
     let mut actions = Vec::new();
     if let Some(error) = selection.copy_error(ui.ctx()) {
@@ -54,6 +56,7 @@ pub(super) fn show(
             collection: false,
             pane,
             sort_header,
+            insert_target,
         },
     );
     actions
@@ -75,6 +78,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
             collection: true,
             pane: Pane::Document,
             sort_header: None,
+            insert_target: None,
         },
     );
 }
@@ -98,6 +102,7 @@ fn show_rows(
             collection: false,
             pane,
             sort_header: None,
+            insert_target: None,
         },
     )
 }
@@ -191,12 +196,53 @@ fn render_rows(
                         }
                     })
                     .body(|mut body| {
+                        let insert = view.insert_target.as_ref().filter(|target| {
+                            !data.has_more
+                                && !data.columns.is_empty()
+                                && data.source_revision == Some(target.document_revision)
+                                && data.table == target.table
+                        });
                         if data.rows.is_empty() {
-                            let bounds = body.max_rect();
+                            let mut bounds = body.max_rect();
+                            if insert.is_some() {
+                                bounds.min.y += DATA_ROW_HEIGHT * scale;
+                            }
                             empty_body(body.ui_mut(), bounds, scale);
                         }
-                        body.rows(DATA_ROW_HEIGHT * scale, data.rows.len(), |mut row| {
+                        let visible_rows = data
+                            .rows
+                            .len()
+                            .saturating_add(usize::from(insert.is_some()));
+                        body.rows(DATA_ROW_HEIGHT * scale, visible_rows, |mut row| {
                             let index = row.index();
+                            if index == data.rows.len() {
+                                if let Some(target) = insert {
+                                    row.col(|ui| {
+                                        grid_cell(ui, true);
+                                        ui.centered_and_justified(|ui| ui.label("*"));
+                                    });
+                                    for position in 0..data.columns.len() {
+                                        row.col(|ui| {
+                                            grid_cell(ui, false);
+                                            if position == 0 {
+                                                let button =
+                                                    egui::Button::new(tr(ui, "insertion-title"))
+                                                        .frame(false)
+                                                        .truncate();
+                                                if ui
+                                                    .add_sized(ui.available_size(), button)
+                                                    .clicked()
+                                                {
+                                                    actions.push(Action::BeginInsert {
+                                                        target: target.clone(),
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                                return;
+                            }
                             row_drawn(index);
                             let number = data
                                 .display_ordinal(index)

@@ -76,6 +76,7 @@ impl State {
                     });
             });
         }
+        let insert_target = self.current_insert_target();
         let data = match self.view {
             DocumentView::Table => self.data.as_ref(),
             DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
@@ -99,7 +100,14 @@ impl State {
             if selection.position().is_some() {
                 focus::declare(ui, pane);
             }
-            actions.extend(datasheet::show(ui, data, selection, pane, sort_header));
+            actions.extend(datasheet::show(
+                ui,
+                data,
+                selection,
+                pane,
+                sort_header,
+                insert_target,
+            ));
         } else if self.view == DocumentView::Query {
             ui.weak(tr(
                 ui,
