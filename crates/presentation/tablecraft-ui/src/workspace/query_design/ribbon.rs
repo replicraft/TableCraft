@@ -19,7 +19,7 @@ impl State {
             group(ui, &tr(ui, "ribbon-views"), |ui| {
                 let view = command(
                     ui,
-                    Icon::TableEdit,
+                    Icon::ViewDesign,
                     &tr(ui, "ribbon-view"),
                     ready,
                     CommandSize::Large,

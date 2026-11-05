@@ -182,6 +182,48 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
     assert!(harness.state().1.is_empty());
 
     harness
+        .get_by_role_and_label(Role::Button, "Tables")
+        .click();
+    harness.run();
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Second")
+            .count(),
+        1,
+        "the active name filter still leaves only the saved query when Tables is collapsed"
+    );
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Second")
+            .count(),
+        1,
+        "collapsing Tables leaves the independently listed saved query visible"
+    );
+    assert_eq!(harness.state().0.selected_navigation_object(), selected);
+    assert!(harness.state().1.is_empty());
+    crate::theme::set_theme(&harness.ctx, crate::Theme::Dark);
+    harness.run();
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Second")
+            .count(),
+        1,
+        "the active name filter still leaves only the saved query when Tables is collapsed"
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Tables")
+        .click();
+    harness.run();
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Second")
+            .count(),
+        2,
+        "expanding Tables restores its filtered object row alongside the saved query"
+    );
+    assert!(harness.state().1.is_empty());
+
+    harness
         .state_mut()
         .0
         .database

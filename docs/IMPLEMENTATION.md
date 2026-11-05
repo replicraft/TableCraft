@@ -1,5 +1,26 @@
 # Implementation status
 
+## Screenshot-guided shell and Ribbon polish — 5 November 2026
+
+The shared shell now has the TableCraft brand, spaced Quick Access controls,
+compact icon-based record navigation, distinct view-selector artwork and a thin
+zoom control. Home Zoom follows the native body/footer arrangement while retaining
+its existing read-only and reviewed-edit boundaries. Currency's default choice
+shows the resolved regional unit. ACE 16 title compatibility uses Access 2016 for
+both stored families; inspection keeps the precise profile.
+
+Tables collapse independently of saved queries, object-tab close artwork is
+smaller, and native grids have an inert Click to Add placeholder outside stored
+column/selection identity. Synthetic tabs now expose grouped disabled command
+previews throughout the Ribbon. No database functionality was expanded.
+
+All 207 UI and 63 desktop tests passed across the final gate and focused
+follow-ups, including 1,184 scene/language/theme combinations. Strict selected
+Clippy, formatting, dependency/documentation checks and 412 original SVG hashes
+passed. Offscreen light/dark and minimum-size review is recorded in the
+[presentation preview](ui/PRESENTATION_PREVIEW.md). Native window checks remain
+suspended; new uncaptured tab layouts are provisional.
+
 ## Reviewed current-occurrence Replace — 5 November 2026
 
 Home Replace now opens the shared Find and Replace window. A successful native

@@ -508,16 +508,23 @@ fn disabled_mock_commands_offer_no_assistive_actions_and_reject_forced_activatio
     let (_, output) = render(&mut state, &context, vec![]);
     let paste = command_id(&output, "Paste text");
     let tree = output.platform_output.accesskit_update.as_ref().unwrap();
-    for label in ["Paste text", "Create"] {
-        let (_, node) = tree
-            .nodes
-            .iter()
-            .find(|(_, node)| node.label() == Some(label))
-            .unwrap();
-        assert!(node.is_disabled());
-        assert!(!node.supports_action(egui::accesskit::Action::Click));
-        assert!(!node.supports_action(egui::accesskit::Action::Focus));
-    }
+    let (_, paste_node) = tree
+        .nodes
+        .iter()
+        .find(|(_, node)| node.role() == Role::Button && node.label() == Some("Paste text"))
+        .unwrap();
+    assert!(paste_node.is_disabled());
+    assert!(!paste_node.supports_action(egui::accesskit::Action::Click));
+    assert!(!paste_node.supports_action(egui::accesskit::Action::Focus));
+
+    let (create, create_tab) = tree
+        .nodes
+        .iter()
+        .find(|(_, node)| node.role() == Role::Tab && node.label() == Some("Create"))
+        .unwrap();
+    let create = *create;
+    assert!(!create_tab.is_disabled());
+    assert!(create_tab.supports_action(egui::accesskit::Action::Click));
 
     let (actions, output) = render(
         &mut state,
@@ -548,6 +555,29 @@ fn disabled_mock_commands_offer_no_assistive_actions_and_reject_forced_activatio
             .map(|id| id.accesskit_id()),
         Some(paste)
     );
+    assert!(state.view == DocumentView::Table);
+    assert_eq!(state.selected_cell_text(), Some("Old first cell"));
+
+    // Selecting a mock tab changes only the displayed command panel. Its
+    // unavailable commands retain their disabled assistive contract.
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![assistive_action(create, egui::accesskit::Action::Click)],
+    );
+    assert!(actions.is_empty());
+    assert!(state.ribbon_tab == ribbon::Tab::Create);
+    let (actions, output) = render(&mut state, &context, vec![]);
+    assert!(actions.is_empty());
+    let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+    let (_, wizard) = tree
+        .nodes
+        .iter()
+        .find(|(_, node)| node.role() == Role::Button && node.label() == Some("Query Wizard"))
+        .unwrap();
+    assert!(wizard.is_disabled());
+    assert!(!wizard.supports_action(egui::accesskit::Action::Click));
+    assert!(!wizard.supports_action(egui::accesskit::Action::Focus));
     assert!(state.view == DocumentView::Table);
     assert_eq!(state.selected_cell_text(), Some("Old first cell"));
 }
@@ -796,4 +826,59 @@ fn focused_native_cell_accepts_paste_but_edit_dialog_keeps_local_clipboard_input
         panic!("draft remains open");
     };
     assert_eq!(input.text, "dialog text");
+}
+
+#[test]
+fn mock_ribbon_tabs_reveal_disabled_command_panels_without_changing_the_open_object() {
+    let preview = Preview::new(Scene::Datasheet);
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    let object = harness.state().state().active_object().unwrap();
+    let rows = harness.state().state().data.as_ref().unwrap().rows.as_ptr();
+
+    for (tab, command) in [
+        ("Create", "Query Wizard"),
+        ("External Data", "New Data Source"),
+        ("Database Tools", "Compact and Repair"),
+        ("Help", "Help"),
+        ("Table Fields", "New Field"),
+        ("Table", "Before Change"),
+    ] {
+        harness
+            .get_by_role_and_label(Role::Tab, tab)
+            .click_accesskit();
+        harness.run_steps(3);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::Tab, tab)
+                .accesskit_node()
+                .is_selected(),
+            Some(true)
+        );
+        let control = harness.get_by_role_and_label(Role::Button, command);
+        assert!(control.accesskit_node().is_disabled());
+        assert_eq!(
+            harness.state().state().active_object(),
+            Some(object.clone())
+        );
+        assert_eq!(
+            harness.state().state().data.as_ref().unwrap().rows.as_ptr(),
+            rows
+        );
+        assert!(!harness.state().state().busy);
+    }
+
+    harness
+        .get_by_role_and_label(Role::Tab, "Home")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Copy")
+            .accesskit_node()
+            .is_disabled()
+    );
 }

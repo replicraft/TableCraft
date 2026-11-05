@@ -60,16 +60,46 @@ impl State {
             )
             .order(egui::Order::Foreground)
             .show(context, |ui| {
-                ui.label(egui::RichText::new(title).strong())
+                let body_height = (ui.available_height() - FOOTER_RESERVE).max(MIN_BODY_HEIGHT);
+                egui::Frame::new()
+                    .fill(colors.surface)
+                    .stroke(Stroke::new(1.0, colors.grid_line))
+                    .inner_margin(4.0)
+                    .show(ui, |ui| {
+                        failed = show_text(ui, &mut session, &cell.text, text_size, body_height)
+                            .is_err();
+                    })
+                    .response
                     .on_hover_text(title);
-                ui.small(tr(ui, "zoom-read-only"));
-                if query {
-                    ui.small(tr(ui, "zoom-query-read-only"));
+                ui.small(tr(
+                    ui,
+                    if query {
+                        "zoom-query-read-only"
+                    } else {
+                        "zoom-read-only"
+                    },
+                ))
+                .on_hover_text(provenance.as_deref().unwrap_or(title));
+                if session.copy_error {
+                    ui.label(tr(ui, "zoom-copy-unavailable"));
                 }
-                if let Some(provenance) = &provenance {
-                    ui.small(provenance);
+                if session.index.continued_lines {
+                    ui.small(tr(ui, "zoom-continued"));
                 }
-                ui.horizontal_wrapped(|ui| {
+                ui.add_space(4.0);
+                ui.horizontal(|ui| {
+                    ui.menu_button(tr(ui, "zoom-font"), |ui| {
+                        ui.label("Selawik");
+                        ui.label(tr(ui, "zoom-text-size"));
+                        egui::ComboBox::from_id_salt("zoom_text_size")
+                            .width(56.0)
+                            .selected_text(text_size.to_string())
+                            .show_ui(ui, |ui| {
+                                for size in TEXT_SIZES {
+                                    ui.selectable_value(&mut text_size, size, size.to_string());
+                                }
+                            });
+                    });
                     if ui.button(tr(ui, "zoom-copy")).clicked() {
                         let mut copied = String::new();
                         session.copy_error = copied.try_reserve_exact(cell.text.len()).is_err();
@@ -81,34 +111,6 @@ impl State {
                     if edit.is_some() && ui.button(tr(ui, "zoom-edit")).clicked() {
                         begin_edit = true;
                     }
-                });
-                if session.copy_error {
-                    ui.label(tr(ui, "zoom-copy-unavailable"));
-                }
-                if session.index.continued_lines {
-                    ui.small(tr(ui, "zoom-continued"));
-                }
-
-                let body_height = (ui.available_height() - FOOTER_RESERVE).max(MIN_BODY_HEIGHT);
-                egui::Frame::new()
-                    .fill(colors.surface)
-                    .stroke(Stroke::new(1.0, colors.grid_line))
-                    .inner_margin(4.0)
-                    .show(ui, |ui| {
-                        failed = show_text(ui, &mut session, &cell.text, text_size, body_height)
-                            .is_err();
-                    });
-                ui.add_space(6.0);
-                ui.horizontal(|ui| {
-                    ui.label(tr(ui, "zoom-text-size"));
-                    egui::ComboBox::from_id_salt("zoom_text_size")
-                        .width(56.0)
-                        .selected_text(text_size.to_string())
-                        .show_ui(ui, |ui| {
-                            for size in TEXT_SIZES {
-                                ui.selectable_value(&mut text_size, size, size.to_string());
-                            }
-                        });
                     let ok = tr(ui, "zoom-ok");
                     let cancel = tr(ui, "zoom-cancel");
                     let padding = ui.spacing().button_padding.x * 2.0;

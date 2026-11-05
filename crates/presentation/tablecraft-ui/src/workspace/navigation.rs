@@ -1,4 +1,5 @@
 //! Object navigation emits page intents without owning a database source.
+mod group;
 mod row;
 
 use super::focus::{self, Pane};
@@ -64,66 +65,81 @@ impl State {
                     ScrollArea::vertical()
                         .id_salt(("navigation_objects", db.document_revision))
                         .show(ui, |ui| {
-                            ui.label(RichText::new(tr(ui, "navigation-tables")).strong());
-                            for table in &db.tables {
-                                if (!self.show_system && table.system)
-                                    || !table.name.to_lowercase().contains(&filter)
-                                {
-                                    continue;
-                                }
-                                let target = ObjectTarget {
-                                    document_revision: db.document_revision,
-                                    kind: ObjectKind::Table {
-                                        name: table.name.clone(),
-                                    },
-                                };
-                                let selected =
-                                    self.selected_navigation_object() == Some(target.clone());
-                                ui.push_id(("table", db.document_revision, &table.name), |ui| {
-                                    let response = row::show(
-                                        ui,
-                                        Icon::Table,
-                                        &table.name,
-                                        selected,
-                                        table.system.then_some(system_label.as_str()),
-                                    )
-                                    .on_hover_text(&table.storage);
-                                    focus::register(ui, Pane::Navigation, &response, selected);
-                                    response.context_menu(|ui| {
-                                        if ui
-                                            .add_enabled(
-                                                self.can_open_object(&target),
-                                                egui::Button::new(tr(ui, "navigation-open")),
-                                            )
-                                            .clicked()
-                                        {
-                                            actions.push(Action::OpenObject {
-                                                target: target.clone(),
-                                            });
-                                            ui.close();
-                                        }
-                                        if ui
-                                            .add_enabled(
-                                                !self.busy,
-                                                egui::Button::new(tr(ui, "navigation-view-schema")),
-                                            )
-                                            .clicked()
-                                        {
-                                            actions.push(Action::ViewSchema {
-                                                table: table.name.clone(),
-                                            });
-                                            ui.close();
-                                        }
-                                    });
-                                    if response.clicked() {
-                                        selected_object = Some(target.clone());
-                                    }
-                                    if explicitly_opened(ui, &response, enter_pressed)
-                                        && self.can_open_object(&target)
+                            if group::tables(ui) {
+                                for table in &db.tables {
+                                    if (!self.show_system && table.system)
+                                        || !table.name.to_lowercase().contains(&filter)
                                     {
-                                        actions.push(Action::OpenObject { target });
+                                        continue;
                                     }
-                                });
+                                    let target = ObjectTarget {
+                                        document_revision: db.document_revision,
+                                        kind: ObjectKind::Table {
+                                            name: table.name.clone(),
+                                        },
+                                    };
+                                    let selected =
+                                        self.selected_navigation_object() == Some(target.clone());
+                                    ui.push_id(
+                                        ("table", db.document_revision, &table.name),
+                                        |ui| {
+                                            let response = row::show(
+                                                ui,
+                                                Icon::Table,
+                                                &table.name,
+                                                selected,
+                                                table.system.then_some(system_label.as_str()),
+                                            )
+                                            .on_hover_text(&table.storage);
+                                            focus::register(
+                                                ui,
+                                                Pane::Navigation,
+                                                &response,
+                                                selected,
+                                            );
+                                            response.context_menu(|ui| {
+                                                if ui
+                                                    .add_enabled(
+                                                        self.can_open_object(&target),
+                                                        egui::Button::new(tr(
+                                                            ui,
+                                                            "navigation-open",
+                                                        )),
+                                                    )
+                                                    .clicked()
+                                                {
+                                                    actions.push(Action::OpenObject {
+                                                        target: target.clone(),
+                                                    });
+                                                    ui.close();
+                                                }
+                                                if ui
+                                                    .add_enabled(
+                                                        !self.busy,
+                                                        egui::Button::new(tr(
+                                                            ui,
+                                                            "navigation-view-schema",
+                                                        )),
+                                                    )
+                                                    .clicked()
+                                                {
+                                                    actions.push(Action::ViewSchema {
+                                                        table: table.name.clone(),
+                                                    });
+                                                    ui.close();
+                                                }
+                                            });
+                                            if response.clicked() {
+                                                selected_object = Some(target.clone());
+                                            }
+                                            if explicitly_opened(ui, &response, enter_pressed)
+                                                && self.can_open_object(&target)
+                                            {
+                                                actions.push(Action::OpenObject { target });
+                                            }
+                                        },
+                                    );
+                                }
                             }
                             ui.separator();
                             ui.label(RichText::new(tr(ui, "navigation-queries")).strong());

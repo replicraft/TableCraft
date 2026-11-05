@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = プレビューを省略しています。�
 
 datasheet-row-identity-invalid = レコードの識別情報がこのページと一致しません。
 datasheet-filter-page-unavailable = ここでは読み込み済みのフィルターされたレコードのみ利用できます。
+
+datasheet-click-to-add = クリックして追加
+
+datasheet-add-field-unavailable = フィールドの追加はまだ利用できません。
+
+datasheet-record-position = レコード番号
+
+datasheet-record-of = / { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = レコードを検索
+
+datasheet-no-filter = フィルターなし
+
+datasheet-filtered = フィルター適用済み
+datasheet-page-tools = ページ ツール

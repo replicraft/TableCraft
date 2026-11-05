@@ -1339,3 +1339,25 @@ Review closes it without saving. Closed or superseded Find windows cannot accept
 a late replacement draft. The original file stays unchanged until explicit
 Apply succeeds. The macOS/Linux host advertises this capability; unsupported
 platforms retain an explicit boundary. Native Access interaction is unverified.
+
+## Compact presentation follow-up — 5 November 2026
+
+The title strip begins with the red database icon and TableCraft. Quick Access
+adds the existing file chooser and session-only visibility customization; general
+document Save/Undo/Redo remain unavailable. Document naming currently uses the
+source filename stem and literal Database kind label, not a custom Access AppTitle.
+Both ACE 16 storage families display Access 2016 as the title compatibility
+convention. The precise Ace2016/Ace2019 profile stays available in inspection.
+
+Native grids end with an inert Click to Add placeholder. Its header cannot select,
+sort or copy a nonexistent field, and it has no stored column/row identity. Tables
+can collapse independently of saved queries. Record controls now use compact
+icons, editable position and an honest known/unknown count; the existing paging
+controls remain in Page tools. Grid/ruler view icons and a thin zoom track follow
+the retained capture. The separate Zoom viewer preserves its read-only/reviewed
+editing contract while moving Font and dismissal controls below the body.
+
+Six synthetic Ribbon tabs have grouped disabled command previews. Existing
+commands retain their typed services; no database functionality was expanded.
+Current visual evidence and headless verification are in
+[presentation preview](PRESENTATION_PREVIEW.md#compact-shell-record-strip-and-full-tab-previews--5-november-2026).

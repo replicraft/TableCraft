@@ -36,3 +36,6 @@ shell-zoom-in = 放大
 shell-save-unavailable = 请从经过审核的编辑对话框保存更改。没有直接编辑后尚未保存的记录。
 shell-undo-unavailable = 文档撤销暂不可用。文本输入框保留各自的撤销历史。
 shell-redo-unavailable = 文档重做暂不可用。文本输入框保留各自的重做历史。
+
+shell-quick-access = 自定义快速访问工具栏
+shell-quick-open = 打开数据库文件

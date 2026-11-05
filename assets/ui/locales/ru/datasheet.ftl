@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = Предпросмотр сокращён. �
 
 datasheet-row-identity-invalid = Идентификаторы записей не соответствуют этой странице.
 datasheet-filter-page-unavailable = Здесь доступны только загруженные отфильтрованные записи.
+
+datasheet-click-to-add = Щёлкните для добавления
+
+datasheet-add-field-unavailable = Добавление полей пока недоступно.
+
+datasheet-record-position = Номер записи
+
+datasheet-record-of = из { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = Поиск записей
+
+datasheet-no-filter = Без фильтра
+
+datasheet-filtered = Отфильтровано
+datasheet-page-tools = Инструменты страниц

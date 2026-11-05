@@ -36,3 +36,6 @@ shell-zoom-in = Zoom in
 shell-save-unavailable = Save changes from the reviewed edit dialog. There are no inline unsaved records.
 shell-undo-unavailable = Document undo is not available. Text inputs keep their own undo history.
 shell-redo-unavailable = Document redo is not available. Text inputs keep their own redo history.
+
+shell-quick-access = Customize Quick Access Toolbar
+shell-quick-open = Open database file

@@ -385,3 +385,40 @@ fn status_zoom_scales_the_datasheet_and_view_buttons_use_existing_actions() {
         Default::default()
     );
 }
+
+#[test]
+fn quick_access_spacing_and_visibility_do_not_create_document_actions() {
+    let mut harness = Harness::builder().build_ui_state(
+        |ui, state: &mut (Localizer, Vec<Action>)| {
+            ui.horizontal(|ui| quick_access::show(ui, &state.0, true, &mut state.1));
+        },
+        (Localizer::default(), Vec::new()),
+    );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    let open = harness.get_by_role_and_label(egui::accesskit::Role::Button, "Open database file");
+    let save = harness.get_by_role_and_label(egui::accesskit::Role::Button, "Save");
+    assert!(save.rect().left() - open.rect().right() >= 6.0);
+    assert!(save.accesskit_node().is_disabled());
+    open.click_accesskit();
+    harness.run_steps(1);
+    assert!(matches!(harness.state().1.as_slice(), [Action::ChooseFile]));
+    harness.state_mut().1.clear();
+    harness
+        .get_by_role_and_label(
+            egui::accesskit::Role::Button,
+            "Customize Quick Access Toolbar",
+        )
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(egui::accesskit::Role::CheckBox, "Save")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(
+        harness
+            .query_by_role_and_label(egui::accesskit::Role::Button, "Save")
+            .is_none()
+    );
+    assert!(harness.state().1.is_empty());
+}

@@ -11,3 +11,5 @@ zoom-ok = 确定
 zoom-cancel = 取消
 zoom-limit = 支持放大最多8 MiB的显示值。
 zoom-unavailable = 无法准备放大视图。
+
+zoom-font = 字体…

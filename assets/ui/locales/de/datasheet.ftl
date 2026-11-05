@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = Vorschau gekürzt. Kopieren übernimmt den v
 
 datasheet-row-identity-invalid = Die Datensatzidentitäten stimmen nicht mit dieser Seite überein.
 datasheet-filter-page-unavailable = Hier sind nur die geladenen gefilterten Datensätze verfügbar.
+
+datasheet-click-to-add = Zum Hinzufügen klicken
+
+datasheet-add-field-unavailable = Das Hinzufügen von Feldern ist noch nicht verfügbar.
+
+datasheet-record-position = Datensatznummer
+
+datasheet-record-of = von { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = Datensätze suchen
+
+datasheet-no-filter = Kein Filter
+
+datasheet-filtered = Gefiltert
+datasheet-page-tools = Seitenwerkzeuge

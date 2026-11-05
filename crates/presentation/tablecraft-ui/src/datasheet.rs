@@ -1,3 +1,4 @@
+mod add_column;
 mod clipboard;
 mod collection_columns;
 mod preview;
@@ -150,6 +151,7 @@ fn render_rows(
         });
     }
     let collection_layout = view.collection;
+    let add_column = !collection_layout && data.source_revision.is_some();
     let pane = view.pane;
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
@@ -210,6 +212,9 @@ fn render_rows(
                     };
                     table = table.column(column);
                 }
+                if add_column {
+                    table = table.column(Column::exact(add_column::WIDTH * scale).resizable(false));
+                }
                 let body = table
                     .header(HEADER_ROW_HEIGHT * scale, |mut header| {
                         header.col(|ui| {
@@ -243,6 +248,9 @@ fn render_rows(
                                     node.set_description(description);
                                 });
                             });
+                        }
+                        if add_column {
+                            header.col(add_column::header);
                         }
                     })
                     .body(|mut body| {
@@ -280,6 +288,9 @@ fn render_rows(
                                                 }
                                             }
                                         });
+                                    }
+                                    if add_column {
+                                        row.col(|ui| grid_cell(ui, false));
                                     }
                                 }
                                 return;
@@ -360,6 +371,9 @@ fn render_rows(
                                         );
                                     }
                                 });
+                            }
+                            if add_column {
+                                row.col(|ui| grid_cell(ui, false));
                             }
                         });
                     });

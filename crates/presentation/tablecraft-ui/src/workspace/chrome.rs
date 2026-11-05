@@ -37,12 +37,17 @@ impl State {
                             .alt_text(t.text("shell-app-name")),
                     )
                     .on_hover_text(t.text("shell-app-name"));
-                    quick_access::show(ui, &t);
-                    ui.add_space(6.0);
+                    ui.label(RichText::new(t.text("shell-app-name")).strong());
+                    ui.add_space(8.0);
+                    ui.separator();
+                    let open_available =
+                        !self.busy && !self.edit_dialog_open() && !self.saved_query_prompt_open();
+                    quick_access::show(ui, &t, open_available, actions);
+                    ui.add_space(12.0);
                     let title = self
                         .database
                         .as_ref()
-                        .map_or_else(|| t.text("shell-workspace"), |db| db.title.clone());
+                        .map_or_else(String::new, |db| db.title.clone());
                     let title_hover = self
                         .database
                         .as_ref()
@@ -155,8 +160,20 @@ impl State {
                                         "ribbon-database-tools",
                                         "ribbon-help",
                                     ] {
-                                        tab(ui, key, &t.text(key), false, false, false)
-                                            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                                        let candidate =
+                                            ribbon::Tab::mock(key).expect("mock tab key");
+                                        if tab(
+                                            ui,
+                                            key,
+                                            &t.text(key),
+                                            self.ribbon_tab == candidate,
+                                            true,
+                                            false,
+                                        )
+                                        .clicked()
+                                        {
+                                            self.ribbon_tab = candidate;
+                                        }
                                     }
                                 }
                                 if self.query_design_context() {
@@ -187,8 +204,20 @@ impl State {
                                     }
                                 } else if self.mock_preview && self.data.is_some() {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
-                                        tab(ui, key, &t.text(key), false, false, true)
-                                            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                                        let candidate = ribbon::Tab::mock(key)
+                                            .expect("mock contextual tab key");
+                                        if tab(
+                                            ui,
+                                            key,
+                                            &t.text(key),
+                                            self.ribbon_tab == candidate,
+                                            true,
+                                            true,
+                                        )
+                                        .clicked()
+                                        {
+                                            self.ribbon_tab = candidate;
+                                        }
                                     }
                                 }
                             });
@@ -223,6 +252,7 @@ impl State {
 impl State {
     fn status_bar(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         let t = self.localizer.clone();
+        let colors = palette(ui.ctx());
         ui.horizontal(|ui| {
             let key = if self.database.is_none() {
                 "shell-ready"
@@ -245,7 +275,7 @@ impl State {
                 ui.add_enabled_ui(zoom_available, |ui| {
                     let mut zoom = crate::theme::datasheet_zoom(ui.ctx());
                     ui.small(format!("{zoom}%"));
-                    let increase = ui.small_button("+");
+                    let increase = ui.add(egui::Button::new("+").frame(false));
                     increase.widget_info(|| {
                         WidgetInfo::labeled(
                             WidgetType::Button,
@@ -258,18 +288,38 @@ impl State {
                     }
                     let mut style = (**ui.style()).clone();
                     style.spacing.slider_width = ZOOM_SLIDER_WIDTH;
+                    style.spacing.slider_rail_height = 2.0;
+                    style.spacing.interact_size.y = 14.0;
+                    for widget in [
+                        &mut style.visuals.widgets.inactive,
+                        &mut style.visuals.widgets.hovered,
+                        &mut style.visuals.widgets.active,
+                    ] {
+                        widget.corner_radius = egui::CornerRadius::ZERO;
+                        widget.bg_fill = colors.muted;
+                        widget.fg_stroke = egui::Stroke::NONE;
+                    }
                     ui.scope(|ui| {
                         ui.set_style(style);
-                        ui.add(
+                        let slider = ui.add(
                             egui::Slider::new(
                                 &mut zoom,
                                 crate::theme::MIN_DATASHEET_ZOOM..=crate::theme::MAX_DATASHEET_ZOOM,
                             )
                             .show_value(false)
-                            .text(t.text("shell-zoom")),
+                            .logarithmic(true)
+                            .trailing_fill(false)
+                            .handle_shape(egui::style::HandleShape::Rect { aspect_ratio: 0.2 }),
                         );
+                        slider.widget_info(|| {
+                            WidgetInfo::labeled(
+                                WidgetType::Slider,
+                                slider.enabled(),
+                                t.text("shell-zoom"),
+                            )
+                        });
                     });
-                    let decrease = ui.small_button("−");
+                    let decrease = ui.add(egui::Button::new("−").frame(false));
                     decrease.widget_info(|| {
                         WidgetInfo::labeled(
                             WidgetType::Button,
@@ -295,7 +345,8 @@ impl State {
                         && active
                             .as_ref()
                             .is_some_and(|tab| self.can_activate_object(tab)),
-                    egui::Button::image(Icon::TableEdit.image(ui, STATUS_VIEW_ICON_SIZE))
+                    egui::Button::image(Icon::ViewDesign.image(ui, STATUS_VIEW_ICON_SIZE))
+                        .frame(false)
                         .selected(self.view == DocumentView::Design),
                 );
                 design.widget_info(|| {
@@ -315,7 +366,8 @@ impl State {
                     .is_some_and(|tab| self.can_view_object_datasheet(tab));
                 let datasheet = ui.add_enabled(
                     datasheet_available,
-                    egui::Button::image(Icon::Table.image(ui, STATUS_VIEW_ICON_SIZE))
+                    egui::Button::image(Icon::ViewDatasheet.image(ui, STATUS_VIEW_ICON_SIZE))
+                        .frame(false)
                         .selected(self.view == DocumentView::Table),
                 );
                 datasheet.widget_info(|| {

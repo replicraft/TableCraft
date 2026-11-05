@@ -104,7 +104,7 @@ fn replace_current_integer_requires_review_and_apply_before_the_real_file_change
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.rows[data.row_index(1).unwrap()][1].text, "25");
     harness
-        .get_by_role_and_label(Role::Button, "‹ Previous page")
+        .get_by_role_and_label(Role::Button, "First")
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(&mut harness);

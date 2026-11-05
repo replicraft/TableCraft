@@ -36,3 +36,6 @@ shell-zoom-in = Acercar
 shell-save-unavailable = Guarde los cambios desde el diálogo de edición revisada. No hay registros sin guardar editados directamente.
 shell-undo-unavailable = Deshacer en el documento no está disponible. Los campos de texto conservan su propio historial.
 shell-redo-unavailable = Rehacer en el documento no está disponible. Los campos de texto conservan su propio historial.
+
+shell-quick-access = Personalizar la barra de acceso rápido
+shell-quick-open = Abrir archivo de base de datos

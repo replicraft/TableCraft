@@ -1,4 +1,6 @@
 //! Visible record positions remain distinct from native snapshot ordinals.
+mod toolbar;
+
 use super::ribbon::{CommandSize, Icon, command};
 use super::{Action, Data, DocumentView, State};
 use crate::localization::tr;
@@ -16,6 +18,8 @@ pub struct RecordTarget {
 pub(super) struct RecordNavigation {
     pending: Option<Pending>,
     input: String,
+    position: String,
+    search: String,
     error: Option<String>,
 }
 
@@ -37,6 +41,8 @@ impl RecordNavigation {
     pub(super) fn retained_bytes(&self) -> Option<usize> {
         let mut count = super::objects::memory::Counter::new(size_of::<Self>());
         count.string(&self.input);
+        count.string(&self.position);
+        count.string(&self.search);
         count.optional(&self.error);
         count.finish()
     }
@@ -435,79 +441,6 @@ impl State {
             }
         }
         None
-    }
-
-    pub(super) fn record_navigator(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
-        let target = self.current_insert_target();
-        if command(
-            ui,
-            Icon::Add,
-            &tr(ui, "insertion-title"),
-            target.is_some(),
-            CommandSize::Small,
-        )
-        .clicked()
-            && let Some(target) = target
-        {
-            actions.push(Action::BeginInsert { target });
-        }
-        let Some(current) = self.selected_record_target() else {
-            return;
-        };
-        let idle = !self.busy && self.records.pending.is_none() && !self.table_filter_pending();
-        let RecordPositions {
-            current: position,
-            first,
-            previous,
-            next,
-            ..
-        } = self.record_positions().expect("selected position");
-        let mut destination = None;
-
-        ui.horizontal(|ui| {
-            ui.label(tr(ui, "datasheet-record"));
-            if ui
-                .add_enabled(
-                    idle && first.is_some(),
-                    egui::Button::new(tr(ui, "datasheet-first")),
-                )
-                .clicked()
-            {
-                destination = first;
-            }
-            if ui
-                .add_enabled(
-                    idle && previous.is_some(),
-                    egui::Button::new(tr(ui, "datasheet-previous")),
-                )
-                .clicked()
-            {
-                destination = previous;
-            }
-            ui.label((u64::from(position) + 1).to_string());
-            if ui
-                .add_enabled(
-                    idle && next.is_some(),
-                    egui::Button::new(tr(ui, "datasheet-next")),
-                )
-                .clicked()
-            {
-                destination = next;
-            }
-            ui.separator();
-            if let Some(ordinal) = self.record_number_input(ui, idle, "record_number") {
-                destination = Some(ordinal);
-            }
-            if self.records.pending.is_some() {
-                ui.spinner();
-            }
-        });
-        if let Some(error) = &self.records.error {
-            ui.label(error);
-        }
-        if let Some(display_ordinal) = destination {
-            self.request_display_record(current, display_ordinal, actions);
-        }
     }
 }
 

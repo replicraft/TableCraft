@@ -193,6 +193,10 @@ fn page_changes_and_parked_display_preferences_preserve_typed_full_view_totals()
     crate::configure(&harness.ctx);
     harness.run();
     harness
+        .get_by_role_and_label(Role::Button, "Page tools")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
         .get_by_role_and_label(Role::Button, "Next page ›")
         .click();
     harness.run();

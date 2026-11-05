@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = Preview shortened. Copy preserves the comple
 
 datasheet-row-identity-invalid = The row identities do not match this page.
 datasheet-filter-page-unavailable = Only the loaded filtered records are available here.
+
+datasheet-click-to-add = Click to Add
+
+datasheet-add-field-unavailable = Adding fields is not available yet.
+
+datasheet-record-position = Record number
+
+datasheet-record-of = of { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = Search records
+
+datasheet-no-filter = No Filter
+
+datasheet-filtered = Filtered
+datasheet-page-tools = Page tools

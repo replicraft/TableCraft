@@ -6,10 +6,11 @@ mod tabs;
 mod object_layout_tests;
 
 use super::focus::{self, Pane};
+use super::ribbon::Icon;
 use super::{Action, DocumentView, State, diagnostics};
 use crate::datasheet;
 use crate::localization::{message, tr};
-use egui::{Frame, Margin, RichText, Ui};
+use egui::{Frame, Margin, RichText, Ui, WidgetInfo, WidgetType};
 
 impl State {
     pub(super) fn content(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
@@ -61,21 +62,32 @@ impl State {
         }
         if self.view == DocumentView::Table {
             egui::Panel::bottom(ui.make_persistent_id("record_navigation")).show(ui, |ui| {
-                if self.active_filter_target().is_some() || self.table_filter_pending() {
-                    ui.horizontal_wrapped(|ui| self.filter_status(ui));
-                }
                 egui::ScrollArea::horizontal()
                     .id_salt("record_toolbar")
                     .show(ui, |ui| {
                         ui.horizontal(|ui| {
                             self.record_navigator(ui, actions);
-                            if self.filtered_page_navigator(ui, actions) {
-                                return;
-                            }
-                            if let Some(data) = &self.data {
-                                ui.separator();
-                                page_navigator(ui, data, self.busy, actions);
-                            }
+                            let more = ui.menu_button(Icon::MoreRecords.image(ui, 12.0), |ui| {
+                                self.filter_status(ui);
+                                let before = actions.len();
+                                if self.filtered_page_navigator(ui, actions) {
+                                    if actions.len() != before {
+                                        ui.close();
+                                    }
+                                    return;
+                                }
+                                if let Some(data) = &self.data {
+                                    page_navigator(ui, data, self.busy, actions);
+                                }
+                                if actions.len() != before {
+                                    ui.close();
+                                }
+                            });
+                            let label = tr(ui, "datasheet-page-tools");
+                            more.response.widget_info(|| {
+                                WidgetInfo::labeled(WidgetType::Button, true, &label)
+                            });
+                            more.response.on_hover_text(label);
                         });
                     });
             });

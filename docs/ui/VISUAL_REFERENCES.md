@@ -332,3 +332,25 @@ article. Its exact application build, display scale and interaction timing are
 unknown. The borrowed image remains in ignored `.cache/access-public-references/`
 and is not tracked or shipped. It supplies layout evidence, not a native
 comparison of TableCraft's virtual text, copy, keyboard or reviewed-edit behavior.
+
+## Compact shell follow-up — 5 November 2026
+
+The actual retained Home image and published Zoom image were reopened for this
+pass. They guide the record-strip icon order and compact position/count box,
+separate grid/ruler status icons, thin zoom track, small table-tab close artwork,
+Tables collapse chevron and Click to Add header. The source title's Access 2016
+label is a compatibility-family convention; engine profile codes remain distinct
+and do not identify the producing application.
+
+Quick Access spacing, TableCraft branding and original vector geometry adapt
+those surfaces for this application. Font customization in the current Zoom
+viewer exposes its existing text-size choices, not a full native font dialog.
+Copy/review controls and read-only limits remain visible. Options has no matching
+Access capture in this set.
+
+Create, External Data, Database Tools, Help, Table Fields and Table have no
+corresponding retained captures. Their disabled synthetic panels are provisional
+visible command previews. They must not be presented as exhaustive native
+dropdowns or working macro/VBA, forms, reports, imports or administration.
+Light/dark offscreen review and exact sizes are recorded in
+[presentation preview](PRESENTATION_PREVIEW.md#compact-shell-record-strip-and-full-tab-previews--5-november-2026).

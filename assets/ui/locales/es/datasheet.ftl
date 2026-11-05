@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = Vista previa abreviada. Copiar conserva el v
 
 datasheet-row-identity-invalid = Las identidades de los registros no coinciden con esta página.
 datasheet-filter-page-unavailable = Aquí solo están disponibles los registros filtrados cargados.
+
+datasheet-click-to-add = Haga clic para agregar
+
+datasheet-add-field-unavailable = La adición de campos aún no está disponible.
+
+datasheet-record-position = Número de registro
+
+datasheet-record-of = de { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = Buscar registros
+
+datasheet-no-filter = Sin filtro
+
+datasheet-filtered = Filtrado
+datasheet-page-tools = Herramientas de página

@@ -11,3 +11,5 @@ zoom-ok = 확인
 zoom-cancel = 취소
 zoom-limit = 최대 8 MiB의 표시 값을 확대할 수 있습니다.
 zoom-unavailable = 확대 보기를 준비하지 못했습니다.
+
+zoom-font = 글꼴…
