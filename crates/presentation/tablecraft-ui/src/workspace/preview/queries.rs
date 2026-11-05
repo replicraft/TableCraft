@@ -52,6 +52,11 @@ impl Preview {
                 .set_saved_query_details(request, target, typed_parameters()),
             "synthetic parameter declarations must match the selected saved query"
         );
+        assert!(
+            self.state.request_saved_query_run().is_none(),
+            "synthetic parameter acquisition must stage without dispatching a query"
+        );
+        assert!(self.state.saved_query_prompt_open());
     }
 
     fn successful_saved_result(&mut self) -> (SavedQueryTarget, Vec<ParameterInput>) {

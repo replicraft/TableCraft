@@ -37,3 +37,8 @@ saved-query-type-binary = 이진
 saved-query-type-guid = GUID
 saved-query-type-date = 날짜/시간
 saved-query-type-datetime-extended = 확장 날짜/시간
+
+saved-query-prompt-title = 매개 변수 값 입력
+saved-query-prompt-ok = 확인
+saved-query-prompt-cancel = 취소
+saved-query-prompt-validation = 형식이 지정된 값은 쿼리를 실행할 때 검증됩니다.

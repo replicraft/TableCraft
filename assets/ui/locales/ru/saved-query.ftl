@@ -37,3 +37,8 @@ saved-query-type-binary = Двоичный
 saved-query-type-guid = GUID
 saved-query-type-date = Дата и время
 saved-query-type-datetime-extended = Расширенные дата и время
+
+saved-query-prompt-title = Введите значение параметра
+saved-query-prompt-ok = ОК
+saved-query-prompt-cancel = Отмена
+saved-query-prompt-validation = Типизированные значения проверяются при выполнении запроса.

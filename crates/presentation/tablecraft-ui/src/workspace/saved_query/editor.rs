@@ -1,13 +1,9 @@
 //! Typed parameter entry displays runtime declarations without interpreting SQL.
-use super::SavedQueryState;
-use crate::localization::{message, tr};
+use super::{ParameterInput, ParameterSpec};
+use crate::localization::tr;
 use crate::theme::input_border;
 use crate::workspace::focus::{self, Pane};
 use crate::workspace::{Action, State, diagnostics};
-
-const MAX_PARAMETER_PANE_HEIGHT: f32 = 220.0;
-const MIN_PARAMETER_PANE_HEIGHT: f32 = 24.0;
-const MIN_PREVIOUS_RESULTS_HEIGHT: f32 = 60.0;
 
 pub(super) const INPUT_KINDS: &[(&str, &str)] = &[
     ("boolean", "Boolean"),
@@ -51,44 +47,23 @@ impl State {
             let id = ui.make_persistent_id(("saved_query_error", document_revision, object_id));
             diagnostics::show(ui, id, error);
         }
-        let parameter_height = if self.saved_query.error.is_some() {
-            // Measure after the complete diagnostic and its Copy command, then
-            // leave room for Run/Inspect, status and at least one result row.
-            let reserved = ui.spacing().interact_size.y
-                + ui.text_style_height(&egui::TextStyle::Small)
-                + ui.spacing().item_spacing.y * 5.0
-                + MIN_PREVIOUS_RESULTS_HEIGHT;
-            (ui.available_height() - reserved)
-                .clamp(MIN_PARAMETER_PANE_HEIGHT, MAX_PARAMETER_PANE_HEIGHT)
-        } else {
-            MAX_PARAMETER_PANE_HEIGHT
-        };
-        let changed = ui
-            .push_id(("saved_parameters", document_revision, object_id), |ui| {
-                parameters(ui, &mut self.saved_query, idle, parameter_height)
-            })
-            .inner;
-        if changed {
-            self.saved_query.data = None;
-            self.saved_query.selection.clear();
-            self.saved_query.error = None;
-        }
         if !super::inputs_within_limits(&self.saved_query.inputs) {
-            ui.label(tr(ui, "saved-query-input-limit"));
+            ui.small(tr(ui, "saved-query-input-limit"));
         }
         let target = self
             .saved_query
             .target
             .as_ref()
-            .expect("selected saved query");
+            .expect("selected saved query")
+            .clone();
         ui.horizontal(|ui| {
             let run = ui.add_enabled(
-                self.can_run_saved_query(target, &self.saved_query.inputs),
+                self.saved_query_command_ready(),
                 egui::Button::new(tr(ui, "saved-query-run")),
             );
             focus::register(ui, Pane::Document, &run, false);
             if run.clicked()
-                && let Some(action) = self.saved_query_run_action()
+                && let Some(action) = self.request_saved_query_run()
             {
                 actions.push(action);
             }
@@ -109,25 +84,25 @@ impl State {
     }
 }
 
-fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_height: f32) -> bool {
-    let Some(parameters) = &state.parameters else {
-        return false;
-    };
+pub(super) fn parameters(
+    ui: &mut egui::Ui,
+    parameters: &[ParameterSpec],
+    inputs: &mut [ParameterInput],
+    idle: bool,
+    max_height: f32,
+    focus_input: bool,
+) -> bool {
     ui.scope(|ui| {
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
-        let mut changed = false;
+        let mut submitted = false;
         egui::ScrollArea::vertical()
             .id_salt("saved_query_parameters")
             .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
             .max_height(max_height)
             .show(ui, |ui| {
-                for (index, (spec, input)) in parameters.iter().zip(&mut state.inputs).enumerate() {
+                for (index, (spec, input)) in parameters.iter().zip(inputs).enumerate() {
                     ui.push_id(index, |ui| {
-                        let label = ui.label(message(
-                            ui,
-                            "saved-query-parameter-label",
-                            &[("name", spec.name.clone()), ("kind", spec.label.clone())],
-                        ));
+                        let label = ui.label(&spec.name);
                         ui.add_enabled_ui(idle, |ui| {
                             if spec.kind == "value" {
                                 let kind = egui::ComboBox::from_id_salt("parameter_kind")
@@ -142,13 +117,11 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_he
                                     )
                                     .show_ui(ui, |ui| {
                                         for (kind, _) in INPUT_KINDS {
-                                            changed |= ui
-                                                .selectable_value(
-                                                    &mut input.kind,
-                                                    (*kind).into(),
-                                                    type_label(ui, kind),
-                                                )
-                                                .changed();
+                                            ui.selectable_value(
+                                                &mut input.kind,
+                                                (*kind).into(),
+                                                type_label(ui, kind),
+                                            );
                                         }
                                     })
                                     .response
@@ -158,6 +131,9 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_he
                                     node.set_description(description);
                                 });
                                 input_border(ui, &kind);
+                                if focus_input && input.kind.is_empty() {
+                                    kind.request_focus();
+                                }
                                 focus::register(
                                     ui,
                                     Pane::Document,
@@ -168,14 +144,21 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_he
                                     kind.scroll_to_me(None);
                                 }
                             }
+                            let value_id = ui.make_persistent_id("parameter_value");
+                            let owns_default = ui.memory(|memory| memory.has_focus(value_id))
+                                && !egui::Popup::is_any_open(ui.ctx());
                             let text = ui
                                 .add_enabled(
                                     !input.is_null,
                                     egui::TextEdit::singleline(&mut input.text)
-                                        .desired_width(300.0),
+                                        .id(value_id)
+                                        .desired_width(f32::INFINITY),
                                 )
                                 .labelled_by(label.id);
                             input_border(ui, &text);
+                            if focus_input && !input.is_null && !input.kind.is_empty() {
+                                text.request_focus();
+                            }
                             focus::register(
                                 ui,
                                 Pane::Document,
@@ -187,7 +170,12 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_he
                             if text.gained_focus() {
                                 text.scroll_to_me(None);
                             }
-                            changed |= text.changed();
+                            submitted |= owns_default
+                                && text.lost_focus()
+                                && ui.input(|input| {
+                                    input.modifiers == egui::Modifiers::NONE
+                                        && input.key_pressed(egui::Key::Enter)
+                                });
                             let null = ui
                                 .add_enabled(
                                     spec.nullable,
@@ -207,17 +195,20 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_he
                             ui.ctx().accesskit_node_builder(null.id, |node| {
                                 node.set_description(description);
                             });
+                            if focus_input && input.is_null && !input.kind.is_empty() {
+                                null.request_focus();
+                            }
                             if null.gained_focus() {
                                 null.scroll_to_me(None);
                             }
-                            changed |= null.changed();
+
                             ui.small(hint(ui, &input.kind));
                         });
                         ui.add_space(4.0);
                     });
                 }
             });
-        changed
+        submitted
     })
     .inner
 }

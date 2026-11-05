@@ -1,5 +1,6 @@
 //! Explicit saved-query inspection and execution; no SQL reconstruction in UI.
 mod editor;
+mod prompt;
 
 use super::{Action, Data, DocumentView, State};
 use crate::datasheet::Selection;
@@ -20,6 +21,7 @@ pub struct SavedQuery {
     pub system: bool,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ParameterSpec {
     pub name: String,
     pub kind: String,
@@ -50,6 +52,7 @@ pub(super) struct SavedQueryState {
     inputs: Vec<ParameterInput>,
     pending: Option<Pending>,
     error: Option<String>,
+    prompt: Option<prompt::Session>,
 }
 
 impl State {
@@ -70,6 +73,7 @@ impl State {
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && self.saved_query.pending.is_none()
+            && self.saved_query.prompt.is_none()
             && self.saved_query_binding(target)
     }
 
@@ -159,20 +163,13 @@ impl State {
             && self.saved_query_binding(target)
             && self.saved_query.target.as_ref() == Some(target)
             && self.saved_query.pending.is_none()
-            && self.saved_query.parameters.is_some()
+            && self.saved_query.prompt.is_none()
             && self.saved_query.inputs == parameters
-            && inputs_within_limits(parameters)
-            && self.saved_query.parameters.as_ref().is_some_and(|specs| {
-                specs.len() == parameters.len()
-                    && specs.iter().zip(parameters).all(|(spec, input)| {
-                        spec.name == input.name
-                            && (spec.kind == "value" || spec.kind == input.kind)
-                            && (spec.nullable || !input.is_null)
-                            && editor::INPUT_KINDS
-                                .iter()
-                                .any(|(kind, _)| *kind == input.kind)
-                    })
-            })
+            && self
+                .saved_query
+                .parameters
+                .as_ref()
+                .is_some_and(|specs| inputs_admitted(specs, parameters))
     }
 
     pub fn begin_saved_query_run(
@@ -242,6 +239,7 @@ impl State {
     }
 
     pub(super) fn interrupt_saved_query(&mut self) {
+        self.saved_query.prompt = None;
         if self.saved_query.pending.take().is_some() {
             self.saved_query.error = Some(self.localizer.text("saved-query-interrupted"));
         }
@@ -290,3 +288,21 @@ fn inputs_within_limits(parameters: &[ParameterInput]) -> bool {
 
 #[cfg(test)]
 mod tests;
+
+fn inputs_admitted(specs: &[ParameterSpec], parameters: &[ParameterInput]) -> bool {
+    inputs_within_limits(parameters)
+        && specs.len() == parameters.len()
+        && specs
+            .iter()
+            .zip(parameters)
+            .all(|(spec, input)| input_admitted(spec, input))
+}
+
+fn input_admitted(spec: &ParameterSpec, input: &ParameterInput) -> bool {
+    spec.name == input.name
+        && (spec.kind == "value" || spec.kind == input.kind)
+        && (spec.nullable || !input.is_null)
+        && editor::INPUT_KINDS
+            .iter()
+            .any(|(kind, _)| *kind == input.kind)
+}
