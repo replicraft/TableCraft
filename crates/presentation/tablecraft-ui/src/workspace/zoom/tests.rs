@@ -166,8 +166,13 @@ fn native_edit_delegates_only_the_exact_target_and_query_zoom_remains_read_only(
 #[test]
 fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_binding() {
     let mut state = state("full value".into(), true);
+    state.synchronize_objects();
+    let tab = state
+        .active_object()
+        .expect("the catalog-backed Items table is open");
+    assert!(state.can_close_object(&tab));
     assert!(state.open_zoom_cell());
-    assert!(!state.close_table(1, "Items"));
+    assert!(!state.close_object(&tab));
     state.localizer = crate::Localizer::new(crate::Locale::Ja).unwrap();
     state.theme = crate::Theme::Dark;
     state.validate_zoom();

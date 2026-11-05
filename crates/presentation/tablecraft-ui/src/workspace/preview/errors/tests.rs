@@ -1,5 +1,23 @@
 use super::*;
+use crate::workspace::objects::ObjectKind;
 use crate::{Action, RecordTarget};
+
+fn assert_retained_table(preview: &mut Preview) {
+    let table = preview
+        .state
+        .object_tabs()
+        .into_iter()
+        .find(|tab| matches!(&tab.target.kind, ObjectKind::Table { name } if name == "Customers"))
+        .expect("original Customers tab remains open");
+    assert!(preview.state.activate_object(&table));
+    let parent = preview.state.data.as_ref().unwrap();
+    assert_eq!(parent.table, "Customers");
+    assert_eq!(
+        parent.source_revision,
+        Some(super::super::fixtures::REVISION)
+    );
+    assert!(!parent.rows.is_empty());
+}
 
 #[test]
 fn long_service_reports_preserve_complete_sources_and_retry_inputs() {
@@ -8,15 +26,8 @@ fn long_service_reports_preserve_complete_sources_and_retry_inputs() {
         Scene::LongQueryError,
         Scene::LongSavedError,
     ] {
-        let preview = Preview::new(scene);
+        let mut preview = Preview::new(scene);
         let state = preview.state();
-        let parent = state.data.as_ref().unwrap();
-        assert_eq!(parent.table, "Customers");
-        assert_eq!(
-            parent.source_revision,
-            Some(super::super::fixtures::REVISION)
-        );
-        assert!(!parent.rows.is_empty());
         assert_eq!(state.sql, super::super::fixtures::SQL);
         assert!(!state.busy);
         if scene == Scene::LongSavedError {
@@ -46,6 +57,7 @@ fn long_service_reports_preserve_complete_sources_and_retry_inputs() {
             }
         }
         assert_eq!(state.localizer.diagnostics(), Default::default());
+        assert_retained_table(&mut preview);
     }
 }
 
@@ -76,9 +88,7 @@ fn successful_mock_read_and_query_retries_clear_the_previous_global_report() {
                 "successful mock response replaces the prior failure"
             );
             assert_eq!(preview.state.sql, sql);
-            let table = preview.state.data.as_ref().unwrap();
-            assert_eq!(table.table, "Customers");
-            assert!(!table.rows.is_empty());
+            assert_retained_table(&mut preview);
             assert!(preview.state.mock_preview);
         }
     }
@@ -142,7 +152,7 @@ fn admitted_mock_retries_clear_cancel_reports_but_stale_targets_preserve_them() 
             "admitted {retry} replaces the cancellation report"
         );
         assert_eq!(preview.state.sql, sql);
-        assert!(!preview.state.data.as_ref().unwrap().rows.is_empty());
         assert_eq!(preview.state.localizer.diagnostics(), Default::default());
+        assert_retained_table(&mut preview);
     }
 }

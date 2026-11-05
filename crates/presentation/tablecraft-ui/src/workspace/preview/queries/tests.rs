@@ -1,5 +1,6 @@
 use super::super::Scene;
 use super::*;
+use crate::workspace::DocumentView;
 use crate::{Action, Data};
 
 fn identity(data: &Data) -> (Option<u64>, String, u32, usize, usize) {
@@ -17,6 +18,7 @@ fn query_pending_and_error_samples_preserve_source_and_read_only_result_boundari
     for pending in [true, false] {
         let mut preview = Preview::new(Scene::Datasheet);
         preview.state.path = "/synthetic/never-opened/query.accdb".into();
+        let table_tab = preview.state.active_object().unwrap();
         let original_table = identity(preview.state.data.as_ref().unwrap());
         let original_sql = preview.state.sql.clone();
         if pending {
@@ -27,9 +29,9 @@ fn query_pending_and_error_samples_preserve_source_and_read_only_result_boundari
 
         assert!(preview.state.view == DocumentView::Query);
         assert_eq!(preview.state.busy, pending);
-        assert_eq!(
-            identity(preview.state.data.as_ref().unwrap()),
-            original_table
+        assert!(
+            preview.state.data.is_none(),
+            "native table is parked under its own tab"
         );
         assert_eq!(preview.state.sql, original_sql);
         let result = preview.state.query_data.as_ref().unwrap();
@@ -51,6 +53,11 @@ fn query_pending_and_error_samples_preserve_source_and_read_only_result_boundari
         assert_eq!(identity(result), before);
         assert_eq!(result.rows.as_ptr(), rows);
         assert_eq!(preview.state.localizer.diagnostics(), Default::default());
+        assert!(preview.state.activate_object(&table_tab));
+        assert_eq!(
+            identity(preview.state.data.as_ref().unwrap()),
+            original_table
+        );
     }
 }
 
@@ -58,6 +65,7 @@ fn query_pending_and_error_samples_preserve_source_and_read_only_result_boundari
 fn saved_rerun_and_failure_samples_retain_only_the_previous_complete_read_only_result() {
     for pending in [true, false] {
         let mut preview = Preview::new(Scene::Datasheet);
+        let table_tab = preview.state.active_object().unwrap();
         let original_table = identity(preview.state.data.as_ref().unwrap());
         let original_sql = preview.state.sql.clone();
         if pending {
@@ -70,9 +78,9 @@ fn saved_rerun_and_failure_samples_retain_only_the_previous_complete_read_only_r
         assert_eq!(target, fixtures::saved_target());
         assert!(preview.state.saved_query_visible());
         assert_eq!(preview.state.busy, pending);
-        assert_eq!(
-            identity(preview.state.data.as_ref().unwrap()),
-            original_table
+        assert!(
+            preview.state.data.is_none(),
+            "native table is parked under its own tab"
         );
         assert_eq!(preview.state.sql, original_sql);
         assert!(preview.state.query_data.is_none());
@@ -94,6 +102,11 @@ fn saved_rerun_and_failure_samples_retain_only_the_previous_complete_read_only_r
         assert_eq!(identity(result), before);
         assert_eq!(result.rows.as_ptr(), rows);
         assert_eq!(preview.state.localizer.diagnostics(), Default::default());
+        assert!(preview.state.activate_object(&table_tab));
+        assert_eq!(
+            identity(preview.state.data.as_ref().unwrap()),
+            original_table
+        );
     }
 }
 

@@ -80,6 +80,98 @@ must not appear to succeed. Forms/report designers, printing, arbitrary native
 editing and VBA execution are outside this first slice; their broader product
 requirements remain open.
 
+## Object workspace contract
+
+The workspace now represents each opened table, saved query and the single
+scratch SQL editor as a real object tab. An object target binds its kind and
+literal catalog identity to the current document revision; a tab adds a fresh
+workspace identity. Equal names in a reopened file do not authorize an old tab,
+row target or runtime handle.
+
+A single Navigation Pane click selects an object without replacing the current
+document. Double-click, Enter and the explicit Open command open or activate its
+tab. Selecting an existing document tab activates its retained session; closing
+an inactive tab leaves the current object and its native handle alone. These
+selection/open distinctions follow Microsoft's [Navigation Pane
+contract](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface).
+Table Datasheet and read-only Design are two modes of the same table object,
+not separate table tabs. The View control and tab context menu switch those
+modes. Tab activation and individual closing follow the documented [object-tab
+workflow](https://support.microsoft.com/en-us/access/show-or-hide-object-tabs);
+this implementation does not imply tab reordering, Close All or overlapping
+windows.
+
+Each table session owns its page, selection, metadata, selected Design field,
+view mode and retained filter/sort definition. Native handles remain private to
+the desktop/runtime bridge and accompany the exact owning tab. Saved-query
+sessions retain their own inspected definition, committed typed parameters,
+results and selection. The one scratch SQL draft remains available while other
+objects are active; its results and selection belong to its own tab. Closing
+the scratch object discards that draft. Inactive sessions park presentation
+values rather than duplicating complete row buffers, and activation reapplies
+the current display policy.
+
+Saved-query Open deliberately remains inert inspection followed by explicit
+Run. Access normally executes a SELECT or crosstab when the user opens it by
+double-click or Enter, as described in Microsoft's [Run a query
+article](https://support.microsoft.com/en-us/access/run-a-query). The current
+TableCraft boundary is an explicit compatibility difference: opening a saved
+object cannot execute it, prompt for execution parameters or run active content.
+Run uses the existing sequential parameter prompts and qualified read-query
+service; opening another saved tab does not reuse another object's parameters
+or results.
+
+Managed publications must match the active object's exact kind and catalog
+binding. Table pages cannot replace a query session, and scratch-query results
+cannot replace a table or saved query. Standalone shared-UI consumers with no
+managed object retain their existing isolated publication contracts; this does
+not grant native row identity to query results. Host request generations and
+runtime source validation remain necessary in addition to object identity.
+
+The shared workspace admits at most 16 open objects and accounts for at most
+64 MiB of retained presentation storage. Admission uses checked size accounting
+and refuses an unretainable publication or object transition. This is a UI
+retention ceiling, not a process-memory guarantee or an increase to native
+snapshot, query, comparison, display or operation-specific resource pools. Those
+services retain their independent limits and checked completion requirements.
+
+An acknowledged offline save reopens a fresh read source. The host can retain a
+source-free workspace layout: object identities by catalog kind/name, table
+mode/page preferences, scratch SQL and saved-input preferences. It does not
+restore old rows, query results, native handles, reviews or tab authority. New
+tabs bind the fresh document revision; inactive objects load lazily when
+activated, and retained filter/sort preferences are revalidated by the runtime
+against the new source. Saved definitions are inspected afresh and are never
+rerun automatically. This in-memory layout handoff is not persistent workspace
+storage or a resumed native-project feature.
+
+The consuming save worker remains a single workspace owner. Review dialogs gate
+object transitions; once a save starts, its worker and terminal outcome remain
+owned until acknowledgment. Object switching, closing and source replacement
+cannot abandon that owner or transfer its rights to another tab. A fresh view
+is published only through the existing explicit acknowledgment/reopen path.
+
+The focused evidence surfaces are the shared UI object/session tests and the
+real desktop tests in `workspace/objects/tests.rs`, alongside saved-query,
+picker/source and editing tests. They exercise independent object state,
+selection versus explicit open, same-table modes, stale actions, inactive close,
+and save-owner/reopen behavior using existing independent fixtures. Local execution
+passed all 186 UI cases across the 185-case functional gate and separate preview
+matrix, plus all 45 desktop cases. The 57-scene × eight-locale × two-theme matrix
+covers 912 combinations. Strict seven-package Clippy, formatting, dependency
+boundaries and documentation-link checks passed. The resource-refusal regression
+also verifies that a rejected filter publication ends its pending request while
+retaining the preceding page and capability. These results are local service/host
+evidence, not native Access comparisons.
+
+Four German/de-DE light/dark objects/datasheet PNGs were opened and inspected at
+1000 × 680 logical pixels and 1.25 scale (1250 × 850 physical pixels), using the
+macOS offscreen GPU renderer. Images remain ignored under
+`.cache/ui-objects-review/`. The actual retained Home capture was reopened;
+there is no exact retained mixed-object or dark-mode Access capture. No native
+application window was opened. Platform clipboard/window-manager and Windows
+Access behavior remain unqualified by this slice.
+
 ## Background work and publication
 
 The shared runtime runs file inspection, page reads and query evaluation outside

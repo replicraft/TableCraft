@@ -1,6 +1,7 @@
 //! Local presentation responses. No action escapes to a runtime host.
 use super::{Preview, fixtures};
 use crate::workspace::editing::EditDialog;
+use crate::workspace::objects::{ObjectKind, ObjectOpen, ObjectTarget};
 use crate::{
     Action, Cell, CellKind, CollectionKind, EditDraft, EditInput, EditReview, EditSaveOutcome,
     EditTarget, SavedQueryTarget,
@@ -89,15 +90,35 @@ impl Preview {
                 self.state.show_open();
             }
             Action::Page { table, offset } => {
-                self.state.error = None;
-                self.state.set_table_data(fixtures::page(&table, offset));
+                let target = ObjectTarget {
+                    document_revision: fixtures::REVISION,
+                    kind: ObjectKind::Table {
+                        name: table.clone(),
+                    },
+                };
+                if self.state.prepare_object_open(target).is_some() {
+                    self.state.error = None;
+                    self.state.set_table_data(fixtures::page(&table, offset));
+                }
             }
             Action::ViewSchema { table } => {
-                self.state.error = None;
-                self.state.prepare_schema_view();
-                self.state.set_schema(fixtures::schema(&table));
+                let target = ObjectTarget {
+                    document_revision: fixtures::REVISION,
+                    kind: ObjectKind::Table {
+                        name: table.clone(),
+                    },
+                };
+                if self.state.prepare_object_open(target).is_some() {
+                    self.state.error = None;
+                    self.state.prepare_schema_view();
+                    self.state.set_schema(fixtures::schema(&table));
+                }
             }
             Action::Query => {
+                self.mock_open_object(ObjectTarget {
+                    document_revision: fixtures::REVISION,
+                    kind: ObjectKind::Sql,
+                });
                 self.state.error = None;
                 if self.state.sql == fixtures::SQL {
                     self.state.set_query_data(fixtures::query());
@@ -143,11 +164,23 @@ impl Preview {
                     self.state.close_contents();
                 }
             }
-            Action::CloseTable {
-                document_revision,
-                table,
-            } => {
-                self.state.close_table(document_revision, &table);
+            Action::OpenObject { target } => self.mock_open_object(target),
+            Action::ActivateObject { tab } => {
+                if self.state.activate_object(&tab)
+                    && let Some(open) = self.state.active_object_load()
+                {
+                    self.mock_load_object(open);
+                }
+            }
+            Action::CloseObject { tab } => {
+                self.state.close_object(&tab);
+            }
+            Action::ViewObjectDatasheet { tab } => {
+                if let Some(open) = self.state.prepare_object_datasheet(&tab)
+                    && open.needs_load
+                {
+                    self.mock_load_object(open);
+                }
             }
             Action::SortView {
                 target,
@@ -290,6 +323,36 @@ impl Preview {
             EditSaveOutcome::Failed(message)
         };
         self.state.set_edit_save_outcome(operation_id, outcome);
+    }
+
+    pub(super) fn mock_open_object(&mut self, target: ObjectTarget) {
+        if let Some(open) = self.state.prepare_object_open(target)
+            && open.needs_load
+        {
+            self.mock_load_object(open);
+        }
+    }
+
+    fn mock_load_object(&mut self, open: ObjectOpen) {
+        match open.tab.target.kind {
+            ObjectKind::Table { name } => {
+                if open.table_design {
+                    self.state.prepare_schema_view();
+                    self.state.set_schema(fixtures::schema(&name));
+                } else {
+                    self.state
+                        .set_table_data(fixtures::page(&name, open.offset));
+                }
+            }
+            ObjectKind::SavedQuery { object_id, name } => {
+                self.inspect_saved(SavedQueryTarget {
+                    document_revision: open.tab.target.document_revision,
+                    object_id,
+                    name,
+                });
+            }
+            ObjectKind::Sql => {}
+        }
     }
 
     pub(super) fn inspect_saved(&mut self, target: SavedQueryTarget) {

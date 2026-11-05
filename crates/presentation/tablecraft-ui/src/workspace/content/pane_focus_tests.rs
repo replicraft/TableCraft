@@ -288,7 +288,7 @@ fn compact_localized_saved_query_cycles_prompts_results_navigation_and_ribbon_at
         let sql = state.sql.clone();
         let home = state.localizer.text("ribbon-home");
         let run = state.localizer.text("saved-query-run");
-        let document = state.localizer.text("shell-query");
+        let document = target.name.clone();
         harness.get_by_role_and_label(Role::Tab, &home).focus();
         harness.run();
 

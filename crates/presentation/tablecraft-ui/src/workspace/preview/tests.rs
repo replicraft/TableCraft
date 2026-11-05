@@ -186,3 +186,34 @@ fn cancelling_the_busy_mock_keeps_the_buffered_snapshot_and_never_opens_a_file()
     assert!(preview.state.query_data.is_none());
     assert!(preview.state.mock_preview);
 }
+
+#[test]
+fn objects_scene_retains_independent_tabs_without_running_saved_queries() {
+    let mut preview = Preview::new(Scene::Objects);
+    let tabs = preview.state.object_tabs();
+    assert_eq!(tabs.len(), 4);
+    let customers = tabs.iter().find(|tab| {
+        matches!(&tab.target.kind, super::super::objects::ObjectKind::Table { name } if name == "Customers")
+    }).unwrap();
+    let saved = tabs
+        .iter()
+        .find(|tab| {
+            matches!(
+                tab.target.kind,
+                super::super::objects::ObjectKind::SavedQuery { .. }
+            )
+        })
+        .unwrap();
+    assert_eq!(preview.state.active_object().as_ref(), Some(customers));
+    preview.dispatch(crate::Action::ActivateObject { tab: saved.clone() });
+    assert!(preview.state.saved_query.active);
+    assert!(
+        preview.state.saved_query.data.is_none(),
+        "inspection is not execution"
+    );
+    preview.dispatch(crate::Action::ActivateObject {
+        tab: customers.clone(),
+    });
+    assert_eq!(preview.state.data.as_ref().unwrap().table, "Customers");
+    assert_eq!(preview.state.object_tabs().len(), 4);
+}

@@ -96,9 +96,24 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         });
     }
     harness.run();
-    assert!(
-        matches!(harness.state().1.as_slice(), [Action::Page { table, offset: 0 }] if table == "Second")
+    assert!(harness.state().1.is_empty(), "single click only selects");
+    assert_eq!(
+        harness.state().0.selected_navigation_object(),
+        Some(ObjectTarget {
+            document_revision: 17,
+            kind: ObjectKind::Table {
+                name: "Second".into()
+            },
+        }),
     );
+    harness.key_press(egui::Key::Enter);
+    harness.run();
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::OpenObject { target }]
+            if target.document_revision == 17
+                && target.kind == ObjectKind::Table { name: "Second".into() }
+    ));
 
     harness.state_mut().1.clear();
     harness
@@ -108,10 +123,63 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         .click_accesskit();
     harness.run();
     assert!(
-        matches!(harness.state().1.as_slice(), [Action::InspectSavedQuery { target }]
-        if target.document_revision == 17 && target.object_id == 91 && target.name == "Second")
+        harness.state().1.is_empty(),
+        "query selection never inspects or runs"
+    );
+    harness.key_press(egui::Key::Enter);
+    harness.run();
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::OpenObject { target }]
+            if target.document_revision == 17
+                && target.kind == ObjectKind::SavedQuery {
+                    object_id: 91,
+                    name: "Second".into(),
+                }
+    ));
+    harness.state_mut().1.clear();
+    let query_bounds = harness
+        .get_all_by_role_and_label(Role::Button, "Second")
+        .nth(1)
+        .unwrap()
+        .rect();
+    let point = query_bounds.center();
+    harness.event(egui::Event::PointerMoved(point));
+    for pressed in [true, false] {
+        harness.event(egui::Event::PointerButton {
+            pos: point,
+            button: egui::PointerButton::Secondary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        });
+    }
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Open")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::OpenObject { target }]
+        if matches!(target.kind, ObjectKind::SavedQuery { object_id: 91, .. }))
     );
     harness.state_mut().1.clear();
+
+    let selected = harness.state().0.selected_navigation_object();
+    harness.key_press(egui::Key::F11);
+    harness.run();
+    assert!(!harness.state().0.navigation_visible());
+    assert!(
+        harness
+            .query_by_role_and_label(Role::TextInput, "Search objects")
+            .is_none()
+    );
+    assert!(harness.state().1.is_empty());
+    harness.key_press(egui::Key::F11);
+    harness.run();
+    assert!(harness.state().0.navigation_visible());
+    assert_eq!(harness.state().0.selected_navigation_object(), selected);
+    assert!(harness.state().1.is_empty());
+
     harness
         .state_mut()
         .0

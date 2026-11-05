@@ -471,15 +471,17 @@ fn home_clipboard_witness_rejects_late_source_focus_and_dialog_changes() {
         let context = egui::Context::default();
         state.request_paste(&context);
         match change {
-            "source" => state.set_table_data(Data {
-                source_revision: Some(7),
-                row_ordinals: None,
-                table: "Replacement".into(),
-                offset: 100,
-                columns: vec!["Amount".into()],
-                rows: vec![vec!["99".into()]],
-                has_more: false,
-            }),
+            "source" => {
+                state.set_table_data(Data {
+                    source_revision: Some(7),
+                    row_ordinals: None,
+                    table: "Replacement".into(),
+                    offset: 100,
+                    columns: vec!["Amount".into()],
+                    rows: vec![vec!["99".into()]],
+                    has_more: false,
+                });
+            }
             "focus" => context.memory_mut(|memory| {
                 memory.request_focus(egui::Id::new("newer_text_editor"));
             }),

@@ -2,7 +2,8 @@
 mod row;
 
 use super::focus::{self, Pane};
-use super::{Action, DocumentView, SavedQueryTarget, State, ribbon::Icon};
+use super::objects::{ObjectKind, ObjectTarget};
+use super::{Action, State, ribbon::Icon};
 use crate::localization::tr;
 use egui::{RichText, ScrollArea, TextEdit, Ui};
 
@@ -13,7 +14,12 @@ const SEARCH_VERTICAL_PADDING: i8 = 5;
 
 impl State {
     pub(super) fn navigation(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
-        let mut selected_table = false;
+        if !self.navigation_visible() {
+            return;
+        }
+        let mut selected_object = None;
+        let enter_pressed =
+            ui.input(|input| input.key_pressed(egui::Key::Enter) && input.modifiers.is_none());
         egui::Panel::left("navigation")
             .default_size(210.0)
             .resizable(true)
@@ -65,17 +71,14 @@ impl State {
                                 {
                                     continue;
                                 }
-                                let selected = match self.view {
-                                    DocumentView::Table => self
-                                        .data
-                                        .as_ref()
-                                        .is_some_and(|data| data.table == table.name),
-                                    DocumentView::Design => self
-                                        .schema
-                                        .as_ref()
-                                        .is_some_and(|schema| schema.table == table.name),
-                                    DocumentView::Query => false,
+                                let target = ObjectTarget {
+                                    document_revision: db.document_revision,
+                                    kind: ObjectKind::Table {
+                                        name: table.name.clone(),
+                                    },
                                 };
+                                let selected =
+                                    self.selected_navigation_object() == Some(target.clone());
                                 ui.push_id(("table", db.document_revision, &table.name), |ui| {
                                     let response = row::show(
                                         ui,
@@ -87,6 +90,18 @@ impl State {
                                     .on_hover_text(&table.storage);
                                     focus::register(ui, Pane::Navigation, &response, selected);
                                     response.context_menu(|ui| {
+                                        if ui
+                                            .add_enabled(
+                                                self.can_open_object(&target),
+                                                egui::Button::new(tr(ui, "navigation-open")),
+                                            )
+                                            .clicked()
+                                        {
+                                            actions.push(Action::OpenObject {
+                                                target: target.clone(),
+                                            });
+                                            ui.close();
+                                        }
                                         if ui
                                             .add_enabled(
                                                 !self.busy,
@@ -101,11 +116,12 @@ impl State {
                                         }
                                     });
                                     if response.clicked() {
-                                        selected_table = true;
-                                        actions.push(Action::Page {
-                                            table: table.name.clone(),
-                                            offset: 0,
-                                        });
+                                        selected_object = Some(target.clone());
+                                    }
+                                    if explicitly_opened(ui, &response, enter_pressed)
+                                        && self.can_open_object(&target)
+                                    {
+                                        actions.push(Action::OpenObject { target });
                                     }
                                 });
                             }
@@ -117,11 +133,15 @@ impl State {
                                 {
                                     continue;
                                 }
-                                let selected = self.saved_query_visible()
-                                    && self.saved_query.target.as_ref().is_some_and(|target| {
-                                        target.document_revision == db.document_revision
-                                            && target.object_id == query.object_id
-                                    });
+                                let target = ObjectTarget {
+                                    document_revision: db.document_revision,
+                                    kind: ObjectKind::SavedQuery {
+                                        object_id: query.object_id,
+                                        name: query.name.clone(),
+                                    },
+                                };
+                                let selected =
+                                    self.selected_navigation_object() == Some(target.clone());
                                 ui.push_id(
                                     ("query", db.document_revision, query.object_id),
                                     |ui| {
@@ -139,14 +159,30 @@ impl State {
                                                 &response,
                                                 selected,
                                             );
+                                            response.context_menu(|ui| {
+                                                if ui
+                                                    .add_enabled(
+                                                        self.can_open_object(&target),
+                                                        egui::Button::new(tr(
+                                                            ui,
+                                                            "navigation-open",
+                                                        )),
+                                                    )
+                                                    .clicked()
+                                                {
+                                                    actions.push(Action::OpenObject {
+                                                        target: target.clone(),
+                                                    });
+                                                    ui.close();
+                                                }
+                                            });
                                             if response.clicked() {
-                                                actions.push(Action::InspectSavedQuery {
-                                                    target: SavedQueryTarget {
-                                                        document_revision: db.document_revision,
-                                                        object_id: query.object_id,
-                                                        name: query.name.clone(),
-                                                    },
-                                                });
+                                                selected_object = Some(target.clone());
+                                            }
+                                            if explicitly_opened(ui, &response, enter_pressed)
+                                                && self.can_open_object(&target)
+                                            {
+                                                actions.push(Action::OpenObject { target });
                                             }
                                         });
                                     },
@@ -157,10 +193,19 @@ impl State {
                     ui.weak(tr(ui, "navigation-open-first"));
                 }
             });
-        if selected_table {
-            self.select_view(DocumentView::Table);
+        if let Some(target) = selected_object {
+            self.select_navigation_object(target);
         }
     }
+}
+
+fn explicitly_opened(ui: &mut Ui, response: &egui::Response, enter_pressed: bool) -> bool {
+    let keyboard_open =
+        response.has_focus() && enter_pressed && !egui::Popup::is_any_open(ui.ctx());
+    if keyboard_open {
+        ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
+    }
+    response.double_clicked() || keyboard_open
 }
 
 #[cfg(test)]

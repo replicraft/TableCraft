@@ -28,6 +28,14 @@ pub enum RowOrdinalError {
 }
 
 impl RowOrdinals {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        let values = self.values.capacity().checked_mul(size_of::<u32>())?;
+        let inverse = self.inverse.as_ref().map_or(Some(0), |inverse| {
+            inverse.capacity().checked_mul(size_of::<(u32, usize)>())
+        })?;
+        values.checked_add(inverse)
+    }
+
     /// Source-ordered membership, as returned by ordinary filtered pages.
     pub fn new(values: Vec<u32>) -> Result<Self, RowOrdinalError> {
         check_storage(values.len(), false)?;

@@ -1,6 +1,6 @@
 use super::*;
-use crate::Data;
 use crate::workspace::DocumentView;
+use crate::{Data, Database, ObjectKind, ObjectTarget, Table};
 use egui::{Event, FullOutput, PointerButton};
 
 fn field(name: &str, number: usize, scalar_type: Option<&str>) -> Field {
@@ -335,28 +335,43 @@ fn observed_properties_are_read_only_and_follow_actual_field_selection() {
 
 #[test]
 fn design_publication_and_source_reset_preserve_independent_result_slots() {
-    let mut state = State::default();
-    state.set_table_data(Data {
-        row_ordinals: None,
-        source_revision: None,
-        table: "Records".into(),
-        offset: 100,
-        columns: vec![],
-        rows: vec![],
-        has_more: false,
-    });
-    state.set_query_data(Data {
-        row_ordinals: None,
-        source_revision: None,
-        table: "Query result".into(),
-        offset: 0,
-        columns: vec![],
-        rows: vec![],
-        has_more: false,
-    });
-    state.prepare_schema_view();
-    state.set_schema(schema());
+    let mut state = State {
+        database: Some(Database {
+            document_revision: 7,
+            title_path: None,
+            title: "Managed design".into(),
+            format: "Ace2016".into(),
+            tables: vec![Table {
+                name: "Mixed".into(),
+                system: false,
+                storage: "Local".into(),
+            }],
+            queries: vec![],
+        }),
+        ..State::default()
+    };
     state.dismiss_backstage();
+    let table = state
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Table {
+                name: "Mixed".into(),
+            },
+        })
+        .unwrap()
+        .tab;
+    assert!(state.set_table_data(Data {
+        row_ordinals: None,
+        source_revision: Some(7),
+        table: "Mixed".into(),
+        offset: 100,
+        columns: vec!["Amount".into()],
+        rows: vec![vec!["12".into()]],
+        has_more: false,
+    }));
+    let table_rows = state.data.as_ref().unwrap().rows.as_ptr();
+    assert!(state.prepare_object_design(&table).unwrap().needs_load);
+    state.set_schema(schema());
     assert!(state.view == DocumentView::Design);
     assert!(!state.query_ready());
     assert!(state.visible_data().is_none());
@@ -365,18 +380,56 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
         state.schema.as_ref().unwrap().fields[state.selected_field].number,
         2
     );
-    state.view = DocumentView::Table;
-    assert_eq!(state.visible_data().unwrap().offset, 100);
-    state.view = DocumentView::Query;
+
+    let sql = state
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap()
+        .tab;
+    state.sql = "SELECT 'independent SQL';".into();
+    state.set_query_data(Data {
+        row_ordinals: None,
+        source_revision: None,
+        table: "Query result".into(),
+        offset: 0,
+        columns: vec!["Literal".into()],
+        rows: vec![vec!["SQL row".into()]],
+        has_more: false,
+    });
+    let query_rows = state.query_data.as_ref().unwrap().rows.as_ptr();
+    assert!(state.data.is_none());
+    assert!(state.schema.is_none());
     assert_eq!(state.visible_data().unwrap().table, "Query result");
+    // A late table response cannot install metadata into the newly active SQL object.
+    state.set_schema(schema());
+    assert_eq!(state.active_object(), Some(sql.clone()));
+    assert!(state.schema.is_none());
+    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), query_rows);
+
+    assert!(state.activate_object(&table));
+    assert!(state.view == DocumentView::Design);
+    assert_eq!(state.selected_field, 1);
+    assert_eq!(state.data.as_ref().unwrap().rows.as_ptr(), table_rows);
+    assert!(state.query_data.is_none());
+    assert!(!state.prepare_object_datasheet(&table).unwrap().needs_load);
+    assert_eq!(state.visible_data().unwrap().offset, 100);
     state.prepare_schema_view();
     state.set_schema(schema());
-    state.dismiss_backstage();
     assert_eq!(state.selected_field, 0);
+    assert!(state.view == DocumentView::Design);
+    assert_eq!(state.sql, "SELECT 'independent SQL';");
+
     state.clear_schema();
     assert!(state.schema.is_none());
+    assert!(state.data.is_none());
+    assert!(state.query_data.is_none());
+    assert!(state.sql.is_empty());
+    assert!(state.object_tabs().is_empty());
+    assert!(!state.can_activate_object(&table));
+    assert!(!state.can_activate_object(&sql));
     assert!(state.view == DocumentView::Table);
-    assert_eq!(state.data.as_ref().unwrap().offset, 100);
 }
 
 #[test]

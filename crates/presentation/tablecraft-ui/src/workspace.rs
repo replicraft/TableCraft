@@ -11,6 +11,7 @@ pub(crate) mod focus;
 mod home;
 mod insertion;
 mod navigation;
+mod objects;
 pub mod preview;
 mod query;
 mod records;
@@ -32,6 +33,7 @@ pub use find::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
 };
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
+pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use records::RecordTarget;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
@@ -99,9 +101,17 @@ pub enum Action {
     CloseContents {
         request_id: u64,
     },
-    CloseTable {
-        document_revision: u64,
-        table: String,
+    OpenObject {
+        target: ObjectTarget,
+    },
+    ActivateObject {
+        tab: ObjectTab,
+    },
+    CloseObject {
+        tab: ObjectTab,
+    },
+    ViewObjectDatasheet {
+        tab: ObjectTab,
     },
     SortView {
         target: SortTarget,
@@ -237,6 +247,8 @@ pub struct State {
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
     show_system: bool,
+    objects: objects::Objects,
+    navigation_hidden: bool,
     backstage: backstage::Backstage,
 }
 
@@ -265,32 +277,47 @@ impl State {
         self.refresh_delete_display();
     }
 
-    /// Publish a table response without replacing the query result.
-    pub fn set_table_data(&mut self, mut data: Data) {
+    /// Publish a checked table page into its admitted object session.
+    pub fn set_table_data(&mut self, mut data: Data) -> bool {
         if data.validate_row_ordinals().is_err() {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
-            return;
+            return false;
         }
+        if !self.admit_object_data(&data) {
+            return false;
+        }
+        self.prepare_display(&mut data);
+        if !self.admit_object_data(&data) || !self.adopt_table_publication(&data) {
+            return false;
+        }
+
         self.reset_table_filter();
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
-        self.prepare_display(&mut data);
         self.table_selection.reset(&data);
         self.data = Some(data);
+        true
     }
 
-    /// Publish a query response without changing the table page or its offset.
+    /// Publish a query result into the one scratch SQL object.
     pub fn set_query_data(&mut self, mut data: Data) {
         if data.source_revision.is_some() || data.row_ordinals.is_some() {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return;
         }
+        if !self.admit_object_data(&data) {
+            return;
+        }
+        self.prepare_display(&mut data);
+        if !self.admit_object_data(&data) || !self.adopt_sql_publication() {
+            return;
+        }
+
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
-        self.prepare_display(&mut data);
         self.query_selection.reset(&data);
         self.query_data = Some(data);
     }
@@ -383,6 +410,11 @@ impl State {
 
     /// Publish metadata without overriding a view chosen after its request.
     pub fn set_schema(&mut self, schema: Schema) {
+        let activate = self.schema_activation_pending;
+        if !self.admit_object_schema(&schema) || !self.adopt_schema_publication(&schema) {
+            return;
+        }
+        self.schema_activation_pending = activate;
         self.bump_focus_publication();
         self.close_contents();
         self.schema = Some(schema);
@@ -412,6 +444,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.clear_object_sessions();
         self.bump_focus_publication();
         self.reset_saved_query();
         self.reset_record_navigation();
@@ -472,6 +505,7 @@ impl State {
 
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
+        self.synchronize_objects();
         self.refresh_display();
         self.refresh_edit_display();
         self.refresh_delete_display();
@@ -517,6 +551,11 @@ impl State {
         }
         if shortcuts.cancel {
             actions.push(Action::Cancel);
+        }
+        if !modal_open
+            && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::F11))
+        {
+            self.toggle_navigation();
         }
         let path_id = egui::Id::new("database_path");
         if shortcuts.focus_path {

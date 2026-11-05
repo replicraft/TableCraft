@@ -3,7 +3,7 @@ mod deleting;
 mod inserting;
 #[cfg(test)]
 mod pasting;
-use super::{Desktop, PendingOperation};
+use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
 use std::path::PathBuf;
 use tablecraft_runtime::{
@@ -282,9 +282,21 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
-        if !self.editing.save.as_ref().is_some_and(|save| save.id == id)
-            || !self.editing.worker.acknowledge(id)
-        {
+        let Some(save) = self.editing.save.as_ref().filter(|save| save.id == id) else {
+            return;
+        };
+        let workspace_restore = if matches!(
+            save.report.map(|report| report.outcome),
+            Some(SaveOutcome::Saved { .. })
+        ) {
+            let Some(restore) = self.capture_workspace_restore() else {
+                return;
+            };
+            Some(restore)
+        } else {
+            None
+        };
+        if !self.editing.worker.acknowledge(id) {
             return;
         }
         let save = self.editing.save.take().unwrap();
@@ -306,9 +318,15 @@ impl Desktop {
             let filter_restore = self.retained_filter_after_save(&save.table);
             self.select_file(save.path);
             self.open();
+            if let Some(restore) = workspace_restore {
+                self.retain_workspace_restore(restore);
+            }
             self.filter_restore = filter_restore;
             self.editing.refresh = Some((self.generation, save.table, save.offset));
         } else {
+            self.filter = None;
+            self.filter_restore = None;
+            self.objects = Sessions::default();
             self.state.database = None;
             self.state.data = None;
             self.state.query_data = None;
@@ -321,6 +339,9 @@ impl Desktop {
         if let Some((expected, table, offset)) = self.editing.refresh.take()
             && generation == expected
         {
+            if !self.restore_workspace_after_save(&table) {
+                return true;
+            }
             if self.restore_filter_after_save(&table) {
                 return true;
             }

@@ -8,7 +8,7 @@ use std::{
 use tablecraft_testkit::fixtures::access::saved_queries::{
     Fragment, QUERY_ID, database_with_query_flags,
 };
-use tablecraft_ui::EditTarget;
+use tablecraft_ui::{EditTarget, ObjectKind, ObjectTarget};
 
 fn row(attribute: u8) -> Fragment<'static> {
     Fragment {
@@ -77,6 +77,11 @@ fn target(desktop: &Desktop) -> SavedQueryTarget {
 #[test]
 fn inspect_then_run_preserves_the_sql_slot_and_publishes_noneditable_saved_results() {
     let (_directory, path, original, context, mut desktop) = opened();
+    desktop.open_object(ObjectTarget {
+        document_revision: desktop.state.database.as_ref().unwrap().document_revision,
+        kind: ObjectKind::Sql,
+    });
+    let sql_tab = desktop.state.active_object().unwrap();
     desktop.state.sql = "SELECT 99 AS OriginalSqlResult".into();
     desktop.submit(Command::Query {
         sql: desktop.state.sql.clone(),
@@ -88,8 +93,15 @@ fn inspect_then_run_preserves_the_sql_slot_and_publishes_noneditable_saved_resul
     );
 
     let selected = target(&desktop);
-    desktop.inspect_saved_query(selected.clone());
+    desktop.open_object(ObjectTarget {
+        document_revision: selected.document_revision,
+        kind: ObjectKind::SavedQuery {
+            object_id: selected.object_id,
+            name: selected.name.clone(),
+        },
+    });
     finish(&mut desktop, &context);
+    let saved_tab = desktop.state.active_object().unwrap();
     assert_eq!(desktop.state.selected_saved_target(), Some(&selected));
     assert!(
         desktop.state.selected_cell_text().is_none(),
@@ -101,10 +113,15 @@ fn inspect_then_run_preserves_the_sql_slot_and_publishes_noneditable_saved_resul
     desktop.run_saved_query(selected, Vec::new());
     finish(&mut desktop, &context);
     assert_eq!(desktop.state.selected_cell_text(), Some("2"));
+    assert!(desktop.state.query_data.is_none());
+    desktop.activate_object(sql_tab);
+    assert_eq!(desktop.state.sql, "SELECT 99 AS OriginalSqlResult");
     assert_eq!(
         desktop.state.query_data.as_ref().unwrap().rows[0][0].text,
         "99"
     );
+    desktop.activate_object(saved_tab);
+    assert_eq!(desktop.state.selected_cell_text(), Some("2"));
     assert!(!desktop.state.can_edit_cell(&EditTarget {
         document_revision: desktop.state.database.as_ref().unwrap().document_revision,
         table: "Saved".into(),

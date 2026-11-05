@@ -14,7 +14,8 @@ mod queries;
 
 mod zoom;
 
-use super::{DocumentView, State};
+use super::State;
+use super::objects::{ObjectKind, ObjectTarget};
 use crate::{CollectionKind, ContentsTarget, EditInput, EditSaveOutcome, EditTarget};
 use std::str::FromStr;
 
@@ -22,6 +23,7 @@ use std::str::FromStr;
 pub enum Scene {
     #[default]
     Datasheet,
+    Objects,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -80,8 +82,9 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 56] = [
+    pub const ALL: [Self; 57] = [
         Self::Datasheet,
+        Self::Objects,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -161,6 +164,7 @@ impl Scene {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Datasheet => "datasheet",
+            Self::Objects => "objects",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -265,6 +269,32 @@ impl Preview {
         self.scene
     }
 
+    fn prepare_objects_scene(&mut self) {
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Table {
+                name: "Orders".into(),
+            },
+        });
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::SavedQuery {
+                object_id: 42,
+                name: "Customers by city".into(),
+            },
+        });
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Table {
+                name: "Customers".into(),
+            },
+        });
+    }
+
     pub fn set_scene(&mut self, scene: Scene) {
         let mut state = fixtures::workspace();
         std::mem::swap(&mut state.localizer, &mut self.state.localizer);
@@ -276,6 +306,7 @@ impl Preview {
 
         match scene {
             Scene::Datasheet => {}
+            Scene::Objects => self.prepare_objects_scene(),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError
@@ -296,7 +327,10 @@ impl Preview {
                 self.state.set_schema(fixtures::schema("Customers"));
             }
             Scene::Query => {
-                self.state.view = DocumentView::Query;
+                self.mock_open_object(ObjectTarget {
+                    document_revision: fixtures::REVISION,
+                    kind: ObjectKind::Sql,
+                });
                 self.state.set_query_data(fixtures::query());
             }
             Scene::SavedQuery => {

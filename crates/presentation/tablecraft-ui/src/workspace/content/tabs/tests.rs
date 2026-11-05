@@ -1,5 +1,5 @@
 use super::*;
-use crate::{Data, Database, Locale, Localizer, Schema};
+use crate::{Data, Database, Locale, Localizer, Table};
 use egui::{
     Event, Key, MouseWheelUnit, TouchPhase,
     accesskit::{Action as AccessibilityAction, Role},
@@ -12,27 +12,34 @@ use egui_kittest::{
 fn harness(width: f32) -> Harness<'static, (State, bool, Vec<Action>)> {
     let mut state = State::default();
     state.dismiss_backstage();
+    let name =
+        "Customer accounts with a very long literal name repeated beyond the available tab width";
     state.database = Some(Database {
         title_path: None,
         document_revision: 7,
         title: "Tab observations".into(),
         format: "ACE 16".into(),
-        tables: Vec::new(),
+        tables: vec![Table {
+            name: name.into(),
+            system: false,
+            storage: "Local".into(),
+        }],
         queries: Vec::new(),
     });
+    state
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Table { name: name.into() },
+        })
+        .unwrap();
     state.set_table_data(Data {
         row_ordinals: None,
         source_revision: Some(7),
-        table: "Customer accounts with a very long literal name repeated beyond the available tab width".into(),
+        table: name.into(),
         offset: 0,
         columns: Vec::new(),
         rows: Vec::new(),
         has_more: false,
-    });
-    state.set_schema(Schema {
-        table: "Customer accounts".into(),
-        declared_rows: 0,
-        fields: Vec::new(),
     });
     let harness = Harness::builder()
         .with_size(egui::vec2(width, 120.0))
@@ -96,8 +103,64 @@ fn long_captions_are_single_line_bounded_and_accessibility_retains_full_name() {
 }
 
 #[test]
-fn tab_identity_survives_locale_changes_but_rejects_replaced_objects_and_documents() {
+fn actual_object_tabs_have_stable_instance_identity_and_no_view_placeholders() {
     let mut harness = harness(900.0);
+    harness.run();
+    assert_eq!(harness.get_all_by_role(Role::Tab).count(), 1);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Tab, "Query")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Tab, "Table Design")
+            .is_none()
+    );
+
+    let table = harness.state().0.active_object().unwrap();
+    let name = match &table.target.kind {
+        ObjectKind::Table { name } => name.clone(),
+        _ => panic!("actual table object"),
+    };
+    let table_id = harness
+        .get_by_role_and_label(Role::Tab, &name)
+        .accesskit_node()
+        .id();
+    harness.state_mut().0.set_schema(crate::Schema {
+        table: name.clone(),
+        declared_rows: 0,
+        fields: Vec::new(),
+    });
+    harness.run();
+    assert_eq!(harness.get_all_by_role(Role::Tab).count(), 1);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::Tab, &name)
+            .accesskit_node()
+            .id(),
+        table_id
+    );
+    assert_eq!(harness.state().0.active_object(), Some(table));
+
+    let sql = ObjectTarget {
+        document_revision: 7,
+        kind: ObjectKind::Sql,
+    };
+    harness
+        .get_by_role_and_label(Role::Button, "New SQL query")
+        .click_accesskit();
+    harness.run();
+    assert!(matches!(
+        harness.state().2.as_slice(),
+        [Action::OpenObject { target }] if target == &sql
+    ));
+    harness.state_mut().2.clear();
+    harness
+        .state_mut()
+        .0
+        .prepare_object_open(sql.clone())
+        .unwrap();
     harness.run();
     let query_id = harness
         .get_by_role_and_label(Role::Tab, "Query")
@@ -111,51 +174,43 @@ fn tab_identity_survives_locale_changes_but_rejects_replaced_objects_and_documen
     let query = harness.get_by_role_and_label(Role::Tab, &caption);
     assert_eq!(query.accesskit_node().id(), query_id);
     assert!(query.is_focused());
-    query.click_accesskit();
-    harness.run();
-    assert!(harness.state().0.view == DocumentView::Query);
-
-    harness
-        .state_mut()
-        .0
-        .database
-        .as_mut()
-        .unwrap()
-        .document_revision += 1;
+    let old = harness.state().0.active_object().unwrap();
+    assert!(harness.state_mut().0.close_object(&old));
+    harness.state_mut().0.prepare_object_open(sql).unwrap();
     harness.run();
     let query = harness.get_by_role_and_label(Role::Tab, &caption);
     assert_ne!(query.accesskit_node().id(), query_id);
-    assert!(!query.is_focused());
-    let name = harness.state().0.data.as_ref().unwrap().table.clone();
-    let table_id = harness
-        .get_by_role_and_label(Role::Tab, &name)
-        .accesskit_node()
-        .id();
-    harness.get_by_role_and_label(Role::Tab, &name).focus();
-    harness.run();
-    harness.state_mut().0.data.as_mut().unwrap().table = "Replacement table".into();
-    harness.run();
-    let table = harness.get_by_role_and_label(Role::Tab, "Replacement table");
-    assert_ne!(table.accesskit_node().id(), table_id);
-    assert!(!table.is_focused());
+    assert!(
+        !query.is_focused(),
+        "reopened object is a fresh tab instance"
+    );
+    assert!(!harness.state_mut().0.activate_object(&old));
 }
 
 #[test]
 fn overflow_tabs_reveal_on_focus_preserve_manual_scroll_and_disable_background_actions() {
     let mut harness = harness(250.0);
+    harness
+        .state_mut()
+        .0
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap();
     harness.run();
     assert!(harness.get_all_by_role(Role::ScrollBar).next().is_some());
-    harness
-        .get_by_role_and_label(Role::Tab, "Table Design")
-        .focus();
+    harness.get_by_role_and_label(Role::Tab, "Query").focus();
     harness.run();
-    let before = harness
-        .get_by_role_and_label(Role::Tab, "Table Design")
-        .rect();
+    let before = harness.get_by_role_and_label(Role::Tab, "Query").rect();
     assert!(before.right() <= 250.0);
     harness.key_press(Key::Enter);
     harness.run();
-    assert!(harness.state().0.view == DocumentView::Design);
+    assert!(
+        matches!(harness.state().2.as_slice(), [Action::ActivateObject { tab }]
+        if tab.target.kind == ObjectKind::Sql)
+    );
+    harness.state_mut().2.clear();
 
     harness.event(Event::PointerMoved(egui::pos2(100.0, before.center().y)));
     harness.event(Event::MouseWheel {
@@ -164,20 +219,14 @@ fn overflow_tabs_reveal_on_focus_preserve_manual_scroll_and_disable_background_a
         delta: egui::vec2(500.0, 0.0),
         modifiers: egui::Modifiers::NONE,
     });
-    // The hovered literal caption schedules its delayed tooltip while scrolling.
-    // Process the real wheel input, then leave the tab before awaiting idle.
     harness.run_steps(3);
     harness.event(Event::PointerGone);
     harness.run();
-    let manually_scrolled = harness
-        .get_by_role_and_label(Role::Tab, "Table Design")
-        .rect();
+    let manually_scrolled = harness.get_by_role_and_label(Role::Tab, "Query").rect();
     assert!(manually_scrolled.left() > before.left());
     harness.run_steps(3);
     assert_eq!(
-        harness
-            .get_by_role_and_label(Role::Tab, "Table Design")
-            .rect(),
+        harness.get_by_role_and_label(Role::Tab, "Query").rect(),
         manually_scrolled
     );
 
@@ -196,14 +245,21 @@ fn overflow_tabs_reveal_on_focus_preserve_manual_scroll_and_disable_background_a
     );
     tab.click_accesskit();
     harness.run();
-    assert!(harness.state().0.view == DocumentView::Design);
+    assert!(harness.state().2.is_empty());
 }
 
 #[test]
-fn close_table_dispatches_exact_source_and_retains_database_and_query_slots() {
+fn close_dispatches_exact_tab_instance_and_retains_independent_sql_object() {
     let mut harness = harness(900.0);
-    let data = harness.state().0.data.as_ref().unwrap();
-    let table = data.table.clone();
+    let table = harness.state().0.active_object().unwrap();
+    harness
+        .state_mut()
+        .0
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap();
     harness.state_mut().0.set_query_data(Data {
         row_ordinals: None,
         source_revision: None,
@@ -215,19 +271,19 @@ fn close_table_dispatches_exact_source_and_retains_database_and_query_slots() {
     });
     harness.run();
     harness
-        .get_by_role_and_label(Role::Button, "Close table")
+        .get_all_by_role_and_label(Role::Button, "Close object")
+        .next()
+        .unwrap()
         .click_accesskit();
     harness.run();
-    assert!(
-        matches!(harness.state().2.as_slice(), [Action::CloseTable { document_revision: 7, table: actual }] if actual == &table)
-    );
+    assert!(matches!(harness.state().2.as_slice(), [Action::CloseObject { tab }] if tab == &table));
     let state = &mut harness.state_mut().0;
-    assert!(state.close_table(7, &table));
-    assert!(state.data.is_none());
+    assert!(state.close_object(&table));
     assert!(state.database.is_some());
+    assert_eq!(state.object_tabs().len(), 1);
     assert_eq!(
         state.query_data.as_ref().unwrap().rows[0][0].text,
         "retained result"
     );
-    assert!(!state.close_table(7, &table));
+    assert!(!state.close_object(&table));
 }

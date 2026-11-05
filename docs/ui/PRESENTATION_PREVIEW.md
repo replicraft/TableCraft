@@ -30,8 +30,9 @@ Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
 Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
-has separate `shell`, `ribbon`, `backstage`, `datasheet`, `query`, `saved-query`,
-`design`, `editing`, `collections`, `navigation`, `diagnostics` and `settings`
+has 18 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
+`saved-query`, `design`, `editing`, `insertion`, `deletion`, `collections`,
+`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering` and `zoom`
 `.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
@@ -67,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 56 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 57 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -621,3 +622,21 @@ Customer ID values, the header direction glyph, enabled Remove Sort and disabled
 filter controls for the zero-criterion view. The unfiltered count and sort status
 remain readable in both themes. Rendering used the offscreen GPU exporter; no
 native application window or Access comparison was involved.
+
+## Independent object tabs — 5 November 2026
+
+The `objects` scene opens two tables, a saved-query inspection and the scratch SQL
+editor, then reactivates Customers without a native worker. Each tab has its own
+close control and stable identity; the ordinary datasheet scene starts with just
+the actual Customers object and the functional SQL opener. Neither scene creates
+a placeholder Query or separate Design object. The current 57 × eight × two
+matrix passed (912 combinations), alongside focused lifecycle/layout checks.
+
+German/de-DE objects and datasheet exports were inspected in both themes at
+1000 × 680 logical pixels, 1.25 scale (1250 × 850 physical pixels), using the macOS
+offscreen GPU renderer. PNGs remain ignored at
+`.cache/ui-objects-review/de-{light,dark}-{objects,datasheet}@1.25x.png`.
+The retained actual Home capture was reopened. Compact tab placement and close
+controls were compared; no exact retained mixed-object or dark-mode Access
+capture exists. No native window was opened, and these images do not establish
+platform interaction or native database compatibility.

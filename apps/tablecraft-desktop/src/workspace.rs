@@ -2,6 +2,7 @@ mod editing;
 mod filtering;
 mod find;
 mod navigation;
+mod objects;
 mod opening;
 mod saved;
 #[cfg(test)]
@@ -14,8 +15,8 @@ use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, FilterHandle, Response, Worker,
 };
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, RecordTarget, SavedQuery,
-    SavedQueryTarget, Schema, State, Table,
+    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, ObjectKind, ObjectTarget,
+    RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 use zeroize::Zeroize;
 
@@ -85,6 +86,7 @@ pub(super) struct Desktop {
     editing: Editing,
     filter: Option<FilterHandle>,
     filter_restore: Option<filtering::RestoreFilter>,
+    objects: objects::Sessions,
     startup_visibility_pending: bool,
 }
 
@@ -102,6 +104,7 @@ impl Desktop {
             editing,
             filter: None,
             filter_restore: None,
+            objects: objects::Sessions::default(),
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
@@ -197,6 +200,7 @@ impl Desktop {
         self.state.database = None;
         self.filter = None;
         self.filter_restore = None;
+        self.objects = objects::Sessions::default();
         self.state.data = None;
         self.state.query_data = None;
         self.state.clear_schema();
@@ -276,7 +280,10 @@ impl Desktop {
                     if !self.refresh_after_save(generation)
                         && let Some(table) = first_table
                     {
-                        self.submit(Command::Page { table, offset: 0 });
+                        self.open_object(ObjectTarget {
+                            document_revision,
+                            kind: ObjectKind::Table { name: table },
+                        });
                     }
                 }
                 Ok(Response::Data {
@@ -327,8 +334,9 @@ impl Desktop {
                             }
                         }
                         _ => {
-                            self.state.set_table_data(data);
-                            self.filter = None;
+                            if self.state.set_table_data(data) {
+                                self.filter = None;
+                            }
                         }
                     }
                 }
@@ -474,19 +482,14 @@ impl eframe::App for Desktop {
                 } => {
                     self.sort_view(target, sort, enabled);
                 }
-                Action::CloseTable {
-                    document_revision,
-                    table,
-                } => {
-                    if !self.editing.has_save() && self.state.close_table(document_revision, &table)
-                    {
-                        self.filter = None;
-                    }
-                }
+                Action::OpenObject { target } => self.open_object(target),
+                Action::ActivateObject { tab } => self.activate_object(tab),
+                Action::CloseObject { tab } => self.close_object(tab),
+                Action::ViewObjectDatasheet { tab } => self.view_object_datasheet(tab),
                 Action::NavigateRecord { target } => self.navigate_record(target),
                 Action::FindNext { request } => self.find_next(request),
                 Action::CancelFind { request_id } => self.cancel_find(request_id),
-                Action::ViewSchema { table } => self.submit(Command::Describe { table }),
+                Action::ViewSchema { table } => self.view_object_schema(table),
                 Action::ViewContents { target } => self.submit(Command::InspectCollection {
                     target: RuntimeContentsTarget {
                         document_revision: target.document_revision,
@@ -500,9 +503,21 @@ impl eframe::App for Desktop {
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }
-                Action::Query => self.submit(Command::Query {
-                    sql: self.state.sql.clone(),
-                }),
+                Action::Query => {
+                    let scratch = self
+                        .state
+                        .active_object()
+                        .is_some_and(|tab| tab.target.kind == ObjectKind::Sql);
+                    if scratch
+                        && !self.state.busy
+                        && !self.state.backstage_visible()
+                        && !self.state.sql.trim().is_empty()
+                    {
+                        self.submit(Command::Query {
+                            sql: self.state.sql.clone(),
+                        });
+                    }
+                }
                 Action::ReviewDelete { target } => self.review_delete(target),
                 Action::ApplyDelete { review_id } => self.apply_delete(review_id),
                 Action::CloseDelete { request_id } => self.close_delete(request_id),
@@ -615,6 +630,15 @@ mod tests {
         assert!(!desktop.state.busy, "desktop task did not finish");
     }
 
+    fn open_sql(desktop: &mut Desktop) -> tablecraft_ui::ObjectTab {
+        let target = tablecraft_ui::ObjectTarget {
+            document_revision: desktop.state.database.as_ref().unwrap().document_revision,
+            kind: tablecraft_ui::ObjectKind::Sql,
+        };
+        desktop.open_object(target);
+        desktop.state.active_object().unwrap()
+    }
+
     #[test]
     fn startup_logic_requests_visibility_once_without_revealing_later_hidden_frames() {
         let context = egui::Context::default();
@@ -694,6 +718,7 @@ mod tests {
 
         // Entering Backstage does not cancel a task, and a query response does
         // not dismiss it as though another document had just opened.
+        open_sql(&mut desktop);
         desktop.submit(Command::Query {
             sql: "SELECT 17 AS [Kept]".into(),
         });
@@ -717,18 +742,15 @@ mod tests {
         let mut desktop = Desktop::new(context.clone(), Some(path.clone()));
         let mut frame = eframe::Frame::_new_kittest();
         finish(&mut desktop, &context, &mut frame);
-        desktop.submit(Command::Page {
-            table: "tblContacts".into(),
-            offset: 0,
-        });
-        finish(&mut desktop, &context, &mut frame);
+        let table_tab = desktop.state.active_object().unwrap();
+        let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
+        let sql_tab = open_sql(&mut desktop);
         desktop.submit(Command::Query {
             sql: "SELECT 17 AS [Kept]".into(),
         });
         finish(&mut desktop, &context, &mut frame);
-        desktop.submit(Command::Describe {
-            table: "tblContacts".into(),
-        });
+        let query_rows = desktop.state.query_data.as_ref().unwrap().rows.as_ptr();
+        desktop.view_object_schema("tblContacts".into());
         finish(&mut desktop, &context, &mut frame);
         assert!(desktop.state.error.is_none());
 
@@ -737,8 +759,8 @@ mod tests {
         desktop.state.error = Some("retained diagnostic".into());
         let generation = desktop.generation;
         let revision = desktop.state.database.as_ref().unwrap().document_revision;
-        let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
-        let query_rows = desktop.state.query_data.as_ref().unwrap().rows.as_ptr();
+        let active_tab = desktop.state.active_object().unwrap();
+        let tabs = desktop.state.object_tabs();
         let fields = desktop.state.schema.as_ref().unwrap().fields.as_ptr();
 
         desktop.file_selected(None);
@@ -751,14 +773,8 @@ mod tests {
             desktop.state.database.as_ref().unwrap().document_revision,
             revision
         );
-        assert_eq!(
-            desktop.state.data.as_ref().unwrap().rows.as_ptr(),
-            table_rows
-        );
-        assert_eq!(
-            desktop.state.query_data.as_ref().unwrap().rows.as_ptr(),
-            query_rows
-        );
+        assert_eq!(desktop.state.active_object(), Some(active_tab));
+        assert_eq!(desktop.state.object_tabs(), tabs);
         assert_eq!(
             desktop.state.schema.as_ref().unwrap().fields.as_ptr(),
             fields
@@ -773,6 +789,18 @@ mod tests {
         );
 
         desktop.state.dismiss_backstage();
+        desktop.activate_object(sql_tab);
+        assert_eq!(
+            desktop.state.query_data.as_ref().unwrap().rows.as_ptr(),
+            query_rows
+        );
+        desktop.activate_object(table_tab.clone());
+        desktop.view_object_datasheet(table_tab);
+        finish(&mut desktop, &context, &mut frame);
+        assert_eq!(
+            desktop.state.data.as_ref().unwrap().rows.as_ptr(),
+            table_rows
+        );
         desktop.file_selected(None);
         assert!(!desktop.state.backstage_visible());
         assert_eq!(desktop.generation, generation);
@@ -788,18 +816,35 @@ mod tests {
         finish(&mut desktop, &context, &mut frame);
         assert!(desktop.state.database.is_some());
 
-        desktop.submit(Command::Describe {
-            table: "tblContacts".to_owned(),
-        });
+        let original_tab = desktop.state.active_object().unwrap();
+        let original_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
+        desktop.view_object_schema("tblContacts".to_owned());
         finish(&mut desktop, &context, &mut frame);
         let schema = desktop.state.schema.as_ref().expect("schema response");
         assert_eq!(schema.table, "tblContacts");
         assert_eq!(schema.fields[0].name, "ID");
         assert_eq!(schema.fields[0].scalar_type.as_deref(), Some("Int32"));
-        assert!(
-            desktop.state.data.is_some(),
-            "automatic first table remains available"
+        let contacts_tab = desktop.state.active_object().unwrap();
+        assert_eq!(
+            contacts_tab.target.kind,
+            tablecraft_ui::ObjectKind::Table {
+                name: "tblContacts".into(),
+            }
         );
+        assert_ne!(contacts_tab, original_tab);
+        assert!(desktop.state.object_tabs().contains(&original_tab));
+        desktop.view_object_datasheet(contacts_tab.clone());
+        finish(&mut desktop, &context, &mut frame);
+        assert_eq!(desktop.state.active_object(), Some(contacts_tab.clone()));
+        assert_eq!(desktop.state.data.as_ref().unwrap().table, "tblContacts");
+        desktop.activate_object(original_tab.clone());
+        assert_eq!(desktop.state.active_object(), Some(original_tab));
+        assert_eq!(
+            desktop.state.data.as_ref().unwrap().rows.as_ptr(),
+            original_rows
+        );
+        desktop.activate_object(contacts_tab);
+        assert_eq!(desktop.state.schema.as_ref().unwrap().table, "tblContacts");
 
         // Reopening clears the old schema before the next request completes.
         desktop.submit(Command::Describe {
@@ -820,7 +865,9 @@ mod tests {
         let mut desktop = Desktop::new(context.clone(), Some(path));
         let mut frame = eframe::Frame::_new_kittest();
         finish(&mut desktop, &context, &mut frame);
+        let table_tab = desktop.state.active_object().unwrap();
         let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
+        let sql_tab = open_sql(&mut desktop);
         desktop.submit(Command::Query {
             sql: "SELECT NULL AS [Absent], 'NULL' AS [Label], True AS [Yes], False AS [No], 'false' AS [Text]".into(),
         });
@@ -859,9 +906,15 @@ mod tests {
             ));
         }
         assert_eq!(data.rows[0][3].text, data.rows[0][4].text);
+        desktop.activate_object(table_tab);
         assert_eq!(
             desktop.state.data.as_ref().unwrap().rows.as_ptr(),
             table_rows
+        );
+        desktop.activate_object(sql_tab);
+        assert_eq!(
+            desktop.state.query_data.as_ref().unwrap().rows[0][0].text,
+            "NULL"
         );
     }
 
@@ -877,9 +930,11 @@ mod tests {
         let mut frame = eframe::Frame::_new_kittest();
         finish(&mut desktop, &context, &mut frame);
         let revision = desktop.state.database.as_ref().unwrap().document_revision;
-        desktop.submit(Command::Page {
-            table: "Items".into(),
-            offset: 0,
+        desktop.open_object(tablecraft_ui::ObjectTarget {
+            document_revision: revision,
+            kind: tablecraft_ui::ObjectKind::Table {
+                name: "Items".into(),
+            },
         });
         finish(&mut desktop, &context, &mut frame);
 

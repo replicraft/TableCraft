@@ -1,5 +1,6 @@
 //! Invented presentation data. No captured database records or private images.
 use super::super::State;
+use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{
     Cell, CellKind, CollectionKind, Column, Data, Database, DisplayControl, Field, FieldProperty,
     FieldPropertyValue, HorizontalAlignment, ParameterSpec, SavedQuery, SavedQueryTarget, Schema,
@@ -48,6 +49,14 @@ pub(super) fn workspace() -> State {
         ..Default::default()
     };
     state.dismiss_backstage();
+    state
+        .prepare_object_open(ObjectTarget {
+            document_revision: REVISION,
+            kind: ObjectKind::Table {
+                name: "Customers".into(),
+            },
+        })
+        .expect("synthetic initial table object");
     state.set_table_data(page("Customers", 0));
     state
 }
@@ -55,6 +64,9 @@ pub(super) fn workspace() -> State {
 /// Long, literal object names exercise compact presentation without real files.
 pub(super) fn long_names(state: &mut State) {
     let table = "Customer accounts for international correspondence and follow-up";
+    if let Some(tab) = state.active_object() {
+        state.close_object(&tab);
+    }
     let database = state.database.as_mut().expect("synthetic database");
     let name = "International customer and supplier reconciliation workspace — ".repeat(3);
     database.title = format!("{name}2026 : Database | {name}2026.accdb (Access 2016)");
@@ -62,7 +74,13 @@ pub(super) fn long_names(state: &mut State) {
     database.tables[0].name = table.into();
     database.queries[0].name =
         "Customer account correspondence by region and financial period".into();
-    state.data.as_mut().expect("synthetic page").table = table.into();
+    state
+        .prepare_object_open(ObjectTarget {
+            document_revision: REVISION,
+            kind: ObjectKind::Table { name: table.into() },
+        })
+        .expect("synthetic renamed table");
+    state.set_table_data(page(table, 0));
 }
 
 pub(super) fn page(table: &str, offset: u32) -> Data {

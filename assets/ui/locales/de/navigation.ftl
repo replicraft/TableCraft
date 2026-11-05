@@ -8,3 +8,8 @@ navigation-queries = Abfragen
 navigation-view-schema = Schema anzeigen
 navigation-system = System
 navigation-open-first = Öffnen Sie eine Datenbank, um ihre Objekte anzuzeigen.
+
+navigation-open = Öffnen
+navigation-close-object = Objekt schließen
+navigation-sql-query = Neue SQL-Abfrage
+navigation-sql-query-help = SQL-Abfrageeditor öffnen oder aktivieren. Dabei wird keine Abfrage ausgeführt.
