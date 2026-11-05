@@ -9,7 +9,6 @@ shell-close = Cerrar
 shell-yes = Sí
 shell-no = No
 shell-local-databases = Bases de datos de Access locales
-shell-snapshot-browsing = Exploración de una instantánea
 shell-saving-offline = GUARDANDO SIN CONEXIÓN
 shell-offline-edit = EDICIÓN SIN CONEXIÓN
 shell-preview = INSTANTÁNEA · VISTA PREVIA
@@ -33,3 +32,7 @@ shell-window-close = Cerrar ventana
 shell-zoom = Zoom
 shell-zoom-out = Alejar
 shell-zoom-in = Acercar
+
+shell-save-unavailable = Guarde los cambios desde el diálogo de edición revisada. No hay registros sin guardar editados directamente.
+shell-undo-unavailable = Deshacer en el documento no está disponible. Los campos de texto conservan su propio historial.
+shell-redo-unavailable = Rehacer en el documento no está disponible. Los campos de texto conservan su propio historial.

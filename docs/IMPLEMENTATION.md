@@ -1,5 +1,33 @@
 # Implementation status
 
+## Native field filters and datasheet presentation — 5 November 2026
+
+Home and column menus now open source-bound common field filters. Runtime owns
+native wildcard mode, numeric/date comparisons, NULL semantics and complete
+membership; failed requests retain the old view. Exact fixed-numeric bounds
+refuse precision loss. Floating bounds retain their documented canonical decimal
+profile rather than claiming unqualified native coercion parity.
+
+The final datasheet page offers a separate New row command through existing
+reviewed insertion. Empty-state text remains visible below it without inventing a
+record. Regional settings show actual date/time alternatives and currency symbol
+and minor-unit examples. The real title strip now includes guarded Save/Undo/Redo;
+document history and inline dirty-record Save are still unavailable. Existing
+system-theme startup, first-table opening, centered headers/checkboxes, NULL
+markers, title/path, object Close and view/zoom status layout remain covered.
+Original application/settings vectors and status routing were refined.
+
+The selected gate passed 53 desktop and 95 runtime tests plus one exporter test.
+All 194 UI checks passed, including 61 scenes × eight locales × two themes
+(976 combinations); the final allocation/command-presence follow-up passed all
+193 functional UI checks. Six display tests, strict eight-package Clippy, minimal
+runtime Clippy, formatting, documentation links and dependency guards passed.
+Ten German/de-DE light/dark PNGs were opened offscreen at 1000 × 680 logical
+pixels, scale 1.25. No native windows opened; Windows/Linux window interaction
+and Access-native behavior remain unqualified. See the
+[desktop contract](ui/DESKTOP.md#datasheet-presentation-and-shell-follow-up--5-november-2026)
+and [preview record](ui/PRESENTATION_PREVIEW.md#field-filters-and-datasheet-polish--5-november-2026).
+
 ## Object loading, retry and keyboard navigation — 5 November 2026
 
 Unloaded table and Design tabs now show loading or failed/not-loaded states with

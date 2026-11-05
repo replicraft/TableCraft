@@ -392,7 +392,7 @@ impl State {
         match &self.edit {
             Some(EditDialog::Saving { .. }) => self.localizer.text("shell-saving-offline"),
             Some(_) => self.localizer.text("shell-offline-edit"),
-            None => self.localizer.text("shell-snapshot-browsing"),
+            None => self.localizer.text("shell-ready"),
         }
     }
 

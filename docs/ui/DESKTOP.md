@@ -1273,3 +1273,38 @@ criteria and broader unsupported field types remain unfinished.
 
 The retained Home capture was opened for control placement. No exact common
 filter popup capture exists; its layout remains a visual approximation.
+
+
+## Datasheet presentation and shell follow-up — 5 November 2026
+
+Startup follows the system theme unless explicitly overridden. Opening a database
+activates its first local, non-system table. The condensed title shows the database
+name, filename and file-compatibility label; hover exposes the captured absolute
+path. That label does not identify the Access application that last saved it.
+Windows/Linux use the shared title controls without native decorations; macOS
+retains its native window frame. Cross-platform window interaction is unqualified.
+
+All Objects navigation retains the taller search field and magnifier. Object tabs
+have individual Close actions. The bottom status strip retains the current view
+on the left and guarded view switches and zoom on the right. Datasheet cells use
+typed NULL markers, centered native checkboxes, centered captions and a column
+menu chevron. Stored empty text remains empty; it is not converted to NULL.
+
+The final native page now offers a separate New row action when the existing
+insertion workflow is admitted. This is a command, not an appended record or a
+new native row identity. Home already exposes supported Copy/Paste, filtering,
+sorting, Refresh, New/Delete, Find, navigation and Zoom. General Cut, Replace,
+Totals, spelling and text-formatting services remain unfinished.
+
+Save, Undo and Redo are visible in the title strip with explicit unavailable
+explanations. There is no document undo history or inline dirty-record Save
+service; reviewed offline edits continue to use their consuming Review/Apply
+workflow. Field filters have their own status, and Snapshot browsing wording has
+been retired. Original artwork now uses a stronger red database cylinder and a
+rounded settings gear; the generator and provenance manifest remain authoritative.
+
+Date and time retain independent System locale defaults, explicit alternatives
+and Raw. Options now previews each alternative and the current currency's symbol
+and minor units. System locale uses captured host regional CLDR conventions;
+custom OS date/time overrides are not read. Interface translation does not select
+the regional locale, and display choices do not alter storage, query or edit rules.

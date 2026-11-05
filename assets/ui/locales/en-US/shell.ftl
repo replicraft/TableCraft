@@ -9,7 +9,6 @@ shell-close = Close
 shell-yes = Yes
 shell-no = No
 shell-local-databases = Local Access databases
-shell-snapshot-browsing = Snapshot browsing
 shell-saving-offline = SAVING OFFLINE
 shell-offline-edit = OFFLINE EDIT
 shell-preview = SNAPSHOT · PREVIEW
@@ -33,3 +32,7 @@ shell-window-close = Close window
 shell-zoom = Zoom
 shell-zoom-out = Zoom out
 shell-zoom-in = Zoom in
+
+shell-save-unavailable = Save changes from the reviewed edit dialog. There are no inline unsaved records.
+shell-undo-unavailable = Document undo is not available. Text inputs keep their own undo history.
+shell-redo-unavailable = Document redo is not available. Text inputs keep their own redo history.
