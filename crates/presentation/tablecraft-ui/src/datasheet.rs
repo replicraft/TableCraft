@@ -2,6 +2,7 @@ mod clipboard;
 mod collection_columns;
 mod preview;
 mod selection;
+mod totals;
 pub(crate) use selection::Selection;
 
 use super::{Action, Cell, Data, HorizontalAlignment, InsertTarget, SortSpec, SortTarget};
@@ -27,11 +28,27 @@ pub(crate) struct SortHeader {
     pub sort: Option<SortSpec>,
 }
 
-struct RowView {
+pub(crate) enum SelectionOwner {
+    Native,
+    Total {
+        target: crate::TotalsTarget,
+        column: String,
+    },
+}
+
+#[derive(Default)]
+pub(crate) struct Output {
+    pub selection: Option<SelectionOwner>,
+    pub actions: Vec<Action>,
+    pub totals_choices: Vec<crate::workspace::totals::Choice>,
+}
+
+struct RowView<'a> {
     collection: bool,
     pane: Pane,
     sort_header: Option<SortHeader>,
     insert_target: Option<InsertTarget>,
+    totals: Option<crate::workspace::totals::Row<'a>>,
 }
 
 pub(super) fn show(
@@ -41,8 +58,9 @@ pub(super) fn show(
     pane: Pane,
     sort_header: Option<SortHeader>,
     insert_target: Option<InsertTarget>,
-) -> Vec<Action> {
-    let mut actions = Vec::new();
+    totals: Option<crate::workspace::totals::Row<'_>>,
+) -> Output {
+    let mut output = Output::default();
     if let Some(error) = selection.copy_error(ui.ctx()) {
         ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
     }
@@ -50,16 +68,17 @@ pub(super) fn show(
         ui,
         data,
         |_| {},
-        &mut actions,
         selection,
         RowView {
             collection: false,
             pane,
             sort_header,
             insert_target,
+            totals,
         },
+        &mut output,
     );
-    actions
+    output
 }
 
 /// Collection metadata has a bounded dialog viewport, so its final field can
@@ -72,14 +91,15 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         ui,
         data,
         |_| {},
-        &mut Vec::new(),
         selection,
         RowView {
             collection: true,
             pane: Pane::Document,
             sort_header: None,
             insert_target: None,
+            totals: None,
         },
+        &mut Output::default(),
     );
 }
 
@@ -92,29 +112,38 @@ fn show_rows(
     selection: &mut Selection,
     pane: Pane,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
-    render_rows(
+    let mut output = Output::default();
+    let scroll = render_rows(
         ui,
         data,
         row_drawn,
-        actions,
         selection,
         RowView {
             collection: false,
             pane,
             sort_header: None,
             insert_target: None,
+            totals: None,
         },
-    )
+        &mut output,
+    );
+    actions.extend(output.actions);
+    scroll
 }
 
 fn render_rows(
     ui: &mut Ui,
     data: &Data,
     mut row_drawn: impl FnMut(usize),
-    actions: &mut Vec<Action>,
     selection: &mut Selection,
-    view: RowView,
+    view: RowView<'_>,
+    output: &mut Output,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
+    let Output {
+        actions,
+        totals_choices,
+        selection: owner,
+    } = output;
     if data.validate_row_ordinals().is_err() {
         return ScrollArea::both().show(ui, |ui| {
             ui.label(tr(ui, "datasheet-row-identity-invalid"));
@@ -142,7 +171,26 @@ fn render_rows(
             .show(ui, |ui| {
                 let initial_widths =
                     collection_layout.then(|| collection_columns::initial_widths(ui, data));
-                let mut table = TableBuilder::new(ui);
+                let insert = view.insert_target.as_ref().filter(|target| {
+                    !data.has_more
+                        && !data.columns.is_empty()
+                        && data.source_revision == Some(target.document_revision)
+                        && data.table == target.table
+                });
+                let visible_rows = data
+                    .rows
+                    .len()
+                    .saturating_add(usize::from(insert.is_some()));
+                let totals_height = if view.totals.is_some() {
+                    DATA_ROW_HEIGHT * scale
+                } else {
+                    0.0
+                };
+                let body_height =
+                    (ui.available_height() - HEADER_ROW_HEIGHT * scale - totals_height)
+                        .max(DATA_ROW_HEIGHT * scale);
+                let mut column_rects = Vec::new();
+                let mut table = TableBuilder::new(ui).max_scroll_height(body_height);
                 if let Some(row) = scroll_to {
                     table = table.scroll_to_row(row, Some(egui::Align::Center));
                 }
@@ -162,13 +210,15 @@ fn render_rows(
                     };
                     table = table.column(column);
                 }
-                table
+                let body = table
                     .header(HEADER_ROW_HEIGHT * scale, |mut header| {
                         header.col(|ui| {
+                            column_rects.push(ui.max_rect());
                             grid_cell(ui, true);
                         });
                         for (index, column) in data.columns.iter().enumerate() {
                             header.col(|ui| {
+                                column_rects.push(ui.max_rect());
                                 grid_cell(ui, true);
                                 if ui.is_enabled() && selection.column() == Some(index) {
                                     ui.painter().rect_filled(
@@ -196,23 +246,14 @@ fn render_rows(
                         }
                     })
                     .body(|mut body| {
-                        let insert = view.insert_target.as_ref().filter(|target| {
-                            !data.has_more
-                                && !data.columns.is_empty()
-                                && data.source_revision == Some(target.document_revision)
-                                && data.table == target.table
-                        });
                         if data.rows.is_empty() {
                             let mut bounds = body.max_rect();
                             if insert.is_some() {
                                 bounds.min.y += DATA_ROW_HEIGHT * scale;
                             }
+                            bounds.min.y += totals_height;
                             empty_body(body.ui_mut(), bounds, scale);
                         }
-                        let visible_rows = data
-                            .rows
-                            .len()
-                            .saturating_add(usize::from(insert.is_some()));
                         body.rows(DATA_ROW_HEIGHT * scale, visible_rows, |mut row| {
                             let index = row.index();
                             if index == data.rows.len() {
@@ -256,7 +297,7 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                row_selector(
+                                let native_focus = row_selector(
                                     ui,
                                     data,
                                     index,
@@ -264,6 +305,9 @@ fn render_rows(
                                     selection,
                                     (!collection_layout).then_some(pane),
                                 );
+                                if native_focus {
+                                    *owner = Some(SelectionOwner::Native);
+                                }
                             });
                             for (position, (column, text)) in
                                 data.columns.iter().zip(&data.rows[index]).enumerate()
@@ -280,6 +324,13 @@ fn render_rows(
                                         ui.painter().rect_filled(ui.max_rect(), 0.0, fill);
                                     }
                                     let response = cell(ui, text, &column.name, number, active);
+                                    if ui.is_enabled()
+                                        && (response.has_focus()
+                                            || response.clicked()
+                                            || response.secondary_clicked())
+                                    {
+                                        *owner = Some(SelectionOwner::Native);
+                                    }
                                     selection.observe(ui, index, position, &response);
                                     if !collection_layout
                                         && !selection.row_selected()
@@ -312,6 +363,23 @@ fn render_rows(
                             }
                         });
                     });
+                if let Some(row) = &view.totals {
+                    let header_bottom = column_rects
+                        .first()
+                        .map_or(body.inner_rect.top(), |rect| rect.bottom());
+                    let content_bottom =
+                        header_bottom + visible_rows as f32 * DATA_ROW_HEIGHT * scale;
+                    let top = content_bottom.min(body.inner_rect.bottom());
+                    totals::show(
+                        ui,
+                        row,
+                        &column_rects,
+                        top,
+                        totals_height,
+                        totals_choices,
+                        owner,
+                    );
+                }
                 // The inner vertical ScrollArea consumes both scroll targets,
                 // including its disabled horizontal axis. Issue this one-shot
                 // cell reveal only after that inner area has completed.
@@ -456,7 +524,7 @@ fn row_selector(
     number: u64,
     selection: &mut Selection,
     document_pane: Option<Pane>,
-) {
+) -> bool {
     let response = ui.allocate_response(ui.available_size(), Sense::click());
     selection.observe_row(ui, data, row, &response);
     if let Some(pane) = document_pane
@@ -499,7 +567,10 @@ fn row_selector(
     } else {
         "datasheet-select-record-help"
     };
+    let native_focus = ui.is_enabled()
+        && (response.has_focus() || response.clicked() || response.secondary_clicked());
     response.on_hover_text(message(ui, key, &[("number", number.to_string())]));
+    native_focus
 }
 
 fn collect_contents_action(

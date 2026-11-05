@@ -116,7 +116,10 @@ impl State {
     }
 
     fn find_source(&self) -> Option<(FindTarget, FindPosition)> {
-        if self.view != DocumentView::Table || self.backstage_visible() {
+        if self.total_selection_active()
+            || self.view != DocumentView::Table
+            || self.backstage_visible()
+        {
             return None;
         }
         let data = self.data.as_ref()?;

@@ -114,6 +114,9 @@ impl State {
     ) {
         let target = self.current_sort_target();
         let column = self.data.as_ref().and_then(|data| {
+            if self.total_selection_active() {
+                return None;
+            }
             let (_, column) = self.table_selection.position()?;
             Some(data.columns.get(column)?.name.clone())
         });

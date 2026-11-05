@@ -111,7 +111,8 @@ impl State {
 
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
-        if self.field_filter_dialog_open()
+        if self.total_selection_active()
+            || self.field_filter_dialog_open()
             || self.view != DocumentView::Table
             || self.zoom_dialog_open()
             || self.insertion_dialog_open()

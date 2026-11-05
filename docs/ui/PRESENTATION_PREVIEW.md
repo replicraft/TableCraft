@@ -1,7 +1,7 @@
 # Presentation preview
 
-Current UI work focuses on screenshot-guided visual polish with synthetic data,
-without expanding database behavior. The preview reuses the shared workspace
+The synthetic preview supports screenshot-guided visual and interaction review
+independently of database behavior. It reuses the shared workspace
 renderer and existing view/action model. Its separate desktop host never creates
 a database worker, file dialog or save worker. Synthetic responses cannot open,
 query or modify a real file. Preview-only future Ribbon commands remain disabled.
@@ -24,15 +24,15 @@ normal inspection stays inert. Earlier inline-parameter-pane records below refer
 to the preceding presentation. The current original icon inventory is 50 designs
 with 200 themed/disabled SVGs, including the attachment paperclip.
 
-File → Options selects Light or Dark and the interface language. These choices
+File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
 Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
 Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
-has 18 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
+has 19 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
 `saved-query`, `design`, `editing`, `insertion`, `deletion`, `collections`,
-`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering` and `zoom`
+`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering`, `zoom` and `totals`
 `.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 61 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 63 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -681,3 +681,23 @@ centered captions, retained error input and New row/empty-message separation wer
 visually reviewed. The actual retained Home capture was reopened. There is no
 retained Access Options/common-filter/dark-theme capture, so those presentations
 remain adaptations rather than verified pixel matches or native interactions.
+
+
+## Datasheet Totals — 5 November 2026
+
+The inventory is 63 scenes, adding `totals` and `totals-error`. Each language now
+has 19 section files, with a dedicated `totals.ftl`. Totals scenes contain fixed
+invented complete-view results; choosing an unsupported synthetic computation
+returns a clearly labeled mock failure and never calculates over displayed rows.
+The final 1,008-combination matrix passed; together with the final 197 functional
+checks this establishes 198 UI checks.
+
+German/de-DE light/dark Totals and Totals-error frames were exported and opened
+at 1000 × 680 logical pixels, scale 1.25, using macOS offscreen GPU rendering
+and Windows keyboard conventions. Artifacts remain ignored in
+`.cache/ui-totals-review/`. Selected toggle outline, real column widths, bold
+numeric alignment, reachable overflow totals and retained error controls were
+reviewed. Final error frames were re-exported after removing duplicate mock text.
+No application window opened. The four viewed Microsoft references establish
+short-table placement and operation choices; adaptive overflow placement remains
+provisional. See the [feature contract](DATASHEET_TOTALS.md).

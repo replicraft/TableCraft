@@ -160,7 +160,7 @@ impl State {
     }
 
     pub(in crate::workspace) fn current_field_filter_target(&self) -> Option<FieldFilterTarget> {
-        if self.table_selection.row_selected() {
+        if self.total_selection_active() || self.table_selection.row_selected() {
             return None;
         }
         let (_, column) = self.table_selection.position()?;

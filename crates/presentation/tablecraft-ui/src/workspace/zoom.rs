@@ -90,6 +90,9 @@ pub(crate) fn can_view(cell: &Cell) -> bool {
 
 impl State {
     fn zoom_position(&self) -> Option<(usize, usize)> {
+        if self.total_selection_active() {
+            return None;
+        }
         let selection = match self.view {
             DocumentView::Table => &self.table_selection,
             DocumentView::Query if self.saved_query.active => &self.saved_query.selection,

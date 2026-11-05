@@ -528,6 +528,17 @@ impl State {
         }
     }
 
+    pub(super) fn refresh_parked_totals_display(&mut self) {
+        for entry in &mut self.objects.entries {
+            if let Some(Session::Table { totals, .. }) = &mut entry.session {
+                totals.apply_display(&mut self.format_cache);
+            }
+            if let Some(session) = &entry.session {
+                entry.retained_bytes = session.retained_bytes();
+            }
+        }
+    }
+
     fn clear_object_slots(&mut self) {
         self.data = None;
         self.schema = None;
@@ -536,6 +547,7 @@ impl State {
         self.table_selection = Default::default();
         self.query_selection = Default::default();
         self.table_filter = Default::default();
+        self.totals = Default::default();
         self.records = Default::default();
         self.selected_field = 0;
         self.error = None;
@@ -553,6 +565,7 @@ impl State {
             super::ribbon::Tab::Home
         };
         self.refresh_display();
+        self.refresh_totals_display();
         if let Some(data) = &mut self.data {
             self.format_cache.apply_data(data);
         }

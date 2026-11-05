@@ -20,6 +20,7 @@ mod row_identity;
 mod save_display;
 mod saved_query;
 mod schema;
+pub(crate) mod totals;
 pub(crate) mod zoom;
 
 pub use contents::{CollectionKind, ContentsTarget};
@@ -39,6 +40,9 @@ pub use records::RecordTarget;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
+pub use totals::{
+    TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
+};
 
 use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
@@ -128,6 +132,16 @@ pub enum Action {
     PasteCell {
         target: EditTarget,
         text: String,
+    },
+    DescribeTotals {
+        target: TotalsTarget,
+    },
+    ComputeTotals {
+        target: TotalsTarget,
+        specs: Vec<TotalSpec>,
+    },
+    CancelTotals {
+        request_id: u64,
     },
     DescribeFieldFilter {
         target: FieldFilterTarget,
@@ -247,6 +261,7 @@ pub struct State {
     pub find_formatted_available: bool,
     find: Option<find::Session>,
     table_filter: filtering::TableFilter,
+    totals: totals::Totals,
     zoom: zoom::Zoom,
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
@@ -290,6 +305,8 @@ impl State {
         self.refresh_contents_display();
         self.refresh_edit_display();
         self.refresh_delete_display();
+        self.refresh_totals_display();
+        self.refresh_parked_totals_display();
     }
 
     /// Publish a checked table page into its admitted object session.
@@ -345,6 +362,9 @@ impl State {
         if self.contents_request_id().is_some() {
             return self.selected_contents_text();
         }
+        if self.total_selection_active() {
+            return self.selected_total_cell().map(|cell| cell.text.as_str());
+        }
         let data = self.visible_data()?;
         match self.view {
             DocumentView::Table => self.table_selection.text(data),
@@ -361,6 +381,9 @@ impl State {
         if self.contents_request_id().is_some() {
             return self.can_copy_contents_selection();
         }
+        if self.total_selection_active() {
+            return self.selected_total_cell().is_some();
+        }
         let Some(data) = self.visible_data() else {
             return false;
         };
@@ -375,7 +398,8 @@ impl State {
     }
 
     fn record_selected(&self) -> bool {
-        if self.backstage_visible()
+        if self.total_selection_active()
+            || self.backstage_visible()
             || self.edit_dialog_open()
             || self.contents_request_id().is_some()
         {
@@ -397,6 +421,13 @@ impl State {
         }
         if self.contents_request_id().is_some() {
             return self.copy_contents_selection(ctx);
+        }
+        if self.total_selection_active() {
+            let Some(cell) = self.selected_total_cell() else {
+                return false;
+            };
+            ctx.copy_text(cell.text.clone());
+            return true;
         }
         match self.view {
             DocumentView::Table => self
@@ -527,6 +558,7 @@ impl State {
         self.validate_zoom();
         self.validate_table_filter();
         self.validate_field_filter();
+        self.validate_totals();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
@@ -610,6 +642,11 @@ impl State {
             self.finish_pane_focus(ui);
         }
         self.finish_object_shortcut(ui, object_shortcut, &mut actions);
+        if actions.is_empty()
+            && let Some(action) = self.take_totals_request()
+        {
+            actions.push(action);
+        }
         actions
     }
 }

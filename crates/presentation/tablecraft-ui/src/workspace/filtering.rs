@@ -197,6 +197,19 @@ impl State {
                 .is_some_and(|view| view.enabled && view.filter_count > 0)
     }
 
+    pub(in crate::workspace) fn totals_native_view_counts(&self) -> Option<(u32, u32)> {
+        self.active_filter_target()?;
+        let view = self.table_filter.view.as_ref()?;
+        Some((
+            view.source_rows,
+            if view.enabled {
+                view.matched_rows
+            } else {
+                view.source_rows
+            },
+        ))
+    }
+
     pub(super) fn filtered_record_count(&self) -> Option<u32> {
         self.active_filter_target()?;
         let view = self.table_filter.view.as_ref()?;
@@ -280,7 +293,8 @@ impl State {
     }
 
     pub fn can_filter_selection(&self, target: &FilterSelectionTarget) -> bool {
-        if !self.filter_controls_ready()
+        if self.total_selection_active()
+            || !self.filter_controls_ready()
             || self.table_selection.row_selected()
             || !self.filter_source_current(target.document_revision, &target.table)
         {

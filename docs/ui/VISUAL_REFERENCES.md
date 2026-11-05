@@ -43,6 +43,48 @@ multivalue/history, offline-edit/recovery or native platform interaction evidenc
 Viewing the images does not establish validation timing, parameter ordering,
 focus traversal or native save behavior.
 
+## Published datasheet Totals references — 5 November 2026
+
+Microsoft's [Totals-row article](https://support.microsoft.com/en-us/access/display-column-totals-in-a-datasheet-using-a-totals-row)
+contains three public images, downloaded and opened headlessly from their actual
+Microsoft URLs. They remain in ignored local cache rather than tracked assets.
+Their filenames suggest an older Office presentation, but the exact application
+build, platform and display scale are not established by the article.
+
+| Viewed image | Observed presentation | SHA-256 |
+| --- | --- | --- |
+| [Initial Totals row](https://support.microsoft.com/en-us/access/media/o15-ac-totalsrow.jpg) | A separate row follows the asterisk/New action row. The first field reads Total; the other fields are blank. The pink outline is an article annotation. | `c24563115d1d2523fce84e70d494815f68a20493ea041af45e977cb65acabe63` |
+| [Completed Totals row](https://support.microsoft.com/en-us/access/media/o15-ac-totalsrowcomplete.jpg) | Totals align with the existing columns and use bold text; no native record selector or additional record number appears. | `01ffc2a9dc7f53866d15a9bbf2ab5fe63ca7363de74c9b57030b455ca977c65d` |
+| [Per-column selector](https://support.microsoft.com/en-us/access/media/o15-ac-totalsrowsum.jpg) | The active aggregate cell has a small dropdown. None, Sum, Average and Count are visible in this captured menu. The first field shows 4 after choosing Count instead of its default Total caption. The image does not establish the entire available menu. | `4f2d70dfa3524f59e5afa3f641ca84d621224ba2deaff8a62714f5a49fb7bfed` |
+
+A fourth image, [the selector in Working with datasheets](https://support.microsoft.com/en-us/access/media/total1.gif),
+was also downloaded and opened from that [Microsoft article](https://support.microsoft.com/en-us/access/working-with-datasheets).
+Its SHA-256 is `72ea954841e183829cbd38a5786a0540a6d9fedc5d0ae1448b9bf20ab0d6eb79`.
+It shows ten records, a Total row immediately below them and blank grid space
+below that row. Its dropdown includes None and all seven documented aggregates.
+These short-record images do not establish whether a long datasheet pins Totals
+while records scroll; viewport placement during overflow remains unverified.
+
+The article describes numeric Sum, Average, Minimum, Maximum, Count, sample
+Standard Deviation and sample Variance; Date/Time supports Count, Average,
+Minimum and Maximum. Text offers None and Count, also demonstrated by
+Microsoft's [query introduction](https://support.microsoft.com/en-us/access/introduction-to-queries).
+The detailed Date/Time entries qualify the article's shorter introductory
+statement about nonnumeric columns. These are datasheet choices, not permission
+to expose every SQL aggregate or extend unsupported native type profiles.
+
+The [Microsoft Access SQL Count contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/criteria-expressions/count-function-microsoft-access-sql)
+excludes NULL for Count(column); Count(*) is a different operation. Empty strings
+remain present values. The Totals row is hidden by toggling Home → Records →
+Totals; it cannot be cut or deleted as a record.
+
+The retained private Home image supplies the Ribbon placement but has Totals
+off. These public images add actual Totals-row composition evidence, not native
+interaction, dark-mode, filtered-view recalculation or database compatibility
+proof. Computing over the complete currently filtered view remains an
+implementation interpretation pending direct native comparison, rather than an
+observed result from these images.
+
 ## Object navigation and tab behavior references
 
 Microsoft's [Access user-interface guide](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface)

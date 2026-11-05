@@ -7,6 +7,7 @@ mod opening;
 mod saved;
 #[cfg(test)]
 mod test_support;
+mod totals;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use editing::Editing;
@@ -17,12 +18,22 @@ use tablecraft_runtime::{
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
     ObjectKind, ObjectTarget, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
+    TotalSpec, TotalsTarget,
 };
 use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
     Query,
+    TotalsDescribe {
+        request_id: u64,
+        target: TotalsTarget,
+    },
+    TotalsCompute {
+        request_id: u64,
+        target: TotalsTarget,
+        specs: Vec<TotalSpec>,
+    },
     SortView {
         request_id: u64,
     },
@@ -219,6 +230,10 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::TotalsDescription(description)) => {
+                    self.publish_totals_description(generation, description);
+                }
+                Ok(Response::Totals(result)) => self.publish_totals(generation, result),
                 Ok(Response::FilteredData(result)) => self.publish_filtered(generation, result),
                 Ok(Response::FieldFilterDescription(description)) => {
                     self.publish_field_filter_description(generation, description);
@@ -375,6 +390,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::TotalsDescribe { request_id, .. }
+                    | PendingOperation::TotalsCompute { request_id, .. } => {
+                        self.state.fail_totals(*request_id, error.to_string());
+                    }
                     PendingOperation::FieldFilterDescribe { request_id, .. }
                     | PendingOperation::FieldFilterApply { request_id } => {
                         self.state.fail_field_filter(*request_id, error.to_string());
@@ -461,6 +480,9 @@ impl eframe::App for Desktop {
         }
         for action in actions {
             match action {
+                Action::DescribeTotals { target } => self.describe_totals(target),
+                Action::ComputeTotals { target, specs } => self.compute_totals(target, specs),
+                Action::CancelTotals { request_id } => self.cancel_totals(request_id),
                 Action::ChooseFile => {
                     self.file_dialog
                         .open(frame, ui.ctx(), &self.state.localizer);
@@ -566,6 +588,13 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::TotalsDescribe { request_id, .. }
+                            | PendingOperation::TotalsCompute { request_id, .. } => {
+                                self.state.fail_totals(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::FieldFilterDescribe { request_id, .. }
                             | PendingOperation::FieldFilterApply { request_id } => {
                                 self.state.fail_field_filter(
