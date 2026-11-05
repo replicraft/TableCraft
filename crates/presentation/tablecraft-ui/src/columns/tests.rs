@@ -100,7 +100,15 @@ fn actual_headers_show_captions_and_accessible_context_keeps_original_names() {
             ..Default::default()
         },
         |ui| {
-            assert!(datasheet::show(ui, &data, &mut selection).is_empty());
+            assert!(
+                datasheet::show(
+                    ui,
+                    &data,
+                    &mut selection,
+                    crate::workspace::focus::Pane::Document
+                )
+                .is_empty()
+            );
         },
     );
     output.textures_delta.clear();

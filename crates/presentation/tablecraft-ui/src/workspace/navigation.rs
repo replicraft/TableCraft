@@ -1,6 +1,7 @@
 //! Object navigation emits page intents without owning a database source.
 mod row;
 
+use super::focus::{self, Pane};
 use super::{Action, DocumentView, SavedQueryTarget, State, ribbon::Icon};
 use crate::localization::tr;
 use egui::{RichText, ScrollArea, TextEdit, Ui};
@@ -19,10 +20,12 @@ impl State {
                 let search_label = tr(ui, "navigation-search-objects");
                 let search =
                     ui.add(TextEdit::singleline(&mut self.filter).hint_text(&search_label));
+                focus::register(ui, Pane::Navigation, &search, false);
                 ui.ctx().accesskit_node_builder(search.id, |node| {
                     node.set_label(search_label);
                 });
-                ui.checkbox(&mut self.show_system, tr(ui, "navigation-show-system"));
+                let system = ui.checkbox(&mut self.show_system, tr(ui, "navigation-show-system"));
+                focus::register(ui, Pane::Navigation, &system, false);
                 ui.separator();
                 if let Some(db) = &self.database {
                     let filter = self.filter.to_lowercase();
@@ -57,6 +60,7 @@ impl State {
                                         table.system.then_some(system_label.as_str()),
                                     )
                                     .on_hover_text(&table.storage);
+                                    focus::register(ui, Pane::Navigation, &response, selected);
                                     response.context_menu(|ui| {
                                         if ui
                                             .add_enabled(
@@ -97,15 +101,20 @@ impl State {
                                     ("query", db.document_revision, query.object_id),
                                     |ui| {
                                         ui.add_enabled_ui(!self.busy, |ui| {
-                                            if row::show(
+                                            let response = row::show(
                                                 ui,
                                                 Icon::Search,
                                                 &query.name,
                                                 selected,
                                                 query.system.then_some(system_label.as_str()),
-                                            )
-                                            .clicked()
-                                            {
+                                            );
+                                            focus::register(
+                                                ui,
+                                                Pane::Navigation,
+                                                &response,
+                                                selected,
+                                            );
+                                            if response.clicked() {
                                                 actions.push(Action::InspectSavedQuery {
                                                     target: SavedQueryTarget {
                                                         document_revision: db.document_revision,

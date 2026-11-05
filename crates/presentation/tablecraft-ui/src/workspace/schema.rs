@@ -3,9 +3,12 @@ mod grid;
 mod properties;
 pub use properties::{FieldProperty, FieldPropertyValue};
 
-use super::State;
+use super::{DocumentView, State};
+use crate::workspace::focus::{self, Pane};
 use egui::{Id, RichText, ScrollArea, Ui};
 use egui_extras::{Column, TableBuilder};
+
+const MAX_PANE_ENTRY_FRAMES: u64 = 8;
 
 /// Captured declaration metadata, separate from table pages and query results.
 pub struct Schema {
@@ -33,8 +36,67 @@ pub struct Field {
     pub properties: Vec<FieldProperty>,
 }
 
+/// A logical entry request, never a cached widget response or identifier.
+pub(super) struct PaneEntry {
+    publication: u64,
+    document_revision: Option<u64>,
+    table: String,
+    position: usize,
+    field_number: usize,
+    field_name: String,
+    started_frame: u64,
+    last_frame: u64,
+}
+
 impl State {
+    pub(super) fn request_design_pane_entry(&mut self, context: &egui::Context) {
+        let Some(schema) = &self.schema else {
+            return;
+        };
+        let Some(field) = schema.fields.get(self.selected_field) else {
+            return;
+        };
+        let frame = context.cumulative_frame_nr();
+        self.design_focus_pending = Some(PaneEntry {
+            publication: self.focus_publication,
+            document_revision: self
+                .database
+                .as_ref()
+                .map(|database| database.document_revision),
+            table: schema.table.clone(),
+            position: self.selected_field,
+            field_number: field.number,
+            field_name: field.name.clone(),
+            started_frame: frame,
+            last_frame: frame,
+        });
+    }
+
+    fn take_design_pane_entry(&mut self, context: &egui::Context) -> Option<PaneEntry> {
+        let entry = self.design_focus_pending.take()?;
+        let schema = self.schema.as_ref()?;
+        let field = schema.fields.get(self.selected_field)?;
+        let frame = context.cumulative_frame_nr();
+        let current = self.view == DocumentView::Design
+            && entry.publication == self.focus_publication
+            && entry.document_revision
+                == self
+                    .database
+                    .as_ref()
+                    .map(|database| database.document_revision)
+            && entry.table == schema.table
+            && entry.position == self.selected_field
+            && entry.field_number == field.number
+            && entry.field_name == field.name
+            && (frame == entry.last_frame || frame == entry.last_frame.saturating_add(1))
+            && frame.saturating_sub(entry.started_frame) <= MAX_PANE_ENTRY_FRAMES;
+        current.then_some(entry)
+    }
+
     pub(super) fn design(&mut self, ui: &mut Ui) {
+        let entry = self.take_design_pane_entry(ui.ctx());
+        let enter_grid = entry.is_some();
+        let mut entered_grid = false;
         let localizer = self.localizer.clone();
         let Some(schema) = &self.schema else {
             ui.weak(crate::localization::tr(ui, "design-choose"));
@@ -58,7 +120,8 @@ impl State {
             document_revision,
             schema,
             &mut self.selected_field,
-        );
+        )
+        .or_else(|| enter_grid.then_some(self.selected_field));
 
         egui::Resize::default()
             .id_salt("schema_fields")
@@ -120,6 +183,14 @@ impl State {
                                         ),
                                     },
                                 );
+                                if position == self.selected_field {
+                                    if enter_grid {
+                                        response.request_focus();
+                                        response.scroll_to_me(None);
+                                        entered_grid = true;
+                                    }
+                                    focus::register(ui, Pane::Document, &response, true);
+                                }
                                 let activated = ui.is_enabled()
                                     && (response.clicked()
                                         || response.has_focus() && response.gained_focus());
@@ -160,6 +231,15 @@ impl State {
                         });
                     });
             });
+        if let Some(mut entry) = entry
+            && !entered_grid
+        {
+            // TableBuilder applies an offscreen scroll target before the next draw.
+            // Keep only this still-current logical request for that adjacent frame.
+            entry.last_frame = ui.ctx().cumulative_frame_nr();
+            self.design_focus_pending = Some(entry);
+            ui.ctx().request_repaint();
+        }
         ui.separator();
         ui.vertical_centered(|ui| {
             ui.label(
@@ -175,7 +255,17 @@ impl State {
                 .id_salt("field_properties")
                 .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
                 .show(ui, |ui| {
-                    properties::show(ui, field);
+                    ui.push_id(
+                        (
+                            document_revision,
+                            &schema.table,
+                            self.selected_field,
+                            field.number,
+                        ),
+                        |ui| {
+                            properties::show(ui, field);
+                        },
+                    );
                 });
         });
     }

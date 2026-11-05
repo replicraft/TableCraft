@@ -2,6 +2,7 @@
 use super::SavedQueryState;
 use crate::localization::{message, tr};
 use crate::theme::input_border;
+use crate::workspace::focus::{self, Pane};
 use crate::workspace::{Action, State};
 
 const MAX_PARAMETER_PANE_HEIGHT: f32 = 220.0;
@@ -43,8 +44,9 @@ impl State {
         }
         let idle = !self.busy && self.saved_query.pending.is_none();
         let object_id = target.object_id;
+        let document_revision = target.document_revision;
         let changed = ui
-            .push_id(("saved_parameters", object_id), |ui| {
+            .push_id(("saved_parameters", document_revision, object_id), |ui| {
                 parameters(ui, &mut self.saved_query, idle)
             })
             .inner;
@@ -65,20 +67,19 @@ impl State {
             .as_ref()
             .expect("selected saved query");
         ui.horizontal(|ui| {
-            if ui
-                .add_enabled(
-                    self.can_run_saved_query(target, &self.saved_query.inputs),
-                    egui::Button::new(tr(ui, "saved-query-run")),
-                )
-                .clicked()
+            let run = ui.add_enabled(
+                self.can_run_saved_query(target, &self.saved_query.inputs),
+                egui::Button::new(tr(ui, "saved-query-run")),
+            );
+            focus::register(ui, Pane::Document, &run, false);
+            if run.clicked()
                 && let Some(action) = self.saved_query_run_action()
             {
                 actions.push(action);
             }
-            if ui
-                .add_enabled(idle, egui::Button::new(tr(ui, "saved-query-inspect")))
-                .clicked()
-            {
+            let inspect = ui.add_enabled(idle, egui::Button::new(tr(ui, "saved-query-inspect")));
+            focus::register(ui, Pane::Document, &inspect, false);
+            if inspect.clicked() {
                 actions.push(Action::InspectSavedQuery {
                     target: target.clone(),
                 });
@@ -142,6 +143,12 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                                     node.set_description(description);
                                 });
                                 input_border(ui, &kind);
+                                focus::register(
+                                    ui,
+                                    Pane::Document,
+                                    &kind,
+                                    kind.has_focus() || index == 0 && input.kind.is_empty(),
+                                );
                                 if kind.gained_focus() {
                                     kind.scroll_to_me(None);
                                 }
@@ -154,6 +161,14 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                                 )
                                 .labelled_by(label.id);
                             input_border(ui, &text);
+                            focus::register(
+                                ui,
+                                Pane::Document,
+                                &text,
+                                text.has_focus()
+                                    || index == 0
+                                        && (spec.kind != "value" || !input.kind.is_empty()),
+                            );
                             if text.gained_focus() {
                                 text.scroll_to_me(None);
                             }
@@ -167,6 +182,12 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                                     ),
                                 )
                                 .labelled_by(label.id);
+                            focus::register(
+                                ui,
+                                Pane::Document,
+                                &null,
+                                null.has_focus() || index == 0 && input.is_null,
+                            );
                             let description = tr(ui, "saved-query-use-null");
                             ui.ctx().accesskit_node_builder(null.id, |node| {
                                 node.set_description(description);

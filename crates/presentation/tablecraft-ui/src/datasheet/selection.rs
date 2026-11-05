@@ -39,6 +39,14 @@ impl Selection {
         }
     }
 
+    /// Pane entry reveals the existing selection without changing cell/record mode.
+    pub(crate) fn focus_selected(&mut self) {
+        if let Some((row, _)) = self.position {
+            self.focus_pending = true;
+            self.scroll_pending = Some(row);
+        }
+    }
+
     pub(crate) fn clear(&mut self) {
         let surrender_focus = self.focus.or(self.surrender_focus);
         *self = Self::default();

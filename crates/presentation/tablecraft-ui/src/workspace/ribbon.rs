@@ -2,6 +2,7 @@
 mod icons;
 mod mock_groups;
 
+pub(super) use super::focus::{self, Pane};
 pub(super) use icons::Icon;
 pub(super) use mock_groups::{design, home, mock as mock_command};
 
@@ -106,6 +107,7 @@ pub(super) fn command(
             CommandSize::IconOnly => (egui::vec2(24.0, SMALL_COMMAND_HEIGHT), 0.0),
         };
         let (rect, response) = ui.allocate_exact_size(desired, Sense::click());
+        focus::register(ui, Pane::Ribbon, &response, false);
         if response.enabled() && response.gained_focus() {
             response.scroll_to_me(None);
         }

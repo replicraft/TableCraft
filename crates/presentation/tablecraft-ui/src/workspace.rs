@@ -3,6 +3,7 @@ mod chrome;
 mod content;
 mod contents;
 mod editing;
+pub(crate) mod focus;
 mod home;
 mod navigation;
 pub mod preview;
@@ -136,6 +137,9 @@ pub struct State {
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
     selected_field: usize,
+    design_focus_pending: Option<schema::PaneEntry>,
+    pane_focus_entry: Option<focus::Entry>,
+    focus_publication: u64,
     schema_activation_pending: bool,
     pub busy: bool,
     pub error: Option<String>,
@@ -150,6 +154,7 @@ pub struct State {
 impl State {
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, data: Data) {
+        self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
@@ -159,6 +164,7 @@ impl State {
 
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, data: Data) {
+        self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
         self.query_selection.reset(&data);
@@ -253,6 +259,7 @@ impl State {
 
     /// Publish metadata without overriding a view chosen after its request.
     pub fn set_schema(&mut self, schema: Schema) {
+        self.bump_focus_publication();
         self.close_contents();
         self.schema = Some(schema);
         self.selected_field = 0;
@@ -281,6 +288,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        self.bump_focus_publication();
         self.reset_saved_query();
         self.reset_record_navigation();
         self.invalidate_edit();
@@ -375,6 +383,7 @@ impl State {
                 ui.memory_mut(|memory| memory.request_focus(path_id));
             }
         }
+        self.begin_pane_focus(ui, modal_open);
         ui.add_enabled_ui(!modal_open, |ui| {
             self.chrome(ui, &mut actions);
             if self.backstage_visible() {
@@ -386,6 +395,7 @@ impl State {
         });
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
+        self.finish_pane_focus(ui);
         actions
     }
 }
