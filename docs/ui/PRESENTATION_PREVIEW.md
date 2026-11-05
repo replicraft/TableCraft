@@ -345,3 +345,28 @@ an independent ad-hoc SQL draft. Returning to the workspace exposes the enabled
 translated saved-query Run control without localization diagnostics. This is a
 headless interaction check; it does not close the native locale-selection limit
 recorded in the [desktop observation](DESKTOP.md#native-mock-observation--5-november-2026).
+
+## Headless readability and localized navigation — 5 November 2026
+
+Selected editable text now uses the normal text ink over its blue selection
+background in both themes. egui uses its selection stroke color for selected
+glyphs; the red accent remains on TableCraft's explicit focus outlines. A system
+badge on a selected, focused navigation row likewise uses normal ink; ordinary
+badges retain their muted color. The palette audit measured the former selected
+text pairs at approximately 3.96:1 (light) and 4.37:1 (dark), versus 9.73:1 and
+8.66:1 with normal ink. This addresses those specific pairs, not general
+accessibility conformance.
+
+A compact Russian dark saved-query scenario exercises F6 through prompts,
+results, Navigation and Ribbon, plus reverse entry, at 1.25x and 1.5x. The harness
+sets scale during construction and asserts an actual 900 by 580 logical viewport;
+changing zoom after construction would test a smaller effective viewport.
+Traversal retains the exact typed retry inputs, selected result cell, complete
+result allocation and separate SQL draft, without database actions.
+
+The coordinated headless batch passes 112 shared UI tests and 23 desktop tests,
+including the existing 688 locale/theme/scene drawing combinations. Formatting,
+strict selected-package Clippy, documentation links and dependency guards pass.
+Focused paint checks inspect actual selected glyphs, selection fills and focus
+rings in both themes, plus badge colors across focus/selection transitions.
+No native application was activated or manipulated for this batch.
