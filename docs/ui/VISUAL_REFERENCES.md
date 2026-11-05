@@ -56,15 +56,20 @@ inspection and typed parameter entry have their own documented behavior, but non
 of these three captures shows an Access parameter dialog. The current parameter
 form must not be described as a visually verified copy of that dialog.
 
-Only working commands remain interactive. File opening, passwords, cancellation,
-table pages and read queries retain their current paths. No mock Create ribbon,
-editable new-record row, Click to Add field, checkbox editing, query designer or
-Microsoft account service is introduced to fill the screenshot layout. The
-File/Open presentation uses the Backstage reference's full-page structure and
-narrow left navigation. That capture shows Account, not Open: the implemented
-Open form is TableCraft's working file-selection surface, not a measured copy of
-Access's Open page. Only working Open/About sections are exposed; account/cloud,
-Save, Print and other unsupported commands are not simulated.
+The normal database workspace keeps its existing working command scope. The
+explicit synthetic preview additionally shows disabled Ribbon commands to review
+Access grouping, iconography and density, as requested on 4 November 2026. Those
+controls have explanatory tooltips and cannot dispatch actions. Mock responses
+for existing views stay inside a presentation-only host without database services.
+They do not establish support for new editing, Create tools, query design or
+Microsoft account services.
+
+File/Open uses the Backstage reference's full-page structure and narrow left
+navigation. The retained capture shows Account, not Open or Options; TableCraft's
+Open form and theme/language Options are provisional surfaces. Dark colors are a
+TableCraft adaptation: no dark Access capture is retained. Curated Microsoft
+Fluent System Icons supply actual SVG artwork, with source hashes and MIT notice
+under `assets/ui/icons/`, rather than substitute Unicode symbols.
 
 The read-only schema inspector now follows the observed Design-view organization,
 with a central fields grid and lower selected-field pane. Native rendering and

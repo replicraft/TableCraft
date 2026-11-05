@@ -1,5 +1,20 @@
 # Implementation status
 
+## Shared presentation preview — 4 November 2026
+
+UI work now prioritizes synthetic visual review without new database features.
+`tablecraft-ui` owns light/dark palettes, bundled sectioned Fluent translations
+for eight interface languages and the existing workspace presentation.
+`tablecraft-desktop --mock` starts a separate presentation-only host; no runtime
+worker, native file dialog or save service is constructed. Existing views have
+controlled synthetic scenes, while future Ribbon commands remain disabled.
+
+Microsoft Fluent SVG icons and Selawik with regional CJK fallback fonts retain
+source hashes and licenses under root `assets/ui/`. The retained Access captures
+guide the Home Ribbon, datasheet, read-only Table Design and Backstage structure.
+Options changes only the session's appearance/language, independently of database
+semantics. See [preview commands and current limits](ui/PRESENTATION_PREVIEW.md).
+
 ## Desktop workspace kickoff — 4 November 2026
 
 The first desktop implementation connects table navigation, bounded scalar pages

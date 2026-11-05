@@ -334,3 +334,13 @@ implementation task. The [dependency review](DEPENDENCY_REVIEW.md#targeted-backe
 records the completed evaluations; [dependency records](DEPENDENCIES.md) describe
 actual consumers and features. Selected future Moka/shared-buffer uses still
 require working consumers before adoption.
+
+### Shared UI Fluent consumer (4 November 2026)
+
+`tablecraft-ui` now uses the existing `fluent-bundle` and `unic-langid`
+workspace choices for bundled, explicitly selected presentation languages.
+`fluent-syntax` validates section/message/variable completeness in UI tests.
+This is separate from query error localization and native regional/collation
+policies. No `sys-locale` discovery is introduced; language selection is explicit.
+The development-only `egui_kittest` renderer supplies controlled mock PNG review;
+its WGPU/image closure is not part of the normal desktop or CLI runtime.

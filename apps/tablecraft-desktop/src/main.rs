@@ -1,11 +1,13 @@
 //! Native TableCraft workspace. Database work is isolated from the event thread.
 mod diagnostics;
 mod file_dialog;
+mod mock;
 mod view_models;
 mod workspace;
 
 use clap::Parser;
-use std::path::PathBuf;
+use std::{error::Error, path::PathBuf};
+use tablecraft_ui::{Locale, Localizer, Theme, preview::Scene};
 
 /// Open a native Access database in the desktop workspace.
 #[derive(Parser)]
@@ -16,7 +18,24 @@ struct Args {
     verbose: u8,
 
     /// Optional MDB/ACCDB path to open after startup.
+    #[arg(conflicts_with = "mock")]
     database: Option<PathBuf>,
+
+    /// Review the interface with synthetic data and no database services.
+    #[arg(long)]
+    mock: bool,
+
+    /// Initial synthetic view (datasheet, design, query, saved-query, etc.).
+    #[arg(long, requires = "mock", default_value = "datasheet")]
+    mock_view: Scene,
+
+    /// Initial preview language; the Japanese alias jp is accepted.
+    #[arg(long, requires = "mock")]
+    mock_language: Option<Locale>,
+
+    /// Start the synthetic preview in the dark theme.
+    #[arg(long, requires = "mock")]
+    mock_dark: bool,
 }
 
 fn main() -> eframe::Result {
@@ -33,10 +52,59 @@ fn main() -> eframe::Result {
         options,
         Box::new(move |cc| {
             tablecraft_ui::configure(&cc.egui_ctx);
-            Ok(Box::new(workspace::Desktop::new(
-                cc.egui_ctx.clone(),
-                args.database,
-            )))
+            if args.mock {
+                let localizer = Localizer::new(args.mock_language.unwrap_or_default())
+                    .map_err(|error| Box::new(error) as Box<dyn Error + Send + Sync>)?;
+                let theme = if args.mock_dark {
+                    Theme::Dark
+                } else {
+                    Theme::Light
+                };
+                Ok(Box::new(mock::MockApp::new(
+                    args.mock_view,
+                    localizer,
+                    theme,
+                )))
+            } else {
+                Ok(Box::new(workspace::Desktop::new(
+                    cc.egui_ctx.clone(),
+                    args.database,
+                )))
+            }
         }),
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn mock_mode_requires_explicit_selection_and_cannot_open_a_database_path() {
+        let ordinary = Args::try_parse_from(["tablecraft-desktop"]).unwrap();
+        assert!(!ordinary.mock);
+        assert!(ordinary.database.is_none());
+
+        let preview = Args::try_parse_from([
+            "tablecraft-desktop",
+            "--mock",
+            "--mock-view",
+            "design",
+            "--mock-language",
+            "jp",
+            "--mock-dark",
+        ])
+        .unwrap();
+        assert!(preview.mock);
+        assert_eq!(preview.mock_view, Scene::Design);
+        assert_eq!(preview.mock_language, Some(Locale::Ja));
+        assert!(preview.mock_dark);
+
+        assert!(Args::try_parse_from(["tablecraft-desktop", "sample.accdb", "--mock",]).is_err());
+        assert!(Args::try_parse_from(["tablecraft-desktop", "--mock-language", "ja",]).is_err());
+        assert!(
+            Args::try_parse_from(["tablecraft-desktop", "--mock", "--mock-view", "not-a-view",])
+                .is_err()
+        );
+    }
 }

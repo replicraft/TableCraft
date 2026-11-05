@@ -1523,3 +1523,38 @@ original and independently constructed expected-image digests before opening a
 session, matching the native and CLI acceptance checks. This adds no registry
 package or production adapter dependency; digests establish fixture identity,
 not permission to write.
+
+## Shared UI localization and visual review (4 November 2026)
+
+`tablecraft-ui` now consumes the existing workspace `fluent-bundle` and
+`unic-langid` declarations for explicitly selected bundled UI catalogs. Concurrent
+Fluent bundles are shared through `Arc`; errors use existing `thiserror`.
+`fluent-syntax` is a development dependency for complete message/variable parity
+checks. This leaves the CLI’s existing expression `fluent-catalog` feature unchanged
+and adds no GUI or renderer dependencies to it. `egui_extras` enables `svg` only for the UI consumer's
+curated Microsoft Fluent System Icons. Root assets retain MIT provenance.
+Selawik and unmodified regional Noto Sans CJK fonts retain their OFL notices and
+source hashes under `assets/ui/fonts/`.
+
+## Mock UI preview rendering
+
+The shared UI's development-only `render_preview` example consumes
+`egui_kittest` 0.36.2 (`MIT OR Apache-2.0`, defaults disabled, `wgpu`) and
+`image` 0.25.10 (`MIT OR Apache-2.0`, defaults disabled, `png`). Registry versions
+are inherited from the workspace; these direct declarations are development-only.
+Existing transitive image consumers remain separate from the screenshot harness. The matching egui release avoids a second egui generation. The renderer
+uses upstream wgpu and pollster for offscreen rendering and bounded GPU readback;
+its native driver/unsafe boundary is upstream, not a TableCraft OS automation API.
+
+The example renders the same synthetic `Preview` and existing workspace widgets
+used by the desktop `--mock` host. Output size, scale, OS keyboard convention,
+locale and theme are explicit. It writes ordinary PNG artifacts; it does not
+read the screen, start a database worker or open source files. Pixel comparison
+across GPUs/platforms and native Access behavioral compatibility are separate
+qualification, not consequences of a successful render.
+
+Noto Sans JP/KR/SC Regular 2.004 regional subset OTFs are unmodified bundled UI
+fallback assets under `assets/ui/fonts`, with their OFL 1.1 license and immutable
+source/hash provenance. They extend the selected Selawik UI font rather than
+replacing it. Font selection is a presentation language choice, independent of
+native database collation, value formatting or OS locale discovery.
