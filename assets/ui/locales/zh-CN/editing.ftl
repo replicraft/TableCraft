@@ -35,3 +35,35 @@ editing-outcome-saved = 保存完成
 editing-outcome-cancelled = 保存已取消
 
 editing-outcome-failed = 保存需要检查
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = 已提交
+editing-save-known-rolled-back = 已回滚
+editing-save-known-original = 已验证原始映像
+editing-save-known-replacement = 已验证替换映像
+editing-save-known-unknown = 尚未确定
+editing-save-completion-applied = 已应用
+editing-save-completion-recovered = 已恢复
+editing-save-completion-confirmed = 已确认
+editing-save-completed = 保存已完成，锁定释放已得到确认。
+editing-save-released = 资源已释放。恢复文件可能仍然存在；使用此文件前请先处理。{ $details }
+editing-save-current = 当前操作结果：{ $outcome }。
+editing-save-no-receipt = 没有已完成操作的回执。
+editing-save-prior = 最后完成的操作：{ $completion }；结果：{ $outcome }。
+editing-save-matched = 匹配行数：{ $count }。
+editing-save-changed = 更改的行数：{ $count }。
+editing-save-failure = 保存未正常完成（{ $reason }）。{ $details } 请勿自动重试。
+editing-save-reason-stale = 查看的文档已被替换
+editing-save-reason-open = 无法以独占编辑方式打开文件
+editing-save-reason-source = 文件在查看后发生了更改
+editing-save-reason-cancelled = 已请求取消
+editing-save-reason-resource = 已达到操作限制
+editing-save-reason-planning = 无法验证编辑内容
+editing-save-reason-intent = 无法准备更改记录
+editing-save-reason-setup = 无法设置恢复文件
+editing-save-reason-prepare = 无法准备保存
+editing-save-reason-commit = 提交未正常完成
+editing-save-reason-recovery = 恢复未正常完成
+editing-save-reason-finalization = 保存收尾未正常完成
+editing-save-reason-release = 锁定释放未得到确认
+editing-save-reason-state = 保存会话需要诊断

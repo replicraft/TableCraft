@@ -35,3 +35,35 @@ editing-outcome-saved = Сохранение завершено
 editing-outcome-cancelled = Сохранение отменено
 
 editing-outcome-failed = Требуется проверка сохранения
+
+# Host-authored save status; service payloads remain literal.
+editing-save-known-committed = зафиксирован
+editing-save-known-rolled-back = отменён откатом
+editing-save-known-original = исходный образ проверен
+editing-save-known-replacement = замещающий образ проверен
+editing-save-known-unknown = не установлен
+editing-save-completion-applied = применена
+editing-save-completion-recovered = восстановлена
+editing-save-completion-confirmed = подтверждена
+editing-save-completed = Сохранение завершено, снятие блокировки подтверждено.
+editing-save-released = Ресурсы освобождены. Файлы восстановления могут остаться; разберитесь с ними перед использованием этого файла. { $details }
+editing-save-current = Результат текущей операции: { $outcome }.
+editing-save-no-receipt = Квитанция о завершённой операции отсутствует.
+editing-save-prior = Последняя завершённая операция: { $completion }; результат: { $outcome }.
+editing-save-matched = Совпавшие строки: { $count }.
+editing-save-changed = Изменено строк: { $count }.
+editing-save-failure = Сохранение завершилось нештатно ({ $reason }). { $details } Не повторяйте автоматически.
+editing-save-reason-stale = просматриваемый документ был заменён
+editing-save-reason-open = не удалось открыть файл для монопольного редактирования
+editing-save-reason-source = файл изменился после просмотра
+editing-save-reason-cancelled = была запрошена отмена
+editing-save-reason-resource = достигнут лимит операции
+editing-save-reason-planning = не удалось проверить изменение
+editing-save-reason-intent = не удалось подготовить запись изменения
+editing-save-reason-setup = не удалось создать файлы восстановления
+editing-save-reason-prepare = не удалось подготовить сохранение
+editing-save-reason-commit = фиксация завершилась нештатно
+editing-save-reason-recovery = восстановление завершилось нештатно
+editing-save-reason-finalization = завершение сохранения прошло нештатно
+editing-save-reason-release = снятие блокировки не подтверждено
+editing-save-reason-state = сеанс сохранения требует диагностики
