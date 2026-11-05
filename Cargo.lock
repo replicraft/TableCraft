@@ -4410,6 +4410,7 @@ dependencies = [
  "egui_kittest",
  "rfd",
  "sys-locale",
+ "tablecraft-display",
  "tablecraft-runtime",
  "tablecraft-testkit",
  "tablecraft-ui",
@@ -4417,6 +4418,22 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "zeroize",
+]
+
+[[package]]
+name = "tablecraft-display"
+version = "0.1.0"
+dependencies = [
+ "icu_calendar",
+ "icu_datetime",
+ "icu_decimal",
+ "icu_experimental",
+ "icu_locale",
+ "icu_locale_core",
+ "iso_currency",
+ "jiff",
+ "thiserror 2.0.21",
+ "writeable",
 ]
 
 [[package]]
@@ -4517,6 +4534,7 @@ dependencies = [
  "tablecraft-ace",
  "tablecraft-core",
  "tablecraft-db",
+ "tablecraft-display",
  "tablecraft-expressions",
  "tablecraft-io",
  "tablecraft-model",
@@ -4596,18 +4614,12 @@ dependencies = [
  "egui_kittest",
  "fluent-bundle",
  "fluent-syntax",
- "icu_calendar",
- "icu_datetime",
- "icu_decimal",
- "icu_experimental",
- "icu_locale",
  "icu_locale_core",
  "image",
- "iso_currency",
  "jiff",
+ "tablecraft-display",
  "thiserror 2.0.21",
  "unic-langid",
- "writeable",
 ]
 
 [[package]]

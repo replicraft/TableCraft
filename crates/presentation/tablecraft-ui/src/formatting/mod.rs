@@ -1,18 +1,13 @@
-//! Typed, UI-only regional display choices. No SQL or edit-input conversions.
-mod engine;
-mod model;
+//! UI controls and publication cache around the renderer-neutral display service.
 mod options;
 
-pub use model::{
-    CurrencyChoice, DateFormat, DateRepresentation, NativeFormat, Options, ScalarPresentation,
-    TimeFormat,
-};
 pub(crate) use options::show_options;
+use tablecraft_display::{Engine, Options, raw};
 
 #[derive(Default)]
 pub(crate) struct Cache {
     policy: Option<Options>,
-    engine: Option<engine::Engine>,
+    engine: Option<Engine>,
 }
 
 impl Cache {
@@ -21,7 +16,7 @@ impl Cache {
             return false;
         }
 
-        self.engine = engine::Engine::new(options).ok();
+        self.engine = Engine::new(options).ok();
         self.policy = Some(options.clone());
         true
     }
@@ -32,7 +27,7 @@ impl Cache {
         };
         cell.text = match &self.engine {
             Some(engine) => engine.format(presentation),
-            None => engine::raw(presentation),
+            None => raw(presentation),
         };
     }
 
@@ -45,7 +40,7 @@ impl Cache {
     }
 
     pub fn system_examples(&self) -> Option<(String, String)> {
-        self.engine.as_ref().map(engine::Engine::system_examples)
+        self.engine.as_ref().map(Engine::system_examples)
     }
 
     pub fn status(&self) -> Option<(&str, bool, Option<&str>)> {

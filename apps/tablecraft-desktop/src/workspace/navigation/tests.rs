@@ -129,8 +129,8 @@ fn automatic_first_table_and_title_belong_to_the_successfully_opened_file() {
 
 #[test]
 fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_text() {
+    use tablecraft_display::{CurrencyChoice, DateFormat, TimeFormat};
     use tablecraft_testkit::fixtures::access::{field_presentation, wide_properties};
-    use tablecraft_ui::formatting::{CurrencyChoice, DateFormat, TimeFormat};
 
     for (kind, values, initial, raw) in [
         (

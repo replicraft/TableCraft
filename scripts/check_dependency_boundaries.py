@@ -32,18 +32,23 @@ ALLOWED = {
                           "tablecraft-formats", "tablecraft-testkit"},
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
-    "tablecraft-ui": set(),
+    "tablecraft-display": set(),
+    "tablecraft-ui": {"tablecraft-display"},
     "tablecraft-runtime": {"tablecraft-access", "tablecraft-ace", "tablecraft-core",
                            "tablecraft-model", "tablecraft-io", "tablecraft-query",
                            "tablecraft-sql", "tablecraft-testkit", "tablecraft-db",
-                           "tablecraft-schema", "tablecraft-expressions"},
-    "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit"},
+                           "tablecraft-schema", "tablecraft-expressions", "tablecraft-display"},
+    "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit",
+                           "tablecraft-display"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",
                        "tablecraft-expressions", "tablecraft-query",
                        "tablecraft-formats", "tablecraft-testkit"},
 }
+
+
+DISPLAY_GUI_DEPENDENCIES = {"egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"}
 
 
 def violations(metadata):
@@ -63,6 +68,8 @@ def violations(metadata):
         is_library = any(library_kinds.intersection(t["kind"]) for t in package["targets"])
         for dep in package["dependencies"]:
             target = dep["name"]
+            if name == "tablecraft-display" and target in DISPLAY_GUI_DEPENDENCIES:
+                errors.append(f"{name} -> {target}: display formatting must remain renderer-neutral")
             # Cargo metadata exposes all kinds, optional edges and cfg targets.
             # A path dependency outside the workspace cannot bypass the policy.
             path = dep.get("path")

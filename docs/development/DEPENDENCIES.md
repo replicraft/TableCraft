@@ -44,6 +44,20 @@ is retained beside the file and displayed in the shared About view. Existing CLI
 release archives do not contain this font or new desktop dependencies. Desktop
 release packaging and its complete transitive notice audit are a follow-on gate.
 
+## Renderer-neutral regional display
+
+`tablecraft-display` owns the existing ICU4X/CLDR formatting consumers (`icu_datetime`,
+`icu_calendar`, `icu_decimal`, `icu_experimental`, `icu_locale`, `icu_locale_core`
+and `writeable`), `iso_currency`, Jiff and typed `thiserror` failures. This extraction
+adds no registry package or version upgrade. Runtime, UI and desktop inherit the
+workspace display dependency directly. Display has no GUI or database dependency;
+no formatting fact or option is re-exported through runtime/UI.
+
+The UI retains `icu_locale_core` only as a development dependency because the
+`render_preview` example validates an explicit regional locale argument. Production
+formatting dependencies belong to display. Egui remains a UI dependency, and
+native window/file-picker dependencies remain host-only.
+
 ## Shared captured database images
 
 `tablecraft-runtime` directly inherits `bytes` 1.12.1 (MIT, declared MSRV 1.57),

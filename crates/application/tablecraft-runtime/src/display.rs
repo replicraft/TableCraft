@@ -2,11 +2,12 @@
 //! Native scalar representation remains in the immutable session; this is not
 //! an edit carrier, native field-format evaluator, or lossless export protocol.
 use super::{Cell, CellKind, Column, Error, controls::check};
-use crate::{DateRepresentation, HorizontalAlignment, NativeFormat, ScalarPresentation};
+use crate::HorizontalAlignment;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_display::{DateRepresentation, NativeFormat, ScalarPresentation};
 
 const NANOS_PER_EXTENDED_TICK: u32 = 100;
 const OUTPUT_BYTES: u64 = 8 * 1024 * 1024;

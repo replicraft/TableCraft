@@ -2,8 +2,11 @@
 
 Presentation choices belong to the shared UI. They do not change stored values,
 SQL comparison, database collation, native Format properties or edit input syntax.
-The runtime supplies typed display facts alongside the existing scalar text;
-the UI formats those facts without reparsing rendered strings.
+The runtime supplies typed display facts alongside the existing scalar text.
+`tablecraft-display` owns the renderer-neutral formatter, options and validated
+scalar facts; runtime, UI and desktop import those types directly. UI controls
+edit the preferences, while the same headless engine formats facts without
+reparsing rendered strings. Display has no egui, window or database dependency.
 
 ## Regional display
 

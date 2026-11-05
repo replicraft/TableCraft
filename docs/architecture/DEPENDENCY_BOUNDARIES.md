@@ -15,21 +15,22 @@ but never DB, adapters or hosts. Access/SQLite adapt engines into shared/query
 contracts, and CLI composes these libraries. The allowlist is slightly broader
 than today's graph for already accepted directions; it is not a feature claim.
 
-`tablecraft-ui` lives under `crates/presentation/` and owns the working egui
-presentation. Its current policy permits no local workspace-crate dependencies: it receives
-owned presentation state and user actions without opening databases or importing
-concrete adapters. `tablecraft-runtime` under `crates/application/` owns the
-headless backend worker, document reads and application operations. Its working
-dependencies are Access, ACE, core/model, I/O, query and SQL; testkit remains a
-development-only dependency. Runtime imports neither UI nor desktop and has no GUI
-dependency. The binary-only `tablecraft-desktop` application under `apps/` imports
-only runtime and UI as normal workspace dependencies; testkit is permitted only
-as a development dependency for host-adaptation acceptance. It owns native window
-composition, file selection and application lifetime, without importing backend services directly.
-Neither runtime nor desktop imports the CLI or SQLite. These new edges do not grant
-foundation, engine, adapter, query or CLI packages permission to import UI/runtime;
-the existing library-to-application prohibition also applies to desktop.
-The CLI and reusable backend services retain their headless dependency direction.
+`tablecraft-display` under `crates/presentation/` owns renderer-neutral regional
+formatting, options and validated scalar presentation facts. It has no workspace,
+GUI, platform-window or database dependencies. Runtime, UI and desktop import
+this owner directly; neither runtime nor UI re-exports its types as compatibility
+aliases. The guard rejects GUI/window registry dependencies in display, including
+optional, target-specific and test/build declarations.
+
+`tablecraft-ui` owns egui widgets, styling and accessibility. Its only normal local
+dependency is display; it receives owned state and emits typed actions without
+opening databases. `tablecraft-runtime` owns headless backend workers, document
+reads and application operations, and can share the pure formatter without
+importing UI or desktop. Testkit remains development-only. The binary-only
+`tablecraft-desktop` composes runtime, UI and display directly; backend services
+remain behind runtime. Neither runtime nor desktop imports CLI or SQLite. These
+edges grant no permission for foundation, engine, adapter, query or CLI packages
+to import UI/runtime. Libraries still cannot depend on application packages.
 
 `tablecraft-formats` owns bounded CAB and ZIP/OPC/XML/template decoding, consuming
 core/I/O/schema/model without importing ACE, DB, query or hosts. Access retains

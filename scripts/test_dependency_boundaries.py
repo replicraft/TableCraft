@@ -61,7 +61,10 @@ class BoundaryTests(unittest.TestCase):
             ["tablecraft-ui", "tablecraft-runtime"], False,
         )
         desktop["dependencies"].append({"name": "eframe"})
-        for added in [ui, runtime, desktop]:
+        display = package("tablecraft-display", "crates/presentation/tablecraft-display")
+        for consumer in [ui, runtime, desktop]:
+            consumer["dependencies"].append({"name": "tablecraft-display"})
+        for added in [ui, runtime, desktop, display]:
             data["packages"].append(added)
             data["workspace_members"].append(added["id"])
         return data, ui, desktop
@@ -69,6 +72,25 @@ class BoundaryTests(unittest.TestCase):
     def test_presentation_and_desktop_working_composition_passes(self):
         data, _, _ = self.desktop_workspace()
         self.assertEqual(violations(data), [])
+
+    def test_display_formatter_has_no_workspace_or_gui_dependencies(self):
+        for target in ["tablecraft-ui", "tablecraft-runtime", "tablecraft-core",
+                       "egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"]:
+            for kind in [None, "dev", "build"]:
+                with self.subTest(target=target, kind=kind):
+                    data, _, _ = self.desktop_workspace()
+                    display = next(
+                        candidate for candidate in data["packages"]
+                        if candidate["name"] == "tablecraft-display"
+                    )
+                    display["dependencies"].append({
+                        "name": target, "rename": "format_backend", "kind": kind,
+                        "optional": True, "target": 'cfg(target_os = "windows")',
+                    })
+                    self.assertTrue(any(
+                        f"tablecraft-display -> {target}" in error
+                        for error in violations(data)
+                    ))
 
     def test_presentation_has_no_workspace_backend_or_host_dependencies(self):
         for target in ["tablecraft-core", "tablecraft-access", "tablecraft-ace",
@@ -85,7 +107,7 @@ class BoundaryTests(unittest.TestCase):
     def test_existing_headless_packages_cannot_import_presentation_or_desktop(self):
         for owner in ["tablecraft-core", "tablecraft-schema", "tablecraft-db",
                       "tablecraft-ace", "tablecraft-access", "tablecraft-query",
-                      "tablecraft-cli", "tablecraft-runtime"]:
+                      "tablecraft-cli", "tablecraft-runtime", "tablecraft-display"]:
             for target in ["tablecraft-ui", "tablecraft-desktop"]:
                 for kind in [None, "dev", "build"]:
                     for identity in [

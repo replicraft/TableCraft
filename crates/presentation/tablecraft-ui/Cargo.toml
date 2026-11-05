@@ -11,6 +11,7 @@ publish = false
 workspace = true
 
 [dependencies]
+tablecraft-display.workspace = true
 csv.workspace = true
 fluent-bundle.workspace = true
 unic-langid.workspace = true
@@ -19,16 +20,9 @@ egui = { workspace = true, features = ["default_fonts"] }
 egui_extras = { workspace = true, features = ["svg"] }
 
 jiff.workspace = true
-icu_datetime.workspace = true
-icu_calendar.workspace = true
-icu_decimal.workspace = true
-icu_experimental.workspace = true
-icu_locale.workspace = true
-icu_locale_core.workspace = true
-iso_currency.workspace = true
-writeable.workspace = true
 
 [dev-dependencies]
+icu_locale_core.workspace = true
 fluent-syntax.workspace = true
 egui_kittest = { workspace = true, features = ["wgpu"] }
 image = { workspace = true, features = ["png"] }

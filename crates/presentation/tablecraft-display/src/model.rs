@@ -60,17 +60,6 @@ impl DateFormat {
         Self::Long,
         Self::Raw,
     ];
-    pub(crate) fn key(self) -> &'static str {
-        match self {
-            Self::SystemLocale => "settings-format-system",
-            Self::Iso => "settings-date-iso",
-            Self::DayMonthYear => "settings-date-dmy",
-            Self::MonthDayYear => "settings-date-mdy",
-            Self::Short => "settings-format-short",
-            Self::Long => "settings-format-long",
-            Self::Raw => "settings-format-raw",
-        }
-    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -93,16 +82,6 @@ impl TimeFormat {
         Self::Fractional,
         Self::Raw,
     ];
-    pub(crate) fn key(self) -> &'static str {
-        match self {
-            Self::SystemLocale => "settings-format-system",
-            Self::HoursMinutes => "settings-time-hm",
-            Self::HoursMinutesSeconds => "settings-time-hms",
-            Self::TwelveHour => "settings-time-twelve",
-            Self::Fractional => "settings-time-fractional",
-            Self::Raw => "settings-format-raw",
-        }
-    }
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]

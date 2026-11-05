@@ -3,10 +3,9 @@
 //! This is display/copy text only. Native values, edit input and query execution
 //! retain their original typed carriers. No locale is inferred from the database
 //! LCID or host environment, and custom formats are not evaluated.
-use crate::{
-    Cell, CellKind, DisplayControl, Error, NativeFormat, ScalarPresentation, display::Presentation,
-};
+use crate::{Cell, CellKind, DisplayControl, Error, display::Presentation};
 use tablecraft_ace::{PropertyGroupKind, TableProperties};
+use tablecraft_display::{NativeFormat, ScalarPresentation};
 
 const FORMAT: &str = "Format";
 const DECLARATION_FLAGS: u8 = 1;

@@ -4,7 +4,7 @@ mod cells;
 mod columns;
 mod datasheet;
 mod fonts;
-pub mod formatting;
+mod formatting;
 mod keyboard;
 pub mod localization;
 mod theme;
