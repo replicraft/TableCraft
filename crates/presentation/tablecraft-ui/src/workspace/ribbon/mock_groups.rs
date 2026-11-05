@@ -33,14 +33,27 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                     "ribbon-descending",
                     CommandSize::Small,
                 );
-                mock(ui, t, Icon::Sort, "ribbon-remove-sort", CommandSize::Small);
-            });
-            ui.vertical(|ui| {
-                mock(ui, t, Icon::Filter, "ribbon-advanced", CommandSize::Small);
                 mock(
                     ui,
                     t,
-                    Icon::Filter,
+                    Icon::RemoveSort,
+                    "ribbon-remove-sort",
+                    CommandSize::Small,
+                );
+            });
+            ui.vertical(|ui| {
+                mock(
+                    ui,
+                    t,
+                    Icon::Selection,
+                    "ribbon-selection",
+                    CommandSize::Small,
+                );
+                mock(ui, t, Icon::Advanced, "ribbon-advanced", CommandSize::Small);
+                mock(
+                    ui,
+                    t,
+                    Icon::ToggleFilter,
                     "ribbon-toggle-filter",
                     CommandSize::Small,
                 );
@@ -64,7 +77,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
             ui.vertical(|ui| {
                 mock(ui, t, Icon::Sum, "ribbon-totals", CommandSize::Small);
                 mock(ui, t, Icon::Spelling, "ribbon-spelling", CommandSize::Small);
-                mock(ui, t, Icon::Table, "ribbon-more", CommandSize::Small);
+                mock(ui, t, Icon::MoreRecords, "ribbon-more", CommandSize::Small);
             });
         });
     });
@@ -121,20 +134,37 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     group(ui, &t.text("ribbon-tools"), |ui| {
         ui.horizontal(|ui| {
             mock(ui, t, Icon::Key, "ribbon-primary-key", CommandSize::Large);
+            mock(ui, t, Icon::Builder, "ribbon-builder", CommandSize::Large);
             mock(
                 ui,
                 t,
-                Icon::Flash,
+                Icon::Validation,
                 "ribbon-test-validation-rules",
                 CommandSize::Large,
             );
-            mock(
-                ui,
-                t,
-                Icon::TableEdit,
-                "ribbon-modify-lookups",
-                CommandSize::Large,
-            );
+            ui.vertical(|ui| {
+                mock(
+                    ui,
+                    t,
+                    Icon::InsertRows,
+                    "ribbon-insert-rows",
+                    CommandSize::Small,
+                );
+                mock(
+                    ui,
+                    t,
+                    Icon::DeleteRows,
+                    "ribbon-delete-rows",
+                    CommandSize::Small,
+                );
+                mock(
+                    ui,
+                    t,
+                    Icon::Lookups,
+                    "ribbon-modify-lookups",
+                    CommandSize::Small,
+                );
+            });
         });
     });
     group(ui, &t.text("ribbon-show-hide"), |ui| {
@@ -154,14 +184,14 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
             mock(
                 ui,
                 t,
-                Icon::Flash,
+                Icon::MacroCreate,
                 "ribbon-create-data-macros",
                 CommandSize::Large,
             );
             mock(
                 ui,
                 t,
-                Icon::TableEdit,
+                Icon::MacroRename,
                 "ribbon-rename-delete-macro",
                 CommandSize::Large,
             );
@@ -179,7 +209,7 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
             mock(
                 ui,
                 t,
-                Icon::Table,
+                Icon::Dependencies,
                 "ribbon-object-dependencies",
                 CommandSize::Large,
             );

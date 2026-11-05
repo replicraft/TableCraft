@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = Makro umbenennen/löschen
 ribbon-relationships = Beziehungen
 ribbon-object-dependencies = Objektabhängigkeiten
 ribbon-filter = Filter
+
+ribbon-undo = Rückgängig
+ribbon-redo = Wiederholen
+ribbon-builder = Generator
+ribbon-insert-rows = Zeilen einfügen
+ribbon-delete-rows = Zeilen löschen

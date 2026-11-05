@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = Renomear/Excluir Macro
 ribbon-relationships = Relações
 ribbon-object-dependencies = Dependências do Objeto
 ribbon-filter = Filtrar
+
+ribbon-undo = Desfazer
+ribbon-redo = Refazer
+ribbon-builder = Construtor
+ribbon-insert-rows = Inserir linhas
+ribbon-delete-rows = Excluir linhas

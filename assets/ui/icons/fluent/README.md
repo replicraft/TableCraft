@@ -1,5 +1,10 @@
 # Fluent System Icons
 
+Retained source subset. The active UI uses the original generated
+[TableCraft icons](../tablecraft/README.md); these assets and their MIT notice
+remain together for provenance. The usage description below records the earlier
+implementation.
+
 Selected 24-unit regular SVG paths from Microsoft's
 [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons).
 The exact upstream revision, source paths and original/local SHA-256 hashes are

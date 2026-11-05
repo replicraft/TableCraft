@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = Переименовать или удалить м
 ribbon-relationships = Схема данных
 ribbon-object-dependencies = Зависимости объектов
 ribbon-filter = Фильтр
+
+ribbon-undo = Отменить
+ribbon-redo = Повторить
+ribbon-builder = Построитель
+ribbon-insert-rows = Вставить строки
+ribbon-delete-rows = Удалить строки

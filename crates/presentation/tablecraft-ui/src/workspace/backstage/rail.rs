@@ -40,7 +40,7 @@ pub(super) fn entry(ui: &mut Ui, icon: Icon, label: &str, selected: Option<bool>
         ),
         egui::vec2(ICON_SIZE, ICON_SIZE),
     );
-    icon.image(color, ICON_SIZE).paint_at(ui, icon_rect);
+    icon.image(ui, ICON_SIZE).paint_at(ui, icon_rect);
     let text_left = icon_rect.right() + ICON_TEXT_GAP;
     let mut layout = egui::text::LayoutJob::simple(
         label.to_owned(),

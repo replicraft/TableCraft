@@ -1,0 +1,1044 @@
+{
+  "origin": "Original TableCraft vector artwork authored for this repository; no imported glyph paths, fonts, logos or raster assets.",
+  "canvas": [
+    32,
+    32
+  ],
+  "variants": [
+    "light",
+    "dark",
+    "disabled-light",
+    "disabled-dark"
+  ],
+  "icons": [
+    {
+      "name": "application",
+      "variants": {
+        "light": {
+          "file": "application-light.svg",
+          "sha256": "d25512810e8aa29cd40ceb39b0268d5ed81540a646af1bb406d8800f0389bf6d"
+        },
+        "dark": {
+          "file": "application-dark.svg",
+          "sha256": "377f7def238bc9cd70dfcb231d8605123a1d23f60d55b70528ff0d2cfda82c3f"
+        },
+        "disabled-light": {
+          "file": "application-disabled-light.svg",
+          "sha256": "c844b6517883b946b1330b0eb1e9b98e228dc21c1615039f403cacd1382f145c"
+        },
+        "disabled-dark": {
+          "file": "application-disabled-dark.svg",
+          "sha256": "44e39526c319cf09e7277f11fe1a30715f01cf6485c49a173dbe08faf89afb2e"
+        }
+      }
+    },
+    {
+      "name": "folder_open",
+      "variants": {
+        "light": {
+          "file": "folder_open-light.svg",
+          "sha256": "d895c6b4039248897ec6899154bf5bc748a4aa4a0c3bcff3d2eef19075ba6310"
+        },
+        "dark": {
+          "file": "folder_open-dark.svg",
+          "sha256": "5a1a802a1e3e4dcdb659fa7077b9b9433fc5fd3d81e4d762a540f2724519b8a8"
+        },
+        "disabled-light": {
+          "file": "folder_open-disabled-light.svg",
+          "sha256": "70069255110ff63bede7134f60d08af073ed21bfeba7e59d286583273dcb24e5"
+        },
+        "disabled-dark": {
+          "file": "folder_open-disabled-dark.svg",
+          "sha256": "7be23270327b94349f4218f2bc3967d9c63ba9e3589edb000f315db46cb2818b"
+        }
+      }
+    },
+    {
+      "name": "settings",
+      "variants": {
+        "light": {
+          "file": "settings-light.svg",
+          "sha256": "f87eb31240af6cc5753e2347644ccb250a4ee0483a3562db3dddb097b25dbf6e"
+        },
+        "dark": {
+          "file": "settings-dark.svg",
+          "sha256": "b9ea02ce972fdb9de91388fcdb199921e075d47010c29ef7ade495f456cbd4c7"
+        },
+        "disabled-light": {
+          "file": "settings-disabled-light.svg",
+          "sha256": "a31c40396ae0c4979ba610e8e7f1994475265caa6d8c5cd0a4d156f5ad0a9eef"
+        },
+        "disabled-dark": {
+          "file": "settings-disabled-dark.svg",
+          "sha256": "fa43e565a6796b9e8074cb7516b555ac8f5052fe86a6b07a32165a0181859d36"
+        }
+      }
+    },
+    {
+      "name": "info",
+      "variants": {
+        "light": {
+          "file": "info-light.svg",
+          "sha256": "28f2a46ebac64d24d93bd9073f958ddc9b93b606f1d9b6e5d8e5583c611b6a04"
+        },
+        "dark": {
+          "file": "info-dark.svg",
+          "sha256": "de871764ea0f14f9469d2e5e7247a19ca9509093d024b8f7986175cfac46cf5c"
+        },
+        "disabled-light": {
+          "file": "info-disabled-light.svg",
+          "sha256": "4e8ed14263db5fe59b535fecc86e52d7f5b0dd9e65c83846c91490a20c09cfb5"
+        },
+        "disabled-dark": {
+          "file": "info-disabled-dark.svg",
+          "sha256": "5f5eadc49052f1e17faa526ba9f3638a7dcda01d6de8454d281fca463bdd3859"
+        }
+      }
+    },
+    {
+      "name": "arrow_left",
+      "variants": {
+        "light": {
+          "file": "arrow_left-light.svg",
+          "sha256": "fb7934d1afdd9b26c28e4fd3645ddd367f3ac2ca46f5ae7207327fe775e008c3"
+        },
+        "dark": {
+          "file": "arrow_left-dark.svg",
+          "sha256": "b7dbc13ba17744cff97b4c347f8d4606b6651cc4fa1324528f5afb6bc9f74f2a"
+        },
+        "disabled-light": {
+          "file": "arrow_left-disabled-light.svg",
+          "sha256": "4be5a27ca59a48982f4db5cf1b9ee956f2b7b6572967bd75154fa7864c080d67"
+        },
+        "disabled-dark": {
+          "file": "arrow_left-disabled-dark.svg",
+          "sha256": "898c48bf8524866f8524c70890f3352588c46bf9b4e89b517fd97dbee06c05d8"
+        }
+      }
+    },
+    {
+      "name": "undo",
+      "variants": {
+        "light": {
+          "file": "undo-light.svg",
+          "sha256": "6f4032e79cf47762dd751ae9bcf1746defc6bcad70f577f01f390bb1382ac789"
+        },
+        "dark": {
+          "file": "undo-dark.svg",
+          "sha256": "a2b58bd731b58b155cc84ac4ad5bc82812f7551feb072cf12ce205fb8e611bb0"
+        },
+        "disabled-light": {
+          "file": "undo-disabled-light.svg",
+          "sha256": "a9c832c27586d24ce12450ff98a1e588a7eabfa0f7c2edfc10fa4924b8af5fca"
+        },
+        "disabled-dark": {
+          "file": "undo-disabled-dark.svg",
+          "sha256": "036a15aacec50fd7a511e192794e0fd0ec3adac4b1f24a52fbf5cbca7ef5997d"
+        }
+      }
+    },
+    {
+      "name": "redo",
+      "variants": {
+        "light": {
+          "file": "redo-light.svg",
+          "sha256": "48135e5bae8734294b1c787d83bd086da5c810d742e17f2d20709d14039850ff"
+        },
+        "dark": {
+          "file": "redo-dark.svg",
+          "sha256": "307caee5edc78943dfc606dd1e9c877881034e4380a7647214d6d732446d77a9"
+        },
+        "disabled-light": {
+          "file": "redo-disabled-light.svg",
+          "sha256": "508e875ce4d9ab71b29edf5d355695fe86278c8bff0099fb463db26b4810998b"
+        },
+        "disabled-dark": {
+          "file": "redo-disabled-dark.svg",
+          "sha256": "e74b90a553655f0c0fa70358f14bf15ebe7974138e37aa5d6ac6998c6361ecd5"
+        }
+      }
+    },
+    {
+      "name": "table",
+      "variants": {
+        "light": {
+          "file": "table-light.svg",
+          "sha256": "e4afbf88ee236cee06652e01f96c4308f0147cd4e0dea44e56a548f7530bcf6b"
+        },
+        "dark": {
+          "file": "table-dark.svg",
+          "sha256": "36796a0175caecbae1fb35f911a1ab40e88b05e39ab65a2c2cb8f9d89463874c"
+        },
+        "disabled-light": {
+          "file": "table-disabled-light.svg",
+          "sha256": "d0143fdda6c3402cb5b9794420b35ab018d354002de9b194bfaeea78f6ae37d3"
+        },
+        "disabled-dark": {
+          "file": "table-disabled-dark.svg",
+          "sha256": "9f7db75a03da22c5bdc73ad137828fd906aa062a21bfbaf202c68ee4ee1f5c68"
+        }
+      }
+    },
+    {
+      "name": "table_edit",
+      "variants": {
+        "light": {
+          "file": "table_edit-light.svg",
+          "sha256": "ded1d6291b1f003e89ca59d2a2b7e0608d8e0257a0688e7500914180beda503b"
+        },
+        "dark": {
+          "file": "table_edit-dark.svg",
+          "sha256": "86d66b81601f332903a394476b5a617d6a1e5e7b88c5b302bc1f1bb2d6e8af9e"
+        },
+        "disabled-light": {
+          "file": "table_edit-disabled-light.svg",
+          "sha256": "8b531e11743b9c91c966992b6ca0604a95d7e5157be65976ce0195981afbbf84"
+        },
+        "disabled-dark": {
+          "file": "table_edit-disabled-dark.svg",
+          "sha256": "903151a71b85e41dc61dc72c777e2bb738b520abf720fbea4d3597b92defe900"
+        }
+      }
+    },
+    {
+      "name": "paste",
+      "variants": {
+        "light": {
+          "file": "paste-light.svg",
+          "sha256": "6f7e0259f39f150b6e5321216f9066042edcb434881bf3edf335d012d24f7ef3"
+        },
+        "dark": {
+          "file": "paste-dark.svg",
+          "sha256": "1f0874d26ca157b974bb50c6c3c80210b42b819455a8c515a34526b6e84e5c2a"
+        },
+        "disabled-light": {
+          "file": "paste-disabled-light.svg",
+          "sha256": "b8c79e2fb68af5a365a125f9cd26b5e54ae8f226472c1a076cc804605a1f4bd2"
+        },
+        "disabled-dark": {
+          "file": "paste-disabled-dark.svg",
+          "sha256": "74bc665c33bfe48e9fe6a4bca748f7cd732ddcc3b352f8fea49d34731e635887"
+        }
+      }
+    },
+    {
+      "name": "cut",
+      "variants": {
+        "light": {
+          "file": "cut-light.svg",
+          "sha256": "6d14034bf9680f0a731ed28a89446c1ba2fd0f076ff94b21dc7ad83ae50583b8"
+        },
+        "dark": {
+          "file": "cut-dark.svg",
+          "sha256": "28fb5037d3fd48ea259ae3ef05c09bc4d2a045d8b2f90bede9be49a6089dd3a6"
+        },
+        "disabled-light": {
+          "file": "cut-disabled-light.svg",
+          "sha256": "6d5ecff695bcd4edc99a3da11932eb82d009415d42dbcf46f08703a69d8b4fde"
+        },
+        "disabled-dark": {
+          "file": "cut-disabled-dark.svg",
+          "sha256": "2f024c18247a04ef167cf35080eddb2b8367a128123a0cd7933e64d66402a9fe"
+        }
+      }
+    },
+    {
+      "name": "copy",
+      "variants": {
+        "light": {
+          "file": "copy-light.svg",
+          "sha256": "3315ad788135d9b843be62c66738411382504f53b976cab066550f341eb213f4"
+        },
+        "dark": {
+          "file": "copy-dark.svg",
+          "sha256": "4bdc45c7a7cdc15f0c7839357afc1a559a6e56ebc04447105781d94f901ec16e"
+        },
+        "disabled-light": {
+          "file": "copy-disabled-light.svg",
+          "sha256": "cc17c94a8f45380b61d5c277b8b9de33a5a798eee9c8a66630cfacd88623f1cf"
+        },
+        "disabled-dark": {
+          "file": "copy-disabled-dark.svg",
+          "sha256": "b524af1168d4f0baa318196524b62d0de9d285afde2f50fac507f8c08d991fb8"
+        }
+      }
+    },
+    {
+      "name": "paint_brush",
+      "variants": {
+        "light": {
+          "file": "paint_brush-light.svg",
+          "sha256": "6c1a967a59b4b18deab1e5504c32598ad652dc29d0e343716fc70b3a2bae9558"
+        },
+        "dark": {
+          "file": "paint_brush-dark.svg",
+          "sha256": "9f4ca793bb84324163f17a03ab1133733bcdcd05536024672cf87bf86a5312ca"
+        },
+        "disabled-light": {
+          "file": "paint_brush-disabled-light.svg",
+          "sha256": "4b5666b5fd97128f26c51d7ca2949430e6f28ac8450a5aeac104b47c04aca2ef"
+        },
+        "disabled-dark": {
+          "file": "paint_brush-disabled-dark.svg",
+          "sha256": "fe8e1e0fcec5bed3f3f0afca419ff4dbea1bfde35d442d822ed1cc223047bee9"
+        }
+      }
+    },
+    {
+      "name": "ascending",
+      "variants": {
+        "light": {
+          "file": "ascending-light.svg",
+          "sha256": "1acfb2ea1409577ac41ce56d77de41388522f401bef76ddd370e102df740d2f1"
+        },
+        "dark": {
+          "file": "ascending-dark.svg",
+          "sha256": "01058b04bf4953e06f8fa398ee97c60a907b27455e0b028ece83160efbad05e3"
+        },
+        "disabled-light": {
+          "file": "ascending-disabled-light.svg",
+          "sha256": "e4cdc5207e59fa2a531b15d0fec4d396c2480a1571fa4312f2881cd7836a65b6"
+        },
+        "disabled-dark": {
+          "file": "ascending-disabled-dark.svg",
+          "sha256": "bba3ee072b701429d6df66cc08652635f1d46d3372b020098e96722ee2654e6c"
+        }
+      }
+    },
+    {
+      "name": "descending",
+      "variants": {
+        "light": {
+          "file": "descending-light.svg",
+          "sha256": "7ceccd82e8d06cb25abafc20da4ce82bbbe4f08a468a3b4ba94adb1487b9ce97"
+        },
+        "dark": {
+          "file": "descending-dark.svg",
+          "sha256": "7f29cb53158da6f5ff109c415f390290697da8085da7272b97f2aa2261e021ba"
+        },
+        "disabled-light": {
+          "file": "descending-disabled-light.svg",
+          "sha256": "f70645d34b33e3d8a4b08e2563674dd5cd2f154c4f5337e2ee0c01f90c4970cd"
+        },
+        "disabled-dark": {
+          "file": "descending-disabled-dark.svg",
+          "sha256": "a710476ed2473ff22d38b2deff44842063acafa3fe4a303523634d71e99b3c06"
+        }
+      }
+    },
+    {
+      "name": "filter",
+      "variants": {
+        "light": {
+          "file": "filter-light.svg",
+          "sha256": "36b2a52d0caaebee263433649de01aa0a6e6b6ee6c7359fec77891517511c8af"
+        },
+        "dark": {
+          "file": "filter-dark.svg",
+          "sha256": "0bd25693c069239f503e091de20cd2cd54e2523a3f0f79f7dcb1a7eab0da8699"
+        },
+        "disabled-light": {
+          "file": "filter-disabled-light.svg",
+          "sha256": "2c7fb17c02b79c63f2fe740d51d9647f7106f53d74cfbf3f4fe2f8da4aba277a"
+        },
+        "disabled-dark": {
+          "file": "filter-disabled-dark.svg",
+          "sha256": "00b0fa888d55ae0c37cb108e3ee725d4f710ca112757aadf9bd8a124b4228a97"
+        }
+      }
+    },
+    {
+      "name": "selection",
+      "variants": {
+        "light": {
+          "file": "selection-light.svg",
+          "sha256": "3585366d9786e4863136a97d4d15de34d40bed25c60fb547c111ded159790e24"
+        },
+        "dark": {
+          "file": "selection-dark.svg",
+          "sha256": "e0fcfb39474265aa2b77fc0d7e01669eba19e2c5ee5159b2519ddfcc81c40271"
+        },
+        "disabled-light": {
+          "file": "selection-disabled-light.svg",
+          "sha256": "669e8385b17c27d131260b8db8e2f371f68cbecf0df3667793639e9e3dd84520"
+        },
+        "disabled-dark": {
+          "file": "selection-disabled-dark.svg",
+          "sha256": "5da50e46872c05b4a027823c89fdac2b49c1460b0721040894c5ec7424da0ecf"
+        }
+      }
+    },
+    {
+      "name": "advanced_filter",
+      "variants": {
+        "light": {
+          "file": "advanced_filter-light.svg",
+          "sha256": "b62409cc5d565bd4ade41bcc10ac06a410c9b90b87d76a0b4bf389dff3c4954a"
+        },
+        "dark": {
+          "file": "advanced_filter-dark.svg",
+          "sha256": "7999fc223d7b7c8c60b42ef6789ee70f9472e8605b89f6236abd82586ae8eb6b"
+        },
+        "disabled-light": {
+          "file": "advanced_filter-disabled-light.svg",
+          "sha256": "a7ff6d046b69505ab58da0ffbca98c6ee9c2b623c354a5708071b993ec171e36"
+        },
+        "disabled-dark": {
+          "file": "advanced_filter-disabled-dark.svg",
+          "sha256": "103b7e5b2586f31e2dcf24d2af1803db762ba6085cc61abf29a628161fb1ab5a"
+        }
+      }
+    },
+    {
+      "name": "toggle_filter",
+      "variants": {
+        "light": {
+          "file": "toggle_filter-light.svg",
+          "sha256": "2fc412b4a369c7e03a1943f2d177b72f722d37603b87132c8c217f35c2fb16cc"
+        },
+        "dark": {
+          "file": "toggle_filter-dark.svg",
+          "sha256": "b1e5eb60bc30692116bee61bb17f7c8947e300ad67fecb91e7b4eca45abccbc3"
+        },
+        "disabled-light": {
+          "file": "toggle_filter-disabled-light.svg",
+          "sha256": "fe0eacfe6bcb8c3b484165c416077cd675590f015a3a86ffa95829e58aaf1ea7"
+        },
+        "disabled-dark": {
+          "file": "toggle_filter-disabled-dark.svg",
+          "sha256": "37bcbf10ddbdb739bd0d1556c7fd6f3202af266834f2113d53f66bdb14c9c166"
+        }
+      }
+    },
+    {
+      "name": "remove_sort",
+      "variants": {
+        "light": {
+          "file": "remove_sort-light.svg",
+          "sha256": "3ced5dece3e5d187c848638a3d4d40573d48e97555368a1a1cb463eca6422ee0"
+        },
+        "dark": {
+          "file": "remove_sort-dark.svg",
+          "sha256": "ba2a152a1aead5534cf0495e9463f6870634bdc295617ac7f236a2b1fa0dba01"
+        },
+        "disabled-light": {
+          "file": "remove_sort-disabled-light.svg",
+          "sha256": "a768b72a5495fa437e40ef8e2703c1d63965596c910060ec1a3aacec3a2aab7e"
+        },
+        "disabled-dark": {
+          "file": "remove_sort-disabled-dark.svg",
+          "sha256": "8cd9abdb4bbdf9e5a90f18a5e8365b8cb0f024270bdb85f9ca2b9cbcbca0e3f0"
+        }
+      }
+    },
+    {
+      "name": "refresh",
+      "variants": {
+        "light": {
+          "file": "refresh-light.svg",
+          "sha256": "9fafc7d4acdaeb2f3e9c7c91b6e3157e190e254d713031aaffcfdca07e15fa37"
+        },
+        "dark": {
+          "file": "refresh-dark.svg",
+          "sha256": "67c26366fc8e40299f82216ec08192f37ed4b6ddb538ff23397bd889c7d3165b"
+        },
+        "disabled-light": {
+          "file": "refresh-disabled-light.svg",
+          "sha256": "00afa191c613d9c32d88f4fa6c0deb2044719f98bdc8131f42fb566d02a22125"
+        },
+        "disabled-dark": {
+          "file": "refresh-disabled-dark.svg",
+          "sha256": "fd58ecd396be5b3114769748e3293e6e75aaf2c95c0c1fb452a356c4fb73690c"
+        }
+      }
+    },
+    {
+      "name": "add",
+      "variants": {
+        "light": {
+          "file": "add-light.svg",
+          "sha256": "0c1e25f4a37e7ddb36335bb59254988537bc834b62fd2d649d3d94010b2aa299"
+        },
+        "dark": {
+          "file": "add-dark.svg",
+          "sha256": "c49d8e3e73a8caefd0d9eb68a8eb297821addd6a83d4a5bdd8b79d7738b833ac"
+        },
+        "disabled-light": {
+          "file": "add-disabled-light.svg",
+          "sha256": "63192691838385e8fd07d71a9d7b7dd638c8a5024b5268a89e00461a3fb85ad1"
+        },
+        "disabled-dark": {
+          "file": "add-disabled-dark.svg",
+          "sha256": "44911fdaaf21e7d64909ce41d96706c3aeb0b1d8c464ebe7cd40005c3d04f66e"
+        }
+      }
+    },
+    {
+      "name": "save",
+      "variants": {
+        "light": {
+          "file": "save-light.svg",
+          "sha256": "d7a1e60bbc638b7fd4bc50ace69805af28fb488f4b1dec2660131be018e4e042"
+        },
+        "dark": {
+          "file": "save-dark.svg",
+          "sha256": "1006fe5c70184c940c9a45b0e23f1dda60e0f5547a02f92f31c824ef08aa47e5"
+        },
+        "disabled-light": {
+          "file": "save-disabled-light.svg",
+          "sha256": "7ee254dd6f30ad5651a71d1a0eff6458b73aede16af1fd1f638f51ebe508011b"
+        },
+        "disabled-dark": {
+          "file": "save-disabled-dark.svg",
+          "sha256": "c66a9b52ff9cefda52b13b0638228618f92e6ad53040ed34390e0ca309f7ebf1"
+        }
+      }
+    },
+    {
+      "name": "delete",
+      "variants": {
+        "light": {
+          "file": "delete-light.svg",
+          "sha256": "dddfc8c57a7438c36700d462ed316bede1f64d88b8fce30b971fc680c3bd0828"
+        },
+        "dark": {
+          "file": "delete-dark.svg",
+          "sha256": "a5f6e41b7228654d41a59bfb4141690f121545d804fde30ae9770d2868668018"
+        },
+        "disabled-light": {
+          "file": "delete-disabled-light.svg",
+          "sha256": "f1c0632efd947aa0a62af1bedb562b7bf5f0dcef2005881b3da2e27e041cec46"
+        },
+        "disabled-dark": {
+          "file": "delete-disabled-dark.svg",
+          "sha256": "ccc8a912148235750be6c15af19c05f3aabd2619d5d5214bd1fdfe96c91359d1"
+        }
+      }
+    },
+    {
+      "name": "sum",
+      "variants": {
+        "light": {
+          "file": "sum-light.svg",
+          "sha256": "d2b6b36730071655a5ed5a9e22c0718efb12b842fb7c137cb99a1f057942f450"
+        },
+        "dark": {
+          "file": "sum-dark.svg",
+          "sha256": "28061934bc1f111887b319cc1382c26bb418d4a9a08dff315fa498d7ca7db659"
+        },
+        "disabled-light": {
+          "file": "sum-disabled-light.svg",
+          "sha256": "ed9d2558d0589b0b96c165b8380b2bb0b7a6bb8bb5de4b821101f5b579b7bc73"
+        },
+        "disabled-dark": {
+          "file": "sum-disabled-dark.svg",
+          "sha256": "cef169804409c288b88889f54f402776254d0b5fad607e529191df0f7d3148fb"
+        }
+      }
+    },
+    {
+      "name": "spelling",
+      "variants": {
+        "light": {
+          "file": "spelling-light.svg",
+          "sha256": "f31512efcee66bd29eebe3dd317617a345d3be9a94979069e44ca60c66d4139a"
+        },
+        "dark": {
+          "file": "spelling-dark.svg",
+          "sha256": "917b61ef270dc932a95812dd7e1a3c9480ca60a4277876851a9a599dc70677d4"
+        },
+        "disabled-light": {
+          "file": "spelling-disabled-light.svg",
+          "sha256": "1d1736d0df747f4bccf53295066ae9b91cb682edafc61397f3b5acda31fdf6c3"
+        },
+        "disabled-dark": {
+          "file": "spelling-disabled-dark.svg",
+          "sha256": "333b09f520c971e2b603182e4d2c4f5b9d47c84fa86b28cbc3fa31fd6c064b51"
+        }
+      }
+    },
+    {
+      "name": "more_records",
+      "variants": {
+        "light": {
+          "file": "more_records-light.svg",
+          "sha256": "e909e2efc309c5440002cd006db9900f4679650c06ebff72cd2bc8d7a25d2167"
+        },
+        "dark": {
+          "file": "more_records-dark.svg",
+          "sha256": "8dbce05e8a77391249415779163e98d1adbc066ca273a10f44b77ae9afa5c2b5"
+        },
+        "disabled-light": {
+          "file": "more_records-disabled-light.svg",
+          "sha256": "f982bb67aa72d1f5ae929887ea36663f157b2cee72213a42106a262fbc18b24c"
+        },
+        "disabled-dark": {
+          "file": "more_records-disabled-dark.svg",
+          "sha256": "0446d1fe6c54da4ab3fe0a82cfd3ab1c0e8dec5998f6319cefc7914c12ad2e9f"
+        }
+      }
+    },
+    {
+      "name": "search",
+      "variants": {
+        "light": {
+          "file": "search-light.svg",
+          "sha256": "002b6a97425c181170582dee201527fd9e35019d574295db75025828e8bdece5"
+        },
+        "dark": {
+          "file": "search-dark.svg",
+          "sha256": "3e37c76712ace4fea97d259a143cb3c35d5e90ea1cd24ec96d50c05226e2d617"
+        },
+        "disabled-light": {
+          "file": "search-disabled-light.svg",
+          "sha256": "d343cf78b4248d2dc9f9d1bc4fd8edd57b6ca9fec87c3bb9ab2149c8b6ced511"
+        },
+        "disabled-dark": {
+          "file": "search-disabled-dark.svg",
+          "sha256": "c2af87bd574ff5e294dda0d1b087236f8b6a0cc1976ad95066b23221b53553ea"
+        }
+      }
+    },
+    {
+      "name": "replace",
+      "variants": {
+        "light": {
+          "file": "replace-light.svg",
+          "sha256": "8be032caaa6fd87d76620a2c33349ba532b618a1ca7ab71454dee9b90b3a9b44"
+        },
+        "dark": {
+          "file": "replace-dark.svg",
+          "sha256": "13480768d0f66450984df16bcbad8fefaa4cc0868f290ad4182ee41c486339a7"
+        },
+        "disabled-light": {
+          "file": "replace-disabled-light.svg",
+          "sha256": "53c597575880704115d0c6b7cdeeb3515ee32b2d5dc4e0dfc5bd8369df7ef177"
+        },
+        "disabled-dark": {
+          "file": "replace-disabled-dark.svg",
+          "sha256": "ff0dde74f755120c20dcf71fa4b75e7a48ad21e9ddcdc4f4cc49030316d59cf0"
+        }
+      }
+    },
+    {
+      "name": "go_to",
+      "variants": {
+        "light": {
+          "file": "go_to-light.svg",
+          "sha256": "a815873ac827966fe7f139391a989220d8061984ff3515f8ae887c07b5017356"
+        },
+        "dark": {
+          "file": "go_to-dark.svg",
+          "sha256": "68b3666576bfaf697a45a0b49d6bb177440901be7a76741e1d64eeff6bff64fc"
+        },
+        "disabled-light": {
+          "file": "go_to-disabled-light.svg",
+          "sha256": "c1a61e92e7b1f31f81aab3e2a7eef1eea9c20e81e01d23148311c47b108bb4ac"
+        },
+        "disabled-dark": {
+          "file": "go_to-disabled-dark.svg",
+          "sha256": "282129cc10951fa4577001636da3d61f2b2decce520f99a3f4c4c15bea27aba9"
+        }
+      }
+    },
+    {
+      "name": "cursor",
+      "variants": {
+        "light": {
+          "file": "cursor-light.svg",
+          "sha256": "6274018aa4ad6554978e8d891ccfb5251660e3b4dcb1b3d2c61b25c6b9c0daa5"
+        },
+        "dark": {
+          "file": "cursor-dark.svg",
+          "sha256": "2ee3424663af836ef515902d1bf2ca5b4f00d364ac4569b1c3c155716daf76e3"
+        },
+        "disabled-light": {
+          "file": "cursor-disabled-light.svg",
+          "sha256": "ff7ff5a04b8a5d83c880455d709e9cc440c9c8f3fd6ed22865871db9de56d9e6"
+        },
+        "disabled-dark": {
+          "file": "cursor-disabled-dark.svg",
+          "sha256": "7f7a1482ba48333afc0895309c82c678da25e48921db80b1b5984b4549e0f055"
+        }
+      }
+    },
+    {
+      "name": "bold",
+      "variants": {
+        "light": {
+          "file": "bold-light.svg",
+          "sha256": "bcd242ff6bb2395a69ab43aad88f489d9478f1c1276557b744ee382f737ef0d3"
+        },
+        "dark": {
+          "file": "bold-dark.svg",
+          "sha256": "ad645ac3293875fd3ec9a812df4b16b34cef05587a03925e225ab9a874949142"
+        },
+        "disabled-light": {
+          "file": "bold-disabled-light.svg",
+          "sha256": "1b53048a41e9af04796505c0ed476a56b5e33b110478966a5446cf253a4209c2"
+        },
+        "disabled-dark": {
+          "file": "bold-disabled-dark.svg",
+          "sha256": "0c551e259bb5e4ff24d5aeaeddd05441604de7d8a539ce8aabf0727b9b9b1e30"
+        }
+      }
+    },
+    {
+      "name": "italic",
+      "variants": {
+        "light": {
+          "file": "italic-light.svg",
+          "sha256": "34be3ba6e2fa3f577c0cdf04a49e2eee0def66c274c0660a8e51ac2249887d3f"
+        },
+        "dark": {
+          "file": "italic-dark.svg",
+          "sha256": "4d2822faa93e1dd1d90bc2016b6d724bc7f377f414a276c01cb760c63ed4918c"
+        },
+        "disabled-light": {
+          "file": "italic-disabled-light.svg",
+          "sha256": "934065a50cd2096e2919aa7fa0bc5310f359e011773f96d83d2160ce6606a4cc"
+        },
+        "disabled-dark": {
+          "file": "italic-disabled-dark.svg",
+          "sha256": "3fabdbc36a730e2ee28f37835d6fd02954b4dc43d2452c7e1c694b30dc1b4172"
+        }
+      }
+    },
+    {
+      "name": "underline",
+      "variants": {
+        "light": {
+          "file": "underline-light.svg",
+          "sha256": "cd71f12a6cfc8a93e894d1d847ad144a20fb89c8d1239ff2ff5f369a672da8a1"
+        },
+        "dark": {
+          "file": "underline-dark.svg",
+          "sha256": "115a2c5c5fefb3434ee553cbeacb52343e377e076363cb59377b6e81b88740be"
+        },
+        "disabled-light": {
+          "file": "underline-disabled-light.svg",
+          "sha256": "5fbcd2ab8355420ef3caa5597f48844c87d038c1dc4b6b4f2dedaa4d5301daba"
+        },
+        "disabled-dark": {
+          "file": "underline-disabled-dark.svg",
+          "sha256": "b61a1b89a4a914bd42ba64c1b716596f593f731299502e99c8c9147e9e169b56"
+        }
+      }
+    },
+    {
+      "name": "text_color",
+      "variants": {
+        "light": {
+          "file": "text_color-light.svg",
+          "sha256": "c0b8dbdb59b643f656888b2578e511233a5f28ff76deee32750fcd7c7a416471"
+        },
+        "dark": {
+          "file": "text_color-dark.svg",
+          "sha256": "ac4a86ce32f7153fbe4ec3dd10cc72ddbc726c9f1ac73bff12207bb2013e3f98"
+        },
+        "disabled-light": {
+          "file": "text_color-disabled-light.svg",
+          "sha256": "228f321a9a806cdd530e718688e9dbac85f0f91536f3bb5d72454fadefa5781a"
+        },
+        "disabled-dark": {
+          "file": "text_color-disabled-dark.svg",
+          "sha256": "1ec3f9b9905f765d06b2529357b1a708e3ec9658822fe18c4097d00a25fddc37"
+        }
+      }
+    },
+    {
+      "name": "fill",
+      "variants": {
+        "light": {
+          "file": "fill-light.svg",
+          "sha256": "873571b1b19732e4ebcd0b3c3f2c046b49ef2889cefa512f6da6071d2ca91d9d"
+        },
+        "dark": {
+          "file": "fill-dark.svg",
+          "sha256": "d54814d57bcb3946d89d0d5c86ea658e636c52f8441d36be38c95214d4d91a7b"
+        },
+        "disabled-light": {
+          "file": "fill-disabled-light.svg",
+          "sha256": "d0239314002b235c5e261cdf6603c1134ea931cc45c221e9e935b7874b87bb2b"
+        },
+        "disabled-dark": {
+          "file": "fill-disabled-dark.svg",
+          "sha256": "3f791b27cf5a54f38e188f7224f1e820bb1def500e9a239681a39a1dc9a818b4"
+        }
+      }
+    },
+    {
+      "name": "zoom",
+      "variants": {
+        "light": {
+          "file": "zoom-light.svg",
+          "sha256": "fa8a0fb595c49e14d4e3cce4cd1b23edc095186c1fabe0253f58b231b3077b47"
+        },
+        "dark": {
+          "file": "zoom-dark.svg",
+          "sha256": "7a4ebee0eb26d7a2ea0ebc23496e0276c17213d85a176a0679152bf2f550b060"
+        },
+        "disabled-light": {
+          "file": "zoom-disabled-light.svg",
+          "sha256": "da336e1b7c332b72da3b4b33929e2e12f3cf1472dcb0e50c5942cee900922cb9"
+        },
+        "disabled-dark": {
+          "file": "zoom-disabled-dark.svg",
+          "sha256": "d6c0fab36724ef0f91ab9a1c6ca0e3e2ed488c647bd47f121ff79d78c4509857"
+        }
+      }
+    },
+    {
+      "name": "key",
+      "variants": {
+        "light": {
+          "file": "key-light.svg",
+          "sha256": "e9c01a20655acdb69d94d1bf6db22663dbe715f06bd1ddd8bc517cd071b2ba3b"
+        },
+        "dark": {
+          "file": "key-dark.svg",
+          "sha256": "8bcf2582face364bc6b1859cb14d93efcc902ab2cf4ae5440d585106b70244c7"
+        },
+        "disabled-light": {
+          "file": "key-disabled-light.svg",
+          "sha256": "5b2fd016b671541b356879ab45a75e112430a571bb9f687c20a7a03b41d02bbe"
+        },
+        "disabled-dark": {
+          "file": "key-disabled-dark.svg",
+          "sha256": "d3ae0ec3d76f20ffe6da0a97ce3ecbdf8627faee84b19b8ba60c0bd4a3a7b602"
+        }
+      }
+    },
+    {
+      "name": "validation",
+      "variants": {
+        "light": {
+          "file": "validation-light.svg",
+          "sha256": "a77ccebb0669c3441a20cde666b433c148f9bd252c07ecca466991bb2c5514a4"
+        },
+        "dark": {
+          "file": "validation-dark.svg",
+          "sha256": "ba1af4999d9f364baff813ed50b9cadf757b40114ce15ebf91e2f2df6601c2ff"
+        },
+        "disabled-light": {
+          "file": "validation-disabled-light.svg",
+          "sha256": "9444ff27f79b4c30ace198d7a1b16f76022dc37550176e8da62d45000645a840"
+        },
+        "disabled-dark": {
+          "file": "validation-disabled-dark.svg",
+          "sha256": "f92672a6308ad148d5c55ba5b0585d3e11251ac857f4e35434257d42dc24ead2"
+        }
+      }
+    },
+    {
+      "name": "lookups",
+      "variants": {
+        "light": {
+          "file": "lookups-light.svg",
+          "sha256": "d7dee0b27c6616c87cd47954cdc71529c3e5ad9535bc3d249683a7fdf77f160e"
+        },
+        "dark": {
+          "file": "lookups-dark.svg",
+          "sha256": "9b2acfb54b30a466e3e80133a34a606153a23dd7c919a5e6a8888da17979b006"
+        },
+        "disabled-light": {
+          "file": "lookups-disabled-light.svg",
+          "sha256": "93e4a5a2d28177804a5c69e04a0a382409268ea017b04c09e00104ffe2594f30"
+        },
+        "disabled-dark": {
+          "file": "lookups-disabled-dark.svg",
+          "sha256": "51ea001c242b4144f608ff7ef32a91e27c4d0ca7a7ef8ff5d4164d13e8459f43"
+        }
+      }
+    },
+    {
+      "name": "macro_create",
+      "variants": {
+        "light": {
+          "file": "macro_create-light.svg",
+          "sha256": "805663e71e0519ad25b8efd1a4b22a7c38fb6189d052fed33e0a3442b08b90f6"
+        },
+        "dark": {
+          "file": "macro_create-dark.svg",
+          "sha256": "181109c6031a358a7ad1279400fc254ad89a9282220024ee734dc4eae8c8f3cd"
+        },
+        "disabled-light": {
+          "file": "macro_create-disabled-light.svg",
+          "sha256": "de46fd8d5110d50166a2f43be35d32a174a404ff63438efcdc2612197e64b922"
+        },
+        "disabled-dark": {
+          "file": "macro_create-disabled-dark.svg",
+          "sha256": "684d761d79e55efeabcaa507db38105e8434dd050d0d76c8d8f6d9e1bfb5d1b8"
+        }
+      }
+    },
+    {
+      "name": "macro_rename",
+      "variants": {
+        "light": {
+          "file": "macro_rename-light.svg",
+          "sha256": "ab3cc2cdbadc291c9b9f43c2a2e956270683fcb5ef7db3a26245c5c6a6c949fc"
+        },
+        "dark": {
+          "file": "macro_rename-dark.svg",
+          "sha256": "ccf5dd58801168839599caca94734bc99df745473ed6c5bc4fa0349cb3b75ad0"
+        },
+        "disabled-light": {
+          "file": "macro_rename-disabled-light.svg",
+          "sha256": "42b6d5cc9cb54cd27830590f263675da3be89d018d9bc430505073e7631753ea"
+        },
+        "disabled-dark": {
+          "file": "macro_rename-disabled-dark.svg",
+          "sha256": "2edcc69bb65903beba6106961212a79d2ff931fb49d0f469524ef0a7635268e8"
+        }
+      }
+    },
+    {
+      "name": "relationships",
+      "variants": {
+        "light": {
+          "file": "relationships-light.svg",
+          "sha256": "4a0a5f333f87ca13ff7f81ace5121f633531b1db83f98bd2653b24baceee0278"
+        },
+        "dark": {
+          "file": "relationships-dark.svg",
+          "sha256": "04c8c39a928660c10744366570c704ddc8f744e9aeace3d66648e392f01b8520"
+        },
+        "disabled-light": {
+          "file": "relationships-disabled-light.svg",
+          "sha256": "f2e6c657f50a67c0dc7725f2786341458b0c64819a456654efa94935d75bdc0a"
+        },
+        "disabled-dark": {
+          "file": "relationships-disabled-dark.svg",
+          "sha256": "c0c5c8dc86e9af6d95f378e8b763c7916b753b06a7f79c6736f1dd5f820d4dba"
+        }
+      }
+    },
+    {
+      "name": "properties",
+      "variants": {
+        "light": {
+          "file": "properties-light.svg",
+          "sha256": "78938026a88e04d52fa9481d3c83bce3f816c6f8e2051620f5da9bfc0f040545"
+        },
+        "dark": {
+          "file": "properties-dark.svg",
+          "sha256": "1a1796dd9fd1cf78f4843dda3795dba4722f0d49f1b77d9bcf4a711c0ab63516"
+        },
+        "disabled-light": {
+          "file": "properties-disabled-light.svg",
+          "sha256": "ede0fc91f41657e10c1cff4cb8cda12e115eabe0aaf88907866fc04dc05349a9"
+        },
+        "disabled-dark": {
+          "file": "properties-disabled-dark.svg",
+          "sha256": "5c4a4ee1add6d50f8922109dc1ccfe4f4246b54165ac12e984b859995ed8430d"
+        }
+      }
+    },
+    {
+      "name": "indexes",
+      "variants": {
+        "light": {
+          "file": "indexes-light.svg",
+          "sha256": "9c1924d08eeedfe252a75693cba1b67ff8f64033fcf994c65c4f01599d7aa6fb"
+        },
+        "dark": {
+          "file": "indexes-dark.svg",
+          "sha256": "8d634338c98fa21dc7bdfea91ce45c0fccaeace2f915aee77204b6cc675e9bfb"
+        },
+        "disabled-light": {
+          "file": "indexes-disabled-light.svg",
+          "sha256": "825ad04664cfaa34235b8051e040b93a83551b18c74a7b1ff646c1772c88b4eb"
+        },
+        "disabled-dark": {
+          "file": "indexes-disabled-dark.svg",
+          "sha256": "86dfc312c2cdf73b07c5f30881edea7ab8809d50dca00f2f3dc8b6a38bb262ac"
+        }
+      }
+    },
+    {
+      "name": "dependencies",
+      "variants": {
+        "light": {
+          "file": "dependencies-light.svg",
+          "sha256": "989fe62b0e006938987c4a909f94f22ecc8ab4932ceaf3ca0569de3316cd9c3d"
+        },
+        "dark": {
+          "file": "dependencies-dark.svg",
+          "sha256": "e3c349f3f14d5d69b73af16f5691c7a91933957e93b070e6a381afe4f81be232"
+        },
+        "disabled-light": {
+          "file": "dependencies-disabled-light.svg",
+          "sha256": "a0f97aa088dd3d0d99ae42e5ff0a9f9d15d16cf8330e7517313410367daba6a6"
+        },
+        "disabled-dark": {
+          "file": "dependencies-disabled-dark.svg",
+          "sha256": "656a7665bf002f94eb4e09e7e63da2fb14c05e6ca4f9b4051025c4fd483d03e8"
+        }
+      }
+    },
+    {
+      "name": "builder",
+      "variants": {
+        "light": {
+          "file": "builder-light.svg",
+          "sha256": "733fd7225c03b4c0459dbfa7766a210cccc17b014a83ced48aad0ff749cdb956"
+        },
+        "dark": {
+          "file": "builder-dark.svg",
+          "sha256": "46e28b974b0dfaa517abe95b8e70c22d24152fd004250006bd5be4d5d13eae7b"
+        },
+        "disabled-light": {
+          "file": "builder-disabled-light.svg",
+          "sha256": "468c1d86773b7f5dc9b6f13bf33dcd06f2df2cf67c8dc8dcb48c2180870e3f55"
+        },
+        "disabled-dark": {
+          "file": "builder-disabled-dark.svg",
+          "sha256": "2ac5f0040e272370d839924876903e255eeea36a65ef582a6cb8d4d678b643ff"
+        }
+      }
+    },
+    {
+      "name": "insert_rows",
+      "variants": {
+        "light": {
+          "file": "insert_rows-light.svg",
+          "sha256": "d464955d89027d9cfc3a5254c7132a1cdf4d040b77073fee2f0c7a983967caad"
+        },
+        "dark": {
+          "file": "insert_rows-dark.svg",
+          "sha256": "d7ce3735244e93f82a3c2ef6d19f365792af6b89009d6e28b3061800f76039f1"
+        },
+        "disabled-light": {
+          "file": "insert_rows-disabled-light.svg",
+          "sha256": "9c10253660c11453bbf324a577d7f088811ea59ccc1d45c1b87dd579e43e4d88"
+        },
+        "disabled-dark": {
+          "file": "insert_rows-disabled-dark.svg",
+          "sha256": "fe7b865282ed49f939403b17ac319f5359c568288198ba5d7f09f6855c763e53"
+        }
+      }
+    },
+    {
+      "name": "delete_rows",
+      "variants": {
+        "light": {
+          "file": "delete_rows-light.svg",
+          "sha256": "0dd24dd4e71951c84e5f1619def7f515ef589212bc62c4a4f220c2c8d8e9f5fb"
+        },
+        "dark": {
+          "file": "delete_rows-dark.svg",
+          "sha256": "5cfda1a09daa774c7f2389f349cd3320d29c06c354c2a33abe6df80be9c288bd"
+        },
+        "disabled-light": {
+          "file": "delete_rows-disabled-light.svg",
+          "sha256": "7eb7fbe8a62ccb44fc910a5eb296f5403ad04d12ca92de8ef2b22c1765806a63"
+        },
+        "disabled-dark": {
+          "file": "delete_rows-disabled-dark.svg",
+          "sha256": "c7ff05a4fdb1bc182f225c1478c6da903730cbf857074348481c08fcdf876666"
+        }
+      }
+    }
+  ]
+}

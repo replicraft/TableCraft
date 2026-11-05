@@ -4,6 +4,7 @@ use crate::Database;
 #[test]
 fn long_workspace_title_retains_full_identity_without_displacing_status() {
     let context = egui::Context::default();
+    crate::configure(&context);
     context.enable_accesskit();
     let title = "Quarterly international customer and supplier reconciliation workspace ".repeat(8);
     let mut state = State {
@@ -74,6 +75,7 @@ fn long_workspace_title_retains_full_identity_without_displacing_status() {
 #[test]
 fn short_workspace_title_keeps_the_same_left_edge_as_a_truncated_title() {
     let context = egui::Context::default();
+    crate::configure(&context);
     let mut state = State::default();
     let mut starts = Vec::new();
     for title in ["Long workspace identity ".repeat(40), "Sample.accdb".into()] {
@@ -115,4 +117,122 @@ fn short_workspace_title_keeps_the_same_left_edge_as_a_truncated_title() {
         (starts[0] - starts[1]).abs() < 0.1,
         "short titles stay beside the application name"
     );
+}
+
+#[test]
+fn mock_quick_access_is_compact_and_inert_above_the_separate_ribbon_tabs() {
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    crate::configure(&context);
+    let mut preview = crate::preview::Preview::new(crate::preview::Scene::Datasheet);
+    let mut quick_ids = Vec::new();
+    for frame in 0..3 {
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(900.0, 580.0),
+                )),
+                ..Default::default()
+            },
+            |ui| assert!(preview.state_mut().show(ui).is_empty()),
+        );
+        output.textures_delta.clear();
+        if frame == 2 {
+            let mut previous_right = None;
+            for label in ["File", "Home", "Create", "External Data"] {
+                let text = output
+                    .shapes
+                    .iter()
+                    .find_map(|shape| match &shape.shape {
+                        egui::Shape::Text(text)
+                            if text.galley.job.text == label && text.pos.y < 100.0 =>
+                        {
+                            Some(text)
+                        }
+                        _ => None,
+                    })
+                    .expect("actual Ribbon tab label is painted");
+                if let Some(right) = previous_right {
+                    assert!(
+                        text.pos.x - right >= 16.0,
+                        "adjacent painted labels retain their own side padding"
+                    );
+                }
+                previous_right = Some(text.pos.x + text.galley.size().x);
+            }
+            let colors = palette(&context);
+            let tray = output
+                .shapes
+                .iter()
+                .find_map(|shape| match &shape.shape {
+                    egui::Shape::Rect(rect)
+                        if rect.corner_radius == egui::CornerRadius::same(5)
+                            && rect.fill == colors.surface
+                            && rect.rect.height() > 60.0 =>
+                    {
+                        Some(rect.rect)
+                    }
+                    _ => None,
+                })
+                .expect("rounded command tray is separate from the gray tab bar");
+            assert!(
+                tray.height() <= 100.0,
+                "compact command groups do not gain excess height"
+            );
+            assert!(tray.left() >= 4.0 && tray.right() <= 896.0);
+            let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+            let tab_top = tree
+                .nodes
+                .iter()
+                .find_map(|(_, node)| {
+                    (node.role() == egui::accesskit::Role::Tab && node.label() == Some("Home"))
+                        .then(|| node.bounds())
+                        .flatten()
+                        .map(|rect| rect.y0)
+                })
+                .expect("active Ribbon tab");
+            for label in ["Save", "Undo", "Redo"] {
+                let (id, node) = tree
+                    .nodes
+                    .iter()
+                    .find(|(_, node)| {
+                        node.role() == egui::accesskit::Role::Button
+                            && node.label() == Some(label)
+                            && node.bounds().is_some_and(|rect| rect.y1 <= tab_top)
+                    })
+                    .expect("title-strip preview command");
+                assert!(node.is_disabled());
+                assert!(!node.supports_action(egui::accesskit::Action::Click));
+                assert!(!node.supports_action(egui::accesskit::Action::Focus));
+                let rect = node.bounds().unwrap();
+                assert!(rect.x1 - rect.x0 <= 24.0);
+                assert!(rect.y1 - rect.y0 <= 24.0);
+                quick_ids.push(*id);
+            }
+        }
+    }
+    for id in quick_ids {
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(900.0, 580.0),
+                )),
+                events: vec![egui::Event::AccessKitActionRequest(
+                    egui::accesskit::ActionRequest {
+                        action: egui::accesskit::Action::Click,
+                        target_tree: egui::accesskit::TreeId::ROOT,
+                        target_node: id,
+                        data: None,
+                    },
+                )],
+                ..Default::default()
+            },
+            |ui| assert!(preview.state_mut().show(ui).is_empty()),
+        );
+        output.textures_delta.clear();
+    }
+    assert!(!preview.state().edit_dialog_open());
+    assert_eq!(preview.state().localizer.diagnostics(), Default::default());
 }

@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = Rename/Delete Macro
 ribbon-relationships = Relationships
 ribbon-object-dependencies = Object Dependencies
 ribbon-filter = Filter
+
+ribbon-undo = Undo
+ribbon-redo = Redo
+ribbon-builder = Builder
+ribbon-insert-rows = Insert Rows
+ribbon-delete-rows = Delete Rows
