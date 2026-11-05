@@ -154,3 +154,26 @@ reviewed for parameter scrolling, attachment MIME widths, empty headers and
 terminal outcome presentation. These observations do not qualify native window
 behavior, accessibility tools or Access compatibility. Query parameter,
 collection, edit/save and dark surfaces still lack retained Access captures.
+
+## Datasheet and View control refinement — 5 November 2026
+
+Comparison with the actual retained Home/datasheet and Table Design captures
+identified excess View-group width, left-aligned numeric values and a broad gap
+above the grid. The existing two view actions now share a localized large View
+dropdown. Its icon changes with the current table view; it preserves busy/query
+and modal restrictions. Keyboard and assistive activation use the same existing
+actions. The compact document strip joins directly to the grid.
+
+Cells carry an explicit horizontal-alignment hint through the presentation DTO.
+The runtime derives default right alignment from actual numeric/date carriers,
+and desktop only maps the hint. Plain text, including numeric-looking text,
+remains left-aligned; the renderer does not parse formatted strings. This adds no
+reader or query capability and does not implement native TextAlign overrides.
+
+The batch passes 87 UI tests, 23 desktop tests and three focused runtime display
+tests, with strict Clippy across all three packages. All 624 scene/locale/theme
+drawing combinations remain passing. The updated renderer exported 39 light
+English frames; datasheet and Design were compared with the private captures.
+A Russian dark datasheet was also reviewed at 900 × 580, 1× scale. View-menu tests
+exercise Enter, Escape, assistive activation and existing source/busy guards.
+These remain local renderer/test observations, not Windows Access comparisons.

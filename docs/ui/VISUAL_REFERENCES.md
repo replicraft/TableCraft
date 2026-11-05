@@ -41,9 +41,18 @@ symbol is drawn without the corresponding supported state.
 
 The active datasheet field uses the observed yellow header, blue current row and
 white active cell with a red outline. Home exposes actual View and Clipboard
-groups: Datasheet/Table Design target the current table object, and Copy uses the
+groups: one large View dropdown offers the existing Datasheet/Table Design
+actions for the current table object, and Copy uses the
 retained selected cell. Selection and read-only commands do not establish record
 editing, rectangular selection or query-result updateability.
+The document strip now joins directly to the grid with compact tab padding,
+without the former broad central-panel gutter and separator. Default cell
+alignment comes from an explicit runtime presentation hint derived from typed
+values: numbers and dates align right, ordinary text left. Numeric-looking text
+is still text. This does not inspect or implement stored TextAlign overrides;
+NULL and expression-only states retain a conservative left-aligned fallback.
+Headers, full copied text and the existing checkbox rendering remain independent.
+
 The sample's checked Yes/No fields now render from typed Boolean values plus
 their inspected native checkbox declarations. A Boolean type alone does not
 override a stored text-box choice or stand in for missing field metadata.
