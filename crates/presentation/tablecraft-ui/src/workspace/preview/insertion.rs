@@ -40,7 +40,7 @@ impl Preview {
             .take(MOCK_FIELD_COUNT)
             .map(|column| InsertField {
                 name: column.name.clone(),
-                input_kind: self.state.localizer.text("insertion-mock-kind"),
+                input_hint: crate::InputHint::Text,
                 nullable: true,
             })
             .collect();

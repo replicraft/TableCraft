@@ -14,4 +14,3 @@ insertion-review = Review new row
 insertion-field-limit = This table has too many fields for the bounded new-row dialog.
 insertion-input-limit = The new row exceeds the supported input size. Shorten its values before reviewing.
 insertion-mock-help = Synthetic input only. No database file is opened or changed.
-insertion-mock-kind = Synthetic text input

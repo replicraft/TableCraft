@@ -117,7 +117,7 @@ impl Desktop {
                     text: draft.initial.text,
                     is_null: draft.initial.is_null,
                 },
-                input_kind: draft.input_kind,
+                input_hint: crate::view_models::input_hint(draft.input_hint),
                 nullable: draft.nullable,
             },
         );

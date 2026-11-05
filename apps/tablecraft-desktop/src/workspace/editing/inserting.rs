@@ -52,7 +52,7 @@ impl Desktop {
                     .into_iter()
                     .map(|field| InsertField {
                         name: field.name,
-                        input_kind: field.input_kind,
+                        input_hint: crate::view_models::input_hint(field.input_hint),
                         nullable: field.nullable,
                     })
                     .collect(),

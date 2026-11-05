@@ -1,7 +1,8 @@
 //! Source-bound preparation and ordinary planning without a file lease.
 use super::ids::issue_id;
 use super::{
-    EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, ReviewedState, input,
+    EditDraft, EditError, EditInput, EditReview, EditTarget, InputHint, ReviewedEdit,
+    ReviewedState, input,
 };
 use crate::{
     Error, Response,
@@ -68,7 +69,7 @@ impl Document {
         let mut output = Presentation::new(cancelled);
         let initial = input::initial(original, &mut output)?;
         let original = output.scalar(original, false)?;
-        let input_kind = output.text(input::kind(field.data_type()))?;
+        let input_hint = InputHint::from(field.data_type());
         let id = issue_id()?;
         let retained = copy_target(target, &mut output)?;
         let target = copy_target(target, &mut output)?;
@@ -79,7 +80,7 @@ impl Document {
             target,
             original,
             initial,
-            input_kind,
+            input_hint,
             nullable: field.nullable(),
         }))
     }

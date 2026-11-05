@@ -20,7 +20,7 @@ pub use workspace::preview;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, DeleteReview, DeleteTarget, EditDraft,
     EditInput, EditReview, EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue,
-    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
+    InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
     ParameterSpec, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 

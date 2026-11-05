@@ -14,4 +14,3 @@ insertion-review = 审核新行
 insertion-field-limit = 此表的字段数超过了受限新行对话框的支持范围。
 insertion-input-limit = 新行超过了支持的输入大小。请在审核前缩短这些值。
 insertion-mock-help = 仅为合成输入。不会打开或更改数据库文件。
-insertion-mock-kind = 合成文本输入

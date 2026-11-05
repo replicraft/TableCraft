@@ -14,4 +14,3 @@ insertion-review = Neue Zeile prüfen
 insertion-field-limit = Diese Tabelle hat zu viele Felder für den begrenzten Dialog für neue Zeilen.
 insertion-input-limit = Die neue Zeile überschreitet die unterstützte Eingabegröße. Kürzen Sie die Werte vor der Prüfung.
 insertion-mock-help = Nur synthetische Eingabe. Keine Datenbankdatei wird geöffnet oder geändert.
-insertion-mock-kind = Synthetische Texteingabe

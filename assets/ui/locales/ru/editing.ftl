@@ -67,3 +67,19 @@ editing-save-reason-recovery = восстановление завершилос
 editing-save-reason-finalization = завершение сохранения прошло нештатно
 editing-save-reason-release = снятие блокировки не подтверждено
 editing-save-reason-state = сеанс сохранения требует диагностики
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = Логическое значение: true или false
+editing-input-byte = Байт: от 0 до 255
+editing-input-int16 = 16-битное целое со знаком
+editing-input-int32 = 32-битное целое со знаком
+editing-input-int64 = 64-битное целое со знаком
+editing-input-single = Single: десятичное число Используйте "." как десятичный разделитель.
+editing-input-double = Double: десятичное число Используйте "." как десятичный разделитель.
+editing-input-currency = Денежная сумма: десятичное значение (четыре знака после запятой) Используйте "." как десятичный разделитель.
+editing-input-decimal = Десятичное число Используйте "." как десятичный разделитель.
+editing-input-text = Буквальный текст
+editing-input-binary = Двоичные данные: пары шестнадцатеричных цифр для каждого байта
+editing-input-guid = GUID: канонический идентификатор
+editing-input-date = Устаревший DATE: гражданские дата и время ISO (без часового пояса)
+editing-input-date-extended = Расширенные дата и время: гражданские дата и время ISO (точность 100 нс)

@@ -1,7 +1,7 @@
 //! One reviewed row of original presence-bearing native INSERT intent.
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use super::EditError;
-use super::EditInput;
+use super::{EditInput, InputHint};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use crate::{
     Error, Response,
@@ -45,7 +45,7 @@ pub enum InsertInput {
 
 pub struct InsertField {
     pub name: String,
-    pub input_kind: String,
+    pub input_hint: InputHint,
     /// Reader nullability does not establish native Required/default semantics.
     pub nullable: bool,
 }
@@ -120,7 +120,7 @@ impl Document {
         for column in columns {
             fields.push(InsertField {
                 name: output.text(column.name())?,
-                input_kind: output.text(super::input::kind(column.data_type()))?,
+                input_hint: InputHint::from(column.data_type()),
                 nullable: column.nullable(),
             });
         }

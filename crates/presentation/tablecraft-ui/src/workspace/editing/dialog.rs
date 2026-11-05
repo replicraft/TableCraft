@@ -1,6 +1,6 @@
 //! Presentation of runtime-owned edit decisions and retained save outcomes.
 use super::{EditDialog, EditSaveOutcome, EditTarget};
-use crate::localization::{message, tr};
+use crate::localization::{for_context, message, tr};
 use crate::{
     Cell, datasheet,
     workspace::{Action, State},
@@ -57,7 +57,7 @@ impl State {
                         ui.label(tr(ui, "editing-original"));
                         stored_cell(ui, &draft.original);
 
-                        ui.label(&draft.input_kind);
+                        ui.label(draft.input_hint.label(&for_context(ui.ctx())));
                         let label = ui.label(tr(ui, "editing-replacement"));
                         let text = ui
                             .add_enabled(

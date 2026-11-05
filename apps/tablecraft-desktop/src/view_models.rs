@@ -2,12 +2,15 @@
 use tablecraft_runtime::{
     Cell as RuntimeCell, CellKind as RuntimeKind, CollectionKind as RuntimeCollectionKind,
     Column as RuntimeColumn, ContentsTarget as RuntimeContentsTarget,
-    DisplayControl as RuntimeDisplayControl, Field as RuntimeField,
-    FieldPropertyValue as RuntimeFieldPropertyValue, HorizontalAlignment as RuntimeAlignment,
+    DateRepresentation as RuntimeDateRepresentation, DisplayControl as RuntimeDisplayControl,
+    Field as RuntimeField, FieldPropertyValue as RuntimeFieldPropertyValue,
+    HorizontalAlignment as RuntimeAlignment, InputHint as RuntimeHint,
+    NativeFormat as RuntimeFormat, ScalarPresentation as RuntimePresentation,
 };
 use tablecraft_ui::{
     Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl, Field, FieldProperty,
-    FieldPropertyValue, HorizontalAlignment,
+    FieldPropertyValue, HorizontalAlignment, InputHint,
+    formatting::{DateRepresentation, NativeFormat, ScalarPresentation},
 };
 
 pub(super) fn fields(fields: Vec<RuntimeField>) -> Vec<Field> {
@@ -118,14 +121,7 @@ pub(super) fn cell(cell: RuntimeCell) -> Cell {
 }
 
 // Move validated facts one-to-one. Regional text is exclusively shared-UI policy.
-fn presentation(
-    value: tablecraft_runtime::ScalarPresentation,
-) -> tablecraft_ui::formatting::ScalarPresentation {
-    use tablecraft_runtime::{
-        DateRepresentation as RuntimeDate, ScalarPresentation as RuntimePresentation,
-    };
-    use tablecraft_ui::formatting::{DateRepresentation, ScalarPresentation};
-
+fn presentation(value: RuntimePresentation) -> ScalarPresentation {
     match value {
         RuntimePresentation::Currency {
             scaled,
@@ -141,20 +137,15 @@ fn presentation(
         } => ScalarPresentation::DateTime {
             calendar,
             representation: match representation {
-                RuntimeDate::LegacyBits(bits) => DateRepresentation::LegacyBits(bits),
-                RuntimeDate::Extended => DateRepresentation::Extended,
+                RuntimeDateRepresentation::LegacyBits(bits) => DateRepresentation::LegacyBits(bits),
+                RuntimeDateRepresentation::Extended => DateRepresentation::Extended,
             },
             native_format: native_format(format),
         },
     }
 }
 
-fn native_format(
-    value: tablecraft_runtime::NativeFormat,
-) -> tablecraft_ui::formatting::NativeFormat {
-    use tablecraft_runtime::NativeFormat as RuntimeFormat;
-    use tablecraft_ui::formatting::NativeFormat;
-
+fn native_format(value: RuntimeFormat) -> NativeFormat {
     match value {
         RuntimeFormat::Unspecified => NativeFormat::Unspecified,
         RuntimeFormat::GeneralDate => NativeFormat::GeneralDate,
@@ -168,5 +159,57 @@ fn native_format(
         RuntimeFormat::Euro => NativeFormat::Euro,
         RuntimeFormat::EuroPrefixTwoDecimals => NativeFormat::EuroPrefixTwoDecimals,
         RuntimeFormat::Unsupported => NativeFormat::Unsupported,
+    }
+}
+
+/// Mirror instruction tags only; the host never selects translations or parsers.
+pub(super) fn input_hint(value: RuntimeHint) -> InputHint {
+    match value {
+        RuntimeHint::Boolean => InputHint::Boolean,
+        RuntimeHint::Byte => InputHint::Byte,
+        RuntimeHint::Int16 => InputHint::Int16,
+        RuntimeHint::Int32 => InputHint::Int32,
+        RuntimeHint::Int64 => InputHint::Int64,
+        RuntimeHint::Single => InputHint::Single,
+        RuntimeHint::Double => InputHint::Double,
+        RuntimeHint::Currency => InputHint::Currency,
+        RuntimeHint::Decimal => InputHint::Decimal,
+        RuntimeHint::Text => InputHint::Text,
+        RuntimeHint::BinaryHex => InputHint::BinaryHex,
+        RuntimeHint::Guid => InputHint::Guid,
+        RuntimeHint::DateTimeIso => InputHint::DateTimeIso,
+        RuntimeHint::DateTimeExtendedIso => InputHint::DateTimeExtendedIso,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::input_hint;
+    use tablecraft_runtime::InputHint as RuntimeHint;
+    use tablecraft_ui::InputHint;
+
+    #[test]
+    fn every_runtime_input_hint_crosses_the_host_without_selecting_prose_or_parsers() {
+        for (runtime, expected) in [
+            (RuntimeHint::Boolean, InputHint::Boolean),
+            (RuntimeHint::Byte, InputHint::Byte),
+            (RuntimeHint::Int16, InputHint::Int16),
+            (RuntimeHint::Int32, InputHint::Int32),
+            (RuntimeHint::Int64, InputHint::Int64),
+            (RuntimeHint::Single, InputHint::Single),
+            (RuntimeHint::Double, InputHint::Double),
+            (RuntimeHint::Currency, InputHint::Currency),
+            (RuntimeHint::Decimal, InputHint::Decimal),
+            (RuntimeHint::Text, InputHint::Text),
+            (RuntimeHint::BinaryHex, InputHint::BinaryHex),
+            (RuntimeHint::Guid, InputHint::Guid),
+            (RuntimeHint::DateTimeIso, InputHint::DateTimeIso),
+            (
+                RuntimeHint::DateTimeExtendedIso,
+                InputHint::DateTimeExtendedIso,
+            ),
+        ] {
+            assert_eq!(input_hint(runtime), expected);
+        }
     }
 }

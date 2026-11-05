@@ -67,3 +67,19 @@ editing-save-reason-recovery = die Wiederherstellung wurde nicht ordnungsgemäß
 editing-save-reason-finalization = der Speicherabschluss wurde nicht ordnungsgemäß beendet
 editing-save-reason-release = die Freigabe der Sperre wurde nicht bestätigt
 editing-save-reason-state = die Speichersitzung muss untersucht werden
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = Wahrheitswert: true oder false
+editing-input-byte = Byte: 0 bis 255
+editing-input-int16 = Vorzeichenbehaftete 16-Bit-Ganzzahl
+editing-input-int32 = Vorzeichenbehaftete 32-Bit-Ganzzahl
+editing-input-int64 = Vorzeichenbehaftete 64-Bit-Ganzzahl
+editing-input-single = Single: Dezimalzahl Als Dezimaltrennzeichen "." verwenden.
+editing-input-double = Double: Dezimalzahl Als Dezimaltrennzeichen "." verwenden.
+editing-input-currency = Währung: Dezimalbetrag (vier Nachkommastellen) Als Dezimaltrennzeichen "." verwenden.
+editing-input-decimal = Dezimalzahl Als Dezimaltrennzeichen "." verwenden.
+editing-input-text = Wörtlicher Text
+editing-input-binary = Binär: hexadezimale Bytepaare
+editing-input-guid = GUID: kanonischer Bezeichner
+editing-input-date = Klassisches DATE: lokales Datum und Uhrzeit im ISO-Format (ohne Zeitzone)
+editing-input-date-extended = Erweiterte Datumszeit: lokales Datum und Uhrzeit im ISO-Format (100 ns Genauigkeit)

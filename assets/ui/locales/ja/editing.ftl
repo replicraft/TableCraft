@@ -67,3 +67,19 @@ editing-save-reason-recovery = 復旧が正常に完了しませんでした
 editing-save-reason-finalization = 保存の終了処理が正常に完了しませんでした
 editing-save-reason-release = ロックの解放が確認されませんでした
 editing-save-reason-state = 保存セッションの診断が必要です
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = 真偽値: true または false
+editing-input-byte = バイト: 0～255
+editing-input-int16 = 符号付き16ビット整数
+editing-input-int32 = 符号付き32ビット整数
+editing-input-int64 = 符号付き64ビット整数
+editing-input-single = Single: 小数小数点には「.」を使用してください。
+editing-input-double = Double: 小数小数点には「.」を使用してください。
+editing-input-currency = 通貨: 小数の金額（小数点以下4桁）小数点には「.」を使用してください。
+editing-input-decimal = 10進数小数点には「.」を使用してください。
+editing-input-text = 入力したままの文字列
+editing-input-binary = バイナリ: 各バイトを2桁の16進数で入力
+editing-input-guid = GUID: 正規形式の識別子
+editing-input-date = 従来の DATE: ISO形式のローカル日時（タイムゾーンなし）
+editing-input-date-extended = 拡張日時: ISO形式のローカル日時（100 ns精度）

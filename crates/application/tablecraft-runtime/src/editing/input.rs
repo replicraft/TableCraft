@@ -5,27 +5,6 @@ use crate::{Error, display::Presentation};
 use tablecraft_core::values::Value;
 use tablecraft_schema::ScalarType;
 
-pub(super) fn kind(kind: ScalarType) -> &'static str {
-    match kind {
-        ScalarType::Boolean => "Boolean: true or false",
-        ScalarType::Byte => "Byte: 0 to 255",
-        ScalarType::Int16 => "Signed 16-bit integer",
-        ScalarType::Int32 => "Signed 32-bit integer",
-        ScalarType::Int64 => "Signed 64-bit integer",
-        ScalarType::Single => "Single: decimal number",
-        ScalarType::Double => "Double: decimal number",
-        ScalarType::Currency => "Currency: decimal amount (four decimal places)",
-        ScalarType::Decimal => "Decimal number",
-        ScalarType::Text => "Literal text",
-        ScalarType::Binary => "Binary: hexadecimal byte pairs",
-        ScalarType::Guid => "GUID: canonical identifier",
-        ScalarType::DateTime => "Legacy DATE: ISO civil date-time (no time zone)",
-        ScalarType::DateTimeExtended => {
-            "Extended date-time: ISO civil date-time (100 ns precision)"
-        }
-    }
-}
-
 fn invalid() -> Error {
     EditError::InvalidInput.into()
 }

@@ -1,6 +1,6 @@
 //! Explicit field intent and runtime review; this renderer never supplies defaults.
 use super::{Choice, Dialog, FieldInput, entries_within_limits, inputs};
-use crate::localization::{message, tr};
+use crate::localization::{for_context, message, tr};
 use crate::workspace::{Action, EditSaveOutcome, State, diagnostics, save_display};
 use egui::{Id, Ui};
 
@@ -75,7 +75,7 @@ impl State {
                                 ui.push_id((draft.id, position), |ui| {
                                     ui.separator();
                                     let label = ui.label(&field.name);
-                                    ui.small(&field.input_kind);
+                                    ui.small(field.input_hint.label(&for_context(ui.ctx())));
                                     changed |= field_input(ui, entry, field.nullable, label.id);
                                 });
                             }

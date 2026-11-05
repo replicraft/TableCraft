@@ -67,3 +67,19 @@ editing-save-reason-recovery = recovery did not finish normally
 editing-save-reason-finalization = save finalization did not finish normally
 editing-save-reason-release = lock release was not acknowledged
 editing-save-reason-state = the save session requires diagnosis
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = Boolean: true or false
+editing-input-byte = Byte: 0 to 255
+editing-input-int16 = Signed 16-bit integer
+editing-input-int32 = Signed 32-bit integer
+editing-input-int64 = Signed 64-bit integer
+editing-input-single = Single: decimal number Use "." as the decimal separator.
+editing-input-double = Double: decimal number Use "." as the decimal separator.
+editing-input-currency = Currency: decimal amount (four decimal places) Use "." as the decimal separator.
+editing-input-decimal = Decimal number Use "." as the decimal separator.
+editing-input-text = Literal text
+editing-input-binary = Binary: hexadecimal byte pairs
+editing-input-guid = GUID: canonical identifier
+editing-input-date = Legacy DATE: ISO civil date-time (no time zone)
+editing-input-date-extended = Extended date-time: ISO civil date-time (100 ns precision)

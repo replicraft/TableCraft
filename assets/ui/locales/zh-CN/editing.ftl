@@ -67,3 +67,19 @@ editing-save-reason-recovery = 恢复未正常完成
 editing-save-reason-finalization = 保存收尾未正常完成
 editing-save-reason-release = 锁定释放未得到确认
 editing-save-reason-state = 保存会话需要诊断
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = 布尔值: true 或 false
+editing-input-byte = 字节: 0 到 255
+editing-input-int16 = 有符号16位整数
+editing-input-int32 = 有符号32位整数
+editing-input-int64 = 有符号64位整数
+editing-input-single = Single: 十进制数请使用“.”作为小数分隔符。
+editing-input-double = Double: 十进制数请使用“.”作为小数分隔符。
+editing-input-currency = 货币: 十进制金额（四位小数）请使用“.”作为小数分隔符。
+editing-input-decimal = 十进制数请使用“.”作为小数分隔符。
+editing-input-text = 原样文本
+editing-input-binary = 二进制: 每字节使用两位十六进制数
+editing-input-guid = GUID: 规范格式标识符
+editing-input-date = 旧 DATE: ISO格式本地日期时间（无时区）
+editing-input-date-extended = 扩展日期时间: ISO格式本地日期时间（100 ns精度）
