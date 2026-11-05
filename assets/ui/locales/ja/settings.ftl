@@ -22,3 +22,5 @@ settings-mock-save-cancelled = 模擬的なキャンセルです。ファイル�
 settings-mock-resolved = 模擬的な解決です。ジャーナルやデータベース ファイルは存在しません。
 settings-mock-cancelled = プレビューの操作をキャンセルしました。
 settings-mock-retained = 結果を保持する合成サンプルです。ジャーナルやデータベース ファイルは存在しません。
+
+settings-mock-read-error = 読み取りエラーのサンプルです。データベースは開かれておらず、変更もされていません。

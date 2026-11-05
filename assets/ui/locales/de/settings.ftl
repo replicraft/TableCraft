@@ -22,3 +22,5 @@ settings-mock-save-cancelled = Simulierter Abbruch. Keine Datei wurde geändert.
 settings-mock-resolved = Nur eine simulierte Auflösung. Es existiert keine Journal- oder Datenbankdatei.
 settings-mock-cancelled = Simulierter Vorgang abgebrochen.
 settings-mock-retained = Synthetisches Beispiel eines zurückbehaltenen Ergebnisses. Es existiert keine Journal- oder Datenbankdatei.
+
+settings-mock-read-error = Beispiel eines simulierten Lesefehlers. Es wurde keine Datenbank geöffnet oder geändert.
