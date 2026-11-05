@@ -44,9 +44,10 @@ artwork uses the repository license. Earlier dated verification records below
 refer to the prior Microsoft Fluent subset, which remains inert source material.
 
 The actual retained [Access captures](VISUAL_REFERENCES.md) govern light
-Ribbon/datasheet/Table Design/Backstage proportions. No Access captures exist for
-dark mode, query parameter forms or edit/collection dialogs. Those surfaces remain
-visual adaptations, not verified replicas. Offscreen render evidence is separate
+Ribbon/datasheet/Table Design/Backstage proportions. Published Microsoft parameter
+and attachment dialog images extend the [reference record](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026).
+Dark mode and other uncaptured dialogs remain visual adaptations. Reference
+inspection alone does not establish native interaction parity. Offscreen render evidence is separate
 from native platform interaction and Windows Access behavior.
 
 ## Render review

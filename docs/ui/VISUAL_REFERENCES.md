@@ -17,6 +17,28 @@ from the database header or title alone. The screenshots include OS/VM chrome;
 that chrome does not belong in TableCraft's shared workspace. Account details
 are partly obscured and are not product content to reproduce.
 
+## Published dialog references — 5 November 2026
+
+Two additional Microsoft Support images were fetched and opened headlessly. The
+reference files remain in ignored local cache; public documentation links the
+originals. The articles list supported Access releases rather than identifying
+the exact application build captured in each image.
+
+| Surface | Published reference | Observed layout and scope |
+| --- | --- | --- |
+| Parameter input | [Microsoft parameter-prompt article](https://support.microsoft.com/en-us/access/why-does-access-want-me-to-enter-a-parameter-value) and [actual dialog image](https://support.microsoft.com/en-us/access/media/ac-enterparametervaluedialogbox.jpg) | Compact prompt with a literal parameter label, one input and OK/Cancel. Microsoft's [parameter-query workflow](https://support.microsoft.com/en-us/access/use-parameters-to-ask-for-input-when-running-a-query) specifies a separate prompt for each parameter. Explicit VALUE carrier choices and NULL controls remain TableCraft profile extensions. |
+| Attachments | [Microsoft attachment article](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database) and [actual dialog image](https://support.microsoft.com/en-us/access/media/access-attachments-dialog-box.png) | Filename-first list with paperclip symbols, a side action column and dismissal/confirmation footer. TableCraft currently exposes stored metadata and Close; payload opening/export and attachment mutation require separate capabilities. |
+
+Observed image SHA-256 values:
+
+- Parameter prompt: `cd54cd50aa01ee70a7ab578db15299cb7f0e1b24722326893eeb810f4c18d5d9`.
+- Attachments: `adcc6b059d2289a147aa12461a88dac9da67bdab0174ad0b9025f6a47119631c`.
+
+These references extend the Home/Design/Account record. They supply no dark-mode,
+multivalue/history, offline-edit/recovery or native platform interaction evidence.
+Viewing the images does not establish validation timing, parameter ordering,
+focus traversal or native save behavior.
+
 ## Immediate presentation correction
 
 Use a compact light-gray application title area, white command surface and red
