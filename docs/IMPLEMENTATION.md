@@ -9,7 +9,9 @@ headers and bounded initial column sizing improve existing views. Terminal save
 headings preserve literal host outcome details. Bounded dialog bodies retain full
 literal diagnoses while keeping existing actions reachable. Dated verification
 records live in the preview guide. These slices add no database capability or
-runtime service. See the
+runtime service. Shared F6/Shift+F6 navigation now moves among existing panes,
+retaining virtualized selections and source-bound focus requests; modal and popup
+ownership remains intact. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
 ## Shared presentation preview — 4 November 2026

@@ -234,9 +234,8 @@ Full SQL and the existing run shortcut remain unchanged. Actual Tab traversal of
 12 saved-query prompts reproduced a focused NULL control outside the viewport;
 parameter controls now reveal themselves on gained focus only. Modal Tab/ShiftTab
 and Escape probes found no additional defect and retained save-owner restrictions.
-Existing SQL-editor Tab indentation is unchanged. Full workspace pane cycling
-remains work; [Microsoft's keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
-documents F6/Shift+F6 navigation and is the contract for that next slice.
+Existing SQL-editor Tab indentation is unchanged. That review did not yet implement workspace pane cycling; [Microsoft's keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents F6/Shift+F6 navigation and supplies the contract for the following slice.
 
 The batch passes 96 UI tests and 23 desktop tests, strict Clippy, formatting,
 documentation links and dependency guards. The complete 640 locale/theme/scene
@@ -244,3 +243,42 @@ draw checks remain passing; the four Ribbon scales are a separate focused
 geometry check. Invalid zero, oversized, NaN and infinite renderer scales refuse
 before output-directory creation. Offscreen review still does not qualify native
 monitor transitions, Windows interaction or screen-reader tools.
+
+## Workspace pane navigation — 5 November 2026
+
+F6 moves to the next available pane and Shift+F6 moves backward. The current
+cycle includes Document, query Results, Design Properties, Navigation and Ribbon,
+skipping absent panes. It uses the existing table/query/editor and metadata
+surfaces. Focusing a pane issues no database read, query or editing action.
+Ctrl+F6 and other modified variants remain available for their separate contracts.
+Backstage, popup menus, disabled hosts and collection/edit modals suppress this
+workspace cycle, preserving their existing keyboard and save-owner behavior.
+
+The registry uses enabled focusable responses from the current draw. Returning
+to a virtualized table/result selection reveals its original cell or record
+without changing selection mode. Design entry retains a logical source/field
+witness until the selected field renders, with an eight-frame retry ceiling. New publications invalidate pending
+entry even when names, source revisions and page offsets match. Read-only
+property values retain literal text selection and show a focus outline.
+These local semantics follow the documented shortcut direction; exact Windows
+traversal order remains unverified.
+
+For visual review, `TABLECRAFT_PREVIEW_F6_STEPS=1` through `5` sends that many
+actual F6 key presses after preparing the chosen mock scene. Initial scene focus
+determines the starting position. Output names include `-f6-N` before any scale
+suffix, preserving the unmodified scene frames. The renderer still constructs
+only the resource-free mock host.
+
+The coordinated batch passes 102 UI tests and 23 desktop tests, including actual
+virtualized Table/Results selections in cell and record modes and compact Design
+entry. Strict Clippy, formatting, documentation links and dependency guards pass.
+All 640 locale/theme/scene draw checks remain passing. Follow-up scoped pane and
+Ribbon checks passed after bounding the Design retry and adding the visible
+Ribbon-tab focus outline found during review.
+
+Six local mock frames were exported with actual F6 input: four English light
+Design steps at 900 × 580, Russian dark Design at 1.25× and Japanese light Query
+at 2×. Field/property and Ribbon focus outlines were inspected; the Ribbon frame
+was exported again after its outline correction. An oversized renderer F6 sequence
+refuses before output-directory creation. These are offscreen UI observations,
+not native Windows keyboard or screen-reader qualification.
