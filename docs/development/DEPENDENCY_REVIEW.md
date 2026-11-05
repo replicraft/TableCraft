@@ -612,3 +612,56 @@ Primary implementation references: [ICU4X](https://docs.rs/icu_datetime/2.3.0/ic
 [currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html),
 [ISO relationship API](https://docs.rs/iso_currency/0.7.1/iso_currency/enum.Currency.html)
 and [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/).
+
+
+## Typed clipboard transport review — 5 November 2026
+
+**Retain current text clipboard; typed transport remains planned.** This review
+adds no dependency or platform implementation and does not block the broader GUI
+work. The desktop currently uses egui-winit 0.36.2's text clipboard integration.
+`Cargo.lock` selects arboard 3.7.0 and smithay-clipboard 0.7.3 transitively; neither
+is currently a directly selected TableCraft transport dependency.
+
+| Candidate | Reviewed API and scope | Decision |
+| --- | --- | --- |
+| arboard 3.7.0, MIT OR Apache-2.0 | Local locked source exposes text, HTML with alternative text, image and file-list operations. Its public `Get`/`Set` API has no arbitrary private byte-format operation. The [3.6.1 public Set reference](https://docs.rs/arboard/3.6.1/arboard/struct.Set.html) documents the same relevant standard-format surface; it is not evidence of a separately verified 3.7.0 published archive. | Keep the existing transitive text consumer. Do not disguise a private scalar payload as HTML or infer typed provenance from matching plaintext. |
+| [smithay-clipboard 0.7.3](https://docs.rs/smithay-clipboard/0.7.3/smithay_clipboard/struct.Clipboard.html), MIT | `load`/`store` and primary-selection equivalents transfer strings. `new(display)` borrows a valid Wayland display for the object's lifetime and owns a worker/event queue. Local source uses the ordinary data-device protocol and seat serials. | Keep the existing focused-application text integration. Arbitrary MIME support would need an upstream extension or a dedicated bounded integration using the existing host display. |
+| [clipboard-rs 0.3.5](https://docs.rs/clipboard-rs/0.3.5/clipboard_rs/trait.Clipboard.html), MIT | `set(Vec<ClipboardContent>)` accepts `Text` and `Other(format, bytes)` together; `get_buffer(format)` reads custom bytes. Source findings below refer to upstream master, whose [manifest reported 0.3.5](https://github.com/ChurchTao/clipboard-rs/blob/master/Cargo.toml) at review time, rather than a pinned, independently qualified release archive. | Promising API/reference, not adopted unchanged. Its source does not currently provide the required bounded reads and truthful complete-publication errors. Recheck the chosen published source before any adoption. |
+| [wl-clipboard-rs 0.9.5 copy API](https://docs.rs/wl-clipboard-rs/latest/wl_clipboard_rs/copy/struct.Options.html) | `copy_multi` offers multiple MIME representations; `prepare_copy_multi` plus `PreparedCopy::serve` can retain an explicit serving owner. [get_contents](https://docs.rs/wl-clipboard-rs/latest/wl_clipboard_rs/paste/fn.get_contents.html) returns a pipe, enabling an application-owned bounded read. This is the backend used by the reviewed clipboard-rs Wayland implementation. | Candidate mechanism where the compositor supports its data-control requirements; not a universal replacement for the focused application's ordinary Wayland data-device path. No dependency adopted. |
+
+The clipboard-rs [Windows multi-format implementation](https://github.com/ChurchTao/clipboard-rs/blob/master/src/platform/win.rs)
+continues after individual format-write failures and ultimately returns success.
+That is insufficient evidence that both plaintext and typed bytes were published.
+Its [Wayland reader](https://github.com/ChurchTao/clipboard-rs/blob/master/src/platform/wayland.rs)
+uses an unbounded pipe `read_to_end`, while the
+[X11 INCR reader](https://github.com/ChurchTao/clipboard-rs/blob/master/src/platform/x11.rs)
+can reserve an advertised transfer size and accumulate chunks without a caller
+ceiling. Checking the resulting vector length afterward would not bound transport
+allocation. The Wayland backend also requires data-control support; its watcher
+compares MIME/text snapshots and is not an ownership token. Do not use that
+watcher to qualify identical-text typed provenance.
+
+A future host transport should publish plaintext and one self-contained private
+scalar representation as a single offer, without a subsequent egui text write
+replacing that offer. Reads must obtain the private representation itself, not
+combine a cached typed value with separately acquired plaintext. The private
+payload remains untrusted data: check version, exact length, scalar constructors
+and resource limits before the normal source-bound target review. Presence of a
+custom format grants no write permission. A malformed present private payload
+must report an error rather than silently paste a different plaintext value.
+
+Platform reference mechanisms are one macOS `NSPasteboardItem` containing both
+representations, a registered Windows format plus Unicode text within one
+clipboard-open interval, and one Linux selection/data-source offer advertising
+both MIME targets. Their setup, ownership lifetime, bounded transfer, cancellation
+and per-format failure semantics still need working platform consumers and
+verification. Multi-format visibility must not be described as rollback-safe:
+a failed publication can already have replaced some clipboard content. Never
+clear or restore an unrelated owner's clipboard after failure or ownership loss.
+
+The required ownership boundary is a desktop platform adapter; shared UI and
+runtime services must not acquire OS clipboards. No monitoring, startup clipboard
+replacement, PRIMARY-selection takeover or automatic export is required. A future
+platform module/crate is justified only by that working consumer. This review
+performed no OS clipboard reads/writes, application activation or native platform
+qualification.
