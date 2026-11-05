@@ -15,3 +15,5 @@ collections-history-context = { $context }; 保存順序を保持します。現
 collections-stored-version = 保存済みバージョン
 
 collections-mock-error = コレクション読み取りエラーのシミュレーションです。ペイロードの読み込みやエクスポートは行っていません。
+
+collections-stale-view = このコレクションは現在のビューに属していません。

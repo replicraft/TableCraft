@@ -7,6 +7,8 @@ use std::{
     task::{Context, Poll, Wake, Waker},
 };
 
+use tablecraft_ui::Localizer;
+
 type Selection = Pin<Box<dyn Future<Output = Option<PathBuf>>>>;
 
 #[derive(Default)]
@@ -48,15 +50,20 @@ impl FileDialog {
 
     /// Create the parented sheet on the GUI thread. No nested blocking event
     /// loop, executor or second database worker is introduced by the host.
-    pub(super) fn open(&mut self, frame: &eframe::Frame, context: &egui::Context) {
+    pub(super) fn open(
+        &mut self,
+        frame: &eframe::Frame,
+        context: &egui::Context,
+        localizer: &Localizer,
+    ) {
         if self.is_open() {
             return;
         }
         let selection = rfd::AsyncFileDialog::new()
             .set_parent(frame)
-            .set_title("Open database")
+            .set_title(localizer.text("backstage-open-database"))
             .add_filter(
-                "Access databases",
+                localizer.text("shell-local-databases"),
                 &["accdb", "mdb", "accde", "mde", "accdr", "accdc"],
             )
             .pick_file();

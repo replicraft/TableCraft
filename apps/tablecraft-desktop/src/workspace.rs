@@ -81,7 +81,7 @@ impl Desktop {
         };
         if let Some(target) = &contents {
             if !self.state.can_view_contents(target) {
-                self.state.error = Some("The collection no longer belongs to this view.".into());
+                self.state.error = Some(self.state.localizer.text("collections-stale-view"));
                 return;
             }
         } else {
@@ -331,7 +331,10 @@ impl eframe::App for Desktop {
         }
         for action in actions {
             match action {
-                Action::ChooseFile => self.file_dialog.open(frame, ui.ctx()),
+                Action::ChooseFile => {
+                    self.file_dialog
+                        .open(frame, ui.ctx(), &self.state.localizer);
+                }
                 Action::Open => self.open(),
                 Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
                 Action::NavigateRecord { target } => self.navigate_record(target),
@@ -374,7 +377,7 @@ impl eframe::App for Desktop {
                             PendingOperation::Record { request_id, .. } => {
                                 self.state.fail_record_navigation(
                                     *request_id,
-                                    "Operation cancelled.".into(),
+                                    self.state.localizer.text("shell-operation-cancelled"),
                                 );
                             }
                             PendingOperation::SavedInspection { target, request_id }
@@ -382,10 +385,13 @@ impl eframe::App for Desktop {
                                 self.state.fail_saved_query(
                                     *request_id,
                                     target.clone(),
-                                    "Operation cancelled.".into(),
+                                    self.state.localizer.text("shell-operation-cancelled"),
                                 );
                             }
-                            _ => self.state.error = Some("Operation cancelled.".into()),
+                            _ => {
+                                self.state.error =
+                                    Some(self.state.localizer.text("shell-operation-cancelled"))
+                            }
                         }
                     }
                 }

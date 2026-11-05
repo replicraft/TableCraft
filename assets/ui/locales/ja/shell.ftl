@@ -20,3 +20,5 @@ shell-welcome = 使い慣れた環境で、あなたのデータを。
 shell-welcome-help = Access データベースを開き、テーブルを選択して内容を表示します。
 shell-supported-files = MDB と ACCDB · テーブルと対応する SELECT クエリ
 shell-translation-unavailable = 翻訳を利用できません
+
+shell-operation-cancelled = 操作はキャンセルされました。

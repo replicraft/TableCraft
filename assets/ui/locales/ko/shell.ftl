@@ -20,3 +20,5 @@ shell-welcome = 내 데이터와 익숙한 작업 공간.
 shell-welcome-help = Access 데이터베이스를 열고 테이블을 선택하여 내용을 살펴보세요.
 shell-supported-files = MDB 및 ACCDB · 테이블과 지원되는 SELECT 쿼리
 shell-translation-unavailable = 번역을 사용할 수 없습니다
+
+shell-operation-cancelled = 작업이 취소되었습니다.

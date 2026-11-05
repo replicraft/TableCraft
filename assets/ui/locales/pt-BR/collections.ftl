@@ -15,3 +15,5 @@ collections-history-context = { $context }; a ordem armazenada é preservada; o 
 collections-stored-version = versão armazenada
 
 collections-mock-error = Erro simulado na leitura da coleção. Nenhum conteúdo foi aberto ou exportado.
+
+collections-stale-view = A coleção não pertence mais a esta exibição.
