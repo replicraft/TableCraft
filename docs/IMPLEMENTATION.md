@@ -1,5 +1,16 @@
 # Implementation status
 
+## Ribbon and title polish — 5 November 2026
+
+The shared chrome now follows the retained Access Home/Design captures and
+PaintCraft's compact Ribbon layout approach: an original app mark, inert mock
+quick-access strip, separate gray Ribbon tabs and inset command tray. Object tabs
+use compact neutral borders and small object icons. Forty-nine original command
+SVG concepts have reproducible light/dark and disabled variants under root assets;
+current About credits describe their repository license. Distinct command artwork
+replaces the previously reused Fluent glyphs. Unsupported preview controls remain
+disabled, and native window controls remain host-owned.
+
 ## Presentation lifecycle review — 5 November 2026
 
 The shared presentation preview covers 44 synthetic scenes, including long names, query
@@ -37,8 +48,9 @@ future Ribbon commands remain disabled. Full-row object navigation retains
 source-bound widget identity, and the read-only Design grid supports local
 keyboard field selection beside its full-width General property sheet.
 
-Microsoft Fluent SVG icons and Selawik with regional CJK fallback fonts retain
-source hashes and licenses under root `assets/ui/`. The retained Access captures
+Original generated command SVGs and Selawik with regional CJK fallback fonts
+retain source geometry, hashes and licenses under root `assets/ui/`. The earlier
+Fluent icon subset is retained source material, superseded by the current artwork. The retained Access captures
 guide the Home Ribbon, datasheet, read-only Table Design and Backstage structure.
 Options changes only the session's appearance/language, independently of database
 semantics. See [preview commands and current limits](ui/PRESENTATION_PREVIEW.md).

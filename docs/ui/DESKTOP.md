@@ -147,7 +147,7 @@ builds or its mock scenarios pass.
 | Selawik and root font assets | Root assets, recorded source hashes/OFL notices, locale-prioritized CJK fallbacks and glyph checks | Native font/DPI behavior on each claimed platform. |
 | Fluent translations | Eight locales, twelve section catalogs each, key/variable parity and literal-data separation | Native-speaker review of engineering translations. |
 | Light and dark themes | Shared semantic palette, actual selected-text/badge paint checks, inspected offscreen frames | No retained Access dark-mode capture establishes visual parity. |
-| Ribbon artwork | Thirty-five source/hash-verified Microsoft Fluent SVGs with MIT notice; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
+| Ribbon artwork | Original generated, hash-inventoried SVGs with theme/disabled variants; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
 | Existing mock workflows | Source-bound scenes, admission/state checks and the dated [presentation verification](PRESENTATION_PREVIEW.md) | Synthetic outcomes do not qualify backend operations. |
 | Access reference fidelity | Retained Home/datasheet, Table Design and Account Backstage captures guide their corresponding surfaces | Query/parameter, edit/collection and Open/error layouts remain adaptations without matching captures. |
 | Native behavior | Earlier macOS observations are recorded below with their scope and dates | Current full keyboard/assistive-tool traversal, Windows/Linux window behavior and monitor-scale transitions remain unqualified. Native checks are suspended at the user's request. |

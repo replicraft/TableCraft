@@ -1558,3 +1558,14 @@ fallback assets under `assets/ui/fonts`, with their OFL 1.1 license and immutabl
 source/hash provenance. They extend the selected Selawik UI font rather than
 replacing it. Font selection is a presentation language choice, independent of
 native database collation, value formatting or OS locale discovery.
+
+
+## Original Ribbon artwork — 5 November 2026
+
+The UI retains the same existing `egui_extras` SVG loader and renderer features.
+Its active command artwork now uses original generated TableCraft SVGs from
+`assets/ui/icons/tablecraft/`, including reproducible geometry, explicit
+light/dark/disabled palettes and a complete hash inventory. No new dependency,
+SVG text/font loading or network resource is introduced. The earlier Fluent
+subset and its MIT notice remain together as inert source provenance; current
+About credits describe the repository-owned Apache-2.0 artwork.
