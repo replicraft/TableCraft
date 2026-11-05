@@ -4,7 +4,7 @@ mod properties;
 pub use properties::{FieldProperty, FieldPropertyValue};
 
 use super::State;
-use egui::{RichText, ScrollArea, Ui};
+use egui::{Id, RichText, ScrollArea, Ui};
 use egui_extras::{Column, TableBuilder};
 
 /// Captured declaration metadata, separate from table pages and query results.
@@ -47,6 +47,19 @@ impl State {
             return;
         }
 
+        let focus_scope = ui.id();
+        let document_revision = self
+            .database
+            .as_ref()
+            .map(|database| database.document_revision);
+        let scroll_to = navigate_fields(
+            ui,
+            focus_scope,
+            document_revision,
+            schema,
+            &mut self.selected_field,
+        );
+
         egui::Resize::default()
             .id_salt("schema_fields")
             .default_width(ui.available_width())
@@ -58,7 +71,11 @@ impl State {
             .resizable([false, true])
             .show(ui, |ui| {
                 ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
-                TableBuilder::new(ui)
+                let mut table = TableBuilder::new(ui).animate_scrolling(false);
+                if let Some(position) = scroll_to {
+                    table = table.scroll_to_row(position, None);
+                }
+                table
                     .striped(false)
                     .resizable(true)
                     .column(Column::initial(210.0).at_least(100.0))
@@ -89,17 +106,30 @@ impl State {
                             let position = row.index();
                             let field = &schema.fields[position];
                             row.col(|ui| {
-                                if grid::cell(
+                                let response = grid::cell(
                                     ui,
                                     &field.name,
                                     grid::CellStyle::FieldName {
                                         selected: position == self.selected_field,
+                                        id: field_focus_id(
+                                            focus_scope,
+                                            document_revision,
+                                            &schema.table,
+                                            position,
+                                            field,
+                                        ),
                                     },
-                                )
-                                .clicked()
-                                {
+                                );
+                                let activated = ui.is_enabled()
+                                    && (response.clicked()
+                                        || response.has_focus() && response.gained_focus());
+                                if activated && self.selected_field != position {
                                     self.selected_field = position;
                                     ui.ctx().request_repaint();
+                                } else if response.has_focus() && self.selected_field != position {
+                                    // A newly published schema resets its selection. The old
+                                    // focused field must not silently reclaim that selection.
+                                    response.surrender_focus();
                                 }
                             });
                             row.col(|ui| {
@@ -131,16 +161,114 @@ impl State {
                     });
             });
         ui.separator();
-        ui.label(RichText::new(crate::localization::tr(ui, "design-field-properties")).strong());
+        ui.vertical_centered(|ui| {
+            ui.label(
+                RichText::new(crate::localization::tr(ui, "design-field-properties")).size(11.0),
+            );
+        });
         let Some(field) = schema.fields.get(self.selected_field) else {
             return;
         };
-        ScrollArea::vertical()
-            .id_salt("field_properties")
-            .show(ui, |ui| {
-                properties::show(ui, field);
-            });
+        ui.scope(|ui| {
+            ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
+            ScrollArea::vertical()
+                .id_salt("field_properties")
+                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
+                .show(ui, |ui| {
+                    properties::show(ui, field);
+                });
+        });
     }
+}
+
+fn field_focus_id(
+    scope: Id,
+    document_revision: Option<u64>,
+    table: &str,
+    position: usize,
+    field: &Field,
+) -> Id {
+    scope.with((
+        "design_field",
+        document_revision,
+        table,
+        position,
+        field.number,
+        field.name.as_str(),
+    ))
+}
+
+/// Move only the currently focused field in the currently displayed declaration.
+/// This produces no row handle, edit capability or host action.
+fn navigate_fields(
+    ui: &mut Ui,
+    scope: Id,
+    document_revision: Option<u64>,
+    schema: &Schema,
+    selected: &mut usize,
+) -> Option<usize> {
+    if !ui.is_enabled() {
+        return None;
+    }
+    let field = schema.fields.get(*selected)?;
+    let current_id = field_focus_id(scope, document_revision, &schema.table, *selected, field);
+    let previous = ui.ctx().read_response(current_id)?;
+    if !previous.has_focus() {
+        return None;
+    }
+    let pressed_elsewhere = ui.input(|input| {
+        input.pointer.any_pressed()
+            && input
+                .pointer
+                .interact_pos()
+                .is_some_and(|position| !previous.interact_rect.contains(position))
+    });
+    if pressed_elsewhere || previous.clicked_elsewhere() {
+        previous.surrender_focus();
+        return None;
+    }
+
+    let before = *selected;
+    let mut consumed = false;
+    ui.input_mut(|input| {
+        input.events.retain(|event| {
+            let egui::Event::Key {
+                key,
+                pressed: true,
+                modifiers,
+                ..
+            } = event
+            else {
+                return true;
+            };
+            if !modifiers.is_none() {
+                return true;
+            }
+            match key {
+                egui::Key::ArrowUp => *selected = selected.saturating_sub(1),
+                egui::Key::ArrowDown => {
+                    *selected = selected.saturating_add(1).min(schema.fields.len() - 1);
+                }
+                _ => return true,
+            }
+            consumed = true;
+            false
+        });
+    });
+    if consumed {
+        // egui schedules cardinal focus movement before rendering widgets.
+        // Cancel only the move corresponding to the keys owned above.
+        ui.memory_mut(|memory| memory.move_focus(egui::FocusDirection::None));
+    }
+    if before == *selected {
+        return None;
+    }
+
+    let target = &schema.fields[*selected];
+    let target_id = field_focus_id(scope, document_revision, &schema.table, *selected, target);
+    ui.memory_mut(|memory| memory.request_focus(target_id));
+    ui.ctx().request_repaint();
+    Some(*selected)
 }
 
 fn property(ui: &mut Ui, label: &str, value: impl Into<String>) {
