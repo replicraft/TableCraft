@@ -3,11 +3,11 @@ use tablecraft_runtime::{
     Cell as RuntimeCell, CellKind as RuntimeKind, CollectionKind as RuntimeCollectionKind,
     Column as RuntimeColumn, ContentsTarget as RuntimeContentsTarget,
     DisplayControl as RuntimeDisplayControl, Field as RuntimeField,
-    FieldPropertyValue as RuntimeFieldPropertyValue,
+    FieldPropertyValue as RuntimeFieldPropertyValue, HorizontalAlignment as RuntimeAlignment,
 };
 use tablecraft_ui::{
     Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl, Field, FieldProperty,
-    FieldPropertyValue,
+    FieldPropertyValue, HorizontalAlignment,
 };
 
 pub(super) fn fields(fields: Vec<RuntimeField>) -> Vec<Field> {
@@ -107,6 +107,10 @@ pub(super) fn cell(cell: RuntimeCell) -> Cell {
         }
     };
     Cell {
+        alignment: match cell.alignment {
+            RuntimeAlignment::Left => HorizontalAlignment::Left,
+            RuntimeAlignment::Right => HorizontalAlignment::Right,
+        },
         text: cell.text,
         kind,
     }

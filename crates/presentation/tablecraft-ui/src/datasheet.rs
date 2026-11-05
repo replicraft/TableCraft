@@ -3,7 +3,7 @@ mod collection_columns;
 mod selection;
 pub(crate) use selection::Selection;
 
-use super::{Action, Cell, Data};
+use super::{Action, Cell, Data, HorizontalAlignment};
 use crate::localization::{for_context, message, tr};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
@@ -300,7 +300,7 @@ pub(crate) fn cell(
     if let Some(checked) = checkbox {
         paint_boolean(ui, response.rect, checked, badge.as_deref());
     } else {
-        paint_cell_text(ui, response.rect, display.as_ref());
+        paint_cell_text(ui, response.rect, display.as_ref(), value.alignment);
     }
     if response.clicked() {
         response.request_focus();
@@ -391,7 +391,7 @@ pub(crate) fn cell(
     })
 }
 
-fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str) {
+fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalAlignment) {
     let width = (rect.width() - 2.0 * CELL_TEXT_PADDING).max(0.0);
     let galley = egui::WidgetText::from(text).into_galley(
         ui,
@@ -400,7 +400,10 @@ fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str) {
         egui::TextStyle::Body,
     );
     let position = egui::pos2(
-        rect.left() + CELL_TEXT_PADDING,
+        match alignment {
+            HorizontalAlignment::Left => rect.left() + CELL_TEXT_PADDING,
+            HorizontalAlignment::Right => rect.right() - CELL_TEXT_PADDING - galley.size().x,
+        },
         rect.center().y - galley.size().y * 0.5,
     );
     ui.painter()
@@ -443,7 +446,12 @@ fn paint_boolean(ui: &Ui, rect: egui::Rect, checked: bool, badge: Option<&str>) 
     if let Some(badge) = badge {
         let badge_rect =
             egui::Rect::from_min_max(egui::pos2(check.right() + 3.0, rect.top()), rect.max);
-        paint_cell_text(ui, badge_rect, &format!("[{badge}]"));
+        paint_cell_text(
+            ui,
+            badge_rect,
+            &format!("[{badge}]"),
+            HorizontalAlignment::Left,
+        );
     }
 }
 

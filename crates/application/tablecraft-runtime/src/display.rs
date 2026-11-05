@@ -2,6 +2,7 @@
 //! Native scalar representation remains in the immutable session; this is not
 //! an edit carrier, native field-format evaluator, or lossless export protocol.
 use super::{Cell, CellKind, Column, Error, controls::check};
+use crate::HorizontalAlignment;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -76,6 +77,19 @@ impl<'a> Presentation<'a> {
         stored_calculation: bool,
     ) -> Result<Cell, Error> {
         Ok(Cell {
+            alignment: match value {
+                Value::Byte(_)
+                | Value::Int16(_)
+                | Value::Int32(_)
+                | Value::Int64(_)
+                | Value::Single(_)
+                | Value::Double(_)
+                | Value::Currency(_)
+                | Value::Decimal(_)
+                | Value::DateTime(_)
+                | Value::DateTimeExtended(_) => HorizontalAlignment::Right,
+                _ => HorizontalAlignment::Left,
+            },
             text: self.value(value)?,
             kind: CellKind::Scalar {
                 is_null: matches!(value, Value::Null),

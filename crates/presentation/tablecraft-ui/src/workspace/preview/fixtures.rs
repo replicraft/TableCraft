@@ -2,7 +2,8 @@
 use super::super::State;
 use crate::{
     Cell, CellKind, CollectionKind, Column, Data, Database, DisplayControl, Field, FieldProperty,
-    FieldPropertyValue, ParameterSpec, SavedQuery, SavedQueryTarget, Schema, Table,
+    FieldPropertyValue, HorizontalAlignment, ParameterSpec, SavedQuery, SavedQueryTarget, Schema,
+    Table,
 };
 
 pub(super) const REVISION: u64 = 1;
@@ -104,20 +105,20 @@ fn columns(table: &str) -> Vec<Column> {
 fn row(table: &str, index: u32) -> Vec<Cell> {
     match table {
         "Orders" => vec![
-            text((6001 + index).to_string()),
-            text((1001 + index % 24).to_string()),
-            text("2026-05-14"),
-            text("$ 425.00"),
+            right_aligned((6001 + index).to_string()),
+            right_aligned((1001 + index % 24).to_string()),
+            right_aligned("2026-05-14"),
+            right_aligned("$ 425.00"),
             boolean(!index.is_multiple_of(3)),
         ],
         "Products" => vec![
-            text((201 + index).to_string()),
+            right_aligned((201 + index).to_string()),
             text(["Desk lamp", "Notebook", "Storage box"][index as usize % 3]),
-            text("$ 24.50"),
+            right_aligned("$ 24.50"),
             boolean(!index.is_multiple_of(4)),
         ],
         "MSysObjects" => vec![
-            text((100 + index).to_string()),
+            right_aligned((100 + index).to_string()),
             text(format!("SampleObject{}", index + 1)),
             text("1"),
         ],
@@ -133,14 +134,15 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
             ][variant];
             let city = ["Portland", "서울", "東京", "北京", "서울", "京都"][variant];
             vec![
-                text((1001 + index).to_string()),
+                right_aligned((1001 + index).to_string()),
                 text(name),
                 text(["Northstar Design", "Cedar Studio", "Harbor Works"][variant % 3]),
                 if index == 2 { null() } else { text(city) },
-                text("$ 1,245.50"),
-                text("2026-04-12"),
+                right_aligned("$ 1,245.50"),
+                right_aligned("2026-04-12"),
                 boolean(!index.is_multiple_of(3)),
                 Cell {
+                    alignment: HorizontalAlignment::Left,
                     text: "Priority; Newsletter".into(),
                     kind: CellKind::Multivalue {
                         assigned: true,
@@ -148,6 +150,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    alignment: HorizontalAlignment::Left,
                     text: "1 attachment".into(),
                     kind: CellKind::Attachments {
                         assigned: true,
@@ -155,6 +158,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    alignment: HorizontalAlignment::Left,
                     text: "Schedule the next account review.".into(),
                     kind: CellKind::VersionHistory {
                         assigned: true,
@@ -162,6 +166,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    alignment: HorizontalAlignment::Right,
                     text: "$ 14,946.00".into(),
                     kind: CellKind::Scalar {
                         is_null: false,
@@ -345,8 +350,15 @@ pub(super) fn text(value: impl Into<String>) -> Cell {
     Cell::scalar(value)
 }
 
+fn right_aligned(value: impl Into<String>) -> Cell {
+    let mut cell = Cell::scalar(value);
+    cell.alignment = HorizontalAlignment::Right;
+    cell
+}
+
 pub(super) fn null() -> Cell {
     Cell {
+        alignment: HorizontalAlignment::Left,
         text: "NULL".into(),
         kind: CellKind::Scalar {
             is_null: true,
@@ -359,6 +371,7 @@ pub(super) fn null() -> Cell {
 
 fn boolean(value: bool) -> Cell {
     Cell {
+        alignment: HorizontalAlignment::Left,
         text: value.to_string(),
         kind: CellKind::Scalar {
             is_null: false,

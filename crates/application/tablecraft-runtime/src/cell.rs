@@ -1,8 +1,17 @@
 //! Typed read-only presentation cells; no child payload or executable action.
 
+/// Default type-directed presentation; stored TextAlign overrides are uninspected.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum HorizontalAlignment {
+    #[default]
+    Left,
+    Right,
+}
+
 /// One complete display/copy value and its independently supplied semantics.
 /// Collection text is a summary, not an export of the collection's contents.
 pub struct Cell {
+    pub alignment: HorizontalAlignment,
     pub text: String,
     pub kind: CellKind,
 }
@@ -44,6 +53,7 @@ pub enum CellKind {
 impl Cell {
     pub(crate) fn expression(text: String) -> Self {
         Self {
+            alignment: HorizontalAlignment::Left,
             text,
             kind: CellKind::Scalar {
                 is_null: false,
