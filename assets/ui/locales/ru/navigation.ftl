@@ -8,3 +8,8 @@ navigation-queries = Запросы
 navigation-view-schema = Просмотр схемы
 navigation-system = системный
 navigation-open-first = Откройте базу данных для просмотра её объектов.
+
+navigation-open = Открыть
+navigation-close-object = Закрыть объект
+navigation-sql-query = Новый SQL-запрос
+navigation-sql-query-help = Открыть или активировать редактор SQL-запросов. Запрос не выполняется.

@@ -2,6 +2,7 @@
 mod editor;
 mod prompt;
 
+use super::objects::memory::{self, Counter};
 use super::{Action, Data, DocumentView, State};
 use crate::datasheet::Selection;
 
@@ -53,6 +54,86 @@ pub(super) struct SavedQueryState {
     pending: Option<Pending>,
     error: Option<String>,
     prompt: Option<prompt::Session>,
+    restored_inputs: Option<InputPreferences>,
+}
+
+#[derive(Clone)]
+pub(super) struct InputPreferences {
+    pub(super) inputs: Vec<ParameterInput>,
+    pub(super) declarations: Vec<(String, String)>,
+}
+
+impl SavedQueryState {
+    pub(super) fn needs_inspection(&self) -> bool {
+        self.parameters.is_none()
+    }
+
+    pub(super) fn input_preferences(&self) -> Option<InputPreferences> {
+        if let Some(preferences) = &self.restored_inputs {
+            return Some(preferences.clone());
+        }
+        Some(InputPreferences {
+            inputs: self.inputs.clone(),
+            declarations: self
+                .parameters
+                .as_ref()?
+                .iter()
+                .map(|parameter| (parameter.name.clone(), parameter.kind.clone()))
+                .collect(),
+        })
+    }
+
+    pub(super) fn restore_preferences(
+        &mut self,
+        target: SavedQueryTarget,
+        inputs: Option<InputPreferences>,
+    ) {
+        *self = Self {
+            active: true,
+            target: Some(target),
+            restored_inputs: inputs,
+            ..Self::default()
+        };
+    }
+
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = Counter::new(size_of::<Self>());
+        if let Some(target) = &self.target {
+            count.string(&target.name);
+        }
+        if let Some(data) = &self.data {
+            count.add(memory::data(data)?);
+        }
+        if let Some(parameters) = &self.parameters {
+            count.vector(parameters);
+            for parameter in parameters {
+                count.string(&parameter.name);
+                count.string(&parameter.kind);
+                count.string(&parameter.label);
+            }
+        }
+        for inputs in std::iter::once(&self.inputs).chain(
+            self.restored_inputs
+                .iter()
+                .map(|preferences| &preferences.inputs),
+        ) {
+            count.vector(inputs);
+            for input in inputs {
+                count.string(&input.name);
+                count.string(&input.kind);
+                count.string(&input.text);
+            }
+        }
+        if let Some(preferences) = &self.restored_inputs {
+            count.vector(&preferences.declarations);
+            for (name, kind) in &preferences.declarations {
+                count.string(name);
+                count.string(kind);
+            }
+        }
+        count.optional(&self.error);
+        count.finish()
+    }
 }
 
 impl State {
@@ -86,8 +167,13 @@ impl State {
             && self.contents_request_id().is_none()
             && !self.backstage_visible()
         {
+            if !self.adopt_saved_inspection(&target) {
+                return;
+            }
+            let restored_inputs = self.saved_query.restored_inputs.take();
             self.select_view(DocumentView::Query);
             self.reset_saved_query();
+            self.saved_query.restored_inputs = restored_inputs;
             self.saved_query.active = true;
             self.saved_query.target = Some(target);
             self.saved_query.pending = Some(Pending {
@@ -134,6 +220,20 @@ impl State {
             self.saved_query.error = Some(self.localizer.text("saved-query-declaration-limit"));
             return false;
         }
+        let mut retained = Counter::new(0);
+        retained.vector(&parameters);
+        retained.count::<ParameterInput>(parameters.len());
+        for parameter in &parameters {
+            retained.string(&parameter.name);
+            retained.string(&parameter.kind);
+            retained.string(&parameter.label);
+            retained.text(&parameter.name);
+            retained.text(&parameter.kind);
+        }
+        if !self.admit_object_bytes(retained.finish()) {
+            self.saved_query.pending = None;
+            return false;
+        }
         self.saved_query.inputs = parameters
             .iter()
             .map(|parameter| ParameterInput {
@@ -147,6 +247,17 @@ impl State {
                 is_null: false,
             })
             .collect();
+        if let Some(preferences) = self.saved_query.restored_inputs.take() {
+            let declarations_match = parameters.len() == preferences.declarations.len()
+                && parameters.iter().zip(&preferences.declarations).all(
+                    |(parameter, (name, kind))| parameter.name == *name && parameter.kind == *kind,
+                );
+            if declarations_match && inputs_admitted(&parameters, &preferences.inputs) {
+                self.saved_query.inputs = preferences.inputs;
+            } else {
+                self.saved_query.error = Some(self.localizer.text("objects-parameters-changed"));
+            }
+        }
         self.saved_query.parameters = Some(parameters);
         self.saved_query.pending = None;
         self.bump_focus_publication();
@@ -220,7 +331,15 @@ impl State {
             self.saved_query.error = Some(self.localizer.text("saved-query-incomplete-reply"));
             return false;
         }
+        if !self.admit_object_data(&data) {
+            self.saved_query.pending = None;
+            return false;
+        }
         self.prepare_display(&mut data);
+        if !self.admit_object_data(&data) {
+            self.saved_query.pending = None;
+            return false;
+        }
         self.saved_query.selection.reset(&data);
         self.saved_query.data = Some(data);
         self.saved_query.pending = None;

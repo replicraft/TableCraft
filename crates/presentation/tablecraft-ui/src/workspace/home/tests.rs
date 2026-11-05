@@ -111,6 +111,24 @@ fn table() -> Data {
     }
 }
 
+fn native_database() -> crate::Database {
+    crate::Database {
+        title_path: None,
+        document_revision: 4,
+        title: "Object views".into(),
+        format: "ACE16".into(),
+        tables: ["Contacts", "Another table"]
+            .into_iter()
+            .map(|name| crate::Table {
+                name: name.into(),
+                system: false,
+                storage: "Local".into(),
+            })
+            .collect(),
+        queries: Vec::new(),
+    }
+}
+
 #[test]
 fn home_copy_uses_retained_cell_selection_after_toolbar_focus_changes() {
     let context = egui::Context::default();
@@ -163,44 +181,81 @@ fn home_view_menu_uses_existing_table_navigation_and_schema_actions() {
     let context = egui::Context::default();
     let mut state = State::default();
     state.dismiss_backstage();
+    state.database = Some(native_database());
+    let contacts = crate::ObjectTarget {
+        document_revision: 4,
+        kind: crate::ObjectKind::Table {
+            name: "Contacts".into(),
+        },
+    };
+    state.prepare_object_open(contacts.clone()).unwrap();
     state.set_table_data(table());
-    state.select_view(DocumentView::Query);
+    state
+        .prepare_object_open(crate::ObjectTarget {
+            document_revision: 4,
+            kind: crate::ObjectKind::Sql,
+        })
+        .unwrap();
 
     let (actions, _) = click(&mut state, &context, "View");
     assert!(actions.is_empty());
     assert!(!egui::Popup::is_any_open(&context));
     assert!(state.view == DocumentView::Query);
 
-    state.select_view(DocumentView::Table);
+    state.prepare_object_open(contacts.clone()).unwrap();
     click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Table Design");
     assert!(matches!(actions.as_slice(), [Action::ViewSchema { table }] if table == "Contacts"));
     assert!(!egui::Popup::is_any_open(&context));
 
+    state
+        .prepare_object_open(crate::ObjectTarget {
+            document_revision: 4,
+            kind: crate::ObjectKind::Table {
+                name: "Another table".into(),
+            },
+        })
+        .unwrap();
     state.prepare_schema_view();
     state.set_schema(crate::Schema {
         table: "Another table".into(),
         declared_rows: 0,
         fields: Vec::new(),
     });
+    assert!(
+        state.data.is_none(),
+        "opening Design does not scan table records"
+    );
+    let design = state.active_object().unwrap();
     click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Datasheet");
-    assert!(actions.is_empty());
-    assert!(state.view == DocumentView::Design);
-    click(&mut state, &context, "View");
-    let (actions, _) = click(&mut state, &context, "Table Design");
+    assert!(matches!(actions.as_slice(), [Action::ViewObjectDatasheet { tab }] if tab == &design));
     assert!(
-        matches!(actions.as_slice(), [Action::ViewSchema { table }] if table == "Another table")
+        state.view == DocumentView::Design,
+        "the host owns the actual read transition"
     );
+    let open = state.prepare_object_datasheet(&design).unwrap();
+    assert!(
+        open.needs_load,
+        "schema-only tab requests real native records"
+    );
+    assert_eq!(open.tab, design);
 
+    state.prepare_object_open(contacts).unwrap();
+    state.prepare_schema_view();
     state.set_schema(crate::Schema {
         table: "Contacts".into(),
         declared_rows: 1,
         fields: Vec::new(),
     });
+    let contacts = state.active_object().unwrap();
     click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Datasheet");
-    assert!(actions.is_empty());
+    assert!(
+        matches!(actions.as_slice(), [Action::ViewObjectDatasheet { tab }] if tab == &contacts)
+    );
+    let open = state.prepare_object_datasheet(&contacts).unwrap();
+    assert!(!open.needs_load, "same-table cached page remains available");
     assert!(state.view == DocumentView::Table);
 
     // Becoming busy closes an already open menu and refuses its trigger.
@@ -313,6 +368,7 @@ fn working_ribbon_commands_accept_keyboard_and_assistive_activation() {
     context.enable_accesskit();
     let mut state = State::default();
     state.dismiss_backstage();
+    state.database = Some(native_database());
     state.set_table_data(table());
     render(&mut state, &context, vec![]);
     let (_, output) = render(&mut state, &context, vec![]);
@@ -638,14 +694,7 @@ fn home_paste_requests_clipboard_then_emits_literal_review_intent() {
     let context = egui::Context::default();
     let mut state = State::default();
     state.dismiss_backstage();
-    state.database = Some(crate::workspace::Database {
-        title_path: None,
-        document_revision: 4,
-        title: "Contacts".into(),
-        format: "ACE16".into(),
-        tables: vec![],
-        queries: vec![],
-    });
+    state.database = Some(native_database());
     state.set_table_data(table());
     let (actions, output) = click(&mut state, &context, "Paste text");
     assert!(actions.is_empty());
@@ -683,14 +732,7 @@ fn home_paste_requests_clipboard_then_emits_literal_review_intent() {
 fn focused_native_cell_accepts_paste_but_edit_dialog_keeps_local_clipboard_input() {
     let mut state = State::default();
     state.dismiss_backstage();
-    state.database = Some(crate::workspace::Database {
-        title_path: None,
-        document_revision: 4,
-        title: "Contacts".into(),
-        format: "ACE16".into(),
-        tables: vec![],
-        queries: vec![],
-    });
+    state.database = Some(native_database());
     state.set_table_data(table());
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1100.0, 740.0))

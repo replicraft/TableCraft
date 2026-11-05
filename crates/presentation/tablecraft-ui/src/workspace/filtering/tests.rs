@@ -70,9 +70,14 @@ fn apply(state: &mut State) -> FilterTarget {
 #[test]
 fn filter_publication_checks_sparse_membership_counts_request_and_retained_toggle() {
     let mut state = state();
+    state.synchronize_objects();
+    let tab = state
+        .active_object()
+        .expect("the catalog-backed People table is open");
+    assert!(state.can_close_object(&tab));
     let selection = state.current_filter_selection().unwrap();
     assert!(state.begin_filter_selection(1, selection, FilterComparison::Equal));
-    assert!(!state.close_table(7, "People"));
+    assert!(!state.close_object(&tab));
     assert!(!state.set_filtered_data(2, publication(20, true, 0, vec![2, 5])));
     let mut malformed = publication(20, true, 0, vec![2, 5]);
     malformed.data.has_more = false;
@@ -147,17 +152,33 @@ fn zero_matches_keep_columns_toggle_clear_and_failures_retain_previous_filter() 
     assert!(state.data.as_ref().unwrap().rows.is_empty());
 
     assert!(state.begin_clear_filter(3, target.clone()));
+    let mut oversized = publication(30, false, 0, vec![0, 1]);
+    oversized.filter_count = 0;
+    oversized.matched_rows = oversized.source_rows;
+    oversized.data.rows[0][0].text = String::with_capacity(64 * 1024 * 1024);
+    assert!(!state.set_filtered_data(3, oversized));
+    assert!(!state.table_filter_pending());
+    assert_eq!(state.active_filter_target(), Some(target.clone()));
+    assert!(state.data.as_ref().unwrap().rows.is_empty());
+    assert_eq!(state.data.as_ref().unwrap().columns.len(), 2);
+    assert_eq!(
+        state.filter_error_message(),
+        Some(state.localizer.text("objects-memory-limit").as_str())
+    );
+    assert!(state.can_clear_filter(&target));
+
+    assert!(state.begin_clear_filter(4, target.clone()));
     let mut wrong = publication(30, false, 0, vec![0, 1]);
     wrong.filter_count = 0;
     wrong.matched_rows = wrong.source_rows;
     wrong.data.row_ordinals = None;
-    assert!(!state.set_filtered_data(3, wrong));
+    assert!(!state.set_filtered_data(4, wrong));
     assert_eq!(state.active_filter_target(), Some(target.clone()));
-    assert!(state.begin_clear_filter(4, target));
+    assert!(state.begin_clear_filter(5, target));
     let mut cleared = publication(30, false, 0, vec![0, 1]);
     cleared.filter_count = 0;
     cleared.matched_rows = cleared.source_rows;
-    assert!(state.set_filtered_data(4, cleared));
+    assert!(state.set_filtered_data(5, cleared));
     let target = state.active_filter_target().unwrap();
     assert_eq!(target.filter_id, 30);
     assert!(!state.can_clear_filter(&target));

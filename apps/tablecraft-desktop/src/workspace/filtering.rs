@@ -9,12 +9,32 @@ use tablecraft_ui::{
     RowOrdinals, SortSpec, SortTarget,
 };
 
+#[derive(Clone)]
 pub(super) struct RestoreFilter {
     definition: FilterDefinition,
     enabled: bool,
     offset: u32,
     sort: Option<SortSpec>,
     filter_count: u32,
+}
+
+impl RestoreFilter {
+    pub(super) fn capture(handle: &FilterHandle, enabled: bool, offset: u32) -> Self {
+        Self {
+            definition: handle.definition(),
+            enabled,
+            offset,
+            sort: handle.sort().map(|sort| SortSpec {
+                column: sort.column.clone(),
+                descending: sort.descending,
+            }),
+            filter_count: handle.filter_count(),
+        }
+    }
+
+    pub(super) fn table(&self) -> &str {
+        self.definition.table()
+    }
 }
 
 impl Desktop {
@@ -24,13 +44,11 @@ impl Desktop {
             return None;
         }
         let handle = self.filter_handle(&target)?;
-        Some(RestoreFilter {
-            definition: handle.definition(),
-            enabled: self.state.table_filter_enabled(),
-            offset: self.state.data.as_ref()?.offset,
-            sort: self.state.table_sort(),
-            filter_count: self.state.table_filter_count(),
-        })
+        Some(RestoreFilter::capture(
+            &handle,
+            self.state.table_filter_enabled(),
+            self.state.data.as_ref()?.offset,
+        ))
     }
 
     pub(super) fn restore_filter_after_save(&mut self, table: &str) -> bool {

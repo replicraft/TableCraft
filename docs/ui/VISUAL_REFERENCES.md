@@ -43,6 +43,29 @@ multivalue/history, offline-edit/recovery or native platform interaction evidenc
 Viewing the images does not establish validation timing, parameter ordering,
 focus traversal or native save behavior.
 
+## Object navigation and tab behavior references
+
+Microsoft's [Access user-interface guide](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface)
+distinguishes selecting a Navigation Pane object from opening it by double-click,
+Enter or context-menu Open. The [Navigation Pane
+article](https://support.microsoft.com/en-us/access/use-the-navigation-pane)
+records double-click as the default and single-click opening as a configurable
+alternative. TableCraft currently implements the default selection/open
+separation; it does not expose that alternate setting.
+
+The [object-tab article](https://support.microsoft.com/en-us/access/show-or-hide-object-tabs)
+documents tab activation, individual closing and view switching. Its modern
+Microsoft 365 tab colors differ from the older Windows presentation described
+on the same page; the retained Home/Design captures continue to govern this
+workspace's visual treatment. These behavioral articles are not additional
+locally observed screenshots or native interaction evidence.
+
+Microsoft's [Run a query article](https://support.microsoft.com/en-us/access/run-a-query)
+also establishes an important current difference: Access opens SELECT/crosstab
+queries by executing them. TableCraft's saved-query Open remains inert inspection
+with a separate explicit Run action. Object-tab fidelity must not silently
+remove that execution boundary or imply full native opening parity.
+
 ## Immediate presentation correction
 
 Use a compact light-gray application title area, white command surface and red

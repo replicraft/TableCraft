@@ -3,6 +3,7 @@ use super::{Action, DocumentView, State};
 use crate::localization::tr;
 use crate::theme::palette;
 use crate::workspace::focus::{self, Pane};
+use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::workspace::ribbon::Icon;
 use egui::{Frame, Id, Margin, Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
 
@@ -22,20 +23,19 @@ impl State {
             .database
             .as_ref()
             .map(|database| database.document_revision);
-        let table = self.data.as_ref().map(|data| data.table.as_str());
-        let saved_query = self
-            .saved_query
-            .active
-            .then_some(self.saved_query.target.as_ref())
-            .flatten();
-        let table_title = table
-            .map(str::to_owned)
-            .unwrap_or_else(|| tr(ui, "shell-table"));
-        let mut selected_view = None;
-        let can_close = document
-            .zip(table)
-            .is_some_and(|(revision, table)| self.can_close_table(revision, table));
-
+        let tabs = self.object_tabs();
+        let active = self.active_object();
+        let active_id = active.as_ref().map(|tab| tab.id);
+        let reveal_id = ui.make_persistent_id(("active_object_tab", document));
+        let previous = ui.data(|data| data.get_temp::<u64>(reveal_id));
+        let reveal_active = active_id != previous;
+        ui.data_mut(|data| {
+            if let Some(id) = active_id {
+                data.insert_temp(reveal_id, id);
+            } else {
+                data.remove::<u64>(reveal_id);
+            }
+        });
         Frame::new()
             .inner_margin(Margin {
                 left: 4,
@@ -56,119 +56,74 @@ impl State {
                     .show(ui, |ui| {
                         ui.horizontal(|ui| {
                             ui.spacing_mut().item_spacing.x = 0.0;
-                            for (view, title, icon, id) in [
-                                (
-                                    DocumentView::Table,
-                                    table_title,
-                                    Icon::Table,
-                                    ui.make_persistent_id(("table_tab", document, table)),
-                                ),
-                                (
-                                    DocumentView::Query,
-                                    tr(ui, "shell-query"),
-                                    Icon::Search,
-                                    ui.make_persistent_id((
-                                        "query_tab",
-                                        document,
-                                        saved_query.map(|target| {
-                                            (target.document_revision, target.object_id)
-                                        }),
-                                    )),
-                                ),
-                                (
-                                    DocumentView::Design,
-                                    tr(ui, "shell-table-design"),
-                                    Icon::TableEdit,
-                                    ui.make_persistent_id((
-                                        "design_tab",
-                                        document,
-                                        self.schema.as_ref().map(|schema| schema.table.as_str()),
-                                    )),
-                                ),
-                            ] {
-                                if view == DocumentView::Table && table.is_none() {
-                                    continue;
-                                }
-                                if view == DocumentView::Design && self.schema.is_none() {
-                                    continue;
-                                }
-                                let (response, close) = tab(
-                                    ui,
-                                    id,
-                                    &title,
-                                    icon,
-                                    self.view == view,
-                                    view == DocumentView::Table && table.is_some(),
-                                    can_close,
-                                );
-                                if close && let Some(document_revision) = document {
-                                    actions.push(Action::CloseTable {
-                                        document_revision,
-                                        table: title.clone(),
-                                    });
-                                }
-                                if self.view == view {
+                            for object in tabs {
+                                let selected =
+                                    active.as_ref().is_some_and(|active| active.id == object.id);
+                                let (title, icon) = match &object.target.kind {
+                                    ObjectKind::Table { name } => {
+                                        let icon = if selected && self.view == DocumentView::Design
+                                        {
+                                            Icon::TableEdit
+                                        } else {
+                                            Icon::Table
+                                        };
+                                        (name.clone(), icon)
+                                    }
+                                    ObjectKind::SavedQuery { name, .. } => {
+                                        (name.clone(), Icon::Search)
+                                    }
+                                    ObjectKind::Sql => (tr(ui, "shell-query"), Icon::Search),
+                                };
+                                let id = ui.make_persistent_id((
+                                    "object_tab",
+                                    object.target.document_revision,
+                                    object.id,
+                                ));
+                                let can_close = self.can_close_object(&object);
+                                let can_activate = self.can_activate_object(&object);
+                                let (response, close) = ui
+                                    .add_enabled_ui(can_activate, |ui| {
+                                        tab(ui, id, &title, icon, selected, true, can_close)
+                                    })
+                                    .inner;
+                                if selected {
                                     focus::register(ui, Pane::Document, &response, false);
+                                    if reveal_active {
+                                        response.scroll_to_me(None);
+                                    }
                                 }
-                                if response.clicked() {
-                                    selected_view = Some(view);
-                                    ui.ctx().request_repaint();
+                                if close {
+                                    actions.push(Action::CloseObject {
+                                        tab: object.clone(),
+                                    });
+                                } else if response.clicked() {
+                                    actions.push(Action::ActivateObject { tab: object });
+                                }
+                            }
+                            if let Some(document_revision) = document {
+                                let target = ObjectTarget {
+                                    document_revision,
+                                    kind: ObjectKind::Sql,
+                                };
+                                ui.add_space(6.0);
+                                if ui
+                                    .add_enabled(
+                                        self.can_open_object(&target),
+                                        egui::Button::image_and_text(
+                                            Icon::Search.image(ui, TAB_ICON_SIZE),
+                                            tr(ui, "navigation-sql-query"),
+                                        )
+                                        .small(),
+                                    )
+                                    .on_hover_text(tr(ui, "navigation-sql-query-help"))
+                                    .clicked()
+                                {
+                                    actions.push(Action::OpenObject { target });
                                 }
                             }
                         });
                     });
             });
-        if let Some(view) = selected_view {
-            self.select_view(view);
-        }
-    }
-
-    pub fn can_close_table(&self, document_revision: u64, table: &str) -> bool {
-        !self.busy
-            && !self.zoom_dialog_open()
-            && !self.table_filter_pending()
-            && !self.backstage_visible()
-            && !self.edit_dialog_open()
-            && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
-            && self
-                .database
-                .as_ref()
-                .is_some_and(|database| database.document_revision == document_revision)
-            && self.data.as_ref().is_some_and(|data| {
-                data.source_revision == Some(document_revision) && data.table == table
-            })
-    }
-
-    /// Close only this local table pane; database and independent query slots remain open.
-    pub fn close_table(&mut self, document_revision: u64, table: &str) -> bool {
-        if !self.can_close_table(document_revision, table) {
-            return false;
-        }
-        self.bump_focus_publication();
-        self.table_selection.clear();
-        self.data = None;
-        self.reset_table_filter();
-        self.reset_record_navigation();
-        if self
-            .schema
-            .as_ref()
-            .is_some_and(|schema| schema.table == table)
-        {
-            self.schema = None;
-            self.selected_field = 0;
-            self.schema_activation_pending = false;
-        }
-        if self.view != DocumentView::Query {
-            self.error = None;
-            self.view = if self.query_data.is_some() || self.saved_query.active {
-                DocumentView::Query
-            } else {
-                DocumentView::Table
-            };
-            self.ribbon_tab = crate::workspace::ribbon::Tab::Home;
-        }
-        true
     }
 }
 
@@ -275,7 +230,7 @@ fn tab(
                 ui.interact(close_rect, id.with("close"), Sense::click())
             })
             .inner;
-        let label = tr(ui, "datasheet-close-table");
+        let label = tr(ui, "navigation-close-object");
         close.widget_info(|| WidgetInfo::labeled(WidgetType::Button, close.enabled(), &label));
         ui.ctx().accesskit_node_builder(close.id, |node| {
             node.set_description(title);

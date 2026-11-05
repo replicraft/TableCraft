@@ -1,5 +1,29 @@
 # Implementation status
 
+## Independent object workspace — 5 November 2026
+
+Tables, saved queries and the scratch SQL editor now have independently owned
+object tabs. Navigation single-click selects; double-click, Enter and Open
+activate. Datasheet/Design belong to the same table instance. Pages, selections,
+filters/sort, saved inputs/results and per-object widget layout survive switches
+without cloning rows. Closing an inactive object leaves the active native handle
+intact; stale instance IDs cannot close a newly reopened object.
+
+A successful reviewed save retains source-free workspace preferences, clears old
+rows/maps/capabilities, rebinds the fresh catalog and loads background objects
+lazily. Save ownership remains global. Shared UI admission limits are 16 objects
+and a conservative 64 MiB retained presentation allowance, separate from runtime
+pools. A refused filter publication now completes its pending request while
+preserving the old page and handle.
+
+All 186 UI cases passed across the functional gate and separate preview matrix;
+all 45 desktop cases passed. The matrix covers 57 scenes × eight locales × two
+themes (912 combinations). Strict seven-package Clippy passed. Four German
+light/dark objects/datasheet exports were inspected offscreen. These are local
+UI/host checks, not native Access or cross-platform qualification. Saved queries
+still open to inert inspection and require explicit Run. See the
+[object contract and verification](ui/DESKTOP.md#object-workspace-contract).
+
 ## Reviewed text Paste — 5 November 2026
 
 Home Paste text and keyboard Paste on a focused native scalar cell now open a

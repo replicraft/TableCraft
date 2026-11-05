@@ -1,17 +1,23 @@
 //! Query lifecycle samples use only existing presentation publication contracts.
 use super::{Preview, fixtures};
-use crate::workspace::DocumentView;
+use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{ParameterInput, ParameterSpec, SavedQueryTarget};
 
 impl Preview {
     pub(super) fn prepare_query_running(&mut self) {
-        self.state.select_view(DocumentView::Query);
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
         self.state.set_query_data(fixtures::query());
         self.state.busy = true;
     }
 
     pub(super) fn prepare_query_error(&mut self) {
-        self.state.select_view(DocumentView::Query);
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
         self.state.set_query_data(fixtures::query());
         self.state.error = Some(self.state.localizer.text("query-mock-error"));
     }

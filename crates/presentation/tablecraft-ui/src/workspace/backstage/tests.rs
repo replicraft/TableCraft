@@ -1,5 +1,6 @@
 use super::*;
 use crate::workspace::DocumentView;
+use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{
     Data, Database, ParameterSpec,
     preview::{Preview, Scene},
@@ -264,6 +265,7 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     let mut preview = Preview::new(Scene::SavedQuery);
     let state = preview.state_mut();
     let target = state.selected_saved_target().unwrap().clone();
+    let saved_tab = state.active_object().unwrap();
     state.begin_saved_query_inspection(target.clone(), 80);
     assert!(state.set_saved_query_details(
         80,
@@ -285,6 +287,13 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     ));
     let sql = "SELECT '独立した SQL draft; <literal> & [name]'";
     state.sql = sql.into();
+    let scratch = state
+        .prepare_object_open(ObjectTarget {
+            document_revision: target.document_revision,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap()
+        .tab;
     state.set_query_data(Data {
         row_ordinals: None,
         source_revision: None,
@@ -294,6 +303,8 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         rows: vec![vec!["Earlier SQL value".into()]],
         has_more: false,
     });
+    let sql_rows = state.query_data.as_ref().unwrap().rows.as_ptr();
+    assert!(state.activate_object(&saved_tab));
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1280.0, 820.0))
         .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
@@ -340,15 +351,6 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         .unwrap()
         .rows
         .as_ptr();
-    let sql_rows = harness
-        .state()
-        .state()
-        .query_data
-        .as_ref()
-        .unwrap()
-        .rows
-        .as_ptr();
-
     harness.get_by_role_and_label(Role::Button, &run).click();
     harness.run();
     harness
@@ -386,7 +388,10 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         state.saved_query.data.as_ref().unwrap().rows.as_ptr(),
         saved_rows
     );
-    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), sql_rows);
+    assert!(
+        state.query_data.is_none(),
+        "inactive scratch result remains parked"
+    );
     let Some(Action::RunSavedQuery { target, parameters }) = state.saved_query_run_action() else {
         panic!("saved query retains exact typed retry choices after Options");
     };
@@ -422,6 +427,21 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     harness.key_press(egui::Key::Escape);
     harness.run();
     assert!(!harness.state().state().saved_query_prompt_open());
+    let state = harness.state_mut().state_mut();
+    assert!(state.activate_object(&scratch));
+    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), sql_rows);
+    assert_eq!(state.sql, sql);
+    assert_eq!(state.localizer.locale(), Locale::Ja);
+    assert!(state.activate_object(&saved_tab));
+    assert_eq!(
+        state.saved_query.data.as_ref().unwrap().rows.as_ptr(),
+        saved_rows
+    );
+    let Some(Action::RunSavedQuery { target, parameters }) = state.saved_query_run_action() else {
+        panic!("saved input ownership survives actual object activation");
+    };
+    assert_eq!(target, original_target);
+    assert_eq!(parameters, original_inputs);
     assert_eq!(
         harness.state().state().localizer.diagnostics(),
         Default::default()

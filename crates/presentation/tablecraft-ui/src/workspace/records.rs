@@ -33,6 +33,15 @@ struct Pending {
     target: RecordTarget,
 }
 
+impl RecordNavigation {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = super::objects::memory::Counter::new(size_of::<Self>());
+        count.string(&self.input);
+        count.optional(&self.error);
+        count.finish()
+    }
+}
+
 impl State {
     fn record_source_matches(&self, target: &RecordTarget) -> bool {
         self.view == DocumentView::Table
@@ -112,7 +121,9 @@ impl State {
             return false;
         };
 
-        self.set_table_data(data);
+        if !self.set_table_data(data) {
+            return false;
+        }
         if let Some(data) = &self.data {
             self.table_selection.select(data, row, column);
         }

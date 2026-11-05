@@ -8,3 +8,8 @@ navigation-queries = Queries
 navigation-view-schema = View schema
 navigation-system = system
 navigation-open-first = Open a database to see its objects.
+
+navigation-open = Open
+navigation-close-object = Close object
+navigation-sql-query = New SQL query
+navigation-sql-query-help = Open or activate the SQL query editor. This does not run a query.

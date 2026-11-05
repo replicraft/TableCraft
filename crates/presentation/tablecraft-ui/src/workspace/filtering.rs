@@ -125,6 +125,23 @@ impl Operation {
     }
 }
 
+impl TableFilter {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = super::objects::memory::Counter::new(size_of::<Self>());
+        if let Some(view) = &self.view {
+            count.string(&view.target.table);
+            if let Some(sort) = &view.sort {
+                count.string(&sort.column);
+            }
+        }
+        if let Some(error) = &self.error {
+            count.string(&error.table);
+            count.string(&error.message);
+        }
+        count.finish()
+    }
+}
+
 impl State {
     fn filter_source_current(&self, revision: u64, table: &str) -> bool {
         self.database
@@ -196,7 +213,7 @@ impl State {
             && valid_publication(publication)
     }
 
-    pub(super) fn install_filtered_view(&mut self, publication: FilterPublication) {
+    pub(super) fn install_filtered_view(&mut self, publication: FilterPublication) -> bool {
         let FilterPublication {
             target,
             sort,
@@ -206,7 +223,9 @@ impl State {
             source_rows,
             data,
         } = publication;
-        self.set_table_data(data);
+        if !self.set_table_data(data) {
+            return false;
+        }
         self.table_filter = TableFilter {
             view: Some(View {
                 target,
@@ -219,6 +238,7 @@ impl State {
             pending: None,
             error: None,
         };
+        true
     }
 
     pub fn current_filter_selection(&self) -> Option<FilterSelectionTarget> {
@@ -506,7 +526,14 @@ impl State {
         }
 
         let column = pending.column.clone();
-        self.install_filtered_view(publication);
+        if !self.install_filtered_view(publication) {
+            let message = self
+                .error
+                .take()
+                .unwrap_or_else(|| self.localizer.text("filtering-invalid-result"));
+            self.fail_filter(request_id, message);
+            return false;
+        }
         if let Some(data) = &self.data
             && let Some(column) = column
                 .as_deref()

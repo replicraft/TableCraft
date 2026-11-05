@@ -1,4 +1,5 @@
 use super::*;
+use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{Database, SavedQuery};
 
 fn state() -> (State, SavedQueryTarget) {
@@ -22,6 +23,12 @@ fn state() -> (State, SavedQueryTarget) {
         }],
     });
     state.sql = "SELECT 42".into();
+    state
+        .prepare_object_open(ObjectTarget {
+            document_revision: 7,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap();
     state.set_query_data(data("SQL result", "42"));
     (state, target)
 }
@@ -58,6 +65,7 @@ fn specs() -> Vec<ParameterSpec> {
 #[test]
 fn inspected_parameters_require_explicit_value_type_and_preserve_sql_result_slot() {
     let (mut state, target) = state();
+    let scratch = state.active_object().unwrap();
     assert!(state.can_inspect_saved_query(&target));
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(!state.set_saved_query_details(9, target.clone(), specs()));
@@ -90,7 +98,11 @@ fn inspected_parameters_require_explicit_value_type_and_preserve_sql_result_slot
             .is_none()
     );
     assert_eq!(state.visible_data().unwrap().rows[0][0].text, "7");
-    state.saved_query.active = false;
+    assert!(
+        state.query_data.is_none(),
+        "scratch result is parked separately"
+    );
+    assert!(state.activate_object(&scratch));
     assert_eq!(state.visible_data().unwrap().rows[0][0].text, "42");
     assert_eq!(state.sql, "SELECT 42");
 }
@@ -162,13 +174,30 @@ fn typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_tex
 }
 
 #[test]
-fn object_click_inspects_only_and_explicit_run_emits_exact_typed_parameters() {
+fn object_selection_requires_explicit_open_and_run_emits_exact_typed_parameters() {
     let (mut state, target) = state();
     let context = egui::Context::default();
     let actions = click(&mut state, &context, &target.name);
     assert!(
-        matches!(actions.as_slice(), [Action::InspectSavedQuery { target: actual }] if actual == &target)
+        actions.is_empty(),
+        "single click selects without inspecting"
     );
+    let object = ObjectTarget {
+        document_revision: target.document_revision,
+        kind: ObjectKind::SavedQuery {
+            object_id: target.object_id,
+            name: target.name.clone(),
+        },
+    };
+    assert_eq!(state.selected_navigation_object(), Some(object.clone()));
+    let actions = render(
+        &mut state,
+        &context,
+        vec![enter(true, egui::Modifiers::NONE)],
+    )
+    .0;
+    assert!(matches!(actions.as_slice(), [Action::OpenObject { target }] if target == &object));
+    state.prepare_object_open(object).unwrap();
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(render(&mut state, &context, vec![]).0.is_empty());
     assert!(state.set_saved_query_details(1, target.clone(), specs()));
@@ -246,6 +275,7 @@ fn click(state: &mut State, context: &egui::Context, label: &str) -> Vec<Action>
 #[test]
 fn replaced_saved_result_surrenders_old_grid_focus_and_shortcuts_follow_visible_query() {
     let (mut state, target) = state();
+    let scratch = state.active_object().unwrap();
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(state.set_saved_query_details(1, target.clone(), vec![]));
     state.begin_saved_query_run(target.clone(), vec![], 2);
@@ -309,7 +339,9 @@ fn replaced_saved_result_surrenders_old_grid_focus_and_shortcuts_follow_visible_
             .0
             .is_empty()
     );
-    assert!(click(&mut state, &context, "SQL query").is_empty());
+    let actions = click(&mut state, &context, "Query");
+    assert!(matches!(actions.as_slice(), [Action::ActivateObject { tab }] if tab == &scratch));
+    assert!(state.activate_object(&scratch));
     let actions = render(&mut state, &context, vec![enter(true, command)]).0;
     assert!(matches!(actions.as_slice(), [Action::Query]));
     assert_eq!(state.visible_data().unwrap().rows[0][0].text, "42");

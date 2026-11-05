@@ -4,10 +4,21 @@ use tablecraft_runtime::{
     Command, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
     SavedQueryTarget as RuntimeTarget,
 };
-use tablecraft_ui::{ParameterInput, ParameterSpec, SavedQueryTarget};
+use tablecraft_ui::{ObjectKind, ObjectTarget, ParameterInput, ParameterSpec, SavedQueryTarget};
 
 impl Desktop {
     pub(super) fn inspect_saved_query(&mut self, target: SavedQueryTarget) {
+        let object = ObjectTarget {
+            document_revision: target.document_revision,
+            kind: ObjectKind::SavedQuery {
+                object_id: target.object_id,
+                name: target.name.clone(),
+            },
+        };
+        if self.state.active_object().map(|tab| tab.target).as_ref() != Some(&object) {
+            self.open_object(object);
+            return;
+        }
         if self.editing.has_save() || !self.state.can_inspect_saved_query(&target) {
             return;
         }

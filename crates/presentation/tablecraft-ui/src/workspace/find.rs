@@ -359,11 +359,14 @@ impl State {
                 }
 
                 let mut session = self.find.take().expect("accepted Find session");
-                match publication {
+                let accepted = match publication {
                     Publication::Native(data) => self.set_table_data(data),
-                    Publication::Filtered(publication) => {
-                        self.install_filtered_view(publication);
-                    }
+                    Publication::Filtered(publication) => self.install_filtered_view(publication),
+                };
+                if !accepted {
+                    self.find = Some(session);
+                    self.fail_find(request_id, self.localizer.text("objects-memory-limit"));
+                    return false;
                 }
                 let (row, column) = position.expect("validated exact field and member");
                 self.table_selection.select(

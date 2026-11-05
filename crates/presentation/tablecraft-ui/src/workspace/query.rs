@@ -20,22 +20,6 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
-            ui.horizontal(|ui| {
-                if ui
-                    .selectable_label(!self.saved_query.active, tr(ui, "query-title"))
-                    .clicked()
-                {
-                    self.interrupt_saved_query();
-                    self.saved_query.active = false;
-                }
-                if let Some(target) = &self.saved_query.target
-                    && ui
-                        .selectable_label(self.saved_query.active, &target.name)
-                        .clicked()
-                {
-                    self.saved_query.active = true;
-                }
-            });
             if self.saved_query.active {
                 self.saved_query_editor(ui, actions);
                 return;

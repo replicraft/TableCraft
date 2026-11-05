@@ -22,9 +22,10 @@ pub use workspace::{
     EditInput, EditReview, EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue,
     FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
-    InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
-    ParameterSpec, RecordTarget, RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget,
-    Schema, SortSpec, SortTarget, State, Table,
+    InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ObjectKind,
+    ObjectOpen, ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, RecordTarget,
+    RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget,
+    State, Table, WorkspaceLayout,
 };
 
 #[cfg(test)]

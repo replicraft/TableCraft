@@ -1,5 +1,6 @@
 //! The existing table views share the Access-style large View dropdown.
 use super::{Action, CommandSize, DocumentView, Icon, State, command};
+use crate::workspace::objects::ObjectKind;
 use egui::{Popup, Stroke, accesskit::HasPopup};
 
 const VIEW_ARROW_HALF_WIDTH: f32 = 3.0;
@@ -8,21 +9,17 @@ const VIEW_ARROW_BOTTOM_PADDING: f32 = 6.0;
 impl State {
     pub(super) fn view_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let t = self.localizer.clone();
-        let datasheet_available = match self.view {
-            DocumentView::Table => self.data.is_some(),
-            DocumentView::Design => self.schema.as_ref().is_some_and(|schema| {
-                self.data
-                    .as_ref()
-                    .is_some_and(|data| data.table == schema.table)
-            }),
-            DocumentView::Query => false,
-        };
-        let table = match self.view {
-            DocumentView::Table => self.data.as_ref().map(|data| data.table.clone()),
-            DocumentView::Design => self.schema.as_ref().map(|schema| schema.table.clone()),
-            DocumentView::Query => None,
-        };
-        let enabled = !self.busy && table.is_some();
+        let active = self.active_object();
+        let table = active.as_ref().and_then(|tab| match &tab.target.kind {
+            ObjectKind::Table { name } => Some(name.clone()),
+            _ => None,
+        });
+        let datasheet_available = active
+            .as_ref()
+            .is_some_and(|tab| self.can_view_object_datasheet(tab));
+        let enabled = active
+            .as_ref()
+            .is_some_and(|tab| table.is_some() && self.can_activate_object(tab));
         let icon = if self.view == DocumentView::Design {
             Icon::Table
         } else {
@@ -69,7 +66,9 @@ impl State {
                 )
                 .clicked()
                 {
-                    self.select_view(DocumentView::Table);
+                    if let Some(tab) = active.as_ref() {
+                        actions.push(Action::ViewObjectDatasheet { tab: tab.clone() });
+                    }
                     ui.close();
                 }
                 if command(
