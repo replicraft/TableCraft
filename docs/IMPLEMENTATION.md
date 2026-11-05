@@ -1,5 +1,15 @@
 # Implementation status
 
+## Bounded long-value presentation — 5 November 2026
+
+Datasheet paint, tooltips and accessibility now use a bounded Unicode preview
+instead of repeatedly cloning and laying out full Memo-sized strings. Limits
+cover scalar count, UTF-8 bytes and logical lines; shortening is explicit and
+localized, with native provenance preserved. Copy retains complete original
+display text. All 153 UI tests and strict UI Clippy passed, including actual
+large-value paint/accessibility bounds and exact-copy checks. This adds no
+backend coercion, value mutation or native application activation.
+
 ## Localized input and Home record navigation — 5 November 2026
 
 Runtime drafts now publish fourteen inert input-hint tags rather than English

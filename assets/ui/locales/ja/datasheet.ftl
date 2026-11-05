@@ -52,3 +52,5 @@ datasheet-close-table = テーブルを閉じる
 datasheet-sort-column = { $column } を並べ替え
 
 datasheet-last = 最後
+
+datasheet-value-preview-truncated = プレビューを省略しています。コピーでは表示用の値全体を保持します。

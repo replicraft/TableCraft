@@ -895,3 +895,14 @@ shares the footer input/parser and native target service; Select record uses eac
 visible result's existing selection and complete single-record clipboard output.
 Actual popup and source/modal/EOF/query boundaries are exercised headlessly.
 Strict selected Clippy passed; no native application was opened.
+
+
+## Long-value presentation gate — 5 November 2026
+
+All 153 shared UI tests passed, including the 768 scene/locale/theme combinations.
+Three helper cases cover exact boundaries, decomposed Unicode, emoji, combining
+sequences and CR/LF/CRLF/Unicode line separators. An actual-cell observation
+checks bounded painted/accessibility payloads for large ASCII, CJK and multiline
+values while the emitted Copy command retains the complete text. Strict UI
+Clippy, formatting and documentation links passed. No native application was
+opened and no native clipboard publication is claimed by these headless checks.

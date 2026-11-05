@@ -93,6 +93,29 @@ fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
     );
 }
 
+#[test]
+fn large_cell_preview_bounds_paint_and_accessibility_while_copy_preserves_complete_text() {
+    for (text, prefix) in [
+        ("a".repeat(100_000) + "tail", "a".repeat(512) + "…"),
+        ("界".repeat(100_000) + "tail", "界".repeat(341) + "…"),
+        ("\n".repeat(100_000) + "tail", "\n".repeat(7) + "…"),
+    ] {
+        let value = Cell {
+            kind: CellKind::Scalar {
+                is_null: false,
+                stored_calculation: true,
+                boolean: None,
+                display_control: crate::DisplayControl::Uninspected,
+            },
+            ..Cell::scalar(text)
+        };
+        let expected = format!(
+            "Description, row 7: {prefix}; Stored calculated result; no formula evaluated; freshness unknown Preview shortened. Copy preserves the complete displayed value."
+        );
+        assert_focused_copy(&value, &expected);
+    }
+}
+
 fn assert_focused_copy(value: &Cell, accessible_value: &str) {
     let context = Context::default();
     context.enable_accesskit();
@@ -113,6 +136,11 @@ fn assert_focused_copy(value: &Cell, accessible_value: &str) {
         assert!(response.has_focus());
     });
     output.textures_delta.clear();
+    for shape in &output.shapes {
+        if let egui::Shape::Text(painted) = &shape.shape {
+            assert!(painted.galley.job.text.len() < 4096);
+        }
+    }
     assert!(
         output
             .platform_output
@@ -124,6 +152,14 @@ fn assert_focused_copy(value: &Cell, accessible_value: &str) {
         .accesskit_update
         .as_ref()
         .expect("accessibility update");
+    for (_, node) in &tree.nodes {
+        for text in [node.value(), node.label(), node.description()]
+            .into_iter()
+            .flatten()
+        {
+            assert!(text.len() < 4096);
+        }
+    }
     assert!(
         tree.nodes
             .iter()

@@ -52,3 +52,5 @@ datasheet-close-table = Close table
 datasheet-sort-column = Sort { $column }
 
 datasheet-last = Last
+
+datasheet-value-preview-truncated = Preview shortened. Copy preserves the complete displayed value.
