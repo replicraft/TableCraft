@@ -2,6 +2,7 @@
 mod collections;
 mod controls;
 mod formatting;
+pub(crate) mod page;
 pub(crate) mod presentation;
 
 use super::{
@@ -10,7 +11,8 @@ use super::{
     display::Presentation,
     document::Document,
 };
-use tablecraft_access::{BrowsePage, CollectionPageRequest, NativeBrowser, TablePageRequest};
+use page::PagePresentation;
+use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
 use tablecraft_ace::TableSnapshotLimits;
 
 const PAGE_ROWS: u32 = 100;
@@ -34,45 +36,11 @@ impl Document {
         // retried as another profile or converted to a partial/empty collection.
         let page = browser.browse_page(table, request)?;
         let mut output = Presentation::new(cancelled);
-        let (columns, mut rows, reached_end) = match page {
-            BrowsePage::Scalar(page) => {
-                output.work(1)?;
-                crate::native_properties::require_binding(properties.as_ref(), page.schema())?;
-                let mut columns = output.columns(page.columns().len())?;
-                for column in page.columns() {
-                    columns.push(crate::column::native(
-                        column.name(),
-                        properties.as_ref(),
-                        &mut output,
-                    )?);
-                }
-                let mut rows = output.rows(page.rows().len())?;
-                for values in page.rows() {
-                    let mut row = output.row(values.len())?;
-                    for value in values {
-                        row.push(output.scalar(value, false)?);
-                    }
-                    rows.push(row);
-                }
-                (columns, rows, page.reached_end())
-            }
-            BrowsePage::Collections(page) => {
-                output.work(1)?;
-                crate::native_properties::require_binding(properties.as_ref(), page.schema())?;
-                let mut columns = output.columns(page.schema().columns().len())?;
-                for column in page.schema().columns() {
-                    columns.push(crate::column::native(
-                        column.name(),
-                        properties.as_ref(),
-                        &mut output,
-                    )?);
-                }
-                let rows = collections::rows(&page, &mut output)?;
-                (columns, rows, page.reached_end())
-            }
-        };
-        controls::enrich(properties.as_ref(), &columns, &mut rows, &mut output)?;
-        formatting::apply(properties.as_ref(), &columns, &mut rows, &mut output)?;
+        let PagePresentation {
+            columns,
+            rows,
+            reached_end,
+        } = page::present(&page, properties.as_ref(), None, &mut output)?;
         Ok(Response::Data {
             source_revision: Some(self.revision),
             table: output.text(table)?,
