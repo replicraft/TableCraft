@@ -13,11 +13,9 @@ impl State {
             .resizable(true)
             .show(ui, |ui| {
                 ui.add_space(5.0);
-                ui.label(
-                    RichText::new(tr(ui, "navigation-all-objects"))
-                        .strong()
-                        .size(15.0),
-                );
+                let heading = tr(ui, "navigation-all-objects");
+                ui.add(egui::Label::new(RichText::new(&heading).strong().size(15.0)).truncate())
+                    .on_hover_text(heading);
                 let search_label = tr(ui, "navigation-search-objects");
                 let search =
                     ui.add(TextEdit::singleline(&mut self.filter).hint_text(&search_label));
