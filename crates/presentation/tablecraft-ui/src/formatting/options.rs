@@ -1,7 +1,10 @@
 use super::Cache;
 use crate::Localizer;
 use egui::Ui;
+use fluent_bundle::FluentArgs;
 use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
+
+const FORMAT_CHOICE_WIDTH: f32 = 280.0;
 
 pub(crate) fn show_options(
     ui: &mut Ui,
@@ -13,19 +16,16 @@ pub(crate) fn show_options(
     ui.heading(localizer.text("settings-display-formatting"));
     ui.small(localizer.text("settings-format-display-only"));
 
-    let examples = cache.system_examples();
     let date_label = |choice: DateFormat| {
         example_label(
             localizer.text(date_key(choice)),
-            choice == DateFormat::SystemLocale,
-            examples.as_ref().map(|pair| pair.0.as_str()),
+            cache.date_example(choice).as_deref(),
         )
     };
     let time_label = |choice: TimeFormat| {
         example_label(
             localizer.text(time_key(choice)),
-            choice == TimeFormat::SystemLocale,
-            examples.as_ref().map(|pair| pair.1.as_str()),
+            cache.time_example(choice).as_deref(),
         )
     };
 
@@ -35,20 +35,28 @@ pub(crate) fn show_options(
         .show(ui, |ui| {
             ui.label(localizer.text("settings-date-format"));
             egui::ComboBox::from_id_salt("display_date_format")
+                .width(FORMAT_CHOICE_WIDTH)
+                .truncate()
                 .selected_text(date_label(options.date))
                 .show_ui(ui, |ui| {
                     for choice in DateFormat::ALL {
-                        ui.selectable_value(&mut options.date, choice, date_label(choice));
+                        let label = date_label(choice);
+                        ui.selectable_value(&mut options.date, choice, &label)
+                            .on_hover_text(label);
                     }
                 });
             ui.end_row();
 
             ui.label(localizer.text("settings-time-format"));
             egui::ComboBox::from_id_salt("display_time_format")
+                .width(FORMAT_CHOICE_WIDTH)
+                .truncate()
                 .selected_text(time_label(options.time))
                 .show_ui(ui, |ui| {
                     for choice in TimeFormat::ALL {
-                        ui.selectable_value(&mut options.time, choice, time_label(choice));
+                        let label = time_label(choice);
+                        ui.selectable_value(&mut options.time, choice, &label)
+                            .on_hover_text(label);
                     }
                 });
             ui.end_row();
@@ -67,6 +75,12 @@ pub(crate) fn show_options(
                 });
             ui.end_row();
         });
+
+    if let Some(example) = cache.currency_example() {
+        let mut arguments = FluentArgs::new();
+        arguments.set("value", example);
+        ui.small(localizer.format("settings-currency-example", &arguments));
+    }
 
     if let Some((locale, fallback, currency)) = cache.status() {
         ui.horizontal_wrapped(|ui| {
@@ -99,10 +113,10 @@ fn currency_label(choice: CurrencyChoice, localizer: &Localizer) -> String {
     }
 }
 
-fn example_label(label: String, system: bool, sample: Option<&str>) -> String {
-    match (system, sample) {
-        (true, Some(sample)) => format!("{label} ({sample})"),
-        _ => label,
+fn example_label(label: String, sample: Option<&str>) -> String {
+    match sample {
+        Some(sample) => format!("{label} ({sample})"),
+        None => label,
     }
 }
 

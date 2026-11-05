@@ -22,7 +22,12 @@ and Raw. Time choices include regional, hours/minutes, hours/minutes/seconds,
 12-hour, fractional and Raw. Qualified native date-only and time-only Format
 properties keep their separate shapes. The default General Date behavior also
 keeps a date without a time, or a time without a date, when the typed value has
-that shape. Column names do not select formatting.
+that shape. Column names do not select formatting. Each date/time choice shows
+an asymmetric example (12 April 2026, 15:04:05) from the same regional formatter,
+so day/month and month/day order are visible before applying a choice. Raw
+examples show the complete typed diagnostic representation. The selected
+currency also shows its actual symbol, rounding and minor-unit precision using
+a fixed illustrative amount; it is not a conversion of a source cell.
 
 Currency is an exact scaled integer, never converted through binary floating
 point for display. The selected currency controls its symbol and minor-unit

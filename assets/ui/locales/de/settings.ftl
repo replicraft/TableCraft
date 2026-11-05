@@ -50,3 +50,5 @@ settings-format-unavailable = Regionale Formatierung nicht verfügbar; typisiert
 settings-format-system-help = System verwendet regionale CLDR-Standards. Benutzerdefinierte Datums- und Zeitvorgaben des Betriebssystems werden nicht gelesen. Erkannte reine Datums- und Zeitformate bleiben erhalten.
 settings-currency-unit-help = Die Währung bestimmt die Anzeige, nicht die Einheit der Datenbank. Symbol, Rundung und Dezimalstellen folgen der gewählten Währung.
 settings-format-raw-help = Kopieren verwendet den angezeigten Text. Rohwert erhält vier Währungsdezimalstellen, die exakten alten DATE-Bits oder sieben Nachkommastellen bei erweitertem Datum/Uhrzeit.
+
+settings-currency-example = Währungsbeispiel: { $value }

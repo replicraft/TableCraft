@@ -50,3 +50,5 @@ settings-format-unavailable = Formatação regional indisponível; os valores ti
 settings-format-system-help = Sistema usa os padrões regionais do CLDR. Não lê personalizações de data e hora do sistema operacional. Os formatos armazenados reconhecidos de somente data ou hora são mantidos.
 settings-currency-unit-help = A moeda define a exibição, não a unidade do banco de dados. Símbolos, arredondamento e casas decimais seguem a moeda escolhida.
 settings-format-raw-help = Copiar usa o texto exibido. Bruto preserva as quatro casas de Currency, os bits exatos de DATE legado ou as sete casas de Data/Hora Estendida.
+
+settings-currency-example = Exemplo de moeda: { $value }

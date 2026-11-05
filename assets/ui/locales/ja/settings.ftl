@@ -50,3 +50,5 @@ settings-format-unavailable = 地域別の書式設定を利用できないた�
 settings-format-system-help = システム設定では CLDR の地域別既定値を使用します。OS 独自の日付・時刻設定は読み取りません。認識された日付のみ・時刻のみの保存形式を維持します。
 settings-currency-unit-help = 通貨は表示方式であり、データベースの単位ではありません。記号、丸め、小数桁数は選択した通貨に従います。
 settings-format-raw-help = コピーには表示テキストを使用します。元の値は Currency の小数4桁、従来の DATE の正確なビット値、または拡張日付/時刻の小数7桁を保持します。
+
+settings-currency-example = 通貨の表示例: { $value }
