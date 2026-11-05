@@ -1009,7 +1009,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
             egui::Modifiers::NONE,
         )]),
         |ui| {
-            assert!(show(ui, &data, &mut selection, Pane::Document, None).is_empty());
+            assert!(show(ui, &data, &mut selection, Pane::Document, None, None).is_empty());
         },
     );
     output.textures_delta.clear();
@@ -1051,7 +1051,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     let mut output = context.run_ui(input(vec![]), |ui| {
         ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")))
             .request_focus();
-        let _ = show(ui, &data, &mut selection, Pane::Document, None);
+        let _ = show(ui, &data, &mut selection, Pane::Document, None, None);
     });
     output.textures_delta.clear();
     let mut output = context.run_ui(
@@ -1061,7 +1061,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         ]),
         |ui| {
             ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")));
-            let _ = show(ui, &data, &mut selection, Pane::Document, None);
+            let _ = show(ui, &data, &mut selection, Pane::Document, None, None);
         },
     );
     output.textures_delta.clear();
@@ -1145,7 +1145,7 @@ fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
     };
     let mut selection = Selection::default();
     let mut output = context.run_ui(input(vec![]), |ui| {
-        assert!(show(ui, &data, &mut selection, Pane::Document, None).is_empty());
+        assert!(show(ui, &data, &mut selection, Pane::Document, None, None).is_empty());
         assert!(selection.copy(&data, ui.ctx()));
     });
     output.textures_delta.clear();
@@ -1211,6 +1211,8 @@ fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
 
 #[test]
 fn empty_filtered_body_keeps_headers_anchored_without_inventing_a_record() {
+    use egui_kittest::kittest::Queryable;
+
     let mut header_positions = Vec::new();
     for scene in [
         crate::preview::Scene::Filtered,
@@ -1257,6 +1259,13 @@ fn empty_filtered_body_keeps_headers_anchored_without_inventing_a_record() {
                 .expect("localized empty-state decoration remains visible");
             let bounds = painted.1.galley.rect.translate(painted.1.pos.to_vec2());
             assert!(bounds.top() > header);
+            let insertion_label = harness.state().localizer.text("insertion-title");
+            let insertion = harness
+                .get_all_by_role_and_label(Role::Button, &insertion_label)
+                .into_iter()
+                .find(|button| button.rect().top() > header && button.rect().top() < bounds.top())
+                .expect("the empty datasheet retains its New row action");
+            assert!(bounds.top() >= insertion.rect().bottom());
             assert!(
                 painted.0.clip_rect.contains_rect(bounds),
                 "empty message={bounds:?}, clip={:?}",
@@ -1268,4 +1277,73 @@ fn empty_filtered_body_keeps_headers_anchored_without_inventing_a_record() {
         }
     }
     assert_eq!(header_positions[0], header_positions[1]);
+}
+
+#[test]
+fn final_native_page_add_action_uses_existing_insert_target_without_a_record_identity() {
+    use egui_kittest::{Harness, kittest::Queryable};
+
+    for (rows, has_more, source_revision, offered) in [
+        (1, false, Some(7), true),
+        (0, false, Some(7), true),
+        (1, true, Some(7), false),
+        (1, false, None, false),
+    ] {
+        let data = Data {
+            row_ordinals: None,
+            source_revision,
+            table: "Items".into(),
+            offset: 0,
+            columns: vec!["Id".into()],
+            rows: (0..rows).map(|_| vec![Cell::scalar("1")]).collect(),
+            has_more,
+        };
+        let target = InsertTarget {
+            document_revision: 7,
+            table: "Items".into(),
+        };
+        let mut selection = Selection::default();
+        selection.reset(&data);
+        let selected = selection.position();
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(600.0, 300.0))
+            .build_ui_state(
+                |ui, state: &mut (Data, Selection, Vec<Action>)| {
+                    state.2.extend(show(
+                        ui,
+                        &state.0,
+                        &mut state.1,
+                        Pane::Document,
+                        None,
+                        Some(InsertTarget {
+                            document_revision: 7,
+                            table: "Items".into(),
+                        }),
+                    ));
+                },
+                (data, selection, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run();
+        if offered {
+            harness
+                .get_by_role_and_label(Role::Button, "New row")
+                .click_accesskit();
+            harness.run();
+            assert!(matches!(
+                harness.state().2.as_slice(),
+                [Action::BeginInsert { target: actual }] if actual == &target
+            ));
+        } else {
+            assert!(
+                harness
+                    .query_by_role_and_label(Role::Button, "New row")
+                    .is_none()
+            );
+            assert!(harness.state().2.is_empty());
+        }
+        assert_eq!(harness.state().0.rows.len(), rows);
+        assert_eq!(harness.state().1.position(), selected);
+        assert_eq!(harness.state().0.parent_ordinal(rows), None);
+    }
 }
