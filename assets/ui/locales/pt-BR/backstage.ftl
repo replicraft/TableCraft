@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ Voltar
+backstage-home = Página Inicial
+backstage-new = Novo
+backstage-open = Abrir
+backstage-info = Informações
+backstage-save = Salvar
+backstage-save-as = Salvar Como
+backstage-print = Imprimir
+backstage-close = Fechar
+backstage-account = Conta
+backstage-options = Opções
+backstage-about = Sobre
+backstage-open-title = Abrir um banco de dados local do Access
+backstage-path = Caminho do banco de dados
+backstage-path-hint = Caminho para .accdb ou .mdb
+backstage-browse = Procurar…
+backstage-password = Senha
+backstage-password-hint = Senha opcional
+backstage-open-database = Abrir banco de dados
+backstage-stable-copy-help = Abra uma cópia estável ou feche outros aplicativos que estejam gravando no banco de dados.
+backstage-read-only-help = Abrir não altera o arquivo. Edições offline exigem revisão e aplicação explícitas.
+backstage-about-title = Sobre o TableCraft
+backstage-about-description = Um ambiente de trabalho do Access multiplataforma. Prévia para desktop.
+backstage-font-credit = Selawik regular · © 2015 Microsoft Corporation
+backstage-font-source = Origem da fonte: Microsoft Selawik 1.01
+backstage-font-license = Licença da Selawik
+backstage-recent = Bancos de dados recentes
+backstage-computer = Este computador
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = Origem da fonte: Noto Sans CJK 2.004
+backstage-noto-license = Licença do Noto Sans CJK
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = Origem dos ícones: Microsoft Fluent UI System Icons
+backstage-icons-license = Licença dos Fluent UI System Icons (MIT)

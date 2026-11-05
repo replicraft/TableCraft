@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ Назад
+backstage-home = Главная
+backstage-new = Создать
+backstage-open = Открыть
+backstage-info = Сведения
+backstage-save = Сохранить
+backstage-save-as = Сохранить как
+backstage-print = Печать
+backstage-close = Закрыть
+backstage-account = Учётная запись
+backstage-options = Параметры
+backstage-about = О программе
+backstage-open-title = Открыть локальную базу данных Access
+backstage-path = Путь к базе данных
+backstage-path-hint = Путь к файлу .accdb или .mdb
+backstage-browse = Обзор…
+backstage-password = Пароль
+backstage-password-hint = Необязательный пароль
+backstage-open-database = Открыть базу данных
+backstage-stable-copy-help = Откройте стабильную копию или закройте другие приложения, записывающие в базу данных.
+backstage-read-only-help = Открытие не изменяет файл. Автономные изменения требуют явной проверки и применения.
+backstage-about-title = О программе TableCraft
+backstage-about-description = Кроссплатформенная рабочая среда Access. Предварительная версия для компьютера.
+backstage-font-credit = Selawik Regular · © 2015 Microsoft Corporation
+backstage-font-source = Источник шрифта: Microsoft Selawik 1.01
+backstage-font-license = Лицензия Selawik
+backstage-recent = Последние базы данных
+backstage-computer = Этот компьютер
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = Источник шрифта: Noto Sans CJK 2.004
+backstage-noto-license = Лицензия Noto Sans CJK
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = Источник значков: Microsoft Fluent UI System Icons
+backstage-icons-license = Лицензия Fluent UI System Icons (MIT)
