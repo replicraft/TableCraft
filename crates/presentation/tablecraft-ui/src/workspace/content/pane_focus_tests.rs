@@ -38,6 +38,50 @@ fn scroll_away(harness: &mut Harness<'_, State>, position: egui::Pos2) {
     harness.run();
 }
 
+fn expand_rows(harness: &mut Harness<'_, State>, query: bool) {
+    let state = harness.state_mut();
+    let data = if query {
+        state.query_data.as_mut().unwrap()
+    } else {
+        state.data.as_mut().unwrap()
+    };
+    data.rows = (0..200)
+        .map(|row| {
+            data.columns
+                .iter()
+                .map(|_| Cell::scalar(format!("row {row}")))
+                .collect()
+        })
+        .collect();
+    harness.run();
+}
+
+fn expand_fields(harness: &mut Harness<'_, State>) {
+    let schema = harness.state_mut().schema.as_mut().unwrap();
+    schema.fields = (0..200)
+        .map(|number| crate::Field {
+            name: format!("Focus field {number}"),
+            number,
+            native_type: 4,
+            storage_bytes: 4,
+            fixed: true,
+            flags: 0,
+            extended_flags: 0,
+            scalar_type: Some("Int32".into()),
+            display_type: None,
+            field_size: None,
+            reader_nullable: None,
+            decimal_parameters: None,
+            complex_type_id: None,
+            properties: vec![crate::FieldProperty {
+                name: "Caption",
+                value: crate::FieldPropertyValue::Text("Literal readonly property".into()),
+            }],
+        })
+        .collect();
+    harness.run();
+}
+
 #[test]
 fn pane_entry_reveals_offscreen_selected_cell_or_record_without_changing_selection() {
     for query in [false, true] {
@@ -47,21 +91,7 @@ fn pane_entry_reveals_offscreen_selected_cell_or_record_without_changing_selecti
             } else {
                 Scene::Datasheet
             });
-            let state = harness.state_mut();
-            let data = if query {
-                state.query_data.as_mut().unwrap()
-            } else {
-                state.data.as_mut().unwrap()
-            };
-            data.rows = (0..200)
-                .map(|row| {
-                    data.columns
-                        .iter()
-                        .map(|_| Cell::scalar(format!("row {row}")))
-                        .collect()
-                })
-                .collect();
-            harness.run();
+            expand_rows(&mut harness, query);
             let first = harness.get_all_by_role(Role::RowHeader).next().unwrap();
             let first_label = first.accesskit_node().label().unwrap();
             let position = first.rect().center() + egui::vec2(100.0, 0.0);
@@ -112,29 +142,7 @@ fn pane_entry_reveals_offscreen_selected_cell_or_record_without_changing_selecti
 #[test]
 fn compact_design_pane_entry_reveals_selected_field_and_focuses_readonly_property() {
     let mut harness = harness(Scene::Design);
-    let schema = harness.state_mut().schema.as_mut().unwrap();
-    schema.fields = (0..200)
-        .map(|number| crate::Field {
-            name: format!("Focus field {number}"),
-            number,
-            native_type: 4,
-            storage_bytes: 4,
-            fixed: true,
-            flags: 0,
-            extended_flags: 0,
-            scalar_type: Some("Int32".into()),
-            display_type: None,
-            field_size: None,
-            reader_nullable: None,
-            decimal_parameters: None,
-            complex_type_id: None,
-            properties: vec![crate::FieldProperty {
-                name: "Caption",
-                value: crate::FieldPropertyValue::Text("Literal readonly property".into()),
-            }],
-        })
-        .collect();
-    harness.run();
+    expand_fields(&mut harness);
     let position = harness.get_by_label("Focus field 0").rect().center();
     scroll_away(&mut harness, position);
     assert!(harness.query_by_label("Focus field 0").is_none());
@@ -191,4 +199,67 @@ fn newer_navigation_focus_after_read_failure_supersedes_deferred_pane_entry() {
     );
     assert!(harness.state().pane_focus_entry.is_none());
     assert_eq!(harness.state().table_selection.position(), Some((0, 0)));
+}
+
+#[test]
+fn newer_navigation_focus_supersedes_materializing_cell_record_and_field_entry() {
+    for scene in [Scene::Datasheet, Scene::Design] {
+        for record in [false, true] {
+            if scene == Scene::Design && record {
+                continue;
+            }
+            let mut harness = harness(scene);
+            let position = if scene == Scene::Design {
+                expand_fields(&mut harness);
+                harness.get_by_label("Focus field 0").rect().center()
+            } else {
+                expand_rows(&mut harness, false);
+                let row = harness.get_all_by_role(Role::RowHeader).next().unwrap();
+                let position = row.rect().center() + egui::vec2(100.0, 0.0);
+                if record {
+                    row.click();
+                    harness.run();
+                }
+                position
+            };
+            scroll_away(&mut harness, position);
+            harness.get_by_role_and_label(Role::Tab, "Home").focus();
+            harness.run();
+            harness.event(Event::Key {
+                key: Key::F6,
+                physical_key: None,
+                pressed: true,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            });
+            harness.step();
+            assert!(harness.state().pane_focus_entry.is_some());
+            harness.step();
+            assert!(harness.state().pane_focus_entry.is_none());
+            if scene == Scene::Design {
+                assert!(
+                    harness.state().design_focus_pending.is_some(),
+                    "field reveal still awaits its actual response"
+                );
+            }
+            harness
+                .get_by_role_and_label(Role::TextInput, "Search objects")
+                .focus();
+            harness.run();
+            assert!(
+                harness
+                    .get_by_role_and_label(Role::TextInput, "Search objects")
+                    .is_focused(),
+                "newer Navigation focus must win during {} materialization",
+                scene.as_str()
+            );
+            if scene == Scene::Design {
+                assert_eq!(harness.state().selected_field, 0);
+                assert!(harness.state().design_focus_pending.is_none());
+            } else {
+                assert_eq!(harness.state().table_selection.position(), Some((0, 0)));
+                assert_eq!(harness.state().table_selection.row_selected(), record);
+            }
+        }
+    }
 }

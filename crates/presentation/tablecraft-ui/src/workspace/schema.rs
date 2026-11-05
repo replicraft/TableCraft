@@ -46,6 +46,8 @@ pub(super) struct PaneEntry {
     field_name: String,
     started_frame: u64,
     last_frame: u64,
+    // Comparison only; this identifier is never restored as a focus target.
+    focus_witness: Option<Id>,
 }
 
 impl State {
@@ -69,6 +71,7 @@ impl State {
             field_name: field.name.clone(),
             started_frame: frame,
             last_frame: frame,
+            focus_witness: context.memory(|memory| memory.focused()),
         });
     }
 
@@ -77,7 +80,8 @@ impl State {
         let schema = self.schema.as_ref()?;
         let field = schema.fields.get(self.selected_field)?;
         let frame = context.cumulative_frame_nr();
-        let current = self.view == DocumentView::Design
+        let current = context.memory(|memory| memory.focused()) == entry.focus_witness
+            && self.view == DocumentView::Design
             && entry.publication == self.focus_publication
             && entry.document_revision
                 == self
