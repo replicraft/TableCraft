@@ -14,7 +14,7 @@ pub use contents::{CollectionKind, ContentsTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
 pub use records::RecordTarget;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
-pub use schema::{Field, Schema};
+pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 
 use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;

@@ -7,6 +7,7 @@ mod display;
 mod document;
 #[cfg(feature = "offline-edit")]
 mod editing;
+mod native_properties;
 mod query;
 mod rows;
 mod saved;
@@ -29,7 +30,7 @@ pub use saved::{
     MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
     SavedQuery, SavedQueryTarget,
 };
-pub use schema::Field;
+pub use schema::{Field, FieldProperty, FieldPropertyValue};
 pub use worker::Worker;
 
 use std::path::PathBuf;

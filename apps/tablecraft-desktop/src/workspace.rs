@@ -7,8 +7,8 @@ use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, Field, RecordTarget, SavedQuery, SavedQueryTarget,
-    Schema, State, Table,
+    Action, ContentsTarget, Data, Database, RecordTarget, SavedQuery, SavedQueryTarget, Schema,
+    State, Table,
 };
 use zeroize::Zeroize;
 
@@ -177,22 +177,7 @@ impl Desktop {
                 }) => self.state.set_schema(Schema {
                     table,
                     declared_rows,
-                    fields: fields
-                        .into_iter()
-                        .map(|field| Field {
-                            name: field.name,
-                            number: field.number,
-                            native_type: field.native_type,
-                            storage_bytes: field.storage_bytes,
-                            fixed: field.fixed,
-                            flags: field.flags,
-                            extended_flags: field.extended_flags,
-                            scalar_type: field.scalar_type,
-                            reader_nullable: field.reader_nullable,
-                            decimal_parameters: field.decimal_parameters,
-                            complex_type_id: field.complex_type_id,
-                        })
-                        .collect(),
+                    fields: crate::view_models::fields(fields),
                 }),
                 Ok(Response::Opened {
                     document_revision,

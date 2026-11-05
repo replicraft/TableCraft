@@ -27,13 +27,44 @@ file-open/read call must return before a cooperative cancellation check can run.
 | --- | --- |
 | Open | Inert catalog and format; a failed replacement clears the old session |
 | Page | One buffered table page with typed scalar/stored-field cells |
-| Describe | Field declarations and reader facts, without user-record scans |
+| Describe | Field declarations, reader facts and inert field-property observations, without user-record scans |
 | InspectCollection | Complete stored children of one revision-bound native parent cell |
 | Query | Explicit read-query result over the selected source; no implicit provider opens |
 
-Describe's reader NULL policy is separate from Required/default/validation
-properties, which it does not inspect. Unknown field declarations remain visible.
-Metadata does not establish whole-table readability or permission to write.
+Describe's reader NULL policy stays separate from its stored Required/default/
+validation observations. Unknown field declarations remain visible. Metadata does
+not establish whole-table readability or permission to write.
+
+## Read-only Table Design properties
+
+Describe now preflights the actual catalog property carrier, inspects the target's
+complete native property map and binds its exact object ID to the table schema.
+Those native operations share one cumulative allowance. The same preflight and
+binding owner serves ordinary Page reads; it does not open user records or execute
+property text.
+
+Each field retains observations for Required, AllowZeroLength, DefaultValue,
+ValidationRule, ValidationText, Description and Caption. A missing carrier is
+`Uninspected`; a completed field map without a key is `Absent`. These states are
+distinct from an explicit false Boolean or empty text. Unknown flags/carriers
+are `Unsupported`, rather than fabricated defaults. Qualified Boolean properties
+use their one-byte native accessor; a wrong width fails the operation. Text and
+Memo declarations with the native DDL flag remain original, inert text.
+
+Field-level scope and original field names govern association. An index property
+map with the same name is not a substitute. Descriptor envelopes, each selected
+property vector and all copied text consume the descriptor publication budget;
+iteration, comparisons and cancellation remain checked. Partial descriptors are
+never published after failure.
+
+The stored declarations explain the read-only property sheet. They do not
+evaluate defaults or validation, enforce Required, confer edit authority or change
+reader nullability. Microsoft's [Required workflow](https://support.microsoft.com/en-us/access/require-a-value-in-a-field),
+[default-value guidance](https://support.microsoft.com/en-us/access/set-default-values-for-fields-or-controls)
+and [validation guidance](https://support.microsoft.com/en-us/access/restrict-data-input-by-using-validation-rules)
+describe the corresponding application behaviors; those behaviors remain separate
+from inert inspection. See the [native property contract](../access/schema/NATIVE_PROPERTIES.md)
+for type, framing and preservation boundaries.
 
 ## Table cells and stored collections
 

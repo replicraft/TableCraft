@@ -2,9 +2,48 @@
 use tablecraft_runtime::{
     Cell as RuntimeCell, CellKind as RuntimeKind, CollectionKind as RuntimeCollectionKind,
     Column as RuntimeColumn, ContentsTarget as RuntimeContentsTarget,
-    DisplayControl as RuntimeDisplayControl,
+    DisplayControl as RuntimeDisplayControl, Field as RuntimeField,
+    FieldPropertyValue as RuntimeFieldPropertyValue,
 };
-use tablecraft_ui::{Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl};
+use tablecraft_ui::{
+    Cell, CellKind, CollectionKind, Column, ContentsTarget, DisplayControl, Field, FieldProperty,
+    FieldPropertyValue,
+};
+
+pub(super) fn fields(fields: Vec<RuntimeField>) -> Vec<Field> {
+    fields
+        .into_iter()
+        .map(|field| Field {
+            name: field.name,
+            number: field.number,
+            native_type: field.native_type,
+            storage_bytes: field.storage_bytes,
+            fixed: field.fixed,
+            flags: field.flags,
+            extended_flags: field.extended_flags,
+            scalar_type: field.scalar_type,
+            reader_nullable: field.reader_nullable,
+            decimal_parameters: field.decimal_parameters,
+            complex_type_id: field.complex_type_id,
+            properties: field
+                .properties
+                .into_iter()
+                .map(|property| FieldProperty {
+                    name: property.name,
+                    value: match property.value {
+                        RuntimeFieldPropertyValue::Uninspected => FieldPropertyValue::Uninspected,
+                        RuntimeFieldPropertyValue::Absent => FieldPropertyValue::Absent,
+                        RuntimeFieldPropertyValue::Boolean(value) => {
+                            FieldPropertyValue::Boolean(value)
+                        }
+                        RuntimeFieldPropertyValue::Text(value) => FieldPropertyValue::Text(value),
+                        RuntimeFieldPropertyValue::Unsupported => FieldPropertyValue::Unsupported,
+                    },
+                })
+                .collect(),
+        })
+        .collect()
+}
 
 pub(super) fn columns(columns: Vec<RuntimeColumn>) -> Vec<Column> {
     columns

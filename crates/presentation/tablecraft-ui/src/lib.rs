@@ -11,8 +11,8 @@ pub use columns::Column;
 pub use theme::configure;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, Data, Database, EditDraft, EditInput, EditReview,
-    EditSaveOutcome, EditTarget, Field, ParameterInput, ParameterSpec, RecordTarget, SavedQuery,
-    SavedQueryTarget, Schema, State, Table,
+    EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue, ParameterInput,
+    ParameterSpec, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 
 #[cfg(test)]
