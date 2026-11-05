@@ -1,5 +1,14 @@
 # Implementation status
 
+## Sparse native row identity — 5 November 2026
+
+Shared datasheets now distinguish visible positions from checked native snapshot
+ordinals. Ordered immutable maps drive cell edits, deletion, collections and
+reverse lookups; invalid maps retain the preceding publication and query results
+cannot gain native identity. Four focused identity tests, six record-navigation
+tests and strict UI Clippy passed. This is the identity prerequisite for native
+filtering, not a claim that all filtering workflows are complete.
+
 ## Native Find and complete-value Zoom — 5 November 2026
 
 Home Find now searches the complete admitted native table through checked EOF,

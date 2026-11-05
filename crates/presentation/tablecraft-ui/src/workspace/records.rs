@@ -1,4 +1,4 @@
-//! Record positions are native snapshot ordinals, never stored row identities.
+//! Visible record positions remain distinct from native snapshot ordinals.
 use super::ribbon::{CommandSize, Icon, command};
 use super::{Action, Data, DocumentView, State};
 use crate::localization::tr;
@@ -17,6 +17,15 @@ pub(super) struct RecordNavigation {
     pending: Option<Pending>,
     input: String,
     error: Option<String>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct RecordPositions {
+    current: u32,
+    first: Option<u32>,
+    previous: Option<u32>,
+    next: Option<u32>,
+    last: Option<u32>,
 }
 
 struct Pending {
@@ -39,18 +48,25 @@ impl State {
             && self.data.as_ref().is_some_and(|data| {
                 data.source_revision == Some(target.document_revision)
                     && data.table == target.table
+                    && data.validate_row_ordinals().is_ok()
                     && data.column_index(&target.column).is_some()
             })
     }
 
     /// Host preflight before replacing any latest-wins read request.
     pub fn can_navigate_record(&self, target: &RecordTarget) -> bool {
-        !self.busy && self.records.pending.is_none() && self.record_source_matches(target)
+        !self.busy
+            && self.records.pending.is_none()
+            && self.record_source_matches(target)
+            && self
+                .data
+                .as_ref()
+                .is_some_and(|data| data.row_ordinals.is_none())
     }
 
     /// Bind a request accepted by the host without discarding the current page.
     pub fn begin_record_navigation(&mut self, target: RecordTarget, request_id: u64) {
-        if self.records.pending.is_none() && self.record_source_matches(&target) {
+        if self.can_navigate_record(&target) {
             self.records.pending = Some(Pending { request_id, target });
             self.records.error = None;
         }
@@ -66,7 +82,11 @@ impl State {
             return false;
         }
         self.records.pending = None;
-        if data.source_revision != Some(target.document_revision) || data.table != target.table {
+        if data.source_revision != Some(target.document_revision)
+            || data.table != target.table
+            || data.row_ordinals.is_some()
+            || data.validate_row_ordinals().is_err()
+        {
             self.records.error = Some(self.localizer.text("datasheet-wrong-source"));
             return false;
         }
@@ -78,14 +98,11 @@ impl State {
             self.records.error = Some(self.localizer.text("datasheet-missing-column"));
             return false;
         }
-        let position = target
-            .parent_ordinal
-            .checked_sub(data.offset)
-            .and_then(|row| {
-                let column = data.column_index(&target.column)?;
-                data.rows.get(row as usize)?.get(column)?;
-                Some((row as usize, column))
-            });
+        let position = data.row_index(target.parent_ordinal).and_then(|row| {
+            let column = data.column_index(&target.column)?;
+            data.rows.get(row)?.get(column)?;
+            Some((row, column))
+        });
         let Some((row, column)) = position else {
             self.records.error = Some(if !data.has_more {
                 self.localizer.text("datasheet-missing-record")
@@ -124,7 +141,7 @@ impl State {
         let target = RecordTarget {
             document_revision: data.source_revision?,
             table: data.table.clone(),
-            parent_ordinal: data.offset.checked_add(u32::try_from(row).ok()?)?,
+            parent_ordinal: data.parent_ordinal(row)?,
             column: data.columns.get(column)?.name.clone(),
         };
         self.record_source_matches(&target).then_some(target)
@@ -135,20 +152,79 @@ impl State {
             return;
         }
         let data = self.data.as_ref().expect("admitted native source");
-        let position = target
-            .parent_ordinal
-            .checked_sub(data.offset)
-            .and_then(|row| {
-                let column = data.column_index(&target.column)?;
-                data.rows.get(row as usize)?.get(column)?;
-                Some((row as usize, column))
-            });
+        let position = data.row_index(target.parent_ordinal).and_then(|row| {
+            let column = data.column_index(&target.column)?;
+            data.rows.get(row)?.get(column)?;
+            Some((row, column))
+        });
         if let Some((row, column)) = position {
             self.table_selection.select(data, row, column);
             self.records.error = None;
         } else {
             actions.push(Action::NavigateRecord { target });
         }
+    }
+
+    fn request_display_record(
+        &mut self,
+        current: RecordTarget,
+        display_ordinal: u32,
+        actions: &mut Vec<Action>,
+    ) {
+        if self.busy || self.records.pending.is_some() || !self.record_source_matches(&current) {
+            return;
+        }
+        let data = self.data.as_ref().expect("admitted native page");
+        if data.row_ordinals.is_none() {
+            self.request_record(
+                RecordTarget {
+                    parent_ordinal: display_ordinal,
+                    ..current
+                },
+                actions,
+            );
+            return;
+        }
+
+        let position = display_ordinal.checked_sub(data.offset).and_then(|row| {
+            let row = usize::try_from(row).ok()?;
+            let column = data.column_index(&current.column)?;
+            data.rows.get(row)?.get(column)?;
+            Some((row, column))
+        });
+        if let Some((row, column)) = position {
+            self.table_selection.select(data, row, column);
+            self.records.error = None;
+        } else {
+            self.records.error = Some(self.localizer.text("datasheet-filter-page-unavailable"));
+        }
+    }
+
+    fn record_positions(&self) -> Option<RecordPositions> {
+        let data = self.data.as_ref()?;
+        let (row, _) = self.table_selection.position()?;
+        let current = data.display_ordinal(row)?;
+        let mapped = data.row_ordinals.is_some();
+        let first = (current > 0 && (!mapped || data.offset == 0)).then_some(0);
+        let previous = current.checked_sub(1).filter(|_| !mapped || row > 0);
+        let next = current
+            .checked_add(1)
+            .filter(|_| row + 1 < data.rows.len() || (!mapped && data.has_more));
+        let last = if data.has_more {
+            None
+        } else {
+            data.rows
+                .len()
+                .checked_sub(1)
+                .and_then(|row| data.display_ordinal(row))
+        };
+        Some(RecordPositions {
+            current,
+            first,
+            previous,
+            next,
+            last: last.filter(|last| *last != current),
+        })
     }
 
     pub(super) fn can_select_record(&self) -> bool {
@@ -166,6 +242,7 @@ impl State {
         match self.view {
             DocumentView::Table => {
                 self.records.pending.is_none()
+                    && data.validate_row_ordinals().is_ok()
                     && self.database.as_ref().is_some_and(|database| {
                         data.source_revision == Some(database.document_revision)
                     })
@@ -206,9 +283,9 @@ impl State {
 
     pub(super) fn record_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let current = self.selected_record_target();
-        let enabled = current
-            .as_ref()
-            .is_some_and(|target| self.can_navigate_record(target));
+        let enabled = current.as_ref().is_some_and(|target| {
+            !self.busy && self.records.pending.is_none() && self.record_source_matches(target)
+        });
         let response = command(
             ui,
             Icon::GoTo,
@@ -223,28 +300,20 @@ impl State {
         }
 
         let current = current.expect("enabled native record");
-        let data = self.data.as_ref().expect("selected native page");
-        let end = u64::from(data.offset) + data.rows.len() as u64;
-        let next = current
-            .parent_ordinal
-            .checked_add(1)
-            .filter(|next| data.has_more || u64::from(*next) < end);
-        let last = if data.has_more {
-            None
-        } else {
-            end.checked_sub(1).and_then(|last| u32::try_from(last).ok())
-        };
-        let previous = current.parent_ordinal.checked_sub(1);
+        let RecordPositions {
+            first,
+            previous,
+            next,
+            last,
+            ..
+        } = self.record_positions().expect("selected position");
         let mut destination = None;
         Popup::menu(&response).show(|ui| {
             for (key, target) in [
-                ("datasheet-first", (current.parent_ordinal > 0).then_some(0)),
+                ("datasheet-first", first),
                 ("datasheet-previous", previous),
                 ("datasheet-next", next),
-                (
-                    "datasheet-last",
-                    last.filter(|last| *last != current.parent_ordinal),
-                ),
+                ("datasheet-last", last),
             ] {
                 if ui
                     .add_enabled(target.is_some(), egui::Button::new(tr(ui, key)))
@@ -268,14 +337,8 @@ impl State {
             node.set_has_popup(HasPopup::Menu);
             node.set_expanded(expanded);
         });
-        if let Some(parent_ordinal) = destination {
-            self.request_record(
-                RecordTarget {
-                    parent_ordinal,
-                    ..current
-                },
-                actions,
-            );
+        if let Some(display_ordinal) = destination {
+            self.request_display_record(current, display_ordinal, actions);
         }
     }
 
@@ -348,36 +411,39 @@ impl State {
             return;
         };
         let idle = !self.busy && self.records.pending.is_none();
-        let data = self.data.as_ref().expect("selected native page");
-        let last_loaded = u64::from(data.offset) + data.rows.len() as u64;
-        let next = current.parent_ordinal.checked_add(1);
-        let next_exists = next.is_some_and(|next| data.has_more || u64::from(next) < last_loaded);
+        let RecordPositions {
+            current: position,
+            first,
+            previous,
+            next,
+            ..
+        } = self.record_positions().expect("selected position");
         let mut destination = None;
 
         ui.horizontal(|ui| {
             ui.label(tr(ui, "datasheet-record"));
             if ui
                 .add_enabled(
-                    idle && current.parent_ordinal > 0,
+                    idle && first.is_some(),
                     egui::Button::new(tr(ui, "datasheet-first")),
                 )
                 .clicked()
             {
-                destination = Some(0);
+                destination = first;
             }
             if ui
                 .add_enabled(
-                    idle && current.parent_ordinal > 0,
+                    idle && previous.is_some(),
                     egui::Button::new(tr(ui, "datasheet-previous")),
                 )
                 .clicked()
             {
-                destination = current.parent_ordinal.checked_sub(1);
+                destination = previous;
             }
-            ui.label((u64::from(current.parent_ordinal) + 1).to_string());
+            ui.label((u64::from(position) + 1).to_string());
             if ui
                 .add_enabled(
-                    idle && next_exists,
+                    idle && next.is_some(),
                     egui::Button::new(tr(ui, "datasheet-next")),
                 )
                 .clicked()
@@ -395,14 +461,8 @@ impl State {
         if let Some(error) = &self.records.error {
             ui.label(error);
         }
-        if let Some(parent_ordinal) = destination {
-            self.request_record(
-                RecordTarget {
-                    parent_ordinal,
-                    ..current
-                },
-                actions,
-            );
+        if let Some(display_ordinal) = destination {
+            self.request_display_record(current, display_ordinal, actions);
         }
     }
 }

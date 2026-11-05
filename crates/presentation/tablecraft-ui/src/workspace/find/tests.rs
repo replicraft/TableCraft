@@ -33,6 +33,7 @@ fn state() -> State {
 
 fn page(offset: u32) -> Data {
     Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "People".into(),
         offset,

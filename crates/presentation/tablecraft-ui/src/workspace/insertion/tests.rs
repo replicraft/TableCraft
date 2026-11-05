@@ -22,6 +22,7 @@ fn state() -> (State, InsertTarget) {
         queries: Vec::new(),
     });
     state.set_table_data(Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Empty table".into(),
         offset: 0,

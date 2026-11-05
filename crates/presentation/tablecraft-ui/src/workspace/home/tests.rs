@@ -98,6 +98,7 @@ fn click_at(
 
 fn table() -> Data {
     Data {
+        row_ordinals: None,
         source_revision: Some(4),
         table: "Contacts".into(),
         offset: 100,

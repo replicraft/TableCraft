@@ -102,6 +102,11 @@ fn render_rows(
     selection: &mut Selection,
     view: RowView,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
+    if data.validate_row_ordinals().is_err() {
+        return ScrollArea::both().show(ui, |ui| {
+            ui.label(tr(ui, "datasheet-row-identity-invalid"));
+        });
+    }
     let collection_layout = view.collection;
     let pane = view.pane;
     selection.prepare(ui, data);
@@ -176,7 +181,9 @@ fn render_rows(
                         body.rows(DATA_ROW_HEIGHT * scale, data.rows.len(), |mut row| {
                             let index = row.index();
                             row_drawn(index);
-                            let number = u64::from(data.offset) + index as u64 + 1;
+                            let number = data
+                                .display_ordinal(index)
+                                .map_or(0, |ordinal| u64::from(ordinal) + 1);
                             row.col(|ui| {
                                 grid_cell(ui, true);
                                 if ui.is_enabled() && selection.row() == Some(index) {

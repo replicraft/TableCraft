@@ -54,3 +54,6 @@ datasheet-sort-column = Сортировать { $column }
 datasheet-last = Последняя
 
 datasheet-value-preview-truncated = Предпросмотр сокращён. Копирование сохраняет полное отображаемое значение.
+
+datasheet-row-identity-invalid = Идентификаторы записей не соответствуют этой странице.
+datasheet-filter-page-unavailable = Здесь доступны только загруженные отфильтрованные записи.

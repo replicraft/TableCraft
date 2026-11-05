@@ -27,6 +27,7 @@ fn policy_changes_and_new_publications_format_typed_cells_and_keep_copy_text_lit
     let mut typed = Cell::scalar("old host display text");
     typed.presentation = Some(money(12_345_678));
     let page = |typed| Data {
+        row_ordinals: None,
         source_revision: Some(1),
         table: "Items".into(),
         offset: 0,

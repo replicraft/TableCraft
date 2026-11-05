@@ -13,6 +13,7 @@ fn state() -> (State, EditTarget) {
         tables: vec![],
     });
     state.set_table_data(Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),
         offset: 100,

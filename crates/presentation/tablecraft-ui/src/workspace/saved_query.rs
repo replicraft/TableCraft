@@ -211,7 +211,11 @@ impl State {
         {
             return false;
         }
-        if data.source_revision.is_some() || data.offset != 0 || data.has_more {
+        if data.source_revision.is_some()
+            || data.row_ordinals.is_some()
+            || data.offset != 0
+            || data.has_more
+        {
             self.saved_query.pending = None;
             self.saved_query.error = Some(self.localizer.text("saved-query-incomplete-reply"));
             return false;

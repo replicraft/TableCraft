@@ -99,6 +99,7 @@ mod tests {
         assert_eq!(
             row_text(
                 &Data {
+                    row_ordinals: None,
                     source_revision: None,
                     table: "Result".into(),
                     offset: 0,

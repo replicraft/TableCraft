@@ -125,7 +125,7 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
     ui.horizontal(|ui| {
         if ui
             .add_enabled(
-                !busy && data.offset > 0,
+                !busy && data.row_ordinals.is_none() && data.offset > 0,
                 egui::Button::new(tr(ui, "datasheet-previous-page")),
             )
             .clicked()
@@ -157,7 +157,7 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
         let next_offset = data.offset.checked_add(100);
         if ui
             .add_enabled(
-                !busy && data.has_more && next_offset.is_some(),
+                !busy && data.row_ordinals.is_none() && data.has_more && next_offset.is_some(),
                 egui::Button::new(tr(ui, "datasheet-next-page")),
             )
             .clicked()

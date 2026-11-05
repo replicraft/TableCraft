@@ -91,7 +91,7 @@ impl Data {
             document_revision: self.source_revision?,
             table: self.table.clone(),
             column: self.columns.get(column)?.name.clone(),
-            parent_ordinal: self.offset.checked_add(u32::try_from(row).ok()?)?,
+            parent_ordinal: self.parent_ordinal(row)?,
         })
     }
 }
@@ -124,7 +124,7 @@ impl State {
         let Some(data) = &self.data else {
             return false;
         };
-        let Some(row) = target.parent_ordinal.checked_sub(data.offset) else {
+        let Some(row) = data.row_index(target.parent_ordinal) else {
             return false;
         };
         let Some(column) = data.column_index(&target.column) else {
@@ -134,7 +134,7 @@ impl State {
             && data.table == target.table
             && data
                 .rows
-                .get(row as usize)
+                .get(row)
                 .and_then(|row| row.get(column))
                 .is_some_and(|cell| {
                     matches!(

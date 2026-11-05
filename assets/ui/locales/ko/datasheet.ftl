@@ -54,3 +54,6 @@ datasheet-sort-column = { $column } 정렬
 datasheet-last = 마지막
 
 datasheet-value-preview-truncated = 미리 보기가 축약되었습니다. 복사하면 표시 값 전체가 유지됩니다.
+
+datasheet-row-identity-invalid = 레코드 식별 정보가 이 페이지와 일치하지 않습니다.
+datasheet-filter-page-unavailable = 여기서는 로드된 필터링 레코드만 사용할 수 있습니다.

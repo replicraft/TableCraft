@@ -54,3 +54,6 @@ datasheet-sort-column = { $column } を並べ替え
 datasheet-last = 最後
 
 datasheet-value-preview-truncated = プレビューを省略しています。コピーでは表示用の値全体を保持します。
+
+datasheet-row-identity-invalid = レコードの識別情報がこのページと一致しません。
+datasheet-filter-page-unavailable = ここでは読み込み済みのフィルターされたレコードのみ利用できます。

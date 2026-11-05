@@ -54,3 +54,6 @@ datasheet-sort-column = 对 { $column } 排序
 datasheet-last = 最后一条
 
 datasheet-value-preview-truncated = 预览已缩短。复制会保留完整的显示值。
+
+datasheet-row-identity-invalid = 记录标识与此页不匹配。
+datasheet-filter-page-unavailable = 此处仅可访问已加载的筛选记录。
