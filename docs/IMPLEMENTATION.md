@@ -23,6 +23,11 @@ existing saved-read execution service. Saved/SQL results retain distinct slots,
 and neither grants native record/edit/collection capabilities.
 Typed Yes/No cells now honor explicit native checkbox declarations while keeping
 text-box overrides, uninspected metadata, NULL and cached-result facts separate.
+Qualified Boolean text-box formats and native Caption headers now use inspected
+properties; captions remain separate from field identity. Queries use exact stored
+text-policy identities and qualified database wildcard settings, with unsupported
+policies refused. Complete displayed-record selection and bounded CSV-backed TSV
+copying are available; native paste and broader editing remain unimplemented.
 
 Runtime tests pass actual table/query operations, action refusal, cancellation
 and stale-generation suppression. Table pages also retain typed NULL/cache facts

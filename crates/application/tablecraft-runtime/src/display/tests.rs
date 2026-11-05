@@ -1,5 +1,5 @@
 use super::Presentation;
-use crate::{Cell, CellKind, Error};
+use crate::{Cell, CellKind, Column, Error};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -7,15 +7,21 @@ use tablecraft_core::{
 
 #[test]
 fn column_envelopes_and_header_payloads_share_the_bounded_output_pool() {
-    let envelope = 2 * size_of::<String>() as u64;
+    let envelope = 2 * size_of::<Column>() as u64;
     let mut exact = Presentation {
         work: ResourceBudget::new(envelope + 3, 0, 10),
         cancelled: &|| false,
     };
     let mut columns = exact.columns(2).unwrap();
-    columns.push(exact.text("Id").unwrap());
-    columns.push(exact.text("X").unwrap());
-    assert_eq!(columns, ["Id", "X"]);
+    columns.push(crate::column::plain("Id", &mut exact).unwrap());
+    columns.push(crate::column::plain("X", &mut exact).unwrap());
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id", "X"]
+    );
     assert_eq!(exact.work.remaining(Resource::Bytes), 0);
 
     let mut missing_envelope_byte = Presentation {
@@ -36,12 +42,18 @@ fn column_envelopes_and_header_payloads_share_the_bounded_output_pool() {
         cancelled: &|| false,
     };
     let mut columns = missing_payload_byte.columns(2).unwrap();
-    columns.push(missing_payload_byte.text("Id").unwrap());
+    columns.push(crate::column::plain("Id", &mut missing_payload_byte).unwrap());
     assert!(
-        matches!(missing_payload_byte.text("X"), Err(Error::Limit(limit))
+        matches!(crate::column::plain("X", &mut missing_payload_byte), Err(Error::Limit(limit))
         if limit.resource == Resource::Bytes && limit.remaining == 0)
     );
-    assert_eq!(columns, ["Id"]);
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id"]
+    );
 }
 
 #[test]

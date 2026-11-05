@@ -16,7 +16,7 @@ pub use records::RecordTarget;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, Schema};
 
-use super::{Cell, keyboard};
+use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
 use egui::Ui;
 
@@ -41,7 +41,7 @@ pub struct Data {
     pub source_revision: Option<u64>,
     pub table: String,
     pub offset: u32,
-    pub columns: Vec<String>,
+    pub columns: Vec<Column>,
     pub rows: Vec<Vec<Cell>>,
     pub has_more: bool,
 }

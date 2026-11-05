@@ -1,4 +1,5 @@
 mod boolean;
+mod captions;
 mod contents;
 #[cfg(all(
     feature = "offline-edit",
@@ -98,7 +99,13 @@ fn native_sample_pages_and_queries_use_real_services() {
     else {
         panic!("expected data page");
     };
-    assert_eq!(columns, ["Id", "Score"]);
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id", "Score"]
+    );
     assert_eq!(row_texts(&rows), [["1", "10"], ["2", "20"], ["3", "30"]]);
     assert!(!has_more);
 
@@ -115,7 +122,13 @@ fn native_sample_pages_and_queries_use_real_services() {
     else {
         panic!("expected buffered query result");
     };
-    assert_eq!(columns, ["Id", "Score"]);
+    assert_eq!(
+        columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id", "Score"]
+    );
     assert_eq!(row_texts(&rows), [["3", "30"], ["2", "20"]]);
     assert!(!has_more);
     assert!(request(&worker, query("DELETE FROM [Items]")).is_err());

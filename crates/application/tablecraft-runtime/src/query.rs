@@ -77,7 +77,7 @@ pub(super) fn execute<R: NativeReadSource>(
     let mut output = Presentation::new(cancelled);
     let mut columns = output.columns(result.columns().len())?;
     for name in result.columns() {
-        columns.push(output.text(name)?);
+        columns.push(crate::column::plain(name, &mut output)?);
     }
     let mut rows = output.rows(result.rows().len())?;
     for values in result.rows() {

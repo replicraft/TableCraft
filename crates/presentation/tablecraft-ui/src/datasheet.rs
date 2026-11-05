@@ -54,13 +54,18 @@ fn show_rows(
                             grid_cell(ui, true);
                             ui.label(RichText::new("#"));
                         });
-                        for (column, name) in data.columns.iter().enumerate() {
+                        for (index, column) in data.columns.iter().enumerate() {
                             header.col(|ui| {
                                 grid_cell(ui, true);
-                                if ui.is_enabled() && selection.column() == Some(column) {
+                                if ui.is_enabled() && selection.column() == Some(index) {
                                     ui.painter().rect_filled(ui.max_rect(), 0.0, ACTIVE_HEADER);
                                 }
-                                ui.label(RichText::new(name));
+                                let label = ui
+                                    .add(egui::Label::new(RichText::new(column.label())).truncate())
+                                    .on_hover_text(&column.name);
+                                ui.ctx().accesskit_node_builder(label.id, |node| {
+                                    node.set_description(format!("Field name: {}", column.name));
+                                });
                             });
                         }
                     })
@@ -90,7 +95,7 @@ fn show_rows(
                                         };
                                         ui.painter().rect_filled(ui.max_rect(), 0.0, fill);
                                     }
-                                    let response = cell(ui, text, column, number, active);
+                                    let response = cell(ui, text, &column.name, number, active);
                                     selection.observe(ui, index, position, &response);
                                     if ui.is_enabled() && selection.selected(index, position) {
                                         ui.painter().rect_stroke(

@@ -232,7 +232,9 @@ fn horizontal_wheel_and_scrollbar_drag_move_actual_one_and_hundred_row_tables() 
             source_revision: None,
             table: format!("Wide table with {rows} rows"),
             offset: 0,
-            columns: (0..16).map(|column| format!("Column {column}")).collect(),
+            columns: (0..16)
+                .map(|column| format!("Column {column}").into())
+                .collect(),
             rows: (0..rows)
                 .map(|row| {
                     (0..16)
@@ -427,7 +429,9 @@ fn full_cell_click_and_arrows_select_loaded_cells_and_reveal_offscreen_columns_o
         source_revision: Some(7),
         table: "Wide selected table".into(),
         offset: 100,
-        columns: (0..16).map(|column| format!("Field {column}")).collect(),
+        columns: (0..16)
+            .map(|column| format!("Field {column}").into())
+            .collect(),
         rows: (0..100)
             .map(|row| {
                 (0..16)
@@ -523,7 +527,7 @@ fn click_grid_cell(
     let (row, column) = position;
     let name = format!(
         "{}, row {}: {}",
-        data.columns[column],
+        data.columns[column].name,
         u64::from(data.offset) + row as u64 + 1,
         data.rows[row][column].text
     );

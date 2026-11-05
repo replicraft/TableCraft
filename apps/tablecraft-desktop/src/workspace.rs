@@ -235,7 +235,7 @@ impl Desktop {
                         source_revision,
                         table,
                         offset,
-                        columns,
+                        columns: crate::view_models::columns(columns),
                         rows: crate::view_models::rows(rows),
                         has_more,
                     };
@@ -265,7 +265,7 @@ impl Desktop {
                             table: target.column.clone(),
                             source_revision: None,
                             offset: 0,
-                            columns,
+                            columns: crate::view_models::columns(columns),
                             rows: crate::view_models::rows(rows),
                             has_more: false,
                         };

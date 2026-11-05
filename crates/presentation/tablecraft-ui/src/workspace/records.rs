@@ -34,7 +34,7 @@ impl State {
             && self.data.as_ref().is_some_and(|data| {
                 data.source_revision == Some(target.document_revision)
                     && data.table == target.table
-                    && data.columns.contains(&target.column)
+                    && data.column_index(&target.column).is_some()
             })
     }
 
@@ -70,7 +70,7 @@ impl State {
                 Some("The returned page starts at another record position.".into());
             return false;
         }
-        if !data.columns.contains(&target.column) {
+        if data.column_index(&target.column).is_none() {
             self.records.error =
                 Some("The requested column is absent from the returned page.".into());
             return false;
@@ -79,10 +79,7 @@ impl State {
             .parent_ordinal
             .checked_sub(data.offset)
             .and_then(|row| {
-                let column = data
-                    .columns
-                    .iter()
-                    .position(|name| name == &target.column)?;
+                let column = data.column_index(&target.column)?;
                 data.rows.get(row as usize)?.get(column)?;
                 Some((row as usize, column))
             });
@@ -125,7 +122,7 @@ impl State {
             document_revision: data.source_revision?,
             table: data.table.clone(),
             parent_ordinal: data.offset.checked_add(u32::try_from(row).ok()?)?,
-            column: data.columns.get(column)?.clone(),
+            column: data.columns.get(column)?.name.clone(),
         };
         self.record_source_matches(&target).then_some(target)
     }
@@ -139,10 +136,7 @@ impl State {
             .parent_ordinal
             .checked_sub(data.offset)
             .and_then(|row| {
-                let column = data
-                    .columns
-                    .iter()
-                    .position(|name| name == &target.column)?;
+                let column = data.column_index(&target.column)?;
                 data.rows.get(row as usize)?.get(column)?;
                 Some((row as usize, column))
             });

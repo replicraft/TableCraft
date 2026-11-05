@@ -43,7 +43,7 @@ impl Data {
         Some(ContentsTarget {
             document_revision: self.source_revision?,
             table: self.table.clone(),
-            column: self.columns.get(column)?.clone(),
+            column: self.columns.get(column)?.name.clone(),
             parent_ordinal: self.offset.checked_add(u32::try_from(row).ok()?)?,
         })
     }
@@ -74,7 +74,7 @@ impl State {
         else {
             return false;
         };
-        let Some(column) = data.columns.iter().position(|name| name == &target.column) else {
+        let Some(column) = data.column_index(&target.column) else {
             return false;
         };
         data.rows

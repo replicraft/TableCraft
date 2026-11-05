@@ -96,7 +96,23 @@ mod tests {
         .map(Cell::scalar)
         .collect();
         assert_eq!(
-            encode(&values).unwrap_or_else(|error| panic!("{}", error.message())),
+            row_text(
+                &Data {
+                    source_revision: None,
+                    table: "Result".into(),
+                    offset: 0,
+                    columns: (0..values.len())
+                        .map(|index| crate::Column {
+                            name: format!("Raw{index}"),
+                            caption: Some(format!("Caption{index}")),
+                        })
+                        .collect(),
+                    rows: vec![values],
+                    has_more: false,
+                },
+                0
+            )
+            .unwrap_or_else(|error| panic!("{}", error.message())),
             "\tNULL\t2 attachments\t\"tab\there\"\t\"line\r\nnext\"\t\"a\"\"b\"\n"
         );
     }

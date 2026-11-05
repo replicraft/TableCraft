@@ -1,5 +1,6 @@
 //! Shared application sessions and cancellable native read tasks for hosts.
 mod cell;
+mod column;
 mod contents;
 mod controls;
 mod display;
@@ -15,6 +16,7 @@ mod source;
 mod worker;
 
 pub use cell::{Cell, CellKind, DisplayControl};
+pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -167,7 +169,7 @@ pub enum Response {
         target: ContentsTarget,
         kind: CollectionKind,
         assigned: bool,
-        columns: Vec<String>,
+        columns: Vec<Column>,
         rows: Vec<Vec<Cell>>,
     },
     /// Inert declarations. Row totals are unverified; field reader nullability
@@ -188,7 +190,7 @@ pub enum Response {
         source_revision: Option<u64>,
         table: String,
         offset: u32,
-        columns: Vec<String>,
+        columns: Vec<Column>,
         rows: Vec<Vec<Cell>>,
         has_more: bool,
     },

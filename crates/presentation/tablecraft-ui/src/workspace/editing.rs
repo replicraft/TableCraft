@@ -88,7 +88,7 @@ impl Data {
         Some(EditTarget {
             document_revision: self.source_revision?,
             table: self.table.clone(),
-            column: self.columns.get(column)?.clone(),
+            column: self.columns.get(column)?.name.clone(),
             parent_ordinal: self.offset.checked_add(u32::try_from(row).ok()?)?,
         })
     }
@@ -112,11 +112,7 @@ impl State {
         let Some(row) = target.parent_ordinal.checked_sub(data.offset) else {
             return false;
         };
-        let Some(column) = data
-            .columns
-            .iter()
-            .position(|column| column == &target.column)
-        else {
+        let Some(column) = data.column_index(&target.column) else {
             return false;
         };
         data.source_revision == Some(target.document_revision)

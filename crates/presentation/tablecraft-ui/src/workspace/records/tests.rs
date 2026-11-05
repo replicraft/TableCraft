@@ -36,6 +36,7 @@ fn state() -> State {
 #[test]
 fn navigation_keeps_column_and_accepts_only_matching_source_request_and_record() {
     let mut state = state();
+    state.data.as_mut().unwrap().columns[1].caption = Some("Friendly name".into());
     state
         .table_selection
         .select(state.data.as_ref().unwrap(), 99, 1);

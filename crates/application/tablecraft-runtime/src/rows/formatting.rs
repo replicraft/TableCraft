@@ -13,7 +13,7 @@ const TEXT_BOX: i16 = 109;
 
 pub(super) fn apply(
     properties: Option<&TableProperties>,
-    columns: &[String],
+    columns: &[crate::Column],
     rows: &mut [Vec<Cell>],
     output: &mut Presentation<'_>,
 ) -> Result<(), Error> {
@@ -22,7 +22,7 @@ pub(super) fn apply(
     };
     for (column, name) in columns.iter().enumerate() {
         output.work(1)?;
-        let Some((yes, no)) = labels(properties, name, output)? else {
+        let Some((yes, no)) = labels(properties, &name.name, output)? else {
             continue;
         };
         for row in rows.iter_mut() {

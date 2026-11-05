@@ -642,6 +642,29 @@ The focused shared UI suite passes 57 tests, including actual selector/toolbar
 interaction, keyboard event ordering, publication reset, quoting expansion and
 failure atomicity. Native observations are recorded separately below when run.
 
+## Caption headers and native policy follow-up
+
+Native page headers display qualified Text/Memo Caption metadata while retaining
+the original field name in hover/accessibility context and every edit, collection
+and record-navigation target. Duplicate captions cannot redirect those targets.
+An explicitly empty caption remains metadata, with the current header falling
+back to its original name. Query aliases and synthetic child headings inherit no
+native caption. Headerless record TSV is unchanged.
+
+The connected checks pass 60 UI tests, 49 runtime unit tests plus diagnostics with
+editing enabled, 41 standalone read-only runtime tests plus diagnostics, and 20
+desktop tests. Strict engine-library and selected-package checks, native build,
+formatting, dependency boundaries and documentation links pass. These include
+independent Text/Memo property cases, exact column allocation accounting, actual
+header rendering, duplicate-label targets and the thin desktop DTO mapping.
+
+The latest native visual check remains unverified. The preview process was live
+in its AppKit event loop, but the UI tool reported no capturable window; a later
+attempt to inspect the Dock stalled and was interrupted. This is neither proof
+of a rendering regression nor a successful native check. The earlier native
+observations above remain historical evidence for their corresponding builds.
+No new Windows or Access differential comparison is claimed.
+
 ## Saved-query objects and typed parameters
 
 The object pane now lists Tables and Queries from a single inert native catalog
