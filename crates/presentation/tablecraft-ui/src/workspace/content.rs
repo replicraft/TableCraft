@@ -33,14 +33,23 @@ impl State {
                     self.design(ui);
                     return;
                 }
+                if self.view == DocumentView::Table {
+                    self.filter_report(ui);
+                }
                 self.query_editor(ui, actions);
                 if self.view == DocumentView::Table {
                     egui::Panel::bottom("record_navigation").show(ui, |ui| {
+                        if self.active_filter_target().is_some() || self.table_filter_pending() {
+                            ui.horizontal_wrapped(|ui| self.filter_status(ui));
+                        }
                         egui::ScrollArea::horizontal()
                             .id_salt("record_toolbar")
                             .show(ui, |ui| {
                                 ui.horizontal(|ui| {
                                     self.record_navigator(ui, actions);
+                                    if self.filtered_page_navigator(ui, actions) {
+                                        return;
+                                    }
                                     if let Some(data) = &self.data {
                                         ui.separator();
                                         page_navigator(ui, data, self.busy, actions);
@@ -58,10 +67,6 @@ impl State {
                     DocumentView::Design => None,
                 };
                 if let Some(data) = data {
-                    if data.rows.is_empty() {
-                        ui.weak(tr(ui, "datasheet-no-rows"));
-                    }
-
                     let sort_revision = data.source_revision.filter(|revision| {
                         data.columns.first().is_some_and(|column| {
                             self.can_sort_table(*revision, &data.table, &column.name)

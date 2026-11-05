@@ -283,8 +283,10 @@ impl Desktop {
             save.report.map(|report| report.outcome),
             Some(SaveOutcome::Saved { .. })
         ) {
+            let filter_restore = self.retained_filter_after_save(&save.table);
             self.select_file(save.path);
             self.open();
+            self.filter_restore = filter_restore;
             self.editing.refresh = Some((self.generation, save.table, save.offset));
         } else {
             self.state.database = None;
@@ -299,6 +301,9 @@ impl Desktop {
         if let Some((expected, table, offset)) = self.editing.refresh.take()
             && generation == expected
         {
+            if self.restore_filter_after_save(&table) {
+                return true;
+            }
             self.submit(Command::Page { table, offset });
             return true;
         }

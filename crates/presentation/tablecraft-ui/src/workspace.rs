@@ -5,6 +5,7 @@ mod contents;
 mod deletion;
 mod diagnostics;
 mod editing;
+mod filtering;
 mod find;
 pub(crate) mod focus;
 mod home;
@@ -23,6 +24,9 @@ pub(crate) mod zoom;
 pub use contents::{CollectionKind, ContentsTarget};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
+pub use filtering::{
+    FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
+};
 pub use find::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
 };
@@ -106,6 +110,18 @@ pub enum Action {
     },
     BeginEdit {
         target: EditTarget,
+    },
+    FilterSelection {
+        target: FilterSelectionTarget,
+        comparison: FilterComparison,
+    },
+    FilterPage {
+        target: FilterTarget,
+        offset: u32,
+        enabled: bool,
+    },
+    ClearTableFilter {
+        target: FilterTarget,
     },
     FindNext {
         request: FindRequest,
@@ -201,6 +217,7 @@ pub struct State {
     /// Host-qualified formatted-search capability, separate from raw Find.
     pub find_formatted_available: bool,
     find: Option<find::Session>,
+    table_filter: filtering::TableFilter,
     zoom: zoom::Zoom,
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
@@ -250,6 +267,7 @@ impl State {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return;
         }
+        self.reset_table_filter();
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
@@ -456,6 +474,7 @@ impl State {
         self.refresh_edit_display();
         self.refresh_delete_display();
         self.validate_zoom();
+        self.validate_table_filter();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());

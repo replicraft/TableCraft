@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = Igual ao valor selecionado
+filtering-not-equal = Diferente do valor selecionado
+filtering-is-null = É Nulo
+filtering-is-not-null = Não é Nulo
+filtering-clear-all = Limpar todos os filtros
+filtering-selection-help = Filtrar pelo valor armazenado real. Campos diferentes são combinados com E; um novo critério substitui o anterior desse campo.
+filtering-toggle-help = Remover temporariamente ou reaplicar o filtro mantido.
+filtering-filtered-count = Filtrados: { $matched } de { $source } registros
+filtering-unfiltered-count = Sem filtro: { $source } registros; o filtro mantido corresponde a { $matched }
+filtering-applying-equal = Aplicando o filtro Igual…
+filtering-applying-not-equal = Aplicando o filtro Diferente…
+filtering-loading = Carregando a página de filtro solicitada…
+filtering-clearing = Limpando todos os filtros…
+filtering-stale = A solicitação de filtro não corresponde mais à tabela ou exibição atual.
+filtering-invalid-result = A página, identidades de linha ou contagens retornadas não correspondem à solicitação.
+filtering-record-range = Esse número de registro está fora desta exibição.
+filtering-mock-unavailable = Os filtros nativos não estão disponíveis nesta prévia sintética. Nenhum registro foi filtrado.
+filtering-mock-membership = Somente associação sintética. Nenhum banco de dados foi aberto ou filtrado.
+filtering-mock-error = Falha de leitura sintética. O filtro e a página anteriores foram mantidos.

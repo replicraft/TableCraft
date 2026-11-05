@@ -1,12 +1,13 @@
 //! Full immutable native-table Find, independent of loaded browser pages.
 use super::{request, stored::opened};
 use crate::{
-    Command, Error, FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope,
-    FindSpan, FindTarget, Response, Worker,
+    CellKind, Command, Error, FilterComparison, FilterError, FilterSelectionTarget, FindDirection,
+    FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget, Response,
+    Worker,
 };
 use tablecraft_display::Options;
 use tablecraft_testkit::fixtures::access::{
-    canonical_fixed_creation, canonical_native17_creation, mutation_fixture,
+    canonical_fixed_creation, canonical_native17_creation, complex_links, mutation_fixture,
 };
 
 fn search(revision: u64, pattern: &str) -> FindRequest {
@@ -200,4 +201,122 @@ fn find_cancellation_and_pattern_ceiling_return_errors_instead_of_negative_publi
         document.find_next(&search(revision, "1"), &|| true),
         Err(Error::Cancelled)
     ));
+}
+
+#[test]
+fn filtered_find_excludes_hidden_matches_crosses_pages_and_binds_issued_source() {
+    let rows: Vec<_> = (0..205).map(|index| (index + 1, index % 2)).collect();
+    let bytes = mutation_fixture::with_rows_and_sort_order(&rows, [9, 4, 0, 0]);
+    let (_directory, path, worker, revision) = opened(&bytes);
+    let Response::FilteredData(filtered) = request(
+        &worker,
+        Command::FilterSelection {
+            target: FilterSelectionTarget {
+                document_revision: revision,
+                table: "Items".into(),
+                parent_ordinal: 0,
+                column: "Score".into(),
+                filter_id: None,
+            },
+            comparison: FilterComparison::Equal,
+            base: None,
+        },
+    )
+    .unwrap() else {
+        panic!("expected complete filter membership");
+    };
+    let search_filtered = |options: FindRequest, enabled| {
+        request(
+            &worker,
+            Command::FindFiltered {
+                handle: filtered.handle.clone(),
+                request: options,
+                enabled,
+            },
+        )
+    };
+
+    let Response::Found { position, .. } = search_filtered(search(revision, "204"), true).unwrap()
+    else {
+        panic!("expected complete filtered Find");
+    };
+    assert!(
+        position.is_none(),
+        "a hidden match must not escape the retained map"
+    );
+    let Response::Found { position, .. } = search_filtered(search(revision, "205"), true).unwrap()
+    else {
+        panic!("expected complete filtered Find");
+    };
+    let found = position.unwrap();
+    assert_eq!(found.parent_ordinal, 204);
+    assert_eq!(
+        filtered.handle.display_offset_for_ordinal(true, 204),
+        Some(102)
+    );
+    assert_eq!(filtered.handle.display_offset_for_ordinal(true, 203), None);
+
+    let mut invalid_anchor = search(revision, "205");
+    invalid_anchor.start = Some(FindPosition {
+        parent_ordinal: 203,
+        column: "Id".into(),
+        span: None,
+    });
+    assert!(matches!(
+        search_filtered(invalid_anchor, true),
+        Err(Error::Find(FindError::InvalidTarget))
+    ));
+    let Response::Found { position, .. } = search_filtered(search(revision, "204"), false).unwrap()
+    else {
+        panic!("expected Find with the retained filter toggled off");
+    };
+    assert_eq!(position.unwrap().parent_ordinal, 203);
+    assert_eq!(
+        filtered.handle.display_offset_for_ordinal(false, 203),
+        Some(203)
+    );
+
+    let (_other_directory, _other_path, other_worker, other_revision) = opened(&bytes);
+    assert_eq!(revision, other_revision);
+    assert!(matches!(
+        request(
+            &other_worker,
+            Command::FindFiltered {
+                handle: filtered.handle,
+                request: search(other_revision, "205"),
+                enabled: true,
+            }
+        ),
+        Err(Error::Filter(FilterError::StaleHandle))
+    ));
+    assert_eq!(std::fs::read(path).unwrap(), bytes);
+}
+
+#[test]
+fn complex_fields_refuse_find_without_exposing_internal_owner_keys() {
+    let original = complex_links::presence_cases();
+    let (_directory, path, worker, revision) = opened(&original);
+    let Response::Data { columns, rows, .. } = request(
+        &worker,
+        Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("expected mixed native table");
+    };
+    assert!(matches!(rows[0][1].kind, CellKind::Multivalue { .. }));
+    let mut options = search(revision, "10");
+    options.scope = FindScope::Field(columns[1].name.clone());
+    assert!(matches!(
+        find(&worker, options.clone()),
+        Err(Error::Find(FindError::UnsupportedField))
+    ));
+    options.scope = FindScope::Table;
+    assert!(matches!(
+        find(&worker, options),
+        Err(Error::Find(FindError::UnsupportedField))
+    ));
+    assert_eq!(std::fs::read(path).unwrap(), original);
 }

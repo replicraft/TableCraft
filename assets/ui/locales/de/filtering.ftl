@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = Ist gleich dem ausgewählten Wert
+filtering-not-equal = Ist ungleich dem ausgewählten Wert
+filtering-is-null = Ist Null
+filtering-is-not-null = Ist Nicht Null
+filtering-clear-all = Alle Filter löschen
+filtering-selection-help = Mit dem tatsächlich gespeicherten Wert filtern. Verschiedene Felder werden mit UND verknüpft; ein neues Kriterium ersetzt das bisherige Kriterium dieses Feldes.
+filtering-toggle-help = Den gespeicherten Filter vorübergehend entfernen oder erneut anwenden.
+filtering-filtered-count = Gefiltert: { $matched } von { $source } Datensätzen
+filtering-unfiltered-count = Ungefiltert: { $source } Datensätze; gespeicherter Filter findet { $matched }
+filtering-applying-equal = Gleichheitsfilter wird angewendet…
+filtering-applying-not-equal = Ungleichheitsfilter wird angewendet…
+filtering-loading = Angeforderte Filterseite wird geladen…
+filtering-clearing = Alle Filter werden gelöscht…
+filtering-stale = Die Filteranfrage passt nicht mehr zur aktuellen Tabelle oder Ansicht.
+filtering-invalid-result = Die zurückgegebene Filterseite, Datensatzidentität oder Anzahl passt nicht zu dieser Anfrage.
+filtering-record-range = Diese Datensatznummer liegt außerhalb dieser Ansicht.
+filtering-mock-unavailable = Native Filter sind in dieser synthetischen Vorschau nicht verfügbar. Es wurden keine Datensätze gefiltert.
+filtering-mock-membership = Nur synthetische Datensatzauswahl. Keine Datenbank wurde geöffnet oder gefiltert.
+filtering-mock-error = Synthetischer Lesefehler. Der bisherige Filter und die Seite bleiben erhalten.

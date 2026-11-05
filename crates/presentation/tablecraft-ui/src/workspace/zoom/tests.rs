@@ -167,6 +167,7 @@ fn native_edit_delegates_only_the_exact_target_and_query_zoom_remains_read_only(
 fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_binding() {
     let mut state = state("full value".into(), true);
     assert!(state.open_zoom_cell());
+    assert!(!state.close_table(1, "Items"));
     state.localizer = crate::Localizer::new(crate::Locale::Ja).unwrap();
     state.theme = crate::Theme::Dark;
     state.validate_zoom();

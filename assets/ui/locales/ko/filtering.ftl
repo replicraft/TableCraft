@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = 선택한 값과 같음
+filtering-not-equal = 선택한 값과 같지 않음
+filtering-is-null = Null임
+filtering-is-not-null = Null이 아님
+filtering-clear-all = 모든 필터 지우기
+filtering-selection-help = 실제 저장된 값으로 필터링합니다. 다른 필드는 AND로 결합하며 새 조건은 해당 필드의 이전 조건을 대체합니다.
+filtering-toggle-help = 보관된 필터를 일시적으로 해제하거나 다시 적용합니다.
+filtering-filtered-count = 필터링됨: { $source }개 중 { $matched }개 레코드
+filtering-unfiltered-count = 필터 없음: { $source }개 레코드, 보관된 필터 일치 { $matched }개
+filtering-applying-equal = 같음 필터 적용 중…
+filtering-applying-not-equal = 같지 않음 필터 적용 중…
+filtering-loading = 요청한 필터 페이지를 읽는 중…
+filtering-clearing = 모든 필터를 지우는 중…
+filtering-stale = 필터 요청이 더 이상 현재 테이블 또는 보기와 일치하지 않습니다.
+filtering-invalid-result = 반환된 페이지, 행 식별자 또는 개수가 요청과 일치하지 않습니다.
+filtering-record-range = 해당 레코드 번호는 이 보기의 범위를 벗어납니다.
+filtering-mock-unavailable = 합성 미리 보기에서는 네이티브 필터를 사용할 수 없습니다. 필터링된 레코드는 없습니다.
+filtering-mock-membership = 합성 데이터의 소속 정보만 표시합니다. 데이터베이스를 열거나 필터링하지 않았습니다.
+filtering-mock-error = 합성 읽기 오류입니다. 이전 필터와 페이지가 유지됩니다.

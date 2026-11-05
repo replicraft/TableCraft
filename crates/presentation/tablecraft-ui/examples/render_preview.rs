@@ -8,6 +8,7 @@ use tablecraft_ui::{
 };
 
 const ANIMATED_SCENE_STEPS: usize = 3;
+const LAYOUT_SETTLE_STEPS: usize = 2;
 const MIN_SCALE: f32 = 1.0;
 const MAX_SCALE: f32 = 2.0;
 const MAX_F6_STEPS: u8 = 5;
@@ -87,11 +88,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for scene in scenes {
         harness.state_mut().set_scene(scene);
+        // Layout captures should not acquire a tooltip from the harness cursor.
+        // Interaction tests choose their pointer position explicitly.
+        harness.remove_cursor();
         if scene.is_animated() {
             // Lifecycle spinners deliberately request repaints while pending.
             // Advance a fixed number of frames instead of waiting for idle.
             harness.run_steps(ANIMATED_SCENE_STEPS);
         } else {
+            // A changed scene can alter an auto-sized footer's previous-frame
+            // height. Capture the settled layout, as interaction tests do.
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
             harness.run();
         }
         for _ in 0..focus_steps {

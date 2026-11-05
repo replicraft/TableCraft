@@ -32,6 +32,9 @@ file-open/read call must return before a cooperative cancellation check can run.
 | Query | Explicit read-query result over the selected source; no implicit provider opens |
 | SortTable | Revision-bound table/field identifiers composed into an owned SELECT/ORDER BY model; complete buffered read-only result under the same query budgets |
 | FindNext | Revision-bound native table/field search returning an exact source ordinal, field name and consumed UTF-16 span; no rows are filtered or reordered |
+| FilterSelection | Capture an exact native selected value, build complete typed filter membership and return its first checked native page |
+| FilterPage | Read a visible page from an issued filter handle, preserving original source ordinals; toggling does not discard criteria |
+| ReapplyFilter | Explicitly rebind typed filter preferences to a newly opened revision, issuing a fresh map and source handle |
 
 The desktop follows a successful Open with Page for the first non-system local
 table, unless restoring an acknowledged save. This is a host workflow, not a
@@ -330,6 +333,86 @@ The existing plain-source, offline and macOS/Linux save limits apply. This route
 adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
 validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
 
+## Native table filtering
+
+Selection filtering reads the original scalar from the immutable native source,
+using the exact revision/table/field/source ordinal supplied by the host. The UI
+never reconstructs the predicate from displayed currency, date, checkbox, NULL
+marker or rounded text. The initial operations are Equal and NotEqual for an
+entire selected value; selected stored NULL becomes IsNull or IsNotNull. Empty
+text remains a typed text value, distinct from NULL. Partial text selection,
+range menus, common-filter editors, Filter by Form and advanced expressions are
+not supplied by this initial service. Calculated/complex/unqualified selected
+fields and Binary predicates refuse explicitly.
+
+At most sixteen distinct native fields are retained. Applying a new criterion to
+the same exact field replaces that field's previous criterion; different fields
+combine with eager AND semantics. Every criterion evaluates for every traversed
+source row, even after an earlier false/unknown result. Native field comparison
+policies and the existing scalar SQL comparison service govern equality; stored
+representation equality is not SQL equality. In particular, signed numeric zero
+representations can compare equal. Unknown text policies are never replaced by
+binary comparison; NULL predicates do not activate unused collation callbacks.
+
+The membership scan uses one projected native cursor with cumulative work and
+cancellation controls and completes checked EOF before returning anything. A
+failure or later count mismatch cannot publish an earlier matching prefix. The
+retained map contains ordered, unique original ordinals, rather than copied table
+rows or filtered display indices. Filter pages separately carry visible offset,
+original ordinals, matched/source counts and `has_more`; disabled filtering shows
+the source membership while retaining the criterion-match count and definition.
+No filtered position can acquire native identity through `offset + displayIndex`.
+
+An opaque cloneable `FilterHandle` shares immutable typed criteria, exact type
+constraints and membership through Arc. A private per-Document Arc witness binds
+its row rights independently of the public revision counter; another worker with
+the same revision number cannot reuse the handle. There is no hidden active
+filter or registry that evicts old published handles. A candidate command takes
+an explicitly matching base handle or explicitly starts a new definition. The
+host keeps its old handle/page until a complete matching replacement is accepted;
+canceled, failed and superseded candidates drop normally. Toggle off/on keeps the
+issued definition; Clear All drops the host's filter state. A selection made
+while filtering is off starts a new definition.
+
+Each visible page reads one original contiguous band covering at most 100 mapped
+rows, then presents only those selected indices. The existing normal browse
+profile retains native Caption, Format, display controls, stored-calculation
+provenance and complete stored collection summaries. Unselected band rows are not
+converted into UI cells. The native band allocation is still fully charged;
+sparse large bands can exhaust the ordinary allowance rather than silently omit
+fields or reset the budget for each selected row. Existing complete collection
+snapshot limits remain unchanged. An empty filtered page publishes qualified
+metadata headings without fetching an unrelated source row.
+
+Map construction has an 8 MiB retained-work allowance and one million steps,
+including typed criterion/name copies, schema-name comparisons, map capacity and
+handle/definition storage. Selection capture and its cursor scan share one native
+allowance (512 MiB, 100,000 rows, five million steps), with the separate existing
+16 MiB/one-million-step native comparison pool. The first page and subsequent
+FilterPage calls use a separately named native band-read allowance with the same
+bounds, plus the normal cumulative 8 MiB/100,000-step presentation pool. No pool
+resets per batch, source row, field or selected output row. These are explicit
+phase limits; a valid but larger source can return a resource error.
+
+Saving/reopening changes the document witness, so old filter handles must refuse.
+`FilterHandle.definition()` instead returns opaque cloneable preferences with
+only table, typed predicates and declared type constraints; it carries no row map
+or old source rights. Explicit ReapplyFilter validates the new revision and exact
+field declarations, resolves fresh native comparisons, scans again through EOF
+and returns a new handle/map/page. It preserves enabled/off state and clamps the
+requested visible offset to existing membership (zero when empty). The desktop
+uses this only after a matching acknowledged save and fresh Open; it never
+reuses old filtered ordinals as new-source identities.
+
+Microsoft's [filtering workflow](https://support.microsoft.com/en-us/access/apply-a-filter-to-view-select-records-in-an-access-database)
+and [record-editing guidance](https://support.microsoft.com/en-us/access/ways-to-add-edit-and-delete-records)
+provide the selection, replacement, toggle and record-position target. Local
+acceptance covers 205 source rows across filtered pages, same-field replacement,
+different-field AND, typed NULL/empty and signed zero, eager nonfinite errors,
+failed/canceled candidates preserving old handles, cross-worker witness rejection,
+EOF failure and explicit fresh-source reapplication. These headless checks do not
+establish native Access filtering or cross-platform GUI parity.
+
 ## Native table Find
 
 `FindNext` captures the exact document revision, local table, field/table scope,
@@ -375,6 +458,11 @@ retain the current explicit carrier presentation. Documented Find exclusions for
 Yes/No and OLE Object are explicit; other unsupported fields refuse. Whole-field,
 unformatted `Null`/`Is Null` criteria search typed NULL, and `""` searches actual
 zero-length text; neither searches the UI's synthetic NULL badge.
+
+Complex fields are outside this scalar Find profile. Their internal foreign keys
+are never treated as searchable displayed values. A current collection cell does
+not enable Find; table-wide search refuses a complex scoped field, while ordinary
+field-specific searches retain their existing qualification.
 
 The command has a 64 KiB UTF-8 pattern ceiling. Metadata and cursor reads share
 one native allowance (512 MiB, 100,000 rows, five million steps), with a separate

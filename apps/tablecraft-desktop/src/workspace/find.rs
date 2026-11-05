@@ -1,9 +1,17 @@
 //! Search the complete native source, then retrieve its checked result page.
+use super::filtering::filtered_publication;
 use super::{Desktop, PendingOperation};
 use tablecraft_runtime::{
-    self as runtime, Command, FindPosition as RuntimePosition, FindRequest as RuntimeRequest,
+    self as runtime, Command, FilteredData, FindPosition as RuntimePosition,
+    FindRequest as RuntimeRequest,
 };
-use tablecraft_ui::{self as ui, FindPosition, FindRequest, FindSpan};
+use tablecraft_ui::{self as ui, FilterTarget, FindPosition, FindRequest, FindSpan};
+
+#[derive(Clone)]
+pub(super) struct FilterWitness {
+    pub(super) target: FilterTarget,
+    pub(super) enabled: bool,
+}
 
 impl Desktop {
     pub(super) fn find_next(&mut self, request: FindRequest) {
@@ -11,8 +19,28 @@ impl Desktop {
             return;
         }
 
-        let command = Command::FindNext {
-            request: runtime_request(request.clone()),
+        let filter = self
+            .state
+            .active_filter_target()
+            .map(|target| FilterWitness {
+                target,
+                enabled: self.state.table_filter_enabled(),
+            });
+        let command = match &filter {
+            Some(filter) => {
+                let Some(handle) = self.filter_handle(&filter.target) else {
+                    self.state.error = Some(self.state.localizer.text("filtering-stale"));
+                    return;
+                };
+                Command::FindFiltered {
+                    handle,
+                    request: runtime_request(request.clone()),
+                    enabled: filter.enabled,
+                }
+            }
+            None => Command::FindNext {
+                request: runtime_request(request.clone()),
+            },
         };
         let request_id = self.worker.request(command);
         self.generation = request_id;
@@ -20,6 +48,7 @@ impl Desktop {
         self.pending = PendingOperation::Find {
             request_id,
             request,
+            filter,
         };
         self.state.busy = true;
     }
@@ -33,6 +62,7 @@ impl Desktop {
         let PendingOperation::Find {
             request_id,
             request: pending,
+            filter,
         } = &self.pending
         else {
             return;
@@ -46,23 +76,99 @@ impl Desktop {
 
         let request_id = *request_id;
         let request = pending.clone();
+        let filter = filter.clone();
         let Some(position) = position.map(ui_position) else {
-            self.state.set_find_result(request_id, request, None, None);
+            if filter.is_some() {
+                self.state
+                    .set_filtered_find_result(request_id, request, None, None);
+            } else {
+                self.state.set_find_result(request_id, request, None, None);
+            }
             self.pending = PendingOperation::Read;
             return;
         };
         // Page publication has its own native allowance. Neither a failed page
         // nor cancellation may publish the match without its original revision.
-        self.generation = self.worker.request(Command::Page {
-            table: request.target.table.clone(),
-            offset: position.parent_ordinal,
-        });
+        let command = match &filter {
+            Some(filter) => {
+                let Some(handle) = self.filter_handle(&filter.target) else {
+                    self.state
+                        .fail_find(request_id, self.state.localizer.text("filtering-stale"));
+                    return;
+                };
+                let Some(offset) =
+                    handle.display_offset_for_ordinal(filter.enabled, position.parent_ordinal)
+                else {
+                    self.state.fail_find(
+                        request_id,
+                        self.state.localizer.text("filtering-invalid-result"),
+                    );
+                    return;
+                };
+                Command::FilterPage {
+                    handle,
+                    offset,
+                    enabled: filter.enabled,
+                }
+            }
+            None => Command::Page {
+                table: request.target.table.clone(),
+                offset: position.parent_ordinal,
+            },
+        };
+        self.generation = self.worker.request(command);
         self.pending = PendingOperation::FindPage {
             request_id,
             request,
             position,
+            filter,
         };
         self.state.busy = true;
+    }
+
+    pub(super) fn publish_filtered_found(&mut self, generation: u64, result: FilteredData) {
+        let PendingOperation::FindPage {
+            request_id,
+            request,
+            position,
+            filter: Some(filter),
+        } = &self.pending
+        else {
+            return;
+        };
+        if generation != self.generation || !self.state.accepts_find_reply(*request_id, request) {
+            return;
+        }
+        let request_id = *request_id;
+        let request = request.clone();
+        let position = position.clone();
+        let valid = result.target.filter_id == filter.target.filter_id
+            && result.target.document_revision == filter.target.document_revision
+            && result.target.table == filter.target.table
+            && result.enabled == filter.enabled;
+        if !valid {
+            self.state.fail_find(
+                request_id,
+                self.state.localizer.text("filtering-invalid-result"),
+            );
+            return;
+        }
+        match filtered_publication(result) {
+            Ok((handle, publication)) => {
+                if self.state.set_filtered_find_result(
+                    request_id,
+                    request,
+                    Some(position),
+                    Some(publication),
+                ) {
+                    self.filter = Some(handle);
+                }
+            }
+            Err(_) => self.state.fail_find(
+                request_id,
+                self.state.localizer.text("filtering-invalid-result"),
+            ),
+        }
     }
 
     pub(super) fn cancel_find(&mut self, request_id: u64) {

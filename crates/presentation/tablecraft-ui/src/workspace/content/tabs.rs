@@ -125,6 +125,8 @@ impl State {
 
     pub fn can_close_table(&self, document_revision: u64, table: &str) -> bool {
         !self.busy
+            && !self.zoom_dialog_open()
+            && !self.table_filter_pending()
             && !self.backstage_visible()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
@@ -146,6 +148,7 @@ impl State {
         self.bump_focus_publication();
         self.table_selection.clear();
         self.data = None;
+        self.reset_table_filter();
         self.reset_record_navigation();
         if self
             .schema

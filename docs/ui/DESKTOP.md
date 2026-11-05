@@ -5,8 +5,8 @@ their displayed offset. Editing, deletion and collection targets resolve the
 original snapshot ordinal through that membership; query results cannot acquire
 native identity from their row position. Malformed maps refuse publication or
 target construction without a contiguous fallback. Visible numbering remains a
-separate display position. Complete filtered-view workflows are being integrated;
-generic unfiltered navigation and Find do not silently bypass a mapped view.
+separate display position. Selection filtering uses dedicated scoped paging and
+Find routes; generic unfiltered navigation never bypasses a mapped view.
 
 For the current presentation-only mock mode, light/dark themes and bundled
 Fluent languages, see [presentation preview](PRESENTATION_PREVIEW.md). The native
@@ -956,3 +956,43 @@ Datasheet, Find and Zoom in both themes: macOS build, 1000×680 logical points,
 `.cache/find-zoom-review-final/`. Find and Zoom start centered while retaining
 movable window positions. These exports do not exercise native window controls,
 OS clipboard integration or a Windows application.
+
+## Native selection filtering — 5 November 2026
+
+Home → Selection applies Equals/Does not equal to the actual native cell value;
+NULL cells offer Is Null/Is Not Null. Displayed rounding, symbols and localized
+dates do not become predicate inputs. A new criterion replaces the existing
+criterion for that field; different fields combine with eager AND. Toggle Filter
+retains the definition while switching between matching and original records.
+Advanced → Clear All Filters removes it after successful unfiltered retrieval.
+
+The runtime returns complete checked membership and an opaque source-bound
+handle. Visible pages retain original row ordinals, captions, controls, collection
+summaries and calculation provenance. Find searches only the active membership;
+paging and Go To use visible positions, while edits/deletion/collections resolve
+the original native record. A failed candidate retains the previous view and
+handle. After an acknowledged offline save, typed filter preferences bind to the
+reopened schema and rescan under a new source identity; old row rights are not
+reused. A changed record can consequently disappear from the matching view.
+
+This is bounded, session-local selection filtering for native tables. It does
+not persist Access object Filter/FilterOnLoad properties, filter query results,
+sort a filtered view, expose partial-value/range menus or implement Filter by Form.
+The distinct-field ceiling is sixteen. The existing platform/write limitations
+remain in force. See the [runtime contract](../application/RUNTIME.md#native-table-filtering).
+
+The coordinated gate passed 170 UI, 83 runtime, 37 desktop and five formatter
+tests, plus the runtime documentation example. Three actual desktop widget tests
+cover selection/paging/toggle/clear, filtered Find and a reviewed save that changes
+membership after reopen. Native cases include eager errors, complex-field
+refusal, sparse collection parents and cached NULL provenance without formula
+execution. Follow-up geometry, modal-close and focused-cell copy checks passed;
+the forced keyboard-focus tooltip was removed while bounded hover details remain.
+
+Strict selected Clippy and the minimal runtime profile passed. The synthetic
+matrix contains 55 scenes, eight locales and two themes (880 draw combinations).
+Eight German/de-DE filtered, empty, disabled and error exports were inspected
+offscreen on macOS at 1000×680 logical / 1.25× (1250×850 pixels), retained privately
+under `.cache/filtering-review-final/`. Empty headers stay aligned with populated
+headers, and preview exports settle layout without a synthetic pointer. No native
+application window, system clipboard or Windows interaction was exercised.

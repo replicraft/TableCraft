@@ -1,28 +1,10 @@
 //! Actual Home Find widgets, full-source worker and checked result publication.
 use super::*;
-use crate::workspace::test_support::{finish_reads, opened};
+use crate::workspace::test_support::{finish_reads, opened, request_find};
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::kittest::Queryable;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 use tablecraft_ui::{FindDirection, FindMatch, FindScope, FindTarget};
-
-fn search(harness: &mut Harness<'_, Desktop>, pattern: &str) {
-    harness.state_mut().state.open_find();
-    harness.run_steps(2);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Find What:")
-        .focus();
-    harness.run_steps(1);
-    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Find What:")
-        .type_text(pattern);
-    harness.run_steps(2);
-    harness
-        .get_by_role_and_label(Role::Button, "Find Next")
-        .click_accesskit();
-    harness.run_steps(1);
-}
 
 #[test]
 fn find_crosses_the_visible_page_and_preserves_it_after_not_found() {
@@ -30,14 +12,14 @@ fn find_crosses_the_visible_page_and_preserves_it_after_not_found() {
     let bytes = mutation_fixture::with_rows_and_sort_order(&rows, [9, 4, 0, 0]);
     let (_directory, path, original, mut harness) = opened(bytes);
     assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 100);
-    search(&mut harness, "105");
+    request_find(&mut harness, "105");
     finish_reads(&mut harness);
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.offset, 104);
     assert_eq!(data.rows[0][0].text, "105");
     assert!(harness.state().state.find_window_open());
 
-    search(&mut harness, "9999");
+    request_find(&mut harness, "9999");
     finish_reads(&mut harness);
     assert_eq!(harness.state().state.data.as_ref().unwrap().offset, 104);
     assert!(

@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = Равно выбранному значению
+filtering-not-equal = Не равно выбранному значению
+filtering-is-null = Пусто (Null)
+filtering-is-not-null = Не пусто (Not Null)
+filtering-clear-all = Очистить все фильтры
+filtering-selection-help = Фильтрация по сохранённому значению. Разные поля объединяются через И; новый критерий заменяет прежний критерий этого поля.
+filtering-toggle-help = Временно отключить или снова применить сохранённый фильтр.
+filtering-filtered-count = Отфильтровано: { $matched } из { $source } записей
+filtering-unfiltered-count = Без фильтра: { $source } записей; сохранённому фильтру соответствуют { $matched }
+filtering-applying-equal = Применение фильтра Равно…
+filtering-applying-not-equal = Применение фильтра Не равно…
+filtering-loading = Загрузка запрошенной страницы фильтра…
+filtering-clearing = Очистка всех фильтров…
+filtering-stale = Запрос фильтра больше не соответствует текущей таблице или представлению.
+filtering-invalid-result = Возвращённая страница, идентификаторы строк или количество не соответствуют запросу.
+filtering-record-range = Этот номер записи находится за пределами представления.
+filtering-mock-unavailable = В синтетическом просмотре собственные фильтры недоступны. Записи не фильтровались.
+filtering-mock-membership = Только синтетическая выборка. База данных не открывалась и не фильтровалась.
+filtering-mock-error = Синтетическая ошибка чтения. Предыдущий фильтр и страница сохранены.

@@ -181,7 +181,7 @@ impl State {
             })
     }
 
-    fn read_commands(&self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+    fn read_commands(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-sort-filter"), |ui| {
             ui.horizontal(|ui| {
@@ -212,23 +212,13 @@ impl State {
                         );
                     }
                 });
-                if self.mock_preview {
-                    ui.vertical(|ui| {
-                        for (icon, key) in [
-                            (Icon::Selection, "ribbon-selection"),
-                            (Icon::Advanced, "ribbon-advanced"),
-                            (Icon::ToggleFilter, "ribbon-toggle-filter"),
-                        ] {
-                            ribbon::mock_command(ui, &t, icon, key, CommandSize::Small);
-                        }
-                    });
-                }
+                ui.vertical(|ui| self.filter_commands(ui, actions));
             });
         });
         group(ui, &t.text("ribbon-records"), |ui| {
             ui.horizontal(|ui| {
                 let page = self.data.as_ref().filter(|data| {
-                    data.row_ordinals.is_none()
+                    (data.row_ordinals.is_none() || self.active_filter_target().is_some())
                         && self.view == DocumentView::Table
                         && !self.busy
                         && !self.edit_dialog_open()

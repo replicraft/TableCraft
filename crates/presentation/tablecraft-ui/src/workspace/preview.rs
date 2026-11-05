@@ -6,6 +6,7 @@ mod collections;
 mod deletion;
 mod editing;
 mod errors;
+mod filtering;
 mod find;
 mod fixtures;
 mod insertion;
@@ -42,6 +43,10 @@ pub enum Scene {
     DeleteReview,
     Find,
     FindSearching,
+    Filtered,
+    FilterEmpty,
+    FilterDisabled,
+    FilterError,
     Zoom,
     Review,
     Recovery,
@@ -74,7 +79,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 51] = [
+    pub const ALL: [Self; 55] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
@@ -97,6 +102,10 @@ impl Scene {
         Self::DeleteReview,
         Self::Find,
         Self::FindSearching,
+        Self::Filtered,
+        Self::FilterEmpty,
+        Self::FilterDisabled,
+        Self::FilterError,
         Self::Zoom,
         Self::Review,
         Self::Recovery,
@@ -171,6 +180,10 @@ impl Scene {
             Self::DeleteReview => "delete-review",
             Self::Find => "find",
             Self::FindSearching => "find-searching",
+            Self::Filtered => "filtered",
+            Self::FilterEmpty => "filter-empty",
+            Self::FilterDisabled => "filter-disabled",
+            Self::FilterError => "filter-error",
             Self::Zoom => "zoom",
             Self::Review => "review",
             Self::Recovery => "recovery",
@@ -297,6 +310,10 @@ impl Preview {
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),
             Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::Filtered => self.prepare_filter_scene(filtering::FilterScene::Applied),
+            Scene::FilterEmpty => self.prepare_filter_scene(filtering::FilterScene::Empty),
+            Scene::FilterDisabled => self.prepare_filter_scene(filtering::FilterScene::Disabled),
+            Scene::FilterError => self.prepare_filter_scene(filtering::FilterScene::Error),
             Scene::Zoom => self.prepare_zoom_scene(),
             Scene::Review | Scene::Recovery => {
                 self.open_edit();

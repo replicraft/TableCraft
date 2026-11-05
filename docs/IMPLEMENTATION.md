@@ -1,5 +1,22 @@
 # Implementation status
 
+## Native selection filtering — 5 November 2026
+
+Home Selection, Toggle Filter and Clear All now use native typed values and
+complete, source-bound membership. Filtered paging/Find retain original record
+identity; reviewed saves rebuild retained definitions against the reopened file.
+Errors and cancellation preserve the old view. Scalar/stored collection display
+shares the normal native presenter, including cached-value provenance.
+
+The combined gate passed 170 UI, 83 runtime, 37 desktop and five display tests
+plus the runtime documentation example; follow-up field-admission, geometry and
+focus/copy checks passed. Strict selected Clippy and minimal runtime checks passed.
+Eight light/dark offscreen exports were inspected without opening a native window.
+The UI matrix now covers 55 × eight × two combinations. Query-result filtering,
+filter-aware sorting, range/form filters and persisted Access Filter properties
+remain unfinished. See the [desktop record](ui/DESKTOP.md#native-selection-filtering--5-november-2026)
+and [runtime contract](application/RUNTIME.md#native-table-filtering).
+
 ## Sparse native row identity — 5 November 2026
 
 Shared datasheets now distinguish visible positions from checked native snapshot

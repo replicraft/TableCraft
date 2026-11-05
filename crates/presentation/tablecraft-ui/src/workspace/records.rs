@@ -171,7 +171,11 @@ impl State {
         display_ordinal: u32,
         actions: &mut Vec<Action>,
     ) {
-        if self.busy || self.records.pending.is_some() || !self.record_source_matches(&current) {
+        if self.busy
+            || self.records.pending.is_some()
+            || self.table_filter_pending()
+            || !self.record_source_matches(&current)
+        {
             return;
         }
         let data = self.data.as_ref().expect("admitted native page");
@@ -195,6 +199,17 @@ impl State {
         if let Some((row, column)) = position {
             self.table_selection.select(data, row, column);
             self.records.error = None;
+        } else if let Some(target) = self.active_filter_target() {
+            let enabled = self.table_filter_enabled();
+            if self.can_filter_page(&target, display_ordinal, enabled) {
+                actions.push(Action::FilterPage {
+                    target,
+                    offset: display_ordinal,
+                    enabled,
+                });
+            } else {
+                self.records.error = Some(self.localizer.text("filtering-record-range"));
+            }
         } else {
             self.records.error = Some(self.localizer.text("datasheet-filter-page-unavailable"));
         }
@@ -205,6 +220,15 @@ impl State {
         let (row, _) = self.table_selection.position()?;
         let current = data.display_ordinal(row)?;
         let mapped = data.row_ordinals.is_some();
+        if mapped && let Some(count) = self.filtered_record_count() {
+            return Some(RecordPositions {
+                current,
+                first: (current > 0).then_some(0),
+                previous: current.checked_sub(1),
+                next: current.checked_add(1).filter(|next| *next < count),
+                last: count.checked_sub(1).filter(|last| *last != current),
+            });
+        }
         let first = (current > 0 && (!mapped || data.offset == 0)).then_some(0);
         let previous = current.checked_sub(1).filter(|_| !mapped || row > 0);
         let next = current
@@ -284,7 +308,10 @@ impl State {
     pub(super) fn record_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let current = self.selected_record_target();
         let enabled = current.as_ref().is_some_and(|target| {
-            !self.busy && self.records.pending.is_none() && self.record_source_matches(target)
+            !self.busy
+                && self.records.pending.is_none()
+                && !self.table_filter_pending()
+                && self.record_source_matches(target)
         });
         let response = command(
             ui,
@@ -410,7 +437,7 @@ impl State {
         let Some(current) = self.selected_record_target() else {
             return;
         };
-        let idle = !self.busy && self.records.pending.is_none();
+        let idle = !self.busy && self.records.pending.is_none() && !self.table_filter_pending();
         let RecordPositions {
             current: position,
             first,

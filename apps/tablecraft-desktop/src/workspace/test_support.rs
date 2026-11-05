@@ -1,7 +1,8 @@
 //! Application-private real host glue shared by headless workflow acceptance tests.
 use super::Desktop;
 use eframe::App;
-use egui_kittest::Harness;
+use egui::accesskit::Role;
+use egui_kittest::{Harness, kittest::Queryable};
 use std::{
     path::PathBuf,
     time::{Duration, Instant},
@@ -55,4 +56,22 @@ pub(super) fn finish_save(harness: &mut Harness<'_, Desktop>) -> tablecraft_runt
         std::thread::yield_now();
     }
     harness.state().editing.save_report().unwrap()
+}
+
+pub(super) fn request_find(harness: &mut Harness<'_, Desktop>, pattern: &str) {
+    harness.state_mut().state.open_find();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Find What:")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Find What:")
+        .type_text(pattern);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Find Next")
+        .click_accesskit();
+    harness.run_steps(1);
 }

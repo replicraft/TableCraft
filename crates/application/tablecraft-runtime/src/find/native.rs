@@ -1,10 +1,10 @@
-//! Complete local-table cursor traversal; no SQL filters or loaded-page searches.
+//! Complete local-table traversal with optional immutable native filter membership.
 use super::{
     FindDirection, FindError, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
     MAX_FIND_PATTERN_BYTES, matching::Matcher,
 };
 use crate::{
-    Error, Response,
+    Error, FilterHandle, Response,
     controls::{SCOPE, budget, check, comparison_budget},
     display::Presentation,
     document::Document,
@@ -16,7 +16,7 @@ use tablecraft_ace::{
     DatabaseQueryMode, inspect_database_properties, inspect_database_sort_order,
     inspect_table_schema,
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_display::Options;
 use tablecraft_expressions::{
     comparison::StringSearch,
@@ -90,6 +90,39 @@ impl Document {
     pub(crate) fn find_next(
         &mut self,
         request: &FindRequest,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        self.find_in_membership(request, None, cancelled)
+    }
+
+    pub(crate) fn find_filtered(
+        &mut self,
+        handle: &FilterHandle,
+        request: &FindRequest,
+        enabled: bool,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        check(cancelled)?;
+        self.check_filter(handle)?;
+        if request.target.table != handle.target().table
+            || request.target.document_revision != handle.target().document_revision
+        {
+            return Err(FindError::InvalidTarget.into());
+        }
+        if request.start.as_ref().is_some_and(|anchor| {
+            handle
+                .display_offset_for_ordinal(enabled, anchor.parent_ordinal)
+                .is_none()
+        }) {
+            return Err(FindError::InvalidTarget.into());
+        }
+        self.find_in_membership(request, Some((handle, enabled)), cancelled)
+    }
+
+    fn find_in_membership(
+        &mut self,
+        request: &FindRequest,
+        filter: Option<(&FilterHandle, bool)>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         check(cancelled)?;
@@ -170,6 +203,11 @@ impl Document {
                 }
                 selected_field_found = true;
             }
+            // A complex field's Int32 storage carrier is an internal owner key,
+            // never the logical value exposed to Find.
+            if field.complex_type_id().is_some() {
+                return Err(FindError::UnsupportedField.into());
+            }
             // These are documented Find exclusions, not successful searches of
             // uninspected data. Unsupported declarations otherwise refuse.
             if field.is_ole_object() || field.scalar_type() == Some(ScalarType::Boolean) {
@@ -209,6 +247,9 @@ impl Document {
         let mut primary = None;
         let mut wrapped = None;
         let mut anchor_seen = request.start.is_none();
+        let membership = filter.and_then(|(handle, enabled)| enabled.then(|| handle.ordinals()));
+        let mut membership_index = 0;
+        let mut source_rows = 0_u32;
         loop {
             let batch = cursor.next_page(SCAN_BATCH_ROWS)?;
             for (row_number, values) in batch.rows().iter().enumerate() {
@@ -217,6 +258,17 @@ impl Document {
                     .offset()
                     .checked_add(u32::try_from(row_number).map_err(|_| FindError::InvalidTarget)?)
                     .ok_or(FindError::InvalidTarget)?;
+                work.charge(Resource::Steps, 1)?;
+                if ordinal != source_rows {
+                    return Err(FindError::InvalidTarget.into());
+                }
+                source_rows = source_rows.checked_add(1).ok_or(FindError::InvalidTarget)?;
+                if let Some(ordinals) = membership {
+                    if ordinals.get(membership_index) != Some(&ordinal) {
+                        continue;
+                    }
+                    membership_index += 1;
+                }
                 if request
                     .start
                     .as_ref()
@@ -348,7 +400,10 @@ impl Document {
                 break;
             }
         }
-        if !anchor_seen {
+        if !anchor_seen
+            || membership.is_some_and(|ordinals| membership_index != ordinals.len())
+            || filter.is_some_and(|(handle, _)| source_rows != handle.source_rows())
+        {
             return Err(FindError::InvalidTarget.into());
         }
         Ok(Response::Found {

@@ -1,5 +1,5 @@
 use super::*;
-use crate::{Action, Cell, Database, Table};
+use crate::{Action, Cell, CellKind, Database, Table};
 use egui::accesskit::Role;
 use egui_kittest::{
     Harness,
@@ -134,6 +134,13 @@ fn new_user_selection_source_or_cancel_prevents_stale_find_publication() {
     state.set_table_data(page(100));
     assert!(!state.accepts_find_reply(2, &request));
     assert_eq!(state.data.as_ref().unwrap().offset, 100);
+
+    state.data.as_mut().unwrap().rows[0][0].kind = CellKind::Multivalue {
+        assigned: true,
+        members: 1,
+    };
+    assert!(!state.can_open_find());
+    assert!(state.current_find_request().is_none());
 }
 
 #[test]
@@ -260,4 +267,83 @@ fn escape_dismisses_the_find_popup_before_closing_the_modeless_window() {
     assert!(!harness.state().0.find_window_open());
     assert!(harness.state().1.is_empty());
     assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
+}
+
+#[test]
+fn filtered_find_republishes_exact_view_and_selects_physical_member_without_losing_filter() {
+    let mut state = state();
+    state.close_find();
+    let selection = state.current_filter_selection().unwrap();
+    assert!(state.begin_filter_selection(30, selection, super::super::FilterComparison::Equal));
+    let target = FilterTarget {
+        document_revision: 7,
+        table: "People".into(),
+        filter_id: 9,
+    };
+    let publication = |offset, ordinals: Vec<u32>, has_more| {
+        let mut data = page(offset);
+        data.rows = ordinals
+            .iter()
+            .map(|ordinal| vec![Cell::scalar(ordinal.to_string()), Cell::scalar("Ada Ada")])
+            .collect();
+        data.row_ordinals = Some(crate::RowOrdinals::new(ordinals).unwrap());
+        data.has_more = has_more;
+        FilterPublication {
+            target: target.clone(),
+            enabled: true,
+            matched_rows: 3,
+            source_rows: 300,
+            data,
+        }
+    };
+    assert!(state.set_filtered_data(30, publication(0, vec![100], true)));
+    state.open_find();
+    state.find.as_mut().unwrap().pattern = "Ada".into();
+    let request = state.current_find_request().unwrap();
+    state.begin_find(31, request.clone());
+    let found = FindPosition {
+        parent_ordinal: 250,
+        column: "Name".into(),
+        span: Some(FindSpan {
+            start_utf16: 0,
+            end_utf16: 3,
+        }),
+    };
+    assert!(!state.set_find_result(31, request.clone(), Some(found.clone()), Some(page(250))));
+    assert!(state.accepts_find_reply(31, &request));
+    assert!(state.set_filtered_find_result(
+        31,
+        request,
+        Some(found),
+        Some(publication(1, vec![200, 250], false)),
+    ));
+    assert_eq!(state.active_filter_target(), Some(target.clone()));
+    assert!(state.table_filter_enabled());
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+    assert_eq!(state.data.as_ref().unwrap().parent_ordinal(1), Some(250));
+
+    let request = state.current_find_request().unwrap();
+    state.begin_find(32, request.clone());
+    let mut wrong_mode = publication(1, vec![200, 250], false);
+    wrong_mode.enabled = false;
+    assert!(!state.set_filtered_find_result(
+        32,
+        request,
+        Some(FindPosition {
+            parent_ordinal: 250,
+            column: "Name".into(),
+            span: Some(FindSpan {
+                start_utf16: 0,
+                end_utf16: 3
+            }),
+        }),
+        Some(wrong_mode)
+    ));
+    assert_eq!(state.active_filter_target(), Some(target.clone()));
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+
+    let request = state.current_find_request().unwrap();
+    state.begin_find(33, request.clone());
+    assert!(state.begin_filter_page(34, target, 0, true));
+    assert!(!state.accepts_find_reply(33, &request));
 }

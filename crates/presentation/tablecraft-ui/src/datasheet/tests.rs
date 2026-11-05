@@ -130,16 +130,30 @@ fn assert_focused_copy(value: &Cell, accessible_value: &str) {
     });
     initial.textures_delta.clear();
 
-    let mut output = context.run_ui(input(vec![Event::Copy]), |ui| {
+    // A newly created popup measures itself in an invisible first frame.
+    // Settle that frame before observing focused-cell painting and Copy.
+    let mut settled = context.run_ui(input(vec![Event::PointerGone]), |ui| {
+        ui.set_max_width(80.0);
+        let response = cell(ui, value, "Description", 7, true);
+        assert!(response.has_focus());
+    });
+    settled.textures_delta.clear();
+
+    let mut output = context.run_ui(input(vec![Event::PointerGone, Event::Copy]), |ui| {
         ui.set_max_width(80.0);
         let response = cell(ui, value, "Description", 7, true);
         assert_eq!(Some(response.id), id);
         assert!(response.has_focus());
     });
     output.textures_delta.clear();
+    let copy_help = crate::localization::for_context(&context).text("datasheet-copy-cell-help");
     for shape in &output.shapes {
         if let egui::Shape::Text(painted) = &shape.shape {
             assert!(painted.galley.job.text.len() < 4096);
+            assert_ne!(
+                painted.galley.job.text, copy_help,
+                "keyboard focus without a pointer must not paint a cell tooltip",
+            );
         }
     }
     assert!(
@@ -1193,4 +1207,65 @@ fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
         (caption_center.x - header_rect.center().x).abs() <= 1.0,
         "caption={caption_center:?}, header={header_rect:?}"
     );
+}
+
+#[test]
+fn empty_filtered_body_keeps_headers_anchored_without_inventing_a_record() {
+    let mut header_positions = Vec::new();
+    for scene in [
+        crate::preview::Scene::Filtered,
+        crate::preview::Scene::FilterEmpty,
+    ] {
+        let mut preview = crate::preview::Preview::new(scene);
+        let mut state = std::mem::take(preview.state_mut());
+        state.localizer = crate::Localizer::new(crate::Locale::De).unwrap();
+        let message = state.localizer.text("datasheet-no-rows");
+        let mut harness = egui_kittest::Harness::builder()
+            .with_size(egui::vec2(900.0, 580.0))
+            .with_max_steps(32)
+            .build_ui_state(
+                |ui, state: &mut crate::State| assert!(state.show(ui).is_empty()),
+                state,
+            );
+        crate::configure(&harness.ctx);
+        harness.ctx.set_pixels_per_point(1.25);
+        harness.run();
+        let header = harness
+            .output()
+            .shapes
+            .iter()
+            .find_map(|shape| {
+                let egui::Shape::Text(text) = &shape.shape else {
+                    return None;
+                };
+                (text.galley.job.text == "Customer ID").then_some(text.pos.y)
+            })
+            .expect("actual first column caption");
+        header_positions.push(header);
+
+        if scene == crate::preview::Scene::FilterEmpty {
+            let painted = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Text(text) = &shape.shape else {
+                        return None;
+                    };
+                    (text.galley.job.text == message).then_some((shape, text))
+                })
+                .expect("localized empty-state decoration remains visible");
+            let bounds = painted.1.galley.rect.translate(painted.1.pos.to_vec2());
+            assert!(bounds.top() > header);
+            assert!(
+                painted.0.clip_rect.contains_rect(bounds),
+                "empty message={bounds:?}, clip={:?}",
+                painted.0.clip_rect,
+            );
+            assert!(harness.state().data.as_ref().unwrap().rows.is_empty());
+            assert!(harness.state().selected_cell_text().is_none());
+            assert!(harness.state().current_delete_target().is_none());
+        }
+    }
+    assert_eq!(header_positions[0], header_positions[1]);
 }
