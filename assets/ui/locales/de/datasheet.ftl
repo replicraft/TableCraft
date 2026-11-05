@@ -50,3 +50,5 @@ datasheet-go = Los
 datasheet-null-value = NULL
 datasheet-close-table = Tabelle schließen
 datasheet-sort-column = { $column } sortieren
+
+datasheet-last = Letzter

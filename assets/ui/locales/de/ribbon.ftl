@@ -73,3 +73,5 @@ ribbon-refresh-table = Aktualisieren
 ribbon-refresh-table-help = Die aktuelle Tabellenseite neu laden.
 ribbon-sorted-results = Sortierte Tabellenergebnisse (schreibgeschützt)
 ribbon-mock-sort-disabled = Die vollständige Tabellensortierung ist in dieser synthetischen Vorschau nicht verfügbar. Es wurden keine Zeilen umgeordnet.
+
+ribbon-select-record = Datensatz auswählen

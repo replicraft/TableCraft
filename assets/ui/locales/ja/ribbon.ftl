@@ -73,3 +73,5 @@ ribbon-refresh-table = 更新
 ribbon-refresh-table-help = 現在のテーブルページを再読み込みします。
 ribbon-sorted-results = 並べ替えたテーブルの結果（読み取り専用）
 ribbon-mock-sort-disabled = この合成プレビューではテーブル全体を並べ替えられません。行の順序は変更していません。
+
+ribbon-select-record = レコードを選択

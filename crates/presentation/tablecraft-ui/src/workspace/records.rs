@@ -1,6 +1,8 @@
 //! Record positions are native snapshot ordinals, never stored row identities.
+use super::ribbon::{CommandSize, Icon, command};
 use super::{Action, Data, DocumentView, State};
 use crate::localization::tr;
+use egui::{Popup, accesskit::HasPopup};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RecordTarget {
@@ -27,6 +29,7 @@ impl State {
         self.view == DocumentView::Table
             && !self.backstage_visible()
             && !self.edit_dialog_open()
+            && !self.saved_query_prompt_open()
             && self.contents_request_id().is_none()
             && self
                 .database
@@ -147,14 +150,193 @@ impl State {
         }
     }
 
+    pub(super) fn can_select_record(&self) -> bool {
+        if self.busy
+            || self.backstage_visible()
+            || self.edit_dialog_open()
+            || self.contents_request_id().is_some()
+            || self.saved_query_prompt_open()
+        {
+            return false;
+        }
+        let Some(data) = self.visible_data() else {
+            return false;
+        };
+        match self.view {
+            DocumentView::Table => {
+                self.records.pending.is_none()
+                    && self.database.as_ref().is_some_and(|database| {
+                        data.source_revision == Some(database.document_revision)
+                    })
+                    && self.table_selection.can_copy(data)
+            }
+            DocumentView::Query if self.saved_query.active => {
+                self.saved_query.selection.can_copy(data)
+            }
+            DocumentView::Query => self.query_selection.can_copy(data),
+            DocumentView::Design => false,
+        }
+    }
+
+    pub(super) fn select_current_record(&mut self, context: &egui::Context) -> bool {
+        if !self.can_select_record() {
+            return false;
+        }
+        match self.view {
+            DocumentView::Table => self
+                .table_selection
+                .select_record(self.data.as_ref().expect("visible table page"), context),
+            DocumentView::Query if self.saved_query.active => {
+                self.saved_query.selection.select_record(
+                    self.saved_query
+                        .data
+                        .as_ref()
+                        .expect("visible saved result"),
+                    context,
+                )
+            }
+            DocumentView::Query => self.query_selection.select_record(
+                self.query_data.as_ref().expect("visible query result"),
+                context,
+            ),
+            DocumentView::Design => false,
+        }
+    }
+
+    pub(super) fn record_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        let current = self.selected_record_target();
+        let enabled = current
+            .as_ref()
+            .is_some_and(|target| self.can_navigate_record(target));
+        let response = command(
+            ui,
+            Icon::GoTo,
+            &tr(ui, "ribbon-go-to"),
+            enabled,
+            CommandSize::Small,
+        );
+        let popup_id = Popup::default_response_id(&response);
+        if !response.enabled() {
+            Popup::close_id(ui.ctx(), popup_id);
+            return;
+        }
+
+        let current = current.expect("enabled native record");
+        let data = self.data.as_ref().expect("selected native page");
+        let end = u64::from(data.offset) + data.rows.len() as u64;
+        let next = current
+            .parent_ordinal
+            .checked_add(1)
+            .filter(|next| data.has_more || u64::from(*next) < end);
+        let last = if data.has_more {
+            None
+        } else {
+            end.checked_sub(1).and_then(|last| u32::try_from(last).ok())
+        };
+        let previous = current.parent_ordinal.checked_sub(1);
+        let mut destination = None;
+        Popup::menu(&response).show(|ui| {
+            for (key, target) in [
+                ("datasheet-first", (current.parent_ordinal > 0).then_some(0)),
+                ("datasheet-previous", previous),
+                ("datasheet-next", next),
+                (
+                    "datasheet-last",
+                    last.filter(|last| *last != current.parent_ordinal),
+                ),
+            ] {
+                if ui
+                    .add_enabled(target.is_some(), egui::Button::new(tr(ui, key)))
+                    .clicked()
+                {
+                    destination = target;
+                    ui.close();
+                }
+            }
+            ui.separator();
+            if let Some(ordinal) = self.record_number_input(ui, true, "ribbon_record_number") {
+                destination = Some(ordinal);
+                ui.close();
+            }
+            if let Some(error) = &self.records.error {
+                ui.label(error);
+            }
+        });
+        let expanded = Popup::is_id_open(ui.ctx(), popup_id);
+        ui.ctx().accesskit_node_builder(response.id, |node| {
+            node.set_has_popup(HasPopup::Menu);
+            node.set_expanded(expanded);
+        });
+        if let Some(parent_ordinal) = destination {
+            self.request_record(
+                RecordTarget {
+                    parent_ordinal,
+                    ..current
+                },
+                actions,
+            );
+        }
+    }
+
+    fn record_number_input(
+        &mut self,
+        ui: &mut egui::Ui,
+        enabled: bool,
+        id: &'static str,
+    ) -> Option<u32> {
+        let label = ui.label(tr(ui, "datasheet-go-record"));
+
+        let input = ui
+            .add_enabled(
+                enabled,
+                egui::TextEdit::singleline(&mut self.records.input)
+                    .id(egui::Id::new(id))
+                    .desired_width(80.0),
+            )
+            .labelled_by(label.id);
+        // Single-line TextEdit releases focus on Return before this
+        // response is inspected. It still owns that submission frame.
+        let enter = (input.has_focus() || input.lost_focus())
+            && ui.input_mut(|input| {
+                let mut enter = false;
+                input.events.retain(|event| {
+                    let plain_enter = matches!(
+                        event,
+                        egui::Event::Key {
+                            key: egui::Key::Enter,
+                            pressed: true,
+                            modifiers,
+                            ..
+                        } if modifiers.is_none()
+                    );
+                    enter |= plain_enter;
+                    !plain_enter
+                });
+                enter
+            });
+        if ui
+            .add_enabled(enabled, egui::Button::new(tr(ui, "datasheet-go")))
+            .clicked()
+            || enabled && enter
+        {
+            match parse_record(&self.records.input) {
+                Some(ordinal) => return Some(ordinal),
+                None => {
+                    self.records.error = Some(self.localizer.text("datasheet-record-input-help"));
+                }
+            }
+        }
+        None
+    }
+
     pub(super) fn record_navigator(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
         let target = self.current_insert_target();
-        if super::ribbon::command(
+        if command(
             ui,
-            super::ribbon::Icon::Add,
+            Icon::Add,
             &tr(ui, "insertion-title"),
             target.is_some(),
-            super::ribbon::CommandSize::Small,
+            CommandSize::Small,
         )
         .clicked()
             && let Some(target) = target
@@ -202,48 +384,8 @@ impl State {
                 destination = next;
             }
             ui.separator();
-            let label = ui.label(tr(ui, "datasheet-go-record"));
-
-            let input = ui
-                .add_enabled(
-                    idle,
-                    egui::TextEdit::singleline(&mut self.records.input)
-                        .id(egui::Id::new("record_number"))
-                        .desired_width(80.0),
-                )
-                .labelled_by(label.id);
-            // Single-line TextEdit releases focus on Return before this
-            // response is inspected. It still owns that submission frame.
-            let enter = (input.has_focus() || input.lost_focus())
-                && ui.input_mut(|input| {
-                    let mut enter = false;
-                    input.events.retain(|event| {
-                        let plain_enter = matches!(
-                            event,
-                            egui::Event::Key {
-                                key: egui::Key::Enter,
-                                pressed: true,
-                                modifiers,
-                                ..
-                            } if modifiers.is_none()
-                        );
-                        enter |= plain_enter;
-                        !plain_enter
-                    });
-                    enter
-                });
-            if ui
-                .add_enabled(idle, egui::Button::new(tr(ui, "datasheet-go")))
-                .clicked()
-                || idle && enter
-            {
-                match parse_record(&self.records.input) {
-                    Some(ordinal) => destination = Some(ordinal),
-                    None => {
-                        self.records.error =
-                            Some(self.localizer.text("datasheet-record-input-help"));
-                    }
-                }
+            if let Some(ordinal) = self.record_number_input(ui, idle, "record_number") {
+                destination = Some(ordinal);
             }
             if self.records.pending.is_some() {
                 ui.spinner();

@@ -883,3 +883,15 @@ Home capture was reopened for its working Delete command. No retained Access
 Delete-confirmation capture exists; this explicit offline dialog is provisional.
 Cancel receives initial focus; Enter and Escape cancellation are observed in
 headless tests. No native app activation or Windows Access comparison occurred.
+
+
+## Typed instructions and Home navigation gate — 5 November 2026
+
+The combined selected gate passed 149 UI, 67 runtime and 32 desktop tests plus
+the runtime documentation example. Typed input hints are mapped exhaustively
+across the host and rendered fully visibly in German/Japanese edit and new-row
+forms. Decimal instructions explicitly retain invariant `.` syntax. Home Go To
+shares the footer input/parser and native target service; Select record uses each
+visible result's existing selection and complete single-record clipboard output.
+Actual popup and source/modal/EOF/query boundaries are exercised headlessly.
+Strict selected Clippy passed; no native application was opened.

@@ -73,3 +73,5 @@ ribbon-refresh-table = 새로 고침
 ribbon-refresh-table-help = 현재 테이블 페이지를 다시 불러옵니다.
 ribbon-sorted-results = 정렬된 테이블 결과(읽기 전용)
 ribbon-mock-sort-disabled = 이 합성 미리 보기에서는 전체 테이블 정렬을 사용할 수 없습니다. 행 순서는 변경되지 않았습니다.
+
+ribbon-select-record = 레코드 선택

@@ -73,3 +73,5 @@ ribbon-refresh-table = 刷新
 ribbon-refresh-table-help = 重新加载当前表页。
 ribbon-sorted-results = 已排序的表结果（只读）
 ribbon-mock-sort-disabled = 此合成预览不支持整表排序，未重新排列任何行。
+
+ribbon-select-record = 选择记录

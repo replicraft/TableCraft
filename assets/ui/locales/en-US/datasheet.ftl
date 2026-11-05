@@ -50,3 +50,5 @@ datasheet-go = Go
 datasheet-null-value = NULL
 datasheet-close-table = Close table
 datasheet-sort-column = Sort { $column }
+
+datasheet-last = Last

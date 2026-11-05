@@ -1,5 +1,19 @@
 # Implementation status
 
+## Localized input and Home record navigation — 5 November 2026
+
+Runtime drafts now publish fourteen inert input-hint tags rather than English
+instructions. The desktop maps them exhaustively; cell and new-row forms render
+Fluent guidance in all eight languages, including explicit invariant decimal
+syntax. Home Go To reuses checked record navigation and enables Last only with
+observed EOF. Select record works for native tables and both query-result slots
+without manufacturing native mutation identity.
+
+The coordinated headless gate passed 149 UI, 67 runtime and 32 desktop tests plus
+the runtime documentation example. Actual German/Japanese hint rendering and
+Home popup, record selection/copy and query/saved-result boundaries are covered.
+Selected strict Clippy passed. No native application was opened.
+
 ## Reviewed desktop row deletion — 5 November 2026
 
 Home Delete row now requests a normal native single-row review with original

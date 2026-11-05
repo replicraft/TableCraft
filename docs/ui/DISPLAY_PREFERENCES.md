@@ -121,3 +121,16 @@ Cell edits and New row fields use shared typed instruction tags, translated
 through Fluent in all eight UI languages. Original field names are not translated.
 Decimal input explicitly uses `.` even when regional display uses a comma. The
 UI never reparses formatted Currency/date text as a replacement value.
+
+
+## Home record navigation and selection
+
+Home Go To reuses the footer's revision-bound record navigation and checked
+one-based record input. First, previous and next keep their existing native
+source semantics; Last requires observed EOF and an actual final loaded ordinal,
+never a declared row total. A failed request retains the previous page/selection.
+
+Select record uses the existing selection for the visible table, ad hoc query or
+saved-query result. It preserves the selected field, copies one complete displayed
+record and does not grant native edit/delete identity to query output. Select All
+is not simulated with a visible-page prefix.

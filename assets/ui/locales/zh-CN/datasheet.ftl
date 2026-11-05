@@ -50,3 +50,5 @@ datasheet-go = 转到
 datasheet-null-value = NULL
 datasheet-close-table = 关闭表
 datasheet-sort-column = 对 { $column } 排序
+
+datasheet-last = 最后一条

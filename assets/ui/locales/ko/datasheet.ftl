@@ -50,3 +50,5 @@ datasheet-go = 이동
 datasheet-null-value = NULL
 datasheet-close-table = 테이블 닫기
 datasheet-sort-column = { $column } 정렬
+
+datasheet-last = 마지막

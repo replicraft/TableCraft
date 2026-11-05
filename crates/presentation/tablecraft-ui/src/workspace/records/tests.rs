@@ -1,5 +1,10 @@
 use super::*;
-use crate::Database;
+use crate::{Database, SavedQuery, SavedQueryTarget};
+use egui::accesskit::Role;
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 fn page(offset: u32, count: usize, has_more: bool) -> Data {
     Data {
@@ -278,5 +283,193 @@ fn record_enter(pressed: bool, modifiers: egui::Modifiers) -> egui::Event {
         pressed,
         repeat: false,
         modifiers,
+    }
+}
+
+#[test]
+fn ribbon_go_to_reuses_checked_navigation_and_enables_last_only_at_checked_eof() {
+    let mut harness = Harness::builder().build_ui_state(
+        |ui, state: &mut (State, Vec<Action>)| state.0.record_menu(ui, &mut state.1),
+        (state(), Vec::new()),
+    );
+    crate::configure(&harness.ctx);
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Go To")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Last")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Next")
+        .click_accesskit();
+    harness.run();
+    assert_eq!(harness.state().0.table_selection.position(), Some((1, 0)));
+    assert!(harness.state().1.is_empty());
+
+    harness.state_mut().0.data.as_mut().unwrap().has_more = false;
+    harness
+        .get_by_role_and_label(Role::Button, "Go To")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Last")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Last")
+        .click_accesskit();
+    harness.run();
+    assert_eq!(harness.state().0.table_selection.position(), Some((99, 0)));
+    assert!(harness.state().1.is_empty());
+
+    harness
+        .get_by_role_and_label(Role::Button, "Go To")
+        .click_accesskit();
+    harness.run();
+    let input = harness.get_by_role(Role::TextInput);
+    input.focus();
+    harness.run();
+    harness.get_by_role(Role::TextInput).type_text("0");
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Go")
+        .click_accesskit();
+    harness.run();
+    assert!(harness.state().1.is_empty());
+    assert!(harness.state().0.records.error.is_some());
+    harness.state_mut().0.records.input = "201".into();
+    harness
+        .get_by_role_and_label(Role::Button, "Go")
+        .click_accesskit();
+    harness.run();
+    assert!(matches!(harness.state().1.as_slice(),
+        [Action::NavigateRecord { target }]
+            if target.document_revision == 7 && target.table == "Items"
+                && target.parent_ordinal == 200 && target.column == "ID"
+    ));
+    assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
+}
+
+#[test]
+fn home_select_record_preserves_field_and_copies_one_complete_loaded_record() {
+    let mut state = state();
+    state
+        .table_selection
+        .select(state.data.as_ref().unwrap(), 3, 1);
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Select record")
+        .click_accesskit();
+    harness.run();
+    assert_eq!(harness.state().0.table_selection.position(), Some((3, 1)));
+    assert!(harness.state().0.table_selection.row_selected());
+    assert!(harness.state().1.is_empty());
+    let context = harness.ctx.clone();
+    assert!(harness.state_mut().0.copy_selected(&context));
+    let mut output = context.run_ui(Default::default(), |_| {});
+    output.textures_delta.clear();
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText("103\tvalue\n".into()),)
+    );
+
+    harness.state_mut().0.busy = true;
+    assert!(!harness.state().0.can_select_record());
+    harness.state_mut().0.busy = false;
+    harness.state_mut().0.view = DocumentView::Query;
+    assert!(!harness.state().0.can_select_record());
+    harness.state_mut().0.view = DocumentView::Table;
+    harness.state_mut().0.data.as_mut().unwrap().source_revision = None;
+    assert!(!harness.state().0.can_select_record());
+}
+
+#[test]
+fn home_select_record_uses_visible_query_and_saved_result_without_native_handles() {
+    for saved in [false, true] {
+        let mut state = state();
+        let mut result = page(0, 2, false);
+        result.source_revision = None;
+        result.table = "Read-only result".into();
+        if saved {
+            let target = SavedQueryTarget {
+                document_revision: 7,
+                object_id: 90,
+                name: "Read-only saved result".into(),
+            };
+            state.database.as_mut().unwrap().queries.push(SavedQuery {
+                object_id: target.object_id,
+                name: target.name.clone(),
+                system: false,
+            });
+            state.begin_saved_query_inspection(target.clone(), 1);
+            assert!(state.set_saved_query_details(1, target.clone(), Vec::new()));
+            state.begin_saved_query_run(target.clone(), Vec::new(), 2);
+            assert!(state.set_saved_query_data(2, target, result));
+            state
+                .saved_query
+                .selection
+                .select(state.saved_query.data.as_ref().unwrap(), 1, 1);
+        } else {
+            state.set_query_data(result);
+            state
+                .query_selection
+                .select(state.query_data.as_ref().unwrap(), 1, 1);
+        }
+        state.view = DocumentView::Query;
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(1280.0, 820.0))
+            .build_ui_state(
+                |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                (state, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run();
+        assert!(
+            harness
+                .get_by_role_and_label(Role::Button, "Go To")
+                .accesskit_node()
+                .is_disabled()
+        );
+        harness
+            .get_by_role_and_label(Role::Button, "Select record")
+            .click_accesskit();
+        harness.run();
+        let state = &harness.state().0;
+        let selection = if saved {
+            &state.saved_query.selection
+        } else {
+            &state.query_selection
+        };
+        assert_eq!(selection.position(), Some((1, 1)));
+        assert!(selection.row_selected());
+        assert!(state.current_delete_target().is_none());
+        assert!(harness.state().1.is_empty());
+
+        let context = harness.ctx.clone();
+        assert!(harness.state_mut().0.copy_selected(&context));
+        let mut output = context.run_ui(Default::default(), |_| {});
+        output.textures_delta.clear();
+        assert!(
+            output
+                .platform_output
+                .commands
+                .contains(&egui::OutputCommand::CopyText("1\tvalue\n".into()),)
+        );
     }
 }

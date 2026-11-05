@@ -73,3 +73,5 @@ ribbon-refresh-table = Refresh
 ribbon-refresh-table-help = Reload the current table page.
 ribbon-sorted-results = Sorted table results (read-only)
 ribbon-mock-sort-disabled = Full-table sorting is unavailable in this synthetic preview. No rows were reordered.
+
+ribbon-select-record = Select record

@@ -76,9 +76,44 @@ impl State {
                 });
             });
             self.read_commands(ui, actions);
+            self.find_commands(ui, actions);
             if self.mock_preview {
                 ribbon::home(ui, &t);
             }
+        });
+    }
+
+    fn find_commands(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        let t = self.localizer.clone();
+        group(ui, &t.text("ribbon-find-group"), |ui| {
+            ui.horizontal(|ui| {
+                if self.mock_preview {
+                    ribbon::mock_command(ui, &t, Icon::Search, "ribbon-find", CommandSize::Large);
+                }
+                ui.vertical(|ui| {
+                    if self.mock_preview {
+                        ribbon::mock_command(
+                            ui,
+                            &t,
+                            Icon::Replace,
+                            "ribbon-replace",
+                            CommandSize::Small,
+                        );
+                    }
+                    self.record_menu(ui, actions);
+                    if command(
+                        ui,
+                        Icon::Cursor,
+                        &t.text("ribbon-select-record"),
+                        self.can_select_record(),
+                        CommandSize::Small,
+                    )
+                    .clicked()
+                    {
+                        self.select_current_record(ui.ctx());
+                    }
+                });
+            });
         });
     }
 
