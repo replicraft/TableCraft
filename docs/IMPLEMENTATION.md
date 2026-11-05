@@ -2,7 +2,7 @@
 
 ## Presentation lifecycle review — 5 November 2026
 
-The shared presentation preview covers 43 synthetic scenes, including long names, query
+The shared presentation preview covers 44 synthetic scenes, including long names, query
 reruns/errors, declared parameters, collection absence/empty/NULL distinctions,
 validation and save/recovery outcomes. Parameter overflow controls, collection
 headers and bounded initial column sizing improve existing views. Terminal save
