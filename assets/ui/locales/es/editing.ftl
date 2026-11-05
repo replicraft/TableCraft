@@ -23,3 +23,15 @@ editing-release = Liberar recursos de guardado
 editing-diagnosis-required = Se requiere diagnóstico; la recuperación y liberación automáticas no están disponibles.
 editing-target = { $table } · { $column } · fila { $row }
 editing-stored-value = Valor almacenado
+
+editing-mock-rejected = La validación simulada rechazó este valor de ejemplo. No se abrió ni modificó ninguna base de datos.
+
+editing-mock-failed = Error al guardar la simulación. No se abrió ni modificó ninguna base de datos.
+
+editing-mock-diagnosis = El resultado simulado requiere un diagnóstico. No existe ningún archivo de base de datos ni diario en esta vista previa.
+
+editing-outcome-saved = Guardado completado
+
+editing-outcome-cancelled = Guardado cancelado
+
+editing-outcome-failed = El guardado requiere atención

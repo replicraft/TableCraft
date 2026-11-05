@@ -13,3 +13,5 @@ collections-unassigned = Keine Sammlung zugewiesen: { $kind }
 collections-encoded-context = { $context }; Nutzdaten bleiben codiert und werden nicht geöffnet
 collections-history-context = { $context }; gespeicherte Reihenfolge bleibt erhalten; aktueller Memo-Text ist getrennt
 collections-stored-version = gespeicherte Version
+
+collections-mock-error = Simulierter Lesefehler der Sammlung. Es wurden keine Nutzdaten geöffnet oder exportiert.

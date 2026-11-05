@@ -152,11 +152,14 @@ impl State {
                             ui.label(tr(ui, "editing-diagnosis-required"));
                         }
                     }
-                    EditSaveOutcome::Saved(message)
-                    | EditSaveOutcome::Cancelled(message)
-                    | EditSaveOutcome::Failed(message) => {
-                        ui.label(message.as_str());
-                        close = ui.button(tr(ui, "backstage-close")).clicked();
+                    EditSaveOutcome::Saved(message) => {
+                        close = terminal_outcome(ui, "editing-outcome-saved", message);
+                    }
+                    EditSaveOutcome::Cancelled(message) => {
+                        close = terminal_outcome(ui, "editing-outcome-cancelled", message);
+                    }
+                    EditSaveOutcome::Failed(message) => {
+                        close = terminal_outcome(ui, "editing-outcome-failed", message);
                     }
                 },
             }
@@ -219,4 +222,10 @@ fn stored_cell(ui: &mut egui::Ui, value: &Cell) {
             let _ = datasheet::cell(ui, value, &tr(ui, "editing-stored-value"), 1, true);
         },
     );
+}
+
+fn terminal_outcome(ui: &mut egui::Ui, heading: &str, message: &str) -> bool {
+    ui.heading(tr(ui, heading));
+    ui.label(message);
+    ui.button(tr(ui, "backstage-close")).clicked()
 }

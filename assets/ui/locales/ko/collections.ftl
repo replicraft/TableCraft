@@ -13,3 +13,5 @@ collections-unassigned = 할당된 { $kind } 컬렉션이 없습니다
 collections-encoded-context = { $context }; 데이터는 인코딩된 상태로 유지되며 열지 않습니다
 collections-history-context = { $context }; 저장된 순서를 유지하며 현재 Memo 텍스트는 별도로 취급합니다
 collections-stored-version = 저장된 버전
+
+collections-mock-error = 컬렉션 읽기 오류 시뮬레이션입니다. 페이로드를 열거나 내보내지 않았습니다.

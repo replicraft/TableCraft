@@ -13,3 +13,5 @@ collections-unassigned = Коллекция не назначена: { $kind }
 collections-encoded-context = { $context }; данные остаются закодированными и не открываются
 collections-history-context = { $context }; сохранён исходный порядок; текущий текст Memo хранится отдельно
 collections-stored-version = сохранённая версия
+
+collections-mock-error = Смоделированная ошибка чтения коллекции. Содержимое не открывалось и не экспортировалось.

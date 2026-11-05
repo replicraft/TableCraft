@@ -13,3 +13,5 @@ collections-unassigned = No hay una colección asignada de tipo { $kind }
 collections-encoded-context = { $context }; los datos siguen codificados y no se abren
 collections-history-context = { $context }; se conserva el orden almacenado; el texto Memo actual es independiente
 collections-stored-version = versión almacenada
+
+collections-mock-error = Error simulado al leer la colección. No se abrió ni exportó ningún contenido.

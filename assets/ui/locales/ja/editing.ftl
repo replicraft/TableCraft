@@ -23,3 +23,15 @@ editing-release = 保存リソースを解放
 editing-diagnosis-required = 診断が必要です。自動復旧と自動解放は利用できません。
 editing-target = { $table } · { $column } · 行 { $row }
 editing-stored-value = 保存値
+
+editing-mock-rejected = 検証のシミュレーションでこのサンプル値が拒否されました。データベースは開かれておらず、変更もされていません。
+
+editing-mock-failed = 保存のシミュレーションに失敗しました。データベースは開かれておらず、変更もされていません。
+
+editing-mock-diagnosis = シミュレーションの結果には診断が必要です。このプレビューにはデータベース ファイルもジャーナルもありません。
+
+editing-outcome-saved = 保存完了
+
+editing-outcome-cancelled = 保存のキャンセル
+
+editing-outcome-failed = 保存状態の確認が必要です

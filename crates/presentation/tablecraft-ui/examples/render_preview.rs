@@ -42,8 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for scene in scenes {
         harness.state_mut().set_scene(scene);
-        if scene == Scene::Loading {
-            // A busy spinner deliberately requests another repaint forever.
+        if scene.is_animated() {
+            // Lifecycle spinners deliberately request repaints while pending.
             // Advance a fixed number of frames instead of waiting for idle.
             harness.run_steps(ANIMATED_SCENE_STEPS);
         } else {

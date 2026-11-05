@@ -13,3 +13,5 @@ collections-unassigned = { $kind } コレクションは割り当てられてい
 collections-encoded-context = { $context }; データはエンコードされたままで、開きません
 collections-history-context = { $context }; 保存順序を保持します。現在の Memo テキストは別に扱います
 collections-stored-version = 保存済みバージョン
+
+collections-mock-error = コレクション読み取りエラーのシミュレーションです。ペイロードの読み込みやエクスポートは行っていません。

@@ -23,3 +23,15 @@ editing-release = Speicherressourcen freigeben
 editing-diagnosis-required = Eine Diagnose ist erforderlich; automatische Wiederherstellung und Freigabe sind nicht verfügbar.
 editing-target = { $table } · { $column } · Zeile { $row }
 editing-stored-value = Gespeicherter Wert
+
+editing-mock-rejected = Die simulierte Prüfung hat diesen Beispielwert abgelehnt. Es wurde keine Datenbank geöffnet oder geändert.
+
+editing-mock-failed = Das simulierte Speichern ist fehlgeschlagen. Es wurde keine Datenbank geöffnet oder geändert.
+
+editing-mock-diagnosis = Das simulierte Ergebnis erfordert eine Diagnose. In dieser Vorschau gibt es keine Datenbankdatei und kein Journal.
+
+editing-outcome-saved = Speichern abgeschlossen
+
+editing-outcome-cancelled = Speichern abgebrochen
+
+editing-outcome-failed = Speichervorgang erfordert Aufmerksamkeit
