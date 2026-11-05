@@ -98,3 +98,18 @@ It adds no fake row to the datasheet or generated-value placeholder. Actual nati
 admission may refuse a table or input. See the [runtime insertion contract](../application/RUNTIME.md#reviewed-offline-row-insertion)
 for platform, default, input and preservation limits. Unsupported Home editing or
 history commands remain unavailable.
+
+
+## Delete row
+
+Home Delete row reviews the actual current native user-table record. Its dialog
+shows the original record position and qualified field presentation, defaults to
+Cancel, and requires explicit Apply. Enter on the initial Cancel or Escape closes
+without deleting. The dialog states that Undo is unavailable. Sorted/query output,
+system tables and absent rows cannot issue this intent.
+
+The same save owner retains uncertain outcomes and resources until recovery or
+release and acknowledgement. Successful refresh uses complete native membership
+so deleting a later page's last record does not leave an unexplained empty page.
+This is a provisional explicit offline confirmation, not native Access autosave
+or an Undo implementation. See [runtime limits](../application/RUNTIME.md#reviewed-offline-row-deletion).

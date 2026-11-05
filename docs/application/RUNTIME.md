@@ -285,6 +285,32 @@ and packaged sources are read-only here; native saves are currently macOS/Linux
 only. This adds no general create-table, multirow, external-source or inline
 Access autosave guarantee. See [normal INSERT](../access/writes/NORMAL_ACE_INSERT.md).
 
+## Reviewed offline row deletion
+
+ReviewDelete captures a document revision, table and original row ordinal. The
+worker binds that ordinal against its complete native snapshot, preserves the
+qualified field captions/control/format facts for confirmation, and runs the
+normal single-row DELETE planner. The returned display review cannot authorize a
+save: only the separate opaque ReviewedDelete capability can enter SaveWorker.
+No native lease is held while the confirmation is visible.
+
+Apply uses the same save owner and durable journal as cell editing and insertion.
+It compares the complete reviewed image against the fresh exclusively retained
+capture, binds a fresh snapshot-local handle, and reconstructs the normal plan.
+Original byte equality, required programs, native constraints, relationships,
+indexes and preservation gates remain mandatory. Source drift refuses before
+journal creation and retains any actual resource owner for explicit release.
+Cancellation does not manufacture rollback or discard a completed receipt.
+
+After successful acknowledgement the host reopens the actual source. The next
+view ordinal comes from the complete reviewed membership: the next remaining
+record, the previous last record, or zero when empty. It does not use a declared
+row count or a browser page prefix, and it is not a native mutation handle.
+Query/sorted output, system tables and absent records cannot issue the UI intent.
+The existing plain-source, offline and macOS/Linux save limits apply. This route
+adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
+validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
+
 ## Native saved queries and declared parameters
 
 Open now publishes table and saved-query declarations from one inert

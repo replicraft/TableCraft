@@ -155,11 +155,12 @@ capabilities forwarded, root named-query ownership and target field policies int
 Database
 header/catalog inspection is available through `inspect`/`inspect --catalog`; the bounded `query update` command creates fresh offline Jet 4 copies under
 [explicit editing limits](docs/access/writes/QUERY_EDITING.md). The desktop host now
-composes shared UI and runtime services. Its explicit offline cell edits and row
-insertion use runtime-issued consuming reviews and one nonreplaceable save worker;
+composes shared UI and runtime services. Its explicit offline cell edits, insertion
+and deletion use runtime-issued consuming reviews and one nonreplaceable save worker;
 retain terminal outcomes and resource owners across cancellation and view changes.
-Follow the [application editing contract](docs/application/RUNTIME.md#reviewed-offline-cell-edits)
-and [insertion contract](docs/application/RUNTIME.md#reviewed-offline-row-insertion).
+Follow the [application editing contract](docs/application/RUNTIME.md#reviewed-offline-cell-edits),
+[insertion contract](docs/application/RUNTIME.md#reviewed-offline-row-insertion)
+and [deletion contract](docs/application/RUNTIME.md#reviewed-offline-row-deletion).
 Keep omitted fields distinct from explicit NULL and supplied values; display
 formatting must never become implicit edit input or invented generated defaults.
 Follow [NATIVE_READING.md](docs/access/NATIVE_READING.md) for supported native

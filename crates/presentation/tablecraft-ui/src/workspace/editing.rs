@@ -109,6 +109,7 @@ impl State {
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
         if self.view != DocumentView::Table
             || self.insertion_dialog_open()
+            || self.deletion_dialog_open()
             || self.table_selection.row_selected()
             || self.backstage_visible()
             || self.contents_request_id().is_some()
@@ -325,6 +326,7 @@ impl State {
 
     pub fn edit_save_pending(&self) -> bool {
         self.insert_save_pending()
+            || self.delete_save_pending()
             || matches!(
                 &self.edit,
                 Some(EditDialog::Saving { .. })
@@ -335,7 +337,7 @@ impl State {
             )
     }
     pub fn edit_dialog_open(&self) -> bool {
-        self.edit.is_some() || self.insertion_dialog_open()
+        self.edit.is_some() || self.insertion_dialog_open() || self.deletion_dialog_open()
     }
 
     /// Saving is nonreplaceable: close/cancel must wait for a terminal outcome.
@@ -348,6 +350,13 @@ impl State {
     }
 
     pub(super) fn edit_status(&self) -> String {
+        if self.deletion_dialog_open() {
+            return self.localizer.text(if self.delete_save_pending() {
+                "shell-saving-offline"
+            } else {
+                "deletion-title"
+            });
+        }
         if self.insertion_dialog_open() {
             return self.localizer.text(
                 if matches!(
@@ -369,6 +378,7 @@ impl State {
 
     pub(super) fn invalidate_edit(&mut self) {
         self.invalidate_insert();
+        self.invalidate_delete();
         if matches!(
             &self.edit,
             Some(EditDialog::Checking { .. } | EditDialog::Draft { .. })

@@ -39,6 +39,9 @@ enum PendingOperation {
     Insert {
         request_id: u64,
     },
+    Delete {
+        request_id: u64,
+    },
 }
 
 pub(super) struct Desktop {
@@ -175,6 +178,9 @@ impl Desktop {
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
                 }
+                Ok(Response::DeleteReviewed { review, capability }) => {
+                    self.publish_delete_review(generation, review, capability);
+                }
                 Ok(Response::InsertDraft(draft)) => self.publish_insert_draft(generation, draft),
                 Ok(Response::InsertReviewed { review, capability }) => {
                     self.publish_insert_review(generation, review, capability);
@@ -307,6 +313,9 @@ impl Desktop {
                     PendingOperation::Edit { request_id } => {
                         self.state.fail_edit(*request_id, error.to_string());
                     }
+                    PendingOperation::Delete { request_id } => {
+                        self.state.fail_delete(*request_id, error.to_string());
+                    }
                     PendingOperation::Insert { request_id } => {
                         self.state.fail_insert(*request_id, error.to_string());
                     }
@@ -413,6 +422,9 @@ impl eframe::App for Desktop {
                 Action::Query => self.submit(Command::Query {
                     sql: self.state.sql.clone(),
                 }),
+                Action::ReviewDelete { target } => self.review_delete(target),
+                Action::ApplyDelete { review_id } => self.apply_delete(review_id),
+                Action::CloseDelete { request_id } => self.close_delete(request_id),
                 Action::BeginInsert { target } => self.begin_insert(target),
                 Action::ReviewInsert { draft_id, inputs } => self.review_insert(draft_id, inputs),
                 Action::ApplyInsert { review_id } => self.apply_insert(review_id),
@@ -436,6 +448,12 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::Delete { request_id } => {
+                                self.state.fail_delete(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::Insert { request_id } => {
                                 self.state.fail_insert(
                                     *request_id,

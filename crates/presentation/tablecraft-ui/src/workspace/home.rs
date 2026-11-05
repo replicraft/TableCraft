@@ -196,12 +196,21 @@ impl State {
                     {
                         actions.push(Action::BeginInsert { target });
                     }
+                    let target = self.current_delete_target();
+                    if command(
+                        ui,
+                        Icon::Delete,
+                        &t.text("deletion-title"),
+                        target.is_some(),
+                        CommandSize::Small,
+                    )
+                    .clicked()
+                        && let Some(target) = target
+                    {
+                        actions.push(Action::ReviewDelete { target });
+                    }
                     if self.mock_preview {
-                        for (icon, key) in
-                            [(Icon::Save, "ribbon-save"), (Icon::Delete, "ribbon-delete")]
-                        {
-                            ribbon::mock_command(ui, &t, icon, key, CommandSize::Small);
-                        }
+                        ribbon::mock_command(ui, &t, Icon::Save, "ribbon-save", CommandSize::Small);
                     }
                 });
                 if self.mock_preview {

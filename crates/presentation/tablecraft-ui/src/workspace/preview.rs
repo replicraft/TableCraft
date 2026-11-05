@@ -3,6 +3,7 @@
 //! No file, database, query evaluator or task service is available to this host.
 mod actions;
 mod collections;
+mod deletion;
 mod editing;
 mod errors;
 mod fixtures;
@@ -34,6 +35,8 @@ pub enum Scene {
     Edit,
     NewRecord,
     InsertReview,
+    DeleteChecking,
+    DeleteReview,
     Review,
     Recovery,
     Backstage,
@@ -65,7 +68,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 46] = [
+    pub const ALL: [Self; 48] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
@@ -84,6 +87,8 @@ impl Scene {
         Self::Edit,
         Self::NewRecord,
         Self::InsertReview,
+        Self::DeleteChecking,
+        Self::DeleteReview,
         Self::Review,
         Self::Recovery,
         Self::Backstage,
@@ -123,6 +128,7 @@ impl Scene {
                 | Self::SavedInspecting
                 | Self::SavedRunning
                 | Self::CollectionLoading
+                | Self::DeleteChecking
                 | Self::EditChecking
                 | Self::EditValidating
                 | Self::SaveApplying
@@ -151,6 +157,8 @@ impl Scene {
             Self::Edit => "edit",
             Self::NewRecord => "new-record",
             Self::InsertReview => "insert-review",
+            Self::DeleteChecking => "delete-checking",
+            Self::DeleteReview => "delete-review",
             Self::Review => "review",
             Self::Recovery => "recovery",
             Self::Backstage => "backstage",
@@ -272,6 +280,8 @@ impl Preview {
             Scene::Edit => self.open_edit(),
             Scene::NewRecord => self.prepare_insert_scene(false),
             Scene::InsertReview => self.prepare_insert_scene(true),
+            Scene::DeleteChecking => self.prepare_delete_scene(false),
+            Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Review | Scene::Recovery => {
                 self.open_edit();
                 let input = EditInput {

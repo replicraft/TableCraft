@@ -67,7 +67,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 46 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 48 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -572,3 +572,12 @@ single save owner. Backend admission remains responsible for supported types,
 constraints and native insertion; the dialog does not assume defaults or skip
 required programs. This explicit offline dialog is a provisional application
 workflow, not a verified replica of Access's inline new-record row.
+
+
+The `delete-checking` and `delete-review` scenes exercise the existing reviewed,
+offline single-row deletion UI with synthetic source-bound rows. Home's Delete
+placement follows the retained Access Home Ribbon capture. No deletion confirmation
+capture is retained: this bounded confirmation layout remains provisional. It
+shows the actual reviewed row and count, initially focuses Cancel, and exposes no
+implicit acceptance on Enter. Native Access deletion interaction has not been
+verified by these headless previews.
