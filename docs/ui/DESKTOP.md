@@ -149,7 +149,7 @@ builds or its mock scenarios pass.
 | Light and dark themes | Shared semantic palette, actual selected-text/badge paint checks, inspected offscreen frames | No retained Access dark-mode capture establishes visual parity. |
 | Ribbon artwork | Original generated, hash-inventoried SVGs with theme/disabled variants; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
 | Existing mock workflows | Source-bound scenes, admission/state checks and the dated [presentation verification](PRESENTATION_PREVIEW.md) | Synthetic outcomes do not qualify backend operations. |
-| Access reference fidelity | Retained Home/datasheet, Table Design and Account Backstage captures guide their corresponding surfaces | Query/parameter, edit/collection and Open/error layouts remain adaptations without matching captures. |
+| Access reference fidelity | Retained Home/datasheet, Table Design and Account Backstage captures guide their corresponding surfaces | Published parameter and attachment images extend the reference record; other dialog/dark layouts remain adaptations, and native interaction parity is still unqualified. |
 | Native behavior | Earlier macOS observations are recorded below with their scope and dates | Current full keyboard/assistive-tool traversal, Windows/Linux window behavior and monitor-scale transitions remain unqualified. Native checks are suspended at the user's request. |
 
 These limits do not authorize new database functionality or resume deferred
