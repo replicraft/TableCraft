@@ -149,17 +149,17 @@ impl Preview {
             } => {
                 self.state.close_table(document_revision, &table);
             }
-            Action::SortTable {
-                document_revision,
-                table,
-                column,
-                descending: _,
+            Action::SortView {
+                target,
+                sort,
+                enabled,
             } => {
-                if self
-                    .state
-                    .can_sort_table(document_revision, &table, &column)
-                {
-                    self.state.error = Some(self.state.localizer.text("ribbon-mock-sort-disabled"));
+                let request = self.request();
+                if self.state.begin_sort_view(request, target, sort, enabled) {
+                    self.state.fail_filter(
+                        request,
+                        self.state.localizer.text("filtering-sort-mock-unavailable"),
+                    );
                 }
             }
             Action::BeginInsert { target } => self.mock_begin_insert(target),

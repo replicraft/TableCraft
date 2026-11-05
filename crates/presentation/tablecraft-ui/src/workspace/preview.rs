@@ -47,6 +47,7 @@ pub enum Scene {
     FilterEmpty,
     FilterDisabled,
     FilterError,
+    Sorted,
     Zoom,
     Review,
     Recovery,
@@ -79,7 +80,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 55] = [
+    pub const ALL: [Self; 56] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
@@ -106,6 +107,7 @@ impl Scene {
         Self::FilterEmpty,
         Self::FilterDisabled,
         Self::FilterError,
+        Self::Sorted,
         Self::Zoom,
         Self::Review,
         Self::Recovery,
@@ -184,6 +186,7 @@ impl Scene {
             Self::FilterEmpty => "filter-empty",
             Self::FilterDisabled => "filter-disabled",
             Self::FilterError => "filter-error",
+            Self::Sorted => "sorted",
             Self::Zoom => "zoom",
             Self::Review => "review",
             Self::Recovery => "recovery",
@@ -314,6 +317,7 @@ impl Preview {
             Scene::FilterEmpty => self.prepare_filter_scene(filtering::FilterScene::Empty),
             Scene::FilterDisabled => self.prepare_filter_scene(filtering::FilterScene::Disabled),
             Scene::FilterError => self.prepare_filter_scene(filtering::FilterScene::Error),
+            Scene::Sorted => self.prepare_sorted_scene(),
             Scene::Zoom => self.prepare_zoom_scene(),
             Scene::Review | Scene::Recovery => {
                 self.open_edit();

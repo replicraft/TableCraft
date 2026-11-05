@@ -566,7 +566,7 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
         .click_accesskit();
     harness.run();
     assert!(
-        matches!(harness.state().1.as_slice(), [Action::SortTable { document_revision, table: actual_table, column: actual_column, descending: false }] if *document_revision == revision && actual_table == &table && actual_column == &column)
+        matches!(harness.state().1.as_slice(), [Action::SortView { target, sort: Some(sort), enabled: false }] if target.document_revision == revision && target.table == table && target.filter_id.is_none() && sort.column == column && !sort.descending)
     );
     assert!(
         harness
@@ -605,49 +605,30 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
         .click_accesskit();
     harness.run();
     assert!(
-        matches!(harness.state().1.as_slice(), [Action::SortTable { document_revision, table: actual_table, column: actual_column, descending: true }] if *document_revision == revision && actual_table == &table && actual_column == &column)
+        matches!(harness.state().1.as_slice(), [Action::SortView { target, sort: Some(sort), enabled: false }] if target.document_revision == revision && target.table == table && target.filter_id.is_none() && sort.column == column && sort.descending)
     );
-    assert!(
-        !harness
-            .state()
-            .0
-            .can_sort_table(revision + 1, &table, &column)
-    );
-    assert!(
-        !harness
-            .state()
-            .0
-            .can_sort_table(revision, &table, "missing column")
-    );
-}
-
-#[test]
-fn sorted_result_publication_refuses_native_or_partial_data_and_keeps_sql_buffer_literal() {
-    let mut preview = Preview::new(Scene::Datasheet);
-    let state = preview.state_mut();
-    let sql = state.sql.clone();
-    assert!(!state.set_sorted_query_data(table()));
-    assert!(state.view == DocumentView::Table);
-    let mut sorted = table();
-    sorted.source_revision = None;
-    sorted.offset = 0;
-    sorted.has_more = true;
-    assert!(!state.set_sorted_query_data(sorted));
-    let mut sorted = table();
-    sorted.source_revision = None;
-    sorted.offset = 0;
-    assert!(state.set_sorted_query_data(sorted));
-    assert!(state.view == DocumentView::Query);
-    assert!(state.sorted_query);
-    assert!(
-        !state.query_ready(),
-        "an unrelated SQL buffer must not run as the sort definition"
-    );
-    assert_eq!(state.sql, sql);
-    assert!(state.query_data.as_ref().unwrap().source_revision.is_none());
-    state.query_data = None;
-    assert!(
-        state.query_ready(),
-        "opening another document exposes the actual SQL editor again"
-    );
+    assert!(!harness.state().0.can_sort_view(
+        &crate::SortTarget {
+            document_revision: revision + 1,
+            table: table.clone(),
+            filter_id: None
+        },
+        Some(&crate::SortSpec {
+            column: column.clone(),
+            descending: false
+        }),
+        false
+    ));
+    assert!(!harness.state().0.can_sort_view(
+        &crate::SortTarget {
+            document_revision: revision,
+            table: table.clone(),
+            filter_id: None
+        },
+        Some(&crate::SortSpec {
+            column: "missing column".into(),
+            descending: false
+        }),
+        false
+    ));
 }

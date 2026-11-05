@@ -1,9 +1,9 @@
 //! Full immutable native-table Find, independent of loaded browser pages.
 use super::{request, stored::opened};
 use crate::{
-    CellKind, Command, Error, FilterComparison, FilterError, FilterSelectionTarget, FindDirection,
-    FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget, Response,
-    Worker,
+    CellKind, Command, Error, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,
+    FilteredData, FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope,
+    FindSpan, FindTarget, Response, SortSpec, SortTarget, Worker,
 };
 use tablecraft_display::Options;
 use tablecraft_testkit::fixtures::access::{
@@ -217,6 +217,7 @@ fn filtered_find_excludes_hidden_matches_crosses_pages_and_binds_issued_source()
                 parent_ordinal: 0,
                 column: "Score".into(),
                 filter_id: None,
+                enabled: false,
             },
             comparison: FilterComparison::Equal,
             base: None,
@@ -319,4 +320,167 @@ fn complex_fields_refuse_find_without_exposing_internal_owner_keys() {
         Err(Error::Find(FindError::UnsupportedField))
     ));
     assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn sorted_find_uses_display_order_for_occurrences_directions_wrap_and_filtered_pages() {
+    let rows: Vec<_> = (0..105)
+        .map(|ordinal| {
+            let score = match ordinal {
+                0 => 20,
+                1 => 30,
+                104 => 10,
+                _ => 40 + ordinal,
+            };
+            (1111, score)
+        })
+        .collect();
+    let bytes = mutation_fixture::with_rows_and_sort_order(&rows, [9, 4, 0, 0]);
+    let (_directory, path, worker, revision) = opened(&bytes);
+    let sorted = |base: Option<FilterHandle>, enabled| {
+        let Response::FilteredData(data) = request(
+            &worker,
+            Command::SortView {
+                target: SortTarget {
+                    document_revision: revision,
+                    table: "Items".into(),
+                    filter_id: base.as_ref().map(|handle| handle.target().filter_id),
+                },
+                sort: Some(SortSpec {
+                    column: "Score".into(),
+                    descending: false,
+                }),
+                base,
+                enabled,
+            },
+        )
+        .unwrap() else {
+            panic!("expected complete native sorted membership");
+        };
+        data
+    };
+    let view = sorted(None, false);
+    assert_eq!(&view.source_ordinals[..3], [104, 0, 1]);
+    assert!(view.has_more);
+    let search_view = |view: &FilteredData, options: FindRequest| {
+        let Response::Found { position, .. } = request(
+            &worker,
+            Command::FindFiltered {
+                handle: view.handle.clone(),
+                request: options,
+                enabled: view.enabled,
+            },
+        )
+        .unwrap() else {
+            panic!("expected complete Find over sorted membership");
+        };
+        position
+    };
+    let mut options = search(revision, "11");
+    options.matching = FindMatch::Any;
+    let first = search_view(&view, options.clone()).unwrap();
+    assert_eq!(first.parent_ordinal, 104);
+    assert_eq!(first.span.as_ref().unwrap().start_utf16, 0);
+    options.start = Some(first);
+    let second = search_view(&view, options.clone()).unwrap();
+    assert_eq!(second.parent_ordinal, 104);
+    assert_eq!(second.span.as_ref().unwrap().start_utf16, 2);
+    options.start = Some(second.clone());
+    options.direction = FindDirection::Down;
+    let next = search_view(&view, options.clone()).unwrap();
+    assert_eq!(next.parent_ordinal, 0);
+    assert_eq!(next.span.as_ref().unwrap().start_utf16, 0);
+    options.start = Some(next);
+    options.direction = FindDirection::Up;
+    let previous = search_view(&view, options.clone()).unwrap();
+    assert_eq!(previous, second);
+
+    let mut tail = search(revision, "143");
+    tail.scope = FindScope::Field("Score".into());
+    let last = search_view(&view, tail.clone()).unwrap();
+    assert_eq!(last.parent_ordinal, 103);
+    assert_eq!(
+        view.handle.display_offset_for_ordinal(view.enabled, 103),
+        Some(104)
+    );
+    options.start = Some(FindPosition {
+        parent_ordinal: 103,
+        column: "Id".into(),
+        span: Some(FindSpan {
+            start_utf16: 2,
+            end_utf16: 4,
+        }),
+    });
+    options.direction = FindDirection::All;
+    let wrapped = search_view(&view, options.clone()).unwrap();
+    assert_eq!(wrapped.parent_ordinal, 104);
+    assert_eq!(wrapped.span.as_ref().unwrap().start_utf16, 0);
+    options.direction = FindDirection::Down;
+    assert!(search_view(&view, options).is_none());
+
+    let Response::FilteredData(filtered) = request(
+        &worker,
+        Command::FilterSelection {
+            target: FilterSelectionTarget {
+                document_revision: revision,
+                table: "Items".into(),
+                parent_ordinal: 0,
+                column: "Score".into(),
+                filter_id: None,
+                enabled: false,
+            },
+            comparison: FilterComparison::NotEqual,
+            base: None,
+        },
+    )
+    .unwrap() else {
+        panic!("expected complete selection membership");
+    };
+    let view = sorted(Some(filtered.handle), true);
+    assert_eq!(&view.source_ordinals[..2], [104, 1]);
+    let mut after_first = search(revision, "11");
+    after_first.matching = FindMatch::Any;
+    after_first.start = Some(second);
+    assert_eq!(search_view(&view, after_first).unwrap().parent_ordinal, 1);
+    assert_eq!(search_view(&view, tail).unwrap().parent_ordinal, 103);
+    assert_eq!(
+        view.handle.display_offset_for_ordinal(view.enabled, 103),
+        Some(103)
+    );
+    let Response::FilteredData(empty) = request(
+        &worker,
+        Command::FilterSelection {
+            target: FilterSelectionTarget {
+                document_revision: revision,
+                table: "Items".into(),
+                parent_ordinal: 0,
+                column: "Id".into(),
+                filter_id: None,
+                enabled: false,
+            },
+            comparison: FilterComparison::NotEqual,
+            base: None,
+        },
+    )
+    .unwrap() else {
+        panic!("expected complete empty membership");
+    };
+    let off = sorted(Some(empty.handle), false);
+    assert_eq!(off.matched_rows, 0);
+    assert_eq!(off.source_rows, 105);
+    assert!(
+        matches!(
+            request(
+                &worker,
+                Command::FindFiltered {
+                    handle: off.handle,
+                    request: search(revision, "absent"),
+                    enabled: true,
+                }
+            ),
+            Err(Error::Find(FindError::InvalidTarget))
+        ),
+        "an uncached empty mode must refuse before returning Not found"
+    );
+    assert_eq!(std::fs::read(path).unwrap(), bytes);
 }

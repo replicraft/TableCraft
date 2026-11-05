@@ -11,9 +11,6 @@ use tablecraft_ace::{DatabaseQueryMode, NativeReadSource};
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::predicates::LikeMode;
 use tablecraft_query::{ExecutionOptions, QueryLimits, execute_with_schema_discovery};
-use tablecraft_sql::select::{
-    Expression, FieldReference, Name, Projection, Select, SortKey, Table, TableSource,
-};
 use tablecraft_sql::{ParseLimits, parse_query, query::Query};
 
 const SQL_BYTES: usize = 64 * 1024;
@@ -22,59 +19,6 @@ const QUERY_ROWS: u64 = 10_000;
 const QUERY_STEPS: u64 = 1_000_000;
 
 impl Document {
-    pub(super) fn sort_table(
-        &mut self,
-        document_revision: u64,
-        table: &str,
-        column: &str,
-        descending: bool,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Response, Error> {
-        check(cancelled)?;
-        if self.revision != document_revision {
-            return Err(Error::StaleDocument);
-        }
-
-        // Names are owned identifiers, never interpolated into executable SQL.
-        let limits = ParseLimits::default();
-        let mut select = Select::from_projection(
-            vec![Projection::Wildcard(None)],
-            vec![TableSource::Table(Table {
-                database: None,
-                name: Name::from_contents(table, limits)?,
-                alias: None,
-            })],
-        );
-        select.order_by.push(SortKey {
-            expression: Expression::Field(FieldReference {
-                qualifier: None,
-                name: Name::from_contents(column, limits)?,
-            }),
-            descending,
-        });
-        let query = Query::from_select(select);
-        let mut work = budget();
-        let metadata = crate::rows::presentation::Metadata::inspect(
-            &mut self.source,
-            table,
-            &mut work,
-            cancelled,
-        )?;
-        let source = NativeSource::new(&mut self.source, SCOPE, work, cancelled)?;
-        let comparison_pool = RefCell::new(comparison_budget());
-        let (mut source, resolver) =
-            source.with_deferred_database_collation_resolver(&comparison_pool)?;
-        execute(
-            &query,
-            &mut source,
-            &resolver,
-            &[],
-            table,
-            Some(&metadata),
-            cancelled,
-        )
-    }
-
     pub(super) fn query(
         &mut self,
         sql: &str,
@@ -95,7 +39,6 @@ impl Document {
             &resolver,
             &[],
             "Query results",
-            None,
             cancelled,
         )
     }
@@ -107,7 +50,6 @@ pub(super) fn execute<R: NativeReadSource>(
     resolver: &NativeCollationResolver<'_>,
     parameters: &[(&str, Value)],
     title: &str,
-    metadata: Option<&crate::rows::presentation::Metadata>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     let like_mode = match source.database_query_mode()? {
@@ -134,12 +76,8 @@ pub(super) fn execute<R: NativeReadSource>(
     )?;
     let mut output = Presentation::new(cancelled);
     let mut columns = output.columns(result.columns().len())?;
-    for (position, name) in result.columns().iter().enumerate() {
-        let column = match metadata {
-            Some(metadata) => metadata.column(position, name, &mut output)?,
-            None => crate::column::plain(name, &mut output)?,
-        };
-        columns.push(column);
+    for name in result.columns() {
+        columns.push(crate::column::plain(name, &mut output)?);
     }
     let mut rows = output.rows(result.rows().len())?;
     for values in result.rows() {
@@ -157,9 +95,6 @@ pub(super) fn execute<R: NativeReadSource>(
             row.push(cell);
         }
         rows.push(row);
-    }
-    if let Some(metadata) = metadata {
-        metadata.enrich(&columns, &mut rows, &mut output)?;
     }
     Ok(Response::Data {
         source_revision: None,

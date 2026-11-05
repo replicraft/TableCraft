@@ -1,7 +1,7 @@
 //! Qualify one typed selection, then publish complete immutable membership only.
 use super::{
     Criterion, FILTER_STEPS, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,
-    FilterState, FilterTarget, MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, issue_id,
+    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria,
 };
 use crate::{
     Error, Response,
@@ -27,16 +27,14 @@ impl Document {
         }
 
         match (base, target.filter_id) {
-            (None, None) => {}
+            (None, None) if !target.enabled => {}
             (Some(base), Some(id)) => {
                 self.check_filter(base)?;
                 if base.target().filter_id != id
                     || base.target().table != target.table
                     || base
-                        .state
-                        .ordinals
-                        .binary_search(&target.parent_ordinal)
-                        .is_err()
+                        .display_offset_for_ordinal(target.enabled, target.parent_ordinal)
+                        .is_none()
                 {
                     return Err(FilterError::InvalidSelection.into());
                 }
@@ -65,7 +63,7 @@ impl Document {
         work.charge_allocation(MAX_FILTER_FIELDS as u64, size_of::<Criterion>() as u64)?;
         let mut predicates = Vec::new();
         predicates.try_reserve_exact(MAX_FILTER_FIELDS)?;
-        if let Some(base) = base {
+        if let Some(base) = base.filter(|_| target.enabled) {
             for criterion in &base.state.definition.state.criteria {
                 check(cancelled)?;
                 work.charge(
@@ -117,26 +115,25 @@ impl Document {
         check(cancelled)?;
 
         let table = criteria::copy_text(&target.table, &mut work, cancelled)?;
-        work.charge_allocation(1, size_of::<FilterState>() as u64)?;
-        let handle = FilterHandle {
-            state: Arc::new(FilterState {
-                source: Arc::clone(&self.filter_source),
-                target: FilterTarget {
-                    document_revision: self.revision,
-                    table,
-                    filter_id: issue_id()?,
-                },
-                definition: super::definition::create(
-                    &target.table,
-                    predicates,
-                    &mut work,
-                    cancelled,
-                )?,
+        let sort = base
+            .map(|base| {
+                super::sorting::inherited_sort(&base.state.definition, &mut work, cancelled)
+            })
+            .transpose()?
+            .flatten();
+        self.publish_view(
+            super::sorting::ViewBuild {
+                table,
+                predicates,
+                sort,
                 ordinals,
                 source_rows,
-            }),
-        };
-        self.filter_page(&handle, 0, true, cancelled)
+                enabled: true,
+                offset: 0,
+            },
+            &mut work,
+            cancelled,
+        )
     }
 
     pub(crate) fn check_filter(&self, handle: &FilterHandle) -> Result<(), Error> {

@@ -1,5 +1,26 @@
 # Implementation status
 
+## Native editable sorting — 5 November 2026
+
+Header sorting and Home Ascending/Descending now build a complete native view
+without replacing the table with a read-only query result. Filter criteria and
+sorting compose: Remove Sort retains predicates; Clear All Filters retains the
+sort; toggling a filter computes the requested membership's order before replacing
+the view. Native record identities survive nonmonotone display order, Find,
+paging and reviewed edits. Save/reopen rebinds the retained preferences against
+the new source rather than reusing old row rights.
+
+The combined gate passed 174 UI, 88 runtime and 38 desktop checks, plus the runtime
+exporter test. This includes a reviewed edit in a descending filtered table and
+sorted Find across page boundaries. The extracted strict stored-key service also
+passed 28 key checks and strict query Clippy. Follow-up field-admission and
+uncached-mode checks passed; final strict seven-package Clippy and minimal runtime
+Clippy passed. Light/dark sorted exports were inspected offscreen.
+Sorting currently has one field;
+query-result sorting, broader filter editors and persisted Access OrderBy/Filter
+properties remain unfinished. See the [runtime contract](application/RUNTIME.md#native-table-sorting)
+and [desktop record](ui/DESKTOP.md#native-editable-sorting--5-november-2026).
+
 ## Native selection filtering — 5 November 2026
 
 Home Selection, Toggle Filter and Clear All now use native typed values and
@@ -12,9 +33,9 @@ The combined gate passed 170 UI, 83 runtime, 37 desktop and five display tests
 plus the runtime documentation example; follow-up field-admission, geometry and
 focus/copy checks passed. Strict selected Clippy and minimal runtime checks passed.
 Eight light/dark offscreen exports were inspected without opening a native window.
-The UI matrix now covers 55 × eight × two combinations. Query-result filtering,
-filter-aware sorting, range/form filters and persisted Access Filter properties
-remain unfinished. See the [desktop record](ui/DESKTOP.md#native-selection-filtering--5-november-2026)
+At that checkpoint the UI matrix covered 55 × eight × two combinations.
+Query-result filtering, range/form filters and persisted Access Filter properties
+remain unfinished; the sorting record above supersedes its earlier limitation. See the [desktop record](ui/DESKTOP.md#native-selection-filtering--5-november-2026)
 and [runtime contract](application/RUNTIME.md#native-table-filtering).
 
 ## Sparse native row identity — 5 November 2026

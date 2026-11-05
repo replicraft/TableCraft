@@ -1,5 +1,5 @@
 //! Read one original band once and present only its checked visible membership.
-use super::{FilterHandle, FilterTarget, FilteredData};
+use super::{FilterHandle, FilterTarget, FilteredData, SortSpec};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -21,6 +21,8 @@ impl Document {
     ) -> Result<Response, Error> {
         check(cancelled)?;
         self.check_filter(handle)?;
+        let enabled = enabled && handle.filter_count() != 0;
+        let handle = self.filter_for_mode(handle, enabled, cancelled)?;
         let count = if enabled {
             handle.matched_rows()
         } else {
@@ -37,15 +39,11 @@ impl Document {
         ordinals.try_reserve_exact(returned as usize)?;
         for visible in offset..offset + returned {
             output.work(1)?;
-            ordinals.push(if enabled {
-                *handle
-                    .state
-                    .ordinals
-                    .get(visible as usize)
-                    .ok_or(InspectError::Malformed)?
-            } else {
-                visible
-            });
+            ordinals.push(
+                handle
+                    .display_ordinal(enabled, visible)
+                    .ok_or(InspectError::Malformed)?,
+            );
         }
         // The map scan and band read are separately named bounded phases. This
         // native allowance is never reset per selected row, field or collection.
@@ -56,9 +54,11 @@ impl Document {
             &mut page_work,
             cancelled,
         )?;
-        let (columns, rows) = if let (Some(&first), Some(&last)) =
-            (ordinals.first(), ordinals.last())
-        {
+        output.work(ordinals.len() as u64 * 2)?;
+        let (columns, rows) = if let (Some(first), Some(last)) = (
+            ordinals.iter().copied().min(),
+            ordinals.iter().copied().max(),
+        ) {
             let width = last
                 .checked_sub(first)
                 .and_then(|width| width.checked_add(1))
@@ -125,6 +125,16 @@ impl Document {
             matched_rows: handle.matched_rows(),
             source_rows: handle.source_rows(),
             has_more: offset + returned < count,
+            sort: handle
+                .sort()
+                .map(|sort| -> Result<SortSpec, Error> {
+                    Ok(SortSpec {
+                        column: output.text(&sort.column)?,
+                        descending: sort.descending,
+                    })
+                })
+                .transpose()?,
+            filter_count: handle.filter_count(),
         }))
     }
 }

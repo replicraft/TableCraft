@@ -57,6 +57,8 @@ impl Preview {
             filter_id: request,
         };
         let publication = FilterPublication {
+            sort: None,
+            filter_count: 1,
             target: target.clone(),
             enabled: true,
             matched_rows,
@@ -87,5 +89,51 @@ impl Preview {
             self.state
                 .fail_filter(request, self.state.localizer.text("filtering-mock-error"));
         }
+    }
+}
+
+impl Preview {
+    pub(super) fn prepare_sorted_scene(&mut self) {
+        let columns = fixtures::page("Customers", 0).columns;
+        let mut source = Vec::new();
+        for offset in (0..fixtures::TOTAL_ROWS).step_by(fixtures::PAGE_ROWS as usize) {
+            source.extend(fixtures::page("Customers", offset).rows);
+        }
+        let mut rows = Vec::new();
+        let mut ordinals = Vec::new();
+        for (ordinal, row) in source
+            .into_iter()
+            .enumerate()
+            .rev()
+            .take(fixtures::PAGE_ROWS as usize)
+        {
+            rows.push(row);
+            ordinals.push(ordinal as u32);
+        }
+        let filter_id = self.request();
+        self.state.install_filtered_view(FilterPublication {
+            target: FilterTarget {
+                document_revision: fixtures::REVISION,
+                table: "Customers".into(),
+                filter_id,
+            },
+            sort: Some(crate::SortSpec {
+                column: "CustomerID".into(),
+                descending: true,
+            }),
+            filter_count: 0,
+            enabled: false,
+            matched_rows: fixtures::TOTAL_ROWS,
+            source_rows: fixtures::TOTAL_ROWS,
+            data: Data {
+                source_revision: Some(fixtures::REVISION),
+                row_ordinals: Some(RowOrdinals::from_display_order(ordinals).unwrap()),
+                table: "Customers".into(),
+                offset: 0,
+                columns,
+                rows,
+                has_more: true,
+            },
+        });
     }
 }

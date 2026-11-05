@@ -4,9 +4,10 @@ mod preview;
 mod selection;
 pub(crate) use selection::Selection;
 
-use super::{Action, Cell, Data, HorizontalAlignment};
+use super::{Action, Cell, Data, HorizontalAlignment, SortSpec, SortTarget};
 use crate::localization::{for_context, message, tr};
 use crate::workspace::focus::{self, Pane};
+use crate::workspace::ribbon::Icon;
 use egui::{Response, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
@@ -19,10 +20,17 @@ const DATA_ROW_HEIGHT: f32 = 20.0;
 const SORT_CONTROL_WIDTH: f32 = 18.0;
 const SORT_CHEVRON_HALF_WIDTH: f32 = 3.0;
 
+pub(crate) struct SortHeader {
+    pub commands_enabled: bool,
+    pub target: SortTarget,
+    pub enabled: bool,
+    pub sort: Option<SortSpec>,
+}
+
 struct RowView {
     collection: bool,
     pane: Pane,
-    sort_revision: Option<u64>,
+    sort_header: Option<SortHeader>,
 }
 
 pub(super) fn show(
@@ -30,7 +38,7 @@ pub(super) fn show(
     data: &Data,
     selection: &mut Selection,
     pane: Pane,
-    sort_revision: Option<u64>,
+    sort_header: Option<SortHeader>,
 ) -> Vec<Action> {
     let mut actions = Vec::new();
     if let Some(error) = selection.copy_error(ui.ctx()) {
@@ -45,7 +53,7 @@ pub(super) fn show(
         RowView {
             collection: false,
             pane,
-            sort_revision,
+            sort_header,
         },
     );
     actions
@@ -66,7 +74,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         RowView {
             collection: true,
             pane: Pane::Document,
-            sort_revision: None,
+            sort_header: None,
         },
     );
 }
@@ -89,7 +97,7 @@ fn show_rows(
         RowView {
             collection: false,
             pane,
-            sort_revision: None,
+            sort_header: None,
         },
     )
 }
@@ -164,8 +172,13 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                let label =
-                                    column_header(ui, data, index, view.sort_revision, actions);
+                                let label = column_header(
+                                    ui,
+                                    data,
+                                    index,
+                                    view.sort_header.as_ref(),
+                                    actions,
+                                );
                                 let description = message(
                                     ui,
                                     "datasheet-field-name",
@@ -286,12 +299,12 @@ fn column_header(
     ui: &mut Ui,
     data: &Data,
     index: usize,
-    sort_revision: Option<u64>,
+    sort_header: Option<&SortHeader>,
     actions: &mut Vec<Action>,
 ) -> Response {
     let column = &data.columns[index];
     let rect = ui.max_rect();
-    let sort_width = sort_revision.map_or(0.0, |_| SORT_CONTROL_WIDTH);
+    let sort_width = sort_header.map_or(0.0, |_| SORT_CONTROL_WIDTH);
     let caption = rect.shrink2(egui::vec2(sort_width, 0.0));
     let label = ui
         .put(
@@ -301,14 +314,23 @@ fn column_header(
                 .truncate(),
         )
         .on_hover_text(&column.name);
-    if let Some(document_revision) = sort_revision {
+    if let Some(header) = sort_header {
         let control = egui::Rect::from_min_max(
             egui::pos2(rect.right() - sort_width, rect.top()),
             rect.right_bottom(),
         );
-        let id =
-            ui.make_persistent_id(("column_sort", document_revision, &data.table, &column.name));
-        let response = ui.interact(control, id, Sense::click());
+        let id = ui.make_persistent_id((
+            "column_sort",
+            header.target.document_revision,
+            header.target.filter_id,
+            &data.table,
+            &column.name,
+        ));
+        let response = ui
+            .add_enabled_ui(header.commands_enabled, |ui| {
+                ui.interact(control, id, Sense::click())
+            })
+            .inner;
         let name = message(
             ui,
             "datasheet-sort-column",
@@ -316,6 +338,20 @@ fn column_header(
         );
         response
             .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), name.clone()));
+        if let Some(sort) = &header.sort
+            && sort.column == column.name
+        {
+            let marker = egui::Rect::from_center_size(
+                egui::pos2(rect.left() + sort_width * 0.5, rect.center().y),
+                egui::vec2(14.0, 14.0),
+            );
+            let icon = if sort.descending {
+                Icon::Descending
+            } else {
+                Icon::Ascending
+            };
+            ui.put(marker, icon.image(ui, 14.0));
+        }
         let center = control.center();
         let half = SORT_CHEVRON_HALF_WIDTH;
         ui.painter()
@@ -330,15 +366,17 @@ fn column_header(
             ));
         if response.enabled() {
             egui::Popup::menu(&response).show(|ui| {
-                ui.small(tr(ui, "ribbon-sort-query-help"));
+                ui.small(tr(ui, "filtering-sort-help"));
                 for (descending, key) in [(false, "ribbon-ascending"), (true, "ribbon-descending")]
                 {
                     if ui.button(tr(ui, key)).clicked() {
-                        actions.push(Action::SortTable {
-                            document_revision,
-                            table: data.table.clone(),
-                            column: column.name.clone(),
-                            descending,
+                        actions.push(Action::SortView {
+                            target: header.target.clone(),
+                            sort: Some(SortSpec {
+                                column: column.name.clone(),
+                                descending,
+                            }),
+                            enabled: header.enabled,
                         });
                         ui.close();
                     }
@@ -347,7 +385,7 @@ fn column_header(
         } else {
             egui::Popup::close_id(ui.ctx(), egui::Popup::default_response_id(&response));
         }
-        response.on_hover_text(tr(ui, "ribbon-sort-query-help"));
+        response.on_hover_text(tr(ui, "filtering-sort-help"));
     }
     label
 }

@@ -14,7 +14,7 @@ mod navigation;
 pub mod preview;
 mod query;
 mod records;
-mod ribbon;
+pub(crate) mod ribbon;
 mod row_identity;
 mod save_display;
 mod saved_query;
@@ -26,6 +26,7 @@ pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
 pub use filtering::{
     FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
+    SortSpec, SortTarget,
 };
 pub use find::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
@@ -102,11 +103,10 @@ pub enum Action {
         document_revision: u64,
         table: String,
     },
-    SortTable {
-        document_revision: u64,
-        table: String,
-        column: String,
-        descending: bool,
+    SortView {
+        target: SortTarget,
+        sort: Option<SortSpec>,
+        enabled: bool,
     },
     BeginEdit {
         target: EditTarget,
@@ -204,7 +204,6 @@ pub struct State {
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,
-    sorted_query: bool,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -283,7 +282,6 @@ impl State {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return;
         }
-        self.sorted_query = false;
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
@@ -451,7 +449,6 @@ impl State {
 
     fn query_ready(&self) -> bool {
         self.view == DocumentView::Query
-            && !(self.sorted_query && self.query_data.is_some())
             && !self.saved_query.active
             && !self.backstage_visible()
             && self.database.is_some()

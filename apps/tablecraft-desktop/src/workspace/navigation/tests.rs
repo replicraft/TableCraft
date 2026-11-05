@@ -2,7 +2,9 @@
 use super::*;
 use eframe::App;
 use std::time::{Duration, Instant};
-use tablecraft_testkit::fixtures::access::mutation_fixture;
+use tablecraft_display::{CurrencyChoice, DateFormat, TimeFormat};
+use tablecraft_testkit::fixtures::access::{field_presentation, mutation_fixture, wide_properties};
+use tablecraft_ui::{EditTarget, SortSpec};
 
 fn finish(desktop: &mut Desktop, context: &egui::Context) {
     let mut frame = eframe::Frame::_new_kittest();
@@ -129,9 +131,6 @@ fn automatic_first_table_and_title_belong_to_the_successfully_opened_file() {
 
 #[test]
 fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_text() {
-    use tablecraft_display::{CurrencyChoice, DateFormat, TimeFormat};
-    use tablecraft_testkit::fixtures::access::{field_presentation, wide_properties};
-
     for (kind, values, initial, raw) in [
         (
             5,
@@ -177,21 +176,38 @@ fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_t
             assert_eq!(row[1].text, expected);
         }
         let revision = desktop.state.database.as_ref().unwrap().document_revision;
-        assert!(desktop.state.can_sort_table(revision, "Items", "Id"));
-        desktop.submit(Command::SortTable {
-            document_revision: revision,
-            table: "Items".into(),
+        let target = desktop.state.current_sort_target().unwrap();
+        let sort = SortSpec {
             column: "Id".into(),
             descending: true,
-        });
+        };
+        assert!(desktop.state.can_sort_view(&target, Some(&sort), false));
+        desktop.sort_view(target, Some(sort.clone()), false);
         finish(&mut desktop, &context);
-        let sorted = desktop.state.query_data.as_ref().unwrap();
-        assert_eq!(sorted.source_revision, None);
+        let sorted = desktop.state.data.as_ref().unwrap();
+        assert_eq!(sorted.source_revision, Some(revision));
+        assert_eq!(sorted.row_ordinals.as_ref().unwrap().as_slice(), [1, 0]);
+        assert_eq!(sorted.parent_ordinal(0), Some(1));
+        assert_eq!(sorted.row_index(1), Some(0));
         assert!(!sorted.has_more);
         assert_eq!(sorted.rows.len(), 2);
         assert_eq!(sorted.rows[0][0].text, "2");
         assert_eq!(sorted.rows[0][1].text, initial[1]);
         assert_eq!(sorted.rows[1][1].text, initial[0]);
+        assert!(desktop.state.query_data.is_none());
+        assert_eq!(desktop.state.table_sort(), Some(sort));
+        assert!(desktop.state.can_edit_cell(&EditTarget {
+            document_revision: revision,
+            table: "Items".into(),
+            column: "Score".into(),
+            parent_ordinal: 1,
+        }));
+        assert!(!desktop.state.can_edit_cell(&EditTarget {
+            document_revision: revision,
+            table: "Items".into(),
+            column: "Score".into(),
+            parent_ordinal: 2,
+        }));
 
         desktop.state.formatting.currency = CurrencyChoice::Raw;
         desktop.state.formatting.date = DateFormat::Raw;
@@ -200,7 +216,8 @@ fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_t
             desktop.state.show(ui);
         });
         output.textures_delta.clear();
-        let sorted = desktop.state.query_data.as_ref().unwrap();
+        let sorted = desktop.state.data.as_ref().unwrap();
+        assert_eq!(sorted.row_ordinals.as_ref().unwrap().as_slice(), [1, 0]);
         assert_eq!(sorted.rows[0][1].text, raw[1]);
         assert_eq!(sorted.rows[1][1].text, raw[0]);
 
@@ -212,7 +229,7 @@ fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_t
         });
         output.textures_delta.clear();
         assert_eq!(
-            desktop.state.query_data.as_ref().unwrap().rows[0][1].text,
+            desktop.state.data.as_ref().unwrap().rows[0][1].text,
             initial[1]
         );
         assert_eq!(std::fs::read(&path).unwrap(), original);

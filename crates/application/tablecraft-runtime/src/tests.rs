@@ -24,7 +24,7 @@ mod schema;
 mod stored;
 mod text_policy;
 
-use super::{Command, Error, Response, Worker};
+use super::{Command, Error, Response, SortSpec, SortTarget, Worker};
 use std::{
     io::Cursor,
     path::{Path, PathBuf},
@@ -401,7 +401,7 @@ fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
 }
 
 #[test]
-fn sorting_reads_the_complete_relation_and_returns_no_native_edit_identity() {
+fn sorting_reads_the_complete_relation_and_retains_native_edit_identity() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("sorted.mdb");
     let records = (1..=105).map(|id| (id, id * 10)).collect::<Vec<_>>();
@@ -413,37 +413,60 @@ fn sorting_reads_the_complete_relation_and_returns_no_native_edit_identity() {
     else {
         panic!("expected document");
     };
-    let Response::Data {
-        source_revision,
-        rows,
-        has_more,
-        ..
-    } = request(
+    let Response::FilteredData(sorted) = request(
         &worker,
-        Command::SortTable {
-            document_revision,
-            table: "Items".into(),
-            column: "Score".into(),
-            descending: true,
+        Command::SortView {
+            target: SortTarget {
+                document_revision,
+                table: "Items".into(),
+                filter_id: None,
+            },
+            sort: Some(SortSpec {
+                column: "Score".into(),
+                descending: true,
+            }),
+            base: None,
+            enabled: false,
         },
     )
-    .unwrap()
-    else {
+    .unwrap() else {
         panic!("expected sorted result");
     };
-    assert_eq!(source_revision, None);
-    assert_eq!(rows.len(), 105);
-    assert_eq!(rows[0][1].text, "1050");
-    assert_eq!(rows[104][1].text, "10");
-    assert!(!has_more);
+    assert_eq!(sorted.target.document_revision, document_revision);
+    assert_eq!(sorted.rows.len(), 100);
+    assert_eq!(sorted.rows[0][1].text, "1050");
+    assert_eq!(sorted.source_ordinals[0], 104);
+    assert!(sorted.has_more);
+    let Response::FilteredData(tail) = request(
+        &worker,
+        Command::FilterPage {
+            handle: sorted.handle,
+            offset: 100,
+            enabled: false,
+        },
+    )
+    .unwrap() else {
+        panic!("native sorted tail");
+    };
+    assert_eq!(tail.rows.len(), 5);
+    assert_eq!(tail.rows[4][1].text, "10");
+    assert_eq!(tail.source_ordinals, [4, 3, 2, 1, 0]);
+    assert!(!tail.has_more);
     assert!(matches!(
         request(
             &worker,
-            Command::SortTable {
-                document_revision: document_revision + 1,
-                table: "Items".into(),
-                column: "Score".into(),
-                descending: false,
+            Command::SortView {
+                target: SortTarget {
+                    document_revision: document_revision + 1,
+                    table: "Items".into(),
+                    filter_id: None,
+                },
+                sort: Some(SortSpec {
+                    column: "Score".into(),
+                    descending: false
+                }),
+                base: None,
+                enabled: false,
             }
         ),
         Err(Error::StaleDocument)

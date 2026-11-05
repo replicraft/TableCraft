@@ -38,7 +38,7 @@ pub(super) fn copy_text(
     Ok(owned)
 }
 
-fn copy_value(
+pub(super) fn copy_value(
     value: &Value,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

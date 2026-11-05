@@ -68,10 +68,7 @@ ribbon-builder = Builder
 ribbon-insert-rows = Insert Rows
 ribbon-delete-rows = Delete Rows
 
-ribbon-sort-query-help = Sort the complete table into read-only query results. The current page is not reordered.
 ribbon-refresh-table = Refresh
 ribbon-refresh-table-help = Reload the current table page.
-ribbon-sorted-results = Sorted table results (read-only)
-ribbon-mock-sort-disabled = Full-table sorting is unavailable in this synthetic preview. No rows were reordered.
 
 ribbon-select-record = Select record

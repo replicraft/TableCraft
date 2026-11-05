@@ -33,7 +33,9 @@ file-open/read call must return before a cooperative cancellation check can run.
 | SortTable | Revision-bound table/field identifiers composed into an owned SELECT/ORDER BY model; complete buffered read-only result under the same query budgets |
 | FindNext | Revision-bound native table/field search returning an exact source ordinal, field name and consumed UTF-16 span; no rows are filtered or reordered |
 | FilterSelection | Capture an exact native selected value, build complete typed filter membership and return its first checked native page |
-| FilterPage | Read a visible page from an issued filter handle, preserving original source ordinals; toggling does not discard criteria |
+| FilterPage | Read a visible page from an issued native view handle, preserving original source ordinals; toggling retains criteria and sort |
+| SortView | Order the complete active native membership using strict stored keys, returning a checked editable source map |
+| ClearFilter | Drop predicates while retaining the native sort and source binding |
 | ReapplyFilter | Explicitly rebind typed filter preferences to a newly opened revision, issuing a fresh map and source handle |
 
 The desktop follows a successful Open with Page for the first non-system local
@@ -328,7 +330,9 @@ After successful acknowledgement the host reopens the actual source. The next
 view ordinal comes from the complete reviewed membership: the next remaining
 record, the previous last record, or zero when empty. It does not use a declared
 row count or a browser page prefix, and it is not a native mutation handle.
-Query/sorted output, system tables and absent records cannot issue the UI intent.
+Query output, system tables and absent records cannot issue the UI intent.
+Native filtered/sorted views retain checked original ordinals instead of treating
+a displayed position as a source ordinal.
 The existing plain-source, offline and macOS/Linux save limits apply. This route
 adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
 validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
@@ -357,8 +361,9 @@ binary comparison; NULL predicates do not activate unused collation callbacks.
 The membership scan uses one projected native cursor with cumulative work and
 cancellation controls and completes checked EOF before returning anything. A
 failure or later count mismatch cannot publish an earlier matching prefix. The
-retained map contains ordered, unique original ordinals, rather than copied table
-rows or filtered display indices. Filter pages separately carry visible offset,
+retained membership map contains ascending, unique original ordinals, rather
+than copied table rows or filtered display indices. A separate checked display
+permutation records the requested native sort. Filter pages separately carry visible offset,
 original ordinals, matched/source counts and `has_more`; disabled filtering shows
 the source membership while retaining the criterion-match count and definition.
 No filtered position can acquire native identity through `offset + displayIndex`.
@@ -371,8 +376,9 @@ filter or registry that evicts old published handles. A candidate command takes
 an explicitly matching base handle or explicitly starts a new definition. The
 host keeps its old handle/page until a complete matching replacement is accepted;
 canceled, failed and superseded candidates drop normally. Toggle off/on keeps the
-issued definition; Clear All drops the host's filter state. A selection made
-while filtering is off starts a new definition.
+issued definition; Clear All drops its predicates while retaining the sort. A
+selection made while filtering is off starts fresh predicates but retains the
+existing sort. The selection target explicitly witnesses that activation mode.
 
 Each visible page reads one original contiguous band covering at most 100 mapped
 rows, then presents only those selected indices. The existing normal browse
@@ -396,7 +402,7 @@ phase limits; a valid but larger source can return a resource error.
 
 Saving/reopening changes the document witness, so old filter handles must refuse.
 `FilterHandle.definition()` instead returns opaque cloneable preferences with
-only table, typed predicates and declared type constraints; it carries no row map
+only table, typed predicates, sort and declared type constraints; it carries no row map
 or old source rights. Explicit ReapplyFilter validates the new revision and exact
 field declarations, resolves fresh native comparisons, scans again through EOF
 and returns a new handle/map/page. It preserves enabled/off state and clamps the
@@ -412,6 +418,50 @@ different-field AND, typed NULL/empty and signed zero, eager nonfinite errors,
 failed/canceled candidates preserving old handles, cross-worker witness rejection,
 EOF failure and explicit fresh-source reapplication. These headless checks do not
 establish native Access filtering or cross-platform GUI parity.
+
+## Native table sorting
+
+Following Microsoft's [native sorting workflow](https://support.microsoft.com/en-us/access/sort-records-on-text-numeric-or-date-values),
+SortView replaces the selected single native sort key or removes it with an
+explicit absent SortSpec. It works with a plain table, a filtered view or retained
+off-state criteria. It never constructs an SQL query or replaces native identity
+with a read-only query result. ClearFilter removes criteria while retaining sort;
+removing sort preserves criteria. Zero-predicate views are canonically unfiltered.
+Multiple sort keys, custom list ordering and sorting complex/OLE/Binary/GUID fields
+are not implemented by this initial native view service.
+
+A complete projected cursor binds the selected field's exact declaration, counts
+all source records and reaches checked EOF before publishing an order. Only
+records admitted by the active filter have their sort keys validated, copied and
+compared. Excluded nonfinite values therefore cannot fail an active filtered sort;
+explicitly toggling the filter off can fail when those values enter the order.
+Such failure retains the prior published handle and page. Strict relational keys
+provide NULL-first ascending order, exact numeric widening and native weighted
+text comparison without parsing displayed text. Descending reverses comparison;
+equal keys keep their original source order. Text containing numeric characters
+remains Text. Native text parity still requires the recorded Windows qualification.
+
+Each immutable handle caches the requested mode's display permutation and checked
+source-ordinal ranks. Its ascending predicate membership remains separate for
+complete native traversal. Requesting the opposite mode computes a fresh bounded
+order and page before returning a replacement handle with the same semantic
+revision/table/view identifier; the previous handle is never mutated. A rank
+request for an uncached mode refuses instead of guessing physical order. Native
+Find uses the current display rank while retaining physical source ordinals.
+After a successful save, explicit definition reapplication rebinds the selected
+key and predicates against the newly opened source and issues fresh row rights.
+
+Sorting has its own cumulative 64 MiB/ten-million-step key-work pool and one
+ordinary native cursor allowance, separate from membership construction and page
+publication. Retained permutations/ranks are charged to the 8 MiB view allowance;
+text comparisons use the existing independent native comparison pool. Full cursor
+work, admitted key copies, fallible stable merge comparisons and rank construction
+remain cancellable. A mode change uses a fresh explicit sorting phase, never a
+per-record budget reset. Local checks cover complete 105-record descending paging,
+stable equal keys, filtering/sort/clear interactions, exclusion of hidden NaN,
+failed off-toggle preservation, fresh-source reapplication and native stored
+format/control/calculation provenance. They do not establish native Access GUI or
+cross-platform parity.
 
 ## Native table Find
 
@@ -433,6 +483,13 @@ occurrence, Down stops at the end, and All searches forward then wraps. Continue
 searches consume further occurrences within the same cell. Positions contain the
 original row ordinal and exact field name plus a consumed UTF-16 range; valid
 surrogate pairs are not bisected, including zero-width continuation.
+
+FindFiltered additionally requires the exact issued native view and an already
+computed display mode. It checks that admission before scanning, including an
+empty membership or absent pattern. Filtered searches exclude nonmembers while
+still completing the physical cursor; sorted searches choose occurrences by
+checked display rank, original field order and UTF-16 span, preserving the
+original source ordinal for the matching page and later guarded editing.
 
 Pattern compilation happens once per command. Any/Whole/Start matching uses the
 shared bounded wildcard frontier and stored ANSI-89/ANSI-92 query setting.

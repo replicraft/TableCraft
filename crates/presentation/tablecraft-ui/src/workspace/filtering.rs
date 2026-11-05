@@ -1,9 +1,14 @@
 //! Native selection filtering retains physical row identities and runtime values.
 mod controls;
+mod sorting;
+
+pub use sorting::{SortSpec, SortTarget};
 
 use super::{Data, DocumentView, State};
 use crate::CellKind;
 use tablecraft_display::Options;
+
+const MAX_FILTER_FIELDS: u32 = 16;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FilterTarget {
@@ -19,6 +24,7 @@ pub struct FilterSelectionTarget {
     pub parent_ordinal: u32,
     pub column: String,
     pub filter_id: Option<u64>,
+    pub enabled: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -33,10 +39,14 @@ pub struct FilterRestore {
     pub table: String,
     pub enabled: bool,
     pub offset: u32,
+    pub sort: Option<SortSpec>,
+    pub filter_count: u32,
 }
 
 pub struct FilterPublication {
     pub target: FilterTarget,
+    pub sort: Option<SortSpec>,
+    pub filter_count: u32,
     pub enabled: bool,
     pub matched_rows: u32,
     pub source_rows: u32,
@@ -64,6 +74,8 @@ enum FailureSource {
 
 struct View {
     target: FilterTarget,
+    sort: Option<SortSpec>,
+    filter_count: u32,
     enabled: bool,
     matched_rows: u32,
     source_rows: u32,
@@ -93,6 +105,11 @@ enum Operation {
     Restore {
         target: FilterRestore,
     },
+    Sort {
+        target: SortTarget,
+        sort: Option<SortSpec>,
+        enabled: bool,
+    },
 }
 
 impl Operation {
@@ -100,6 +117,7 @@ impl Operation {
         match self {
             Self::Selection { target, .. } => (target.document_revision, &target.table),
             Self::Restore { target } => (target.document_revision, &target.table),
+            Self::Sort { target, .. } => (target.document_revision, &target.table),
             Self::Page { target, .. } | Self::Clear { target } => {
                 (target.document_revision, &target.table)
             }
@@ -146,7 +164,7 @@ impl State {
                 .table_filter
                 .view
                 .as_ref()
-                .is_some_and(|view| view.enabled)
+                .is_some_and(|view| view.enabled && view.filter_count > 0)
     }
 
     pub(super) fn filtered_record_count(&self) -> Option<u32> {
@@ -171,6 +189,8 @@ impl State {
         };
         self.active_filter_target().as_ref() == Some(&publication.target)
             && view.enabled == publication.enabled
+            && view.sort == publication.sort
+            && view.filter_count == publication.filter_count
             && view.matched_rows == publication.matched_rows
             && view.source_rows == publication.source_rows
             && valid_publication(publication)
@@ -179,6 +199,8 @@ impl State {
     pub(super) fn install_filtered_view(&mut self, publication: FilterPublication) {
         let FilterPublication {
             target,
+            sort,
+            filter_count,
             enabled,
             matched_rows,
             source_rows,
@@ -188,6 +210,8 @@ impl State {
         self.table_filter = TableFilter {
             view: Some(View {
                 target,
+                sort,
+                filter_count,
                 enabled,
                 matched_rows,
                 source_rows,
@@ -215,9 +239,8 @@ impl State {
             table: data.table.clone(),
             parent_ordinal: data.parent_ordinal(row)?,
             column: data.columns.get(column)?.name.clone(),
-            filter_id: self
-                .active_filter_target()
-                .and_then(|target| self.table_filter_enabled().then_some(target.filter_id)),
+            filter_id: self.active_filter_target().map(|target| target.filter_id),
+            enabled: self.table_filter_enabled(),
         };
         self.can_filter_selection(&target).then_some(target)
     }
@@ -235,13 +258,12 @@ impl State {
         let Some((row, column)) = self.table_selection.position() else {
             return false;
         };
-        let current_filter = self
-            .active_filter_target()
-            .and_then(|target| self.table_filter_enabled().then_some(target.filter_id));
+        let current_filter = self.active_filter_target().map(|target| target.filter_id);
         let mapped_source_known =
             data.row_ordinals.is_none() || self.active_filter_target().is_some();
         mapped_source_known
             && target.filter_id == current_filter
+            && target.enabled == self.table_filter_enabled()
             && data.parent_ordinal(row) == Some(target.parent_ordinal)
             && data
                 .columns
@@ -271,6 +293,9 @@ impl State {
             .view
             .as_ref()
             .expect("retained filter view");
+        if enabled && view.filter_count == 0 {
+            return false;
+        }
         let count = if enabled {
             view.matched_rows
         } else {
@@ -280,7 +305,9 @@ impl State {
     }
 
     pub fn can_clear_filter(&self, target: &FilterTarget) -> bool {
-        self.filter_controls_ready() && self.active_filter_target().as_ref() == Some(target)
+        self.filter_controls_ready()
+            && self.active_filter_target().as_ref() == Some(target)
+            && self.table_filter_count() > 0
     }
 
     fn begin_filter_operation(&mut self, request_id: u64, operation: Operation) {
@@ -411,6 +438,14 @@ impl State {
                     && publication.target.table == target.table
                     && publication.enabled
                     && publication.data.offset == 0
+                    && publication.sort == self.table_sort()
+                    && publication.filter_count > 0
+                    && self
+                        .table_filter
+                        .view
+                        .as_ref()
+                        .is_none_or(|view| publication.source_rows == view.source_rows)
+                    && (target.enabled || publication.filter_count == 1)
             }
             Operation::Page {
                 target,
@@ -421,6 +456,8 @@ impl State {
                     && self.table_filter.view.as_ref().is_some_and(|view| {
                         publication.matched_rows == view.matched_rows
                             && publication.source_rows == view.source_rows
+                            && publication.filter_count == view.filter_count
+                            && publication.sort == view.sort
                     })
                     && publication.data.offset == *offset
                     && publication.enabled == *enabled
@@ -430,8 +467,38 @@ impl State {
                     && publication.target.table == target.table
                     && publication.enabled == target.enabled
                     && publication.data.offset <= target.offset
+                    && publication.sort == target.sort
+                    && publication.filter_count == target.filter_count
             }
-            Operation::Clear { .. } => false,
+            Operation::Clear { target } => {
+                publication.target.document_revision == target.document_revision
+                    && publication.target.table == target.table
+                    && publication.filter_count == 0
+                    && self
+                        .table_filter
+                        .view
+                        .as_ref()
+                        .is_some_and(|view| publication.source_rows == view.source_rows)
+                    && !publication.enabled
+                    && publication.sort == self.table_sort()
+                    && publication.data.offset == 0
+            }
+            Operation::Sort {
+                target,
+                sort,
+                enabled,
+            } => {
+                publication.target.document_revision == target.document_revision
+                    && publication.target.table == target.table
+                    && publication.sort == *sort
+                    && publication.enabled == *enabled
+                    && publication.filter_count == self.table_filter_count()
+                    && publication.data.offset == 0
+                    && self.table_filter.view.as_ref().is_none_or(|view| {
+                        publication.matched_rows == view.matched_rows
+                            && publication.source_rows == view.source_rows
+                    })
+            }
         };
         if !expected || !valid_publication(&publication) {
             self.fail_filter(request_id, self.localizer.text("filtering-invalid-result"));
@@ -448,34 +515,6 @@ impl State {
         {
             self.table_selection.select(data, 0, column);
         }
-        true
-    }
-
-    pub fn set_cleared_filter(
-        &mut self,
-        request_id: u64,
-        target: FilterTarget,
-        data: Data,
-    ) -> bool {
-        if !self.accepts_filter_reply(request_id) {
-            return false;
-        }
-        let expected = matches!(self.table_filter.pending.as_ref().map(|pending| &pending.operation),
-            Some(Operation::Clear { target: current }) if *current == target);
-        let source_rows = self.table_filter.view.as_ref().map(|view| view.source_rows);
-        let valid = expected
-            && data.source_revision == Some(target.document_revision)
-            && data.table == target.table
-            && data.row_ordinals.is_none()
-            && data.offset == 0
-            && data.validate_row_ordinals().is_ok()
-            && source_rows.is_some_and(|count| valid_page_counts(&data, count));
-        if !valid {
-            self.fail_filter(request_id, self.localizer.text("filtering-invalid-result"));
-            return false;
-        }
-        self.set_table_data(data);
-        self.table_filter = TableFilter::default();
         true
     }
 
@@ -559,15 +598,23 @@ fn valid_publication(publication: &FilterPublication) -> bool {
         publication.source_rows
     };
     publication.target.filter_id != 0
+        && publication.filter_count <= MAX_FILTER_FIELDS
+        && (publication.filter_count > 0
+            || (!publication.enabled && publication.matched_rows == publication.source_rows))
+        && publication
+            .sort
+            .as_ref()
+            .is_none_or(|sort| data.columns.iter().any(|column| column.name == sort.column))
         && publication.matched_rows <= publication.source_rows
         && data.source_revision == Some(publication.target.document_revision)
         && data.table == publication.target.table
         && data.validate_row_ordinals().is_ok()
         && data.row_ordinals.as_ref().is_some_and(|ordinals| {
-            ordinals
-                .as_slice()
-                .iter()
-                .all(|ordinal| *ordinal < publication.source_rows)
+            (publication.sort.is_some() || ordinals.is_source_ordered())
+                && ordinals
+                    .as_slice()
+                    .iter()
+                    .all(|ordinal| *ordinal < publication.source_rows)
         })
         && !data.columns.is_empty()
         && data.rows.iter().all(|row| row.len() == data.columns.len())

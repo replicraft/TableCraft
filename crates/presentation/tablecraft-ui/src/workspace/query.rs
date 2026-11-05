@@ -20,17 +20,6 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
-            if self.sorted_query && self.query_data.is_some() {
-                ui.heading(tr(ui, "ribbon-sorted-results"));
-                ui.small(tr(ui, "ribbon-sort-query-help"));
-                if ui.button(tr(ui, "query-title")).clicked() {
-                    self.sorted_query = false;
-                    self.query_data = None;
-                    self.query_selection.clear();
-                }
-                ui.separator();
-                return;
-            }
             ui.horizontal(|ui| {
                 if ui
                     .selectable_label(!self.saved_query.active, tr(ui, "query-title"))

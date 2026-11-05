@@ -2,7 +2,7 @@
 use super::{request, stored::opened};
 use crate::{
     CellKind, Command, Error, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,
-    FilteredData, Response, Worker,
+    FilteredData, Response, SortSpec, SortTarget, Worker,
 };
 use tablecraft_expressions::EvalError;
 use tablecraft_testkit::fixtures::access::{
@@ -23,6 +23,7 @@ fn selection(
         parent_ordinal: ordinal,
         column: column.into(),
         filter_id: base.map(|base| base.target().filter_id),
+        enabled: base.is_some(),
     }
 }
 
@@ -419,6 +420,19 @@ fn sparse_mixed_pages_keep_original_collection_parents_and_cached_null_provenanc
         ),
         Err(Error::Filter(FilterError::UnsupportedField))
     ));
+    assert!(matches!(
+        sort(
+            &worker,
+            revision,
+            Some(&filtered.handle),
+            true,
+            Some(SortSpec {
+                column: filtered.columns[1].name.clone(),
+                descending: false,
+            }),
+        ),
+        Err(Error::Filter(FilterError::UnsupportedField))
+    ));
     assert_eq!(
         filtered.rows[0][1].kind,
         CellKind::Multivalue {
@@ -492,4 +506,179 @@ fn sparse_mixed_pages_keep_original_collection_parents_and_cached_null_provenanc
         }
     ));
     assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+fn sort(
+    worker: &Worker,
+    revision: u64,
+    base: Option<&FilterHandle>,
+    enabled: bool,
+    spec: Option<SortSpec>,
+) -> Result<FilteredData, Error> {
+    let Response::FilteredData(data) = request(
+        worker,
+        Command::SortView {
+            target: SortTarget {
+                document_revision: revision,
+                table: "Items".into(),
+                filter_id: base.map(|handle| handle.target().filter_id),
+            },
+            sort: spec,
+            base: base.cloned(),
+            enabled,
+        },
+    )?
+    else {
+        panic!("expected a complete native sorted page");
+    };
+    Ok(data)
+}
+
+#[test]
+fn native_sort_retains_filter_membership_and_source_positions_across_modes_and_clear() {
+    let bytes = mutation_fixture::with_rows(&[(1, 30), (2, 10), (3, 20), (4, 10)]);
+    let (_directory, path, worker, revision) = opened(&bytes);
+    let ascending = SortSpec {
+        column: "Score".into(),
+        descending: false,
+    };
+    let sorted = sort(&worker, revision, None, false, Some(ascending.clone())).unwrap();
+    assert_eq!(sorted.source_ordinals, [1, 3, 2, 0]);
+    assert_eq!(sorted.rows[0][0].text, "2");
+    assert!(!sorted.enabled);
+    assert_eq!(sorted.filter_count, 0);
+    assert_eq!(sorted.handle.display_offset_for_ordinal(false, 0), Some(3));
+    let mut selected = selection(revision, "Score", 1, Some(&sorted.handle));
+    selected.enabled = false;
+    let filtered = apply(
+        &worker,
+        selected,
+        FilterComparison::Equal,
+        Some(&sorted.handle),
+    )
+    .unwrap();
+    assert_eq!(filtered.source_ordinals, [1, 3]);
+    assert_eq!(filtered.sort, Some(ascending.clone()));
+    assert_eq!(filtered.filter_count, 1);
+    assert_eq!(filtered.handle.display_offset_for_ordinal(false, 0), None);
+    let off = page(&worker, &filtered.handle, 0, false).unwrap();
+    assert_eq!(off.target, filtered.target);
+    assert_eq!(off.source_ordinals, [1, 3, 2, 0]);
+    assert_eq!(off.handle.display_offset_for_ordinal(true, 1), None);
+    assert_eq!(
+        page(&worker, &filtered.handle, 0, true)
+            .unwrap()
+            .source_ordinals,
+        [1, 3]
+    );
+    let mut fresh = selection(revision, "Id", 0, Some(&off.handle));
+    fresh.enabled = false;
+    let replacement = apply(&worker, fresh, FilterComparison::Equal, Some(&off.handle)).unwrap();
+    assert_eq!(replacement.source_ordinals, [0]);
+    assert_eq!(replacement.filter_count, 1);
+    assert_eq!(replacement.sort, Some(ascending));
+    let Response::FilteredData(cleared) = request(
+        &worker,
+        Command::ClearFilter {
+            handle: filtered.handle.clone(),
+        },
+    )
+    .unwrap() else {
+        panic!("native clear retains sorting");
+    };
+    assert_eq!(cleared.source_ordinals, [1, 3, 2, 0]);
+    assert_eq!(cleared.filter_count, 0);
+    assert!(!cleared.enabled);
+    let removed = sort(&worker, revision, Some(&filtered.handle), true, None).unwrap();
+    assert_eq!(removed.source_ordinals, [1, 3]);
+    assert!(removed.sort.is_none());
+    assert_eq!(std::fs::read(path).unwrap(), bytes);
+}
+
+#[test]
+fn sorting_excluded_nonfinite_keys_does_not_preflight_them_for_a_future_toggle() {
+    let source = canonical_ordinary_wide_insert::source(OrdinaryInsertCase::FixedSpecial);
+    let (_directory, _path, worker, revision) = opened(&source.after);
+    let filtered = apply(
+        &worker,
+        selection(revision, "Int32Value", 0, None),
+        FilterComparison::Equal,
+        None,
+    )
+    .unwrap();
+    assert_eq!(filtered.source_ordinals, [0, 1]);
+    let sorted = sort(
+        &worker,
+        revision,
+        Some(&filtered.handle),
+        true,
+        Some(SortSpec {
+            column: "DoubleValue".into(),
+            descending: false,
+        }),
+    )
+    .unwrap();
+    assert_eq!(sorted.source_ordinals, [0, 1]);
+    // The hidden third record contains NaN. Only explicitly requesting the
+    // unfiltered order evaluates that key; a failure cannot replace this view.
+    assert!(page(&worker, &sorted.handle, 0, false).is_err());
+    assert_eq!(
+        page(&worker, &sorted.handle, 0, true)
+            .unwrap()
+            .source_ordinals,
+        [0, 1]
+    );
+    assert_eq!(sorted.handle.display_offset_for_ordinal(false, 2), None);
+}
+
+#[test]
+fn sorted_definition_rebinds_after_reopen_and_never_grants_old_source_rights() {
+    let bytes = mutation_fixture::with_rows(&[(1, 30), (2, 10), (3, 20)]);
+    let (_directory, path, worker, revision) = opened(&bytes);
+    let sorted = sort(
+        &worker,
+        revision,
+        None,
+        false,
+        Some(SortSpec {
+            column: "Score".into(),
+            descending: true,
+        }),
+    )
+    .unwrap();
+    let definition = sorted.handle.definition();
+    let Response::Opened {
+        document_revision: fresh_revision,
+        ..
+    } = request(
+        &worker,
+        Command::Open {
+            path,
+            password: String::new(),
+        },
+    )
+    .unwrap()
+    else {
+        panic!("fresh source");
+    };
+    assert!(matches!(
+        page(&worker, &sorted.handle, 0, false),
+        Err(Error::Filter(FilterError::StaleHandle))
+    ));
+    let Response::FilteredData(rebound) = request(
+        &worker,
+        Command::ReapplyFilter {
+            definition,
+            document_revision: fresh_revision,
+            enabled: false,
+            offset: 1,
+        },
+    )
+    .unwrap() else {
+        panic!("fresh native sort preferences");
+    };
+    assert_eq!(rebound.source_ordinals, [2, 1]);
+    assert_eq!(rebound.offset, 1);
+    assert_ne!(rebound.target.filter_id, sorted.target.filter_id);
+    assert_eq!(rebound.filter_count, 0);
 }

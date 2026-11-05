@@ -38,6 +38,8 @@ fn publication(id: u64, enabled: bool, offset: u32, ordinals: Vec<u32>) -> Filte
         .map(|ordinal| vec![Cell::scalar(ordinal.to_string()), Cell::scalar("Ada")])
         .collect();
     FilterPublication {
+        sort: None,
+        filter_count: 1,
         target: FilterTarget {
             document_revision: 7,
             table: "People".into(),
@@ -94,7 +96,11 @@ fn filter_publication_checks_sparse_membership_counts_request_and_retained_toggl
     assert!(state.set_filtered_data(4, publication(20, false, 0, vec![0, 1])));
     assert!(!state.table_filter_enabled());
     assert_eq!(state.active_filter_target(), Some(target.clone()));
-    assert_eq!(state.current_filter_selection().unwrap().filter_id, None);
+    assert_eq!(
+        state.current_filter_selection().unwrap().filter_id,
+        Some(20)
+    );
+    assert!(!state.current_filter_selection().unwrap().enabled);
     state.select_view(DocumentView::Query);
     assert_eq!(state.active_filter_target(), Some(target));
     assert!(!state.can_clear_filter(&state.active_filter_target().unwrap()));
@@ -141,15 +147,22 @@ fn zero_matches_keep_columns_toggle_clear_and_failures_retain_previous_filter() 
     assert!(state.data.as_ref().unwrap().rows.is_empty());
 
     assert!(state.begin_clear_filter(3, target.clone()));
-    let mut ordinary = publication(20, false, 0, vec![0, 1]).data;
-    assert!(!state.set_cleared_filter(3, target.clone(), ordinary));
+    let mut wrong = publication(30, false, 0, vec![0, 1]);
+    wrong.filter_count = 0;
+    wrong.matched_rows = wrong.source_rows;
+    wrong.data.row_ordinals = None;
+    assert!(!state.set_filtered_data(3, wrong));
     assert_eq!(state.active_filter_target(), Some(target.clone()));
-    assert!(state.begin_clear_filter(4, target.clone()));
-    ordinary = publication(20, false, 0, vec![0, 1]).data;
-    ordinary.row_ordinals = None;
-    assert!(state.set_cleared_filter(4, target, ordinary));
-    assert!(state.active_filter_target().is_none());
-    assert!(state.data.as_ref().unwrap().row_ordinals.is_none());
+    assert!(state.begin_clear_filter(4, target));
+    let mut cleared = publication(30, false, 0, vec![0, 1]);
+    cleared.filter_count = 0;
+    cleared.matched_rows = cleared.source_rows;
+    assert!(state.set_filtered_data(4, cleared));
+    let target = state.active_filter_target().unwrap();
+    assert_eq!(target.filter_id, 30);
+    assert!(!state.can_clear_filter(&target));
+    assert!(!state.can_filter_page(&target, 0, true));
+    assert!(state.data.as_ref().unwrap().row_ordinals.is_some());
 }
 
 #[test]
@@ -161,6 +174,11 @@ fn restore_uses_fresh_catalog_revision_and_accepts_clamped_new_membership_only()
         table: "People".into(),
         enabled: true,
         offset: 100,
+        sort: Some(SortSpec {
+            column: "Name".into(),
+            descending: true,
+        }),
+        filter_count: 1,
     };
     assert!(state.begin_filter_restore(9, restore.clone()));
     state.fail_filter(9, "Restore failed for the freshly opened table.".into());
@@ -179,9 +197,26 @@ fn restore_uses_fresh_catalog_revision_and_accepts_clamped_new_membership_only()
         state.filter_error_message(),
         Some("Restore failed for the freshly opened table.")
     );
-    assert!(state.begin_filter_restore(10, restore));
+    assert!(state.begin_filter_restore(10, restore.clone()));
     assert!(!state.set_filtered_data(9, publication(20, true, 0, vec![2, 5])));
-    assert!(state.set_filtered_data(10, publication(20, true, 0, vec![2, 5])));
+    assert!(!state.set_filtered_data(10, publication(20, true, 0, vec![2, 5])));
+    assert!(
+        state.data.is_none(),
+        "a reply must not silently drop the captured sort"
+    );
+    assert!(state.begin_filter_restore(11, restore.clone()));
+    let mut wrong_count = publication(20, true, 0, vec![2, 5]);
+    wrong_count.sort = restore.sort.clone();
+    wrong_count.filter_count = 2;
+    assert!(!state.set_filtered_data(11, wrong_count));
+    assert!(
+        state.data.is_none(),
+        "a reply must retain the captured predicate count"
+    );
+    assert!(state.begin_filter_restore(12, restore.clone()));
+    let mut restored = publication(20, true, 0, vec![2, 5]);
+    restored.sort = restore.sort;
+    assert!(state.set_filtered_data(12, restored));
     assert_eq!(state.active_filter_target().unwrap().filter_id, 20);
     assert_eq!(
         state
@@ -196,9 +231,9 @@ fn restore_uses_fresh_catalog_revision_and_accepts_clamped_new_membership_only()
     );
 
     let target = state.active_filter_target().unwrap();
-    assert!(state.begin_filter_page(11, target, 2, true));
+    assert!(state.begin_filter_page(13, target, 2, true));
     state.formatting.date = tablecraft_display::DateFormat::Iso;
-    assert!(!state.accepts_filter_reply(11));
+    assert!(!state.accepts_filter_reply(13));
     state.validate_table_filter();
     assert!(!state.table_filter_pending());
     assert_eq!(state.data.as_ref().unwrap().offset, 0);
@@ -260,4 +295,96 @@ fn actual_null_menu_and_filtered_navigation_dispatch_runtime_targets_not_page_fi
             if target.filter_id == 20
         )
     );
+}
+
+fn sorted_publication(
+    id: u64,
+    sort: Option<SortSpec>,
+    enabled: bool,
+    filtered: bool,
+) -> FilterPublication {
+    let mut result = publication(id, enabled, 0, Vec::new());
+    result.filter_count = u32::from(filtered);
+    result.matched_rows = if filtered { 3 } else { result.source_rows };
+    result.sort = sort;
+    let ordinals = if result.sort.is_some() {
+        vec![9, 5]
+    } else {
+        vec![0, 1]
+    };
+    result.data.rows = ordinals
+        .iter()
+        .map(|ordinal| {
+            vec![
+                Cell::scalar(ordinal.to_string()),
+                Cell::scalar(ordinal.to_string()),
+            ]
+        })
+        .collect();
+    result.data.row_ordinals = Some(RowOrdinals::from_display_order(ordinals).unwrap());
+    result.data.has_more = true;
+    result
+}
+
+#[test]
+fn native_sort_requires_exact_witness_and_preserves_edit_identity_without_query_substitute() {
+    let mut state = state();
+    state.sql = "SELECT 42;".into();
+    let target = state.current_sort_target().unwrap();
+    let sort = SortSpec {
+        column: "Name".into(),
+        descending: true,
+    };
+    assert!(state.begin_sort_view(10, target.clone(), Some(sort.clone()), false));
+    let wrong = sorted_publication(20, None, false, false);
+    assert!(!state.set_filtered_data(10, wrong));
+    assert_eq!(state.data.as_ref().unwrap().parent_ordinal(0), Some(0));
+    assert!(state.begin_sort_view(11, target, Some(sort.clone()), false));
+    assert!(state.set_filtered_data(11, sorted_publication(20, Some(sort), false, false)));
+    assert!(state.view == DocumentView::Table);
+    assert!(state.query_data.is_none());
+    assert_eq!(state.sql, "SELECT 42;");
+    assert_eq!(state.current_delete_target().unwrap().parent_ordinal, 9);
+    assert_eq!(state.current_filter_selection().unwrap().parent_ordinal, 9);
+    assert_eq!(state.table_filter_count(), 0);
+    assert!(!state.table_filter_enabled());
+    assert!(!state.can_clear_filter(&state.active_filter_target().unwrap()));
+    let target = state.current_sort_target().unwrap();
+    assert!(state.begin_sort_view(12, target, None, false));
+    assert!(state.set_filtered_data(12, sorted_publication(21, None, false, false)));
+    assert!(state.table_sort().is_none());
+    assert!(
+        state
+            .data
+            .as_ref()
+            .unwrap()
+            .row_ordinals
+            .as_ref()
+            .unwrap()
+            .is_source_ordered()
+    );
+}
+
+#[test]
+fn clearing_filters_and_off_selection_retain_sort_but_do_not_reapply_inactive_criteria() {
+    let mut state = state();
+    apply(&mut state);
+    let sort = SortSpec {
+        column: "Name".into(),
+        descending: true,
+    };
+    let target = state.current_sort_target().unwrap();
+    assert!(state.begin_sort_view(10, target, Some(sort.clone()), true));
+    assert!(state.set_filtered_data(10, sorted_publication(21, Some(sort.clone()), true, true)));
+    let target = state.active_filter_target().unwrap();
+    assert!(state.begin_filter_page(11, target.clone(), 0, false));
+    assert!(state.set_filtered_data(11, sorted_publication(21, Some(sort.clone()), false, true)));
+    let selection = state.current_filter_selection().unwrap();
+    assert_eq!(selection.filter_id, Some(21));
+    assert!(!selection.enabled);
+    assert!(state.begin_clear_filter(12, target));
+    assert!(state.set_filtered_data(12, sorted_publication(22, Some(sort.clone()), false, false)));
+    assert_eq!(state.table_sort(), Some(sort));
+    assert_eq!(state.table_filter_count(), 0);
+    assert!(!state.can_filter_page(&state.active_filter_target().unwrap(), 0, true));
 }

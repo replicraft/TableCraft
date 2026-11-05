@@ -1,6 +1,6 @@
 //! Real stored Format declarations, using existing independent raw fixture helpers.
 use super::{request, stored::opened};
-use crate::{CellKind, Command, DisplayControl, Response};
+use crate::{CellKind, Command, DisplayControl, Response, SortSpec, SortTarget};
 use tablecraft_testkit::fixtures::access::{field_presentation, wide_properties};
 
 fn source(format: Option<(&str, u8, u8)>, control: i16, scope: u16) -> Vec<u8> {
@@ -86,7 +86,7 @@ fn checkbox_unqualified_and_non_column_formats_keep_original_full_value_text() {
 }
 
 #[test]
-fn complete_table_sort_preserves_qualified_column_display_without_native_row_identity() {
+fn complete_table_sort_preserves_qualified_column_display_and_native_row_identity() {
     use tablecraft_display::{NativeFormat, ScalarPresentation};
 
     for (kind, format, values) in [
@@ -116,27 +116,31 @@ fn complete_table_sort_preserves_qualified_column_display_without_native_row_ide
             field_presentation::score64(&blocks, kind, &values)
         };
         let (_directory, path, worker, revision) = opened(&bytes);
-        let Response::Data {
-            source_revision,
-            columns,
-            rows,
-            offset,
-            has_more,
-            ..
-        } = request(
+        let Response::FilteredData(sorted) = request(
             &worker,
-            Command::SortTable {
-                document_revision: revision,
-                table: "Items".into(),
-                column: "Id".into(),
-                descending: true,
+            Command::SortView {
+                target: SortTarget {
+                    document_revision: revision,
+                    table: "Items".into(),
+                    filter_id: None,
+                },
+                sort: Some(SortSpec {
+                    column: "Id".into(),
+                    descending: true,
+                }),
+                base: None,
+                enabled: false,
             },
         )
-        .unwrap()
-        else {
+        .unwrap() else {
             panic!("expected complete sorted result");
         };
-        assert_eq!(source_revision, None);
+        assert_eq!(sorted.target.document_revision, revision);
+        assert_eq!(sorted.source_ordinals, [1, 0]);
+        let columns = sorted.columns;
+        let rows = sorted.rows;
+        let offset = sorted.offset;
+        let has_more = sorted.has_more;
         assert_eq!(offset, 0);
         assert!(!has_more);
         assert_eq!(columns[1].name, "Score");

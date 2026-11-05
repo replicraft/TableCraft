@@ -125,7 +125,9 @@ impl State {
                 .expect("retained filter view");
             ui.label(message(
                 ui,
-                if view.enabled {
+                if view.filter_count == 0 {
+                    "filtering-source-count"
+                } else if view.enabled {
                     "filtering-filtered-count"
                 } else {
                     "filtering-unfiltered-count"
@@ -135,6 +137,17 @@ impl State {
                     ("source", view.source_rows.to_string()),
                 ],
             ));
+            if let Some(sort) = &view.sort {
+                ui.label(message(
+                    ui,
+                    if sort.descending {
+                        "filtering-sort-descending"
+                    } else {
+                        "filtering-sort-ascending"
+                    },
+                    &[("column", sort.column.clone())],
+                ));
+            }
         }
         if self.mock_preview && self.active_filter_target().is_some() {
             ui.small(tr(ui, "filtering-mock-membership"));
@@ -152,6 +165,7 @@ impl State {
                 } => "filtering-applying-not-equal",
                 Operation::Page { .. } | Operation::Restore { .. } => "filtering-loading",
                 Operation::Clear { .. } => "filtering-clearing",
+                Operation::Sort { .. } => "filtering-sorting",
             };
             ui.label(tr(ui, key));
         }

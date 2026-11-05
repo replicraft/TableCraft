@@ -291,6 +291,8 @@ fn filtered_find_republishes_exact_view_and_selects_physical_member_without_losi
         FilterPublication {
             target: target.clone(),
             enabled: true,
+            sort: None,
+            filter_count: 1,
             matched_rows: 3,
             source_rows: 300,
             data,

@@ -148,6 +148,7 @@ impl Metadata {
         formatting::apply(self.properties.as_ref(), columns, rows, output)
     }
 
+    #[cfg(feature = "offline-edit")]
     pub fn enrich(
         &self,
         columns: &[Column],

@@ -1,7 +1,7 @@
 //! Explicit fresh-source reapplication of preferences, never old row identities.
 use super::{
-    Criterion, DefinitionState, FILTER_STEPS, FilterDefinition, FilterError, FilterHandle,
-    FilterState, FilterTarget, MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, issue_id,
+    BoundSort, Criterion, DefinitionState, FILTER_STEPS, FilterDefinition, FilterError,
+    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria,
 };
 use crate::{
     Error, Response,
@@ -16,13 +16,18 @@ use tablecraft_core::limits::ResourceBudget;
 pub(super) fn create(
     table: &str,
     criteria: Vec<Criterion>,
+    sort: Option<BoundSort>,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FilterDefinition, Error> {
     let table = criteria::copy_text(table, work, cancelled)?;
     work.charge_allocation(1, size_of::<DefinitionState>() as u64)?;
     Ok(FilterDefinition {
-        state: Arc::new(DefinitionState { table, criteria }),
+        state: Arc::new(DefinitionState {
+            table,
+            criteria,
+            sort,
+        }),
     })
 }
 
@@ -39,9 +44,7 @@ impl Document {
         if document_revision != self.revision {
             return Err(Error::StaleDocument);
         }
-        if definition.state.criteria.is_empty()
-            || definition.state.criteria.len() > MAX_FILTER_FIELDS
-        {
+        if definition.state.criteria.len() > MAX_FILTER_FIELDS {
             return Err(FilterError::CriterionLimit.into());
         }
 
@@ -78,29 +81,18 @@ impl Document {
             cancelled,
         )?;
         let table = criteria::copy_text(definition.table(), &mut work, cancelled)?;
-        work.charge_allocation(1, size_of::<FilterState>() as u64)?;
-        let handle = FilterHandle {
-            state: Arc::new(FilterState {
-                source: Arc::clone(&self.filter_source),
-                target: FilterTarget {
-                    document_revision,
-                    table,
-                    filter_id: issue_id()?,
-                },
-                definition: create(definition.table(), predicates, &mut work, cancelled)?,
+        let sort = super::sorting::inherited_sort(definition, &mut work, cancelled)?;
+        self.publish_view(
+            super::sorting::ViewBuild {
+                table,
+                predicates,
+                sort,
                 ordinals,
                 source_rows,
-            }),
-        };
-        let count = if enabled {
-            handle.matched_rows()
-        } else {
-            handle.source_rows()
-        };
-        self.filter_page(
-            &handle,
-            offset.min(count.saturating_sub(1)),
-            enabled,
+                enabled,
+                offset,
+            },
+            &mut work,
             cancelled,
         )
     }

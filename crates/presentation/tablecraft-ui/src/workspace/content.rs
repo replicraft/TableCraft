@@ -67,11 +67,7 @@ impl State {
                     DocumentView::Design => None,
                 };
                 if let Some(data) = data {
-                    let sort_revision = data.source_revision.filter(|revision| {
-                        data.columns.first().is_some_and(|column| {
-                            self.can_sort_table(*revision, &data.table, &column.name)
-                        })
-                    });
+                    let sort_header = self.native_sort_header();
                     let selection = if self.view == DocumentView::Table {
                         &mut self.table_selection
                     } else if self.saved_query.active {
@@ -87,7 +83,7 @@ impl State {
                     if selection.position().is_some() {
                         focus::declare(ui, pane);
                     }
-                    actions.extend(datasheet::show(ui, data, selection, pane, sort_revision));
+                    actions.extend(datasheet::show(ui, data, selection, pane, sort_header));
                 } else if self.view == DocumentView::Query {
                     ui.weak(tr(
                         ui,

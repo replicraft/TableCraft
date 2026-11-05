@@ -3,7 +3,7 @@ mod icons;
 mod mock_groups;
 
 pub(super) use super::focus::{self, Pane};
-pub(super) use icons::Icon;
+pub(crate) use icons::Icon;
 pub(super) use mock_groups::{design, home, mock as mock_command};
 
 use crate::theme::palette;
