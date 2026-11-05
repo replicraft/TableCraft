@@ -46,3 +46,7 @@ datasheet-control-lookup = Nachschlageanzeigen werden noch nicht unterstützt; d
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = Los
+
+datasheet-null-value = NULL
+datasheet-close-table = Tabelle schließen
+datasheet-sort-column = { $column } sortieren

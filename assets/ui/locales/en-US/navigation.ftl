@@ -1,6 +1,6 @@
 # TableCraft UI: navigation.
 
-navigation-all-objects = All Access Objects
+navigation-all-objects = All Objects
 navigation-search-objects = Search objects
 navigation-show-system = Show system objects
 navigation-tables = Tables

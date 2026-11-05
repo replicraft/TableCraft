@@ -86,6 +86,25 @@ impl Preview {
                     self.state.close_contents();
                 }
             }
+            Action::CloseTable {
+                document_revision,
+                table,
+            } => {
+                self.state.close_table(document_revision, &table);
+            }
+            Action::SortTable {
+                document_revision,
+                table,
+                column,
+                descending: _,
+            } => {
+                if self
+                    .state
+                    .can_sort_table(document_revision, &table, &column)
+                {
+                    self.state.error = Some(self.state.localizer.text("ribbon-mock-sort-disabled"));
+                }
+            }
             Action::BeginEdit { target } => self.edit(target),
             Action::ReviewEdit { draft_id, input } => {
                 if self.state.can_review_edit(draft_id, &input) {
@@ -290,6 +309,7 @@ impl Preview {
 
 fn copy_cell(cell: &Cell) -> Cell {
     Cell {
+        presentation: cell.presentation,
         alignment: cell.alignment,
         text: cell.text.clone(),
         kind: cell.kind,

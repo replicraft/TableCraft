@@ -22,6 +22,7 @@ tablecraft-ui.workspace = true
 clap.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
 tablecraft-runtime = { workspace = true, features = ["offline-edit"] }
+sys-locale.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 

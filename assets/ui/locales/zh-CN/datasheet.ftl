@@ -46,3 +46,7 @@ datasheet-control-lookup = 尚不支持查阅显示；显示存储值
 datasheet-context-pair = { $base }；{ $presentation }
 
 datasheet-go = 转到
+
+datasheet-null-value = NULL
+datasheet-close-table = 关闭表
+datasheet-sort-column = 对 { $column } 排序

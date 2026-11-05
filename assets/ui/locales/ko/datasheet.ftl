@@ -46,3 +46,7 @@ datasheet-control-lookup = 조회 표시는 아직 지원되지 않으므로 저
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = 이동
+
+datasheet-null-value = NULL
+datasheet-close-table = 테이블 닫기
+datasheet-sort-column = { $column } 정렬

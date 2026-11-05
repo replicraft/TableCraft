@@ -15,6 +15,7 @@ impl MockApp {
         preview.state_mut().localizer = localizer;
         preview.state_mut().theme = theme;
         preview.set_scene(scene);
+        preview.state_mut().formatting.system_locale = sys_locale::get_locale();
 
         Self {
             preview,

@@ -1,5 +1,8 @@
 //! Typed read-only presentation cells; no child payload or executable action.
 
+mod presentation;
+pub use presentation::{DateRepresentation, NativeFormat, ScalarPresentation};
+
 /// Default type-directed presentation; stored TextAlign overrides are uninspected.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum HorizontalAlignment {
@@ -11,6 +14,7 @@ pub enum HorizontalAlignment {
 /// One complete display/copy value and its independently supplied semantics.
 /// Collection text is a summary, not an export of the collection's contents.
 pub struct Cell {
+    pub presentation: Option<ScalarPresentation>,
     pub alignment: HorizontalAlignment,
     pub text: String,
     pub kind: CellKind,
@@ -53,6 +57,7 @@ pub enum CellKind {
 impl Cell {
     pub(crate) fn expression(text: String) -> Self {
         Self {
+            presentation: None,
             alignment: HorizontalAlignment::Left,
             text,
             kind: CellKind::Scalar {

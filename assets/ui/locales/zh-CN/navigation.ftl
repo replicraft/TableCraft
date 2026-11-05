@@ -1,6 +1,6 @@
 # TableCraft UI: navigation.
 
-navigation-all-objects = 所有 Access 对象
+navigation-all-objects = 所有对象
 navigation-search-objects = 搜索对象
 navigation-show-system = 显示系统对象
 navigation-tables = 表

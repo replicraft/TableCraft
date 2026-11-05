@@ -18,8 +18,9 @@ pub(super) fn workspace() -> State {
         path: "Sample Workspace.accdb".into(),
         sql: SQL.into(),
         database: Some(Database {
+            title_path: Some("Synthetic workspace/Sample Workspace.accdb".into()),
             document_revision: REVISION,
-            title: "Sample Workspace.accdb · Mock".into(),
+            title: "Sample Workspace : Database | Sample Workspace.accdb (Access 2016)".into(),
             format: "ACE 16".into(),
             tables: ["Customers", "Orders", "Products", "MSysObjects"]
                 .into_iter()
@@ -53,10 +54,9 @@ pub(super) fn workspace() -> State {
 pub(super) fn long_names(state: &mut State) {
     let table = "Customer accounts for international correspondence and follow-up";
     let database = state.database.as_mut().expect("synthetic database");
-    database.title = format!(
-        "{}2026.accdb · Mock",
-        "International customer and supplier reconciliation workspace — ".repeat(3),
-    );
+    let name = "International customer and supplier reconciliation workspace — ".repeat(3);
+    database.title = format!("{name}2026 : Database | {name}2026.accdb (Access 2016)");
+    database.title_path = Some(format!("Synthetic workspace/{name}2026.accdb"));
     database.tables[0].name = table.into();
     database.queries[0].name =
         "Customer account correspondence by region and financial period".into();
@@ -121,14 +121,14 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
         "Orders" => vec![
             right_aligned((6001 + index).to_string()),
             right_aligned((1001 + index % 24).to_string()),
-            right_aligned("2026-05-14"),
-            right_aligned("$ 425.00"),
+            date_cell(2026, 5, 14),
+            currency_cell(4_250_000),
             boolean(!index.is_multiple_of(3)),
         ],
         "Products" => vec![
             right_aligned((201 + index).to_string()),
             text(["Desk lamp", "Notebook", "Storage box"][index as usize % 3]),
-            right_aligned("$ 24.50"),
+            currency_cell(245_000),
             boolean(!index.is_multiple_of(4)),
         ],
         "MSysObjects" => vec![
@@ -152,10 +152,11 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                 text(name),
                 text(["Northstar Design", "Cedar Studio", "Harbor Works"][variant % 3]),
                 if index == 2 { null() } else { text(city) },
-                right_aligned("$ 1,245.50"),
-                right_aligned("2026-04-12"),
+                currency_cell(12_455_000),
+                date_cell(2026, 4, 12),
                 boolean(!index.is_multiple_of(3)),
                 Cell {
+                    presentation: None,
                     alignment: HorizontalAlignment::Left,
                     text: "Priority; Newsletter".into(),
                     kind: CellKind::Multivalue {
@@ -164,6 +165,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    presentation: None,
                     alignment: HorizontalAlignment::Left,
                     text: "1 attachment".into(),
                     kind: CellKind::Attachments {
@@ -172,6 +174,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    presentation: None,
                     alignment: HorizontalAlignment::Left,
                     text: "Schedule the next account review.".into(),
                     kind: CellKind::VersionHistory {
@@ -180,6 +183,7 @@ fn row(table: &str, index: u32) -> Vec<Cell> {
                     },
                 },
                 Cell {
+                    presentation: None,
                     alignment: HorizontalAlignment::Right,
                     text: "$ 14,946.00".into(),
                     kind: CellKind::Scalar {
@@ -372,6 +376,7 @@ fn right_aligned(value: impl Into<String>) -> Cell {
 
 pub(super) fn null() -> Cell {
     Cell {
+        presentation: None,
         alignment: HorizontalAlignment::Left,
         text: "NULL".into(),
         kind: CellKind::Scalar {
@@ -385,6 +390,7 @@ pub(super) fn null() -> Cell {
 
 fn boolean(value: bool) -> Cell {
     Cell {
+        presentation: None,
         alignment: HorizontalAlignment::Left,
         text: value.to_string(),
         kind: CellKind::Scalar {
@@ -394,4 +400,23 @@ fn boolean(value: bool) -> Cell {
             display_control: DisplayControl::Native(106),
         },
     }
+}
+
+fn currency_cell(scaled: i64) -> Cell {
+    let mut cell = right_aligned(String::new());
+    cell.presentation = Some(crate::formatting::ScalarPresentation::Currency {
+        scaled,
+        native_format: crate::formatting::NativeFormat::Currency,
+    });
+    cell
+}
+
+fn date_cell(year: i16, month: i8, day: i8) -> Cell {
+    let mut cell = right_aligned(String::new());
+    cell.presentation = Some(crate::formatting::ScalarPresentation::DateTime {
+        calendar: jiff::civil::date(year, month, day).at(0, 0, 0, 0),
+        representation: crate::formatting::DateRepresentation::Extended,
+        native_format: crate::formatting::NativeFormat::ShortDate,
+    });
+    cell
 }

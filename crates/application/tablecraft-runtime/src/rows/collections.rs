@@ -110,6 +110,7 @@ pub(super) fn rows(
                         output.text("NULL")?
                     };
                     Cell {
+                        presentation: None,
                         text,
                         kind,
                         alignment: HorizontalAlignment::Left,

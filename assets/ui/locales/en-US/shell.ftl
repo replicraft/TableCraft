@@ -22,3 +22,14 @@ shell-supported-files = MDB and ACCDB · tables and supported SELECT queries
 shell-translation-unavailable = Translation unavailable
 
 shell-operation-cancelled = Operation cancelled.
+
+shell-view-datasheet = Datasheet view
+shell-view-design = Design view
+shell-view-query = Query view
+shell-window-minimize = Minimize
+shell-window-maximize = Maximize
+shell-window-restore = Restore
+shell-window-close = Close window
+shell-zoom = Zoom
+shell-zoom-out = Zoom out
+shell-zoom-in = Zoom in

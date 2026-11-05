@@ -67,3 +67,9 @@ ribbon-redo = Wiederholen
 ribbon-builder = Generator
 ribbon-insert-rows = Zeilen einfügen
 ribbon-delete-rows = Zeilen löschen
+
+ribbon-sort-query-help = Die gesamte Tabelle in schreibgeschützte Abfrageergebnisse sortieren. Die aktuelle Seite wird nicht umgeordnet.
+ribbon-refresh-table = Aktualisieren
+ribbon-refresh-table-help = Die aktuelle Tabellenseite neu laden.
+ribbon-sorted-results = Sortierte Tabellenergebnisse (schreibgeschützt)
+ribbon-mock-sort-disabled = Die vollständige Tabellensortierung ist in dieser synthetischen Vorschau nicht verfügbar. Es wurden keine Zeilen umgeordnet.

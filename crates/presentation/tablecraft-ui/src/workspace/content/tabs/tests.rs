@@ -2,17 +2,18 @@ use super::*;
 use crate::{Data, Database, Locale, Localizer, Schema};
 use egui::{
     Event, Key, MouseWheelUnit, TouchPhase,
-    accesskit::{Action, Role},
+    accesskit::{Action as AccessibilityAction, Role},
 };
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
 
-fn harness(width: f32) -> Harness<'static, (State, bool)> {
+fn harness(width: f32) -> Harness<'static, (State, bool, Vec<Action>)> {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
+        title_path: None,
         document_revision: 7,
         title: "Tab observations".into(),
         format: "ACE 16".into(),
@@ -35,11 +36,11 @@ fn harness(width: f32) -> Harness<'static, (State, bool)> {
     let harness = Harness::builder()
         .with_size(egui::vec2(width, 120.0))
         .build_ui_state(
-            |ui, state: &mut (State, bool)| {
+            |ui, state: &mut (State, bool, Vec<Action>)| {
                 crate::localization::install(ui.ctx(), &state.0.localizer);
-                ui.add_enabled_ui(state.1, |ui| state.0.document_tabs(ui));
+                ui.add_enabled_ui(state.1, |ui| state.0.document_tabs(ui, &mut state.2));
             },
-            (state, true),
+            (state, true, Vec::new()),
         );
     crate::configure(&harness.ctx);
     harness
@@ -182,9 +183,49 @@ fn overflow_tabs_reveal_on_focus_preserve_manual_scroll_and_disable_background_a
     harness.state_mut().1 = false;
     harness.run();
     let tab = harness.get_by_role_and_label(Role::Tab, "Query");
-    assert!(!tab.accesskit_node().data().supports_action(Action::Click));
-    assert!(!tab.accesskit_node().data().supports_action(Action::Focus));
+    assert!(
+        !tab.accesskit_node()
+            .data()
+            .supports_action(AccessibilityAction::Click)
+    );
+    assert!(
+        !tab.accesskit_node()
+            .data()
+            .supports_action(AccessibilityAction::Focus)
+    );
     tab.click_accesskit();
     harness.run();
     assert!(harness.state().0.view == DocumentView::Design);
+}
+
+#[test]
+fn close_table_dispatches_exact_source_and_retains_database_and_query_slots() {
+    let mut harness = harness(900.0);
+    let data = harness.state().0.data.as_ref().unwrap();
+    let table = data.table.clone();
+    harness.state_mut().0.set_query_data(Data {
+        source_revision: None,
+        table: "Independent query".into(),
+        offset: 0,
+        columns: vec!["Value".into()],
+        rows: vec![vec![crate::Cell::scalar("retained result")]],
+        has_more: false,
+    });
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Close table")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().2.as_slice(), [Action::CloseTable { document_revision: 7, table: actual }] if actual == &table)
+    );
+    let state = &mut harness.state_mut().0;
+    assert!(state.close_table(7, &table));
+    assert!(state.data.is_none());
+    assert!(state.database.is_some());
+    assert_eq!(
+        state.query_data.as_ref().unwrap().rows[0][0].text,
+        "retained result"
+    );
+    assert!(!state.close_table(7, &table));
 }

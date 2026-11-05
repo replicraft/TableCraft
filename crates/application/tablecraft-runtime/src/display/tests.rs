@@ -131,3 +131,59 @@ fn alignment_uses_typed_carriers_without_changing_text_or_provenance() {
         );
     }
 }
+
+#[test]
+fn typed_display_facts_preserve_exact_currency_date_bits_and_extended_ticks() {
+    use crate::{DateRepresentation, NativeFormat, ScalarPresentation};
+    let mut output = Presentation::new(&|| false);
+    for scaled in [i64::MIN, -1, 0, 1, i64::MAX] {
+        let cell = output
+            .scalar(&Value::Currency(Currency::from_scaled(scaled)), false)
+            .unwrap();
+        assert_eq!(
+            cell.presentation,
+            Some(ScalarPresentation::Currency {
+                scaled,
+                native_format: NativeFormat::Unspecified,
+            })
+        );
+    }
+
+    let legacy = LegacyDateTime::from_ole_days(-0.5).unwrap();
+    let cell = output.scalar(&Value::DateTime(legacy), false).unwrap();
+    assert_eq!(
+        cell.presentation,
+        Some(ScalarPresentation::DateTime {
+            calendar: jiff::civil::date(1899, 12, 30).at(12, 0, 0, 0),
+            representation: DateRepresentation::LegacyBits((-0.5_f64).to_bits()),
+            native_format: NativeFormat::Unspecified,
+        })
+    );
+    let extended = ExtendedDateTime::new(2026, 4, 12, 15, 4, 5, 1_234_567).unwrap();
+    let cell = output
+        .scalar(&Value::DateTimeExtended(extended), false)
+        .unwrap();
+    assert_eq!(
+        cell.presentation,
+        Some(ScalarPresentation::DateTime {
+            calendar: jiff::civil::date(2026, 4, 12).at(15, 4, 5, 123_456_700),
+            representation: DateRepresentation::Extended,
+            native_format: NativeFormat::Unspecified,
+        })
+    );
+    assert!(
+        output
+            .scalar(&Value::Text("12.34".into()), false)
+            .unwrap()
+            .presentation
+            .is_none()
+    );
+    assert!(
+        output
+            .scalar(&Value::Null, false)
+            .unwrap()
+            .presentation
+            .is_none()
+    );
+    assert!(Cell::expression("12.34".into()).presentation.is_none());
+}

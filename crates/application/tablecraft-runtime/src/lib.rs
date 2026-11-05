@@ -16,7 +16,10 @@ mod schema;
 mod source;
 mod worker;
 
-pub use cell::{Cell, CellKind, DisplayControl, HorizontalAlignment};
+pub use cell::{
+    Cell, CellKind, DateRepresentation, DisplayControl, HorizontalAlignment, NativeFormat,
+    ScalarPresentation,
+};
 pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
@@ -129,6 +132,13 @@ pub enum Command {
     Query {
         sql: String,
     },
+    /// Complete bounded sorting through the query evaluator; results are read-only.
+    SortTable {
+        document_revision: u64,
+        table: String,
+        column: String,
+        descending: bool,
+    },
     InspectSavedQuery {
         target: SavedQueryTarget,
     },
@@ -148,6 +158,8 @@ impl Drop for Command {
 
 pub struct Table {
     pub name: String,
+    /// Local storage fact; independent of display text and row readability.
+    pub local: bool,
     pub system: bool,
     pub storage: String,
 }
@@ -182,6 +194,8 @@ pub enum Response {
     },
     Opened {
         document_revision: u64,
+        /// Absolute path captured by the successful open operation.
+        source_path: PathBuf,
         title: String,
         format: String,
         tables: Vec<Table>,

@@ -124,6 +124,7 @@ fn stale_saved_actions_cannot_replace_a_new_open_or_dispatch_changed_inputs() {
     desktop.inspect_saved_query(stale.clone());
     assert_eq!(desktop.generation, generation);
     finish(&mut desktop, &context);
+    let generation = desktop.generation;
     desktop.inspect_saved_query(stale);
     assert_eq!(desktop.generation, generation);
     assert!(desktop.state.selected_saved_target().is_none());

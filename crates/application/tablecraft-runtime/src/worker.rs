@@ -78,6 +78,18 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .run_saved_query(target, parameters, cancelled),
+            Command::SortTable {
+                document_revision,
+                table,
+                column,
+                descending,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.sort_table(
+                *document_revision,
+                table,
+                column,
+                *descending,
+                cancelled,
+            ),
             Command::Query { sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -129,6 +141,7 @@ impl Worker {
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",
                     Command::Query { .. } => "query",
+                    Command::SortTable { .. } => "sort_table",
                     Command::InspectSavedQuery { .. } => "inspect_saved_query",
                     Command::RunSavedQuery { .. } => "run_saved_query",
                 };

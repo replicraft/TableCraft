@@ -61,6 +61,7 @@ from native platform interaction and Windows Access behavior.
 ```sh
 TABLECRAFT_PREVIEW_DIR=.cache/ui-previews \
 TABLECRAFT_PREVIEW_LOCALE=ja \
+TABLECRAFT_PREVIEW_REGIONAL_LOCALE=ja-JP \
 TABLECRAFT_PREVIEW_THEME=dark \
 TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
@@ -549,3 +550,10 @@ locale / theme combinations and the 50-design icon decode inventory. Formatting,
 strict selected-package Clippy, documentation links and dependency boundaries
 pass. All source changes remain in presentation; host service contracts and
 backend operation scope are unchanged. No native window or UI automation was used.
+
+
+Regional formatting in exported previews is selected independently with
+`TABLECRAFT_PREVIEW_REGIONAL_LOCALE` (default `en-US`). It is not inferred from the
+Fluent translation locale. The exporter uses a full-viewport root UI instead of
+the test harness's artificial eight-point demonstration frame. Record logical
+size, pixel scale, build platform and chosen regional locale with reviewed images.

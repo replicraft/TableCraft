@@ -58,6 +58,14 @@ impl Data {
 }
 
 impl State {
+    pub(super) fn refresh_contents_display(&mut self) {
+        if let Some(dialog) = &mut self.contents
+            && let ContentsResult::Ready { data, .. } = &mut dialog.result
+        {
+            self.format_cache.apply_data(data);
+        }
+    }
+
     /// Only actual collection cells in the current native page are actionable.
     pub fn can_view_contents(&self, target: &ContentsTarget) -> bool {
         if self.edit_dialog_open()
@@ -122,6 +130,7 @@ impl State {
         }
         // Child rows are observations, never a new native parent capability.
         data.source_revision = None;
+        self.prepare_display(&mut data);
         if let Some(dialog) = &mut self.contents {
             dialog.selection.reset(&data);
             dialog.result = ContentsResult::Ready {

@@ -587,3 +587,28 @@ Cargo, production runtime and ordinary CI dependencies are unchanged. JDBC metad
 actual object classes and TableCraft carriers remain separate. Integral-average,
 rounding and execution differences in this route explicitly prevent treating it
 as a native Access oracle or importing HSQLDB semantics into TableCraft.
+
+
+## Regional UI display consumers — 5 November 2026
+
+Adopted sys-locale 0.3.2 for desktop startup regional identifiers, independent of
+explicit Fluent language selection. Its working consumer is the desktop host;
+there is no reason to scaffold a platform crate. Jiff remains the civil calendar
+carrier. ICU4X 2.3 Gregorian date/time field sets and ICU experimental 0.6 currency
+formatting supply regional order, symbols and currency minor units from exact
+scaled integers. These are shared-UI presentation choices, not query/native
+formatting policy. iso_currency 0.7.1 provides a versioned country-to-regular-
+currency mapping, refusing an automatic choice for ambiguous regions.
+
+The experimental currency API is isolated behind the UI formatter and uses its
+compiled CLDR fraction/rounding data. Native Currency has no stored currency code;
+System is a display convention, with qualified stored Euro hints retained.
+Unsupported custom formats retain raw typed output; this is not a general Access
+Format-property interpreter. CLDR regional defaults do not read custom operating-
+system regional overrides. Registry/default-feature and license details are in
+[DEPENDENCIES.md](DEPENDENCIES.md#typed-regional-ui-formatting--5-november-2026).
+
+Primary implementation references: [ICU4X](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
+[currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html),
+[ISO relationship API](https://docs.rs/iso_currency/0.7.1/iso_currency/enum.Currency.html)
+and [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/).

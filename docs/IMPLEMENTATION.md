@@ -1,5 +1,25 @@
 # Implementation status
 
+## Regional datasheets and window chrome — 5 November 2026
+
+The desktop now opens the first local user table after a successful file capture,
+retains the captured path for title hover, and restores the saved page after an
+acknowledged edit. Default theme follows the system. The shared UI separates
+regional date, time and Currency display choices, including Raw, while preserving
+typed values and native edit syntax. Native General Date shapes and a qualified
+stored euro prefix are covered. Headers and checkboxes are centered; typed NULL,
+table Close, taller object search, actual Refresh, and bounded read-only sorting
+are available. Sort preserves qualified captions/control/format metadata without
+issuing native row identities. Windows/Linux have custom viewport controls;
+macOS keeps native decoration. The original app icon is a red database cylinder.
+
+The selected headless gate passed 141 UI, 58 runtime and 26 desktop tests plus the
+runtime documentation example. The UI gate includes 704 scene/locale/theme draw
+combinations. Offscreen macOS-built exports were inspected at 1280×820 / 1× and
+900×580 / 1.25×; the renderer removes its artificial test-harness outer frame.
+Native UI activation remains suspended. See [display preferences](ui/DISPLAY_PREFERENCES.md)
+for the regional-data, sorting, platform and history limits.
+
 ## Published dialog references and staged parameters — 5 November 2026
 
 Published Microsoft parameter and attachment dialog images now extend the visual

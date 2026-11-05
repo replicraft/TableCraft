@@ -107,11 +107,66 @@ pub(super) fn cell(cell: RuntimeCell) -> Cell {
         }
     };
     Cell {
+        presentation: cell.presentation.map(presentation),
         alignment: match cell.alignment {
             RuntimeAlignment::Left => HorizontalAlignment::Left,
             RuntimeAlignment::Right => HorizontalAlignment::Right,
         },
         text: cell.text,
         kind,
+    }
+}
+
+// Move validated facts one-to-one. Regional text is exclusively shared-UI policy.
+fn presentation(
+    value: tablecraft_runtime::ScalarPresentation,
+) -> tablecraft_ui::formatting::ScalarPresentation {
+    use tablecraft_runtime::{
+        DateRepresentation as RuntimeDate, ScalarPresentation as RuntimePresentation,
+    };
+    use tablecraft_ui::formatting::{DateRepresentation, ScalarPresentation};
+
+    match value {
+        RuntimePresentation::Currency {
+            scaled,
+            native_format: format,
+        } => ScalarPresentation::Currency {
+            scaled,
+            native_format: native_format(format),
+        },
+        RuntimePresentation::DateTime {
+            calendar,
+            representation,
+            native_format: format,
+        } => ScalarPresentation::DateTime {
+            calendar,
+            representation: match representation {
+                RuntimeDate::LegacyBits(bits) => DateRepresentation::LegacyBits(bits),
+                RuntimeDate::Extended => DateRepresentation::Extended,
+            },
+            native_format: native_format(format),
+        },
+    }
+}
+
+fn native_format(
+    value: tablecraft_runtime::NativeFormat,
+) -> tablecraft_ui::formatting::NativeFormat {
+    use tablecraft_runtime::NativeFormat as RuntimeFormat;
+    use tablecraft_ui::formatting::NativeFormat;
+
+    match value {
+        RuntimeFormat::Unspecified => NativeFormat::Unspecified,
+        RuntimeFormat::GeneralDate => NativeFormat::GeneralDate,
+        RuntimeFormat::ShortDate => NativeFormat::ShortDate,
+        RuntimeFormat::MediumDate => NativeFormat::MediumDate,
+        RuntimeFormat::LongDate => NativeFormat::LongDate,
+        RuntimeFormat::ShortTime => NativeFormat::ShortTime,
+        RuntimeFormat::MediumTime => NativeFormat::MediumTime,
+        RuntimeFormat::LongTime => NativeFormat::LongTime,
+        RuntimeFormat::Currency => NativeFormat::Currency,
+        RuntimeFormat::Euro => NativeFormat::Euro,
+        RuntimeFormat::EuroPrefixTwoDecimals => NativeFormat::EuroPrefixTwoDecimals,
+        RuntimeFormat::Unsupported => NativeFormat::Unsupported,
     }
 }

@@ -25,11 +25,17 @@ file-open/read call must return before a cooperative cancellation check can run.
 
 | Command | Owned response and scope |
 | --- | --- |
-| Open | Inert catalog and format; a failed replacement clears the old session |
+| Open | Inert catalog, local-storage facts, format and captured absolute source path; a failed replacement clears the old session |
 | Page | One buffered table page with typed scalar/stored-field cells |
 | Describe | Field declarations, reader facts and inert field-property observations, without user-record scans |
 | InspectCollection | Complete stored children of one revision-bound native parent cell |
 | Query | Explicit read-query result over the selected source; no implicit provider opens |
+| SortTable | Revision-bound table/field identifiers composed into an owned SELECT/ORDER BY model; complete buffered read-only result under the same query budgets |
+
+The desktop follows a successful Open with Page for the first non-system local
+table, unless restoring an acknowledged save. This is a host workflow, not a
+catalog enumeration side effect. Sorting returns no native row handles or source
+revision: reordered query positions cannot be used as native edit ordinals.
 
 Describe's reader NULL policy stays separate from its stored Required/default/
 validation observations. Unknown field declarations remain visible. Metadata does

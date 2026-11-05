@@ -33,6 +33,8 @@ pub struct Table {
 
 /// Opened database metadata supplied by the application host.
 pub struct Database {
+    /// Captured open-source path for title hover, independent of editable Open text.
+    pub title_path: Option<String>,
     pub document_revision: u64,
     pub title: String,
     pub format: String,
@@ -77,6 +79,16 @@ pub enum Action {
     CloseContents {
         request_id: u64,
     },
+    CloseTable {
+        document_revision: u64,
+        table: String,
+    },
+    SortTable {
+        document_revision: u64,
+        table: String,
+        column: String,
+        descending: bool,
+    },
     BeginEdit {
         target: EditTarget,
     },
@@ -120,6 +132,8 @@ enum DocumentView {
 pub struct State {
     pub localizer: crate::Localizer,
     pub theme: crate::Theme,
+    pub formatting: crate::formatting::Options,
+    format_cache: crate::formatting::Cache,
     /// Synthetic presentation only; never grants database capabilities.
     pub mock_preview: bool,
     pub path: String,
@@ -130,6 +144,7 @@ pub struct State {
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,
+    sorted_query: bool,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -153,21 +168,47 @@ pub struct State {
 }
 
 impl State {
+    fn prepare_display(&mut self, data: &mut Data) {
+        self.refresh_display();
+        self.format_cache.apply_data(data);
+    }
+
+    fn refresh_display(&mut self) {
+        if !self.format_cache.update(&self.formatting) {
+            return;
+        }
+
+        if let Some(data) = &mut self.data {
+            self.format_cache.apply_data(data);
+        }
+        if let Some(data) = &mut self.query_data {
+            self.format_cache.apply_data(data);
+        }
+        if let Some(data) = &mut self.saved_query.data {
+            self.format_cache.apply_data(data);
+        }
+        self.refresh_contents_display();
+        self.refresh_edit_display();
+    }
+
     /// Publish a table response without replacing the query result.
-    pub fn set_table_data(&mut self, data: Data) {
+    pub fn set_table_data(&mut self, mut data: Data) {
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
         self.close_contents();
+        self.prepare_display(&mut data);
         self.table_selection.reset(&data);
         self.data = Some(data);
     }
 
     /// Publish a query response without changing the table page or its offset.
-    pub fn set_query_data(&mut self, data: Data) {
+    pub fn set_query_data(&mut self, mut data: Data) {
+        self.sorted_query = false;
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
+        self.prepare_display(&mut data);
         self.query_selection.reset(&data);
         self.query_data = Some(data);
     }
@@ -331,6 +372,7 @@ impl State {
 
     fn query_ready(&self) -> bool {
         self.view == DocumentView::Query
+            && !(self.sorted_query && self.query_data.is_some())
             && !self.saved_query.active
             && !self.backstage_visible()
             && self.database.is_some()
@@ -349,6 +391,8 @@ impl State {
 
     /// Draw the workspace and return explicit user actions; performs no I/O.
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
+        self.refresh_display();
+        self.refresh_edit_display();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
@@ -455,6 +499,7 @@ mod tests {
         };
         assert!(!state.query_ready());
         state.database = Some(Database {
+            title_path: None,
             document_revision: 1,
             title: "Sample".into(),
             format: "ACE16".into(),

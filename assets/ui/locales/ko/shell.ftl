@@ -22,3 +22,14 @@ shell-supported-files = MDB 및 ACCDB · 테이블과 지원되는 SELECT 쿼리
 shell-translation-unavailable = 번역을 사용할 수 없습니다
 
 shell-operation-cancelled = 작업이 취소되었습니다.
+
+shell-view-datasheet = 데이터시트 보기
+shell-view-design = 디자인 보기
+shell-view-query = 쿼리 보기
+shell-window-minimize = 최소화
+shell-window-maximize = 최대화
+shell-window-restore = 복원
+shell-window-close = 창 닫기
+shell-zoom = 확대/축소
+shell-zoom-out = 축소
+shell-zoom-in = 확대

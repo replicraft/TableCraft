@@ -1,4 +1,5 @@
 //! Shared title, contextual ribbon and status; no file or database services.
+mod window;
 use super::focus::{self, Pane};
 use super::ribbon::Icon;
 use super::{Action, DocumentView, State, ribbon};
@@ -10,17 +11,21 @@ const APPLICATION_ICON_SIZE: f32 = 16.0;
 const QUICK_ACCESS_BUTTON_SIZE: f32 = 20.0;
 const RIBBON_TAB_HEIGHT: f32 = 26.0;
 const RIBBON_TAB_SIDE_PADDING: f32 = 9.0;
+const ZOOM_STEP_PERCENT: u16 = 10;
+const ZOOM_SLIDER_WIDTH: f32 = 96.0;
+const STATUS_VIEW_ICON_SIZE: f32 = 16.0;
 
 impl State {
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         let colors = palette(ui.ctx());
         let t = self.localizer.clone();
         egui::Panel::top("title")
-            .frame(
-                Frame::new()
-                    .fill(colors.title_fill)
-                    .inner_margin(Margin::symmetric(10, 5)),
-            )
+            .frame(Frame::new().fill(colors.title_fill).inner_margin(Margin {
+                left: 8,
+                right: if window::enabled() { 0 } else { 8 },
+                top: if window::enabled() { 0 } else { 4 },
+                bottom: if window::enabled() { 0 } else { 4 },
+            }))
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
                     ui.add(
@@ -37,21 +42,39 @@ impl State {
                         .database
                         .as_ref()
                         .map_or_else(|| t.text("shell-workspace"), |db| db.title.clone());
-                    let status = RichText::new(self.edit_status())
-                        .color(colors.muted)
-                        .size(11.0);
-                    let status_width = egui::WidgetText::from(status.clone())
-                        .into_galley(
-                            ui,
-                            Some(egui::TextWrapMode::Extend),
-                            f32::INFINITY,
-                            egui::TextStyle::Body,
-                        )
-                        .size()
-                        .x;
+                    let title_hover = self
+                        .database
+                        .as_ref()
+                        .and_then(|database| database.title_path.as_deref())
+                        .unwrap_or(&title);
+                    let status = if self.edit_dialog_open() {
+                        Some(self.edit_status())
+                    } else if self.busy {
+                        Some(t.text("shell-working"))
+                    } else {
+                        None
+                    };
+                    let status =
+                        status.map(|text| RichText::new(text).color(colors.muted).size(11.0));
+                    let status_width = status.as_ref().map_or(0.0, |text| {
+                        egui::WidgetText::from(text.clone())
+                            .into_galley(
+                                ui,
+                                Some(egui::TextWrapMode::Extend),
+                                f32::INFINITY,
+                                egui::TextStyle::Body,
+                            )
+                            .size()
+                            .x
+                            + ui.spacing().item_spacing.x
+                    });
+                    let controls_width = if window::enabled() {
+                        window::CONTROLS_WIDTH + ui.spacing().item_spacing.x
+                    } else {
+                        0.0
+                    };
                     let title_width =
-                        (ui.available_width() - status_width - ui.spacing().item_spacing.x)
-                            .max(0.0);
+                        (ui.available_width() - status_width - controls_width).max(0.0);
                     let response = ui
                         .allocate_ui_with_layout(
                             egui::vec2(title_width, ui.text_style_height(&egui::TextStyle::Body)),
@@ -60,17 +83,28 @@ impl State {
                             |ui| {
                                 ui.add(
                                     egui::Label::new(RichText::new(&title).color(colors.ink))
+                                        .sense(if window::enabled() {
+                                            egui::Sense::CLICK | egui::Sense::DRAG
+                                        } else {
+                                            egui::Sense::hover()
+                                        })
                                         .halign(egui::Align::LEFT)
                                         .truncate(),
                                 )
                             },
                         )
                         .inner
-                        .on_hover_text(&title);
+                        .on_hover_text(title_hover);
+                    window::drag_title(&response);
                     ui.ctx().accesskit_node_builder(response.id, |node| {
                         node.set_label(title);
                     });
-                    ui.label(status);
+                    if let Some(status) = status {
+                        ui.label(status);
+                    }
+                    if window::enabled() {
+                        window::show(ui, &t);
+                    }
                 });
             });
         if !self.backstage_visible() {
@@ -166,31 +200,117 @@ impl State {
                     .fill(colors.title_fill)
                     .inner_margin(Margin::symmetric(8, 3)),
             )
-            .show(ui, |ui| {
-                ui.horizontal(|ui| {
-                    ui.small(t.text(if self.busy {
-                        "shell-working"
-                    } else {
-                        "shell-ready"
-                    }));
-                    if self.busy {
-                        ui.spinner();
-                        if ui.button(t.text("shell-cancel")).clicked() {
-                            actions.push(Action::Cancel);
-                        }
-                    }
-                    ui.separator();
-                    ui.small(
-                        self.database.as_ref().map_or_else(
-                            || t.text("shell-local-databases"),
-                            |db| db.format.clone(),
-                        ),
-                    );
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.small(t.text("shell-snapshot-browsing"));
+            .show(ui, |ui| self.status_bar(ui, actions));
+    }
+}
+
+impl State {
+    fn status_bar(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        let t = self.localizer.clone();
+        ui.horizontal(|ui| {
+            let key = if self.database.is_none() {
+                "shell-ready"
+            } else {
+                match self.view {
+                    DocumentView::Table => "shell-view-datasheet",
+                    DocumentView::Design => "shell-view-design",
+                    DocumentView::Query => "shell-view-query",
+                }
+            };
+            ui.small(t.text(key));
+            if self.busy {
+                ui.spinner();
+                if ui.button(t.text("shell-cancel")).clicked() {
+                    actions.push(Action::Cancel);
+                }
+            }
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                let zoom_available = !self.backstage_visible() && self.visible_data().is_some();
+                ui.add_enabled_ui(zoom_available, |ui| {
+                    let mut zoom = crate::theme::datasheet_zoom(ui.ctx());
+                    ui.small(format!("{zoom}%"));
+                    let increase = ui.small_button("+");
+                    increase.widget_info(|| {
+                        WidgetInfo::labeled(
+                            WidgetType::Button,
+                            increase.enabled(),
+                            t.text("shell-zoom-in"),
+                        )
                     });
+                    if increase.on_hover_text(t.text("shell-zoom-in")).clicked() {
+                        zoom = zoom.saturating_add(ZOOM_STEP_PERCENT);
+                    }
+                    let mut style = (**ui.style()).clone();
+                    style.spacing.slider_width = ZOOM_SLIDER_WIDTH;
+                    ui.scope(|ui| {
+                        ui.set_style(style);
+                        ui.add(
+                            egui::Slider::new(
+                                &mut zoom,
+                                crate::theme::MIN_DATASHEET_ZOOM..=crate::theme::MAX_DATASHEET_ZOOM,
+                            )
+                            .show_value(false)
+                            .text(t.text("shell-zoom")),
+                        );
+                    });
+                    let decrease = ui.small_button("−");
+                    decrease.widget_info(|| {
+                        WidgetInfo::labeled(
+                            WidgetType::Button,
+                            decrease.enabled(),
+                            t.text("shell-zoom-out"),
+                        )
+                    });
+                    if decrease.on_hover_text(t.text("shell-zoom-out")).clicked() {
+                        zoom = zoom.saturating_sub(ZOOM_STEP_PERCENT);
+                    }
+                    if zoom != crate::theme::datasheet_zoom(ui.ctx()) {
+                        crate::theme::set_datasheet_zoom(ui.ctx(), zoom);
+                    }
                 });
+                ui.separator();
+                let table = match self.view {
+                    DocumentView::Table => self.data.as_ref().map(|data| data.table.clone()),
+                    DocumentView::Design => self.schema.as_ref().map(|schema| schema.table.clone()),
+                    DocumentView::Query => None,
+                };
+                let design = ui.add_enabled(
+                    !self.backstage_visible() && !self.busy && table.is_some(),
+                    egui::Button::image(Icon::TableEdit.image(ui, STATUS_VIEW_ICON_SIZE))
+                        .selected(self.view == DocumentView::Design),
+                );
+                design.widget_info(|| {
+                    WidgetInfo::labeled(
+                        WidgetType::Button,
+                        design.enabled(),
+                        t.text("shell-view-design"),
+                    )
+                });
+                if design.clicked() && self.view != DocumentView::Design {
+                    actions.push(Action::ViewSchema {
+                        table: table.clone().expect("enabled table view"),
+                    });
+                }
+                let datasheet_available = table
+                    .as_ref()
+                    .is_some_and(|name| self.data.as_ref().is_some_and(|data| &data.table == name));
+                let datasheet = ui.add_enabled(
+                    !self.backstage_visible() && !self.busy && datasheet_available,
+                    egui::Button::image(Icon::Table.image(ui, STATUS_VIEW_ICON_SIZE))
+                        .selected(self.view == DocumentView::Table),
+                );
+                datasheet.widget_info(|| {
+                    WidgetInfo::labeled(
+                        WidgetType::Button,
+                        datasheet.enabled(),
+                        t.text("shell-view-datasheet"),
+                    )
+                });
+                if datasheet.clicked() {
+                    self.select_view(DocumentView::Table);
+                }
             });
+        });
     }
 }
 

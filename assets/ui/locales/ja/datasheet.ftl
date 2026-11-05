@@ -46,3 +46,7 @@ datasheet-control-lookup = ルックアップ表示は未対応です。保存�
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = 移動
+
+datasheet-null-value = NULL
+datasheet-close-table = テーブルを閉じる
+datasheet-sort-column = { $column } を並べ替え

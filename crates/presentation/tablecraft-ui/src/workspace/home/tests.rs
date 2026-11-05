@@ -220,6 +220,7 @@ fn row_selector_and_home_copy_share_complete_displayed_record_and_publication_re
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(super::super::Database {
+        title_path: None,
         document_revision: 4,
         title: "Example".into(),
         format: "ACE16".into(),
@@ -538,5 +539,114 @@ fn mock_table_design_command_prepares_missing_schema_through_the_isolated_previe
             .get_by_role_and_label(Role::Button, "View")
             .accesskit_node()
             .is_disabled()
+    );
+}
+
+#[test]
+fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refresh() {
+    let mut preview = Preview::new(Scene::Datasheet);
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = false;
+    let native = state.data.as_ref().unwrap();
+    let revision = native.source_revision.unwrap();
+    let table = native.table.clone();
+    let column = native.columns[0].name.clone();
+    let offset = native.offset;
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Ascending")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::SortTable { document_revision, table: actual_table, column: actual_column, descending: false }] if *document_revision == revision && actual_table == &table && actual_column == &column)
+    );
+    assert!(
+        harness
+            .state()
+            .0
+            .data
+            .as_ref()
+            .unwrap()
+            .source_revision
+            .is_some()
+    );
+    harness.state_mut().1.clear();
+    harness
+        .get_by_role_and_label(Role::Button, "Refresh")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::Page { table: actual, offset: actual_offset }] if actual == &table && *actual_offset == offset)
+    );
+    harness.state_mut().1.clear();
+    let mut arguments = crate::FluentArgs::new();
+    arguments.set("column", column.as_str());
+    let header_label = harness
+        .state()
+        .0
+        .localizer
+        .format("datasheet-sort-column", &arguments);
+    harness
+        .get_by_role_and_label(Role::Button, &header_label)
+        .click_accesskit();
+    harness.run();
+    harness
+        .get_all_by_role_and_label(Role::Button, "Descending")
+        .last()
+        .expect("opened header sort command")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::SortTable { document_revision, table: actual_table, column: actual_column, descending: true }] if *document_revision == revision && actual_table == &table && actual_column == &column)
+    );
+    assert!(
+        !harness
+            .state()
+            .0
+            .can_sort_table(revision + 1, &table, &column)
+    );
+    assert!(
+        !harness
+            .state()
+            .0
+            .can_sort_table(revision, &table, "missing column")
+    );
+}
+
+#[test]
+fn sorted_result_publication_refuses_native_or_partial_data_and_keeps_sql_buffer_literal() {
+    let mut preview = Preview::new(Scene::Datasheet);
+    let state = preview.state_mut();
+    let sql = state.sql.clone();
+    assert!(!state.set_sorted_query_data(table()));
+    assert!(state.view == DocumentView::Table);
+    let mut sorted = table();
+    sorted.source_revision = None;
+    sorted.offset = 0;
+    sorted.has_more = true;
+    assert!(!state.set_sorted_query_data(sorted));
+    let mut sorted = table();
+    sorted.source_revision = None;
+    sorted.offset = 0;
+    assert!(state.set_sorted_query_data(sorted));
+    assert!(state.view == DocumentView::Query);
+    assert!(state.sorted_query);
+    assert!(
+        !state.query_ready(),
+        "an unrelated SQL buffer must not run as the sort definition"
+    );
+    assert_eq!(state.sql, sql);
+    assert!(state.query_data.as_ref().unwrap().source_revision.is_none());
+    state.query_data = None;
+    assert!(
+        state.query_ready(),
+        "opening another document exposes the actual SQL editor again"
     );
 }

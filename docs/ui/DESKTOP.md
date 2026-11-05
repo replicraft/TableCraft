@@ -823,3 +823,22 @@ At the user's request, further non-headless checks are suspended to avoid
 interrupting their work. Continue with headless interaction and offscreen render
 checks; do not activate, manipulate or close native application windows as part of
 ongoing verification without renewed authorization.
+
+
+## Regional datasheet and chrome headless gate — 5 November 2026
+
+The current display/read batch passed 141 shared UI tests (including 704
+scene/locale/theme draws), 58 runtime tests, 26 desktop tests and the runtime
+documentation example. Coverage includes real typed date/Currency facts,
+qualified native Format provenance, complete 105-row sorting with no edit
+identity, retained sort presentation, automatic first-table opening and captured
+path identity. System-theme transitions, viewport requests, status view/zoom,
+centered headers/checkboxes, visible typed NULL and table Close are headless checks.
+
+The retained Access Home capture was reopened before these changes. PNG exports
+were reviewed from a macOS build with Windows input conventions: light datasheet
+and query at 1280×820 logical / 1×, and German dark Options at 900×580 / 1.25×.
+The new renderer uses the actual full viewport instead of the harness's eight-point
+outer frame. These exports do not verify Windows/Linux window-manager behavior
+or constitute a native Access comparison. Native UI checks remain suspended.
+The [display contract](DISPLAY_PREFERENCES.md) records deliberate current differences.

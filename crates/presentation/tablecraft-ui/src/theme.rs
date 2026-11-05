@@ -1,8 +1,13 @@
 use egui::{Color32, Context, FontId, TextStyle, Visuals};
 
+const DEFAULT_DATASHEET_ZOOM: u16 = 100;
+pub(crate) const MIN_DATASHEET_ZOOM: u16 = 50;
+pub(crate) const MAX_DATASHEET_ZOOM: u16 = 200;
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Theme {
     #[default]
+    System,
     Light,
     Dark,
 }
@@ -24,54 +29,52 @@ pub struct Palette {
 }
 
 impl Theme {
-    fn egui(self) -> egui::Theme {
+    fn preference(self) -> egui::ThemePreference {
         match self {
-            Self::Light => egui::Theme::Light,
-            Self::Dark => egui::Theme::Dark,
+            Self::System => egui::ThemePreference::System,
+            Self::Light => egui::ThemePreference::Light,
+            Self::Dark => egui::ThemePreference::Dark,
         }
     }
+}
 
-    fn colors(self) -> Palette {
-        match self {
-            Self::Light => Palette {
-                accent: Color32::from_rgb(185, 16, 38),
-                ink: Color32::from_rgb(32, 32, 32),
-                muted: Color32::from_rgb(96, 96, 96),
-                title_fill: Color32::from_rgb(240, 240, 240),
-                surface: Color32::WHITE,
-                grid_header: Color32::from_rgb(225, 228, 232),
-                grid_line: Color32::from_rgb(217, 221, 226),
-                active_header: Color32::from_rgb(255, 225, 102),
-                active_row: Color32::from_rgb(166, 205, 234),
-                active_cell: Color32::WHITE,
-                checkbox_accent: Color32::from_rgb(44, 107, 159),
-            },
-            Self::Dark => Palette {
-                accent: Color32::from_rgb(244, 139, 157),
-                ink: Color32::from_rgb(235, 237, 240),
-                muted: Color32::from_rgb(166, 172, 182),
-                title_fill: Color32::from_rgb(36, 38, 43),
-                surface: Color32::from_rgb(27, 29, 33),
-                grid_header: Color32::from_rgb(48, 52, 59),
-                grid_line: Color32::from_rgb(66, 71, 80),
-                active_header: Color32::from_rgb(108, 82, 27),
-                active_row: Color32::from_rgb(37, 68, 94),
-                active_cell: Color32::from_rgb(31, 34, 39),
-                checkbox_accent: Color32::from_rgb(115, 184, 236),
-            },
-        }
+fn colors(theme: egui::Theme) -> Palette {
+    match theme {
+        egui::Theme::Light => Palette {
+            accent: Color32::from_rgb(185, 16, 38),
+            ink: Color32::from_rgb(32, 32, 32),
+            muted: Color32::from_rgb(96, 96, 96),
+            title_fill: Color32::from_rgb(240, 240, 240),
+            surface: Color32::WHITE,
+            grid_header: Color32::from_rgb(225, 228, 232),
+            grid_line: Color32::from_rgb(217, 221, 226),
+            active_header: Color32::from_rgb(255, 225, 102),
+            active_row: Color32::from_rgb(166, 205, 234),
+            active_cell: Color32::WHITE,
+            checkbox_accent: Color32::from_rgb(44, 107, 159),
+        },
+        egui::Theme::Dark => Palette {
+            accent: Color32::from_rgb(244, 139, 157),
+            ink: Color32::from_rgb(235, 237, 240),
+            muted: Color32::from_rgb(166, 172, 182),
+            title_fill: Color32::from_rgb(36, 38, 43),
+            surface: Color32::from_rgb(27, 29, 33),
+            grid_header: Color32::from_rgb(48, 52, 59),
+            grid_line: Color32::from_rgb(66, 71, 80),
+            active_header: Color32::from_rgb(108, 82, 27),
+            active_row: Color32::from_rgb(37, 68, 94),
+            active_cell: Color32::from_rgb(31, 34, 39),
+            checkbox_accent: Color32::from_rgb(115, 184, 236),
+        },
     }
 }
 
 pub fn palette(ctx: &Context) -> Palette {
-    match ctx.theme() {
-        egui::Theme::Light => Theme::Light.colors(),
-        egui::Theme::Dark => Theme::Dark.colors(),
-    }
+    colors(ctx.theme())
 }
 
 pub fn set_theme(ctx: &Context, theme: Theme) {
-    let preference = egui::ThemePreference::from(theme.egui());
+    let preference = theme.preference();
     if ctx.options(|options| options.theme_preference) == preference {
         return;
     }
@@ -83,13 +86,12 @@ pub fn set_theme(ctx: &Context, theme: Theme) {
 pub fn configure(ctx: &Context) {
     crate::fonts::configure(ctx, crate::Locale::EnUs);
     egui_extras::install_image_loaders(ctx);
-    for theme in [Theme::Light, Theme::Dark] {
-        let selected = theme.egui();
-        let colors = theme.colors();
+    for selected in [egui::Theme::Light, egui::Theme::Dark] {
+        let colors = colors(selected);
         let mut style = (*ctx.style_of(selected)).clone();
-        style.visuals = match theme {
-            Theme::Light => Visuals::light(),
-            Theme::Dark => Visuals::dark(),
+        style.visuals = match selected {
+            egui::Theme::Light => Visuals::light(),
+            egui::Theme::Dark => Visuals::dark(),
         };
         style.visuals.override_text_color = Some(colors.ink);
         style.visuals.panel_fill = colors.title_fill;
@@ -113,6 +115,21 @@ pub fn configure(ctx: &Context) {
             .insert(TextStyle::Heading, FontId::proportional(18.0));
         ctx.set_style_of(selected, style);
     }
+}
+
+pub(crate) fn datasheet_zoom(ctx: &Context) -> u16 {
+    ctx.data(|data| data.get_temp::<u16>(egui::Id::new("datasheet_zoom")))
+        .unwrap_or(DEFAULT_DATASHEET_ZOOM)
+}
+
+pub(crate) fn set_datasheet_zoom(ctx: &Context, percent: u16) {
+    let percent = percent.clamp(MIN_DATASHEET_ZOOM, MAX_DATASHEET_ZOOM);
+    ctx.data_mut(|data| data.insert_temp(egui::Id::new("datasheet_zoom"), percent));
+    ctx.request_repaint();
+}
+
+pub(crate) fn datasheet_scale(ctx: &Context) -> f32 {
+    f32::from(datasheet_zoom(ctx)) / f32::from(DEFAULT_DATASHEET_ZOOM)
 }
 
 /// Keep editable fields visible against both light and dark surfaces.
@@ -145,6 +162,34 @@ mod tests {
         set_theme(&context, Theme::Light);
         assert_eq!(context.theme(), egui::Theme::Light);
         assert!(!context.style_of(context.theme()).visuals.dark_mode);
+    }
+
+    #[test]
+    fn system_default_tracks_host_theme_and_explicit_choices_override_it() {
+        let context = Context::default();
+        configure(&context);
+        assert_eq!(Theme::default(), Theme::System);
+        for (choice, host, expected) in [
+            (Theme::System, egui::Theme::Light, egui::Theme::Light),
+            (Theme::System, egui::Theme::Dark, egui::Theme::Dark),
+            (Theme::Light, egui::Theme::Dark, egui::Theme::Light),
+            (Theme::System, egui::Theme::Dark, egui::Theme::Dark),
+        ] {
+            set_theme(&context, choice);
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    system_theme: Some(host),
+                    ..Default::default()
+                },
+                |_| {},
+            );
+            output.textures_delta.clear();
+            assert_eq!(context.theme(), expected);
+            assert_eq!(
+                context.style_of(context.theme()).visuals.dark_mode,
+                expected == egui::Theme::Dark
+            );
+        }
     }
 
     #[test]

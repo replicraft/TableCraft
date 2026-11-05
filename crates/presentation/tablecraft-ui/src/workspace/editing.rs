@@ -95,6 +95,16 @@ impl Data {
 }
 
 impl State {
+    pub(super) fn refresh_edit_display(&mut self) {
+        if let Some(EditDialog::Draft { draft, review, .. }) = &mut self.edit {
+            self.format_cache.apply(&mut draft.original);
+            if let Some(review) = review {
+                self.format_cache.apply(&mut review.before);
+                self.format_cache.apply(&mut review.after);
+            }
+        }
+    }
+
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
         if self.view != DocumentView::Table

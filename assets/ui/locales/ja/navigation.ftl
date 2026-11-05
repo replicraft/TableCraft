@@ -1,6 +1,6 @@
 # TableCraft UI: navigation.
 
-navigation-all-objects = すべての Access オブジェクト
+navigation-all-objects = すべてのオブジェクト
 navigation-search-objects = オブジェクトの検索
 navigation-show-system = システム オブジェクトを表示
 navigation-tables = テーブル

@@ -23,6 +23,7 @@ fn state() -> State {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
+        title_path: None,
         document_revision: 7,
         title: "Example".into(),
         format: "ACE16".into(),

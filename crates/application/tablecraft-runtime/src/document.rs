@@ -8,12 +8,13 @@ use super::{
 #[cfg(feature = "offline-edit")]
 use crate::editing::{DocumentEdits, journal_path};
 use bytes::Bytes;
-use std::path::Path;
+use std::path::{Path, absolute};
 #[cfg(feature = "offline-edit")]
-use std::{fs::symlink_metadata, io::ErrorKind, path::absolute, sync::atomic::AtomicBool};
+use std::{fs::symlink_metadata, io::ErrorKind, sync::atomic::AtomicBool};
 use tablecraft_access::NativeBrowser;
 #[cfg(feature = "offline-edit")]
 use tablecraft_ace::InspectError;
+use tablecraft_ace::NativeTableStorage;
 use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
@@ -40,8 +41,9 @@ impl Document {
         let password = Zeroizing::new(std::mem::take(password));
         let mut work = budget();
         check(cancelled)?;
+        let source_path = absolute(path).map_err(tablecraft_ace::InspectError::from)?;
         #[cfg(feature = "offline-edit")]
-        let retained_path = absolute(path).map_err(InspectError::from)?;
+        let retained_path = source_path.clone();
         #[cfg(feature = "offline-edit")]
         match symlink_metadata(journal_path(&retained_path)) {
             Ok(_) => return Err(Error::RetainedJournal),
@@ -103,6 +105,7 @@ impl Document {
             output.work(1)?;
             match entry.object().kind() {
                 ObjectKind::Table => tables.push(Table {
+                    local: matches!(entry.storage(), Some(NativeTableStorage::Local)),
                     name: output.text(entry.object().name().as_str())?,
                     system: entry.is_system(),
                     storage: output.text(&format!("{:?}", entry.storage()))?,
@@ -125,6 +128,7 @@ impl Document {
             document,
             Response::Opened {
                 document_revision: revision,
+                source_path,
                 title,
                 format,
                 tables,

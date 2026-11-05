@@ -7,6 +7,13 @@ fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
     context.enable_accesskit();
     crate::configure(&context);
     let mut preview = Preview::new(Scene::Datasheet);
+    let formatting = crate::formatting::Options {
+        system_locale: Some("de-DE".into()),
+        date: crate::formatting::DateFormat::Iso,
+        time: crate::formatting::TimeFormat::HoursMinutesSeconds,
+        currency: crate::formatting::CurrencyChoice::Eur,
+    };
+    preview.state_mut().formatting = formatting.clone();
     for locale in crate::Locale::ALL {
         preview.state_mut().localizer = crate::Localizer::new(locale).unwrap();
         for theme in [crate::Theme::Light, crate::Theme::Dark] {
@@ -14,6 +21,7 @@ fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
             for scene in Scene::ALL {
                 preview.set_scene(scene);
                 assert!(preview.state().mock_preview);
+                assert_eq!(preview.state().formatting, formatting);
                 let empty_identity = if scene == Scene::Empty {
                     let data = preview.state.data.as_ref().unwrap();
                     Some((

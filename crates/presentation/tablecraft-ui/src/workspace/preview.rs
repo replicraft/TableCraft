@@ -225,6 +225,7 @@ impl Preview {
         let mut state = fixtures::workspace();
         std::mem::swap(&mut state.localizer, &mut self.state.localizer);
         std::mem::swap(&mut state.theme, &mut self.state.theme);
+        std::mem::swap(&mut state.formatting, &mut self.state.formatting);
         self.state = state;
         self.next_request = 1;
         self.scene = scene;

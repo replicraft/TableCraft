@@ -46,3 +46,7 @@ datasheet-control-lookup = La presentación de búsqueda aún no es compatible; 
 datasheet-context-pair = { $base }; { $presentation }
 
 datasheet-go = Ir
+
+datasheet-null-value = NULL
+datasheet-close-table = Cerrar tabla
+datasheet-sort-column = Ordenar { $column }

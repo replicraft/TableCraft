@@ -67,3 +67,9 @@ ribbon-redo = Повторить
 ribbon-builder = Построитель
 ribbon-insert-rows = Вставить строки
 ribbon-delete-rows = Удалить строки
+
+ribbon-sort-query-help = Сортировать всю таблицу в результаты запроса только для чтения. Текущая страница не переставляется.
+ribbon-refresh-table = Обновить
+ribbon-refresh-table-help = Загрузить текущую страницу таблицы заново.
+ribbon-sorted-results = Отсортированная таблица (только чтение)
+ribbon-mock-sort-disabled = Сортировка всей таблицы недоступна в этом синтетическом просмотре. Порядок строк не изменён.
