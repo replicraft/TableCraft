@@ -18,6 +18,13 @@ semantics. Core values describe materialized carriers, not the declared/Variant
 type metadata required to infer every native promotion. Documentation-derived
 tests are not observed native Access results.
 
+The host-input `conversions::text::decimal_exact` API reuses numeric Text grammar,
+explicit NumberFormat and cumulative NumericBuffer controls, then rejects dropped
+nonzero decimal digits. It retains the bounded Decimal envelope and does not
+change CDec's rounding contract or choose a new predicate promotion policy.
+Native common-filter operands use it to preserve comparison thresholds. Its
+focused conversion regression passed; native UI coercion parity is separate.
+
 ## Implemented rules
 
 | Area | Implemented behavior |

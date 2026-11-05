@@ -8,6 +8,36 @@ use crate::{EvalError, functions::text::output::NumericBuffer};
 pub use policy::NumberFormat;
 use tablecraft_core::values::{Currency, Double, Single, Value};
 
+/// Parse a numeric bound without discarding significant decimal digits.
+///
+/// This is a host-input contract, not CDec's rounding behavior. Normalization,
+/// grammar and the bounded Decimal envelope reuse the existing conversion path;
+/// an additional exact lexical check refuses any dropped nonzero digits.
+pub fn decimal_exact(
+    text: &str,
+    format: NumberFormat,
+    buffer: &mut impl NumericBuffer,
+) -> Result<Value, EvalError> {
+    let value = convert(Conversion::Decimal, text, format, buffer)?;
+    let Value::Decimal(decimal) = &value else {
+        return Err(EvalError::TypeMismatch);
+    };
+    for _ in 0..buffer.text().len() {
+        buffer.step()?;
+    }
+    let coefficient =
+        scaled::rounded(buffer.text(), i64::from(decimal.scale()), false).map_err(|error| {
+            match error {
+                EvalError::TypeMismatch => EvalError::PrecisionLoss,
+                error => error,
+            }
+        })?;
+    if coefficient != decimal.coefficient() {
+        return Err(EvalError::PrecisionLoss);
+    }
+    Ok(value)
+}
+
 pub(super) fn convert(
     conversion: Conversion,
     text: &str,

@@ -46,6 +46,33 @@ fn bounded(
 fn call(conversion: Conversion, text: &str, format: NumberFormat) -> Result<Value, EvalError> {
     bounded(conversion, text, format, 100_000, 65_536)
 }
+
+#[test]
+fn exact_numeric_bounds_reuse_grammar_but_refuse_cdec_rounding() {
+    let exact = |text| {
+        decimal_exact(
+            text,
+            NumberFormat::Invariant,
+            &mut Buffer {
+                text: String::new(),
+                steps: 100_000,
+                bytes: 65_536,
+            },
+        )
+    };
+    for (text, coefficient, scale) in [("0.1", 1, 1), ("0.1000", 1000, 4), ("1.23451", 123451, 5)] {
+        assert_eq!(
+            exact(text),
+            Ok(Value::Decimal(Decimal::new(coefficient, scale).unwrap()))
+        );
+    }
+    for text in ["1e-29", "1.00000000000000000000000000001"] {
+        assert_eq!(exact(text), Err(EvalError::PrecisionLoss));
+        assert!(call(Conversion::Decimal, text, NumberFormat::Invariant).is_ok());
+    }
+    assert_eq!(exact("1,25"), Err(EvalError::TypeMismatch));
+}
+
 #[test]
 fn profiles_parse_entire_grouped_currency_and_exponent_spellings() {
     for (format, text, number) in [
