@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = 検索
+find-what = 検索する文字列:
+find-look-in = 検索対象:
+find-match = 検索条件:
+find-search = 検索方向:
+find-any = フィールドの一部分
+find-whole = フィールド全体
+find-start = フィールドの先頭
+find-all = すべて
+find-up = 上へ
+find-down = 下へ
+find-match-case = 大文字と小文字を区別する
+find-formatted = 書式設定したフィールドを検索する
+find-formatted-unavailable = このソースでは書式を使った検索は利用できません。
+find-next = 次を検索
+find-searching = テーブルを検索中…
+find-not-found = 一致する箇所が見つかりませんでした。
+find-found = レコード { $row }、フィールド { $column }
+find-invalid-result = 返された検索位置またはページは、この要求と一致しません。
+find-mock-help = 合成の検索コントロールのみです。データベースファイルは開かれず、検索されません。
+find-unavailable = このホストではネイティブ検索はまだ利用できません。
+find-pattern-limit = 検索パターンがUTF-8の64 KiB制限を超えています。検索する前に短くしてください。
+find-query-unavailable = クエリ結果の検索はまだ実装されていません。

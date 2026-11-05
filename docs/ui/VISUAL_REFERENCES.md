@@ -19,7 +19,7 @@ are partly obscured and are not product content to reproduce.
 
 ## Published dialog references — 5 November 2026
 
-Two additional Microsoft Support images were fetched and opened headlessly. The
+Four additional Microsoft Support images were fetched and opened headlessly. The
 reference files remain in ignored local cache; public documentation links the
 originals. The articles list supported Access releases rather than identifying
 the exact application build captured in each image.
@@ -27,12 +27,16 @@ the exact application build captured in each image.
 | Surface | Published reference | Observed layout and scope |
 | --- | --- | --- |
 | Parameter input | [Microsoft parameter-prompt article](https://support.microsoft.com/en-us/access/why-does-access-want-me-to-enter-a-parameter-value) and [actual dialog image](https://support.microsoft.com/en-us/access/media/ac-enterparametervaluedialogbox.jpg) | Compact prompt with a literal parameter label, one input and OK/Cancel. Microsoft's [parameter-query workflow](https://support.microsoft.com/en-us/access/use-parameters-to-ask-for-input-when-running-a-query) specifies a separate prompt for each parameter. Explicit VALUE carrier choices and NULL controls remain TableCraft profile extensions. |
+| Find | [Microsoft record-finding article](https://support.microsoft.com/en-us/access/find-records-in-an-access-database) and [actual Find dialog image](https://support.microsoft.com/en-us/access/media/ac-findreplacedb.gif) | Compact left-label/input rows, scope/match/direction lists, case/format checkboxes, and Find Next/Cancel at the right. The legacy image shows a Find/Replace pair; TableCraft exposes only Find because no reviewed Replace service exists. The exact pictured application build and scale are unknown. |
+| Zoom | [Microsoft Zoom-box article](https://support.microsoft.com/en-us/access/use-the-zoom-box-to-enter-text-and-expressions) and [actual Zoom image](https://support.microsoft.com/en-us/access/media/ac-zoom-box.png) | Resizable rectangular text body, bottom Font/OK/Cancel controls and a resize grip. Blue explanatory callouts belong to the article image, not the application. TableCraft uses a source-bound read-only viewer with text-size controls and separately reviewed editing. |
 | Attachments | [Microsoft attachment article](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database) and [actual dialog image](https://support.microsoft.com/en-us/access/media/access-attachments-dialog-box.png) | Filename-first list with paperclip symbols, a side action column and dismissal/confirmation footer. TableCraft currently exposes stored metadata and Close; payload opening/export and attachment mutation require separate capabilities. |
 
 Observed image SHA-256 values:
 
 - Parameter prompt: `cd54cd50aa01ee70a7ab578db15299cb7f0e1b24722326893eeb810f4c18d5d9`.
 - Attachments: `adcc6b059d2289a147aa12461a88dac9da67bdab0174ad0b9025f6a47119631c`.
+- Find: `4563876ea3b8591ae8fda5d75f6c77929cf73c334e24500b86680be90240ea53`.
+- Zoom: `ba262cf21e026309d6f27f9f423041477f6be24b32128aadadb124a900b332ad`.
 
 These references extend the Home/Design/Account record. They supply no dark-mode,
 multivalue/history, offline-edit/recovery or native platform interaction evidence.
@@ -221,3 +225,10 @@ Regional formatting and read-action limits are described in
 workflow, read-only sorted query results and visible NULL marker remain deliberate
 current presentation differences from Access's inline editing and blank NULLs.
 They do not establish general Access interaction or database compatibility.
+
+
+The Zoom reference was opened as a 427×300 image from Microsoft's public Support
+article. Its exact application build, display scale and interaction timing are
+unknown. The borrowed image remains in ignored `.cache/access-public-references/`
+and is not tracked or shipped. It supplies layout evidence, not a native
+comparison of TableCraft's virtual text, copy, keyboard or reviewed-edit behavior.

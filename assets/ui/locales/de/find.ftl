@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = Suchen
+find-what = Suchen nach:
+find-look-in = Suchen in:
+find-match = Vergleichen:
+find-search = Suchrichtung:
+find-any = Teil des Feldinhalts
+find-whole = Ganzes Feld
+find-start = Anfang des Feldinhalts
+find-all = Alle
+find-up = Aufwärts
+find-down = Abwärts
+find-match-case = Groß-/Kleinschreibung beachten
+find-formatted = Felder wie formatiert durchsuchen
+find-formatted-unavailable = Die formatierte Suche ist für diese Quelle nicht verfügbar.
+find-next = Weitersuchen
+find-searching = Tabelle wird durchsucht…
+find-not-found = Kein passendes Vorkommen gefunden.
+find-found = Datensatz { $row }, Feld { $column }
+find-invalid-result = Die zurückgegebene Suchposition oder Seite passt nicht zu dieser Anfrage.
+find-mock-help = Nur synthetische Suchsteuerelemente. Keine Datenbankdatei wird geöffnet oder durchsucht.
+find-unavailable = Die native Suche ist in diesem Host noch nicht verfügbar.
+find-pattern-limit = Das Suchmuster überschreitet die UTF-8-Grenze von 64 KiB. Kürzen Sie es vor der Suche.
+find-query-unavailable = Die Suche in Abfrageergebnissen ist noch nicht implementiert.

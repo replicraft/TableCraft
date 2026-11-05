@@ -234,6 +234,7 @@ fn render_rows(
                                             &response,
                                             data,
                                             (index, position),
+                                            !collection_layout,
                                             actions,
                                         );
                                     }
@@ -380,6 +381,7 @@ fn collect_contents_action(
     response: &Response,
     data: &Data,
     position: (usize, usize),
+    allow_zoom: bool,
     actions: &mut Vec<Action>,
 ) {
     if !ui.is_enabled() {
@@ -388,12 +390,20 @@ fn collect_contents_action(
     let (row, column) = position;
     let contents = data.contents_target(row, column);
     let edit = data.edit_target(row, column);
-    if contents.is_none() && edit.is_none() {
+    let value = data.rows.get(row).and_then(|values| values.get(column));
+    let zoom = allow_zoom && value.is_some_and(crate::workspace::zoom::can_view);
+    if contents.is_none() && edit.is_none() && !zoom {
         return;
     }
     let mut view_contents = false;
     let mut edit_cell = false;
     response.context_menu(|ui| {
+        if zoom && ui.button(tr(ui, "zoom-title")).clicked() {
+            if let Some(cell) = value {
+                crate::workspace::zoom::request(ui.ctx(), cell, position);
+            }
+            ui.close();
+        }
         if contents.is_some() && ui.button(tr(ui, "datasheet-view-contents")).clicked() {
             view_contents = true;
             ui.close();
@@ -403,6 +413,14 @@ fn collect_contents_action(
             ui.close();
         }
     });
+    if zoom
+        && response.has_focus()
+        && !egui::Popup::is_any_open(ui.ctx())
+        && ui.input_mut(|input| input.consume_key(egui::Modifiers::SHIFT, egui::Key::F2))
+        && let Some(cell) = value
+    {
+        crate::workspace::zoom::request(ui.ctx(), cell, position);
+    }
     if contents.is_some() && response.has_focus() {
         view_contents |= ui.input_mut(|input| {
             let mut enter = false;

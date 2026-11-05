@@ -1,8 +1,6 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
 mod inserting;
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
-mod test_support;
 use super::{Desktop, PendingOperation};
 use crate::view_models::cell;
 use std::path::PathBuf;
@@ -23,6 +21,13 @@ pub(super) struct Editing {
     delete_review: Option<(u64, ReviewedDelete)>,
     save: Option<ActiveSave>,
     refresh: Option<(u64, String, u32)>,
+}
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+impl Editing {
+    pub(super) fn save_report(&self) -> Option<SaveReport> {
+        self.save.as_ref().and_then(|save| save.report)
+    }
 }
 
 #[derive(Clone, Copy)]

@@ -1,5 +1,5 @@
-//! Application-private real host glue shared by row mutation acceptance tests.
-use super::super::Desktop;
+//! Application-private real host glue shared by headless workflow acceptance tests.
+use super::Desktop;
 use eframe::App;
 use egui_kittest::Harness;
 use std::{
@@ -46,27 +46,13 @@ pub(super) fn finish_reads(harness: &mut Harness<'_, Desktop>) {
     assert!(harness.state().state.error.is_none());
 }
 
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 pub(super) fn finish_save(harness: &mut Harness<'_, Desktop>) -> tablecraft_runtime::SaveReport {
     let deadline = Instant::now() + Duration::from_secs(10);
-    while harness
-        .state()
-        .editing
-        .save
-        .as_ref()
-        .unwrap()
-        .report
-        .is_none()
-    {
+    while harness.state().editing.save_report().is_none() {
         assert!(Instant::now() < deadline, "native host save did not finish");
         harness.run_steps(1);
         std::thread::yield_now();
     }
-    harness
-        .state()
-        .editing
-        .save
-        .as_ref()
-        .unwrap()
-        .report
-        .unwrap()
+    harness.state().editing.save_report().unwrap()
 }

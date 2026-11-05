@@ -1,6 +1,6 @@
 //! Actual row selection, confirmation and shared save-owner routing without windows.
 use super::*;
-use crate::workspace::editing::test_support::{self, finish_reads, finish_save};
+use crate::workspace::test_support::{self, finish_reads, finish_save};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_runtime::{SaveFailureKind, SaveOutcome};

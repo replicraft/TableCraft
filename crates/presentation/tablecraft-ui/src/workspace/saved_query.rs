@@ -70,6 +70,7 @@ impl State {
     pub fn can_inspect_saved_query(&self, target: &SavedQueryTarget) -> bool {
         !self.busy
             && !self.backstage_visible()
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && self.saved_query.pending.is_none()
@@ -80,6 +81,7 @@ impl State {
     /// Bind an accepted inspection request and enter the saved-query view.
     pub fn begin_saved_query_inspection(&mut self, target: SavedQueryTarget, request_id: u64) {
         if self.saved_query_binding(&target)
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && !self.backstage_visible()
@@ -98,6 +100,7 @@ impl State {
     fn accepts_saved_reply(&self, request_id: u64, target: &SavedQueryTarget) -> bool {
         self.saved_query_visible()
             && !self.backstage_visible()
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && self.saved_query_binding(target)
@@ -158,6 +161,7 @@ impl State {
         !self.busy
             && self.saved_query_visible()
             && !self.backstage_visible()
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && self.saved_query_binding(target)

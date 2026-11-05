@@ -1,5 +1,25 @@
 # Implementation status
 
+## Native Find and complete-value Zoom — 5 November 2026
+
+Home Find now searches the complete admitted native table through checked EOF,
+then publishes a separately checked result page. Exact source/request witnesses,
+repeated UTF-16 occurrences, cancellation, explicit wildcard/case/display policy
+and typed NULL/empty criteria are retained. Query Find, Replace, substring
+highlighting and unformatted regional date/fractional-number conversions remain
+explicit limitations. The shared resizable Zoom viewer provides bounded visible
+layout and full copying without cloning a Memo-sized value every frame; optional
+native Edit delegates to the existing review workflow.
+
+The selected package gate passed 159 UI, 73 runtime, 34 desktop and five display
+tests plus the runtime documentation example. Subsequent review fixes received
+focused checks (seven Zoom, five Find UI, two desktop Find and six runtime Find
+cases); final strict selected Clippy and the minimal runtime build passed. Six
+light/dark offscreen exports were inspected without opening an application.
+The matrix now covers 51 scenes × eight locales × two themes.
+See the [desktop record](ui/DESKTOP.md#native-find-and-complete-value-zoom--5-november-2026)
+and [runtime contract](application/RUNTIME.md#native-table-find) for boundaries.
+
 ## Shared headless display formatter — 5 November 2026
 
 `tablecraft-display` now owns regional formatting, options and validated scalar

@@ -5,6 +5,7 @@ mod contents;
 mod deletion;
 mod diagnostics;
 mod editing;
+mod find;
 pub(crate) mod focus;
 mod home;
 mod insertion;
@@ -16,10 +17,14 @@ mod ribbon;
 mod save_display;
 mod saved_query;
 mod schema;
+pub(crate) mod zoom;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
+pub use find::{
+    FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
+};
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use records::RecordTarget;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
@@ -97,6 +102,12 @@ pub enum Action {
     },
     BeginEdit {
         target: EditTarget,
+    },
+    FindNext {
+        request: FindRequest,
+    },
+    CancelFind {
+        request_id: u64,
     },
     ReviewDelete {
         target: DeleteTarget,
@@ -181,6 +192,12 @@ pub struct State {
     edit: Option<editing::EditDialog>,
     insertion: Option<insertion::Dialog>,
     deletion: Option<deletion::Dialog>,
+    /// Host capability; false until the complete native Find service is ready.
+    pub find_available: bool,
+    /// Host-qualified formatted-search capability, separate from raw Find.
+    pub find_formatted_available: bool,
+    find: Option<find::Session>,
+    zoom: zoom::Zoom,
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
     selected_field: usize,
@@ -426,13 +443,15 @@ impl State {
         self.refresh_display();
         self.refresh_edit_display();
         self.refresh_delete_display();
+        self.validate_zoom();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
         let mut actions = Vec::new();
         let modal_open = self.contents_request_id().is_some()
             || self.edit_dialog_open()
-            || self.saved_query_prompt_open();
+            || self.saved_query_prompt_open()
+            || self.zoom_dialog_open();
         if !modal_open
             && self.backstage_visible()
             && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
@@ -444,10 +463,15 @@ impl State {
         } else {
             keyboard::consume(
                 ui.ctx(),
-                self.query_ready() || self.saved_query_command_ready(),
-                self.busy,
+                !self.find_window_open()
+                    && (self.query_ready() || self.saved_query_command_ready()),
+                self.busy && !self.find_window_open(),
+                self.can_open_find(),
             )
         };
+        if shortcuts.find {
+            self.open_find();
+        }
         if shortcuts.query {
             if self.saved_query_visible() {
                 if let Some(action) = self.request_saved_query_run() {
@@ -469,23 +493,28 @@ impl State {
                 ui.memory_mut(|memory| memory.request_focus(path_id));
             }
         }
-        let modal_open = modal_open || self.saved_query_prompt_open();
-        self.begin_pane_focus(ui, modal_open);
+        let modal_open = modal_open || self.saved_query_prompt_open() || self.zoom_dialog_open();
+        self.begin_pane_focus(ui, modal_open || self.find_window_open());
         ui.add_enabled_ui(!modal_open, |ui| {
             self.chrome(ui, &mut actions);
-            if self.backstage_visible() {
-                self.backstage(ui, &mut actions, path_id);
-            } else {
-                self.navigation(ui, &mut actions);
-                self.content(ui, &mut actions);
-            }
+            ui.add_enabled_ui(!self.zoom_dialog_open(), |ui| {
+                if self.backstage_visible() {
+                    self.backstage(ui, &mut actions, path_id);
+                } else {
+                    self.navigation(ui, &mut actions);
+                    self.content(ui, &mut actions);
+                }
+            });
         });
+        self.accept_zoom_request(ui.ctx());
+        self.find_window(ui.ctx(), &mut actions);
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
         self.insertion_dialog(ui.ctx(), &mut actions);
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
-        if !self.saved_query_prompt_open() {
+        self.zoom_dialog(ui.ctx(), &mut actions);
+        if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
             self.finish_pane_focus(ui);
         }
         actions

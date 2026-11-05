@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = Find
+find-what = Find What:
+find-look-in = Look In:
+find-match = Match:
+find-search = Search:
+find-any = Any Part of Field
+find-whole = Whole Field
+find-start = Start of Field
+find-all = All
+find-up = Up
+find-down = Down
+find-match-case = Match Case
+find-formatted = Search Fields As Formatted
+find-formatted-unavailable = Formatted searching is not available for this source.
+find-next = Find Next
+find-searching = Searching the table…
+find-not-found = No matching occurrence was found.
+find-found = Record { $row }, field { $column }
+find-invalid-result = The returned search position or page does not match this request.
+find-mock-help = Synthetic Find controls only. No database file is opened or searched.
+find-unavailable = Native Find is not available in this host yet.
+find-pattern-limit = The search pattern exceeds the 64 KiB UTF-8 limit. Shorten it before searching.
+find-query-unavailable = Finding in query results is not implemented yet.

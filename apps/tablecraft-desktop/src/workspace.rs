@@ -1,15 +1,18 @@
 mod editing;
+mod find;
 mod navigation;
 mod opening;
 mod saved;
+#[cfg(test)]
+mod test_support;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, RecordTarget, SavedQuery, SavedQueryTarget, Schema,
-    State, Table,
+    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, RecordTarget, SavedQuery,
+    SavedQueryTarget, Schema, State, Table,
 };
 use zeroize::Zeroize;
 
@@ -17,6 +20,15 @@ enum PendingOperation {
     Read,
     Query,
     Sort,
+    Find {
+        request_id: u64,
+        request: FindRequest,
+    },
+    FindPage {
+        request_id: u64,
+        request: FindRequest,
+        position: FindPosition,
+    },
     SavedInspection {
         target: SavedQueryTarget,
         request_id: u64,
@@ -70,6 +82,8 @@ impl Desktop {
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
+        app.state.find_available = true;
+        app.state.find_formatted_available = true;
         app.state.formatting.system_locale = sys_locale::get_locale();
         if let Some(path) = path {
             app.select_file(path);
@@ -175,6 +189,9 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::Found { request, position }) => {
+                    self.publish_found(generation, request, position);
+                }
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
                 }
@@ -271,6 +288,18 @@ impl Desktop {
                             self.state
                                 .set_record_data(*request_id, target.clone(), data);
                         }
+                        PendingOperation::FindPage {
+                            request_id,
+                            request,
+                            position,
+                        } => {
+                            self.state.set_find_result(
+                                *request_id,
+                                request.clone(),
+                                Some(position.clone()),
+                                Some(data),
+                            );
+                        }
                         _ => self.state.set_table_data(data),
                     }
                 }
@@ -301,6 +330,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::Find { request_id, .. }
+                    | PendingOperation::FindPage { request_id, .. } => {
+                        self.state.fail_find(*request_id, error.to_string());
+                    }
                     PendingOperation::SavedInspection { target, request_id }
                     | PendingOperation::SavedRun { target, request_id } => {
                         self.state
@@ -405,6 +438,8 @@ impl eframe::App for Desktop {
                     }
                 }
                 Action::NavigateRecord { target } => self.navigate_record(target),
+                Action::FindNext { request } => self.find_next(request),
+                Action::CancelFind { request_id } => self.cancel_find(request_id),
                 Action::ViewSchema { table } => self.submit(Command::Describe { table }),
                 Action::ViewContents { target } => self.submit(Command::InspectCollection {
                     target: RuntimeContentsTarget {
@@ -448,6 +483,13 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::Find { request_id, .. }
+                            | PendingOperation::FindPage { request_id, .. } => {
+                                self.state.fail_find(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::Delete { request_id } => {
                                 self.state.fail_delete(
                                     *request_id,

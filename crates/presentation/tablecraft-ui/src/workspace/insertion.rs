@@ -168,6 +168,7 @@ impl State {
 
     pub fn can_insert_row(&self, target: &InsertTarget) -> bool {
         !self.busy
+            && !self.zoom_dialog_open()
             && self.edit.is_none()
             && self.insertion.is_none()
             && self.deletion.is_none()

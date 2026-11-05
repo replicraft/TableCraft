@@ -28,6 +28,7 @@ impl State {
     fn record_source_matches(&self, target: &RecordTarget) -> bool {
         self.view == DocumentView::Table
             && !self.backstage_visible()
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && !self.saved_query_prompt_open()
             && self.contents_request_id().is_none()
