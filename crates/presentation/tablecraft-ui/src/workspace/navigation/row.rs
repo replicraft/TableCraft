@@ -54,11 +54,16 @@ pub(super) fn show(
     icon.image(colors.ink, ICON_SIZE).paint_at(ui, icon_rect);
     let text_left = icon_rect.right() + ICON_TEXT_GAP;
     let description = badge.map(str::to_owned);
+    let badge_color = if selected && response.has_focus() {
+        colors.ink
+    } else {
+        colors.muted
+    };
     let badge = badge.map(|label| {
         ui.painter().layout_no_wrap(
             label.to_owned(),
             ui.style().text_styles[&TextStyle::Small].clone(),
-            colors.muted,
+            badge_color,
         )
     });
     let text_right = badge
@@ -73,7 +78,7 @@ pub(super) fn show(
                 rect.center().y - badge.size().y * 0.5,
             ),
             badge.clone(),
-            colors.muted,
+            badge_color,
         );
     }
     let mut layout = egui::text::LayoutJob::simple(
@@ -111,3 +116,6 @@ pub(super) fn show(
     }
     response.on_hover_text(name)
 }
+
+#[cfg(test)]
+mod tests;

@@ -95,7 +95,8 @@ pub fn configure(ctx: &Context) {
         style.visuals.panel_fill = colors.title_fill;
         style.visuals.window_fill = colors.surface;
         style.visuals.selection.bg_fill = colors.active_row;
-        style.visuals.selection.stroke.color = colors.accent;
+        // egui uses this stroke color for selected glyphs as well as outlines.
+        style.visuals.selection.stroke.color = colors.ink;
         style.visuals.widgets.inactive.corner_radius = 2.into();
         style.visuals.widgets.hovered.corner_radius = 2.into();
         style.visuals.widgets.active.corner_radius = 2.into();
@@ -144,5 +145,92 @@ mod tests {
         set_theme(&context, Theme::Light);
         assert_eq!(context.theme(), egui::Theme::Light);
         assert!(!context.style_of(context.theme()).visuals.dark_mode);
+    }
+
+    #[test]
+    fn selected_text_paints_normal_ink_while_custom_focus_keeps_its_accent() {
+        for theme in [Theme::Light, Theme::Dark] {
+            let context = Context::default();
+            configure(&context);
+            set_theme(&context, theme);
+            let mut text = "Selected literal".to_owned();
+            let colors = palette(&context);
+            let mut selected = None;
+            for frame in 0..2 {
+                let events = if frame == 1 {
+                    vec![egui::Event::Key {
+                        key: egui::Key::A,
+                        physical_key: None,
+                        pressed: true,
+                        repeat: false,
+                        modifiers: egui::Modifiers {
+                            ctrl: true,
+                            command: true,
+                            ..egui::Modifiers::NONE
+                        },
+                    }]
+                } else {
+                    Vec::new()
+                };
+                let mut output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(500.0, 100.0),
+                        )),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        let response = ui.text_edit_singleline(&mut text);
+                        if frame == 0 {
+                            response.request_focus();
+                        }
+                        input_border(ui, &response);
+                    },
+                );
+                output.textures_delta.clear();
+                if frame == 1 {
+                    selected = Some(output);
+                }
+            }
+            let output = selected.unwrap();
+            let galley = output
+                .shapes
+                .iter()
+                .find_map(|shape| match &shape.shape {
+                    egui::Shape::Text(painted) if painted.galley.job.text == text => {
+                        Some(&painted.galley)
+                    }
+                    _ => None,
+                })
+                .expect("the selected input text is actually painted");
+            let vertices: Vec<_> = galley
+                .rows
+                .iter()
+                .flat_map(|row| &row.visuals.mesh.vertices)
+                .collect();
+            assert!(
+                vertices
+                    .iter()
+                    .any(|vertex| vertex.color == colors.active_row),
+                "actual selection background"
+            );
+            let selected_glyphs_use_ink = vertices.iter().any(|vertex| {
+                let is_glyph = vertex.uv != egui::epaint::WHITE_UV;
+                is_glyph && vertex.color == colors.ink
+            });
+            assert!(
+                selected_glyphs_use_ink,
+                "selected glyphs retain readable ink"
+            );
+            assert!(!vertices.iter().any(|vertex| vertex.color == colors.accent));
+            let accent_focus_ring = output.shapes.iter().any(|shape| match &shape.shape {
+                egui::Shape::Rect(rect) => rect.stroke.color == colors.accent,
+                _ => false,
+            });
+            assert!(accent_focus_ring, "custom focus ring retains the accent");
+            assert_eq!(text, "Selected literal");
+        }
     }
 }
