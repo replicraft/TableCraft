@@ -37,3 +37,17 @@ design-validation-rule = 유효성 검사 규칙
 design-validation-text = 유효성 검사 텍스트
 design-caption = 캡션
 design-field-size = 필드 크기
+
+design-lookup = 조회
+design-lookup-uninspected = 조회 속성을 검사하지 않았습니다. 설정이나 기본값을 추정하지 않습니다.
+design-help-selection = 속성을 선택하면 설명이 표시됩니다. 값은 읽기 전용이며 저장된 식을 평가하지 않습니다.
+design-help-required = 필수는 저장된 선언입니다. NULL 읽기 지원으로 이 속성을 판단하지 않습니다.
+design-help-zero-length = 빈 문자열 허용은 NULL과 별개로 빈 텍스트를 제어합니다.
+design-help-default = 저장된 기본 식을 평가하지 않고 표시합니다.
+design-help-validation = 저장된 유효성 검사 식과 메시지를 실행하지 않고 표시합니다.
+design-help-label = 저장된 캡션과 설명을 그대로 표시합니다.
+design-help-size = 필드 크기는 캡처한 선언이며 선택한 값의 길이가 아닙니다.
+design-resize-panes = 필드 그리드와 속성 크기 조정
+design-description-optional = 설명 (선택 사항)
+design-copy-limit = 속성이 클립보드 제한인 1 MiB를 초과합니다. 복사하지 않았습니다.
+design-copy-allocation = 속성 복사에 필요한 메모리를 할당할 수 없습니다. 복사하지 않았습니다.

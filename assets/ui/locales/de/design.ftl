@@ -37,3 +37,17 @@ design-validation-rule = Gültigkeitsregel
 design-validation-text = Gültigkeitsmeldung
 design-caption = Beschriftung
 design-field-size = Feldgröße
+
+design-lookup = Nachschlagen
+design-lookup-uninspected = Nachschlageeigenschaften wurden nicht geprüft. Einstellungen oder Standardwerte werden nicht abgeleitet.
+design-help-selection = Wählen Sie eine Eigenschaft für ihre Erklärung. Werte sind schreibgeschützt; gespeicherte Ausdrücke werden nicht ausgewertet.
+design-help-required = Erforderlich ist die gespeicherte Deklaration. Die NULL-Leseunterstützung bestimmt diese Eigenschaft nicht.
+design-help-zero-length = Leere Zeichenfolge zulassen steuert leeren Text unabhängig von NULL.
+design-help-default = Der gespeicherte Standardausdruck wird ohne Auswertung angezeigt.
+design-help-validation = Gespeicherte Gültigkeitsausdrücke und Meldungen werden ohne Ausführung angezeigt.
+design-help-label = Gespeicherte Beschriftungen und Beschreibungen werden wörtlich angezeigt.
+design-help-size = Feldgröße ist die erfasste Deklaration, nicht die Länge des ausgewählten Werts.
+design-resize-panes = Feldraster und Eigenschaften skalieren
+design-description-optional = Beschreibung (optional)
+design-copy-limit = Die Eigenschaft überschreitet das Zwischenablage-Limit von 1 MiB. Es wurde nichts kopiert.
+design-copy-allocation = Speicher für den Eigenschaftstext konnte nicht reserviert werden. Es wurde nichts kopiert.

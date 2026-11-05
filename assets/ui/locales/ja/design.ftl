@@ -37,3 +37,17 @@ design-validation-rule = 入力規則
 design-validation-text = エラー メッセージ
 design-caption = 標題
 design-field-size = フィールド サイズ
+
+design-lookup = ルックアップ
+design-lookup-uninspected = ルックアップのプロパティは未検査です。設定や既定値は推測しません。
+design-help-selection = プロパティを選択すると説明が表示されます。値は読み取り専用で、保存された式は評価されません。
+design-help-required = 必須は保存された宣言です。NULLの読み取り対応からは判断しません。
+design-help-zero-length = 空文字列の許可は、NULLとは別に空のテキストを制御します。
+design-help-default = 保存された既定の式を評価せずに表示します。
+design-help-validation = 保存された検証式とメッセージを実行せずに表示します。
+design-help-label = 保存された標題と説明をそのまま表示します。
+design-help-size = フィールドサイズは取得した宣言であり、選択した値の長さではありません。
+design-resize-panes = フィールドグリッドとプロパティのサイズ変更
+design-description-optional = 説明（省略可能）
+design-copy-limit = プロパティがクリップボードの上限1 MiBを超えています。コピーされませんでした。
+design-copy-allocation = プロパティのコピーに必要なメモリを確保できません。コピーされませんでした。

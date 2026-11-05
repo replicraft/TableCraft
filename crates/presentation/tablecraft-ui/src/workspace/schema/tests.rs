@@ -217,7 +217,7 @@ fn observed_properties_are_read_only_and_follow_actual_field_selection() {
     assert_field_node(&output, "Original unsupported name", true, false);
     assert_field_node(&output, "Amount", false, false);
     assert!(!painted(&output, "Native flags"));
-    assert!(!painted(&output, "Lookup"));
+    assert!(painted(&output, "Lookup"));
     for key in [
         "AllowZeroLength",
         "DefaultValue",
@@ -253,6 +253,10 @@ fn observed_properties_are_read_only_and_follow_actual_field_selection() {
             .then_some(node)
         })
         .expect("stored expression retains its actual property label");
+    assert!(
+        !property_value.supports_action(egui::accesskit::Action::SetValue),
+        "selecting General or Lookup must not turn observations into editable settings"
+    );
     let value_bounds = property_value.bounds().expect("property value bounds");
     assert!(
         value_bounds.width() > 600.0,
@@ -684,4 +688,75 @@ fn replaced_schema_and_property_text_do_not_retarget_old_field_focus() {
         assert_eq!(state.selected_field, 0);
         assert_field_node(&output, "Amount", false, true);
     }
+}
+
+#[test]
+fn compact_design_grid_keeps_inert_blank_rows_and_a_keyboard_resizable_split() {
+    use egui::accesskit::Role;
+    use egui_kittest::{Harness, kittest::Queryable};
+
+    let mut state = State::default();
+    state.prepare_schema_view();
+    state.set_schema(schema());
+    state.dismiss_backstage();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(|ui, state: &mut State| state.design(ui), state);
+    crate::configure(&harness.ctx);
+    harness.run();
+
+    let first = harness.get_by_label("Original unsupported name").rect();
+    let second = harness.get_by_label("Amount").rect();
+    assert!((first.width() - FIELD_NAME_WIDTH).abs() < 2.0);
+    assert!((second.top() - first.top() - FIELD_ROW_HEIGHT).abs() < 1.0);
+    let splitter = harness.get_by_role_and_label(Role::Button, "Resize field grid and properties");
+    let initial_split = splitter.rect();
+    assert!(initial_split.top() > second.bottom() + FIELD_ROW_HEIGHT);
+    assert!(initial_split.bottom() < 580.0 - MIN_PROPERTIES_HEIGHT);
+
+    for bottom in [second.bottom(), second.bottom() + FIELD_ROW_HEIGHT] {
+        let rule = harness.output().shapes.iter().find_map(|shape| {
+            let egui::Shape::LineSegment { points, stroke } = &shape.shape else {
+                return None;
+            };
+            let horizontal = (points[0].y - points[1].y).abs() < 0.01;
+            let at_cell_bottom = (points[0].y - (bottom - 0.5)).abs() < 0.1;
+            let spans_field =
+                points[0].x <= first.left() + 1.0 && points[1].x >= first.right() - 1.0;
+            (horizontal && at_cell_bottom && spans_field && stroke.width == 1.0).then_some((
+                shape.clip_rect,
+                *points,
+                stroke.width,
+            ))
+        });
+        let (clip, points, width) = rule.expect("real and inert rows retain visible rules");
+        let stroke_bounds = egui::Rect::from_two_pos(points[0], points[1]).expand(width * 0.5);
+        assert!(clip.contains_rect(stroke_bounds));
+    }
+
+    let blank = egui::pos2(first.center().x, second.bottom() + FIELD_ROW_HEIGHT * 1.5);
+    for pressed in [true, false] {
+        harness.event(Event::PointerMoved(blank));
+        harness.event(Event::PointerButton {
+            pos: blank,
+            button: PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        });
+        harness.run();
+    }
+    assert_eq!(harness.state().selected_field, 0);
+    assert_eq!(harness.state().schema.as_ref().unwrap().fields.len(), 2);
+
+    harness
+        .get_by_role_and_label(Role::Button, "Resize field grid and properties")
+        .focus();
+    harness.run();
+    harness.key_press(egui::Key::ArrowUp);
+    harness.run();
+    let resized = harness
+        .get_by_role_and_label(Role::Button, "Resize field grid and properties")
+        .rect();
+    assert!((initial_split.top() - resized.top() - FIELD_ROW_HEIGHT).abs() < 2.0);
+    assert_eq!(harness.state().selected_field, 0);
 }
