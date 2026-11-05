@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = Collection contents
+collections-attachments-title = Attachments
 collections-target = { $table } · { $column } · parent { $parent }
 collections-reading = Reading stored contents…
 collections-attachment-help = Stored metadata only. Attachment bytes remain encoded; nothing is opened or exported.

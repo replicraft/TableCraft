@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = コレクションの内容
+collections-attachments-title = 添付ファイル
 collections-target = { $table } · { $column } · 親 { $parent }
 collections-reading = 保存済みの内容を読み取り中…
 collections-attachment-help = 保存済みのメタデータのみです。添付データはエンコードされたままで、開いたりエクスポートしたりしません。

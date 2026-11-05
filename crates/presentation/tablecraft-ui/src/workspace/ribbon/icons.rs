@@ -11,6 +11,7 @@ pub(in crate::workspace) enum Icon {
     Undo,
     Redo,
     Table,
+    Attachment,
     TableEdit,
     Paste,
     Cut,
@@ -107,6 +108,7 @@ impl Icon {
             Self::Undo => asset!("undo", variant),
             Self::Redo => asset!("redo", variant),
             Self::Table => asset!("table", variant),
+            Self::Attachment => asset!("attachment", variant),
             Self::TableEdit => asset!("table_edit", variant),
             Self::Paste => asset!("paste", variant),
             Self::Cut => asset!("cut", variant),
@@ -153,7 +155,7 @@ impl Icon {
     }
 
     #[cfg(test)]
-    const ALL: [Self; 49] = [
+    const ALL: [Self; 50] = [
         Self::Application,
         Self::FolderOpen,
         Self::Settings,
@@ -162,6 +164,7 @@ impl Icon {
         Self::Undo,
         Self::Redo,
         Self::Table,
+        Self::Attachment,
         Self::TableEdit,
         Self::Paste,
         Self::Cut,

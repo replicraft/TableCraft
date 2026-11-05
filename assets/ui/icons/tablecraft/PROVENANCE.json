@@ -159,6 +159,27 @@
       }
     },
     {
+      "name": "attachment",
+      "variants": {
+        "light": {
+          "file": "attachment-light.svg",
+          "sha256": "31a6e87dce602d6fe80d991f6f3f08fcf0201c47899013d4dbaa90c1163a75b2"
+        },
+        "dark": {
+          "file": "attachment-dark.svg",
+          "sha256": "fbf1f20d73f2a1602e49668e1c0d71572002c9f73f9c2723ad6e7358094af6c3"
+        },
+        "disabled-light": {
+          "file": "attachment-disabled-light.svg",
+          "sha256": "07c1924645ccf35b70bf39b92dd1fd720c073cb9dd6672bc4d205db0fe3fa371"
+        },
+        "disabled-dark": {
+          "file": "attachment-disabled-dark.svg",
+          "sha256": "8e5f66084be39cce881d1a1550db588f5ad0585b5c033890163fd29f98fd3a59"
+        }
+      }
+    },
+    {
       "name": "table",
       "variants": {
         "light": {

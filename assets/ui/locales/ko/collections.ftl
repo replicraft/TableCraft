@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = 컬렉션 내용
+collections-attachments-title = 첨부 파일
 collections-target = { $table } · { $column } · 부모 { $parent }
 collections-reading = 저장된 내용을 읽는 중…
 collections-attachment-help = 저장된 메타데이터만 표시합니다. 첨부 데이터는 인코딩된 상태로 유지되며 열거나 내보내지 않습니다.

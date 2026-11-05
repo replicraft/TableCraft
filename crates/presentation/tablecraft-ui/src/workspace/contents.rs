@@ -1,4 +1,5 @@
 //! Revision-bound read-only collection dialogs; no database or payload decoding.
+use super::ribbon::Icon;
 use super::{Action, Data, DocumentView, State};
 use crate::localization::{for_context, message, tr};
 use crate::{CellKind, datasheet};
@@ -7,6 +8,7 @@ const EMPTY_CONTENTS_HEIGHT: f32 = 48.0;
 const MODAL_VERTICAL_RESERVE: f32 = 100.0;
 const MIN_BODY_HEIGHT: f32 = 120.0;
 const MAX_CHILD_HEIGHT: f32 = 440.0;
+const ATTACHMENT_HEADING_ICON_SIZE: f32 = 16.0;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ContentsTarget {
@@ -204,14 +206,37 @@ impl State {
             ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
             ui.set_width((ctx.content_rect().width() - 80.0).clamp(320.0, 880.0));
             ui.horizontal(|ui| {
-                ui.heading(tr(ui, "collections-title"));
-                close = ui.button(tr(ui, "backstage-close")).clicked();
+                let attachments = matches!(
+                    &dialog.result,
+                    ContentsResult::Ready {
+                        kind: CollectionKind::Attachments,
+                        ..
+                    }
+                );
+                let title = if attachments {
+                    ui.add(Icon::Attachment.image(ui, ATTACHMENT_HEADING_ICON_SIZE));
+                    "collections-attachments-title"
+                } else {
+                    "collections-title"
+                };
+                ui.heading(tr(ui, title));
+                close = ui
+                    .scope_builder(
+                        egui::UiBuilder::new()
+                            .id(ui.make_persistent_id(("contents_close", request_id))),
+                        |ui| ui.button(tr(ui, "backstage-close")),
+                    )
+                    .inner
+                    .clicked();
             });
             let body_height =
                 (ctx.content_rect().height() - MODAL_VERTICAL_RESERVE).max(MIN_BODY_HEIGHT);
             egui::ScrollArea::vertical()
                 .id_salt("collection_body")
                 .auto_shrink([false, true])
+                // Measure against the full bound after a shorter Loading state;
+                // auto-shrink still contracts the finished viewport to its content.
+                .min_scrolled_height(body_height)
                 .max_height(body_height)
                 .show(ui, |ui| {
                     let body_top = ui.cursor().top();

@@ -273,6 +273,7 @@ fn dialog_renders_assigned_empty_absent_and_null_member_states_without_actions()
 fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
     let context = egui::Context::default();
     context.enable_accesskit();
+    crate::configure(&context);
     let mut state = state();
     state.data.as_mut().unwrap().rows[0][0].kind = CellKind::Attachments {
         assigned: true,
@@ -280,6 +281,49 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
     };
     let target = target(&state);
     state.begin_contents(target.clone(), 23);
+    let mut loading_close = None;
+    for _ in 0..3 {
+        let events = loading_close.map_or_else(Vec::new, |target_node| {
+            vec![egui::Event::AccessKitActionRequest(
+                egui::accesskit::ActionRequest {
+                    action: egui::accesskit::Action::Focus,
+                    target_node,
+                    target_tree: egui::accesskit::TreeId::ROOT,
+                    data: None,
+                },
+            )]
+        });
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1280.0, 820.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| assert!(state.show(ui).is_empty()),
+        );
+        loading_close = output
+            .platform_output
+            .accesskit_update
+            .as_ref()
+            .unwrap()
+            .nodes
+            .iter()
+            .find_map(|(id, node)| {
+                (node.role() == egui::accesskit::Role::Button && node.label() == Some("Close"))
+                    .then_some(*id)
+            });
+        output.textures_delta.clear();
+    }
+    let loading_close = loading_close.expect("loading collection Close control");
+    assert_eq!(
+        context
+            .memory(|memory| memory.focused())
+            .map(|id| id.accesskit_id()),
+        Some(loading_close)
+    );
     let mut contents = data();
     contents.columns = vec![
         "Child metadata header".into(),
@@ -296,7 +340,7 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
     for frame in 0..4 {
         let mut output = context.run_ui(
             egui::RawInput {
-                time: Some(f64::from(frame) * 0.25),
+                time: Some(context.cumulative_frame_nr() as f64 * 0.25),
                 screen_rect: Some(egui::Rect::from_min_size(
                     egui::Pos2::ZERO,
                     egui::vec2(1280.0, 820.0),
@@ -308,6 +352,26 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
             },
         );
         if frame >= 2 {
+            let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+            let ready_close = tree
+                .nodes
+                .iter()
+                .find_map(|(id, node)| {
+                    (node.role() == egui::accesskit::Role::Button && node.label() == Some("Close"))
+                        .then_some(*id)
+                })
+                .expect("ready attachment Close control");
+            assert_eq!(
+                ready_close, loading_close,
+                "publication must preserve the dismissal control identity"
+            );
+            assert_eq!(
+                context
+                    .memory(|memory| memory.focused())
+                    .map(|id| id.accesskit_id()),
+                Some(loading_close),
+                "publication must preserve existing Close focus"
+            );
             let texts: Vec<_> = output
                 .shapes
                 .iter()
@@ -323,6 +387,37 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
                     }
                 })
                 .collect();
+            let heading = texts
+                .iter()
+                .find(|(text, _, _)| text == "Attachments")
+                .expect("qualified attachment title");
+            assert!(
+                output.shapes.iter().any(|shape| {
+                    let egui::epaint::Shape::Rect(image) = &shape.shape else {
+                        return false;
+                    };
+                    image.brush.is_some()
+                        && (image.rect.width() - ATTACHMENT_HEADING_ICON_SIZE).abs() < 1.0
+                        && (image.rect.height() - ATTACHMENT_HEADING_ICON_SIZE).abs() < 1.0
+                        && image.rect.center().y >= heading.1
+                        && image.rect.bottom() <= heading.2
+                }),
+                "qualified attachment heading includes the small paperclip artwork"
+            );
+            for label in [
+                "Add…",
+                "Remove",
+                "Open",
+                "Save As…",
+                "Save All…",
+                "OK",
+                "Cancel",
+            ] {
+                assert!(
+                    !texts.iter().any(|(text, _, _)| text == label),
+                    "metadata view must not offer attachment manager actions"
+                );
+            }
             let header_top = texts
                 .iter()
                 .find(|(text, _, _)| text == "Child metadata header")
@@ -366,7 +461,7 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
             );
             assert_eq!(state.selected_contents_text(), Some("example.bin"));
             for label in [
-                "Collection contents",
+                "Attachments",
                 "Close",
                 "Original table · Original column · parent 101",
                 "Assigned attachment collection",

@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = Содержимое коллекции
+collections-attachments-title = Вложения
 collections-target = { $table } · { $column } · родитель { $parent }
 collections-reading = Чтение сохранённого содержимого…
 collections-attachment-help = Только сохранённые метаданные. Вложения остаются закодированными; ничего не открывается и не экспортируется.

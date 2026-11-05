@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = Sammlungsinhalt
+collections-attachments-title = Anlagen
 collections-target = { $table } · { $column } · übergeordnet { $parent }
 collections-reading = Gespeicherter Inhalt wird gelesen…
 collections-attachment-help = Nur gespeicherte Metadaten. Anlagen bleiben codiert; nichts wird geöffnet oder exportiert.
