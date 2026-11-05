@@ -730,21 +730,26 @@ tests cover the stored comparison/wildcard execution path separately.
 The object pane now lists Tables and Queries from a single inert native catalog
 capture. Search and the system-object switch apply to both groups. Selecting a
 query inspects its supported read definition and declared prompts; it does not
-execute it. **Run saved query** explicitly executes the selected definition with
-its typed literal inputs. VALUE prompts require a concrete type choice, and NULL
+execute it. **Run saved query** collects one declared parameter at a time in a
+staged modal prompt, then executes the selected definition only after final
+confirmation. A parameterless query runs directly. Cancelling acquisition leaves
+committed inputs, results and selection intact. VALUE prompts require a concrete type choice, and NULL
 is independent from retained text. Prompt/type/NULL controls expose their actual
 label relationships and purposes through AccessKit.
 
 The selected saved query and the ad-hoc SQL editor retain separate inputs,
 results and cell selections. Their Run shortcut follows the visible mode.
-Changing parameter input invalidates its old result; an unchanged-input failed
-rerun retains and labels the previous successful result. Late replies must match
+Final confirmation of changed inputs invalidates the old result; staged edits
+alone do not. An unchanged-input failed rerun retains and labels the previous
+successful result. Late replies must match
 source, object, request and submitted inputs. Native/partial/wrong-offset result
 envelopes are refused. Query results remain outside native cell-edit, collection
 and record-navigation capabilities.
 
-This is a bounded explicit-inspection/run workflow. It is not a pixel-qualified
-copy of Access's sequential parameter dialogs or general query updateability.
+This bounded workflow follows Microsoft's published sequential prompt reference.
+Explicit VALUE type and NULL controls retain the typed profile's additional
+choices. Native prompt-time validation, ordering and window behavior remain
+unqualified, and general query updateability is outside this read workflow.
 Microsoft's [parameter prompt guidance](https://support.microsoft.com/en-us/access/use-parameters-to-ask-for-input-when-running-a-query)
 and [PARAMETERS contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql)
 supply the name/type behavior; the retained Access captures continue to govern
@@ -752,8 +757,9 @@ workspace density, grouping and selection. Action/pass-through/unsupported query
 declarations remain visible and report errors, without provider or VBA execution.
 See the [runtime boundaries](../application/RUNTIME.md#native-saved-queries-and-declared-parameters).
 
-On macOS, the native preview was exercised against an independently built raw
-ACE-shaped database with two user saved queries. Opening listed the objects
+The following macOS observations predate the staged modal presentation. The
+native preview was exercised against an independently built raw ACE-shaped
+database with two user saved queries. Opening listed the objects
 without execution. A declared Long prompt returned the expected two filtered
 rows; invalid numeric text was refused. A VALUE prompt required an explicit type,
 returned SQL-looking text literally, and retained a separate explicit NULL choice.

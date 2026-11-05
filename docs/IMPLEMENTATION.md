@@ -1,5 +1,17 @@
 # Implementation status
 
+## Published dialog references and staged parameters — 5 November 2026
+
+Published Microsoft parameter and attachment dialog images now extend the visual
+reference record. Saved-query Run collects declared values one at a time using a
+shared modal session; final confirmation alone dispatches the existing typed
+action. Cancel preserves committed inputs and complete results. Explicit VALUE
+type and NULL choices remain, with typed validation at query run. The read-only
+attachment viewer has a localized heading and original paperclip glyph; its
+Loading-to-Ready transition preserves Close focus and bounded metadata layout.
+The original icon inventory is now 50 concepts / 200 themed SVGs. These changes
+add no backend operation and use headless verification only.
+
 ## Ribbon and title polish — 5 November 2026
 
 The shared chrome now follows the retained Access Home/Design captures and
