@@ -7,6 +7,7 @@ mod fonts;
 mod formatting;
 mod keyboard;
 pub mod localization;
+mod text_input;
 mod theme;
 mod workspace;
 

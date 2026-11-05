@@ -1,13 +1,17 @@
 //! Reject oversized insertions whole before TextEdit can truncate or lay them out.
-use super::MAX_INPUT_BYTES;
 use egui::text_edit::TextEditState;
 use egui::{Event, Id, ImeEvent, Key, Ui};
 
 // Scalar layout and UTF-8 publication limits are separate units. UTF-8 admission
 // can reject an insertion below this scalar ceiling; neither accepts a prefix.
-pub(super) const MAX_EDITOR_SCALARS: usize = 64 * 1024;
+pub(crate) const MAX_EDITOR_SCALARS: usize = 64 * 1024;
 
-pub(super) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str) -> bool {
+pub(crate) fn reject_oversized_events(
+    ui: &mut Ui,
+    id: Id,
+    text: &str,
+    max_bytes: usize,
+) -> bool {
     if !ui.memory(|memory| memory.has_focus(id)) {
         return false;
     }
@@ -86,7 +90,7 @@ pub(super) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str) -> bool {
                 }
                 _ => return true,
             };
-            if inserted.len() > MAX_INPUT_BYTES {
+            if inserted.len() > max_bytes {
                 rejected = true;
                 return false;
             }
@@ -97,7 +101,7 @@ pub(super) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str) -> bool {
             let next_bytes = bytes
                 .saturating_sub(selected_bytes)
                 .saturating_add(inserted.len());
-            if next_chars > MAX_EDITOR_SCALARS || next_bytes > MAX_INPUT_BYTES {
+            if next_chars > MAX_EDITOR_SCALARS || next_bytes > max_bytes {
                 rejected = true;
                 return false;
             }

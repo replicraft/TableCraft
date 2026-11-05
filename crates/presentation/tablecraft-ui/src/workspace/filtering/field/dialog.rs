@@ -1,5 +1,6 @@
 //! Native type metadata determines the available common-filter controls.
-use super::{FieldFilterPatternMode, input};
+use super::{FieldFilterPatternMode, MAX_INPUT_BYTES};
+use crate::text_input;
 use crate::localization::tr;
 use crate::workspace::{Action, State, diagnostics};
 use egui::{ComboBox, Id, Label, Popup, TextEdit, TextStyle, Ui};
@@ -90,13 +91,18 @@ impl State {
                                 );
                                 ui.label(&label);
                                 let id = ui.make_persistent_id(("field_operand", index));
-                                if input::reject_oversized_events(ui, id, &field.inputs[index]) {
+                                if text_input::reject_oversized_events(
+                                    ui,
+                                    id,
+                                    &field.inputs[index],
+                                    MAX_INPUT_BYTES,
+                                ) {
                                     field.error = Some(localizer.text("filtering-field-limit"));
                                 }
                                 let response = ui.add(
                                     TextEdit::multiline(&mut field.inputs[index])
                                         .id(id)
-                                        .char_limit(input::MAX_EDITOR_SCALARS)
+                                        .char_limit(text_input::MAX_EDITOR_SCALARS)
                                         .desired_rows(2)
                                         .desired_width(ui.available_width()),
                                 );
