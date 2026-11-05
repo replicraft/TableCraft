@@ -5,6 +5,8 @@ use crate::workspace::focus::{self, Pane};
 use egui::{RichText, TextEdit, Ui};
 
 const MAX_SQL_EDITOR_HEIGHT: f32 = 150.0;
+const MIN_SQL_EDITOR_HEIGHT: f32 = 24.0;
+const MIN_RESULTS_HEIGHT: f32 = 60.0;
 
 impl State {
     pub(super) fn query_editor(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
@@ -33,6 +35,15 @@ impl State {
             ui.label(
                 RichText::new(tr(ui, "query-help")).color(crate::theme::palette(ui.ctx()).muted),
             );
+            let editor_height = if self.error.is_some() {
+                let reserved = ui.spacing().interact_size.y
+                    + ui.spacing().item_spacing.y * 3.0
+                    + MIN_RESULTS_HEIGHT;
+                (ui.available_height() - reserved)
+                    .clamp(MIN_SQL_EDITOR_HEIGHT, MAX_SQL_EDITOR_HEIGHT)
+            } else {
+                MAX_SQL_EDITOR_HEIGHT
+            };
             ui.scope(|ui| {
                 ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
                 egui::ScrollArea::vertical()
@@ -40,7 +51,7 @@ impl State {
                         "query_sql",
                         self.database.as_ref().map(|db| db.document_revision),
                     ))
-                    .max_height(MAX_SQL_EDITOR_HEIGHT)
+                    .max_height(editor_height)
                     .scroll_bar_visibility(
                         egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded,
                     )

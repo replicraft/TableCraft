@@ -3,9 +3,11 @@ use super::SavedQueryState;
 use crate::localization::{message, tr};
 use crate::theme::input_border;
 use crate::workspace::focus::{self, Pane};
-use crate::workspace::{Action, State};
+use crate::workspace::{Action, State, diagnostics};
 
 const MAX_PARAMETER_PANE_HEIGHT: f32 = 220.0;
+const MIN_PARAMETER_PANE_HEIGHT: f32 = 24.0;
+const MIN_PREVIOUS_RESULTS_HEIGHT: f32 = 60.0;
 
 pub(super) const INPUT_KINDS: &[(&str, &str)] = &[
     ("boolean", "Boolean"),
@@ -45,9 +47,25 @@ impl State {
         let idle = !self.busy && self.saved_query.pending.is_none();
         let object_id = target.object_id;
         let document_revision = target.document_revision;
+        if let Some(error) = &self.saved_query.error {
+            let id = ui.make_persistent_id(("saved_query_error", document_revision, object_id));
+            diagnostics::show(ui, id, error);
+        }
+        let parameter_height = if self.saved_query.error.is_some() {
+            // Measure after the complete diagnostic and its Copy command, then
+            // leave room for Run/Inspect, status and at least one result row.
+            let reserved = ui.spacing().interact_size.y
+                + ui.text_style_height(&egui::TextStyle::Small)
+                + ui.spacing().item_spacing.y * 5.0
+                + MIN_PREVIOUS_RESULTS_HEIGHT;
+            (ui.available_height() - reserved)
+                .clamp(MIN_PARAMETER_PANE_HEIGHT, MAX_PARAMETER_PANE_HEIGHT)
+        } else {
+            MAX_PARAMETER_PANE_HEIGHT
+        };
         let changed = ui
             .push_id(("saved_parameters", document_revision, object_id), |ui| {
-                parameters(ui, &mut self.saved_query, idle)
+                parameters(ui, &mut self.saved_query, idle, parameter_height)
             })
             .inner;
         if changed {
@@ -57,9 +75,6 @@ impl State {
         }
         if !super::inputs_within_limits(&self.saved_query.inputs) {
             ui.label(tr(ui, "saved-query-input-limit"));
-        }
-        if let Some(error) = &self.saved_query.error {
-            ui.label(error);
         }
         let target = self
             .saved_query
@@ -94,7 +109,7 @@ impl State {
     }
 }
 
-fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> bool {
+fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool, max_height: f32) -> bool {
     let Some(parameters) = &state.parameters else {
         return false;
     };
@@ -104,7 +119,7 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
         egui::ScrollArea::vertical()
             .id_salt("saved_query_parameters")
             .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
-            .max_height(MAX_PARAMETER_PANE_HEIGHT)
+            .max_height(max_height)
             .show(ui, |ui| {
                 for (index, (spec, input)) in parameters.iter().zip(&mut state.inputs).enumerate() {
                     ui.push_id(index, |ui| {
