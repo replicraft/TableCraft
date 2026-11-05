@@ -1,7 +1,7 @@
 //! Qualify one typed selection, then publish complete immutable membership only.
 use super::{
     Criterion, FILTER_STEPS, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,
-    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria,
+    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, patterns,
 };
 use crate::{
     Error, Response,
@@ -60,24 +60,10 @@ impl Document {
         let resolver =
             NativeCollationResolver::new_deferred_default(order, &comparisons, cancelled)?;
         let mut work = ResourceBudget::new(RETAINED_BYTES, 0, FILTER_STEPS);
-        work.charge_allocation(MAX_FILTER_FIELDS as u64, size_of::<Criterion>() as u64)?;
-        let mut predicates = Vec::new();
-        predicates.try_reserve_exact(MAX_FILTER_FIELDS)?;
-        if let Some(base) = base.filter(|_| target.enabled) {
-            for criterion in &base.state.definition.state.criteria {
-                check(cancelled)?;
-                work.charge(
-                    Resource::Steps,
-                    1 + criterion.column.len() as u64 + target.column.len() as u64,
-                )?;
-                if criterion.column != target.column {
-                    predicates.push(criteria::copy(criterion, &mut work, cancelled)?);
-                }
-            }
-        }
-        if predicates.len() == MAX_FILTER_FIELDS {
-            return Err(FilterError::CriterionLimit.into());
-        }
+        let mut predicates =
+            replacement_criteria(base, target.enabled, &target.column, &mut work, cancelled)?;
+        let mode =
+            patterns::mode_if_needed(&mut self.source, &predicates, &mut native_work, cancelled)?;
 
         let mut browser = NativeBrowser::new(&mut self.source, SCOPE, native_work, cancelled);
         let selected_page = browser.projected_page(
@@ -109,6 +95,7 @@ impl Document {
             &schema,
             &predicates,
             &resolver,
+            mode,
             &mut work,
             cancelled,
         )?;
@@ -144,4 +131,32 @@ impl Document {
         }
         Ok(())
     }
+}
+
+pub(super) fn replacement_criteria(
+    base: Option<&FilterHandle>,
+    enabled: bool,
+    column: &str,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Criterion>, Error> {
+    work.charge_allocation(MAX_FILTER_FIELDS as u64, size_of::<Criterion>() as u64)?;
+    let mut predicates = Vec::new();
+    predicates.try_reserve_exact(MAX_FILTER_FIELDS)?;
+    if let Some(base) = base.filter(|_| enabled) {
+        for criterion in &base.state.definition.state.criteria {
+            check(cancelled)?;
+            work.charge(
+                Resource::Steps,
+                1 + criterion.column.len() as u64 + column.len() as u64,
+            )?;
+            if criterion.column != column {
+                predicates.push(criteria::copy(criterion, work, cancelled)?);
+            }
+        }
+    }
+    if predicates.len() == MAX_FILTER_FIELDS {
+        return Err(FilterError::CriterionLimit.into());
+    }
+    Ok(predicates)
 }

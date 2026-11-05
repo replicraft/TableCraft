@@ -355,9 +355,51 @@ never reconstructs the predicate from displayed currency, date, checkbox, NULL
 marker or rounded text. The initial operations are Equal and NotEqual for an
 entire selected value; selected stored NULL becomes IsNull or IsNotNull. Empty
 text remains a typed text value, distinct from NULL. Partial text selection,
-range menus, common-filter editors, Filter by Form and advanced expressions are
-not supplied by this initial service. Calculated/complex/unqualified selected
-fields and Binary predicates refuse explicitly.
+Filter by Form and advanced expressions are not supplied by this service.
+Calculated/complex/unqualified selected fields and Binary predicates refuse
+explicitly.
+
+`DescribeFieldFilter` inspects an exact revision/table/column without requiring
+any user record, including for empty tables. Its returned `InputHint`, nullable
+reader declaration, eligible operators and optional ANSI pattern mode are
+informational. `ApplyFieldFilter` independently checks that source, declaration,
+operator, operands and optional opaque base handle again; metadata is neither an
+edit permission nor a retained operation capability. An explicit enabled/off
+witness accompanies the exact base filter ID.
+
+Entered numeric/date common filters support Equal/NotEqual, ordered comparisons,
+inclusive Between/NotBetween, and IsNull/IsNotNull. Between accepts reversed
+bounds, retaining the shared eager comparison service; it does not normalize
+NULL into an ordinary value. Ordinary negated comparisons also exclude NULL.
+Typed date operands use the existing invariant ISO entry syntax, rather than
+reparsing regional display text. Boolean, Guid, Binary, calculated and complex
+fields are outside this common-filter profile. Existing qualified Boolean
+selection filtering remains separate.
+
+Numeric bounds are query operands rather than values to be written into a
+field. Fixed numeric fields accept exact Decimal operands, including fractional
+and out-of-storage-range thresholds; Currency bounds are not rounded through
+CCur and integer bounds are not narrowed to their storage widths. The shared
+exact parser reuses the conversion grammar but refuses discarded nonzero digits
+outside the 96-bit coefficient/scale-at-most-28 envelope. Existing CDec rounding
+behavior is unchanged. Single/Double operands additionally require their parsed
+carrier's shortest decimal spelling to represent the same exact decimal input:
+`0.1` and `0.1000` are accepted, whereas Single `1.00000001` refuses precision
+loss rather than silently becoming `1`. This canonical decimal round-trip guard
+is an explicit engineering profile, not mathematical IEEE exactness or native
+Access numeric type-promotion qualification. Localized numeric spelling and
+unsupported precision refuse while retaining the previous view.
+
+Entered Text Equal/NotEqual use native LIKE/NOT LIKE patterns, unlike literal
+selected-value equality. Begins/Ends/Contains and their negations add the
+mode-appropriate outer wildcards without escaping or rewriting the user's
+pattern. The successfully inspected absence of the database query-mode setting
+selects ANSI-89; known ANSI-92 selects its grammar; unknown mode refuses.
+Qualified native weighted comparison providers are required, with no binary or
+system-locale fallback. Pattern negation excludes stored NULL; present-empty
+Text remains distinct. Reapplication resolves the fresh source's pattern mode
+and field policy instead of retaining an old compiled matcher. Arbitrary SQL
+filter expressions and dynamic date presets are not supplied.
 
 At most sixteen distinct native fields are retained. Applying a new criterion to
 the same exact field replaces that field's previous criterion; different fields
@@ -402,8 +444,13 @@ metadata headings without fetching an unrelated source row.
 
 Map construction has an 8 MiB retained-work allowance and one million steps,
 including typed criterion/name copies, schema-name comparisons, map capacity and
-handle/definition storage. Selection capture and its cursor scan share one native
-allowance (512 MiB, 100,000 rows, five million steps), with the separate existing
+handle/definition storage. Entered operands have a 64 KiB UTF-8 ceiling each and
+exact operator arity (zero, one or two); parsing uses the existing cumulative
+8 MiB/100,000-step scalar presentation allowance. Compiled native patterns share
+one separate 64 MiB/ten-million-step pool across preparation and all source
+rows. Pattern, scalar and comparison work never resets for each candidate.
+A smaller work allowance may refuse an input below the byte ceiling. Selection
+capture and its cursor scan share one native allowance (512 MiB, 100,000 rows, five million steps), with the separate existing
 16 MiB/one-million-step native comparison pool. The first page and subsequent
 FilterPage calls use a separately named native band-read allowance with the same
 bounds, plus the normal cumulative 8 MiB/100,000-step presentation pool. No pool
@@ -422,7 +469,10 @@ reuses old filtered ordinals as new-source identities.
 
 Microsoft's [filtering workflow](https://support.microsoft.com/en-us/access/apply-a-filter-to-view-select-records-in-an-access-database)
 and [record-editing guidance](https://support.microsoft.com/en-us/access/ways-to-add-edit-and-delete-records)
-provide the selection, replacement, toggle and record-position target. Local
+provide the selection, replacement, toggle and record-position target.
+Microsoft's [Between contract](https://support.microsoft.com/en-us/access/between-and-operator)
+and [Access/ANSI comparison](https://support.microsoft.com/en-us/access/comparison-of-microsoft-access-sql-and-ansi-sql)
+specify inclusive bounds, NULL behavior and Access's reversed-bound distinction. Local
 acceptance covers 205 source rows across filtered pages, same-field replacement,
 different-field AND, typed NULL/empty and signed zero, eager nonfinite errors,
 failed/canceled candidates preserving old handles, cross-worker witness rejection,

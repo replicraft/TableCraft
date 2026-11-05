@@ -1,10 +1,15 @@
 //! Shared exact typed text input; no SQL parsing or implicit carrier selection.
+mod hint;
 use crate::{Error, display::Presentation};
+pub use hint::InputHint;
 use tablecraft_core::values::{Double, ExtendedDateTime, Guid, LegacyDateTime, Single, Value};
 use tablecraft_expressions::{
     EvalError,
     functions::{
-        conversions::{Conversion, text::NumberFormat},
+        conversions::{
+            Conversion,
+            text::{NumberFormat, decimal_exact},
+        },
         text::output::{NumericBuffer, TextOutput},
     },
 };
@@ -156,6 +161,24 @@ fn convert(
         failure: None,
     };
     let result = conversion.apply_text(text, NumberFormat::Invariant, &mut buffer);
+    if let Some(error) = buffer.failure {
+        return Err(error);
+    }
+    Ok(result?)
+}
+
+/// Query bounds preserve entered decimal precision rather than storage rounding.
+pub(crate) fn exact_numeric(text: &str, output: &mut Presentation<'_>) -> Result<Value, Error> {
+    if text.len() > MAX_INPUT_BYTES {
+        return Err(Error::ScalarInputLimit);
+    }
+    output.work(1 + text.len() as u64)?;
+    let mut buffer = Buffer {
+        output,
+        text: String::new(),
+        failure: None,
+    };
+    let result = decimal_exact(text, NumberFormat::Invariant, &mut buffer);
     if let Some(error) = buffer.failure {
         return Err(error);
     }

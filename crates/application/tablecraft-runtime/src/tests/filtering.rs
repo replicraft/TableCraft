@@ -1,4 +1,5 @@
 //! Native filter membership and issued row identity, independent of UI text.
+mod field;
 use super::{request, stored::opened};
 use crate::{
     CellKind, Command, Error, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,

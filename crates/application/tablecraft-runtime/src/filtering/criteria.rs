@@ -7,8 +7,9 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_expressions::{
-    comparison::{Collation, Comparison, compare},
+    comparison::{Collation, Comparison, StringSearch, compare},
     logic::Truth,
+    predicates::{LikeString, PreparedLikeSearch, between},
 };
 use tablecraft_schema::{ScalarType, TypeDescriptor};
 
@@ -85,6 +86,26 @@ pub(super) fn copy(
         Predicate::IsNotNull => Predicate::IsNotNull,
         Predicate::Equal(value) => Predicate::Equal(copy_value(value, work, cancelled)?),
         Predicate::NotEqual(value) => Predicate::NotEqual(copy_value(value, work, cancelled)?),
+        Predicate::Ordered {
+            comparison,
+            expected,
+        } => Predicate::Ordered {
+            comparison: *comparison,
+            expected: copy_value(expected, work, cancelled)?,
+        },
+        Predicate::Between {
+            first,
+            second,
+            negated,
+        } => Predicate::Between {
+            first: copy_value(first, work, cancelled)?,
+            second: copy_value(second, work, cancelled)?,
+            negated: *negated,
+        },
+        Predicate::Pattern { operator, input } => Predicate::Pattern {
+            operator: *operator,
+            input: copy_text(input, work, cancelled)?,
+        },
     };
     Ok(Criterion {
         column: copy_text(&criterion.column, work, cancelled)?,
@@ -97,7 +118,9 @@ pub(super) fn evaluate(
     criterion: &Criterion,
     value: &Value,
     collation: &dyn Collation,
+    prepared: Option<&PreparedLikeSearch>,
     work: &mut ResourceBudget,
+    pattern_work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Truth, Error> {
     check(cancelled)?;
@@ -121,6 +144,42 @@ pub(super) fn evaluate(
         Predicate::NotEqual(expected) => {
             compare(Comparison::NotEqual, value, expected, Some(collation))?
         }
+        Predicate::Ordered {
+            comparison,
+            expected,
+        } => compare(*comparison, value, expected, Some(collation))?,
+        Predicate::Between {
+            first,
+            second,
+            negated,
+        } => between(value, first, second, *negated, |comparison, left, right| {
+            check(cancelled)?;
+            work.charge(Resource::Steps, 1)?;
+            compare(comparison, left, right, Some(collation)).map_err(Error::from)
+        })?,
+        Predicate::Pattern { operator, .. } => {
+            if matches!(value, Value::Null) {
+                return Ok(Truth::Unknown);
+            }
+            let Value::Text(text) = value else {
+                return Err(super::FilterError::UnsupportedField.into());
+            };
+            let matcher = prepared.ok_or(super::FilterError::UnknownPatternMode)?;
+            let matched = matcher
+                .find(
+                    LikeString::Text(text),
+                    StringSearch::ForwardFrom(0),
+                    collation,
+                    pattern_work,
+                    Some(cancelled),
+                )?
+                .is_some();
+            if matched != operator.negated_pattern() {
+                Truth::True
+            } else {
+                Truth::False
+            }
+        }
     })
 }
 
@@ -128,7 +187,9 @@ pub(super) fn needs_text_policy(criterion: &Criterion, value: &Value) -> bool {
     matches!(
         (&criterion.predicate, value),
         (
-            Predicate::Equal(Value::Text(_)) | Predicate::NotEqual(Value::Text(_)),
+            Predicate::Equal(Value::Text(_))
+                | Predicate::NotEqual(Value::Text(_))
+                | Predicate::Pattern { .. },
             Value::Text(_)
         )
     )

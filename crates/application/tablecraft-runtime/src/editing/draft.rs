@@ -1,14 +1,14 @@
 //! Source-bound preparation and ordinary planning without a file lease.
 use super::ids::issue_id;
 use super::{
-    EditDraft, EditError, EditInput, EditReview, EditTarget, InputHint, ReviewedEdit,
-    ReviewedState, input,
+    EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, ReviewedState, input,
 };
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
     display::Presentation,
     document::Document,
+    scalar_input::InputHint,
 };
 use std::sync::Arc;
 use tablecraft_access::editing::journal::NativeJournalEditor;

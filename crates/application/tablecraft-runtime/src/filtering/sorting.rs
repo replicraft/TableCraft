@@ -128,6 +128,7 @@ impl Document {
                 &schema,
                 &predicates,
                 &resolver,
+                None,
                 &mut work,
                 cancelled,
             )?

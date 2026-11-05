@@ -1,10 +1,17 @@
 //! Immutable, source-issued table filters; presentation indices are not identities.
 mod criteria;
 mod definition;
+mod field;
 mod page;
+mod patterns;
 mod scan;
 mod service;
 mod sorting;
+
+pub use field::{
+    FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
+    MAX_FIELD_FILTER_INPUT_BYTES,
+};
 
 use crate::{Cell, Column, Error};
 use std::sync::{
@@ -12,6 +19,7 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 use tablecraft_core::values::Value;
+use tablecraft_expressions::comparison::Comparison;
 use tablecraft_schema::TypeDescriptor;
 use thiserror::Error as ThisError;
 
@@ -126,6 +134,19 @@ struct Criterion {
 enum Predicate {
     Equal(Value),
     NotEqual(Value),
+    Ordered {
+        comparison: Comparison,
+        expected: Value,
+    },
+    Between {
+        first: Value,
+        second: Value,
+        negated: bool,
+    },
+    Pattern {
+        operator: FieldFilterOperator,
+        input: String,
+    },
     IsNull,
     IsNotNull,
 }
@@ -210,6 +231,14 @@ pub enum FilterError {
     InvalidSelection,
     #[error("filter criteria exceed the sixteen distinct-field limit")]
     CriterionLimit,
+    #[error("the field does not support this common-filter operator")]
+    UnsupportedOperator,
+    #[error("the filter operator requires a different number of operands")]
+    InvalidOperands,
+    #[error("a filter operand exceeds the 64 KiB UTF-8 input ceiling")]
+    InputLimit,
+    #[error("the database wildcard mode is not qualified")]
+    UnknownPatternMode,
     #[error("the selected field does not support this scalar filter")]
     UnsupportedField,
     #[error("filter identifier counter is exhausted")]

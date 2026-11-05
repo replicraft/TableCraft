@@ -1,7 +1,7 @@
 //! Explicit fresh-source reapplication of preferences, never old row identities.
 use super::{
     BoundSort, Criterion, DefinitionState, FILTER_STEPS, FilterDefinition, FilterError,
-    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria,
+    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, patterns,
 };
 use crate::{
     Error, Response,
@@ -71,12 +71,15 @@ impl Document {
             predicates.push(criteria::copy(predicate, &mut work, cancelled)?);
         }
 
+        let mode =
+            patterns::mode_if_needed(&mut self.source, &predicates, &mut native_work, cancelled)?;
         let mut browser = NativeBrowser::new(&mut self.source, SCOPE, native_work, cancelled);
         let (ordinals, source_rows) = super::scan::membership(
             &mut browser,
             &schema,
             &predicates,
             &resolver,
+            mode,
             &mut work,
             cancelled,
         )?;
