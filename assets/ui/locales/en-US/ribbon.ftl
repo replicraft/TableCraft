@@ -8,6 +8,7 @@ ribbon-database-tools = Database Tools
 ribbon-help = Help
 ribbon-table-fields = Table Fields
 ribbon-table = Table
+ribbon-view = View
 ribbon-views = Views
 ribbon-datasheet = Datasheet
 ribbon-table-design = Table Design

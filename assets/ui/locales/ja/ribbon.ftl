@@ -8,6 +8,7 @@ ribbon-database-tools = データベース ツール
 ribbon-help = ヘルプ
 ribbon-table-fields = テーブルのフィールド
 ribbon-table = テーブル
+ribbon-view = 表示
 ribbon-views = 表示
 ribbon-datasheet = データシート
 ribbon-table-design = テーブル デザイン

@@ -8,6 +8,7 @@ ribbon-database-tools = Datenbanktools
 ribbon-help = Hilfe
 ribbon-table-fields = Tabellenfelder
 ribbon-table = Tabelle
+ribbon-view = Ansicht
 ribbon-views = Ansichten
 ribbon-datasheet = Datenblatt
 ribbon-table-design = Tabellenentwurf
