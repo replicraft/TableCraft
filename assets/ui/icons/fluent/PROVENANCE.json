@@ -1,0 +1,196 @@
+{
+  "repository": "https://github.com/microsoft/fluentui-system-icons",
+  "revision": "9bfae3d782fda4c8764f2128cec4d0dda160b283",
+  "license": "MIT",
+  "license_source": "https://raw.githubusercontent.com/microsoft/fluentui-system-icons/9bfae3d782fda4c8764f2128cec4d0dda160b283/LICENSE",
+  "license_sha256": "69bc45dc42b9acb96a69823adbc6ae538374e3c0bde169b855b32c48eaaef52f",
+  "modification": "Only monochrome fill #212121 changed to #FFFFFF for theme tinting; paths and geometry are unchanged.",
+  "icons": [
+    {
+      "file": "add.svg",
+      "source_path": "assets/Add/SVG/ic_fluent_add_24_regular.svg",
+      "upstream_sha256": "167c7f2703870a06ff80dbbcc5d60fa37bfae9d225f37ed3d585949239bc3431",
+      "local_sha256": "45d4b317f87752581e616dc5857750505f3c97eabb909694182824d697c5e218"
+    },
+    {
+      "file": "arrow_right.svg",
+      "source_path": "assets/Arrow Right/SVG/ic_fluent_arrow_right_24_regular.svg",
+      "upstream_sha256": "4f415858d01fce575cf40c9a17f336ea848017b5697ccb464f6e0789116d60e3",
+      "local_sha256": "3ef7df6d68eb9371cf2ba82dfdb6378b73564cc093c3bdd7b3ad424cc21b8a90"
+    },
+    {
+      "file": "arrow_sort.svg",
+      "source_path": "assets/Arrow Sort/SVG/ic_fluent_arrow_sort_24_regular.svg",
+      "upstream_sha256": "f95fb569a4ce30336a11bab1c5a90a465f7f1b1987b191977f1cd2e1f824e48f",
+      "local_sha256": "29605185e81df6d3669bda7ca248be69f6d0094bb9e11bce9b0f1c79a0c13c4b"
+    },
+    {
+      "file": "arrow_swap.svg",
+      "source_path": "assets/Arrow Swap/SVG/ic_fluent_arrow_swap_24_regular.svg",
+      "upstream_sha256": "c3b7c9b71cc5af4b7ddedf9f756c0b3749139bd773cedb0bed84ede0d2eb140c",
+      "local_sha256": "a54ac9e142a3ea53edc997b06f1b825d8823d9b7cf178721bdbb7c6190b2345f"
+    },
+    {
+      "file": "arrow_sync.svg",
+      "source_path": "assets/Arrow Sync/SVG/ic_fluent_arrow_sync_24_regular.svg",
+      "upstream_sha256": "9537e4dc984b915d1d67bf2ed61c1fdf713c69d0b293a4dc12b2520d57ab55b7",
+      "local_sha256": "9ea842e3bb3de70bbaa90994d8cda0cf6d663eee7074c7237edc99c482fdca19"
+    },
+    {
+      "file": "autosum.svg",
+      "source_path": "assets/AutoSum/SVG/ic_fluent_autosum_24_regular.svg",
+      "upstream_sha256": "0128baa37310ec186301478c3207940c113b3a6e0af11e9c2f7918e5fdcdd20a",
+      "local_sha256": "83376ffe02b93e965dcd8b2270634d90d754b61f3c4b2ef74c263dfb580efb40"
+    },
+    {
+      "file": "clipboard_paste.svg",
+      "source_path": "assets/Clipboard Paste/SVG/ic_fluent_clipboard_paste_24_regular.svg",
+      "upstream_sha256": "2f9053de6de55352a4b244c1ddc15af9b9648ca9f77f6402d33616290aca292b",
+      "local_sha256": "14ae1b695abd24cc9ca2823aacd5e2960720c7d115753b47da2eb4b32a9b1421"
+    },
+    {
+      "file": "copy.svg",
+      "source_path": "assets/Copy/SVG/ic_fluent_copy_24_regular.svg",
+      "upstream_sha256": "599789902ed3de0b58da04dbac37e9a96cba962659197ecd0ea2463799ed85dd",
+      "local_sha256": "3cc22639bd65ee4f6208140538257a512ca3a0a2accb09ce6f6d42bc04505590"
+    },
+    {
+      "file": "cursor.svg",
+      "source_path": "assets/Cursor/SVG/ic_fluent_cursor_24_regular.svg",
+      "upstream_sha256": "efe2e0a90260aedc81fefc45658d0e7d77ce78e09bf345ad8aedc6b0e28fd043",
+      "local_sha256": "8e72abd4772401ee46bf243d324897d9e8bdd6e6052a325dce1b5aec219e1338"
+    },
+    {
+      "file": "cut.svg",
+      "source_path": "assets/Cut/SVG/ic_fluent_cut_24_regular.svg",
+      "upstream_sha256": "af3d18f0d18afc680385675fdc91d6cb486611753cd7dc2341bc8907b6ae6f24",
+      "local_sha256": "2c5dba4cc0b624354af1f015582e876e4a35a20801c424520882ea03cbdf68b8"
+    },
+    {
+      "file": "delete.svg",
+      "source_path": "assets/Delete/SVG/ic_fluent_delete_24_regular.svg",
+      "upstream_sha256": "0f0769b54d5862f2390ea7e51aab825e5dc10d4fa36da34d1559acc55799be92",
+      "local_sha256": "7f6f69b74d4e05d9cc8037318d42a9700e046ca6a29904fc305a617eb3bcbd22"
+    },
+    {
+      "file": "filter.svg",
+      "source_path": "assets/Filter/SVG/ic_fluent_filter_24_regular.svg",
+      "upstream_sha256": "06d1ca481689c345922149cae48b1471135d251a9a3e7caf389ab40caaddf8f7",
+      "local_sha256": "d5646ce4cf5fadf4174ab624dd4b42584ed123eb334ab985c06ae00483194f36"
+    },
+    {
+      "file": "flash.svg",
+      "source_path": "assets/Flash/SVG/ic_fluent_flash_24_regular.svg",
+      "upstream_sha256": "675a6af0b74a43001de66d67c952fe0c2257fecf4bd0b19e17d4cf19f1e2591f",
+      "local_sha256": "5c4d863d52813dc47829c563f02c88fe76b638f5b2c49dbf3a5d3d5c171b6d91"
+    },
+    {
+      "file": "key.svg",
+      "source_path": "assets/Key/SVG/ic_fluent_key_24_regular.svg",
+      "upstream_sha256": "1424c553a38abe9b9f686c83eface19100b7474a205a7d47b0c669bd18a7d708",
+      "local_sha256": "759af4182a30ca7c3cefd000b097ef53f88187e0785410f0081721b45fd72b2e"
+    },
+    {
+      "file": "list.svg",
+      "source_path": "assets/List/SVG/ic_fluent_list_24_regular.svg",
+      "upstream_sha256": "c9e666eba3f49c7fc9246fbeb7390408d5c8a6ec1357727304e6a5c3f0dc8770",
+      "local_sha256": "75a04778fd6506bc0a591dd8863373102daf75533ac103ddbadf43511216e9d2"
+    },
+    {
+      "file": "paint_brush.svg",
+      "source_path": "assets/Paint Brush/SVG/ic_fluent_paint_brush_24_regular.svg",
+      "upstream_sha256": "afbac2dbe8474f7893aebfebb5e2dae4c944ee4aef065b8518f58103bb2c0fe6",
+      "local_sha256": "bd45e7abf163032f85785299e7ac15d5f780b75d6861cf7e2a7c0f961ef06573"
+    },
+    {
+      "file": "paint_bucket.svg",
+      "source_path": "assets/Paint Bucket/SVG/ic_fluent_paint_bucket_24_regular.svg",
+      "upstream_sha256": "88dc28a6ff16bf9f652432be4a0490f917625258ed44bfeb6e9d0f448fe7c16e",
+      "local_sha256": "d49d0f8d5681eeb900035aea15606b09b677aa79b5c1ab398d5efbd396a74a11"
+    },
+    {
+      "file": "panel_right.svg",
+      "source_path": "assets/Panel Right/SVG/ic_fluent_panel_right_24_regular.svg",
+      "upstream_sha256": "6f3c2964c9352fe6062ee59ef2c658cdf56ddbcf68629ac8ab0b222d9742abd9",
+      "local_sha256": "bebe1f9cbef4a355b464cbd340176572fad5d10448e1fdf437d872ab02191b9e"
+    },
+    {
+      "file": "save.svg",
+      "source_path": "assets/Save/SVG/ic_fluent_save_24_regular.svg",
+      "upstream_sha256": "35d473d8af5134ab3679d3f41e7270d6ac6bce66fc5f98caccb42d75350b237f",
+      "local_sha256": "98b36a1166ad3d4d30b691ff73c214185ca30eca03fe183ea3ea2562d912e2ab"
+    },
+    {
+      "file": "search.svg",
+      "source_path": "assets/Search/SVG/ic_fluent_search_24_regular.svg",
+      "upstream_sha256": "dc8ec761e8cdc52032b86e15c424716ded96d168970b5b611257253a41484b62",
+      "local_sha256": "f6d0fd1e73725ac1cc1d2b77bd277270e2954a601d5fecce08ac16b659a9f8d9"
+    },
+    {
+      "file": "table.svg",
+      "source_path": "assets/Table/SVG/ic_fluent_table_24_regular.svg",
+      "upstream_sha256": "f6021978e1c20649e4b07276db570c51a8b6436540d46020a186233301948e30",
+      "local_sha256": "18496d1a4e4238ad5ec91fef850b47588b3bb5da1b6152c946a7a5d6a33ada80"
+    },
+    {
+      "file": "table_edit.svg",
+      "source_path": "assets/Table Edit/SVG/ic_fluent_table_edit_24_regular.svg",
+      "upstream_sha256": "2cb0a898afd572b95c62bae7feea604b341f2807196231dcbcfe321e07c3ab63",
+      "local_sha256": "92388add7c31cce2b05cb6757b70567c2e0c5472fba0c82ae1a8a140b29293a9"
+    },
+    {
+      "file": "table_link.svg",
+      "source_path": "assets/Table Link/SVG/ic_fluent_table_link_24_regular.svg",
+      "upstream_sha256": "cf2ee3840eafdb58addd85c475aea21e8991a7dee132de1fb9e1795ecd775e9e",
+      "local_sha256": "6e29f6227527a210857c48af5b073acb1393fb7140ec5a4e91b81e46323e46a7"
+    },
+    {
+      "file": "text_bold.svg",
+      "source_path": "assets/Text Bold/SVG/ic_fluent_text_bold_24_regular.svg",
+      "upstream_sha256": "b9af3ca180a23b9ac644160701fbdeb9944b09796919aed343c2c1cf1fcd94d6",
+      "local_sha256": "8f9e31455189f2e53849373e59eb2d085574cc22795eabfd856545e057903b17"
+    },
+    {
+      "file": "text_color.svg",
+      "source_path": "assets/Text Color/SVG/ic_fluent_text_color_24_regular.svg",
+      "upstream_sha256": "af1f32bfa4b45d38d7b39858934cb46c68ae2fe582d14e674adffaf3fbe7d077",
+      "local_sha256": "a09549f71486b64c8cf4a4f4c8f4443df243caa59c8989c4479799e073d53789"
+    },
+    {
+      "file": "text_grammar_checkmark.svg",
+      "source_path": "assets/Text Grammar Checkmark/SVG/ic_fluent_text_grammar_checkmark_24_regular.svg",
+      "upstream_sha256": "55edb339994f40015529aa798edc4ee03fb67e4e9f5b5b35b5832927ba44fad5",
+      "local_sha256": "640f7e9552fcf4e209d207d93f5afe88fd809c5ce4dedce67e3984ba76982a5e"
+    },
+    {
+      "file": "text_italic.svg",
+      "source_path": "assets/Text Italic/SVG/ic_fluent_text_italic_24_regular.svg",
+      "upstream_sha256": "63b5cf5c4addee1bba7c94a493df86b55c06456d703146560f266be7d64aa069",
+      "local_sha256": "c93b5a5a6e3469e9c3695c1666956d73078edd7d167029c46f455a759ec4f399"
+    },
+    {
+      "file": "text_sort_ascending.svg",
+      "source_path": "assets/Text Sort Ascending/SVG/ic_fluent_text_sort_ascending_24_regular.svg",
+      "upstream_sha256": "95ada55bce4cfe79307aadae4fa491b7cf0bd02a23a702f04347b2a36903162e",
+      "local_sha256": "29d529d4d7b3607b3a036ec641525ddb791f498dc5501467bff94f3a61e359e9"
+    },
+    {
+      "file": "text_sort_descending.svg",
+      "source_path": "assets/Text Sort Descending/SVG/ic_fluent_text_sort_descending_24_regular.svg",
+      "upstream_sha256": "317e57e4407955658c0a621d0feb2808a2e86c1da0dfb398126242ed50960956",
+      "local_sha256": "529da4e1a3502a5ca5a2c1cc1d4a3f73a1bed1de54c907ac92f5338ffa562d0d"
+    },
+    {
+      "file": "text_underline.svg",
+      "source_path": "assets/Text Underline/SVG/ic_fluent_text_underline_24_regular.svg",
+      "upstream_sha256": "64aa5bac04dd3088731fc9da5d564bdcaecc036b3d783aa46120796133419a21",
+      "local_sha256": "3539475cf4854b61ff1a88789cf2fc412bf5d750d6c09d9c468e7a5d38ca052e"
+    },
+    {
+      "file": "zoom_in.svg",
+      "source_path": "assets/Zoom In/SVG/ic_fluent_zoom_in_24_regular.svg",
+      "upstream_sha256": "bfa7c14efab4004ee394d4937c6f448442017c2c305ab5c9e7ffafab3ab9eca7",
+      "local_sha256": "756a8dd7a72a6f7e346ce4e7ce552b95bb327e08bea40d8671313d58ad7d5561"
+    }
+  ]
+}
