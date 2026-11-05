@@ -30,6 +30,10 @@ interaction and database behavior.
 Current UI work prioritizes screenshot-guided polish, light/dark themes and
 sectioned Fluent catalogs with synthetic data; do not expand database functionality
 as part of that work. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md).
+Native UI verification is currently suspended at the user's request to avoid
+interrupting their work. Use headless interaction tests and offscreen rendering;
+do not launch, activate, manipulate or close native app windows for verification
+until the user explicitly resumes those checks.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
