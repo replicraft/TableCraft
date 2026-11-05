@@ -16,7 +16,9 @@ pub(super) fn show(ui: &mut Ui, id: Id, report: &str) {
         ui.scope(|ui| {
             ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
             let body = ScrollArea::vertical()
-                .id_salt("service_report")
+                // A new literal report starts at its beginning. The same report
+                // retains its viewport through redraws, theme and UI language.
+                .id_salt(("service_report", report))
                 .auto_shrink([false, true])
                 .max_height(MAX_REPORT_HEIGHT)
                 .show(ui, |ui| {
