@@ -28,7 +28,7 @@ pub(super) fn enrich(
     Ok(())
 }
 
-fn field(
+pub(super) fn field(
     properties: Option<&TableProperties>,
     name: &str,
     output: &mut Presentation<'_>,

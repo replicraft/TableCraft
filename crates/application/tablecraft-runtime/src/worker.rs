@@ -85,6 +85,10 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .review_delete(target, cancelled),
+            Command::FindNext { request } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .find_next(request, cancelled),
             Command::InspectSavedQuery { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -158,6 +162,7 @@ impl Worker {
                     Command::ReviewInsert { .. } => "review_insert",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewDelete { .. } => "review_delete",
+                    Command::FindNext { .. } => "find_next",
                     Command::Page { .. } => "page",
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",

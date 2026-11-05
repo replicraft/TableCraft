@@ -70,7 +70,7 @@ fn format_cell(
     Ok(())
 }
 
-fn native_format(
+pub(super) fn native_format(
     properties: &TableProperties,
     column: &str,
     output: &mut Presentation<'_>,

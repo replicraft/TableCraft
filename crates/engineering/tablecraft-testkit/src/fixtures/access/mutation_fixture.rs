@@ -1,6 +1,19 @@
 //! Original literal native fixture owner, shared by actual tests.
 use super::{data_page, image, put16, put32, record};
 
+const SORT_ORDER_OFFSET: usize = 110;
+const SORT_ORDER_MASK: [u8; 4] = [1, 27, 152, 253];
+
+/// Browser rows with an independently specified database comparison descriptor.
+/// These original header bytes do not use the production decoder or key encoder.
+pub fn with_rows_and_sort_order(records: &[(i32, i32)], order: [u8; 4]) -> Vec<u8> {
+    let mut bytes = with_rows(records);
+    for (position, mask) in SORT_ORDER_MASK.into_iter().enumerate() {
+        bytes[SORT_ORDER_OFFSET + position] = order[position] ^ mask;
+    }
+    bytes
+}
+
 // Original independent golden format bytes. No external fixture/tool is needed.
 pub fn database() -> Vec<u8> {
     with_rows(&[(1, 10), (2, 20), (3, 30)])

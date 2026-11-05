@@ -7,6 +7,7 @@ mod display;
 mod document;
 #[cfg(feature = "offline-edit")]
 mod editing;
+mod find;
 mod native_properties;
 mod query;
 mod rows;
@@ -27,6 +28,10 @@ pub use editing::{
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveSessionState,
     SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
+pub use find::{
+    FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
+    FindTarget, MAX_FIND_PATTERN_BYTES,
+};
 pub use saved::{
     MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
     SavedQuery, SavedQueryTarget,
@@ -46,6 +51,8 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Edit(#[from] EditError),
+    #[error(transparent)]
+    Find(#[from] FindError),
     #[error(transparent)]
     Conversion(#[from] tablecraft_expressions::EvalError),
     #[error("typed input is invalid")]
@@ -130,6 +137,9 @@ pub enum Command {
     ReviewDelete {
         target: DeleteTarget,
     },
+    FindNext {
+        request: FindRequest,
+    },
     Page {
         table: String,
         offset: u32,
@@ -198,6 +208,10 @@ pub enum Response {
     DeleteReviewed {
         review: DeleteReview,
         capability: ReviewedDelete,
+    },
+    Found {
+        request: FindRequest,
+        position: Option<FindPosition>,
     },
     /// A complete explicit read of one parent's stored collection. There are no
     /// executable attachment actions or borrowed native values in this response.
