@@ -25,12 +25,19 @@ heading emphasis. Move the functional table/query document switch above its
 content, separate from file-opening commands. Keep actual table names visible.
 The left object pane follows the reference's compact search and Tables grouping.
 
-The datasheet uses smaller rows and headers, narrower row numbers, gray column
+The datasheet uses smaller rows and headers, a narrow record-selector strip, gray column
 headers and fine grid separators while preserving virtual rows, resizing,
 keyboard focus and complete cell copying. Reference pixel sizes are proportions
 from a captured display, not platform-independent logical measurements. Current
 colors and spacing are approximations requiring visual comparison at the target
 scale; they are not measured pixel-exact matches.
+
+The retained datasheet capture does not paint ordinal numbers or a `#` header in
+its record-selector strip. The working selectors now follow that organization
+with an approximately 18-point strip, while keeping record numbers in accessible
+labels, hover text and the bottom navigator. Current-row/selected-row highlights,
+selector clicks and full-record Copy remain functional. No pencil, lock or new-row
+symbol is drawn without the corresponding supported state.
 
 The active datasheet field uses the observed yellow header, blue current row and
 white active cell with a red outline. Home exposes actual View and Clipboard

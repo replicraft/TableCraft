@@ -775,6 +775,7 @@ fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
 #[test]
 fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_opening_children() {
     let context = Context::default();
+    context.enable_accesskit();
     let data = Data {
         source_revision: Some(7),
         table: "Parents".into(),
@@ -806,6 +807,32 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     };
     let mut selection = Selection::default();
     selection.reset(&data);
+    let (mut output, _, _) = selection_frame(&context, &data, &mut selection, vec![]);
+    for shape in &output.shapes {
+        if let egui::epaint::Shape::Text(text) = &shape.shape {
+            assert!(!["#", "1", "2"].contains(&text.galley.job.text.as_str()));
+        }
+    }
+    let tree = output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .expect("actual selector accessibility tree");
+    for label in ["Select record 1", "Select record 2"] {
+        let selector = tree
+            .nodes
+            .iter()
+            .find_map(|(_, node)| {
+                (node.role() == Role::RowHeader && node.label() == Some(label)).then_some(node)
+            })
+            .expect("accessible selector retains its record number");
+        let bounds = selector.bounds().expect("actual selector hit target");
+        let width = bounds.x1 - bounds.x0;
+        // The retained capture's selector strip is close to one row's height.
+        assert!((14.0..=22.0).contains(&width), "selector width: {width}");
+    }
+    output.textures_delta.clear();
+
     click_grid_cell(
         &context,
         &data,
