@@ -1,16 +1,18 @@
 //! Source cards expose exact metadata fields and explicit, owned join edges.
 use super::{Session, click};
 use crate::localization::tr;
-use egui::{Frame, Rect, ScrollArea, Stroke, Ui};
+use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind, DesignSource,
     MAX_DESIGN_COLUMNS, MAX_DESIGN_JOINS, draft_text_bytes,
 };
 
-const SOURCE_HEIGHT: f32 = 165.0;
 const SOURCE_WIDTH: f32 = 170.0;
-const SOURCE_HEADING_HEIGHT: f32 = 40.0;
-const SOURCE_VIEWPORT_SHARE: f32 = 0.4;
+const SOURCE_HEADING_HEIGHT: f32 = 22.0;
+const FIELD_ROW_HEIGHT: f32 = 18.0;
+const CARD_GAP: f32 = 48.0;
+const FIELD_TEXT_PADDING: f32 = 7.0;
+const JOIN_LEAD: f32 = 12.0;
 
 #[derive(Default)]
 struct SourceEvents {
@@ -21,14 +23,11 @@ struct SourceEvents {
     pair: Option<click::Pair>,
 }
 
-pub(super) fn source_area(ui: &mut Ui, session: &mut Session) -> bool {
+pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bool {
     let mut events = SourceEvents {
         pair: session.click_pair.take(),
         ..SourceEvents::default()
     };
-    let height = (ui.available_height() * SOURCE_VIEWPORT_SHARE)
-        .min(SOURCE_HEIGHT)
-        .max(SOURCE_HEADING_HEIGHT + ui.spacing().interact_size.y);
     let mut joins_changed = false;
     ScrollArea::both()
         .id_salt("qbe_sources")
@@ -37,6 +36,7 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session) -> bool {
         .auto_shrink([false, false])
         .show(ui, |ui| {
             ui.horizontal_top(|ui| {
+                ui.spacing_mut().item_spacing.x = CARD_GAP;
                 for source in &session.draft.sources {
                     ui.push_id(("qbe_source", source.id), |ui| {
                         source_card(ui, session, source, &mut events, height);
@@ -86,15 +86,29 @@ fn source_card(
     events: &mut SourceEvents,
     height: f32,
 ) {
-    Frame::group(ui.style())
-        .fill(crate::theme::palette(ui.ctx()).surface)
+    let colors = crate::theme::palette(ui.ctx());
+    Frame::new()
+        .fill(colors.surface)
+        .stroke(Stroke::new(1.0, colors.grid_line))
+        .corner_radius(2.0)
         .show(ui, |ui| {
             ui.vertical(|ui| {
                 ui.set_width(SOURCE_WIDTH);
-                ui.strong(source.alias.as_deref().unwrap_or(&source.table));
-                ui.separator();
+                ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
+                Frame::new()
+                    .fill(colors.grid_header)
+                    .inner_margin(egui::Margin::symmetric(6, 2))
+                    .show(ui, |ui| {
+                        let title = source.alias.as_deref().unwrap_or(&source.table);
+                        ui.add_sized(
+                            [SOURCE_WIDTH - 12.0, SOURCE_HEADING_HEIGHT - 4.0],
+                            egui::Label::new(egui::RichText::new(title).strong()).truncate(),
+                        )
+                        .on_hover_text(title);
+                    });
                 ScrollArea::vertical()
-                    .max_height(height - SOURCE_HEADING_HEIGHT)
+                    .id_salt("source_fields")
+                    .max_height((height - SOURCE_HEADING_HEIGHT - 2.0).max(FIELD_ROW_HEIGHT))
                     .auto_shrink([false, false])
                     .show(ui, |ui| source_fields(ui, session, source, events));
             });
@@ -102,9 +116,7 @@ fn source_card(
 }
 
 fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: &mut SourceEvents) {
-    let all_fields = ui
-        .push_id("all_fields", |ui| ui.selectable_label(false, "*"))
-        .inner;
+    let all_fields = ui.push_id("all_fields", |ui| field_row(ui, "*")).inner;
     if all_fields.clicked() {
         events.clicked = true;
     }
@@ -131,9 +143,7 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
             column: field.name.clone(),
         };
         let response = ui
-            .push_id(("field", &field.name), |ui| {
-                ui.selectable_label(false, &field.name)
-            })
+            .push_id(("field", &field.name), |ui| field_row(ui, &field.name))
             .inner;
         if response.rect.intersects(ui.clip_rect()) {
             events
@@ -150,6 +160,48 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
             join_menu(ui, session, &reference, events);
         });
     }
+}
+
+/// A compact full-width row keeps join anchors at card edges, never at the
+/// end of a short field name. Full metadata names remain accessible and hoverable.
+fn field_row(ui: &mut Ui, name: &str) -> Response {
+    let (rect, response) = ui.allocate_exact_size(
+        egui::vec2(ui.available_width(), FIELD_ROW_HEIGHT),
+        egui::Sense::click(),
+    );
+    let colors = crate::theme::palette(ui.ctx());
+    if response.hovered() || response.has_focus() {
+        ui.painter().rect_filled(rect, 0.0, colors.active_row);
+    }
+    let font = egui::TextStyle::Body.resolve(ui.style());
+    let mut layout = egui::text::LayoutJob::simple(
+        name.to_owned(),
+        font,
+        colors.ink,
+        (rect.width() - FIELD_TEXT_PADDING * 2.0).max(0.0),
+    );
+    layout.wrap.max_rows = 1;
+    let galley = ui.painter().layout_job(layout);
+    ui.painter().with_clip_rect(rect).galley(
+        egui::pos2(
+            rect.left() + FIELD_TEXT_PADDING,
+            rect.center().y - galley.size().y * 0.5,
+        ),
+        galley,
+        colors.ink,
+    );
+    response.widget_info(|| {
+        egui::WidgetInfo::selected(
+            egui::WidgetType::SelectableLabel,
+            ui.is_enabled(),
+            false,
+            name,
+        )
+    });
+    if response.clicked() {
+        response.request_focus();
+    }
+    response.on_hover_text(name)
 }
 
 fn join_menu(ui: &mut Ui, session: &Session, left: &DesignField, events: &mut SourceEvents) {
@@ -185,7 +237,7 @@ fn join_menu(ui: &mut Ui, session: &Session, left: &DesignField, events: &mut So
 }
 
 fn draw_joins(ui: &Ui, session: &Session, anchors: &[(DesignField, Rect)]) {
-    let stroke = Stroke::new(1.0, crate::theme::palette(ui.ctx()).muted);
+    let stroke = Stroke::new(1.0, crate::theme::palette(ui.ctx()).ink);
     for join in &session.draft.joins {
         let left = anchors.iter().find(|(field, _)| *field == join.left);
         let right = anchors.iter().find(|(field, _)| *field == join.right);
@@ -195,7 +247,11 @@ fn draw_joins(ui: &Ui, session: &Session, anchors: &[(DesignField, Rect)]) {
             } else {
                 (left.left_center(), right.right_center())
             };
-            ui.painter().line_segment([start, end], stroke);
+            let direction = (end.x - start.x).signum();
+            let left_lead = start + egui::vec2(JOIN_LEAD * direction, 0.0);
+            let right_lead = end - egui::vec2(JOIN_LEAD * direction, 0.0);
+            ui.painter()
+                .line(vec![start, left_lead, right_lead, end], stroke);
         }
     }
 }
@@ -238,3 +294,6 @@ fn join_key(kind: DesignJoinKind) -> &'static str {
         DesignJoinKind::Right => "qbe-right",
     }
 }
+
+#[cfg(test)]
+mod tests;

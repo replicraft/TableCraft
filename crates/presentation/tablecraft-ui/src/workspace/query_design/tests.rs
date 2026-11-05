@@ -268,8 +268,8 @@ fn actual_grid_edits_keep_later_or_rows_and_reject_oversized_paste_whole() {
         .get_by_role_and_label(Role::Button, "CustomerName")
         .rect();
     assert!(
-        name_field.top() > id_field.bottom(),
-        "source fields form a vertical list"
+        name_field.top() >= id_field.bottom(),
+        "compact source fields form contiguous, nonoverlapping vertical rows"
     );
     assert!((id_field.left() - name_field.left()).abs() < 1.0);
     let expression = harness
