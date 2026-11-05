@@ -120,54 +120,21 @@ fn loaded_navigation_has_no_read_action_and_record_numbers_are_checked() {
 
 #[test]
 fn actual_navigator_previous_button_requests_global_record_without_replacing_data() {
-    let mut state = state();
-    let context = egui::Context::default();
-    let mut actions = Vec::new();
-    let mut output = context.run_ui(input(Vec::new()), |ui| {
-        state.record_navigator(ui, &mut actions)
-    });
-    output.textures_delta.clear();
-    let position = output
-        .shapes
-        .iter()
-        .find_map(|shape| match &shape.shape {
-            egui::epaint::Shape::Text(text) if text.galley.job.text == "Previous" => {
-                Some(text.pos + text.galley.size() * 0.5)
-            }
-            _ => None,
-        })
-        .expect("actual Previous button label");
-    for pressed in [true, false] {
-        let mut output = context.run_ui(
-            input(vec![
-                egui::Event::PointerMoved(position),
-                egui::Event::PointerButton {
-                    pos: position,
-                    button: egui::PointerButton::Primary,
-                    pressed,
-                    modifiers: egui::Modifiers::NONE,
-                },
-            ]),
-            |ui| state.record_navigator(ui, &mut actions),
-        );
-        output.textures_delta.clear();
-    }
-    assert!(
-        matches!(actions.as_slice(), [Action::NavigateRecord { target }] if target.parent_ordinal == 99 && target.document_revision == 7 && target.table == "Items")
+    let mut harness = Harness::builder().build_ui_state(
+        |ui, state: &mut (State, Vec<Action>)| state.0.record_navigator(ui, &mut state.1),
+        (state(), Vec::new()),
     );
-    assert_eq!(state.data.as_ref().unwrap().offset, 100);
-    assert_eq!(state.table_selection.position(), Some((0, 0)));
-}
-
-fn input(events: Vec<egui::Event>) -> egui::RawInput {
-    egui::RawInput {
-        screen_rect: Some(egui::Rect::from_min_size(
-            egui::Pos2::ZERO,
-            egui::vec2(1100.0, 740.0),
-        )),
-        events,
-        ..Default::default()
-    }
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Previous")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::NavigateRecord { target }] if target.parent_ordinal == 99 && target.document_revision == 7 && target.table == "Items")
+    );
+    assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
+    assert_eq!(harness.state().0.table_selection.position(), Some((0, 0)));
 }
 
 #[test]
@@ -225,35 +192,37 @@ fn record_navigator_remains_visible_below_the_virtual_datasheet() {
 
 #[test]
 fn focused_record_input_plain_enter_submits_once_but_modified_enter_does_not() {
-    let mut state = state();
-    state.sql = "SELECT 1".into();
-    let context = egui::Context::default();
-    let render = |state: &mut State, events| {
-        let mut actions = Vec::new();
-        let mut output = context.run_ui(input(events), |ui| actions = state.show(ui));
-        output.textures_delta.clear();
-        actions
-    };
-    assert!(render(&mut state, Vec::new()).is_empty());
-    let record_input = egui::Id::new("record_number");
-    context.memory_mut(|memory| memory.request_focus(record_input));
-    assert!(render(&mut state, vec![egui::Event::Text("301".into())]).is_empty());
-    assert_eq!(state.records.input, "301");
-    assert_eq!(
-        context.memory(|memory| memory.focused()),
-        Some(record_input)
-    );
-
-    let actions = render(&mut state, vec![record_enter(true, egui::Modifiers::NONE)]);
+    let mut initial = state();
+    initial.sql = "SELECT 1".into();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1100.0, 740.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (initial, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Record number")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Record number")
+        .type_text("301");
+    harness.run_steps(1);
+    assert_eq!(harness.state().0.records.position, "301");
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(2);
     assert!(
-        matches!(actions.as_slice(), [Action::NavigateRecord { target }]
+        matches!(harness.state().1.as_slice(), [Action::NavigateRecord { target }]
         if target.document_revision == 7 && target.table == "Items"
             && target.parent_ordinal == 300 && target.column == "ID")
     );
-    assert!(render(&mut state, vec![record_enter(false, egui::Modifiers::NONE)]).is_empty());
-    assert!(render(&mut state, Vec::new()).is_empty());
-    assert_eq!(state.data.as_ref().unwrap().offset, 100);
-
+    harness.run_steps(2);
+    assert_eq!(harness.state().1.len(), 1);
+    assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
+    harness.state_mut().1.clear();
     for modifiers in [
         egui::Modifiers {
             shift: true,
@@ -265,25 +234,13 @@ fn focused_record_input_plain_enter_submits_once_but_modified_enter_does_not() {
             ..Default::default()
         },
     ] {
-        context.memory_mut(|memory| memory.request_focus(record_input));
-        assert!(render(&mut state, Vec::new()).is_empty());
-        assert_eq!(
-            context.memory(|memory| memory.focused()),
-            Some(record_input)
-        );
-        assert!(render(&mut state, vec![record_enter(true, modifiers)]).is_empty());
-        assert!(render(&mut state, vec![record_enter(false, modifiers)]).is_empty());
-        assert!(render(&mut state, Vec::new()).is_empty());
-    }
-}
-
-fn record_enter(pressed: bool, modifiers: egui::Modifiers) -> egui::Event {
-    egui::Event::Key {
-        key: egui::Key::Enter,
-        physical_key: None,
-        pressed,
-        repeat: false,
-        modifiers,
+        harness
+            .get_by_role_and_label(Role::TextInput, "Record number")
+            .focus();
+        harness.run_steps(1);
+        harness.key_press_modifiers(modifiers, egui::Key::Enter);
+        harness.run_steps(2);
+        assert!(harness.state().1.is_empty());
     }
 }
 
@@ -508,4 +465,39 @@ fn sparse_navigation_moves_displayed_neighbors_without_unfiltered_reads() {
     assert_eq!(state.table_selection.position(), Some((1, 1)));
     assert!(state.records.error.is_some());
     assert!(actions.is_empty());
+}
+
+#[test]
+fn compact_position_editor_uses_original_record_numbers_and_refuses_an_unknown_last() {
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.0.record_navigator(ui, &mut state.1),
+            (state(), Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Last")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(harness.query_by_label("of \u{2068}?\u{2069}").is_some());
+    let input = harness.get_by_role_and_label(Role::TextInput, "Record number");
+    assert_eq!(input.value().as_deref(), Some("101"));
+    input.focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Record number")
+        .type_text("201");
+    harness.run_steps(1);
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(2);
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::NavigateRecord { target }]
+        if target.parent_ordinal == 200 && target.document_revision == 7 && target.column == "ID")
+    );
+    assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
 }

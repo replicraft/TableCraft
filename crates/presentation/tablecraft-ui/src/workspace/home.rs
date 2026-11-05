@@ -11,6 +11,9 @@ impl State {
             return;
         }
         let t = self.localizer.clone();
+        if self.mock_preview && ribbon::mock_tab(ui, &t, self.ribbon_tab) {
+            return;
+        }
         ribbon::strip(ui, |ui| {
             group(ui, &t.text("ribbon-views"), |ui| {
                 self.view_menu(ui, actions);

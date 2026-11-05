@@ -36,3 +36,6 @@ shell-zoom-in = 拡大
 shell-save-unavailable = 変更は確認済み編集ダイアログから保存します。直接編集した未保存のレコードはありません。
 shell-undo-unavailable = ドキュメント操作の取り消しは利用できません。テキスト入力には独自の取り消し履歴があります。
 shell-redo-unavailable = ドキュメント操作のやり直しは利用できません。テキスト入力には独自のやり直し履歴があります。
+
+shell-quick-access = クイック アクセス ツール バーのカスタマイズ
+shell-quick-open = データベース ファイルを開く

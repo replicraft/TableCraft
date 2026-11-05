@@ -21,8 +21,8 @@ The normal optional database path conflicts with mock mode.
 Saved-query Run now collects declared parameters in staged dialogs, one value at
 a time. The `saved-parameters` scene starts at the first prompt for visual review;
 normal inspection stays inert. Earlier inline-parameter-pane records below refer
-to the preceding presentation. The current original icon inventory is 52 designs
-with 208 themed/disabled SVGs, including the attachment paperclip.
+to the preceding presentation. The current original icon inventory is 103 designs
+with 412 themed/disabled SVGs, including the attachment paperclip.
 
 File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 68 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 74 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -738,3 +738,56 @@ conventions. Inputs, tab labels, right-side buttons and error reports remained
 visible. The actual Microsoft Find dialog image was reopened; it depicts only
 the Find tab, so the replacement panel remains a documented visual adaptation.
 No native window or Windows Access interaction was exercised.
+
+## Compact shell, record strip and full-tab previews — 5 November 2026
+
+The inventory is 74 scenes. `ribbon-create`, `ribbon-external-data`,
+`ribbon-database-tools`, `ribbon-help`, `ribbon-table-fields` and `ribbon-table`
+show the six newly selectable synthetic tabs. Their grouped commands are disabled
+and cannot dispatch backend work. Existing Home and Design commands retain their
+real service routes. The new panels are representative visible command previews;
+individual dropdowns and native behavior are not fully reproduced.
+
+The title starts with the red database mark and TableCraft, followed by spaced
+Quick Access controls. Open uses the existing file chooser; customization changes
+only session visibility. Save/Undo/Redo remain explicitly unavailable document
+services. The source path stem supplies the first document name and Database is
+the generic kind label. Both ACE 16 storage families use the Access 2016 title
+convention; raw Ace2016/Ace2019 metadata remains distinct. Currency's System locale
+choice includes its resolved regional currency code, independently of UI language
+and a field's native currency format.
+
+The record strip uses distinct First/Previous/Next/Last/New icons, an editable
+record position, checked count, filter state and search. Unknown complete counts
+show `?`; a loaded prefix is not a total. Existing page controls and full filter
+counts remain in Page tools. Search currently opens the existing Find workflow;
+in-place Access quick-search parity is not qualified. Status views use separate
+datasheet/ruler geometry.
+The zoom track has a narrow handle and no redundant label, with 100% centered.
+Home Zoom presents its body first and Font/OK/Cancel below; existing read-only,
+Copy and reviewed-edit boundaries remain explicit.
+
+Tables can collapse without changing selected objects or saved-query visibility.
+The smaller object-tab X retains its original hit target. Native datasheets append
+a disabled Click to Add header after stored fields. Its blank body is outside
+Data, selection, copying, sorting, totals and row identity. Field creation is not
+implemented by this placeholder. Wide tables reveal it through horizontal scroll.
+
+The original artwork inventory is 103 concepts / 412 variants. Dark strokes and
+accents are brighter; neutral disabled Ribbon artwork keeps its opacity while
+commands retain disabled input/accessibility state. Font dropdown chevrons use
+widget geometry rather than unsupported font characters.
+
+Across the coordinated gate and focused follow-ups, all 207 UI and 63 desktop
+tests pass, including the final 74 × eight × two matrix (1,184 combinations).
+Strict UI/desktop Clippy, workspace formatting, local documentation links,
+dependency boundaries and all 412 manifest hashes were checked.
+
+Light/dark Home, Zoom, Options, Query Design and all six new tab PNGs were opened
+at 1600 × 900 logical pixels, 1× scale, with en-US regional policy. German dark
+Home and Zoom were also opened at 900 × 580 and 1.25× (1125 × 725 physical pixels).
+All used macOS offscreen rendering with Windows keyboard conventions; no native
+window opened. The retained Home and published Zoom images were reopened for
+comparison. Matching Access captures do not exist for the six added panels, dark
+mode or Options, so those remain visual adaptations. These checks establish
+headless presentation and existing service routing, not Windows Access parity.

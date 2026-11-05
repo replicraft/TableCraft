@@ -4,17 +4,17 @@ mod mock_groups;
 
 pub(super) use super::focus::{self, Pane};
 pub(crate) use icons::Icon;
-pub(super) use mock_groups::{design, home, mock as mock_command};
+pub(super) use mock_groups::{design, home, mock as mock_command, tab as mock_tab};
 
 use crate::theme::palette;
 use egui::{Align, FontId, Response, RichText, Sense, Ui, WidgetInfo, WidgetType};
 
 const COMMAND_AREA_HEIGHT: f32 = 64.0;
-const LARGE_COMMAND_WIDTH: f32 = 66.0;
+const LARGE_COMMAND_WIDTH: f32 = 54.0;
 const SMALL_COMMAND_HEIGHT: f32 = 20.0;
 const LARGE_ICON_SIZE: f32 = 28.0;
 const SMALL_ICON_SIZE: f32 = 16.0;
-const LABEL_SIZE: f32 = 12.0;
+const LABEL_SIZE: f32 = 11.5;
 const GROUP_LABEL_HEIGHT: f32 = 14.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
 
@@ -24,6 +24,26 @@ pub(super) enum Tab {
     Home,
     TableDesign,
     QueryDesign,
+    Create,
+    ExternalData,
+    DatabaseTools,
+    Help,
+    TableFields,
+    Table,
+}
+
+impl Tab {
+    pub(super) fn mock(key: &str) -> Option<Self> {
+        match key {
+            "ribbon-create" => Some(Self::Create),
+            "ribbon-external-data" => Some(Self::ExternalData),
+            "ribbon-database-tools" => Some(Self::DatabaseTools),
+            "ribbon-help" => Some(Self::Help),
+            "ribbon-table-fields" => Some(Self::TableFields),
+            "ribbon-table" => Some(Self::Table),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -43,7 +63,7 @@ pub(super) fn strip(ui: &mut Ui, contents: impl FnOnce(&mut Ui)) {
             .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
             .show(ui, |ui| {
                 ui.horizontal_top(|ui| {
-                    ui.spacing_mut().item_spacing.x = 8.0;
+                    ui.spacing_mut().item_spacing.x = 4.0;
                     contents(ui);
                 });
             });
@@ -84,6 +104,11 @@ pub(super) fn command(
     size: CommandSize,
 ) -> Response {
     ui.add_enabled_ui(enabled, |ui| {
+        if !ui.is_enabled() {
+            // Neutral artwork and muted text already mark unavailable commands.
+            // Preserve their contrast instead of applying a second opacity fade.
+            ui.set_opacity(1.0);
+        }
         let colors = palette(ui.ctx());
         let color = if ui.is_enabled() {
             colors.ink

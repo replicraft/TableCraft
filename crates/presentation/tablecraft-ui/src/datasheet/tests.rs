@@ -1359,3 +1359,61 @@ fn final_native_page_add_action_uses_existing_insert_target_without_a_record_ide
         assert_eq!(harness.state().0.parent_ordinal(rows), None);
     }
 }
+
+#[test]
+fn add_column_header_is_disabled_and_never_becomes_a_stored_cell() {
+    use egui_kittest::{
+        Harness,
+        kittest::{NodeT, Queryable},
+    };
+
+    let data = Data {
+        row_ordinals: None,
+        source_revision: Some(7),
+        table: "Items".into(),
+        offset: 0,
+        columns: vec!["Value".into()],
+        rows: vec![vec![Cell::scalar("native value")]],
+        has_more: false,
+    };
+    let mut selection = Selection::default();
+    selection.reset(&data);
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(600.0, 300.0))
+        .build_ui_state(
+            |ui, state: &mut (Data, Selection, Vec<Action>)| {
+                state.2.extend(
+                    show(ui, &state.0, &mut state.1, Pane::Document, None, None, None).actions,
+                );
+            },
+            (data, selection, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    let header = harness.get_by_role_and_label(Role::Button, "Click to Add");
+    assert!(header.accesskit_node().is_disabled());
+    let center = header.rect().center();
+    for pressed in [true, false] {
+        harness.event(Event::PointerMoved(center));
+        harness.event(Event::PointerButton {
+            pos: center,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        });
+        harness.run();
+    }
+    assert_eq!(harness.state().1.position(), Some((0, 0)));
+    assert_eq!(harness.state().0.columns.len(), 1);
+    assert_eq!(harness.state().0.rows[0].len(), 1);
+    assert!(harness.state().2.is_empty());
+
+    harness.state_mut().0.source_revision = None;
+    harness.run();
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Click to Add")
+            .is_none(),
+        "query results do not advertise native field creation"
+    );
+}

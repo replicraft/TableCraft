@@ -11,3 +11,5 @@ zoom-ok = OK
 zoom-cancel = Abbrechen
 zoom-limit = Zoom unterstützt Anzeigewerte bis 8 MiB.
 zoom-unavailable = Der vergrößerte Wert konnte nicht vorbereitet werden.
+
+zoom-font = Schriftart…

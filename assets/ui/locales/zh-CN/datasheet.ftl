@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = 预览已缩短。复制会保留完整的�
 
 datasheet-row-identity-invalid = 记录标识与此页不匹配。
 datasheet-filter-page-unavailable = 此处仅可访问已加载的筛选记录。
+
+datasheet-click-to-add = 单击以添加
+
+datasheet-add-field-unavailable = 暂不支持添加字段。
+
+datasheet-record-position = 记录编号
+
+datasheet-record-of = 共 { $count } 条
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = 搜索记录
+
+datasheet-no-filter = 无筛选
+
+datasheet-filtered = 已筛选
+datasheet-page-tools = 页面工具

@@ -47,6 +47,10 @@ fn selection_pages_toggle_and_clear_keep_physical_membership_and_original_bytes(
     assert_eq!(data.parent_ordinal(99), Some(199));
 
     harness
+        .get_by_role_and_label(Role::Button, "Page tools")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
         .get_by_role_and_label(Role::Button, "Next page ›")
         .click_accesskit();
     harness.run_steps(1);

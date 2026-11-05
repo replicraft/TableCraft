@@ -57,3 +57,20 @@ datasheet-value-preview-truncated = 미리 보기가 축약되었습니다. 복�
 
 datasheet-row-identity-invalid = 레코드 식별 정보가 이 페이지와 일치하지 않습니다.
 datasheet-filter-page-unavailable = 여기서는 로드된 필터링 레코드만 사용할 수 있습니다.
+
+datasheet-click-to-add = 클릭하여 추가
+
+datasheet-add-field-unavailable = 필드 추가는 아직 사용할 수 없습니다.
+
+datasheet-record-position = 레코드 번호
+
+datasheet-record-of = / { $count }
+
+datasheet-count-unknown = ?
+
+datasheet-search-records = 레코드 검색
+
+datasheet-no-filter = 필터 없음
+
+datasheet-filtered = 필터 적용됨
+datasheet-page-tools = 페이지 도구

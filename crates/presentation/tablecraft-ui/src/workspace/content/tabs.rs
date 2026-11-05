@@ -13,8 +13,8 @@ const MAX_TAB_WIDTH: f32 = 220.0;
 const TAB_TEXT_PADDING: f32 = 6.0;
 const TAB_ICON_SIZE: f32 = 14.0;
 const TAB_ICON_GAP: f32 = 4.0;
-const CLOSE_ICON_SIZE: f32 = 12.0;
-const CLOSE_ICON_PADDING: f32 = 4.0;
+const CLOSE_ICON_SIZE: f32 = 8.0;
+const CLOSE_TARGET_WIDTH: f32 = 20.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
 
 impl State {
@@ -148,11 +148,7 @@ fn tab(
         .layout_no_wrap(title.to_owned(), font.clone(), color)
         .size()
         .x;
-    let close_width = if closable {
-        CLOSE_ICON_SIZE + CLOSE_ICON_PADDING * 2.0
-    } else {
-        0.0
-    };
+    let close_width = if closable { CLOSE_TARGET_WIDTH } else { 0.0 };
     let content_inset = TAB_TEXT_PADDING * 2.0 + TAB_ICON_SIZE + TAB_ICON_GAP + close_width;
     let width = (natural_width + content_inset).clamp(MIN_TAB_WIDTH, MAX_TAB_WIDTH);
     let (_, rect) = ui.allocate_space(egui::vec2(width, TAB_HEIGHT));

@@ -18,8 +18,8 @@ mod totals;
 
 mod zoom;
 
-use super::State;
 use super::objects::{ObjectKind, ObjectTarget};
+use super::{State, ribbon::Tab};
 use crate::{CollectionKind, ContentsTarget, EditInput, EditSaveOutcome, EditTarget};
 use std::str::FromStr;
 
@@ -27,6 +27,12 @@ use std::str::FromStr;
 pub enum Scene {
     #[default]
     Datasheet,
+    RibbonCreate,
+    RibbonExternalData,
+    RibbonDatabaseTools,
+    RibbonHelp,
+    RibbonTableFields,
+    RibbonTable,
     Objects,
     ObjectLoading,
     ObjectError,
@@ -97,8 +103,14 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 68] = [
+    pub const ALL: [Self; 74] = [
         Self::Datasheet,
+        Self::RibbonCreate,
+        Self::RibbonExternalData,
+        Self::RibbonDatabaseTools,
+        Self::RibbonHelp,
+        Self::RibbonTableFields,
+        Self::RibbonTable,
         Self::Objects,
         Self::ObjectLoading,
         Self::ObjectError,
@@ -194,6 +206,12 @@ impl Scene {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Datasheet => "datasheet",
+            Self::RibbonCreate => "ribbon-create",
+            Self::RibbonExternalData => "ribbon-external-data",
+            Self::RibbonDatabaseTools => "ribbon-database-tools",
+            Self::RibbonHelp => "ribbon-help",
+            Self::RibbonTableFields => "ribbon-table-fields",
+            Self::RibbonTable => "ribbon-table",
             Self::Objects => "objects",
             Self::ObjectLoading => "object-loading",
             Self::ObjectError => "object-error",
@@ -397,6 +415,12 @@ impl Preview {
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),
             Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::RibbonCreate => self.state.ribbon_tab = Tab::Create,
+            Scene::RibbonExternalData => self.state.ribbon_tab = Tab::ExternalData,
+            Scene::RibbonDatabaseTools => self.state.ribbon_tab = Tab::DatabaseTools,
+            Scene::RibbonHelp => self.state.ribbon_tab = Tab::Help,
+            Scene::RibbonTableFields => self.state.ribbon_tab = Tab::TableFields,
+            Scene::RibbonTable => self.state.ribbon_tab = Tab::Table,
             Scene::Replace => self.state.prepare_mock_replace(false),
             Scene::ReplaceError => self.state.prepare_mock_replace(true),
             Scene::Filtered => self.prepare_filter_scene(filtering::FilterScene::Applied),

@@ -299,6 +299,10 @@ fn actual_null_menu_and_filtered_navigation_dispatch_runtime_targets_not_page_fi
     assert!(state.set_filtered_data(1, publication(20, true, 0, vec![2, 5])));
     harness.run();
     harness
+        .get_by_role_and_label(Role::Button, "Page tools")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
         .get_by_role_and_label(Role::Button, "Next page ›")
         .click_accesskit();
     harness.run();

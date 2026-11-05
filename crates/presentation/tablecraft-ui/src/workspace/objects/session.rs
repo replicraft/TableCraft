@@ -28,7 +28,7 @@ pub(super) enum Session {
         selected_field: usize,
         filter: TableFilter,
         totals: Totals,
-        records: RecordNavigation,
+        records: Box<RecordNavigation>,
         design: bool,
         error: Option<String>,
     },
@@ -54,7 +54,7 @@ impl Session {
                 selected_field: 0,
                 filter: TableFilter::default(),
                 totals: Totals::default(),
-                records: RecordNavigation::default(),
+                records: Box::default(),
                 design: false,
                 error: None,
             },
@@ -80,7 +80,7 @@ impl Session {
                 selected_field: state.selected_field,
                 filter: mem::take(&mut state.table_filter),
                 totals: mem::take(&mut state.totals),
-                records: mem::take(&mut state.records),
+                records: Box::new(mem::take(&mut state.records)),
                 design: state.view == DocumentView::Design,
                 error: state.error.take(),
             },
@@ -117,7 +117,7 @@ impl Session {
                 state.selected_field = selected_field;
                 state.table_filter = filter;
                 state.totals = totals;
-                state.records = records;
+                state.records = *records;
                 state.view = if design {
                     DocumentView::Design
                 } else {

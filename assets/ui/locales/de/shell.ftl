@@ -36,3 +36,6 @@ shell-zoom-in = Vergrößern
 shell-save-unavailable = Speichern Sie Änderungen im geprüften Bearbeitungsdialog. Es gibt keine ungespeicherten direkt bearbeiteten Datensätze.
 shell-undo-unavailable = Rückgängig für Dokumente ist nicht verfügbar. Texteingaben behalten ihren eigenen Verlauf.
 shell-redo-unavailable = Wiederholen für Dokumente ist nicht verfügbar. Texteingaben behalten ihren eigenen Verlauf.
+
+shell-quick-access = Symbolleiste für den Schnellzugriff anpassen
+shell-quick-open = Datenbankdatei öffnen

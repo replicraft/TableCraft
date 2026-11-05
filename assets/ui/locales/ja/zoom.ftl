@@ -11,3 +11,5 @@ zoom-ok = OK
 zoom-cancel = キャンセル
 zoom-limit = 表示値は8 MiBまで拡大できます。
 zoom-unavailable = 拡大表示を準備できませんでした。
+
+zoom-font = フォント…

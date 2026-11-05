@@ -21,9 +21,9 @@ impl State {
             .as_ref()
             .is_some_and(|tab| table.is_some() && self.can_activate_object(tab));
         let icon = if self.view == DocumentView::Design {
-            Icon::Table
+            Icon::ViewDatasheet
         } else {
-            Icon::TableEdit
+            Icon::ViewDesign
         };
         let response = command(
             ui,
@@ -59,7 +59,7 @@ impl State {
             Popup::menu(&response).show(|ui| {
                 if command(
                     ui,
-                    Icon::Table,
+                    Icon::ViewDatasheet,
                     &t.text("ribbon-datasheet"),
                     datasheet_available,
                     CommandSize::Small,
@@ -73,7 +73,7 @@ impl State {
                 }
                 if command(
                     ui,
-                    Icon::TableEdit,
+                    Icon::ViewDesign,
                     &t.text("ribbon-table-design"),
                     table.is_some(),
                     CommandSize::Small,

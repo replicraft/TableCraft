@@ -112,6 +112,25 @@ struct Pending {
 }
 
 impl State {
+    pub(in crate::workspace) fn find_from_record_search(
+        &mut self,
+        pattern: String,
+    ) -> Option<super::Action> {
+        if pattern.is_empty() || pattern.len() > MAX_FIND_PATTERN_BYTES || !self.can_open_find() {
+            return None;
+        }
+        self.open_find();
+        let session = self.find.as_mut()?;
+        session.pattern = pattern;
+        session.found = None;
+        session.found_request = None;
+        session.not_found = false;
+        session.error = None;
+        let request = self.current_find_request()?;
+        self.can_find_next(&request)
+            .then_some(super::Action::FindNext { request })
+    }
+
     fn find_filter_witness(&self) -> Option<FilterWitness> {
         Some(FilterWitness {
             target: self.active_filter_target()?,
