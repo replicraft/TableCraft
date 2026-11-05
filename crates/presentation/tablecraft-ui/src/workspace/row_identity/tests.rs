@@ -87,3 +87,57 @@ fn collection_targets_use_membership_not_display_offset() {
     data.row_ordinals = Some(RowOrdinals::new(vec![7]).unwrap());
     assert!(data.contents_target(1, 0).is_none());
 }
+
+#[test]
+fn display_order_keeps_native_targets_and_indexed_reverse_lookup_separate() {
+    let mut data = page();
+    data.row_ordinals = Some(RowOrdinals::from_display_order(vec![7, 1, 4]).unwrap());
+    data.rows.push(vec![Cell::scalar("third")]);
+    assert_eq!(data.validate_row_ordinals(), Ok(()));
+    assert_eq!(data.row_ordinals.as_ref().unwrap().as_slice(), [7, 1, 4]);
+    assert!(!data.row_ordinals.as_ref().unwrap().is_source_ordered());
+    for (row, ordinal) in [7, 1, 4].into_iter().enumerate() {
+        assert_eq!(data.parent_ordinal(row), Some(ordinal));
+        assert_eq!(data.row_index(ordinal), Some(row));
+        assert_eq!(data.display_ordinal(row), Some(50 + row as u32));
+        assert_eq!(data.edit_target(row, 0).unwrap().parent_ordinal, ordinal);
+    }
+    assert_eq!(data.row_index(2), None);
+    data.rows[2][0].kind = CellKind::Multivalue {
+        assigned: true,
+        members: 1,
+    };
+    assert_eq!(data.contents_target(2, 0).unwrap().parent_ordinal, 4);
+
+    data.rows.pop();
+    assert_eq!(data.validate_row_ordinals(), Err(RowOrdinalError::Count));
+    assert_eq!(data.row_index(7), None);
+    assert_eq!(data.parent_ordinal(0), None);
+
+    let mut state = State::default();
+    state.set_query_data(data);
+    assert!(state.query_data.is_none());
+}
+
+#[test]
+fn arbitrary_order_rejects_duplicates_and_caps_lookup_storage() {
+    assert_eq!(
+        RowOrdinals::from_display_order(vec![7, 1, 7]),
+        Err(RowOrdinalError::Duplicate),
+    );
+    assert_eq!(RowOrdinals::new(vec![7, 1, 4]), Err(RowOrdinalError::Order));
+    assert_eq!(
+        RowOrdinals::from_display_order(vec![1, 4, 7]).unwrap(),
+        RowOrdinals::new(vec![1, 4, 7]).unwrap(),
+    );
+
+    // The caller-owned values alone exceed the independent eight MiB UI limit.
+    let over_limit = vec![0; 2_097_153];
+    assert_eq!(RowOrdinals::new(over_limit), Err(RowOrdinalError::Limit));
+    // A permutation also accounts for its inverse before allocating that lookup.
+    let permutation: Vec<_> = (0..1_000_000).rev().collect();
+    assert_eq!(
+        RowOrdinals::from_display_order(permutation),
+        Err(RowOrdinalError::Limit),
+    );
+}
