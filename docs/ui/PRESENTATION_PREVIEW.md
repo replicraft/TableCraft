@@ -67,7 +67,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 51 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 55 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -597,3 +597,10 @@ complete Copy retains original line breaks, and eligible native edits delegate
 to the existing reviewed workflow. The [public Zoom reference](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026)
 was opened headlessly; its blue article annotations are not UI assets. This scene
 provides presentation review, not native Access behavior verification.
+
+
+The `filtered`, `filter-empty`, `filter-disabled` and `filter-error` scenes use
+predetermined synthetic memberships over the invented fixture. They show retained
+counts, original native ordinals, empty results, temporarily disabled criteria and
+failed reads that preserve the previous view. Their explicit synthetic notice is
+not a native filtering or mutation result.

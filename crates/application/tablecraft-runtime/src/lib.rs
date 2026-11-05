@@ -7,6 +7,7 @@ mod display;
 mod document;
 #[cfg(feature = "offline-edit")]
 mod editing;
+mod filtering;
 mod find;
 mod native_properties;
 mod query;
@@ -27,6 +28,10 @@ pub use editing::{
     ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveSessionState,
     SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+};
+pub use filtering::{
+    FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
+    FilterTarget, FilteredData, MAX_FILTER_FIELDS,
 };
 pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
@@ -51,6 +56,8 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Edit(#[from] EditError),
+    #[error(transparent)]
+    Filter(#[from] FilterError),
     #[error(transparent)]
     Find(#[from] FindError),
     #[error(transparent)]
@@ -137,6 +144,27 @@ pub enum Command {
     ReviewDelete {
         target: DeleteTarget,
     },
+    ReapplyFilter {
+        definition: FilterDefinition,
+        document_revision: u64,
+        enabled: bool,
+        offset: u32,
+    },
+    FilterSelection {
+        target: FilterSelectionTarget,
+        comparison: FilterComparison,
+        base: Option<FilterHandle>,
+    },
+    FilterPage {
+        handle: FilterHandle,
+        offset: u32,
+        enabled: bool,
+    },
+    FindFiltered {
+        handle: FilterHandle,
+        request: FindRequest,
+        enabled: bool,
+    },
     FindNext {
         request: FindRequest,
     },
@@ -209,6 +237,7 @@ pub enum Response {
         review: DeleteReview,
         capability: ReviewedDelete,
     },
+    FilteredData(FilteredData),
     Found {
         request: FindRequest,
         position: Option<FindPosition>,

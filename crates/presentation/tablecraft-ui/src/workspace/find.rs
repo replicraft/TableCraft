@@ -1,7 +1,9 @@
 //! Modeless native-table Find. Search and matching belong to the shared runtime.
 mod dialog;
 
+use super::filtering::{FilterPublication, FilterTarget};
 use super::{Data, DocumentView, State};
+use crate::CellKind;
 use tablecraft_display::Options;
 
 const MAX_FIND_PATTERN_BYTES: usize = 64 * 1024;
@@ -64,6 +66,7 @@ pub(super) struct Session {
     target: FindTarget,
     field: String,
     publication: u64,
+    filter: Option<FilterWitness>,
     pattern: String,
     whole_table: bool,
     matching: FindMatch,
@@ -77,20 +80,47 @@ pub(super) struct Session {
     focus_input: bool,
 }
 
+#[derive(Clone, PartialEq, Eq)]
+struct FilterWitness {
+    target: FilterTarget,
+    enabled: bool,
+}
+
+enum Publication {
+    Native(Data),
+    Filtered(FilterPublication),
+}
+
+impl Publication {
+    fn data(&self) -> &Data {
+        match self {
+            Self::Native(data) => data,
+            Self::Filtered(publication) => &publication.data,
+        }
+    }
+}
+
 struct Pending {
     request_id: u64,
     request: FindRequest,
     publication: u64,
+    filter: Option<FilterWitness>,
 }
 
 impl State {
+    fn find_filter_witness(&self) -> Option<FilterWitness> {
+        Some(FilterWitness {
+            target: self.active_filter_target()?,
+            enabled: self.table_filter_enabled(),
+        })
+    }
+
     fn find_source(&self) -> Option<(FindTarget, FindPosition)> {
         if self.view != DocumentView::Table || self.backstage_visible() {
             return None;
         }
         let data = self.data.as_ref()?;
-        // Native Find currently searches the whole source, not a filter handle.
-        if data.row_ordinals.is_some() {
+        if data.row_ordinals.is_some() && self.find_filter_witness().is_none() {
             return None;
         }
         let revision = data.source_revision?;
@@ -98,7 +128,10 @@ impl State {
             return None;
         }
         let (row, column) = self.table_selection.position()?;
-        data.rows.get(row)?.get(column)?;
+        let cell = data.rows.get(row)?.get(column)?;
+        if !matches!(cell.kind, CellKind::Scalar { .. }) {
+            return None;
+        }
         Some((
             FindTarget {
                 document_revision: revision,
@@ -119,6 +152,7 @@ impl State {
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && !self.saved_query_prompt_open()
+            && !self.table_filter_pending()
             && self.find_source().is_some()
     }
 
@@ -135,6 +169,7 @@ impl State {
             target,
             field: position.column,
             publication: self.focus_publication,
+            filter: self.find_filter_witness(),
             pattern: String::new(),
             whole_table: false,
             matching: FindMatch::default(),
@@ -172,7 +207,10 @@ impl State {
     pub(super) fn current_find_request(&self) -> Option<FindRequest> {
         let session = self.find.as_ref()?;
         let (target, mut position) = self.find_source()?;
-        if target != session.target || session.publication != self.focus_publication {
+        if target != session.target
+            || session.publication != self.focus_publication
+            || session.filter != self.find_filter_witness()
+        {
             return None;
         }
         if let Some(found) = &session.found
@@ -214,11 +252,13 @@ impl State {
         if !self.can_find_next(&request) {
             return;
         }
+        let filter = self.find_filter_witness();
         let session = self.find.as_mut().expect("admitted Find session");
         session.pending = Some(Pending {
             request_id,
             request,
             publication: self.focus_publication,
+            filter,
         });
         session.error = None;
         session.not_found = false;
@@ -226,6 +266,7 @@ impl State {
 
     pub fn accepts_find_reply(&self, request_id: u64, request: &FindRequest) -> bool {
         !self.edit_dialog_open()
+            && !self.table_filter_pending()
             && !self.zoom_dialog_open()
             && self.contents_request_id().is_none()
             && !self.saved_query_prompt_open()
@@ -235,6 +276,7 @@ impl State {
                     pending.request_id == request_id
                         && pending.request == *request
                         && pending.publication == self.focus_publication
+                        && pending.filter == self.find_filter_witness()
                 })
             })
     }
@@ -246,6 +288,32 @@ impl State {
         found: Option<FindPosition>,
         page: Option<Data>,
     ) -> bool {
+        if self.find_filter_witness().is_some() {
+            return false;
+        }
+        self.publish_find_result(request_id, request, found, page.map(Publication::Native))
+    }
+
+    pub fn set_filtered_find_result(
+        &mut self,
+        request_id: u64,
+        request: FindRequest,
+        found: Option<FindPosition>,
+        page: Option<FilterPublication>,
+    ) -> bool {
+        if self.find_filter_witness().is_none() {
+            return false;
+        }
+        self.publish_find_result(request_id, request, found, page.map(Publication::Filtered))
+    }
+
+    fn publish_find_result(
+        &mut self,
+        request_id: u64,
+        request: FindRequest,
+        found: Option<FindPosition>,
+        page: Option<Publication>,
+    ) -> bool {
         if !self.accepts_find_reply(request_id, &request) {
             return false;
         }
@@ -256,37 +324,52 @@ impl State {
                 session.not_found = true;
                 true
             }
-            (Some(found), Some(page)) => {
+            (Some(found), Some(publication)) => {
+                let data = publication.data();
+                let position = data.row_index(found.parent_ordinal).and_then(|row| {
+                    let column = data.column_index(&found.column)?;
+                    data.rows.get(row)?.get(column)?;
+                    Some((row, column))
+                });
                 let valid_span = found
                     .span
                     .as_ref()
                     .is_some_and(|span| span.start_utf16 <= span.end_utf16);
-                let column = page.column_index(&found.column);
                 let matches_scope = match &request.scope {
                     FindScope::Field(column) => *column == found.column,
                     FindScope::Table => true,
                 };
+                let matches_view = match &publication {
+                    Publication::Native(data) => {
+                        data.row_ordinals.is_none()
+                            && data.offset == found.parent_ordinal
+                            && data.parent_ordinal(0) == Some(found.parent_ordinal)
+                    }
+                    Publication::Filtered(publication) => self.accepts_filtered_view(publication),
+                };
                 let valid = valid_span
                     && matches_scope
-                    && page.row_ordinals.is_none()
-                    && page.parent_ordinal(0) == Some(found.parent_ordinal)
-                    && page.source_revision == Some(request.target.document_revision)
-                    && page.table == request.target.table
-                    && page.offset == found.parent_ordinal
-                    && column.is_some_and(|column| {
-                        page.rows.first().and_then(|row| row.get(column)).is_some()
-                    });
+                    && matches_view
+                    && position.is_some()
+                    && data.source_revision == Some(request.target.document_revision)
+                    && data.table == request.target.table;
                 if !valid {
                     self.fail_find(request_id, self.localizer.text("find-invalid-result"));
                     return false;
                 }
 
                 let mut session = self.find.take().expect("accepted Find session");
-                self.set_table_data(page);
+                match publication {
+                    Publication::Native(data) => self.set_table_data(data),
+                    Publication::Filtered(publication) => {
+                        self.install_filtered_view(publication);
+                    }
+                }
+                let (row, column) = position.expect("validated exact field and member");
                 self.table_selection.select(
                     self.data.as_ref().expect("published Find page"),
-                    0,
-                    column.expect("validated exact field"),
+                    row,
+                    column,
                 );
                 session.pending = None;
                 session.publication = self.focus_publication;

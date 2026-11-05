@@ -1,0 +1,201 @@
+//! Actual Home selection, checked pages and retained filter ownership.
+use super::*;
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+use crate::workspace::test_support::finish_save;
+use crate::workspace::test_support::{finish_reads, opened, request_find};
+use egui::accesskit::Role;
+use egui_kittest::{Harness, kittest::Queryable};
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+use tablecraft_runtime::SaveOutcome;
+use tablecraft_testkit::fixtures::access::mutation_fixture;
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+use tablecraft_ui::EditTarget;
+use tablecraft_ui::FluentArgs;
+
+fn source() -> Vec<u8> {
+    let rows = (1..=205).map(|id| (id, id % 2)).collect::<Vec<_>>();
+    mutation_fixture::with_rows_and_sort_order(&rows, [9, 4, 0, 0])
+}
+
+fn focus_cell(harness: &mut Harness<'_, Desktop>, column: &str, row: &str, text: &str) {
+    let mut arguments = FluentArgs::new();
+    arguments.set("column", column);
+    arguments.set("row", row);
+    arguments.set("text", text);
+    let cell = harness
+        .state()
+        .state
+        .localizer
+        .format("datasheet-cell-context", &arguments);
+    harness.get_by_value(&cell).focus();
+    harness.run_steps(1);
+}
+
+fn select_even_rows(harness: &mut Harness<'_, Desktop>) {
+    focus_cell(harness, "Id", "2", "2");
+    harness.key_press(egui::Key::ArrowRight);
+    harness.run_steps(2);
+    let target = harness.state().state.current_filter_selection().unwrap();
+    assert_eq!(target.column, "Score");
+    assert_eq!(target.parent_ordinal, 1);
+    harness
+        .get_by_role_and_label(Role::Button, "Selection")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Equals selected value")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+    assert!(harness.state().state.table_filter_enabled());
+    assert_eq!(harness.state().filter.as_ref().unwrap().matched_rows(), 102);
+}
+
+#[test]
+fn selection_pages_toggle_and_clear_keep_physical_membership_and_original_bytes() {
+    let (_directory, path, original, mut harness) = opened(source());
+    select_even_rows(&mut harness);
+    let filter_id = harness.state().filter.as_ref().unwrap().target().filter_id;
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.rows.len(), 100);
+    assert_eq!(data.parent_ordinal(0), Some(1));
+    assert_eq!(data.parent_ordinal(99), Some(199));
+
+    harness
+        .get_by_role_and_label(Role::Button, "Next page ›")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.offset, 100);
+    assert_eq!(data.rows.len(), 2);
+    assert_eq!(data.parent_ordinal(0), Some(201));
+    assert_eq!(data.rows[0][0].text, "202");
+    assert!(!data.has_more);
+
+    harness
+        .get_by_role_and_label(Role::Button, "Toggle Filter")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert!(!harness.state().state.table_filter_enabled());
+    assert_eq!(
+        harness.state().filter.as_ref().unwrap().target().filter_id,
+        filter_id
+    );
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .data
+            .as_ref()
+            .unwrap()
+            .parent_ordinal(0),
+        Some(0)
+    );
+
+    harness
+        .get_by_role_and_label(Role::Button, "Advanced")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Clear All Filters")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert!(harness.state().filter.is_none());
+    assert!(harness.state().state.active_filter_target().is_none());
+    assert!(
+        harness
+            .state()
+            .state
+            .data
+            .as_ref()
+            .unwrap()
+            .row_ordinals
+            .is_none()
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[test]
+fn reviewed_edit_reopens_with_fresh_filter_identity_and_removes_the_changed_record() {
+    let (_directory, path, original, mut harness) = opened(source());
+    select_even_rows(&mut harness);
+    let old = harness.state().state.active_filter_target().unwrap();
+    let target = EditTarget {
+        document_revision: old.document_revision,
+        table: old.table.clone(),
+        column: "Score".into(),
+        parent_ordinal: 1,
+    };
+    harness.state_mut().begin_edit(target);
+    finish_reads(&mut harness);
+    harness
+        .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+    harness
+        .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
+        .type_text("7");
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Review change")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    harness
+        .get_by_role_and_label(Role::Button, "Apply to original file")
+        .click_accesskit();
+    harness.run_steps(1);
+    assert!(matches!(
+        finish_save(&mut harness).outcome,
+        SaveOutcome::Saved { .. }
+    ));
+    harness
+        .get_by_role_and_label(Role::Button, "Close")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+
+    let restored = harness.state().state.active_filter_target().unwrap();
+    assert_ne!(restored.document_revision, old.document_revision);
+    assert_ne!(restored.filter_id, old.filter_id);
+    assert!(harness.state().state.table_filter_enabled());
+    assert_eq!(harness.state().filter.as_ref().unwrap().matched_rows(), 101);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.parent_ordinal(0), Some(3));
+    assert_eq!(data.rows[0][0].text, "4");
+    assert!(data.rows.iter().all(|row| row[1].text == "0"));
+    assert_ne!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn find_searches_filtered_members_and_keeps_the_filter_when_loading_a_later_hit() {
+    let (_directory, path, original, mut harness) = opened(source());
+    select_even_rows(&mut harness);
+    let target = harness.state().state.active_filter_target().unwrap();
+    focus_cell(&mut harness, "Id", "1", "2");
+
+    request_find(&mut harness, "205");
+    finish_reads(&mut harness);
+    assert!(
+        harness
+            .query_by_label("No matching occurrence was found.")
+            .is_some()
+    );
+    assert_eq!(harness.state().state.data.as_ref().unwrap().offset, 0);
+
+    request_find(&mut harness, "204");
+    finish_reads(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.offset, 101);
+    assert_eq!(data.parent_ordinal(0), Some(203));
+    assert_eq!(data.rows[0][0].text, "204");
+    assert_eq!(harness.state().state.active_filter_target(), Some(target));
+    assert!(harness.state().state.table_filter_enabled());
+    assert!(harness.state().state.find_window_open());
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}

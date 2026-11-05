@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = 等于所选值
+filtering-not-equal = 不等于所选值
+filtering-is-null = 为空 (Null)
+filtering-is-not-null = 不为空 (Not Null)
+filtering-clear-all = 清除所有筛选器
+filtering-selection-help = 按实际存储值筛选。不同字段的条件以 AND 组合；新条件替换同一字段的旧条件。
+filtering-toggle-help = 暂时移除或重新应用保留的筛选器。
+filtering-filtered-count = 已筛选：{ $source } 条记录中有 { $matched } 条
+filtering-unfiltered-count = 未筛选：{ $source } 条记录；保留的筛选器匹配 { $matched } 条
+filtering-applying-equal = 正在应用等于筛选器…
+filtering-applying-not-equal = 正在应用不等于筛选器…
+filtering-loading = 正在加载请求的筛选页面…
+filtering-clearing = 正在清除所有筛选器…
+filtering-stale = 筛选请求不再匹配当前表或视图。
+filtering-invalid-result = 返回的筛选页面、行标识或计数与此请求不匹配。
+filtering-record-range = 该记录编号超出当前视图范围。
+filtering-mock-unavailable = 合成预览中不支持原生筛选。没有筛选任何记录。
+filtering-mock-membership = 仅为合成数据的成员信息。没有打开或筛选数据库。
+filtering-mock-error = 合成读取失败。保留了先前的筛选器和页面。

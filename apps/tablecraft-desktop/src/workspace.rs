@@ -1,4 +1,5 @@
 mod editing;
+mod filtering;
 mod find;
 mod navigation;
 mod opening;
@@ -9,10 +10,12 @@ mod test_support;
 use crate::file_dialog::{FileDialog, SelectedFile};
 use editing::Editing;
 use std::path::PathBuf;
-use tablecraft_runtime::{Command, ContentsTarget as RuntimeContentsTarget, Response, Worker};
+use tablecraft_runtime::{
+    Command, ContentsTarget as RuntimeContentsTarget, FilterHandle, Response, Worker,
+};
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, RecordTarget, SavedQuery,
-    SavedQueryTarget, Schema, State, Table,
+    Action, ContentsTarget, Data, Database, FilterTarget, FindPosition, FindRequest, RecordTarget,
+    SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 use zeroize::Zeroize;
 
@@ -20,14 +23,29 @@ enum PendingOperation {
     Read,
     Query,
     Sort,
+    FilterSelection {
+        request_id: u64,
+    },
+    FilterPage {
+        request_id: u64,
+    },
+    FilterRestore {
+        request_id: u64,
+    },
+    ClearFilter {
+        request_id: u64,
+        target: FilterTarget,
+    },
     Find {
         request_id: u64,
         request: FindRequest,
+        filter: Option<find::FilterWitness>,
     },
     FindPage {
         request_id: u64,
         request: FindRequest,
         position: FindPosition,
+        filter: Option<find::FilterWitness>,
     },
     SavedInspection {
         target: SavedQueryTarget,
@@ -64,6 +82,8 @@ pub(super) struct Desktop {
     file_dialog: FileDialog,
     selected_file: Option<SelectedFile>,
     editing: Editing,
+    filter: Option<FilterHandle>,
+    filter_restore: Option<filtering::RestoreFilter>,
     startup_visibility_pending: bool,
 }
 
@@ -79,6 +99,8 @@ impl Desktop {
             file_dialog: FileDialog::default(),
             selected_file: None,
             editing,
+            filter: None,
+            filter_restore: None,
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
@@ -175,6 +197,8 @@ impl Desktop {
         };
         let password = std::mem::take(&mut self.state.password);
         self.state.database = None;
+        self.filter = None;
+        self.filter_restore = None;
         self.state.data = None;
         self.state.query_data = None;
         self.state.clear_schema();
@@ -189,6 +213,7 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::FilteredData(result)) => self.publish_filtered(generation, result),
                 Ok(Response::Found { request, position }) => {
                     self.publish_found(generation, request, position);
                 }
@@ -274,6 +299,14 @@ impl Desktop {
                         has_more,
                     };
                     match &self.pending {
+                        PendingOperation::ClearFilter { request_id, target } => {
+                            if self
+                                .state
+                                .set_cleared_filter(*request_id, target.clone(), data)
+                            {
+                                self.filter = None;
+                            }
+                        }
                         PendingOperation::Query => self.state.set_query_data(data),
                         PendingOperation::Sort => {
                             if !self.state.set_sorted_query_data(data) {
@@ -293,15 +326,26 @@ impl Desktop {
                             request_id,
                             request,
                             position,
+                            filter,
                         } => {
-                            self.state.set_find_result(
-                                *request_id,
-                                request.clone(),
-                                Some(position.clone()),
-                                Some(data),
-                            );
+                            if filter.is_none() {
+                                self.state.set_find_result(
+                                    *request_id,
+                                    request.clone(),
+                                    Some(position.clone()),
+                                    Some(data),
+                                );
+                            } else {
+                                self.state.fail_find(
+                                    *request_id,
+                                    self.state.localizer.text("filtering-invalid-result"),
+                                );
+                            }
                         }
-                        _ => self.state.set_table_data(data),
+                        _ => {
+                            self.state.set_table_data(data);
+                            self.filter = None;
+                        }
                     }
                 }
                 Ok(Response::Contents {
@@ -332,6 +376,12 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::FilterSelection { request_id }
+                    | PendingOperation::FilterPage { request_id }
+                    | PendingOperation::FilterRestore { request_id }
+                    | PendingOperation::ClearFilter { request_id, .. } => {
+                        self.state.fail_filter(*request_id, error.to_string());
+                    }
                     PendingOperation::Find { request_id, .. }
                     | PendingOperation::FindPage { request_id, .. } => {
                         self.state.fail_find(*request_id, error.to_string());
@@ -412,7 +462,26 @@ impl eframe::App for Desktop {
                         .open(frame, ui.ctx(), &self.state.localizer);
                 }
                 Action::Open => self.open(),
-                Action::Page { table, offset } => self.submit(Command::Page { table, offset }),
+                Action::Page { table, offset } => {
+                    if let Some(target) = self
+                        .state
+                        .active_filter_target()
+                        .filter(|target| target.table == table)
+                    {
+                        self.filter_page(target, offset, self.state.table_filter_enabled());
+                    } else {
+                        self.submit(Command::Page { table, offset });
+                    }
+                }
+                Action::FilterSelection { target, comparison } => {
+                    self.filter_selection(target, comparison)
+                }
+                Action::FilterPage {
+                    target,
+                    offset,
+                    enabled,
+                } => self.filter_page(target, offset, enabled),
+                Action::ClearTableFilter { target } => self.clear_table_filter(target),
                 Action::SortTable {
                     document_revision,
                     table,
@@ -435,8 +504,9 @@ impl eframe::App for Desktop {
                     document_revision,
                     table,
                 } => {
-                    if !self.editing.has_save() {
-                        self.state.close_table(document_revision, &table);
+                    if !self.editing.has_save() && self.state.close_table(document_revision, &table)
+                    {
+                        self.filter = None;
                     }
                 }
                 Action::NavigateRecord { target } => self.navigate_record(target),
@@ -485,6 +555,15 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::FilterSelection { request_id }
+                            | PendingOperation::FilterPage { request_id }
+                            | PendingOperation::FilterRestore { request_id }
+                            | PendingOperation::ClearFilter { request_id, .. } => {
+                                self.state.fail_filter(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::Find { request_id, .. }
                             | PendingOperation::FindPage { request_id, .. } => {
                                 self.state.fail_find(

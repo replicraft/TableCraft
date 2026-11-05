@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = 選択した値と等しい
+filtering-not-equal = 選択した値と等しくない
+filtering-is-null = Null である
+filtering-is-not-null = Null ではない
+filtering-clear-all = すべてのフィルターをクリア
+filtering-selection-help = 実際に格納された値で絞り込みます。異なるフィールドはANDで結合し、同じフィールドの条件は新しい条件に置き換えます。
+filtering-toggle-help = 保持したフィルターを一時的に解除または再適用します。
+filtering-filtered-count = 絞り込み済み: { $source } 件中 { $matched } 件
+filtering-unfiltered-count = 絞り込みなし: { $source } 件、保持した条件の一致数 { $matched } 件
+filtering-applying-equal = 等しい条件を適用中…
+filtering-applying-not-equal = 等しくない条件を適用中…
+filtering-loading = 要求したフィルターページを読み込み中…
+filtering-clearing = すべてのフィルターをクリア中…
+filtering-stale = フィルター要求が現在のテーブルまたはビューと一致しなくなりました。
+filtering-invalid-result = 返されたページ、行の識別情報、または件数が要求と一致しません。
+filtering-record-range = そのレコード番号は現在のビューの範囲外です。
+filtering-mock-unavailable = 合成プレビューではネイティブの絞り込みを利用できません。レコードは絞り込まれていません。
+filtering-mock-membership = 合成データの所属情報のみです。データベースは開かれておらず、絞り込まれていません。
+filtering-mock-error = 合成の読み込みエラーです。以前のフィルターとページは保持されています。

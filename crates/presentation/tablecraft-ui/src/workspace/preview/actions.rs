@@ -41,6 +41,43 @@ impl Preview {
             return;
         }
         match action {
+            Action::FilterSelection { target, comparison } => {
+                let request = self.request();
+                if self
+                    .state
+                    .begin_filter_selection(request, target, comparison)
+                {
+                    self.state.fail_filter(
+                        request,
+                        self.state.localizer.text("filtering-mock-unavailable"),
+                    );
+                }
+            }
+            Action::FilterPage {
+                target,
+                offset,
+                enabled,
+            } => {
+                let request = self.request();
+                if self
+                    .state
+                    .begin_filter_page(request, target, offset, enabled)
+                {
+                    self.state.fail_filter(
+                        request,
+                        self.state.localizer.text("filtering-mock-unavailable"),
+                    );
+                }
+            }
+            Action::ClearTableFilter { target } => {
+                let request = self.request();
+                if self.state.begin_clear_filter(request, target) {
+                    self.state.fail_filter(
+                        request,
+                        self.state.localizer.text("filtering-mock-unavailable"),
+                    );
+                }
+            }
             Action::FindNext { request } => self.mock_find(request),
             Action::CancelFind { .. } => {}
             Action::ReviewDelete { target } => self.mock_review_delete(target, true),

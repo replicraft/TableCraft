@@ -177,7 +177,11 @@ fn render_rows(
                             });
                         }
                     })
-                    .body(|body| {
+                    .body(|mut body| {
+                        if data.rows.is_empty() {
+                            let bounds = body.max_rect();
+                            empty_body(body.ui_mut(), bounds, scale);
+                        }
                         body.rows(DATA_ROW_HEIGHT * scale, data.rows.len(), |mut row| {
                             let index = row.index();
                             row_drawn(index);
@@ -258,6 +262,24 @@ fn render_rows(
             })
     })
     .inner
+}
+
+fn empty_body(ui: &mut Ui, bounds: egui::Rect, scale: f32) {
+    let visible = bounds.intersect(ui.clip_rect());
+    let origin = visible.left_top()
+        + egui::vec2(
+            RECORD_SELECTOR_WIDTH * scale + CELL_TEXT_PADDING,
+            CELL_TEXT_PADDING,
+        );
+    let message = tr(ui, "datasheet-no-rows");
+    let color = crate::theme::palette(ui.ctx()).muted;
+    let font = egui::TextStyle::Body.resolve(ui.style());
+    let width = (visible.right() - origin.x).max(0.0);
+    let galley = ui.painter().layout(message.clone(), font, color, width);
+    let message_rect = egui::Rect::from_min_size(origin, galley.size());
+    ui.painter().galley(origin, galley, color);
+    ui.interact(message_rect, ui.id().with("empty_body"), Sense::hover())
+        .widget_info(|| WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), message.clone()));
 }
 
 fn column_header(
@@ -598,18 +620,14 @@ pub(crate) fn cell(
         if copy {
             copy_text(ui.ctx(), original_text);
         }
-        egui::Tooltip::for_widget(&response).show(|ui| {
-            ui.label(text);
-            if let Some(context) = &context {
-                ui.small(context);
-            }
-            ui.small(tr(ui, "datasheet-copy-cell-help"));
-        });
     }
     response.on_hover_ui(|ui| {
         ui.label(text);
         if let Some(context) = &context {
             ui.small(context);
+        }
+        if allow_copy {
+            ui.small(tr(ui, "datasheet-copy-cell-help"));
         }
     })
 }

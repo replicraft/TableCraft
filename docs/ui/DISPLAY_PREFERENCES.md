@@ -198,3 +198,26 @@ The [Microsoft Zoom reference](VISUAL_REFERENCES.md#published-dialog-references-
 guides the rectangular text body and footer. Full native Zoom editing, font/style
 and rich-text behavior are not claimed by this read-only implementation. No
 native Access comparison or OS-window interaction is established here.
+
+
+## Native selection filters
+
+Home Selection exposes Equals and Does not equal for an eligible native scalar,
+with Is Null/Is Not Null labels for a stored NULL. The runtime reads the exact
+stored value from its immutable source; UI formatting and copied text never become
+filter operands. A new criterion replaces the previous criterion on that field;
+criteria on different fields combine with AND.
+
+Toggle Filter temporarily switches between matched and complete source membership
+while retaining criteria. Applying a new Selection while the retained filter is
+turned off starts a fresh filter rather than extending inactive criteria.
+Advanced > Clear All Filters removes them only after a
+matching ordinary native page arrives. Both counts come from checked complete
+runtime membership, and an empty result keeps its columns and clear/toggle actions.
+Page and record navigation use visible offsets with the same retained filter;
+explicit original ordinals continue to identify native edit and collection targets.
+A failed or stale read retains the prior page and filter. Switching document views
+retains the table's filter; a plain new-table publication or Close table clears it.
+These controls follow Microsoft's [filter workflow](https://support.microsoft.com/en-us/access/apply-a-filter-to-view-select-records-in-an-access-database).
+Custom common filters, partial-text selection filters and Filter by Form remain
+unimplemented; synthetic scenes supply no native Access comparison evidence.

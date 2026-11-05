@@ -85,6 +85,42 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .review_delete(target, cancelled),
+            Command::ReapplyFilter {
+                definition,
+                document_revision,
+                enabled,
+                offset,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.reapply_filter(
+                definition,
+                *document_revision,
+                *enabled,
+                *offset,
+                cancelled,
+            ),
+            Command::FilterSelection {
+                target,
+                comparison,
+                base,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .filter_selection(target, *comparison, base.as_ref(), cancelled),
+            Command::FilterPage {
+                handle,
+                offset,
+                enabled,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .filter_page(handle, *offset, *enabled, cancelled),
+            Command::FindFiltered {
+                handle,
+                request,
+                enabled,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .find_filtered(handle, request, *enabled, cancelled),
             Command::FindNext { request } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -162,6 +198,10 @@ impl Worker {
                     Command::ReviewInsert { .. } => "review_insert",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewDelete { .. } => "review_delete",
+                    Command::ReapplyFilter { .. } => "reapply_filter",
+                    Command::FilterSelection { .. } => "filter_selection",
+                    Command::FilterPage { .. } => "filter_page",
+                    Command::FindFiltered { .. } => "find_filtered",
                     Command::FindNext { .. } => "find_next",
                     Command::Page { .. } => "page",
                     Command::Describe { .. } => "describe",

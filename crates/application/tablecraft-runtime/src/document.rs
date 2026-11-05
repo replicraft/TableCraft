@@ -8,9 +8,12 @@ use super::{
 #[cfg(feature = "offline-edit")]
 use crate::editing::{DocumentEdits, journal_path};
 use bytes::Bytes;
-use std::path::{Path, absolute};
 #[cfg(feature = "offline-edit")]
 use std::{fs::symlink_metadata, io::ErrorKind, sync::atomic::AtomicBool};
+use std::{
+    path::{Path, absolute},
+    sync::Arc,
+};
 use tablecraft_access::NativeBrowser;
 #[cfg(feature = "offline-edit")]
 use tablecraft_ace::InspectError;
@@ -24,6 +27,7 @@ const SNAPSHOT_BYTES: u64 = 64 * 1024 * 1024;
 const COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Document {
+    pub(crate) filter_source: Arc<()>,
     pub(super) source: Source,
     pub(super) revision: u64,
     #[cfg(feature = "offline-edit")]
@@ -77,6 +81,7 @@ impl Document {
         };
         let (source, format) = Source::open(bytes, password.as_str(), &mut work, cancelled)?;
         let mut document = Self {
+            filter_source: Arc::new(()),
             source,
             revision,
             #[cfg(feature = "offline-edit")]

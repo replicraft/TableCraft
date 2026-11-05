@@ -1,0 +1,20 @@
+# Native selection filtering; values remain runtime-owned.
+filtering-equal = Equals selected value
+filtering-not-equal = Does not equal selected value
+filtering-is-null = Is Null
+filtering-is-not-null = Is Not Null
+filtering-clear-all = Clear All Filters
+filtering-selection-help = Filter using the actual stored value. Different fields combine with AND; a new criterion replaces the previous criterion for that field.
+filtering-toggle-help = Temporarily remove or reapply the retained filter.
+filtering-filtered-count = Filtered: { $matched } of { $source } records
+filtering-unfiltered-count = Unfiltered: { $source } records; retained filter matches { $matched }
+filtering-applying-equal = Applying the Equals filter…
+filtering-applying-not-equal = Applying the Does not equal filter…
+filtering-loading = Loading the requested filter page…
+filtering-clearing = Clearing all filters…
+filtering-stale = The filter request no longer matches the current table or view.
+filtering-invalid-result = The returned filter page, row identities or counts do not match this request.
+filtering-record-range = That record number is outside this view.
+filtering-mock-unavailable = Native filtering is unavailable in this synthetic preview. No records were filtered.
+filtering-mock-membership = Synthetic membership only. No database was opened or filtered.
+filtering-mock-error = Synthetic read failure. The previous filter and page are retained.
