@@ -1,4 +1,6 @@
 //! Active table/query result presentation, preserving each slot's paging state.
+mod tabs;
+
 use super::{Action, DocumentView, State};
 use crate::datasheet;
 use crate::localization::{message, tr};
@@ -84,55 +86,6 @@ impl State {
                     });
                 }
             });
-    }
-
-    fn document_tabs(&mut self, ui: &mut Ui) {
-        let mut selected_view = None;
-        Frame::new()
-            .inner_margin(Margin {
-                left: 4,
-                right: 4,
-                top: 1,
-                bottom: 0,
-            })
-            .show(ui, |ui| {
-                ui.spacing_mut().item_spacing.y = 0.0;
-                ui.horizontal(|ui| {
-                    let table_title = self
-                        .data
-                        .as_ref()
-                        .map(|data| data.table.clone())
-                        .unwrap_or_else(|| tr(ui, "shell-table"));
-                    for (view, title) in [
-                        (DocumentView::Table, table_title),
-                        (DocumentView::Query, tr(ui, "shell-query")),
-                        (DocumentView::Design, tr(ui, "shell-table-design")),
-                    ] {
-                        if view == DocumentView::Design && self.schema.is_none() {
-                            continue;
-                        }
-                        let response = ui.selectable_label(self.view == view, title);
-                        ui.ctx().accesskit_node_builder(response.id, |node| {
-                            node.set_role(egui::accesskit::Role::Tab);
-                            node.clear_toggled();
-                            node.set_selected(self.view == view);
-                        });
-                        if self.view == view {
-                            ui.painter().line_segment(
-                                [response.rect.left_bottom(), response.rect.right_bottom()],
-                                egui::Stroke::new(2.0, crate::theme::palette(ui.ctx()).accent),
-                            );
-                        }
-                        if response.clicked() {
-                            selected_view = Some(view);
-                            ui.ctx().request_repaint();
-                        }
-                    }
-                });
-            });
-        if let Some(view) = selected_view {
-            self.select_view(view);
-        }
     }
 }
 
