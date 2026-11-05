@@ -1,6 +1,5 @@
 //! Metadata-issued common filters retain entered operands without interpreting them.
 mod dialog;
-mod input;
 
 use super::{Operation, State};
 use crate::InputHint;
