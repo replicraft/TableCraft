@@ -1,10 +1,13 @@
 //! Complete eager predicate traversal, shared by initial and explicitly rebound filters.
-use super::{Criterion, FilterError, criteria};
+use super::{Criterion, FilterError, Predicate, criteria, patterns};
 use crate::{Error, controls::check};
 use tablecraft_access::{NativeBrowser, NativeCollationResolver};
 use tablecraft_ace::{NativeReadSource, TableSchema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_expressions::logic::Truth;
+use tablecraft_expressions::{
+    logic::Truth,
+    predicates::{LikeMode, PreparedLikeSearch},
+};
 
 const SCAN_BATCH_ROWS: u32 = 100;
 const INITIAL_MAP_CAPACITY: usize = 64;
@@ -14,6 +17,7 @@ pub(super) fn membership<R: NativeReadSource>(
     schema: &TableSchema,
     predicates: &[Criterion],
     resolver: &NativeCollationResolver<'_>,
+    mode: Option<LikeMode>,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u32>, u32), Error> {
@@ -24,6 +28,31 @@ pub(super) fn membership<R: NativeReadSource>(
         let index = criteria::field_position(schema, &criterion.column, work, cancelled)?;
         criteria::require_field(&schema.columns()[index])?;
         positions.push(index);
+    }
+
+    // Compile patterns once for this complete scan. Retained criteria remain
+    // source-free preferences, so a reapply resolves the fresh database mode.
+    let mut pattern_work = ResourceBudget::new(patterns::PATTERN_BYTES, 0, patterns::PATTERN_STEPS);
+    pattern_work.charge_allocation(
+        predicates.len() as u64,
+        size_of::<Option<PreparedLikeSearch>>() as u64,
+    )?;
+    let mut prepared = Vec::new();
+    prepared.try_reserve_exact(predicates.len())?;
+    for (criterion, &position) in predicates.iter().zip(&positions) {
+        if matches!(criterion.predicate, Predicate::Pattern { .. }) {
+            let policy = match schema.columns()[position].text_sort_order() {
+                Some(order) => resolver.resolve_native(order)?,
+                None => resolver.default_collation(),
+            };
+            patterns::qualify(policy)?;
+        }
+        prepared.push(patterns::compile(
+            criterion,
+            mode,
+            &mut pattern_work,
+            cancelled,
+        )?);
     }
 
     work.charge_allocation(positions.len() as u64, size_of::<usize>() as u64)?;
@@ -65,7 +94,9 @@ pub(super) fn membership<R: NativeReadSource>(
                 .checked_add(u32::try_from(index).map_err(|_| FilterError::InvalidSelection)?)
                 .ok_or(FilterError::InvalidSelection)?;
             let mut keep = true;
-            for (criterion, &position) in predicates.iter().zip(&positions) {
+            for ((criterion, &position), prepared) in
+                predicates.iter().zip(&positions).zip(&prepared)
+            {
                 let projected = projection
                     .binary_search(&position)
                     .map_err(|_| FilterError::InvalidSelection)?;
@@ -79,7 +110,15 @@ pub(super) fn membership<R: NativeReadSource>(
                     resolver.default_collation()
                 };
                 // All terms execute even after an earlier false/unknown term.
-                let truth = criteria::evaluate(criterion, value, policy, work, cancelled)?;
+                let truth = criteria::evaluate(
+                    criterion,
+                    value,
+                    policy,
+                    prepared.as_ref(),
+                    work,
+                    &mut pattern_work,
+                    cancelled,
+                )?;
                 keep &= truth == Truth::True;
             }
             if keep {

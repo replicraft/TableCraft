@@ -113,6 +113,19 @@ impl Worker {
                 *offset,
                 cancelled,
             ),
+            Command::DescribeFieldFilter { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .describe_field_filter(target, cancelled),
+            Command::ApplyFieldFilter {
+                target,
+                operator,
+                inputs,
+                base,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .apply_field_filter(target, *operator, inputs, base.as_ref(), cancelled),
             Command::FilterSelection {
                 target,
                 comparison,
@@ -205,6 +218,8 @@ impl Worker {
                     Command::SortView { .. } => "sort_view",
                     Command::ClearFilter { .. } => "clear_filter",
                     Command::ReapplyFilter { .. } => "reapply_filter",
+                    Command::DescribeFieldFilter { .. } => "describe_field_filter",
+                    Command::ApplyFieldFilter { .. } => "apply_field_filter",
                     Command::FilterSelection { .. } => "filter_selection",
                     Command::FilterPage { .. } => "filter_page",
                     Command::FindFiltered { .. } => "find_filtered",

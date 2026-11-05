@@ -2,14 +2,12 @@
 mod deleting;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod draft;
-mod hint;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod ids;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod input;
 mod inserting;
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
-pub use hint::InputHint;
 mod save;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 mod unsupported;
@@ -23,7 +21,7 @@ pub use save::{
     SaveWorker,
 };
 
-use crate::Cell;
+use crate::{Cell, scalar_input::InputHint};
 use bytes::Bytes;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::sync::{

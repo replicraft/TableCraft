@@ -23,15 +23,17 @@ pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
-    DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget, InputHint,
+    DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
     InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedDelete,
     ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveSessionState,
     SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
 pub use filtering::{
+    FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
-    FilterTarget, FilteredData, MAX_FILTER_FIELDS, SortSpec, SortTarget,
+    FilterTarget, FilteredData, MAX_FIELD_FILTER_INPUT_BYTES, MAX_FILTER_FIELDS, SortSpec,
+    SortTarget,
 };
 pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
@@ -41,6 +43,7 @@ pub use saved::{
     MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
     SavedQuery, SavedQueryTarget,
 };
+pub use scalar_input::InputHint;
 pub use schema::{Field, FieldProperty, FieldPropertyValue};
 pub use worker::Worker;
 
@@ -159,6 +162,15 @@ pub enum Command {
         enabled: bool,
         offset: u32,
     },
+    DescribeFieldFilter {
+        target: FieldFilterTarget,
+    },
+    ApplyFieldFilter {
+        target: FieldFilterTarget,
+        operator: FieldFilterOperator,
+        inputs: Vec<String>,
+        base: Option<FilterHandle>,
+    },
     FilterSelection {
         target: FilterSelectionTarget,
         comparison: FilterComparison,
@@ -216,6 +228,7 @@ pub struct Table {
 }
 
 pub enum Response {
+    FieldFilterDescription(FieldFilterDescription),
     SavedQuery {
         target: SavedQueryTarget,
         parameters: Vec<ParameterSpec>,

@@ -1,7 +1,8 @@
 //! One reviewed row of original presence-bearing native INSERT intent.
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use super::EditError;
-use super::{EditInput, InputHint};
+use super::EditInput;
+use crate::scalar_input::InputHint;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use crate::{
     Error, Response,
