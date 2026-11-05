@@ -35,6 +35,7 @@ impl Preview {
             Action::InspectSavedQuery { target } => self.inspect_saved(target),
             Action::RunSavedQuery { target, parameters } => {
                 if self.state.can_run_saved_query(&target, &parameters) {
+                    self.state.error = None;
                     let request = self.request();
                     self.state
                         .begin_saved_query_run(target.clone(), parameters, request);
@@ -45,13 +46,13 @@ impl Preview {
             }
             Action::NavigateRecord { target } => {
                 if self.state.can_navigate_record(&target) {
+                    self.state.error = None;
                     let request = self.request();
                     self.state.begin_record_navigation(target.clone(), request);
-                    let offset = target.parent_ordinal / fixtures::PAGE_ROWS * fixtures::PAGE_ROWS;
                     self.state.set_record_data(
                         request,
                         target.clone(),
-                        fixtures::page(&target.table, offset),
+                        fixtures::page(&target.table, target.parent_ordinal),
                     );
                 }
             }
@@ -121,6 +122,7 @@ impl Preview {
         if !self.state.can_inspect_saved_query(&target) {
             return;
         }
+        self.state.error = None;
         let request = self.request();
         self.state
             .begin_saved_query_inspection(target.clone(), request);
