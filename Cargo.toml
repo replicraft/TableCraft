@@ -19,6 +19,7 @@ members = [
     "crates/query/tablecraft-expressions",
     "crates/query/tablecraft-sql",
 ]
+default-members = ["apps/tablecraft-desktop"]
 resolver = "3"
 
 [workspace.package]
