@@ -52,3 +52,5 @@ datasheet-close-table = Закрыть таблицу
 datasheet-sort-column = Сортировать { $column }
 
 datasheet-last = Последняя
+
+datasheet-value-preview-truncated = Предпросмотр сокращён. Копирование сохраняет полное отображаемое значение.

@@ -52,3 +52,5 @@ datasheet-close-table = 关闭表
 datasheet-sort-column = 对 { $column } 排序
 
 datasheet-last = 最后一条
+
+datasheet-value-preview-truncated = 预览已缩短。复制会保留完整的显示值。

@@ -1,5 +1,6 @@
 mod clipboard;
 mod collection_columns;
+mod preview;
 mod selection;
 pub(crate) use selection::Selection;
 
@@ -443,9 +444,21 @@ pub(crate) fn cell(
     row: u64,
     allow_copy: bool,
 ) -> Response {
-    let text = value.text.as_str();
+    let original_text = value.text.as_str();
+    let preview = preview::text(original_text);
+    let text = preview.text.as_ref();
     let localizer = for_context(ui.ctx());
-    let context = value.context(&localizer);
+    let mut context = value.context(&localizer);
+    if preview.shortened {
+        let shortening = localizer.text("datasheet-value-preview-truncated");
+        match &mut context {
+            Some(context) => {
+                context.push(' ');
+                context.push_str(&shortening);
+            }
+            None => context = Some(shortening),
+        }
+    }
     let badge = value.badge(&localizer);
     let display = match badge.as_deref() {
         Some(badge) => Cow::Owned(format!("{text}  [{badge}]")),
@@ -558,7 +571,7 @@ pub(crate) fn cell(
             copy
         });
         if copy {
-            copy_text(ui.ctx(), text);
+            copy_text(ui.ctx(), original_text);
         }
         egui::Tooltip::for_widget(&response).show(|ui| {
             ui.label(text);

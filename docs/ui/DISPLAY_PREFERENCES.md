@@ -134,3 +134,17 @@ Select record uses the existing selection for the visible table, ad hoc query or
 saved-query result. It preserves the selected field, copies one complete displayed
 record and does not grant native edit/delete identity to query output. Select All
 is not simulated with a visible-page prefix.
+
+
+## Long-value previews
+
+Datasheet cells, read-only review cells, tooltips and accessibility descriptions
+use a bounded Unicode preview: at most 512 scalars, 1,024 UTF-8 prefix bytes and
+eight logical lines. Shortened previews append an ellipsis and translated
+context. Native NULL, checkbox, stored-cache and collection provenance remain
+separate. Ordinary literal text ending in an ellipsis is not marked shortened.
+
+The original Cell text is retained unchanged, including decomposed Unicode and
+line separators. Explicit single-cell Copy still publishes the complete display
+text. This does not apply the separate record-TSV clipboard limit to a cell or
+represent a preview prefix as a complete stored value.

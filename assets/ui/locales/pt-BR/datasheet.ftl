@@ -52,3 +52,5 @@ datasheet-close-table = Fechar tabela
 datasheet-sort-column = Ordenar { $column }
 
 datasheet-last = Último
+
+datasheet-value-preview-truncated = Prévia abreviada. Copiar preserva o valor exibido completo.
