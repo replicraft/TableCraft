@@ -1,4 +1,5 @@
 use super::*;
+use crate::Action;
 
 #[test]
 fn pending_mock_saves_render_without_claiming_completion_or_releasing_the_owner() {
@@ -192,7 +193,7 @@ fn mock_release_preserves_needs_attention_without_claiming_a_save() {
     };
     let save_id = *save_id;
     let rows = preview.state.data.as_ref().unwrap().rows.as_ptr();
-    preview.dispatch(crate::Action::ReleaseEditSave { save_id });
+    preview.dispatch(Action::ReleaseEditSave { save_id });
     assert!(
         matches!(&preview.state.edit, Some(EditDialog::Finished { outcome: EditSaveOutcome::Failed(message), .. })
         if message == &preview.state.localizer.text("settings-mock-resolved"))
@@ -202,4 +203,130 @@ fn mock_release_preserves_needs_attention_without_claiming_a_save() {
     assert!(!preview.state.edit_save_pending());
     assert!(preview.state.close_edit());
     assert!(preview.state.mock_preview);
+}
+
+#[test]
+fn save_owner_refuses_stale_actions_and_commands_until_current_terminal_acknowledgment() {
+    for scene in [
+        Scene::SaveApplying,
+        Scene::SaveSaved,
+        Scene::SaveCancelled,
+        Scene::SaveFailed,
+        Scene::RecoveryDiagnosis,
+    ] {
+        let seed = Preview::new(scene);
+        let save_id = match &seed.state.edit {
+            Some(EditDialog::Saving { save_id, .. } | EditDialog::Finished { save_id, .. }) => {
+                *save_id
+            }
+            _ => panic!("save fixture retains its owner"),
+        };
+        for action in [
+            Action::Open,
+            Action::ChooseFile,
+            Action::Page {
+                table: "Orders".into(),
+                offset: 0,
+            },
+            Action::ViewSchema {
+                table: "Orders".into(),
+            },
+            Action::Query,
+            Action::CancelEditSave {
+                save_id: save_id + 1,
+            },
+            Action::RecoverEditSave { save_id },
+            Action::ReleaseEditSave { save_id },
+            Action::AcknowledgeEditSave {
+                save_id: save_id + 1,
+            },
+            Action::CloseEdit {
+                request_id: save_id,
+                draft_id: None,
+            },
+        ] {
+            let mut preview = Preview::new(scene);
+            preview.state.error = Some("Existing report".into());
+            preview.state.password = "synthetic password".into();
+            let rows = preview.state.data.as_ref().unwrap().rows.as_ptr();
+            let before = std::mem::discriminant(preview.state.edit.as_ref().unwrap());
+            preview.dispatch(action);
+            let current = preview
+                .state
+                .edit
+                .as_ref()
+                .expect("stale action cannot drop owner");
+            assert_eq!(std::mem::discriminant(current), before);
+            assert!(
+                matches!(current, EditDialog::Saving { save_id: current, .. } | EditDialog::Finished { save_id: current, .. } if *current == save_id)
+            );
+            assert_eq!(preview.state.data.as_ref().unwrap().rows.as_ptr(), rows);
+            assert_eq!(preview.state.error.as_deref(), Some("Existing report"));
+            assert_eq!(preview.state.password, "synthetic password");
+        }
+        if scene != Scene::SaveApplying && scene != Scene::RecoveryDiagnosis {
+            let mut preview = Preview::new(scene);
+            preview.dispatch(Action::AcknowledgeEditSave { save_id });
+            assert!(!preview.state.edit_dialog_open());
+        }
+    }
+}
+
+#[test]
+fn mock_cancel_requests_remain_pending_and_late_requests_preserve_finished_outcomes() {
+    for scene in [Scene::SaveApplying, Scene::SaveResolving] {
+        let mut preview = Preview::new(scene);
+        let save_id = match &preview.state.edit {
+            Some(EditDialog::Saving { save_id, .. }) => *save_id,
+            _ => panic!("pending save fixture"),
+        };
+        preview.dispatch(Action::CancelEditSave { save_id });
+        assert!(
+            matches!(&preview.state.edit, Some(EditDialog::Saving { save_id: current, cancel_requested: true, .. }) if *current == save_id)
+        );
+        assert!(preview.state.edit_save_pending());
+        assert!(!preview.state.close_edit());
+        preview.state.set_edit_save_outcome(
+            save_id,
+            EditSaveOutcome::Saved("Established mock completion".into()),
+        );
+        preview.dispatch(Action::CancelEditSave { save_id });
+        preview.dispatch(Action::Cancel);
+        assert!(
+            matches!(&preview.state.edit, Some(EditDialog::Finished { outcome: EditSaveOutcome::Saved(message), .. }) if message == "Established mock completion")
+        );
+        assert!(preview.state.error.is_none());
+    }
+}
+
+#[test]
+fn stale_edit_close_cannot_dismiss_a_newer_draft() {
+    let mut preview = Preview::new(Scene::Edit);
+    let (request_id, draft_id) = match &preview.state.edit {
+        Some(EditDialog::Draft {
+            request_id, draft, ..
+        }) => (*request_id, draft.id),
+        _ => panic!("editable draft fixture"),
+    };
+    for action in [
+        Action::CloseEdit {
+            request_id: request_id + 1,
+            draft_id: Some(draft_id),
+        },
+        Action::CloseEdit {
+            request_id,
+            draft_id: Some(draft_id + 1),
+        },
+        Action::AcknowledgeEditSave {
+            save_id: request_id,
+        },
+    ] {
+        preview.dispatch(action);
+        assert!(preview.state.edit_dialog_open());
+    }
+    preview.dispatch(Action::CloseEdit {
+        request_id,
+        draft_id: Some(draft_id),
+    });
+    assert!(!preview.state.edit_dialog_open());
 }

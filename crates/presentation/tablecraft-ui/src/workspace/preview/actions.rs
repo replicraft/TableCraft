@@ -8,6 +8,23 @@ use crate::{
 
 impl Preview {
     pub(super) fn dispatch(&mut self, action: Action) {
+        let save_owner = matches!(
+            self.state.edit,
+            Some(EditDialog::Saving { .. } | EditDialog::Finished { .. })
+        );
+        if save_owner
+            && !matches!(
+                &action,
+                Action::CancelEditSave { .. }
+                    | Action::RecoverEditSave { .. }
+                    | Action::ReleaseEditSave { .. }
+                    | Action::AcknowledgeEditSave { .. }
+                    | Action::Cancel
+            )
+        {
+            return;
+        }
+
         match action {
             Action::ChooseFile | Action::Open => {
                 self.state.password.clear();
@@ -64,7 +81,11 @@ impl Preview {
                 };
                 self.collection(target, kind);
             }
-            Action::CloseContents { .. } => self.state.close_contents(),
+            Action::CloseContents { request_id } => {
+                if self.state.contents_request_id() == Some(request_id) {
+                    self.state.close_contents();
+                }
+            }
             Action::BeginEdit { target } => self.edit(target),
             Action::ReviewEdit { draft_id, input } => {
                 if self.state.can_review_edit(draft_id, &input) {
@@ -81,34 +102,47 @@ impl Preview {
                     );
                 }
             }
-            Action::CloseEdit { .. } | Action::AcknowledgeEditSave { .. } => {
-                self.state.close_edit();
+            Action::CloseEdit {
+                request_id,
+                draft_id,
+            } => {
+                let matches = match &self.state.edit {
+                    Some(EditDialog::Checking {
+                        request_id: current,
+                        ..
+                    }) => *current == request_id && draft_id.is_none(),
+                    Some(EditDialog::Draft {
+                        request_id: current,
+                        draft,
+                        ..
+                    }) => *current == request_id && draft_id == Some(draft.id),
+                    _ => false,
+                };
+                if matches {
+                    self.state.close_edit();
+                }
             }
-            Action::CancelEditSave { save_id } => {
-                self.state.set_edit_save_outcome(
-                    save_id,
-                    EditSaveOutcome::Cancelled(
-                        self.state.localizer.text("settings-mock-save-cancelled"),
-                    ),
-                );
+            Action::AcknowledgeEditSave { save_id } => {
+                let matches_current_terminal = match &self.state.edit {
+                    Some(EditDialog::Finished {
+                        save_id: current,
+                        outcome,
+                    }) => {
+                        *current == save_id && !matches!(outcome, EditSaveOutcome::Retained { .. })
+                    }
+                    _ => false,
+                };
+                if matches_current_terminal {
+                    self.state.close_edit();
+                }
             }
-            Action::RecoverEditSave { save_id } => {
-                let operation_id = self.request();
-                self.state.begin_edit_resolution(save_id, operation_id);
-                self.state.set_edit_save_outcome(
-                    operation_id,
-                    EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-resolved")),
-                );
-            }
-            Action::ReleaseEditSave { save_id } => {
-                let operation_id = self.request();
-                self.state.begin_edit_resolution(save_id, operation_id);
-                // Releasing resources is not a completed save. The native host
-                // also publishes released resources as a terminal Failed outcome.
-                self.state.set_edit_save_outcome(
-                    operation_id,
-                    EditSaveOutcome::Failed(self.state.localizer.text("settings-mock-resolved")),
-                );
+            Action::CancelEditSave { save_id } => self.request_mock_cancellation(save_id),
+            Action::RecoverEditSave { save_id } => self.resolve_mock_save(save_id, true),
+            Action::ReleaseEditSave { save_id } => self.resolve_mock_save(save_id, false),
+            Action::Cancel if save_owner => {
+                if let Some(EditDialog::Saving { save_id, .. }) = &self.state.edit {
+                    self.request_mock_cancellation(*save_id);
+                }
             }
             Action::Cancel => {
                 self.state.interrupt_saved_query();
@@ -116,6 +150,52 @@ impl Preview {
                 self.state.error = Some(self.state.localizer.text("settings-mock-cancelled"));
             }
         }
+    }
+
+    fn request_mock_cancellation(&mut self, save_id: u64) {
+        if let Some(EditDialog::Saving {
+            save_id: current,
+            cancel_requested,
+            ..
+        }) = &mut self.state.edit
+            && *current == save_id
+        {
+            // An accepted request is not a rollback or a released save owner.
+            *cancel_requested = true;
+        }
+    }
+
+    fn resolve_mock_save(&mut self, save_id: u64, recover: bool) {
+        let Some(EditDialog::Finished {
+            save_id: current,
+            outcome:
+                EditSaveOutcome::Retained {
+                    can_recover,
+                    can_release,
+                    ..
+                },
+        }) = &self.state.edit
+        else {
+            return;
+        };
+        if *current != save_id {
+            return;
+        }
+        let allowed = if recover { *can_recover } else { *can_release };
+        if !allowed {
+            return;
+        }
+
+        let operation_id = self.request();
+        self.state.begin_edit_resolution(save_id, operation_id);
+        let message = self.state.localizer.text("settings-mock-resolved");
+        let outcome = if recover {
+            EditSaveOutcome::Saved(message)
+        } else {
+            // The native host also keeps released resources separate from Saved.
+            EditSaveOutcome::Failed(message)
+        };
+        self.state.set_edit_save_outcome(operation_id, outcome);
     }
 
     pub(super) fn inspect_saved(&mut self, target: SavedQueryTarget) {
