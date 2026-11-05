@@ -22,9 +22,14 @@ Open the actual local reference images when changing their corresponding surface
 the written reference summary alone is not visual verification. Record the
 rendered platform/scale and any surface for which no Access capture exists.
 Preserve native workflow and layout distinctions; do not substitute a generic Office-inspired
-design or add nonfunctional controls to imitate screenshots. Keep private
+design. The explicitly requested synthetic UI preview may show disabled mock
+Ribbon commands for visual review; keep them separate from existing working
+commands, label their unavailable state and never dispatch backend actions. Keep private
 reference captures private and distinguish visual approximation from verified
 interaction and database behavior.
+Current UI work prioritizes screenshot-guided polish, light/dark themes and
+sectioned Fluent catalogs with synthetic data; do not expand database functionality
+as part of that work. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md).
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 

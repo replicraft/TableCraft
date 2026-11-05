@@ -1,5 +1,9 @@
 # Native desktop preview
 
+For the current presentation-only mock mode, light/dark themes and bundled
+Fluent languages, see [presentation preview](PRESENTATION_PREVIEW.md). The native
+interaction records below retain the scope and state observed at their capture.
+
 The first implementation provides native startup, Selawik workspace, table
 navigation, bounded datasheets with scalar/stored-field cells and explicit
 read-only SQL. Runtime tests
