@@ -780,3 +780,18 @@ it does not establish an application crash. This session therefore does not
 qualify native keyboard traversal, screen-reader actions, the complete locale
 round-trip or Windows behavior. Offscreen interaction tests remain separate
 coverage, and a complete native workflow review is still outstanding.
+
+
+A follow-up on the same live mock session selected Japanese successfully and
+returned from Options to the dark workspace. The localized Ribbon, navigation,
+Design headers and property labels were observed while City retained its literal
+synthetic metadata. A subsequent Down key moved from City to Balance and changed
+the property sheet accordingly. F6 and Tab produced no observable focus change in
+that attempt, so full native traversal remains unqualified. These observations
+extend the earlier partial record without establishing general accessibility
+operation or native translation quality.
+
+At the user's request, further non-headless checks are suspended to avoid
+interrupting their work. Continue with headless interaction and offscreen render
+checks; do not activate, manipulate or close native application windows as part of
+ongoing verification without renewed authorization.
