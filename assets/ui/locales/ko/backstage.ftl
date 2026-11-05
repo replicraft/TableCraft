@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ 뒤로
+backstage-home = 홈
+backstage-new = 새로 만들기
+backstage-open = 열기
+backstage-info = 정보
+backstage-save = 저장
+backstage-save-as = 다른 이름으로 저장
+backstage-print = 인쇄
+backstage-close = 닫기
+backstage-account = 계정
+backstage-options = 옵션
+backstage-about = 정보
+backstage-open-title = 로컬 Access 데이터베이스 열기
+backstage-path = 데이터베이스 경로
+backstage-path-hint = .accdb 또는 .mdb 파일 경로
+backstage-browse = 찾아보기…
+backstage-password = 암호
+backstage-password-hint = 암호(선택 사항)
+backstage-open-database = 데이터베이스 열기
+backstage-stable-copy-help = 안정적인 복사본을 열거나 데이터베이스에 쓰는 다른 응용 프로그램을 먼저 닫으세요.
+backstage-read-only-help = 열기 작업은 파일을 변경하지 않습니다. 오프라인 편집에는 명시적인 검토와 적용이 필요합니다.
+backstage-about-title = TableCraft 정보
+backstage-about-description = 크로스 플랫폼 Access 작업 영역. 데스크톱 미리 보기 버전.
+backstage-font-credit = Selawik 보통 · © 2015 Microsoft Corporation
+backstage-font-source = 글꼴 출처: Microsoft Selawik 1.01
+backstage-font-license = Selawik 라이선스
+backstage-recent = 최근 데이터베이스
+backstage-computer = 이 컴퓨터
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = 글꼴 출처: Noto Sans CJK 2.004
+backstage-noto-license = Noto Sans CJK 라이선스
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = 아이콘 출처: Microsoft Fluent UI System Icons
+backstage-icons-license = Fluent UI System Icons 라이선스(MIT)

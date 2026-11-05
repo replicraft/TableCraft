@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ 戻る
+backstage-home = ホーム
+backstage-new = 新規
+backstage-open = 開く
+backstage-info = 情報
+backstage-save = 保存
+backstage-save-as = 名前を付けて保存
+backstage-print = 印刷
+backstage-close = 閉じる
+backstage-account = アカウント
+backstage-options = オプション
+backstage-about = バージョン情報
+backstage-open-title = ローカルの Access データベースを開く
+backstage-path = データベースのパス
+backstage-path-hint = .accdb または .mdb へのパス
+backstage-browse = 参照…
+backstage-password = パスワード
+backstage-password-hint = パスワード（省略可）
+backstage-open-database = データベースを開く
+backstage-stable-copy-help = 安定したコピーを開くか、データベースに書き込んでいる他のアプリを先に閉じてください。
+backstage-read-only-help = 開くだけではファイルは変更されません。オフライン編集には明示的な確認と適用が必要です。
+backstage-about-title = TableCraft について
+backstage-about-description = クロスプラットフォームの Access ワークスペース。デスクトップ プレビュー版。
+backstage-font-credit = Selawik Regular · © 2015 Microsoft Corporation
+backstage-font-source = フォントの提供元: Microsoft Selawik 1.01
+backstage-font-license = Selawik のライセンス
+backstage-recent = 最近使ったデータベース
+backstage-computer = このコンピューター
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = フォントの提供元: Noto Sans CJK 2.004
+backstage-noto-license = Noto Sans CJK のライセンス
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = アイコンの提供元: Microsoft Fluent UI System Icons
+backstage-icons-license = Fluent UI System Icons のライセンス（MIT）

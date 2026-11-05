@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ 返回
+backstage-home = 主页
+backstage-new = 新建
+backstage-open = 打开
+backstage-info = 信息
+backstage-save = 保存
+backstage-save-as = 另存为
+backstage-print = 打印
+backstage-close = 关闭
+backstage-account = 帐户
+backstage-options = 选项
+backstage-about = 关于
+backstage-open-title = 打开本地 Access 数据库
+backstage-path = 数据库路径
+backstage-path-hint = .accdb 或 .mdb 文件的路径
+backstage-browse = 浏览…
+backstage-password = 密码
+backstage-password-hint = 密码（可选）
+backstage-open-database = 打开数据库
+backstage-stable-copy-help = 请打开稳定副本，或先关闭其他正在写入此数据库的应用程序。
+backstage-read-only-help = 打开操作不会更改文件。离线编辑必须明确审阅并应用。
+backstage-about-title = 关于 TableCraft
+backstage-about-description = 跨平台 Access 工作区。桌面预览版。
+backstage-font-credit = Selawik 常规体 · © 2015 Microsoft Corporation
+backstage-font-source = 字体来源：Microsoft Selawik 1.01
+backstage-font-license = Selawik 许可证
+backstage-recent = 最近使用的数据库
+backstage-computer = 此电脑
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = 字体来源：Noto Sans CJK 2.004
+backstage-noto-license = Noto Sans CJK 许可证
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = 图标来源：Microsoft Fluent UI System Icons
+backstage-icons-license = Fluent UI System Icons 许可证（MIT）

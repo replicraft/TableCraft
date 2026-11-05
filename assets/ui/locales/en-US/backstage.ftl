@@ -1,0 +1,36 @@
+# TableCraft UI: backstage.
+
+backstage-back = ‹ Back
+backstage-home = Home
+backstage-new = New
+backstage-open = Open
+backstage-info = Info
+backstage-save = Save
+backstage-save-as = Save As
+backstage-print = Print
+backstage-close = Close
+backstage-account = Account
+backstage-options = Options
+backstage-about = About
+backstage-open-title = Open a local Access database
+backstage-path = Database path
+backstage-path-hint = Path to .accdb or .mdb
+backstage-browse = Browse…
+backstage-password = Password
+backstage-password-hint = Optional password
+backstage-open-database = Open database
+backstage-stable-copy-help = Open a stable copy or close other database writers before opening.
+backstage-read-only-help = Opening does not change the file. Offline edits require explicit review and apply.
+backstage-about-title = About TableCraft
+backstage-about-description = A cross-platform Access workspace. Desktop preview.
+backstage-font-credit = Selawik regular · © 2015 Microsoft Corporation
+backstage-font-source = Font source: Microsoft Selawik 1.01
+backstage-font-license = Selawik license
+backstage-recent = Recent databases
+backstage-computer = This computer
+backstage-noto-credit = Noto Sans CJK · © 2014–2021 Adobe
+backstage-noto-source = Font source: Noto Sans CJK 2.004
+backstage-noto-license = Noto Sans CJK license
+backstage-icons-credit = Microsoft Fluent UI System Icons · © 2020 Microsoft Corporation
+backstage-icons-source = Icon source: Microsoft Fluent UI System Icons
+backstage-icons-license = Fluent UI System Icons license (MIT)

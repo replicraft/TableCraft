@@ -1,0 +1,11 @@
+# TableCraft UI: query.
+
+query-title = SQL-Abfrage
+query-help = Führt ein unterstütztes SELECT für die geöffnete Momentaufnahme aus.
+query-placeholder = SELECT TOP 100 * FROM [Customers]
+query-run = Abfrage ausführen
+query-empty = Führen Sie eine Abfrage aus, um ihre Ergebnisse anzuzeigen.
+query-saved-empty = Führen Sie die gespeicherte Abfrage aus, um ihre Ergebnisse anzuzeigen.
+query-results = Abfrageergebnisse
+query-sql-view = SQL-Ansicht
+query-design-view = Entwurfsansicht

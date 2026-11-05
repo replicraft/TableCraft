@@ -1,0 +1,11 @@
+# TableCraft UI: query.
+
+query-title = SQL クエリ
+query-help = 開いているスナップショットに対して、対応する SELECT を実行します。
+query-placeholder = SELECT TOP 100 * FROM [Customers]
+query-run = クエリの実行
+query-empty = クエリを実行すると結果が表示されます。
+query-saved-empty = 保存済みクエリを実行すると結果が表示されます。
+query-results = クエリの結果
+query-sql-view = SQL ビュー
+query-design-view = デザイン ビュー
