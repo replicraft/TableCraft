@@ -4,6 +4,8 @@ use crate::localization::{message, tr};
 use crate::theme::input_border;
 use crate::workspace::{Action, State};
 
+const MAX_PARAMETER_PANE_HEIGHT: f32 = 220.0;
+
 pub(super) const INPUT_KINDS: &[(&str, &str)] = &[
     ("boolean", "Boolean"),
     ("byte", "Byte"),
@@ -95,74 +97,84 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
     let Some(parameters) = &state.parameters else {
         return false;
     };
-    let mut changed = false;
-    egui::ScrollArea::vertical()
-        .max_height(220.0)
-        .show(ui, |ui| {
-            for (index, (spec, input)) in parameters.iter().zip(&mut state.inputs).enumerate() {
-                ui.push_id(index, |ui| {
-                    let label = ui.label(message(
-                        ui,
-                        "saved-query-parameter-label",
-                        &[("name", spec.name.clone()), ("kind", spec.label.clone())],
-                    ));
-                    ui.add_enabled_ui(idle, |ui| {
-                        if spec.kind == "value" {
-                            let kind = egui::ComboBox::from_id_salt("parameter_kind")
-                                .selected_text(
-                                    INPUT_KINDS
-                                        .iter()
-                                        .find(|(kind, _)| *kind == input.kind)
-                                        .map_or_else(
-                                            || tr(ui, "saved-query-choose-type"),
-                                            |(kind, _)| type_label(ui, kind),
-                                        ),
+    ui.scope(|ui| {
+        ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
+        let mut changed = false;
+        egui::ScrollArea::vertical()
+            .id_salt("saved_query_parameters")
+            .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
+            .max_height(MAX_PARAMETER_PANE_HEIGHT)
+            .show(ui, |ui| {
+                for (index, (spec, input)) in parameters.iter().zip(&mut state.inputs).enumerate() {
+                    ui.push_id(index, |ui| {
+                        let label = ui.label(message(
+                            ui,
+                            "saved-query-parameter-label",
+                            &[("name", spec.name.clone()), ("kind", spec.label.clone())],
+                        ));
+                        ui.add_enabled_ui(idle, |ui| {
+                            if spec.kind == "value" {
+                                let kind = egui::ComboBox::from_id_salt("parameter_kind")
+                                    .selected_text(
+                                        INPUT_KINDS
+                                            .iter()
+                                            .find(|(kind, _)| *kind == input.kind)
+                                            .map_or_else(
+                                                || tr(ui, "saved-query-choose-type"),
+                                                |(kind, _)| type_label(ui, kind),
+                                            ),
+                                    )
+                                    .show_ui(ui, |ui| {
+                                        for (kind, _) in INPUT_KINDS {
+                                            changed |= ui
+                                                .selectable_value(
+                                                    &mut input.kind,
+                                                    (*kind).into(),
+                                                    type_label(ui, kind),
+                                                )
+                                                .changed();
+                                        }
+                                    })
+                                    .response
+                                    .labelled_by(label.id);
+                                let description = tr(ui, "saved-query-value-type");
+                                ui.ctx().accesskit_node_builder(kind.id, |node| {
+                                    node.set_description(description);
+                                });
+                                input_border(ui, &kind);
+                            }
+                            let text = ui
+                                .add_enabled(
+                                    !input.is_null,
+                                    egui::TextEdit::singleline(&mut input.text)
+                                        .desired_width(300.0),
                                 )
-                                .show_ui(ui, |ui| {
-                                    for (kind, _) in INPUT_KINDS {
-                                        changed |= ui
-                                            .selectable_value(
-                                                &mut input.kind,
-                                                (*kind).into(),
-                                                type_label(ui, kind),
-                                            )
-                                            .changed();
-                                    }
-                                })
-                                .response
                                 .labelled_by(label.id);
-                            let description = tr(ui, "saved-query-value-type");
-                            ui.ctx().accesskit_node_builder(kind.id, |node| {
+                            input_border(ui, &text);
+                            changed |= text.changed();
+                            let null = ui
+                                .add_enabled(
+                                    spec.nullable,
+                                    egui::Checkbox::new(
+                                        &mut input.is_null,
+                                        tr(ui, "saved-query-null"),
+                                    ),
+                                )
+                                .labelled_by(label.id);
+                            let description = tr(ui, "saved-query-use-null");
+                            ui.ctx().accesskit_node_builder(null.id, |node| {
                                 node.set_description(description);
                             });
-                            input_border(ui, &kind);
-                        }
-                        let text = ui
-                            .add_enabled(
-                                !input.is_null,
-                                egui::TextEdit::singleline(&mut input.text).desired_width(300.0),
-                            )
-                            .labelled_by(label.id);
-                        input_border(ui, &text);
-                        changed |= text.changed();
-                        let null = ui
-                            .add_enabled(
-                                spec.nullable,
-                                egui::Checkbox::new(&mut input.is_null, tr(ui, "saved-query-null")),
-                            )
-                            .labelled_by(label.id);
-                        let description = tr(ui, "saved-query-use-null");
-                        ui.ctx().accesskit_node_builder(null.id, |node| {
-                            node.set_description(description);
+                            changed |= null.changed();
+                            ui.small(hint(ui, &input.kind));
                         });
-                        changed |= null.changed();
-                        ui.small(hint(ui, &input.kind));
+                        ui.add_space(4.0);
                     });
-                    ui.add_space(4.0);
-                });
-            }
-        });
-    changed
+                }
+            });
+        changed
+    })
+    .inner
 }
 
 fn type_label(ui: &egui::Ui, kind: &str) -> String {

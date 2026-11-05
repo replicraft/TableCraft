@@ -372,7 +372,15 @@ fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
 
     let (mut state, target) = state();
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target, specs()));
+    let mut parameters = specs();
+    parameters.push(ParameterSpec {
+        name: "From date".into(),
+        kind: "date".into(),
+        label: "DATETIME".into(),
+        nullable: true,
+    });
+    assert!(state.set_saved_query_details(1, target, parameters));
+    let original_inputs = state.saved_query.inputs.clone();
     let context = egui::Context::default();
     context.enable_accesskit();
     let (actions, output) = render(&mut state, &context, vec![]);
@@ -415,4 +423,84 @@ fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
             "NULL control for {prompt}"
         );
     }
+
+    // A third typed prompt overflows the bounded pane. Its lower controls
+    // remain reachable without altering input values or running the query.
+    let visible_text = |output: &egui::FullOutput, expected: &str| {
+        output.shapes.iter().find_map(|shape| match &shape.shape {
+            egui::epaint::Shape::Text(text)
+                if text.galley.job.text.replace(['\u{2068}', '\u{2069}'], "") == expected =>
+            {
+                let rect = egui::Rect::from_min_size(text.pos, text.galley.size());
+                shape
+                    .clip_rect
+                    .contains_rect(rect)
+                    .then_some((rect, shape.clip_rect))
+            }
+            _ => None,
+        })
+    };
+    assert!(
+        tree.nodes.iter().any(|(_, node)| {
+            node.role() == Role::ScrollBar
+                && node.bounds().is_some_and(|bounds| bounds.height() > 150.0)
+        }),
+        "overflow has a visible parameter-pane scrollbar"
+    );
+    let date_hint = "ISO date and time, without a time zone.";
+    assert!(visible_text(&output, date_hint).is_none());
+    let anchor = visible_text(&output, "Minimum · LONG").unwrap().0.center();
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![
+            egui::Event::PointerMoved(anchor),
+            egui::Event::MouseWheel {
+                phase: egui::TouchPhase::Move,
+                unit: egui::MouseWheelUnit::Point,
+                delta: egui::vec2(0.0, -500.0),
+                modifiers: egui::Modifiers::NONE,
+            },
+        ],
+    );
+    assert!(actions.is_empty());
+    render(&mut state, &context, vec![]);
+    let (actions, scrolled) = render(&mut state, &context, vec![]);
+    assert!(actions.is_empty());
+    let (_, parameter_clip) = visible_text(&scrolled, date_hint)
+        .expect("the last parameter's complete hint is reachable");
+    assert!(visible_text(&scrolled, "From date · DATETIME").is_some());
+    let tree = scrolled.platform_output.accesskit_update.as_ref().unwrap();
+    let date_prompt = tree
+        .nodes
+        .iter()
+        .find_map(|(id, node)| {
+            (node.role() == Role::Label
+                && node.value().is_some_and(|value| {
+                    value.replace(['\u{2068}', '\u{2069}'], "") == "From date · DATETIME"
+                }))
+            .then_some(*id)
+        })
+        .expect("the date prompt retains its actual accessible identity");
+    for role in [Role::TextInput, Role::CheckBox] {
+        let node = tree
+            .nodes
+            .iter()
+            .find_map(|(_, node)| {
+                (node.role() == role && node.labelled_by().contains(&date_prompt)).then_some(node)
+            })
+            .expect("the final prompt retains its actual input and NULL control");
+        let bounds = node.bounds().expect("control bounds");
+        let rect = egui::Rect::from_min_max(
+            egui::pos2(bounds.x0 as f32, bounds.y0 as f32),
+            egui::pos2(bounds.x1 as f32, bounds.y1 as f32),
+        );
+        assert!(
+            parameter_clip.contains_rect(rect),
+            "complete {role:?} is visible after scrolling"
+        );
+        assert!(!node.is_disabled());
+    }
+    assert_eq!(state.saved_query.inputs, original_inputs);
+    assert!(state.saved_query.pending.is_none());
 }
