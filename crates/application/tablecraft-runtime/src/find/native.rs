@@ -12,15 +12,12 @@ use crate::{
 };
 use std::{cell::RefCell, cmp::Ordering};
 use tablecraft_access::{NativeBrowser, NativeCollationResolver};
-use tablecraft_ace::{
-    DatabaseQueryMode, inspect_database_properties, inspect_database_sort_order,
-    inspect_table_schema,
-};
+use tablecraft_ace::{inspect_database_sort_order, inspect_table_schema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_display::Options;
 use tablecraft_expressions::{
     comparison::StringSearch,
-    predicates::{LikeMode, next_like_offset, previous_like_offset},
+    predicates::{next_like_offset, previous_like_offset},
 };
 use tablecraft_schema::ScalarType;
 
@@ -206,20 +203,7 @@ impl Document {
             &mut native_work,
             cancelled,
         )?;
-        let mode = match inspect_database_properties(
-            &mut self.source,
-            SCOPE,
-            &mut native_work,
-            cancelled,
-        )? {
-            Some(properties) => properties.query_mode(&mut native_work, cancelled)?,
-            None => DatabaseQueryMode::Absent,
-        };
-        let mode = match mode {
-            DatabaseQueryMode::Ansi89 | DatabaseQueryMode::Absent => LikeMode::Ansi89,
-            DatabaseQueryMode::Ansi92 => LikeMode::Ansi92,
-            DatabaseQueryMode::Unknown => return Err(FindError::WildcardMode.into()),
-        };
+        let mode = super::matching::query_mode(&mut self.source, &mut native_work, cancelled)?;
         let order = inspect_database_sort_order(&mut self.source, &mut native_work, cancelled)?;
         let comparisons = RefCell::new(comparison_budget());
         let resolver =

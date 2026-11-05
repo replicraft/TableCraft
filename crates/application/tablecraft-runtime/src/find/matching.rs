@@ -1,7 +1,8 @@
 //! One compiled pattern and captured shared display policy for a native scan.
 use super::{FindError, FindMatch, FindRequest, FindSpan};
-use crate::{Cell, Error, display::Presentation};
+use crate::{Cell, Error, controls::SCOPE, display::Presentation};
 use std::ops::Range;
+use tablecraft_ace::{DatabaseQueryMode, NativeReadSource, inspect_database_properties};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -13,7 +14,23 @@ use tablecraft_expressions::{
 };
 use tablecraft_schema::ScalarType;
 
-pub(super) struct Matcher {
+pub(crate) fn query_mode<R: NativeReadSource>(
+    source: &mut R,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<LikeMode, Error> {
+    let mode = match inspect_database_properties(source, SCOPE, work, cancelled)? {
+        Some(properties) => properties.query_mode(work, cancelled)?,
+        None => DatabaseQueryMode::Absent,
+    };
+    match mode {
+        DatabaseQueryMode::Absent | DatabaseQueryMode::Ansi89 => Ok(LikeMode::Ansi89),
+        DatabaseQueryMode::Ansi92 => Ok(LikeMode::Ansi92),
+        DatabaseQueryMode::Unknown => Err(FindError::WildcardMode.into()),
+    }
+}
+
+pub(crate) struct Matcher {
     pattern: PreparedLikeSearch,
     null: bool,
     empty: bool,
@@ -22,7 +39,7 @@ pub(super) struct Matcher {
 }
 
 impl Matcher {
-    pub(super) fn new(
+    pub(crate) fn new(
         request: &FindRequest,
         mode: LikeMode,
         work: &mut ResourceBudget,
@@ -65,7 +82,7 @@ impl Matcher {
         })
     }
 
-    pub(super) fn require_type(&self, scalar: ScalarType) -> Result<(), Error> {
+    pub(crate) fn require_type(&self, scalar: ScalarType) -> Result<(), Error> {
         if self.formatted || self.null || self.empty {
             return Ok(());
         }
@@ -81,7 +98,7 @@ impl Matcher {
         }
     }
 
-    pub(super) fn units(
+    pub(crate) fn units(
         &self,
         text: &str,
         work: &mut ResourceBudget,
@@ -98,7 +115,7 @@ impl Matcher {
         Ok(units)
     }
 
-    pub(super) fn special(&self, value: &Value) -> Option<bool> {
+    pub(crate) fn special(&self, value: &Value) -> Option<bool> {
         if self.null {
             return Some(matches!(value, Value::Null));
         }
@@ -111,7 +128,7 @@ impl Matcher {
         None
     }
 
-    pub(super) fn text<'a>(
+    pub(crate) fn text<'a>(
         &self,
         value: &'a Value,
         cell: &'a mut Cell,
@@ -147,7 +164,7 @@ impl Matcher {
         })
     }
 
-    pub(super) fn find(
+    pub(crate) fn find(
         &self,
         text: &str,
         bounds: StringSearch,

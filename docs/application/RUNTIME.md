@@ -479,6 +479,60 @@ failed/canceled candidates preserving old handles, cross-worker witness rejectio
 EOF failure and explicit fresh-source reapplication. These headless checks do not
 establish native Access filtering or cross-platform GUI parity.
 
+## Reviewed replacement of a Find occurrence
+
+With offline editing enabled, `ReplaceFindMatch` accepts the exact successful
+Find request and found record/field/UTF-16 span, literal replacement text and an
+optional issued filter handle/mode. It checks the current document revision,
+source witness, visible membership, scope, native field/control policy and exact
+match boundaries against the immutable raw source. It revalidates that occurrence
+in place; it does not run Find Next again, advance to a different match or replay
+an old search after reopening. Input masks, lookup/non-textbox controls and
+unqualified fields refuse rather than bypassing normal native admission.
+
+Current supported carriers are raw Text and unformatted Byte/Int16/Int32/Int64.
+Text replacement splices precisely the checked occurrence into the full original
+text without normalizing it. UTF-16 positions are mapped to valid UTF-8 character
+boundaries; a span inside a surrogate pair refuses. Find patterns retain their
+native mode/case policy; replacement wildcards are literal characters, without
+capture expansion. Integer replacement operates on its exact canonical integer
+spelling and passes the existing invariant typed parser. Formatted numeric/date
+replacement requires a qualified regional conversion contract and currently
+refuses; displayed currency/date text is never reparsed as invariant input.
+
+An empty replacement deletes only the matched substring. The resulting edit
+input is explicitly non-NULL Text, including a present-empty value when the
+entire text is removed. Stored NULL matches refuse and require an explicit typed
+edit; native automatic Whole Field blank-to-NULL versus empty behavior remains
+unqualified. Existing review controls expose the NULL distinction rather than
+silently equating NULL, empty Text and the literal word `NULL`.
+
+Replacement returns an ordinary `EditDraft` containing the runtime-computed full
+value. It neither reviews nor saves automatically. Explicit Review uses the
+existing native planner, field constraints, exact original image and consuming
+`ReviewedEdit`; Apply uses the same retained SaveWorker outcomes/recovery and
+fresh leased source checks. This reviewed workflow is a deliberate current
+interaction difference from Access's immediate Replace button. Refused candidates
+leave the earlier valid edit draft intact.
+
+Match preparation and ordinary BeginEdit are separate bounded snapshot passes,
+with no offline lease held while the user considers the result. The first pass
+shares the ordinary native allowance across metadata and normal-editor snapshot,
+a 16 MiB/one-million-step native comparison pool, a cumulative
+64 MiB/ten-million-step match pool and the normal 8 MiB presentation pool. The
+second BeginEdit retains its existing native/presentation allowances. Literal
+replacement and final edit input have the existing 1 MiB input ceiling; normal
+Review and Apply retain their own existing bounds. Pools do not reset per row
+or substring. Replace All is not supplied by this single-occurrence operation:
+a complete batch requires its own one-image native admission and consuming
+batch save capability, rather than a loop of independent cell commits.
+
+Microsoft's [Find/Replace contract](https://support.microsoft.com/en-us/access/use-the-find-and-replace-dialog-box-to-change-data)
+documents partial-field search, literal replacement characters, blank replacement
+and lookup restrictions. Current wildcard match-span selection and native
+case-sensitive parity retain the Find qualification limits; successful headless
+review is not a Windows Access replacement comparison.
+
 ## Visual SELECT design services
 
 `tablecraft-builders::query` owns the working headless visual draft, native QBE
