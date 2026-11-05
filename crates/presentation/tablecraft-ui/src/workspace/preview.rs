@@ -4,6 +4,7 @@
 mod actions;
 mod collections;
 mod editing;
+mod errors;
 mod fixtures;
 mod queries;
 
@@ -16,6 +17,9 @@ pub enum Scene {
     #[default]
     Datasheet,
     LongNames,
+    LongReadError,
+    LongQueryError,
+    LongSavedError,
     Empty,
     Loading,
     Error,
@@ -57,9 +61,12 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 40] = [
+    pub const ALL: [Self; 43] = [
         Self::Datasheet,
         Self::LongNames,
+        Self::LongReadError,
+        Self::LongQueryError,
+        Self::LongSavedError,
         Self::Empty,
         Self::Loading,
         Self::Error,
@@ -121,6 +128,9 @@ impl Scene {
         match self {
             Self::Datasheet => "datasheet",
             Self::LongNames => "long-names",
+            Self::LongReadError => "long-read-error",
+            Self::LongQueryError => "long-query-error",
+            Self::LongSavedError => "long-saved-error",
             Self::Empty => "empty",
             Self::Loading => "loading",
             Self::Error => "error",
@@ -219,6 +229,9 @@ impl Preview {
         match scene {
             Scene::Datasheet => {}
             Scene::LongNames => fixtures::long_names(&mut self.state),
+            Scene::LongReadError | Scene::LongQueryError | Scene::LongSavedError => {
+                self.prepare_long_error(scene)
+            }
             Scene::Empty => {
                 let mut data = fixtures::page("Customers", 0);
                 data.rows.clear();
