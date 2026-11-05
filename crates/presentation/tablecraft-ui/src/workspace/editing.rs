@@ -111,7 +111,8 @@ impl State {
 
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
-        if self.view != DocumentView::Table
+        if self.field_filter_dialog_open()
+            || self.view != DocumentView::Table
             || self.zoom_dialog_open()
             || self.insertion_dialog_open()
             || self.deletion_dialog_open()
@@ -353,7 +354,10 @@ impl State {
             )
     }
     pub fn edit_dialog_open(&self) -> bool {
-        self.edit.is_some() || self.insertion_dialog_open() || self.deletion_dialog_open()
+        self.edit.is_some()
+            || self.insertion_dialog_open()
+            || self.deletion_dialog_open()
+            || self.field_filter_dialog_open()
     }
 
     /// Saving is nonreplaceable: close/cancel must wait for a terminal outcome.

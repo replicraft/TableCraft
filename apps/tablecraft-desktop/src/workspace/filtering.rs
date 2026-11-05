@@ -1,4 +1,5 @@
 //! Own opaque filter sessions; widgets receive only inert source witnesses.
+mod field;
 use super::{Desktop, PendingOperation};
 use crate::view_models;
 use tablecraft_runtime::{
@@ -210,6 +211,7 @@ impl Desktop {
         }
         let request_id = match &self.pending {
             PendingOperation::FilterSelection { request_id }
+            | PendingOperation::FieldFilterApply { request_id }
             | PendingOperation::FilterPage { request_id }
             | PendingOperation::FilterRestore { request_id }
             | PendingOperation::SortView { request_id }

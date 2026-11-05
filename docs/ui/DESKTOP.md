@@ -1243,3 +1243,33 @@ loading/error capture exists, so these status surfaces remain provisional visual
 approximations. No native application window was opened. The loading scene is
 classified as animated and exports a bounded frame sequence without waiting for
 an intentionally perpetual spinner to settle.
+
+
+## Common field filters — 5 November 2026
+
+Home Filter and the column menu now describe the selected native field before
+opening a typed comparison editor. Numeric/date comparisons, inclusive Between
+and Not Between (including reversed bounds), explicit NULL tests and text
+patterns use runtime services. Text equality and prefix/suffix/contains choices
+honor the database's ANSI-89/92 wildcard mode; captured selection equality
+continues to compare the literal stored value. Different fields combine with
+AND; a replacement on the same field replaces that criterion. Sorting survives
+filter changes. Unsupported field kinds refuse without a sequential fallback.
+
+Metadata description does not decode user records. Applying a filter finishes
+the complete native scan before publishing a new view. Failure, cancellation,
+invalid input and stale replies preserve the previous rows and native rights.
+The source-bound dialog blocks conflicting object/edit actions. Each input has
+a 64 KiB UTF-8 ceiling; oversized text is rejected whole, including same-frame
+cursor movement followed by paste, rather than silently applying a prefix.
+
+Fixed numeric bounds use exact Decimal operands, including fractional bounds
+outside the stored field's range. Unrepresentable bounds refuse. Floating
+bounds must survive the documented canonical decimal spelling round trip;
+this is an engineering policy, not proof of exact IEEE representation or native
+Access coercion parity. Input uses invariant typed syntax independently of
+regional display. Dynamic date presets, value-list filters, arbitrary SQL
+criteria and broader unsupported field types remain unfinished.
+
+The retained Home capture was opened for control placement. No exact common
+filter popup capture exists; its layout remains a visual approximation.

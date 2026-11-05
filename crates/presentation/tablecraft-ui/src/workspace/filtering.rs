@@ -1,7 +1,11 @@
 //! Native selection filtering retains physical row identities and runtime values.
 mod controls;
+mod field;
 mod sorting;
 
+pub use field::{
+    FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
+};
 pub use sorting::{SortSpec, SortTarget};
 
 use super::{Data, DocumentView, State};
@@ -55,6 +59,7 @@ pub struct FilterPublication {
 
 #[derive(Default)]
 pub(super) struct TableFilter {
+    field: Option<Box<field::Session>>,
     view: Option<View>,
     pending: Option<Pending>,
     error: Option<Failure>,
@@ -90,6 +95,10 @@ struct Pending {
 }
 
 enum Operation {
+    Field {
+        target: FieldFilterTarget,
+        operator: FieldFilterOperator,
+    },
     Selection {
         target: FilterSelectionTarget,
         comparison: FilterComparison,
@@ -115,6 +124,7 @@ enum Operation {
 impl Operation {
     fn source(&self) -> (u64, &str) {
         match self {
+            Self::Field { target, .. } => (target.document_revision, &target.table),
             Self::Selection { target, .. } => (target.document_revision, &target.table),
             Self::Restore { target } => (target.document_revision, &target.table),
             Self::Sort { target, .. } => (target.document_revision, &target.table),
@@ -137,6 +147,9 @@ impl TableFilter {
         if let Some(error) = &self.error {
             count.string(&error.table);
             count.string(&error.message);
+        }
+        if let Some(field) = &self.field {
+            count.add(field.retained_bytes()?);
         }
         count.finish()
     }
@@ -227,6 +240,7 @@ impl State {
             return false;
         }
         self.table_filter = TableFilter {
+            field: None,
             view: Some(View {
                 target,
                 sort,
@@ -437,7 +451,7 @@ impl State {
             && self.view == DocumentView::Table
             && !self.backstage_visible()
             && !self.zoom_dialog_open()
-            && !self.edit_dialog_open()
+            && (!self.edit_dialog_open() || self.field_reply_current(request_id))
             && self.contents_request_id().is_none()
             && !self.saved_query_prompt_open()
             && source_current
@@ -453,6 +467,26 @@ impl State {
             .as_ref()
             .expect("accepted filter request");
         let expected = match &pending.operation {
+            Operation::Field { target, operator } => {
+                self.field_reply_current(request_id)
+                    && self
+                        .table_filter
+                        .field
+                        .as_ref()
+                        .is_some_and(|field| field.operator() == *operator)
+                    && publication.target.document_revision == target.document_revision
+                    && publication.target.table == target.table
+                    && publication.enabled
+                    && publication.data.offset == 0
+                    && publication.sort == self.table_sort()
+                    && publication.filter_count > 0
+                    && self
+                        .table_filter
+                        .view
+                        .as_ref()
+                        .is_none_or(|view| publication.source_rows == view.source_rows)
+                    && (target.enabled || publication.filter_count == 1)
+            }
             Operation::Selection { target, .. } => {
                 publication.target.document_revision == target.document_revision
                     && publication.target.table == target.table
@@ -546,6 +580,10 @@ impl State {
     }
 
     pub fn fail_filter(&mut self, request_id: u64, message: String) {
+        if self.field_reply_current(request_id) {
+            self.fail_field_filter(request_id, message);
+            return;
+        }
         if !self.accepts_filter_reply(request_id) {
             return;
         }

@@ -26,6 +26,7 @@ pub use contents::{CollectionKind, ContentsTarget};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
 pub use filtering::{
+    FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
     SortSpec, SortTarget,
 };
@@ -127,6 +128,17 @@ pub enum Action {
     PasteCell {
         target: EditTarget,
         text: String,
+    },
+    DescribeFieldFilter {
+        target: FieldFilterTarget,
+    },
+    ApplyFieldFilter {
+        target: FieldFilterTarget,
+        operator: FieldFilterOperator,
+        inputs: Vec<String>,
+    },
+    CloseFieldFilter {
+        request_id: u64,
     },
     FilterSelection {
         target: FilterSelectionTarget,
@@ -514,6 +526,7 @@ impl State {
         self.refresh_delete_display();
         self.validate_zoom();
         self.validate_table_filter();
+        self.validate_field_filter();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
@@ -592,6 +605,7 @@ impl State {
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);
+        self.field_filter_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
             self.finish_pane_focus(ui);
         }

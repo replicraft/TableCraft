@@ -49,7 +49,7 @@ datasheet-go = 移動
 
 datasheet-null-value = NULL
 datasheet-close-table = テーブルを閉じる
-datasheet-sort-column = { $column } を並べ替え
+datasheet-column-menu = 列メニュー { $column }
 
 datasheet-last = 最後
 
