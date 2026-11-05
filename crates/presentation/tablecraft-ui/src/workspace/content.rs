@@ -1,6 +1,7 @@
 //! Active table/query result presentation, preserving each slot's paging state.
 mod tabs;
 
+use super::focus::{self, Pane};
 use super::{Action, DocumentView, State};
 use crate::datasheet;
 use crate::localization::{message, tr};
@@ -16,6 +17,9 @@ impl State {
             )
             .show(ui, |ui| {
                 self.document_tabs(ui);
+                if let Some(pane) = self.take_pane_entry() {
+                    self.prepare_pane_entry(pane, ui.ctx());
+                }
                 if let Some(error) = &self.error {
                     Frame::new()
                         .fill(ui.visuals().extreme_bg_color)
@@ -65,7 +69,15 @@ impl State {
                     } else {
                         &mut self.query_selection
                     };
-                    actions.extend(datasheet::show(ui, data, selection));
+                    let pane = if self.view == DocumentView::Table {
+                        Pane::Document
+                    } else {
+                        Pane::Results
+                    };
+                    if selection.position().is_some() {
+                        focus::declare(ui, pane);
+                    }
+                    actions.extend(datasheet::show(ui, data, selection, pane));
                 } else if self.view == DocumentView::Query {
                     ui.weak(tr(
                         ui,
@@ -86,6 +98,21 @@ impl State {
                     });
                 }
             });
+    }
+
+    fn prepare_pane_entry(&mut self, pane: Pane, context: &egui::Context) {
+        match (pane, self.view) {
+            (Pane::Document, DocumentView::Table) => self.table_selection.focus_selected(),
+            (Pane::Document, DocumentView::Design) => self.request_design_pane_entry(context),
+            (Pane::Results, DocumentView::Query) => {
+                if self.saved_query.active {
+                    self.saved_query.selection.focus_selected();
+                } else {
+                    self.query_selection.focus_selected();
+                }
+            }
+            _ => {}
+        }
     }
 }
 
@@ -137,3 +164,6 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
         }
     });
 }
+
+#[cfg(test)]
+mod pane_focus_tests;

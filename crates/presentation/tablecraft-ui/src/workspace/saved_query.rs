@@ -142,6 +142,7 @@ impl State {
             .collect();
         self.saved_query.parameters = Some(parameters);
         self.saved_query.pending = None;
+        self.bump_focus_publication();
         true
     }
 
@@ -218,6 +219,7 @@ impl State {
         self.saved_query.data = Some(data);
         self.saved_query.pending = None;
         self.saved_query.error = None;
+        self.bump_focus_publication();
         true
     }
 

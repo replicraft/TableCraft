@@ -38,6 +38,7 @@ fn ten_thousand_rows_only_draw_the_visible_subset() {
                 |row| drawn.push(row),
                 &mut Vec::new(),
                 &mut Selection::default(),
+                Pane::Document,
             );
         });
         output.textures_delta.clear();
@@ -204,7 +205,14 @@ fn scroll_frame(context: &Context, data: &Data, events: Vec<Event>) -> ScrollObs
     // Advance a deterministic clock past visibility animations between frames.
     frame_input.time = Some(context.cumulative_frame_nr() as f64 * 0.25);
     let mut output = context.run_ui(frame_input, |ui| {
-        let area = show_rows(ui, data, |_| {}, &mut Vec::new(), &mut Selection::default());
+        let area = show_rows(
+            ui,
+            data,
+            |_| {},
+            &mut Vec::new(),
+            &mut Selection::default(),
+            Pane::Document,
+        );
         let bar = context.read_response(area.id.with(0_usize));
         observed = Some(ScrollObservation {
             offset: area.state.offset,
@@ -421,9 +429,16 @@ fn selection_frame(
     let mut frame_input = input(events);
     frame_input.time = Some(context.cumulative_frame_nr() as f64 * 0.25);
     let output = context.run_ui(frame_input, |ui| {
-        offset = show_rows(ui, data, |row| drawn.push(row), &mut Vec::new(), selection)
-            .state
-            .offset;
+        offset = show_rows(
+            ui,
+            data,
+            |row| drawn.push(row),
+            &mut Vec::new(),
+            selection,
+            Pane::Document,
+        )
+        .state
+        .offset;
     });
     (output, drawn, offset)
 }
@@ -651,7 +666,14 @@ fn same_identity_publication_surrenders_old_grid_focus_before_contents_enter() {
         }]),
         |ui| {
             let mut actions = Vec::new();
-            show_rows(ui, &data, |_| {}, &mut actions, &mut selection);
+            show_rows(
+                ui,
+                &data,
+                |_| {},
+                &mut actions,
+                &mut selection,
+                Pane::Document,
+            );
             assert!(
                 actions.is_empty(),
                 "old focused column opened new collection"
@@ -909,7 +931,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
             egui::Modifiers::NONE,
         )]),
         |ui| {
-            assert!(show(ui, &data, &mut selection).is_empty());
+            assert!(show(ui, &data, &mut selection, Pane::Document).is_empty());
         },
     );
     output.textures_delta.clear();
@@ -951,7 +973,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     let mut output = context.run_ui(input(vec![]), |ui| {
         ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")))
             .request_focus();
-        let _ = show(ui, &data, &mut selection);
+        let _ = show(ui, &data, &mut selection, Pane::Document);
     });
     output.textures_delta.clear();
     let mut output = context.run_ui(
@@ -961,7 +983,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         ]),
         |ui| {
             ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")));
-            let _ = show(ui, &data, &mut selection);
+            let _ = show(ui, &data, &mut selection, Pane::Document);
         },
     );
     output.textures_delta.clear();

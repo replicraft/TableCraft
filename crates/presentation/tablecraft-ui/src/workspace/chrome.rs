@@ -1,4 +1,5 @@
 //! Shared title, contextual ribbon and status; no file or database services.
+use super::focus::{self, Pane};
 use super::{Action, DocumentView, State, ribbon};
 use crate::theme::palette;
 use egui::{Frame, Margin, RichText, Ui};
@@ -75,14 +76,15 @@ impl State {
                         .auto_shrink([false, true])
                         .show(ui, |ui| {
                             ui.horizontal(|ui| {
-                                if ui
-                                    .add(egui::Button::new(t.text("ribbon-file")).frame(false))
-                                    .clicked()
-                                {
+                                let file =
+                                    ui.add(egui::Button::new(t.text("ribbon-file")).frame(false));
+                                focus::register(ui, Pane::Ribbon, &file, false);
+                                if file.clicked() {
                                     self.show_open();
                                 }
                                 if tab(
                                     ui,
+                                    "ribbon-home",
                                     &t.text("ribbon-home"),
                                     self.ribbon_tab == ribbon::Tab::Home,
                                     true,
@@ -98,13 +100,14 @@ impl State {
                                         "ribbon-database-tools",
                                         "ribbon-help",
                                     ] {
-                                        tab(ui, &t.text(key), false, false)
+                                        tab(ui, key, &t.text(key), false, false)
                                             .on_disabled_hover_text(t.text("ribbon-preview-only"));
                                     }
                                 }
                                 if self.view == DocumentView::Design {
                                     if tab(
                                         ui,
+                                        "ribbon-table-design",
                                         &t.text("ribbon-table-design"),
                                         self.ribbon_tab == ribbon::Tab::TableDesign,
                                         true,
@@ -115,7 +118,7 @@ impl State {
                                     }
                                 } else if self.mock_preview && self.data.is_some() {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
-                                        tab(ui, &t.text(key), false, false)
+                                        tab(ui, key, &t.text(key), false, false)
                                             .on_disabled_hover_text(t.text("ribbon-preview-only"));
                                     }
                                 }
@@ -159,14 +162,19 @@ impl State {
     }
 }
 
-fn tab(ui: &mut Ui, label: &str, selected: bool, enabled: bool) -> egui::Response {
+fn tab(ui: &mut Ui, key: &str, label: &str, selected: bool, enabled: bool) -> egui::Response {
     let colors = palette(ui.ctx());
-    let response = ui.add_enabled(
-        enabled,
-        egui::Button::selectable(selected, label)
-            .fill(colors.surface)
-            .frame(false),
-    );
+    let response = ui
+        .push_id(key, |ui| {
+            ui.add_enabled(
+                enabled,
+                egui::Button::selectable(selected, label)
+                    .fill(colors.surface)
+                    .frame(false),
+            )
+        })
+        .inner;
+    focus::register(ui, Pane::Ribbon, &response, selected);
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_role(egui::accesskit::Role::Tab);
         node.clear_toggled();
@@ -183,6 +191,14 @@ fn tab(ui: &mut Ui, label: &str, selected: bool, enabled: bool) -> egui::Respons
         ui.painter().line_segment(
             [response.rect.left_bottom(), response.rect.right_bottom()],
             egui::Stroke::new(2.0, colors.accent),
+        );
+    }
+    if response.enabled() && response.has_focus() {
+        ui.painter().rect_stroke(
+            response.rect,
+            0.0,
+            egui::Stroke::new(1.0, colors.accent),
+            egui::StrokeKind::Inside,
         );
     }
     response

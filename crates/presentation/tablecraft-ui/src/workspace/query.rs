@@ -1,6 +1,7 @@
 //! Query editor admission is shared with keyboard command handling.
 use super::{Action, DocumentView, State};
 use crate::localization::tr;
+use crate::workspace::focus::{self, Pane};
 use egui::{RichText, TextEdit, Ui};
 
 const MAX_SQL_EDITOR_HEIGHT: f32 = 150.0;
@@ -54,6 +55,7 @@ impl State {
                             )
                             .labelled_by(sql_label.id);
                         crate::theme::input_border(ui, &sql);
+                        focus::register(ui, Pane::Document, &sql, true);
                     });
             });
             if ui

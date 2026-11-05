@@ -2,6 +2,7 @@
 use super::{DocumentView, State};
 use crate::localization::tr;
 use crate::theme::palette;
+use crate::workspace::focus::{self, Pane};
 use egui::{Frame, Id, Margin, Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
 
 const TAB_HEIGHT: f32 = 22.0;
@@ -77,6 +78,9 @@ impl State {
                                     continue;
                                 }
                                 let response = tab(ui, id, &title, self.view == view);
+                                if self.view == view {
+                                    focus::register(ui, Pane::Document, &response, false);
+                                }
                                 if response.clicked() {
                                     selected_view = Some(view);
                                     ui.ctx().request_repaint();

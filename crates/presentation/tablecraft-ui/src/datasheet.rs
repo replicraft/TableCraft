@@ -5,6 +5,7 @@ pub(crate) use selection::Selection;
 
 use super::{Action, Cell, Data, HorizontalAlignment};
 use crate::localization::{for_context, message, tr};
+use crate::workspace::focus::{self, Pane};
 use egui::{Response, RichText, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
@@ -13,12 +14,12 @@ const RECORD_SELECTOR_WIDTH: f32 = 18.0;
 const CELL_TEXT_PADDING: f32 = 3.0;
 const BOOLEAN_BOX_SIZE: f32 = 14.0;
 
-pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection) -> Vec<Action> {
+pub(super) fn show(ui: &mut Ui, data: &Data, selection: &mut Selection, pane: Pane) -> Vec<Action> {
     let mut actions = Vec::new();
     if let Some(error) = selection.copy_error(ui.ctx()) {
         ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
     }
-    show_rows(ui, data, |_| {}, &mut actions, selection);
+    show_rows(ui, data, |_| {}, &mut actions, selection, pane);
     actions
 }
 
@@ -28,7 +29,15 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
     if let Some(error) = selection.copy_error(ui.ctx()) {
         ui.colored_label(crate::theme::palette(ui.ctx()).accent, error);
     }
-    render_rows(ui, data, |_| {}, &mut Vec::new(), selection, true);
+    render_rows(
+        ui,
+        data,
+        |_| {},
+        &mut Vec::new(),
+        selection,
+        true,
+        Pane::Document,
+    );
 }
 
 fn show_rows(
@@ -37,8 +46,9 @@ fn show_rows(
     row_drawn: impl FnMut(usize),
     actions: &mut Vec<Action>,
     selection: &mut Selection,
+    pane: Pane,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
-    render_rows(ui, data, row_drawn, actions, selection, false)
+    render_rows(ui, data, row_drawn, actions, selection, false, pane)
 }
 
 fn render_rows(
@@ -48,6 +58,7 @@ fn render_rows(
     actions: &mut Vec<Action>,
     selection: &mut Selection,
     collection_layout: bool,
+    pane: Pane,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
@@ -125,7 +136,14 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                row_selector(ui, data, index, number, selection);
+                                row_selector(
+                                    ui,
+                                    data,
+                                    index,
+                                    number,
+                                    selection,
+                                    (!collection_layout).then_some(pane),
+                                );
                             });
                             for (position, (column, text)) in
                                 data.columns.iter().zip(&data.rows[index]).enumerate()
@@ -143,6 +161,12 @@ fn render_rows(
                                     }
                                     let response = cell(ui, text, &column.name, number, active);
                                     selection.observe(ui, index, position, &response);
+                                    if !collection_layout
+                                        && !selection.row_selected()
+                                        && selection.selected(index, position)
+                                    {
+                                        focus::register(ui, pane, &response, true);
+                                    }
                                     if ui.is_enabled() && selection.selected(index, position) {
                                         ui.painter().rect_stroke(
                                             ui.max_rect(),
@@ -178,9 +202,22 @@ fn render_rows(
     .inner
 }
 
-fn row_selector(ui: &mut Ui, data: &Data, row: usize, number: u64, selection: &mut Selection) {
+fn row_selector(
+    ui: &mut Ui,
+    data: &Data,
+    row: usize,
+    number: u64,
+    selection: &mut Selection,
+    document_pane: Option<Pane>,
+) {
     let response = ui.allocate_response(ui.available_size(), Sense::click());
     selection.observe_row(ui, data, row, &response);
+    if let Some(pane) = document_pane
+        && selection.row_selected()
+        && selection.row() == Some(row)
+    {
+        focus::register(ui, pane, &response, true);
+    }
     let label = message(
         ui,
         "datasheet-select-record",

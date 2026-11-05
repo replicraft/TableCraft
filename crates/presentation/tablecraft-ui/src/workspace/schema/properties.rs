@@ -1,5 +1,6 @@
 //! Inert field-property observations, distinct from native storage diagnostics.
 use super::{Field, property, yes_no};
+use crate::workspace::focus::{self, Pane};
 use crate::{Localizer, theme::palette};
 use egui::{Align, Direction, Frame, Label, Layout, Margin, Response, RichText, Ui, UiBuilder};
 use egui_extras::{Column, TableBuilder};
@@ -73,72 +74,77 @@ pub(super) fn show(ui: &mut Ui, field: &Field) {
     }
 
     ui.add_space(ui.spacing().item_spacing.y);
-    egui::CollapsingHeader::new(localizer.text("design-native-details")).show(ui, |ui| {
-        egui::Grid::new("native_field_properties")
-            .num_columns(2)
-            .show(ui, |ui| {
-                property(
-                    ui,
-                    &localizer.text("design-property-field-name"),
-                    &field.name,
-                );
-                property(
-                    ui,
-                    &localizer.text("design-field-number"),
-                    field.number.to_string(),
-                );
-                property(
-                    ui,
-                    &localizer.text("design-native-type"),
-                    format!("0x{:02X}", field.native_type),
-                );
-                property(
-                    ui,
-                    &localizer.text("design-readable-carrier"),
-                    field
-                        .scalar_type
-                        .clone()
-                        .unwrap_or_else(|| localizer.text("design-unsupported")),
-                );
-                property(
-                    ui,
-                    &localizer.text("design-storage-bytes"),
-                    field.storage_bytes.to_string(),
-                );
-                let fixed_storage = yes_no(ui, field.fixed);
-                property(ui, &localizer.text("design-fixed-storage"), fixed_storage);
-                property(
-                    ui,
-                    &localizer.text("design-native-flags"),
-                    format!("0x{:02X}", field.flags),
-                );
-                property(
-                    ui,
-                    &localizer.text("design-extended-flags"),
-                    format!("0x{:02X}", field.extended_flags),
-                );
-                let nullable = field
-                    .reader_nullable
-                    .map(|value| yes_no(ui, value))
-                    .unwrap_or_else(|| localizer.text("design-unclassified"));
-                property(ui, &localizer.text("design-reader-null"), nullable);
-                if let Some((precision, scale)) = field.decimal_parameters {
-                    let parameters = crate::localization::message(
+    let details =
+        egui::CollapsingHeader::new(localizer.text("design-native-details")).show(ui, |ui| {
+            egui::Grid::new("native_field_properties")
+                .num_columns(2)
+                .show(ui, |ui| {
+                    property(
                         ui,
-                        "design-precision-value",
-                        &[
-                            ("precision", precision.to_string()),
-                            ("scale", scale.to_string()),
-                        ],
+                        &localizer.text("design-property-field-name"),
+                        &field.name,
                     );
-                    property(ui, &localizer.text("design-precision-scale"), parameters);
-                }
-                if let Some(id) = field.complex_type_id {
-                    property(ui, &localizer.text("design-complex-id"), id.to_string());
-                }
-            });
-        ui.small(localizer.text("design-reader-null-help"));
-    });
+                    property(
+                        ui,
+                        &localizer.text("design-field-number"),
+                        field.number.to_string(),
+                    );
+                    property(
+                        ui,
+                        &localizer.text("design-native-type"),
+                        format!("0x{:02X}", field.native_type),
+                    );
+                    property(
+                        ui,
+                        &localizer.text("design-readable-carrier"),
+                        field
+                            .scalar_type
+                            .clone()
+                            .unwrap_or_else(|| localizer.text("design-unsupported")),
+                    );
+                    property(
+                        ui,
+                        &localizer.text("design-storage-bytes"),
+                        field.storage_bytes.to_string(),
+                    );
+                    let fixed_storage = yes_no(ui, field.fixed);
+                    property(ui, &localizer.text("design-fixed-storage"), fixed_storage);
+                    property(
+                        ui,
+                        &localizer.text("design-native-flags"),
+                        format!("0x{:02X}", field.flags),
+                    );
+                    property(
+                        ui,
+                        &localizer.text("design-extended-flags"),
+                        format!("0x{:02X}", field.extended_flags),
+                    );
+                    let nullable = field
+                        .reader_nullable
+                        .map(|value| yes_no(ui, value))
+                        .unwrap_or_else(|| localizer.text("design-unclassified"));
+                    property(ui, &localizer.text("design-reader-null"), nullable);
+                    if let Some((precision, scale)) = field.decimal_parameters {
+                        let parameters = crate::localization::message(
+                            ui,
+                            "design-precision-value",
+                            &[
+                                ("precision", precision.to_string()),
+                                ("scale", scale.to_string()),
+                            ],
+                        );
+                        property(ui, &localizer.text("design-precision-scale"), parameters);
+                    }
+                    if let Some(id) = field.complex_type_id {
+                        property(ui, &localizer.text("design-complex-id"), id.to_string());
+                    }
+                });
+            ui.small(localizer.text("design-reader-null-help"));
+        });
+    focus::register(ui, Pane::Properties, &details.header_response, false);
+    if details.header_response.gained_focus() {
+        details.header_response.scroll_to_me(None);
+    }
 }
 
 fn general_sheet(ui: &mut Ui, observations: &[(String, String)]) {
@@ -172,6 +178,7 @@ fn general_sheet(ui: &mut Ui, observations: &[(String, String)]) {
                     });
                     row.col(|ui| {
                         let response = property_cell(ui, value, true);
+                        focus::register(ui, Pane::Properties, &response, response.has_focus());
                         if let Some(label_id) = label_id {
                             response.labelled_by(label_id);
                         }
@@ -193,19 +200,37 @@ fn property_cell(ui: &mut Ui, text: &str, selectable: bool) -> Response {
     // Keep the full cell response/selection region, but align the label's
     // exact-size galley at the left. Ui::put centers that inner galley even
     // when Label::halign is LEFT.
-    ui.scope_builder(
-        UiBuilder::new().max_rect(content).layout(
-            Layout::centered_and_justified(Direction::TopDown).with_cross_align(Align::LEFT),
-        ),
-        |ui| {
-            ui.add(
-                Label::new(text)
-                    .selectable(selectable)
-                    .halign(Align::LEFT)
-                    .truncate(),
-            )
-        },
-    )
-    .inner
-    .on_hover_text(text)
+    let response = ui
+        .scope_builder(
+            UiBuilder::new().max_rect(content).layout(
+                Layout::centered_and_justified(Direction::TopDown).with_cross_align(Align::LEFT),
+            ),
+            |ui| {
+                ui.add(
+                    Label::new(text)
+                        .selectable(selectable)
+                        .sense(if selectable {
+                            egui::Sense::focusable_noninteractive()
+                        } else {
+                            egui::Sense::hover()
+                        })
+                        .halign(Align::LEFT)
+                        .truncate(),
+                )
+            },
+        )
+        .inner
+        .on_hover_text(text);
+    if response.gained_focus() {
+        response.scroll_to_me(None);
+    }
+    if response.has_focus() {
+        ui.painter().rect_stroke(
+            rect,
+            0.0,
+            egui::Stroke::new(1.0, colors.accent),
+            egui::StrokeKind::Inside,
+        );
+    }
+    response
 }
