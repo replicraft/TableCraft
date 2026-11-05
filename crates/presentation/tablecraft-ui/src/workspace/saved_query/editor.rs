@@ -142,6 +142,9 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                                     node.set_description(description);
                                 });
                                 input_border(ui, &kind);
+                                if kind.gained_focus() {
+                                    kind.scroll_to_me(None);
+                                }
                             }
                             let text = ui
                                 .add_enabled(
@@ -151,6 +154,9 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                                 )
                                 .labelled_by(label.id);
                             input_border(ui, &text);
+                            if text.gained_focus() {
+                                text.scroll_to_me(None);
+                            }
                             changed |= text.changed();
                             let null = ui
                                 .add_enabled(
@@ -165,6 +171,9 @@ fn parameters(ui: &mut egui::Ui, state: &mut SavedQueryState, idle: bool) -> boo
                             ui.ctx().accesskit_node_builder(null.id, |node| {
                                 node.set_description(description);
                             });
+                            if null.gained_focus() {
+                                null.scroll_to_me(None);
+                            }
                             changed |= null.changed();
                             ui.small(hint(ui, &input.kind));
                         });
