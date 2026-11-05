@@ -3,6 +3,8 @@ use super::{Action, Data, DocumentView, State};
 use crate::localization::{for_context, message, tr};
 use crate::{CellKind, datasheet};
 
+const EMPTY_CONTENTS_HEIGHT: f32 = 48.0;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ContentsTarget {
     pub document_revision: u64,
@@ -242,22 +244,32 @@ impl State {
                     if *kind == CollectionKind::VersionHistory {
                         ui.small(tr(ui, "collections-history-help"));
                     }
-                    if !data.rows.is_empty() {
-                        ui.add_space(4.0);
-                        let height = (ctx.content_rect().height() - 260.0).clamp(160.0, 440.0);
-                        let size = egui::vec2(ui.available_width(), height);
-                        // The datasheet must receive its own bounded viewport
-                        // starting below the modal labels, never the modal's
-                        // full rectangle (which includes its heading and Close).
-                        ui.allocate_ui_with_layout(
-                            size,
-                            egui::Layout::top_down(egui::Align::LEFT),
-                            |ui| {
-                                ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                                datasheet::show_collection(ui, data, &mut dialog.selection);
-                            },
-                        );
-                    }
+                    ui.add_space(4.0);
+                    let height = if data.rows.is_empty() {
+                        EMPTY_CONTENTS_HEIGHT
+                    } else {
+                        (ctx.content_rect().height() - 260.0).clamp(160.0, 440.0)
+                    };
+                    let size = egui::vec2(ui.available_width(), height);
+                    // Keep the child viewport below modal controls and membership
+                    // metadata. Empty collections retain their declared headers.
+                    ui.allocate_ui_with_layout(
+                        size,
+                        egui::Layout::top_down(egui::Align::LEFT),
+                        |ui| {
+                            ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
+                            ui.push_id(
+                                (
+                                    dialog.target.document_revision,
+                                    &dialog.target.table,
+                                    &dialog.target.column,
+                                ),
+                                |ui| {
+                                    datasheet::show_collection(ui, data, &mut dialog.selection);
+                                },
+                            );
+                        },
+                    );
                 }
             }
         });

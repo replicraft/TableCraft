@@ -1,4 +1,5 @@
 mod clipboard;
+mod collection_columns;
 mod selection;
 pub(crate) use selection::Selection;
 
@@ -46,7 +47,7 @@ fn render_rows(
     mut row_drawn: impl FnMut(usize),
     actions: &mut Vec<Action>,
     selection: &mut Selection,
-    fill_last_column: bool,
+    collection_layout: bool,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
@@ -59,6 +60,8 @@ fn render_rows(
             .id_salt("datasheet_horizontal")
             .auto_shrink([false, false])
             .show(ui, |ui| {
+                let initial_widths =
+                    collection_layout.then(|| collection_columns::initial_widths(ui, data));
                 let mut table = TableBuilder::new(ui);
                 if let Some(row) = scroll_to {
                     table = table.scroll_to_row(row, Some(egui::Align::Center));
@@ -69,10 +72,13 @@ fn render_rows(
                     .resizable(true)
                     .column(Column::exact(RECORD_SELECTOR_WIDTH));
                 for index in 0..data.columns.len() {
-                    let column = if fill_last_column && index + 1 == data.columns.len() {
+                    let column = if collection_layout && index + 1 == data.columns.len() {
                         Column::remainder().at_least(128.0)
                     } else {
-                        Column::initial(128.0).at_least(60.0)
+                        let width = initial_widths
+                            .as_ref()
+                            .map_or(128.0, |widths| widths[index]);
+                        Column::initial(width).at_least(60.0)
                     };
                     table = table.column(column);
                 }
