@@ -656,3 +656,28 @@ ignored under `.cache/ui-object-status-review/`. There is no matching retained
 Access state capture; the exact presentation is provisional. No native window
 was opened. The preview-only animated classification was verified by successful
 bounded loading-frame export after the full functional/matrix gate.
+
+
+## Field filters and datasheet polish — 5 November 2026
+
+The inventory now contains 61 scenes, adding `field-filter` and
+`field-filter-error`. The complete 976-combination matrix passed with eight
+languages and both themes. All 194 UI checks passed; the final memory-layout and
+title-command presence follow-up passed 193 functional checks with only the
+already-passed matrix omitted. Synthetic filter Apply deliberately returns a
+retained mock error rather than pretending to evaluate native predicates.
+
+Ten German/de-DE PNGs were exported and opened under ignored
+`.cache/ui-polish-review/final/`: Datasheet, Options, field-filter, field-filter
+error and empty filtered table in both themes. They use 1000 × 680 logical
+pixels at 1.25 scale (1250 × 850 physical pixels), macOS offscreen GPU rendering
+and Windows keyboard conventions. Native window controls are platform-compiled;
+these macOS frames do not qualify Windows/Linux title controls. The unprivileged
+renderer had no GPU adapter; the same windowless renderer succeeded with local
+GPU access. No application window was opened or activated.
+
+The revised gear/cylinder, compact shell, formatting examples, NULL marker,
+centered captions, retained error input and New row/empty-message separation were
+visually reviewed. The actual retained Home capture was reopened. There is no
+retained Access Options/common-filter/dark-theme capture, so those presentations
+remain adaptations rather than verified pixel matches or native interactions.

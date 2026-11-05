@@ -1,5 +1,6 @@
 use super::*;
 use crate::Database;
+use crate::Localizer;
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
@@ -127,7 +128,7 @@ fn short_workspace_title_keeps_the_same_left_edge_as_a_truncated_title() {
 }
 
 #[test]
-fn mock_quick_access_is_compact_and_inert_above_the_separate_ribbon_tabs() {
+fn quick_access_is_compact_and_inert_in_preview_and_real_workspace() {
     let context = egui::Context::default();
     context.enable_accesskit();
     crate::configure(&context);
@@ -219,6 +220,7 @@ fn mock_quick_access_is_compact_and_inert_above_the_separate_ribbon_tabs() {
             }
         }
     }
+    preview.state_mut().mock_preview = false;
     for id in quick_ids {
         let mut output = context.run_ui(
             egui::RawInput {
@@ -239,6 +241,19 @@ fn mock_quick_access_is_compact_and_inert_above_the_separate_ribbon_tabs() {
             |ui| assert!(preview.state_mut().show(ui).is_empty()),
         );
         output.textures_delta.clear();
+        let node = output
+            .platform_output
+            .accesskit_update
+            .as_ref()
+            .unwrap()
+            .nodes
+            .iter()
+            .find(|(actual, _)| *actual == id)
+            .map(|(_, node)| node)
+            .expect("real workspace retains the actual title command");
+        assert!(node.is_disabled());
+        assert!(!node.supports_action(egui::accesskit::Action::Click));
+        assert!(!node.supports_action(egui::accesskit::Action::Focus));
     }
     assert!(!preview.state().edit_dialog_open());
     assert_eq!(preview.state().localizer.diagnostics(), Default::default());

@@ -13,16 +13,36 @@ check = '<path d="m16 23 4 4 9-11" fill="none" stroke="{green}" stroke-width="3"
 plus = '<path d="M24 17v12M18 23h12" stroke="{green}" stroke-width="3"/>'
 lightning = '<path d="m19 2-10 16h7l-3 12 12-18h-8z" fill="{gold}"/>'
 
-# Eight equally spaced teeth keep the settings silhouette symmetric at 16 px.
+# Rounded, evenly spaced teeth and a clear central opening stay recognizable
+# at the small Backstage rail size. This geometry is authored here, not imported.
 gear_points = []
 for tooth in range(8):
-    for offset, radius in [(-0.5, 10), (-0.3, 10), (-0.3, 13), (0.3, 13), (0.3, 10), (0.5, 10)]:
+    for offset, radius in [(-0.45, 10), (-0.22, 10), (-0.22, 13.5),
+                           (0.22, 13.5), (0.22, 10), (0.45, 10)]:
         angle = (tooth + offset) * math.tau / 8
-        gear_points.append(f'{16 + math.cos(angle) * radius:.3f},{16 + math.sin(angle) * radius:.3f}')
-gear = '<polygon points="' + ' '.join(gear_points) + '" fill="{pale}"/><circle cx="16" cy="16" r="5" fill="{paper}"/>'
+        gear_points.append((16 + math.cos(angle) * radius,
+                            16 + math.sin(angle) * radius))
+
+gear_commands = []
+for index, point in enumerate(gear_points):
+    previous = gear_points[index - 1]
+    following = gear_points[(index + 1) % len(gear_points)]
+    before_length = math.dist(point, previous)
+    after_length = math.dist(point, following)
+    rounding = min(0.7, before_length * 0.35, after_length * 0.35)
+    before = tuple(point[axis] + (previous[axis] - point[axis])
+                   * rounding / before_length for axis in range(2))
+    after = tuple(point[axis] + (following[axis] - point[axis])
+                  * rounding / after_length for axis in range(2))
+    prefix = 'M' if index == 0 else 'L'
+    gear_commands.append(f'{prefix}{before[0]:.3f},{before[1]:.3f}')
+    gear_commands.append(f'Q{point[0]:.3f},{point[1]:.3f} {after[0]:.3f},{after[1]:.3f}')
+gear_commands.append('Z')
+gear = '<path d="' + ' '.join(gear_commands) + '" fill="{ink}" stroke="none"/>'
+gear += '<circle cx="16" cy="16" r="4.7" fill="{paper}" stroke="none"/>'
 
 icons = {
-    'application': '<path d="M5 8v16c0 3 5 5 11 5s11-2 11-5V8" fill="{red}" stroke="{red}"/><ellipse cx="16" cy="8" rx="11" ry="5" fill="{red}" stroke="{paper}" stroke-width="1.5"/><path d="M5 16c0 3 5 5 11 5s11-2 11-5M5 24c0 3 5 5 11 5s11-2 11-5" fill="none" stroke="{paper}" stroke-width="1.5"/>',
+    'application': '<path d="M5 8v16c0 3 5 5 11 5s11-2 11-5V8" fill="{app_red}" stroke="{app_red}"/><ellipse cx="16" cy="8" rx="11" ry="5" fill="{app_red}" stroke="{paper}" stroke-width="1.5"/><path d="M5 16c0 3 5 5 11 5s11-2 11-5M5 24c0 3 5 5 11 5s11-2 11-5" fill="none" stroke="{paper}" stroke-width="1.5"/>',
     'folder_open': '<path d="M3 9V6h10l3 3h12v17H3z" fill="{gold}"/><path d="m3 15 5-4h23l-5 16H3z" fill="{palegold}"/>',
     'settings': gear,
     'info': '<circle cx="16" cy="16" r="13" fill="{blue}" stroke="none"/><circle cx="16" cy="9" r="1.5" fill="{paper}" stroke="none"/><path d="M13 14h3v10h4" fill="none" stroke="{paper}"/>',
@@ -75,10 +95,10 @@ icons = {
 }
 
 palettes = {
-    'light': dict(ink='#445367', paper='#fbfdff', pale='#d8e9f8', blue='#4788bd', green='#3e9365', gold='#d8a039', palegold='#f5dfa0', red='#bf5962'),
-    'dark': dict(ink='#b9cadb', paper='#273646', pale='#355c7b', blue='#83b7e3', green='#8acba4', gold='#e9bf68', palegold='#6b572e', red='#ee929b'),
-    'disabled-light': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red'], '#777f89') | dict(paper='#e7eaee', pale='#d5d9df', palegold='#d5d9df'),
-    'disabled-dark': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red'], '#a5aeba') | dict(paper='#303841', pale='#46505d', palegold='#46505d'),
+    'light': dict(ink='#445367', paper='#fbfdff', pale='#d8e9f8', blue='#4788bd', green='#3e9365', gold='#d8a039', palegold='#f5dfa0', red='#bf5962', app_red='#b12b3d'),
+    'dark': dict(ink='#b9cadb', paper='#273646', pale='#355c7b', blue='#83b7e3', green='#8acba4', gold='#e9bf68', palegold='#6b572e', red='#ee929b', app_red='#dc6572'),
+    'disabled-light': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red', 'app_red'], '#777f89') | dict(paper='#e7eaee', pale='#d5d9df', palegold='#d5d9df'),
+    'disabled-dark': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red', 'app_red'], '#a5aeba') | dict(paper='#303841', pale='#46505d', palegold='#46505d'),
 }
 
 records = []

@@ -16,11 +16,11 @@
       "variants": {
         "light": {
           "file": "application-light.svg",
-          "sha256": "092ab484c308aa78d0af67ce73f9c6ec2fac41f80830a60ae11f9d57e6a1e903"
+          "sha256": "d12324a9903abcf9bd31aa9b152f43cb5a6af771839e11eb73f45c46bf76f8ea"
         },
         "dark": {
           "file": "application-dark.svg",
-          "sha256": "32f3937fd09669a3b5c2a31e9173568dbad6982e53d1337f30d9c745790324d7"
+          "sha256": "58285e82ca003f85ea3d0f582afeba2b04b3e60238d0c008856a2b991f16f8d8"
         },
         "disabled-light": {
           "file": "application-disabled-light.svg",
@@ -58,19 +58,19 @@
       "variants": {
         "light": {
           "file": "settings-light.svg",
-          "sha256": "d473b4a9137bc0a46d19ded8f8e02e02e40bf15b873606ec9c8874db8377421f"
+          "sha256": "726cb07cb21c94bd5b01b163653d25f732b2b777fcc95d60f2c5074c52c0c35a"
         },
         "dark": {
           "file": "settings-dark.svg",
-          "sha256": "c253d48a23897aa363038158a8f378837fd64a3bf0d68955dad89ddbf52bca38"
+          "sha256": "a2122cafcf5744d32a42ecc25f713fb3fcb88abe5cc386219dcf75f663ec6b58"
         },
         "disabled-light": {
           "file": "settings-disabled-light.svg",
-          "sha256": "713e6e4ee6083d64f97279770037d6373f006967cb4bc0270f491a83bac8d903"
+          "sha256": "2feeafbce42a1c17839253c275b62f91eeb75a1a073784ec497b008d913208d2"
         },
         "disabled-dark": {
           "file": "settings-disabled-dark.svg",
-          "sha256": "7b4344605b5524c4fd2d5b0c2f44b96b34599c920995fd6c09895676dae4ea93"
+          "sha256": "78da578059289ba5f9b0c76882f121c1e43d538639c295e15db0e9a808001837"
         }
       }
     },

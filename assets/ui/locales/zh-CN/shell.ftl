@@ -9,7 +9,6 @@ shell-close = 关闭
 shell-yes = 是
 shell-no = 否
 shell-local-databases = 本地 Access 数据库
-shell-snapshot-browsing = 浏览快照
 shell-saving-offline = 正在离线保存
 shell-offline-edit = 离线编辑
 shell-preview = 快照 · 预览
@@ -33,3 +32,7 @@ shell-window-close = 关闭窗口
 shell-zoom = 缩放
 shell-zoom-out = 缩小
 shell-zoom-in = 放大
+
+shell-save-unavailable = 请从经过审核的编辑对话框保存更改。没有直接编辑后尚未保存的记录。
+shell-undo-unavailable = 文档撤销暂不可用。文本输入框保留各自的撤销历史。
+shell-redo-unavailable = 文档重做暂不可用。文本输入框保留各自的重做历史。

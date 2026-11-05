@@ -9,7 +9,6 @@ shell-close = Закрыть
 shell-yes = Да
 shell-no = Нет
 shell-local-databases = Локальные базы данных Access
-shell-snapshot-browsing = Просмотр снимка
 shell-saving-offline = АВТОНОМНОЕ СОХРАНЕНИЕ
 shell-offline-edit = АВТОНОМНОЕ ИЗМЕНЕНИЕ
 shell-preview = СНИМОК · ПРЕДПРОСМОТР
@@ -33,3 +32,7 @@ shell-window-close = Закрыть окно
 shell-zoom = Масштаб
 shell-zoom-out = Уменьшить
 shell-zoom-in = Увеличить
+
+shell-save-unavailable = Сохраняйте изменения в диалоге проверенного редактирования. Несохранённых записей прямого редактирования нет.
+shell-undo-unavailable = Отмена действий документа недоступна. У текстовых полей есть собственная история отмены.
+shell-redo-unavailable = Повтор действий документа недоступен. У текстовых полей есть собственная история повтора.

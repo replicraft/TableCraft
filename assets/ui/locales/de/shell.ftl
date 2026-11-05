@@ -9,7 +9,6 @@ shell-close = Schließen
 shell-yes = Ja
 shell-no = Nein
 shell-local-databases = Lokale Access-Datenbanken
-shell-snapshot-browsing = Momentaufnahme durchsuchen
 shell-saving-offline = OFFLINE-SPEICHERUNG
 shell-offline-edit = OFFLINE-BEARBEITUNG
 shell-preview = MOMENTAUFNAHME · VORSCHAU
@@ -33,3 +32,7 @@ shell-window-close = Fenster schließen
 shell-zoom = Zoom
 shell-zoom-out = Verkleinern
 shell-zoom-in = Vergrößern
+
+shell-save-unavailable = Speichern Sie Änderungen im geprüften Bearbeitungsdialog. Es gibt keine ungespeicherten direkt bearbeiteten Datensätze.
+shell-undo-unavailable = Rückgängig für Dokumente ist nicht verfügbar. Texteingaben behalten ihren eigenen Verlauf.
+shell-redo-unavailable = Wiederholen für Dokumente ist nicht verfügbar. Texteingaben behalten ihren eigenen Verlauf.

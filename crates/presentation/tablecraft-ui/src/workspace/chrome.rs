@@ -1,14 +1,14 @@
 //! Shared title, contextual ribbon and status; no file or database services.
+mod quick_access;
 mod window;
 use super::focus::{self, Pane};
+use super::objects::ObjectKind;
 use super::ribbon::Icon;
 use super::{Action, DocumentView, State, ribbon};
-use crate::Localizer;
 use crate::theme::palette;
 use egui::{Frame, Margin, RichText, Ui, WidgetInfo, WidgetType};
 
 const APPLICATION_ICON_SIZE: f32 = 16.0;
-const QUICK_ACCESS_BUTTON_SIZE: f32 = 20.0;
 const RIBBON_TAB_HEIGHT: f32 = 26.0;
 const RIBBON_TAB_SIDE_PADDING: f32 = 9.0;
 const ZOOM_STEP_PERCENT: u16 = 10;
@@ -34,10 +34,8 @@ impl State {
                             .alt_text(t.text("shell-app-name")),
                     )
                     .on_hover_text(t.text("shell-app-name"));
-                    if self.mock_preview {
-                        quick_access(ui, &t);
-                        ui.add_space(6.0);
-                    }
+                    quick_access::show(ui, &t);
+                    ui.add_space(6.0);
                     let title = self
                         .database
                         .as_ref()
@@ -47,7 +45,9 @@ impl State {
                         .as_ref()
                         .and_then(|database| database.title_path.as_deref())
                         .unwrap_or(&title);
-                    let status = if self.edit_dialog_open() {
+                    let status = if self.field_filter_dialog_open() {
+                        Some(t.text("filtering-field-title"))
+                    } else if self.edit_dialog_open() {
                         Some(self.edit_status())
                     } else if self.busy {
                         Some(t.text("shell-working"))
@@ -269,13 +269,16 @@ impl State {
                     }
                 });
                 ui.separator();
-                let table = match self.view {
-                    DocumentView::Table => self.data.as_ref().map(|data| data.table.clone()),
-                    DocumentView::Design => self.schema.as_ref().map(|schema| schema.table.clone()),
-                    DocumentView::Query => None,
-                };
+                let active = self.active_object();
+                let table = active.as_ref().and_then(|tab| match &tab.target.kind {
+                    ObjectKind::Table { name } => Some(name.clone()),
+                    _ => None,
+                });
                 let design = ui.add_enabled(
-                    !self.backstage_visible() && !self.busy && table.is_some(),
+                    table.is_some()
+                        && active
+                            .as_ref()
+                            .is_some_and(|tab| self.can_activate_object(tab)),
                     egui::Button::image(Icon::TableEdit.image(ui, STATUS_VIEW_ICON_SIZE))
                         .selected(self.view == DocumentView::Design),
                 );
@@ -291,11 +294,11 @@ impl State {
                         table: table.clone().expect("enabled table view"),
                     });
                 }
-                let datasheet_available = table
+                let datasheet_available = active
                     .as_ref()
-                    .is_some_and(|name| self.data.as_ref().is_some_and(|data| &data.table == name));
+                    .is_some_and(|tab| self.can_view_object_datasheet(tab));
                 let datasheet = ui.add_enabled(
-                    !self.backstage_visible() && !self.busy && datasheet_available,
+                    datasheet_available,
                     egui::Button::image(Icon::Table.image(ui, STATUS_VIEW_ICON_SIZE))
                         .selected(self.view == DocumentView::Table),
                 );
@@ -306,46 +309,14 @@ impl State {
                         t.text("shell-view-datasheet"),
                     )
                 });
-                if datasheet.clicked() {
-                    self.select_view(DocumentView::Table);
+                if datasheet.clicked()
+                    && let Some(tab) = active
+                {
+                    actions.push(Action::ViewObjectDatasheet { tab });
                 }
             });
         });
     }
-}
-
-fn quick_access(ui: &mut Ui, localizer: &Localizer) {
-    ui.scope(|ui| {
-        ui.spacing_mut().item_spacing.x = 2.0;
-        ui.spacing_mut().button_padding = egui::vec2(2.0, 2.0);
-        ui.spacing_mut().interact_size = egui::Vec2::splat(QUICK_ACCESS_BUTTON_SIZE);
-        for (key, icon) in [
-            ("ribbon-save", Icon::Save),
-            ("ribbon-undo", Icon::Undo),
-            ("ribbon-redo", Icon::Redo),
-        ] {
-            let label = localizer.text(key);
-            let response = ui
-                .push_id(("quick_access", key), |ui| {
-                    ui.add_enabled_ui(false, |ui| {
-                        ui.add(
-                            egui::Button::image(icon.image(ui, APPLICATION_ICON_SIZE)).frame(false),
-                        )
-                    })
-                    .inner
-                })
-                .inner;
-            response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, &label));
-            ui.ctx().accesskit_node_builder(response.id, |node| {
-                node.remove_action(egui::accesskit::Action::Click);
-                node.remove_action(egui::accesskit::Action::Focus);
-            });
-            response.on_disabled_hover_text(format!(
-                "{label}: {}",
-                localizer.text("ribbon-preview-only")
-            ));
-        }
-    });
 }
 
 fn ribbon_tab_size(ui: &Ui, label: &str) -> egui::Vec2 {

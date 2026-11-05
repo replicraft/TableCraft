@@ -9,7 +9,6 @@ shell-close = 닫기
 shell-yes = 예
 shell-no = 아니요
 shell-local-databases = 로컬 Access 데이터베이스
-shell-snapshot-browsing = 스냅샷 탐색
 shell-saving-offline = 오프라인 저장 중
 shell-offline-edit = 오프라인 편집
 shell-preview = 스냅샷 · 미리 보기
@@ -33,3 +32,7 @@ shell-window-close = 창 닫기
 shell-zoom = 확대/축소
 shell-zoom-out = 축소
 shell-zoom-in = 확대
+
+shell-save-unavailable = 검토된 편집 대화 상자에서 변경 내용을 저장하세요. 직접 편집한 미저장 레코드는 없습니다.
+shell-undo-unavailable = 문서 실행 취소는 사용할 수 없습니다. 텍스트 입력에는 자체 실행 취소 기록이 있습니다.
+shell-redo-unavailable = 문서 다시 실행은 사용할 수 없습니다. 텍스트 입력에는 자체 다시 실행 기록이 있습니다.
