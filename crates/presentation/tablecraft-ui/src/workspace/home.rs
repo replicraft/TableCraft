@@ -217,17 +217,17 @@ impl State {
                         ribbon::mock_command(ui, &t, Icon::Save, "ribbon-save", CommandSize::Small);
                     }
                 });
-                if self.mock_preview {
-                    ui.vertical(|ui| {
+                ui.vertical(|ui| {
+                    self.totals_command(ui, actions);
+                    if self.mock_preview {
                         for (icon, key) in [
-                            (Icon::Sum, "ribbon-totals"),
                             (Icon::Spelling, "ribbon-spelling"),
                             (Icon::MoreRecords, "ribbon-more"),
                         ] {
                             ribbon::mock_command(ui, &t, icon, key, CommandSize::Small);
                         }
-                    });
-                }
+                    }
+                });
             });
         });
     }

@@ -147,6 +147,9 @@ impl State {
     }
 
     fn selected_record_target(&self) -> Option<RecordTarget> {
+        if self.total_selection_active() {
+            return None;
+        }
         let data = self.data.as_ref()?;
         let (row, column) = self.table_selection.position()?;
         let target = RecordTarget {
@@ -227,6 +230,9 @@ impl State {
     }
 
     fn record_positions(&self) -> Option<RecordPositions> {
+        if self.total_selection_active() {
+            return None;
+        }
         let data = self.data.as_ref()?;
         let (row, _) = self.table_selection.position()?;
         let current = data.display_ordinal(row)?;

@@ -26,7 +26,8 @@ pub use workspace::{
     FindTarget, InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget,
     ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, RecordTarget,
     RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget,
-    State, Table, WorkspaceLayout,
+    State, Table, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
+    TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

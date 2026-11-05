@@ -46,6 +46,7 @@ impl State {
         }
         if self.view == DocumentView::Table {
             self.filter_report(ui);
+            self.totals_report(ui);
         }
         if self.unloaded_object_status(ui, actions) {
             return;
@@ -85,6 +86,10 @@ impl State {
         };
         if let Some(data) = data {
             let sort_header = self.native_sort_header();
+            let totals_context = self.totals_render_context();
+            let totals = totals_context
+                .as_ref()
+                .and_then(|(target, enabled)| self.totals.row(target, *enabled));
             let selection = if self.view == DocumentView::Table {
                 &mut self.table_selection
             } else if self.saved_query.active {
@@ -100,14 +105,18 @@ impl State {
             if selection.position().is_some() {
                 focus::declare(ui, pane);
             }
-            actions.extend(datasheet::show(
+            let output = datasheet::show(
                 ui,
                 data,
                 selection,
                 pane,
                 sort_header,
                 insert_target,
-            ));
+                totals,
+            );
+            actions.extend(output.actions);
+            self.apply_totals_selection(output.selection);
+            self.apply_total_choices(output.totals_choices);
         } else if self.view == DocumentView::Query {
             ui.weak(tr(
                 ui,

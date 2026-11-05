@@ -3,7 +3,7 @@ use super::{ObjectKind, ObjectTab};
 use crate::datasheet::Selection;
 use crate::workspace::{
     Data, DocumentView, Schema, State, filtering::TableFilter, records::RecordNavigation,
-    saved_query::SavedQueryState,
+    saved_query::SavedQueryState, totals::Totals,
 };
 use std::mem;
 
@@ -27,6 +27,7 @@ pub(super) enum Session {
         schema: Option<Schema>,
         selected_field: usize,
         filter: TableFilter,
+        totals: Totals,
         records: RecordNavigation,
         design: bool,
         error: Option<String>,
@@ -51,6 +52,7 @@ impl Session {
                 schema: None,
                 selected_field: 0,
                 filter: TableFilter::default(),
+                totals: Totals::default(),
                 records: RecordNavigation::default(),
                 design: false,
                 error: None,
@@ -75,6 +77,7 @@ impl Session {
                 schema: state.schema.take(),
                 selected_field: state.selected_field,
                 filter: mem::take(&mut state.table_filter),
+                totals: mem::take(&mut state.totals),
                 records: mem::take(&mut state.records),
                 design: state.view == DocumentView::Design,
                 error: state.error.take(),
@@ -100,6 +103,7 @@ impl Session {
                 schema,
                 selected_field,
                 filter,
+                totals,
                 records,
                 design,
                 error,
@@ -109,6 +113,7 @@ impl Session {
                 state.schema = schema;
                 state.selected_field = selected_field;
                 state.table_filter = filter;
+                state.totals = totals;
                 state.records = records;
                 state.view = if design {
                     DocumentView::Design

@@ -96,6 +96,7 @@ impl Session {
                 data: page,
                 schema: fields,
                 filter,
+                totals,
                 records,
                 error,
                 ..
@@ -107,6 +108,7 @@ impl Session {
                     count.add(schema(fields)?);
                 }
                 count.add(filter.retained_bytes()?);
+                count.add(totals.retained_bytes()?);
                 count.add(records.retained_bytes()?);
                 count.optional(error);
             }
@@ -169,6 +171,7 @@ impl State {
         count.string(&self.sql);
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.table_filter.retained_bytes()?);
+        count.add(self.totals.retained_bytes()?);
         count.add(self.records.retained_bytes()?);
         count.optional(&self.error);
         count.finish()

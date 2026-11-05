@@ -111,7 +111,9 @@ fn actual_headers_show_captions_and_accessible_context_keeps_original_names() {
                     crate::workspace::focus::Pane::Document,
                     None,
                     None,
+                    None,
                 )
+                .actions
                 .is_empty()
             );
         },

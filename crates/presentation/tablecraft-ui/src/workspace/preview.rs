@@ -13,6 +13,7 @@ mod fixtures;
 mod insertion;
 mod object_status;
 mod queries;
+mod totals;
 
 mod zoom;
 
@@ -30,6 +31,8 @@ pub enum Scene {
     ObjectError,
     FieldFilter,
     FieldFilterError,
+    Totals,
+    TotalsError,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -88,13 +91,15 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 61] = [
+    pub const ALL: [Self; 63] = [
         Self::Datasheet,
         Self::Objects,
         Self::ObjectLoading,
         Self::ObjectError,
         Self::FieldFilter,
         Self::FieldFilterError,
+        Self::Totals,
+        Self::TotalsError,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -180,6 +185,8 @@ impl Scene {
             Self::ObjectError => "object-error",
             Self::FieldFilter => "field-filter",
             Self::FieldFilterError => "field-filter-error",
+            Self::Totals => "totals",
+            Self::TotalsError => "totals-error",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -326,6 +333,8 @@ impl Preview {
             Scene::ObjectError => self.prepare_unloaded_object(false),
             Scene::FieldFilter => self.prepare_field_filter_scene(false),
             Scene::FieldFilterError => self.prepare_field_filter_scene(true),
+            Scene::Totals => self.prepare_totals_scene(false),
+            Scene::TotalsError => self.prepare_totals_scene(true),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError

@@ -3,6 +3,7 @@ use super::session::Entry;
 use super::{MAX_OBJECTS, NEXT_OBJECT_ID, ObjectKind, ObjectTab, ObjectTarget, Objects, Session};
 use crate::SavedQueryTarget;
 use crate::workspace::saved_query::InputPreferences;
+use crate::workspace::totals::{Totals, TotalsPreferences};
 use crate::workspace::{DocumentView, State};
 use std::sync::atomic::Ordering;
 
@@ -17,6 +18,7 @@ struct Preference {
     design: bool,
     offset: u32,
     parameters: Option<InputPreferences>,
+    totals: Option<TotalsPreferences>,
 }
 
 impl State {
@@ -50,7 +52,16 @@ impl State {
                         None => (false, entry.offset, None),
                     }
                 };
+                let totals = if active {
+                    self.totals.preferences()
+                } else {
+                    match &entry.session {
+                        Some(Session::Table { totals, .. }) => totals.preferences(),
+                        _ => None,
+                    }
+                };
                 Preference {
+                    totals,
                     kind: entry.tab.target.kind.clone(),
                     design,
                     offset,
@@ -115,7 +126,10 @@ impl State {
             };
             let mut session = Session::empty(&target.kind);
             match &mut session {
-                Session::Table { design, .. } => *design = preference.design,
+                Session::Table { design, totals, .. } => {
+                    *design = preference.design;
+                    *totals = Totals::restore(preference.totals);
+                }
                 Session::Saved { state, .. } => {
                     let ObjectKind::SavedQuery { object_id, name } = &target.kind else {
                         unreachable!();

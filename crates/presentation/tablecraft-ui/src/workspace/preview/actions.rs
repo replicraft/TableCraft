@@ -42,6 +42,11 @@ impl Preview {
             return;
         }
         match action {
+            Action::DescribeTotals { target } => self.mock_describe_totals(target),
+            Action::ComputeTotals { target, specs } => self.mock_compute_totals(target, specs),
+            Action::CancelTotals { request_id } => {
+                self.state.cancel_totals(request_id);
+            }
             Action::DescribeFieldFilter { target } => self.mock_describe_field_filter(target),
             Action::ApplyFieldFilter {
                 target,

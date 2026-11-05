@@ -18,6 +18,7 @@ This does not change backend compatibility claims or resume SQLite, project
 infrastructure or VBA execution.
 
 - [Datasheet display preferences and window chrome](DISPLAY_PREFERENCES.md)
+- [Complete native-view datasheet totals](DATASHEET_TOTALS.md)
 - [Synthetic preview, themes and translations](PRESENTATION_PREVIEW.md)
 - [Native desktop kickoff, ownership and release gates](DESKTOP.md)
 - [Observed Access visual references and current corrections](VISUAL_REFERENCES.md)

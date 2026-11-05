@@ -1,5 +1,31 @@
 # Implementation status
 
+## Native datasheet Totals — 5 November 2026
+
+Home Totals now exposes per-field aggregate choices over a complete native view,
+including active/off filter membership, without calculating over a visible page.
+The runtime reuses the query kernels and checks complete native EOF before
+publication. Derived currency averages round once for display; typed Raw remains
+available. Totals have no native row/edit identity, and selected totals own Copy
+without allowing Paste/Delete to fall through to an old selected record.
+
+Choices and visibility follow object tabs. Same-view paging retains completed
+results; changed views and reviewed save/reopen require fresh binding. A real
+reviewed edit changed a total from 60 to 65 after reopening the new source, while
+old-source rights were rejected. Defaults remain unset, errors stop automatic
+retry, unsupported retained choices can be removed, and a 33rd choice visibly
+refuses while preserving the existing 32.
+
+The batch passed 101 runtime, seven display and the runtime diagnostics check.
+Across the full gate and focused follow-up, all 57 desktop and 198 UI tests
+passed, including the final 63 × eight × two matrix (1,008 combinations). Strict
+eight-package Clippy, minimal runtime/display Clippy, formatting, documentation
+links and dependency checks passed. German light/dark Totals/error PNGs were
+inspected offscreen at 1000 × 680 logical pixels, scale 1.25. No native window
+opened. Query-result totals, Extended Date/Time Average and native Access
+qualification remain unfinished; adaptive overflow placement is provisional.
+See the [Totals contract](ui/DATASHEET_TOTALS.md).
+
 ## Native field filters and datasheet presentation — 5 November 2026
 
 Home and column menus now open source-bound common field filters. Runtime owns
