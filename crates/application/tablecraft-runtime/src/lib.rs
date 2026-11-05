@@ -16,7 +16,7 @@ mod schema;
 mod source;
 mod worker;
 
-pub use cell::{Cell, CellKind, DisplayControl};
+pub use cell::{Cell, CellKind, DisplayControl, HorizontalAlignment};
 pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]

@@ -63,6 +63,7 @@ fn focused_cell_copies_the_complete_value_and_exposes_row_and_column_context() {
 #[test]
 fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
     let cached_null = Cell {
+        alignment: crate::HorizontalAlignment::Left,
         text: "NULL".into(),
         kind: CellKind::Scalar {
             is_null: true,
@@ -76,6 +77,7 @@ fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
         "Description, row 7: NULL; Stored NULL calculated result; no formula evaluated; freshness unknown",
     );
     let attachment = Cell {
+        alignment: crate::HorizontalAlignment::Left,
         text: "1 attachment".into(),
         kind: CellKind::Attachments {
             assigned: true,
@@ -165,6 +167,7 @@ fn tab_moves_between_cells_without_changing_their_text() {
 fn narrow_cached_result_cell_paints_the_value_before_its_annotation() {
     let context = Context::default();
     let value = Cell {
+        alignment: crate::HorizontalAlignment::Left,
         text: "77".into(),
         kind: CellKind::Scalar {
             is_null: false,
@@ -318,6 +321,7 @@ fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_ente
         offset: 100,
         columns: vec!["Items".into()],
         rows: vec![vec![Cell {
+            alignment: crate::HorizontalAlignment::Left,
             text: "2 items".into(),
             kind: CellKind::Multivalue {
                 assigned: true,
@@ -628,6 +632,7 @@ fn same_identity_publication_surrenders_old_grid_focus_before_contents_enter() {
     data.rows[0] = vec![
         Cell::scalar("NEW"),
         Cell {
+            alignment: crate::HorizontalAlignment::Left,
             text: "1 item".into(),
             kind: CellKind::Multivalue {
                 assigned: true,
@@ -688,6 +693,7 @@ fn typed_boolean_checkbox_is_accessibly_read_only_and_copies_original_text() {
         let context = Context::default();
         context.enable_accesskit();
         let value = Cell {
+            alignment: crate::HorizontalAlignment::Left,
             text: if checked { "-1".into() } else { "0".into() },
             kind: CellKind::Scalar {
                 is_null: false,
@@ -794,6 +800,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
             vec![
                 "0:0".into(),
                 Cell {
+                    alignment: crate::HorizontalAlignment::Left,
                     text: "NULL".into(),
                     kind: CellKind::Scalar {
                         is_null: true,
@@ -803,6 +810,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
                     },
                 },
                 Cell {
+                    alignment: crate::HorizontalAlignment::Left,
                     text: "2 items".into(),
                     kind: CellKind::Multivalue {
                         assigned: true,
@@ -969,4 +977,43 @@ fn record_key(key: egui::Key, pressed: bool, modifiers: egui::Modifiers) -> Even
         repeat: false,
         modifiers,
     }
+}
+
+#[test]
+fn explicit_alignment_changes_paint_position_without_inference_or_copy_changes() {
+    let context = Context::default();
+    let left = Cell::scalar("123.00");
+    let mut right = Cell::scalar("123.00");
+    right.alignment = crate::HorizontalAlignment::Right;
+    let mut bounds = Vec::new();
+    let mut output = context.run_ui(input(vec![]), |ui| {
+        for value in [&left, &right] {
+            ui.allocate_ui_with_layout(
+                egui::vec2(240.0, 24.0),
+                egui::Layout::top_down(egui::Align::LEFT),
+                |ui| {
+                    bounds.push(cell(ui, value, "Value", 1, false).rect);
+                },
+            );
+        }
+    });
+    output.textures_delta.clear();
+    let painted: Vec<_> = output
+        .shapes
+        .iter()
+        .filter_map(|shape| match &shape.shape {
+            egui::epaint::Shape::Text(text) if text.galley.job.text == "123.00" => Some(text),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(painted.len(), 2);
+    assert!((painted[0].pos.x - bounds[0].left() - CELL_TEXT_PADDING).abs() < 0.1);
+    assert!(
+        (painted[1].pos.x + painted[1].galley.size().x - bounds[1].right() + CELL_TEXT_PADDING)
+            .abs()
+            < 0.1
+    );
+    assert_eq!(left.alignment, crate::HorizontalAlignment::Left);
+    assert_eq!(left.text, right.text);
+    assert_focused_copy(&right, "Description, row 7: 123.00");
 }

@@ -8,7 +8,7 @@ pub mod localization;
 mod theme;
 mod workspace;
 
-pub use cells::{Cell, CellKind, DisplayControl};
+pub use cells::{Cell, CellKind, DisplayControl, HorizontalAlignment};
 pub use columns::Column;
 pub use fluent_bundle::FluentArgs;
 pub use localization::{Locale, Localizer};

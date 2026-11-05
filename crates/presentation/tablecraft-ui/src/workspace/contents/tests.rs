@@ -18,6 +18,7 @@ fn state() -> State {
         offset: 100,
         columns: vec!["Original column".into()],
         rows: vec![vec![Cell {
+            alignment: crate::HorizontalAlignment::Left,
             text: "Not an identity".into(),
             kind: CellKind::Multivalue {
                 assigned: true,
@@ -43,6 +44,7 @@ fn data() -> Data {
         offset: 0,
         columns: vec!["Value".into()],
         rows: vec![vec![Cell {
+            alignment: crate::HorizontalAlignment::Left,
             text: "NULL".into(),
             kind: CellKind::Scalar {
                 is_null: true,
@@ -444,6 +446,7 @@ fn collection_widths_are_shared_by_parent_rows_but_isolated_between_fields() {
     for _ in 0..2 {
         let cells = (0..2)
             .map(|_| Cell {
+                alignment: crate::HorizontalAlignment::Left,
                 text: "One member".into(),
                 kind: CellKind::Multivalue {
                     assigned: true,

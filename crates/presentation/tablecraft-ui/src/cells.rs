@@ -2,7 +2,16 @@
 
 use crate::{CollectionKind, FluentArgs, Localizer};
 
+/// Default type-directed presentation; stored TextAlign overrides are uninspected.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum HorizontalAlignment {
+    #[default]
+    Left,
+    Right,
+}
+
 pub struct Cell {
+    pub alignment: HorizontalAlignment,
     pub text: String,
     pub kind: CellKind,
 }
@@ -45,6 +54,7 @@ impl Cell {
     /// Native/query adapters must supply exact NULL and provenance flags instead.
     pub fn scalar(text: impl Into<String>) -> Self {
         Self {
+            alignment: HorizontalAlignment::Left,
             text: text.into(),
             kind: CellKind::Scalar {
                 is_null: false,
@@ -195,6 +205,7 @@ mod tests {
     fn stored_null_and_literal_null_text_have_distinct_provenance() {
         let plain = Cell::scalar("NULL");
         let stored = Cell {
+            alignment: HorizontalAlignment::Left,
             text: "NULL".into(),
             kind: CellKind::Scalar {
                 is_null: true,
@@ -220,6 +231,7 @@ mod tests {
     #[test]
     fn absent_empty_and_null_payload_membership_are_not_conflated() {
         let absent = Cell {
+            alignment: HorizontalAlignment::Left,
             text: "Unassigned".into(),
             kind: CellKind::Attachments {
                 assigned: false,
@@ -227,6 +239,7 @@ mod tests {
             },
         };
         let empty = Cell {
+            alignment: HorizontalAlignment::Left,
             text: "0 attachments".into(),
             kind: CellKind::Attachments {
                 assigned: true,
@@ -234,6 +247,7 @@ mod tests {
             },
         };
         let null_payload = Cell {
+            alignment: HorizontalAlignment::Left,
             text: "1 attachment".into(),
             kind: CellKind::Attachments {
                 assigned: true,
@@ -282,6 +296,7 @@ mod boolean_tests {
             DisplayControl::Native(106),
         ] {
             let value = Cell {
+                alignment: HorizontalAlignment::Left,
                 text: "true".into(),
                 kind: CellKind::Scalar {
                     is_null: false,
@@ -310,6 +325,7 @@ mod boolean_tests {
         }
         for (is_null, boolean) in [(true, None), (true, Some(false)), (false, None)] {
             let value = Cell {
+                alignment: HorizontalAlignment::Left,
                 text: "NULL".into(),
                 kind: CellKind::Scalar {
                     is_null,

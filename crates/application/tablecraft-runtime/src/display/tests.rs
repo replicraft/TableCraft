@@ -1,8 +1,8 @@
 use super::Presentation;
-use crate::{Cell, CellKind, Column, Error};
+use crate::{Cell, CellKind, Column, Error, HorizontalAlignment};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::Value,
+    values::{Currency, Decimal, Double, ExtendedDateTime, LegacyDateTime, Single, Value},
 };
 
 #[test]
@@ -87,4 +87,47 @@ fn boolean_facts_are_independent_of_cached_provenance_and_expression_text() {
             display_control: crate::DisplayControl::Uninspected
         }
     );
+}
+
+#[test]
+fn alignment_uses_typed_carriers_without_changing_text_or_provenance() {
+    let mut output = Presentation::new(&|| false);
+    for value in [
+        Value::Byte(12),
+        Value::Int16(-12),
+        Value::Int32(12),
+        Value::Int64(12),
+        Value::Single(Single::from_float(12.0)),
+        Value::Double(Double::from_float(12.0)),
+        Value::Currency(Currency::from_scaled(120_000)),
+        Value::Decimal(Decimal::new(120, 1).unwrap()),
+        Value::DateTime(LegacyDateTime::from_ole_days(2.0).unwrap()),
+        Value::DateTimeExtended(ExtendedDateTime::new(2026, 5, 12, 9, 30, 0, 0).unwrap()),
+    ] {
+        let expected = output.value(&value).unwrap();
+        let cell = output.scalar(&value, true).unwrap();
+        assert_eq!(cell.alignment, HorizontalAlignment::Right);
+        assert_eq!(cell.text, expected);
+        assert!(matches!(
+            cell.kind,
+            CellKind::Scalar {
+                is_null: false,
+                stored_calculation: true,
+                ..
+            }
+        ));
+    }
+    for value in [
+        Value::Text("123.00".into()),
+        Value::Text("2026-05-12".into()),
+        Value::Null,
+        Value::Boolean(true),
+    ] {
+        let cell = output.scalar(&value, false).unwrap();
+        assert_eq!(cell.alignment, HorizontalAlignment::Left);
+        assert_eq!(cell.text, output.value(&value).unwrap());
+        assert!(
+            matches!(cell.kind, CellKind::Scalar { is_null, .. } if is_null == matches!(value, Value::Null))
+        );
+    }
 }

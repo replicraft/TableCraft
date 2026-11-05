@@ -19,6 +19,7 @@ fn data() -> Data {
         rows: vec![vec![
             Cell::scalar("stored value"),
             Cell {
+                alignment: crate::HorizontalAlignment::Left,
                 text: "2 items".into(),
                 kind: CellKind::Multivalue {
                     assigned: true,

@@ -203,6 +203,7 @@ impl Preview {
 
 fn copy_cell(cell: &Cell) -> Cell {
     Cell {
+        alignment: cell.alignment,
         text: cell.text.clone(),
         kind: cell.kind,
     }

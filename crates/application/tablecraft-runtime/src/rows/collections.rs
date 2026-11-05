@@ -1,5 +1,5 @@
 //! Complete typed collection summaries; no attachment decoding or child actions.
-use crate::{Cell, CellKind, Error, display::Presentation};
+use crate::{Cell, CellKind, Error, HorizontalAlignment, display::Presentation};
 use tablecraft_access::{
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageValue,
     StoredCollectionTablePage,
@@ -109,7 +109,11 @@ pub(super) fn rows(
                     } else {
                         output.text("NULL")?
                     };
-                    Cell { text, kind }
+                    Cell {
+                        text,
+                        kind,
+                        alignment: HorizontalAlignment::Left,
+                    }
                 }
             };
             row.push(cell);
