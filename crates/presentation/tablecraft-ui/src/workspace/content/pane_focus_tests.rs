@@ -11,10 +11,15 @@ use egui_kittest::{
 };
 
 fn harness(scene: Scene) -> Harness<'static, State> {
+    harness_at_scale(scene, 1.0)
+}
+
+fn harness_at_scale(scene: Scene, scale: f32) -> Harness<'static, State> {
     let mut preview = Preview::new(scene);
     let state = std::mem::take(preview.state_mut());
     let mut harness = Harness::builder()
         .with_size(egui::vec2(900.0, 580.0))
+        .with_pixels_per_point(scale)
         .with_max_steps(20)
         .build_ui_state(
             |ui, state: &mut State| assert!(state.show(ui).is_empty()),
@@ -261,5 +266,87 @@ fn newer_navigation_focus_supersedes_materializing_cell_record_and_field_entry()
                 assert_eq!(harness.state().table_selection.row_selected(), record);
             }
         }
+    }
+}
+
+#[test]
+fn compact_localized_saved_query_cycles_prompts_results_navigation_and_ribbon_at_fractional_scales()
+{
+    for scale in [1.25, 1.5] {
+        let mut harness = harness_at_scale(Scene::SavedError, scale);
+        harness.state_mut().localizer = crate::Localizer::new(crate::Locale::Ru).unwrap();
+        harness.state_mut().theme = crate::Theme::Dark;
+        harness.run();
+        assert_eq!(harness.ctx.pixels_per_point(), scale);
+        assert_eq!(harness.ctx.content_rect().size(), egui::vec2(900.0, 580.0));
+        let state = harness.state();
+        let target = state.selected_saved_target().unwrap().clone();
+        let Some(Action::RunSavedQuery { parameters, .. }) = state.saved_query_run_action() else {
+            panic!("saved failure retains its typed retry inputs");
+        };
+        let rows = state.saved_query.data.as_ref().unwrap().rows.as_ptr();
+        let sql = state.sql.clone();
+        let home = state.localizer.text("ribbon-home");
+        let mut args = crate::FluentArgs::new();
+        args.set("name", parameters[0].name.clone());
+        args.set("kind", "TEXT(64)");
+        let prompt = state.localizer.format("saved-query-parameter-label", &args);
+        harness.get_by_role_and_label(Role::Tab, &home).focus();
+        harness.run();
+
+        harness.key_press(Key::F6);
+        harness.run();
+        let input = harness.get_by_role_and_label(Role::TextInput, &prompt);
+        assert!(input.is_focused());
+        assert!(input.rect().top() >= 0.0 && input.rect().bottom() <= 580.0);
+
+        harness.key_press(Key::F6);
+        harness.run();
+        let focused_result = harness
+            .get_all_by_role(Role::Label)
+            .find(|node| node.is_focused())
+            .expect("existing saved-result cell owns Results focus");
+        assert!(focused_result.rect().top() >= 0.0 && focused_result.rect().bottom() <= 580.0);
+        assert_eq!(
+            harness.state().saved_query.selection.position(),
+            Some((0, 0))
+        );
+        assert!(!harness.state().saved_query.selection.row_selected());
+
+        harness.key_press(Key::F6);
+        harness.run();
+        let navigation = harness
+            .get_all_by_role(Role::Button)
+            .find(|node| {
+                node.is_focused()
+                    && node.accesskit_node().label().as_deref() == Some(target.name.as_str())
+            })
+            .expect("selected Navigation query row owns focus");
+        assert!(navigation.is_focused());
+        assert!(navigation.rect().left() >= 0.0 && navigation.rect().right() <= 900.0);
+
+        harness.key_press(Key::F6);
+        harness.run();
+        assert!(harness.get_by_role_and_label(Role::Tab, &home).is_focused());
+        harness.key_press_modifiers(egui::Modifiers::SHIFT, Key::F6);
+        harness.run();
+        assert!(harness.get_all_by_role(Role::Button).any(|node| {
+            node.is_focused()
+                && node.accesskit_node().label().as_deref() == Some(target.name.as_str())
+        }));
+
+        let state = harness.state();
+        assert_eq!(state.sql, sql);
+        assert_eq!(state.selected_saved_target(), Some(&target));
+        assert_eq!(state.saved_query.data.as_ref().unwrap().rows.as_ptr(), rows);
+        let Some(Action::RunSavedQuery {
+            parameters: retained,
+            ..
+        }) = state.saved_query_run_action()
+        else {
+            panic!("pane navigation preserves query readiness");
+        };
+        assert_eq!(retained, parameters);
+        assert_eq!(state.localizer.diagnostics(), Default::default());
     }
 }
