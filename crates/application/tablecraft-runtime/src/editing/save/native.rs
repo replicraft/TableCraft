@@ -1,10 +1,12 @@
 //! The actual offline owner lives on this worker until released or diagnosed.
 mod apply;
+mod apply_delete;
 mod apply_insert;
 mod outcomes;
 
 use self::{
     apply::apply,
+    apply_delete::apply_delete,
     apply_insert::apply_insert,
     outcomes::{finish, known, no_session, receipt, retain},
 };
@@ -13,7 +15,7 @@ use super::{
 };
 use crate::{
     controls::budget,
-    editing::{ReviewedEdit, ReviewedInsert},
+    editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert},
 };
 use std::{
     path::PathBuf,
@@ -27,6 +29,7 @@ use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 enum Task {
     Apply(ReviewedEdit, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
+    ApplyDelete(ReviewedDelete, PathBuf),
     Recover,
     Release,
 }
@@ -97,7 +100,9 @@ impl SaveWorker {
                 drop(mailbox);
                 let cancelled = || owner.cancelled.load(Ordering::Acquire);
                 let operation = match &task {
-                    Task::Apply(..) | Task::ApplyInsert(..) => SaveOperation::Apply,
+                    Task::Apply(..) | Task::ApplyInsert(..) | Task::ApplyDelete(..) => {
+                        SaveOperation::Apply
+                    }
                     Task::Recover => SaveOperation::Recover,
                     Task::Release => SaveOperation::Release,
                 };
@@ -116,6 +121,9 @@ impl SaveWorker {
                     }
                     Task::ApplyInsert(reviewed, bundle) => {
                         apply_insert(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::ApplyDelete(reviewed, bundle) => {
+                        apply_delete(reviewed, bundle, &mut retained, &cancelled)
                     }
                     Task::Recover => match retained.take().map(RetainedOwner::into_session) {
                         Some(session) => finish(
@@ -170,6 +178,15 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedInsert>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyInsert)
+    }
+
+    pub fn start_delete(
+        &self,
+        reviewed: ReviewedDelete,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedDelete>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyDelete)
     }
 
     fn start_reviewed<T>(

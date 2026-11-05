@@ -1,4 +1,5 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
+mod deleting;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod draft;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -6,6 +7,7 @@ mod ids;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod input;
 mod inserting;
+pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 mod save;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 mod unsupported;

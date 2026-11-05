@@ -54,8 +54,12 @@ impl Document {
         });
         let query = Query::from_select(select);
         let mut work = budget();
-        let metadata =
-            crate::rows::sorting::Metadata::inspect(&mut self.source, table, &mut work, cancelled)?;
+        let metadata = crate::rows::presentation::Metadata::inspect(
+            &mut self.source,
+            table,
+            &mut work,
+            cancelled,
+        )?;
         let source = NativeSource::new(&mut self.source, SCOPE, work, cancelled)?;
         let comparison_pool = RefCell::new(comparison_budget());
         let (mut source, resolver) =
@@ -103,7 +107,7 @@ pub(super) fn execute<R: NativeReadSource>(
     resolver: &NativeCollationResolver<'_>,
     parameters: &[(&str, Value)],
     title: &str,
-    metadata: Option<&crate::rows::sorting::Metadata>,
+    metadata: Option<&crate::rows::presentation::Metadata>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     let like_mode = match source.database_query_mode()? {

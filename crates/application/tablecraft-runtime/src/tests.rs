@@ -5,6 +5,11 @@ mod contents;
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux")
 ))]
+mod deleting;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
 mod editing;
 mod formatting;
 #[cfg(all(

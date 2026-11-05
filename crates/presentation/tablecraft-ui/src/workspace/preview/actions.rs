@@ -17,6 +17,12 @@ impl Preview {
                 crate::workspace::insertion::Dialog::Saving { .. }
                     | crate::workspace::insertion::Dialog::Finished { .. }
             )
+        ) || matches!(
+            self.state.deletion,
+            Some(
+                crate::workspace::deletion::Dialog::Saving { .. }
+                    | crate::workspace::deletion::Dialog::Finished { .. }
+            )
         );
         if save_owner
             && !matches!(
@@ -31,10 +37,13 @@ impl Preview {
             return;
         }
 
-        if self.insertion_save_action(&action) {
+        if self.deletion_save_action(&action) || self.insertion_save_action(&action) {
             return;
         }
         match action {
+            Action::ReviewDelete { target } => self.mock_review_delete(target, true),
+            Action::ApplyDelete { review_id } => self.mock_apply_delete(review_id),
+            Action::CloseDelete { request_id } => self.mock_close_delete(request_id),
             Action::ChooseFile | Action::Open => {
                 self.state.password.clear();
                 self.state.error = Some(self.state.localizer.text("settings-mock-open-disabled"));
@@ -323,7 +332,7 @@ impl Preview {
     }
 }
 
-fn copy_cell(cell: &Cell) -> Cell {
+pub(super) fn copy_cell(cell: &Cell) -> Cell {
     Cell {
         presentation: cell.presentation,
         alignment: cell.alignment,

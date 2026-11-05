@@ -866,3 +866,20 @@ draft at 900×580 / 1.5×. Fields occupy available width and the measured footer
 aligns right while retaining keyboard order. No native Access capture exists for
 this explicit offline new-row dialog; it remains a provisional workflow.
 See [runtime bounds](../application/RUNTIME.md#reviewed-offline-row-insertion).
+
+
+## Reviewed deletion headless gate — 5 November 2026
+
+The selected gate passed 145 UI tests, 67 runtime tests, 31 desktop tests and the
+runtime documentation example. All 48 synthetic scenes render in eight locales
+and both explicit themes (768 combinations). Actual widget tests cancel, apply,
+retain and acknowledge a normal native deletion, reusing the application-private
+host harness shared with insertion tests. Runtime checks cover exact membership,
+source drift, stale capabilities and complete-snapshot refresh positions.
+
+Compact German dark Delete review was exported from a macOS build with Windows
+input conventions at 900×580 logical / 1.25× and inspected offscreen. The original
+Home capture was reopened for its working Delete command. No retained Access
+Delete-confirmation capture exists; this explicit offline dialog is provisional.
+Cancel receives initial focus; Enter and Escape cancellation are observed in
+headless tests. No native app activation or Windows Access comparison occurred.

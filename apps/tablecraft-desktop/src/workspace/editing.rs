@@ -1,13 +1,16 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
+mod deleting;
 mod inserting;
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+mod test_support;
 use super::{Desktop, PendingOperation};
 use crate::view_models::cell;
 use std::path::PathBuf;
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
-    EditTarget as RuntimeTarget, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure,
-    SaveFailureKind, SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker,
-    journal_path,
+    EditTarget as RuntimeTarget, ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCompletion,
+    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport,
+    SaveWorker, journal_path,
 };
 use tablecraft_ui::{
     EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
@@ -17,6 +20,7 @@ pub(super) struct Editing {
     worker: SaveWorker,
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
+    delete_review: Option<(u64, ReviewedDelete)>,
     save: Option<ActiveSave>,
     refresh: Option<(u64, String, u32)>,
 }
@@ -25,6 +29,7 @@ pub(super) struct Editing {
 enum SaveOwner {
     Cell,
     Insert,
+    Delete,
 }
 
 struct ActiveSave {
@@ -42,6 +47,7 @@ impl Editing {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             review: None,
             insert_review: None,
+            delete_review: None,
             save: None,
             refresh: None,
         }
@@ -58,6 +64,7 @@ impl Editing {
     pub(super) fn clear_review(&mut self) {
         self.review = None;
         self.insert_review = None;
+        self.delete_review = None;
     }
 }
 
@@ -207,6 +214,7 @@ impl Desktop {
         match save.owner {
             SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
             SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
+            SaveOwner::Delete => self.state.set_delete_save_outcome(report.id, outcome),
         }
     }
 
@@ -241,6 +249,7 @@ impl Desktop {
                 match save.owner {
                     SaveOwner::Cell => self.state.begin_edit_resolution(id, next),
                     SaveOwner::Insert => self.state.begin_insert_resolution(id, next),
+                    SaveOwner::Delete => self.state.begin_delete_resolution(id, next),
                 }
             }
             Err(error) => self.state.error = Some(error.to_string()),
@@ -260,6 +269,9 @@ impl Desktop {
             }
             SaveOwner::Insert => {
                 self.state.close_insert();
+            }
+            SaveOwner::Delete => {
+                self.state.close_delete();
             }
         }
         if matches!(

@@ -2,6 +2,7 @@ mod backstage;
 mod chrome;
 mod content;
 mod contents;
+mod deletion;
 mod diagnostics;
 mod editing;
 pub(crate) mod focus;
@@ -12,10 +13,12 @@ pub mod preview;
 mod query;
 mod records;
 mod ribbon;
+mod save_display;
 mod saved_query;
 mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
+pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use records::RecordTarget;
@@ -94,6 +97,15 @@ pub enum Action {
     BeginEdit {
         target: EditTarget,
     },
+    ReviewDelete {
+        target: DeleteTarget,
+    },
+    ApplyDelete {
+        review_id: u64,
+    },
+    CloseDelete {
+        request_id: u64,
+    },
     BeginInsert {
         target: InsertTarget,
     },
@@ -167,6 +179,7 @@ pub struct State {
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
     insertion: Option<insertion::Dialog>,
+    deletion: Option<deletion::Dialog>,
     records: records::RecordNavigation,
     saved_query: saved_query::SavedQueryState,
     selected_field: usize,
@@ -206,6 +219,7 @@ impl State {
         }
         self.refresh_contents_display();
         self.refresh_edit_display();
+        self.refresh_delete_display();
     }
 
     /// Publish a table response without replacing the query result.
@@ -410,6 +424,7 @@ impl State {
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         self.refresh_display();
         self.refresh_edit_display();
+        self.refresh_delete_display();
         crate::localization::install(ui.ctx(), &self.localizer);
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
@@ -467,6 +482,7 @@ impl State {
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
         self.insertion_dialog(ui.ctx(), &mut actions);
+        self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() {
             self.finish_pane_focus(ui);

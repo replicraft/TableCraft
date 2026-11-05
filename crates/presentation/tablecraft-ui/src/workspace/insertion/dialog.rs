@@ -1,7 +1,7 @@
 //! Explicit field intent and runtime review; this renderer never supplies defaults.
 use super::{Choice, Dialog, FieldInput, entries_within_limits, inputs};
 use crate::localization::{message, tr};
-use crate::workspace::{Action, EditSaveOutcome, State, diagnostics};
+use crate::workspace::{Action, EditSaveOutcome, State, diagnostics, save_display};
 use egui::{Id, Ui};
 
 const MODAL_VERTICAL_RESERVE: f32 = 180.0;
@@ -109,41 +109,11 @@ impl State {
                             resolving,
                             ..
                         } => {
-                            ui.spinner();
-                            ui.label(tr(
-                                ui,
-                                if *resolving {
-                                    "editing-resolving"
-                                } else {
-                                    "editing-applying"
-                                },
-                            ));
-                            if *cancel_requested {
-                                ui.label(tr(ui, "editing-cancellation-requested"));
-                            }
+                            save_display::pending(ui, *cancel_requested, *resolving);
                         }
-                        Dialog::Finished { outcome, .. } => match outcome {
-                            EditSaveOutcome::Retained {
-                                message,
-                                can_recover,
-                                can_release,
-                            } => {
-                                diagnostics::show(ui, ui.id().with("insert_save_report"), message);
-                                ui.label(tr(ui, "editing-recovery-owned"));
-                                if !*can_recover && !*can_release {
-                                    ui.label(tr(ui, "editing-diagnosis-required"));
-                                }
-                            }
-                            EditSaveOutcome::Saved(message) => {
-                                terminal(ui, "editing-outcome-saved", message)
-                            }
-                            EditSaveOutcome::Cancelled(message) => {
-                                terminal(ui, "editing-outcome-cancelled", message)
-                            }
-                            EditSaveOutcome::Failed(message) => {
-                                terminal(ui, "editing-outcome-failed", message)
-                            }
-                        },
+                        Dialog::Finished { outcome, .. } => {
+                            save_display::outcome(ui, outcome);
+                        }
                     });
                 let footer_width = footer_width(ui, dialog);
                 ui.horizontal_wrapped(|ui| {
@@ -379,9 +349,4 @@ fn button(ui: &mut Ui, id: Id, key: &str, enabled: bool) -> bool {
             .clicked()
     })
     .inner
-}
-
-fn terminal(ui: &mut Ui, heading: &str, report: &str) {
-    ui.heading(tr(ui, heading));
-    diagnostics::show(ui, ui.id().with("insert_terminal_report"), report);
 }

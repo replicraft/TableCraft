@@ -6,7 +6,7 @@ pub use native::SaveWorker;
 
 use super::ReviewedEdit;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
-use super::ReviewedInsert;
+use super::{ReviewedDelete, ReviewedInsert};
 use std::fmt;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 use std::path::PathBuf;
@@ -171,6 +171,16 @@ impl SaveWorker {
         reviewed: ReviewedInsert,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedInsert>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+    pub fn start_delete(
+        &self,
+        reviewed: ReviewedDelete,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedDelete>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

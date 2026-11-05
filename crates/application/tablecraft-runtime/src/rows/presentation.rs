@@ -1,4 +1,4 @@
-//! Presentation lineage for the runtime's exact, single-table SELECT * sort.
+//! Presentation lineage for known-origin native table rows.
 //! Arbitrary SQL results cannot opt into native row identity through this helper.
 use super::{controls, formatting};
 use crate::{Cell, Column, Error, controls::SCOPE, display::Presentation};

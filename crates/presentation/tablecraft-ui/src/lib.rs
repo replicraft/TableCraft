@@ -18,10 +18,10 @@ pub use localization::{Locale, Localizer};
 pub use theme::{Theme, configure};
 pub use workspace::preview;
 pub use workspace::{
-    Action, CollectionKind, ContentsTarget, Data, Database, EditDraft, EditInput, EditReview,
-    EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue, InsertDraft,
-    InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput, ParameterSpec,
-    RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
+    Action, CollectionKind, ContentsTarget, Data, Database, DeleteReview, DeleteTarget, EditDraft,
+    EditInput, EditReview, EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue,
+    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
+    ParameterSpec, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 
 #[cfg(test)]

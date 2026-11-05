@@ -1,8 +1,16 @@
 //! Native offline leases currently have no implementation on this platform.
-use super::{EditError, EditInput, EditTarget, InsertInput, InsertTarget};
+use super::{DeleteTarget, EditError, EditInput, EditTarget, InsertInput, InsertTarget};
 use crate::{Error, Response, document::Document};
 
 impl Document {
+    pub(crate) fn review_delete(
+        &mut self,
+        _target: &DeleteTarget,
+        _cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        Err(EditError::UnsupportedPlatform.into())
+    }
+
     pub(crate) fn begin_edit(
         &mut self,
         _target: &EditTarget,

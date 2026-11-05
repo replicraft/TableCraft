@@ -1,5 +1,22 @@
 # Implementation status
 
+## Reviewed desktop row deletion — 5 November 2026
+
+Home Delete row now requests a normal native single-row review with original
+record position, qualified captions and typed display facts. Cancel owns initial
+keyboard focus; Enter and Escape cancel, and only an explicit reviewed Apply
+consumes the native capability. Deletion shares the existing save owner, exact
+original-image guard, journal, retained outcomes and acknowledgement. Successful
+reopen chooses a remaining record from complete snapshot membership, including
+last-row and empty-table cases. No Undo or bulk-delete guarantee is implied.
+
+The selected headless gate passed 145 UI, 67 runtime and 31 desktop tests plus
+the runtime documentation example. The UI matrix covers 48 scenes, eight locales
+and two themes (768 combinations). Strict selected Clippy and dependency/link
+guards passed. Compact German dark confirmation was inspected offscreen at
+900×580 logical / 1.25×. No native application was opened. See the
+[deletion contract](application/RUNTIME.md#reviewed-offline-row-deletion).
+
 ## Reviewed desktop row insertion — 5 November 2026
 
 Home and the record navigator now expose New row for a native user table,

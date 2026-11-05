@@ -1,12 +1,9 @@
 //! Real host dispatch and native save ownership through headless insertion widgets.
 use super::*;
-use eframe::App;
+use crate::workspace::editing::test_support::{self, finish_reads, finish_save};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
-use std::{
-    path::PathBuf,
-    time::{Duration, Instant},
-};
+use std::path::PathBuf;
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
 
@@ -16,42 +13,12 @@ fn opened() -> (
     Vec<u8>,
     Harness<'static, Desktop>,
 ) {
-    let directory = tempfile::tempdir().unwrap();
-    let path = directory.path().join("insert.accdb");
     let original = canonical_native17_creation::source(
         canonical_creation::source(canonical_creation::Case::One).bytes,
     );
-    std::fs::write(&path, &original).unwrap();
-    let desktop = Desktop::new(egui::Context::default(), Some(path.clone()));
-    let mut harness = Harness::builder()
-        .with_size(egui::vec2(1000.0, 760.0))
-        .with_max_steps(32)
-        .build_ui_state(
-            |ui, desktop: &mut Desktop| {
-                let mut frame = eframe::Frame::_new_kittest();
-                desktop.logic(ui.ctx(), &mut frame);
-                desktop.ui(ui, &mut frame);
-            },
-            desktop,
-        );
-    tablecraft_ui::configure(&harness.ctx);
-    finish_reads(&mut harness);
-    assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 1);
-    (directory, path, original, harness)
-}
-
-fn finish_reads(harness: &mut Harness<'_, Desktop>) {
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.busy {
-        assert!(
-            Instant::now() < deadline,
-            "native insertion read did not finish"
-        );
-        harness.run_steps(1);
-        std::thread::yield_now();
-    }
-    harness.run_steps(2);
-    assert!(harness.state().state.error.is_none());
+    let result = test_support::opened(original);
+    assert_eq!(result.3.state().state.data.as_ref().unwrap().rows.len(), 1);
+    result
 }
 
 fn enter_id(harness: &mut Harness<'_, Desktop>, text: &str) {
@@ -114,26 +81,9 @@ fn reviewed_insert_keeps_its_terminal_owner_until_ack_then_refreshes_the_same_ta
         .click_accesskit();
     harness.run_steps(1);
     assert!(harness.state().editing.has_save());
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while harness
-        .state()
-        .editing
-        .save
-        .as_ref()
-        .unwrap()
-        .report
-        .is_none()
-    {
-        assert!(
-            Instant::now() < deadline,
-            "native insertion save did not finish"
-        );
-        harness.run_steps(1);
-        std::thread::yield_now();
-    }
+    let report = finish_save(&mut harness);
     let save = harness.state().editing.save.as_ref().unwrap();
     assert!(matches!(save.owner, SaveOwner::Insert));
-    let report = save.report.unwrap();
     assert!(
         matches!(report.outcome, SaveOutcome::Saved { receipt } if receipt.changed_rows == Some(1))
     );
