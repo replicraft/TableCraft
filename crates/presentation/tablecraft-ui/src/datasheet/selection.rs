@@ -10,9 +10,13 @@ pub(crate) struct Selection {
     focus: Option<Id>,
     surrender_focus: Option<Id>,
     focus_pending: bool,
+    pane_focus_witness: Option<PaneFocusWitness>,
     scroll_pending: Option<usize>,
     reveal_pending: Option<egui::Rect>,
 }
+
+/// Comparison only; this identifier is never requested as a future target.
+struct PaneFocusWitness(Option<Id>);
 
 impl Selection {
     pub(crate) fn reset(&mut self, data: &Data) {
@@ -35,14 +39,17 @@ impl Selection {
             self.row_selected = false;
             self.copy_error = None;
             self.focus_pending = true;
+            self.pane_focus_witness = None;
             self.scroll_pending = Some(row);
         }
     }
 
     /// Pane entry reveals the existing selection without changing cell/record mode.
-    pub(crate) fn focus_selected(&mut self) {
+    pub(crate) fn focus_selected(&mut self, context: &egui::Context) {
         if let Some((row, _)) = self.position {
             self.focus_pending = true;
+            self.pane_focus_witness =
+                Some(PaneFocusWitness(context.memory(|memory| memory.focused())));
             self.scroll_pending = Some(row);
         }
     }
@@ -130,6 +137,7 @@ impl Selection {
             response.request_focus();
             self.focus = Some(response.id);
             self.focus_pending = false;
+            self.pane_focus_witness = None;
         }
         if !ui.is_enabled()
             || !response.clicked() && !response.secondary_clicked() && !response.gained_focus()
@@ -155,6 +163,16 @@ impl Selection {
     }
 
     pub(super) fn prepare(&mut self, ui: &mut Ui, data: &Data) {
+        if self
+            .pane_focus_witness
+            .as_ref()
+            .is_some_and(|witness| ui.memory(|memory| memory.focused()) != witness.0)
+        {
+            self.focus_pending = false;
+            self.pane_focus_witness = None;
+            self.scroll_pending = None;
+            self.reveal_pending = None;
+        }
         if let Some(id) = self.surrender_focus.take() {
             ui.memory_mut(|memory| {
                 if memory.focused() == Some(id) {
@@ -311,6 +329,7 @@ impl Selection {
             self.reveal_pending = Some(response.rect);
             self.focus = Some(response.id);
             self.focus_pending = false;
+            self.pane_focus_witness = None;
         }
     }
 }

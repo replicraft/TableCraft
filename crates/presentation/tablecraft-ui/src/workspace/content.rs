@@ -102,13 +102,13 @@ impl State {
 
     fn prepare_pane_entry(&mut self, pane: Pane, context: &egui::Context) {
         match (pane, self.view) {
-            (Pane::Document, DocumentView::Table) => self.table_selection.focus_selected(),
+            (Pane::Document, DocumentView::Table) => self.table_selection.focus_selected(context),
             (Pane::Document, DocumentView::Design) => self.request_design_pane_entry(context),
             (Pane::Results, DocumentView::Query) => {
                 if self.saved_query.active {
-                    self.saved_query.selection.focus_selected();
+                    self.saved_query.selection.focus_selected(context);
                 } else {
-                    self.query_selection.focus_selected();
+                    self.query_selection.focus_selected(context);
                 }
             }
             _ => {}
