@@ -1,7 +1,7 @@
 //! Working File/Open and About surfaces using the observed Backstage rail layout.
 mod rail;
 
-use super::{Action, State, ribbon::Icon};
+use super::{Action, State, diagnostics, ribbon::Icon};
 use crate::localization::tr;
 use crate::{Locale, Localizer, Theme, theme::palette};
 use egui::{Frame, Margin, ScrollArea, TextEdit, Ui};
@@ -67,17 +67,11 @@ impl State {
     }
 
     fn open_pane(&mut self, ui: &mut Ui, actions: &mut Vec<Action>, path_id: egui::Id) {
-        let colors = palette(ui.ctx());
         ui.heading(tr(ui, "backstage-open"));
         ui.label(tr(ui, "backstage-open-title"));
         ui.add_space(14.0);
         if let Some(error) = &self.error {
-            ScrollArea::vertical()
-                .id_salt("open_error")
-                .max_height(96.0)
-                .show(ui, |ui| {
-                    ui.colored_label(colors.accent, error);
-                });
+            diagnostics::show(ui, ui.id().with("open_error"), error);
             ui.add_space(8.0);
         }
         let path_label = ui.label(tr(ui, "backstage-path"));

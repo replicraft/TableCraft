@@ -381,3 +381,67 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
             .is_disabled()
     );
 }
+
+#[test]
+fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_actions() {
+    let report = "Literal open failure: <file> & [field]\n".repeat(60)
+        + "FINAL OPEN DIAGNOSIS: preserve tabs\tand NULL";
+    let path = "synthetic directory/Example.accdb";
+    let password = "synthetic secret";
+    let state = State {
+        path: path.into(),
+        password: password.into(),
+        error: Some(report.clone()),
+        ..Default::default()
+    };
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .with_max_steps(20)
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+
+    for label in ["Copy details", "Open database", "Back"] {
+        let button = harness.get_by_role_and_label(Role::Button, label);
+        assert!(button.rect().top() >= 0.0 && button.rect().bottom() <= 580.0);
+        assert!(!button.accesskit_node().is_disabled());
+    }
+    harness
+        .get_by_role_and_label(Role::Button, "Copy details")
+        .click_accesskit();
+    harness.step();
+    assert!(
+        harness
+            .output()
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText(report.clone()))
+    );
+    assert!(
+        harness.state().1.is_empty(),
+        "copying diagnostics dispatches no database action"
+    );
+    assert_eq!(harness.state().0.path, path);
+    assert_eq!(harness.state().0.password, password);
+    assert_eq!(harness.state().0.error.as_deref(), Some(report.as_str()));
+
+    harness
+        .get_by_role_and_label(Role::Button, "Open database")
+        .click_accesskit();
+    harness.step();
+    assert!(matches!(harness.state().1.as_slice(), [Action::Open]));
+    assert_eq!(harness.state().0.path, path);
+    assert_eq!(harness.state().0.password, password);
+    harness.state_mut().1.clear();
+    harness
+        .get_by_role_and_label(Role::Button, "Back")
+        .click_accesskit();
+    harness.step();
+    assert!(!harness.state().0.backstage_visible());
+    assert!(harness.state().1.is_empty());
+    assert_eq!(harness.state().0.path, path);
+    assert_eq!(harness.state().0.password, password);
+}
