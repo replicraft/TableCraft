@@ -18,6 +18,12 @@ impl Preview {
         let report = SERVICE_REPORT.to_owned();
         match scene {
             Scene::LongReadError => self.state.error = Some(report),
+            Scene::LongOpenError => {
+                self.state.path = "synthetic/open-failure.accdb".into();
+                self.state.password = "synthetic-preview-only".into();
+                self.state.error = Some(report);
+                self.state.show_open();
+            }
             Scene::LongQueryError => {
                 self.prepare_query_error();
                 self.state.error = Some(report);

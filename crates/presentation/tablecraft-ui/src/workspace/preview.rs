@@ -18,6 +18,7 @@ pub enum Scene {
     Datasheet,
     LongNames,
     LongReadError,
+    LongOpenError,
     LongQueryError,
     LongSavedError,
     Empty,
@@ -61,10 +62,11 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 43] = [
+    pub const ALL: [Self; 44] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
+        Self::LongOpenError,
         Self::LongQueryError,
         Self::LongSavedError,
         Self::Empty,
@@ -129,6 +131,7 @@ impl Scene {
             Self::Datasheet => "datasheet",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
+            Self::LongOpenError => "long-open-error",
             Self::LongQueryError => "long-query-error",
             Self::LongSavedError => "long-saved-error",
             Self::Empty => "empty",
@@ -229,9 +232,10 @@ impl Preview {
         match scene {
             Scene::Datasheet => {}
             Scene::LongNames => fixtures::long_names(&mut self.state),
-            Scene::LongReadError | Scene::LongQueryError | Scene::LongSavedError => {
-                self.prepare_long_error(scene)
-            }
+            Scene::LongReadError
+            | Scene::LongOpenError
+            | Scene::LongQueryError
+            | Scene::LongSavedError => self.prepare_long_error(scene),
             Scene::Empty => {
                 let mut data = fixtures::page("Customers", 0);
                 data.rows.clear();
