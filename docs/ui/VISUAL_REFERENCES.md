@@ -79,6 +79,23 @@ inspector is not established by these references. Native type codes, supported
 read carriers and uninspected properties must remain distinguishable; a familiar
 property-sheet shape does not justify inventing Required/default/validation facts.
 
+The object pane now uses full-width rows with individually chosen table/search
+icons. The inactive selected table has a light surface and thin outline, as in
+the retained capture; focus uses the current-row color and a visible outline.
+Full original names remain accessible and on hover when the visible name is
+truncated. Widget identity includes its document and exact table/query identity,
+so filtering preceding objects cannot retarget keyboard focus.
+
+The Design view's lower General sheet now spans the available width with compact
+bordered label/value rows. Values remain read-only, selectable literal text.
+Plain Up/Down operates only while the currently selected displayed field owns
+focus; one-shot scrolling reveals its next field. Property-text selection,
+modified keys and a replaced declaration do not reuse a stale field target.
+Backstage uses left-aligned icon/text entries, with About and Options at the foot
+of the rail; the four additional Fluent assets retain the same source/license
+provenance as the Ribbon subset. These changes are visual adaptations of the
+retained captures, not a qualification of unseen Access interactions.
+
 ## Review each new surface against the captures
 
 Use the actual local images while implementing the corresponding surface, not

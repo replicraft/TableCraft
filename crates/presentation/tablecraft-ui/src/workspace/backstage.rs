@@ -1,10 +1,12 @@
 //! Working File/Open and About surfaces using the observed Backstage rail layout.
-use super::{Action, State};
+mod rail;
+
+use super::{Action, State, ribbon::Icon};
 use crate::localization::tr;
 use crate::{Locale, Localizer, Theme, theme::palette};
-use egui::{Frame, Margin, RichText, ScrollArea, TextEdit, Ui};
+use egui::{Frame, Margin, ScrollArea, TextEdit, Ui};
 
-#[derive(Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub(super) enum Backstage {
     Closed,
     #[default]
@@ -21,46 +23,25 @@ impl State {
             .frame(
                 Frame::new()
                     .fill(colors.title_fill)
-                    .inner_margin(Margin::symmetric(12, 10)),
+                    .inner_margin(Margin::symmetric(10, 10)),
             )
             .show(ui, |ui| {
-                if ui.button(tr(ui, "backstage-back")).clicked() {
+                if rail::entry(ui, Icon::ArrowLeft, &tr(ui, "backstage-back"), None).clicked() {
                     self.dismiss_backstage();
                 }
                 ui.add_space(18.0);
-                for (view, title) in [
-                    (Backstage::Open, tr(ui, "backstage-open")),
-                    (Backstage::Options, tr(ui, "backstage-options")),
-                    (Backstage::About, tr(ui, "backstage-about")),
-                ] {
-                    let active = self.backstage == view;
-                    let text = if active {
-                        RichText::new(title).color(colors.accent)
-                    } else {
-                        RichText::new(title)
-                    };
-                    let response = ui.add_sized(
-                        [ui.available_width(), 32.0],
-                        egui::Button::new(text)
-                            .selected(active)
-                            .fill(colors.title_fill),
-                    );
-                    if active {
-                        ui.painter().line_segment(
-                            [response.rect.left_top(), response.rect.left_bottom()],
-                            egui::Stroke::new(2.0, colors.accent),
-                        );
-                    }
-                    if response.clicked() {
-                        self.backstage = view;
-                    }
-                }
+                self.file_section(ui, Backstage::Open, Icon::FolderOpen, "backstage-open");
+
+                let footer_height = 2.0 * rail::ROW_HEIGHT + ui.spacing().item_spacing.y;
+                ui.add_space((ui.available_height() - footer_height).max(0.0));
+                self.file_section(ui, Backstage::About, Icon::Info, "backstage-about");
+                self.file_section(ui, Backstage::Options, Icon::Settings, "backstage-options");
             });
         egui::CentralPanel::default()
             .frame(Frame::central_panel(ui.style()).fill(colors.surface))
             .show(ui, |ui| {
                 ScrollArea::vertical()
-                    .id_salt("backstage_content")
+                    .id_salt(("backstage_content", self.backstage))
                     .auto_shrink([false, false])
                     .show(ui, |ui| {
                         ui.add_space(14.0);
@@ -75,6 +56,14 @@ impl State {
                         });
                     });
             });
+    }
+
+    fn file_section(&mut self, ui: &mut Ui, view: Backstage, icon: Icon, key: &str) {
+        ui.push_id(key, |ui| {
+            if rail::entry(ui, icon, &tr(ui, key), Some(self.backstage == view)).clicked() {
+                self.backstage = view;
+            }
+        });
     }
 
     fn open_pane(&mut self, ui: &mut Ui, actions: &mut Vec<Action>, path_id: egui::Id) {

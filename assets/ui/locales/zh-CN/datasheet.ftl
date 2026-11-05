@@ -1,13 +1,5 @@
 # TableCraft UI: datasheet.
 
-datasheet-all-objects = 所有 Access 对象
-datasheet-search-objects = 搜索对象
-datasheet-show-system = 显示系统对象
-datasheet-tables = 表
-datasheet-queries = 查询
-datasheet-view-schema = 查看架构
-datasheet-system = 系统
-datasheet-open-first = 打开数据库以查看其对象。
 datasheet-column-count = 列数：{ $count }
 datasheet-previous-page = ‹ 上一页
 datasheet-next-page = 下一页 ›

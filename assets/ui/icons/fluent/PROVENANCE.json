@@ -191,6 +191,30 @@
       "source_path": "assets/Zoom In/SVG/ic_fluent_zoom_in_24_regular.svg",
       "upstream_sha256": "bfa7c14efab4004ee394d4937c6f448442017c2c305ab5c9e7ffafab3ab9eca7",
       "local_sha256": "756a8dd7a72a6f7e346ce4e7ce552b95bb327e08bea40d8671313d58ad7d5561"
+    },
+    {
+      "file": "folder_open.svg",
+      "source_path": "assets/Folder Open/SVG/ic_fluent_folder_open_24_regular.svg",
+      "upstream_sha256": "d1a653db2d775144808d375b0f5c2a0b64db646e54e54283ecce1610882352c9",
+      "local_sha256": "936c4641261ae6292be81ff2005a7547c36c164b8d2e7653fc29219b9699d314"
+    },
+    {
+      "file": "settings.svg",
+      "source_path": "assets/Settings/SVG/ic_fluent_settings_24_regular.svg",
+      "upstream_sha256": "5ac05e6e11c9ec9f24703091c42ca1f5c91f4032cb0eee35c892d1872a38871b",
+      "local_sha256": "df74babc0b64c6885f249ba6a3269f44ee0873d1f34c6a6ceb36d9d0e257da63"
+    },
+    {
+      "file": "info.svg",
+      "source_path": "assets/Info/SVG/ic_fluent_info_24_regular.svg",
+      "upstream_sha256": "ec9891767b25630079faca1b06026cab94eee56129dc1264a40d256aa65911bb",
+      "local_sha256": "f911406ac82d7c13511876ed27bb3caa429c29f0ed4bb4e5ec81c123a0357d4d"
+    },
+    {
+      "file": "arrow_left.svg",
+      "source_path": "assets/Arrow Left/SVG/ic_fluent_arrow_left_24_regular.svg",
+      "upstream_sha256": "746b500d735b5f6ab075151ba0588600c7bb88d43102c03b2284fd064f5080ab",
+      "local_sha256": "bdcaf0750ce2fd39c174115cd170ec21be8a359086cf3bb543e45739df182764"
     }
   ]
 }

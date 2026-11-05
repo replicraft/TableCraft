@@ -1,6 +1,6 @@
 # TableCraft UI: backstage.
 
-backstage-back = ‹ 뒤로
+backstage-back = 뒤로
 backstage-home = 홈
 backstage-new = 새로 만들기
 backstage-open = 열기

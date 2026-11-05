@@ -3,6 +3,10 @@ use egui::{Color32, Image};
 
 #[derive(Clone, Copy)]
 pub(in crate::workspace) enum Icon {
+    FolderOpen,
+    Settings,
+    Info,
+    ArrowLeft,
     Table,
     TableEdit,
     Paste,
@@ -53,6 +57,10 @@ macro_rules! asset {
 impl Icon {
     pub(in crate::workspace) fn image(self, color: Color32, size: f32) -> Image<'static> {
         let (uri, bytes): (&'static str, &'static [u8]) = match self {
+            Self::FolderOpen => asset!("folder_open"),
+            Self::Settings => asset!("settings"),
+            Self::Info => asset!("info"),
+            Self::ArrowLeft => asset!("arrow_left"),
             Self::Table => asset!("table"),
             Self::TableEdit => asset!("table_edit"),
             Self::Paste => asset!("clipboard_paste"),

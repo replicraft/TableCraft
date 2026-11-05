@@ -85,6 +85,8 @@ inspection and a SQL editor over existing Access services. It opens a snapshot o
 64 MiB; close other writers first. Restricted reviewed offline cell edits are
 available on macOS/Linux. General editing, designers and desktop release
 packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
+Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with
+light/dark themes and interface languages under File → Options.
 
 ## Documentation
 

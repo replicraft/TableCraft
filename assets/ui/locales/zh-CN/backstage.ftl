@@ -1,6 +1,6 @@
 # TableCraft UI: backstage.
 
-backstage-back = ‹ 返回
+backstage-back = 返回
 backstage-home = 主页
 backstage-new = 新建
 backstage-open = 打开

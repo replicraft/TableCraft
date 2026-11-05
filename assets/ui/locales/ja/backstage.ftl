@@ -1,6 +1,6 @@
 # TableCraft UI: backstage.
 
-backstage-back = ‹ 戻る
+backstage-back = 戻る
 backstage-home = ホーム
 backstage-new = 新規
 backstage-open = 開く

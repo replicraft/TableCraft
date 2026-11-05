@@ -1,6 +1,13 @@
 use super::*;
-use crate::{Cell, Data};
-use egui::{Event, FullOutput, PointerButton};
+use crate::{
+    Cell, Data,
+    preview::{Preview, Scene},
+};
+use egui::{Event, FullOutput, PointerButton, accesskit::Role};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 fn render(
     state: &mut State,
@@ -265,5 +272,208 @@ fn row_selector_and_home_copy_share_complete_displayed_record_and_publication_re
             .platform_output
             .commands
             .contains(&egui::OutputCommand::CopyText("NEW first".into()))
+    );
+}
+
+fn command_id(output: &FullOutput, label: &str) -> egui::accesskit::NodeId {
+    output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .expect("actual command accessibility tree")
+        .nodes
+        .iter()
+        .find_map(|(id, node)| {
+            (node.role() == egui::accesskit::Role::Button && node.label() == Some(label))
+                .then_some(*id)
+        })
+        .expect("actual ribbon command")
+}
+
+fn assistive_action(target: egui::accesskit::NodeId, action: egui::accesskit::Action) -> Event {
+    Event::AccessKitActionRequest(egui::accesskit::ActionRequest {
+        action,
+        target_tree: egui::accesskit::TreeId::ROOT,
+        target_node: target,
+        data: None,
+    })
+}
+
+#[test]
+fn working_ribbon_commands_accept_keyboard_and_assistive_activation() {
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    let mut state = State::default();
+    state.dismiss_backstage();
+    state.set_table_data(table());
+    render(&mut state, &context, vec![]);
+    let (_, output) = render(&mut state, &context, vec![]);
+    let copy = command_id(&output, "Copy");
+
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![assistive_action(copy, egui::accesskit::Action::Focus)],
+    );
+    assert!(actions.is_empty());
+    assert_eq!(
+        context
+            .memory(|memory| memory.focused())
+            .map(|id| id.accesskit_id()),
+        Some(copy)
+    );
+
+    for key in [egui::Key::Enter, egui::Key::Space] {
+        for pressed in [true, false] {
+            let (actions, output) = render(
+                &mut state,
+                &context,
+                vec![Event::Key {
+                    key,
+                    physical_key: None,
+                    pressed,
+                    repeat: false,
+                    modifiers: egui::Modifiers::NONE,
+                }],
+            );
+            assert!(actions.is_empty());
+            let copies: Vec<_> = output
+                .platform_output
+                .commands
+                .iter()
+                .filter_map(|command| match command {
+                    egui::OutputCommand::CopyText(text) => Some(text.as_str()),
+                    _ => None,
+                })
+                .collect();
+            if pressed {
+                assert_eq!(copies, ["Old first cell"]);
+            } else {
+                assert!(copies.is_empty());
+            }
+        }
+    }
+
+    let (actions, output) = render(
+        &mut state,
+        &context,
+        vec![assistive_action(copy, egui::accesskit::Action::Click)],
+    );
+    assert!(actions.is_empty());
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText("Old first cell".into(),))
+    );
+
+    let design = command_id(&output, "Table Design");
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![assistive_action(design, egui::accesskit::Action::Click)],
+    );
+    assert!(matches!(actions.as_slice(), [Action::ViewSchema { table }] if table == "Contacts"));
+}
+
+#[test]
+fn disabled_mock_commands_offer_no_assistive_actions_and_reject_forced_activation() {
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    let mut state = State {
+        mock_preview: true,
+        ..Default::default()
+    };
+    state.dismiss_backstage();
+    state.set_table_data(table());
+    render(&mut state, &context, vec![]);
+    let (_, output) = render(&mut state, &context, vec![]);
+    let paste = command_id(&output, "Paste");
+    let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+    for label in ["Paste", "Create"] {
+        let (_, node) = tree
+            .nodes
+            .iter()
+            .find(|(_, node)| node.label() == Some(label))
+            .unwrap();
+        assert!(node.is_disabled());
+        assert!(!node.supports_action(egui::accesskit::Action::Click));
+        assert!(!node.supports_action(egui::accesskit::Action::Focus));
+    }
+
+    let (actions, output) = render(
+        &mut state,
+        &context,
+        vec![
+            assistive_action(paste, egui::accesskit::Action::Focus),
+            assistive_action(paste, egui::accesskit::Action::Click),
+            Event::Key {
+                key: egui::Key::Enter,
+                physical_key: None,
+                pressed: true,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            },
+        ],
+    );
+    assert!(actions.is_empty());
+    assert!(
+        !output
+            .platform_output
+            .commands
+            .iter()
+            .any(|command| { matches!(command, egui::OutputCommand::CopyText(_)) })
+    );
+    assert_ne!(
+        context
+            .memory(|memory| memory.focused())
+            .map(|id| id.accesskit_id()),
+        Some(paste)
+    );
+    assert!(state.view == DocumentView::Table);
+    assert_eq!(state.selected_cell_text(), Some("Old first cell"));
+}
+
+#[test]
+fn mock_table_design_command_prepares_missing_schema_through_the_isolated_preview_host() {
+    let preview = Preview::new(Scene::Datasheet);
+    assert!(preview.state().schema.is_none());
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
+    crate::configure(&harness.ctx);
+    harness.run();
+
+    let design = harness.get_by_role_and_label(Role::Button, "Table Design");
+    assert!(!design.accesskit_node().is_disabled());
+    design.click();
+    harness.run();
+
+    let state = harness.state().state();
+    assert!(state.mock_preview);
+    assert!(state.view == DocumentView::Design);
+    let schema = state
+        .schema
+        .as_ref()
+        .expect("the preview supplied its synthetic declaration");
+    assert_eq!(schema.table, "Customers");
+    assert!(!schema.fields.is_empty());
+    assert_eq!(state.data.as_ref().unwrap().table, "Customers");
+    assert_eq!(state.data.as_ref().unwrap().source_revision, Some(1));
+
+    harness
+        .get_by_role_and_label(Role::Button, "Datasheet")
+        .click();
+    harness.run();
+    assert!(harness.state().state().view == DocumentView::Table);
+    assert!(harness.state().state().mock_preview);
+
+    harness.state_mut().state_mut().busy = true;
+    harness.run_steps(3);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Table Design")
+            .accesskit_node()
+            .is_disabled()
     );
 }

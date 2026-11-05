@@ -1,13 +1,5 @@
 # TableCraft UI: datasheet.
 
-datasheet-all-objects = Todos los objetos de Access
-datasheet-search-objects = Buscar objetos
-datasheet-show-system = Mostrar objetos del sistema
-datasheet-tables = Tablas
-datasheet-queries = Consultas
-datasheet-view-schema = Ver esquema
-datasheet-system = sistema
-datasheet-open-first = Abre una base de datos para ver sus objetos.
 datasheet-column-count = Columnas: { $count }
 datasheet-previous-page = ‹ Página anterior
 datasheet-next-page = Página siguiente ›

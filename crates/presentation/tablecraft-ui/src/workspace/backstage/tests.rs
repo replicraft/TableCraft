@@ -159,7 +159,7 @@ fn file_back_and_escape_preserve_document_inputs_and_running_work() {
     assert!(click(&mut state, "File", &context).is_empty());
     assert!(state.backstage_visible());
     state.busy = true;
-    assert!(click(&mut state, "‹ Back", &context).is_empty());
+    assert!(click(&mut state, "Back", &context).is_empty());
     assert!(!state.backstage_visible());
     state.show_open();
     let (actions, _) = render(

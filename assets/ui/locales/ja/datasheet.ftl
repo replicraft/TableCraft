@@ -1,13 +1,5 @@
 # TableCraft UI: datasheet.
 
-datasheet-all-objects = すべての Access オブジェクト
-datasheet-search-objects = オブジェクトの検索
-datasheet-show-system = システム オブジェクトを表示
-datasheet-tables = テーブル
-datasheet-queries = クエリ
-datasheet-view-schema = スキーマの表示
-datasheet-system = システム
-datasheet-open-first = データベースを開くとオブジェクトが表示されます。
 datasheet-column-count = 列数: { $count }
 datasheet-previous-page = ‹ 前のページ
 datasheet-next-page = 次のページ ›
