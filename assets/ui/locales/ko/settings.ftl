@@ -50,3 +50,5 @@ settings-format-unavailable = 지역별 서식을 사용할 수 없어 형식이
 settings-format-system-help = 시스템은 CLDR 지역 기본값을 사용합니다. 운영 체제의 사용자 지정 날짜와 시간 설정은 읽지 않습니다. 인식된 날짜 전용 및 시간 전용 저장 형식은 유지합니다.
 settings-currency-unit-help = 통화는 표시 방식이며 데이터베이스의 단위가 아닙니다. 기호, 반올림 및 소수 자릿수는 선택한 통화에 따릅니다.
 settings-format-raw-help = 표시된 텍스트를 복사합니다. 원시 값은 Currency의 소수점 4자리, 기존 DATE의 정확한 비트 또는 확장 날짜/시간의 소수점 7자리를 유지합니다.
+
+settings-currency-example = 통화 표시 예: { $value }

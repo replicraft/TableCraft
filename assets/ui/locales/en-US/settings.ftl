@@ -50,3 +50,5 @@ settings-format-unavailable = Regional formatting unavailable; Raw typed values 
 settings-format-system-help = System uses regional CLDR defaults. Custom operating-system date and time overrides are not read. Recognized stored date-only and time-only formats are retained.
 settings-currency-unit-help = Currency selects a display convention, not the database’s unit. Symbols, rounding and decimal places follow the selected currency.
 settings-format-raw-help = Copy uses the displayed text. Raw preserves Currency’s four decimals, the exact legacy DATE bits, or Extended Date/Time’s seven fractional digits.
+
+settings-currency-example = Currency example: { $value }

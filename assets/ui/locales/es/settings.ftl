@@ -50,3 +50,5 @@ settings-format-unavailable = Formato regional no disponible; se muestran los va
 settings-format-system-help = Sistema usa los valores regionales de CLDR. No lee las personalizaciones de fecha y hora del sistema operativo. Conserva los formatos almacenados reconocidos de solo fecha o solo hora.
 settings-currency-unit-help = La moneda define la presentación, no la unidad de la base de datos. El símbolo, el redondeo y los decimales siguen la moneda elegida.
 settings-format-raw-help = Copiar usa el texto mostrado. Sin formato conserva los cuatro decimales de Currency, los bits exactos de DATE o los siete decimales de Fecha/Hora extendida.
+
+settings-currency-example = Ejemplo de moneda: { $value }

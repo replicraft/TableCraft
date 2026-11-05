@@ -135,3 +135,53 @@ fn exact_stored_euro_prefix_overrides_system_currency_without_float_rounding() {
         }
     }
 }
+
+#[test]
+fn option_examples_use_captured_region_and_the_same_typed_formatter_as_cells() {
+    let calendar = date(2026, 4, 12).at(15, 4, 5, 123_456_700);
+    for locale in ["en-US", "de-DE", "ja-JP"] {
+        let policy = options(locale);
+        let examples = Engine::new(&policy).unwrap();
+        for choice in DateFormat::ALL {
+            let mut selected = policy.clone();
+            selected.date = choice;
+            let engine = Engine::new(&selected).unwrap();
+            let fact = ScalarPresentation::DateTime {
+                calendar,
+                representation: DateRepresentation::Extended,
+                native_format: NativeFormat::ShortDate,
+            };
+            assert_eq!(examples.date_example(choice), engine.format(fact));
+        }
+        for choice in TimeFormat::ALL {
+            let mut selected = policy.clone();
+            selected.time = choice;
+            let engine = Engine::new(&selected).unwrap();
+            let fact = ScalarPresentation::DateTime {
+                calendar,
+                representation: DateRepresentation::Extended,
+                native_format: NativeFormat::LongTime,
+            };
+            assert_eq!(examples.time_example(choice), engine.format(fact));
+        }
+    }
+
+    let engine = Engine::new(&options("en-US")).unwrap();
+    assert_eq!(engine.date_example(DateFormat::DayMonthYear), "12/04/2026");
+    assert_eq!(engine.date_example(DateFormat::MonthDayYear), "04/12/2026");
+    assert_eq!(engine.time_example(TimeFormat::HoursMinutes), "15:04");
+    assert_eq!(
+        engine.time_example(TimeFormat::Fractional),
+        "15:04:05.1234567"
+    );
+    for (currency, expected) in [
+        (CurrencyChoice::Usd, "$1,234.57"),
+        (CurrencyChoice::Jpy, "¥1,235"),
+        (CurrencyChoice::Kwd, "KWD\u{a0}1,234.568"),
+        (CurrencyChoice::Raw, "1234.5678"),
+    ] {
+        let mut policy = options("en-US");
+        policy.currency = currency;
+        assert_eq!(Engine::new(&policy).unwrap().currency_example(), expected);
+    }
+}

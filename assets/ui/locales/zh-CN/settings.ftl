@@ -50,3 +50,5 @@ settings-format-unavailable = 区域格式不可用；显示带类型的原始�
 settings-format-system-help = 系统使用 CLDR 区域默认值，不读取操作系统自定义的日期和时间设置。保留已识别的仅日期或仅时间存储格式。
 settings-currency-unit-help = 货币选择决定显示方式，而非数据库的单位。符号、舍入和小数位数遵循所选货币。
 settings-format-raw-help = 复制使用显示文本。原始值保留 Currency 的四位小数、旧 DATE 的精确位值或扩展日期/时间的七位小数。
+
+settings-currency-example = 货币显示示例：{ $value }

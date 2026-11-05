@@ -107,17 +107,32 @@ impl Engine {
         })
     }
 
-    pub fn system_examples(&self) -> (String, String) {
-        // Stable illustrative values, independent of the wall clock or database.
-        let date = Date::try_new_gregorian(2026, 4, 12).expect("literal example date");
-        let time = Time::try_new(15, 4, 5, 0).expect("literal example time");
-        (
-            self.date_short.format(&date).write_to_string().into_owned(),
-            self.time_medium
-                .format(&time)
-                .write_to_string()
-                .into_owned(),
+    /// A fixed illustrative value, using this engine's captured regional locale.
+    pub fn date_example(&self, choice: DateFormat) -> String {
+        let calendar = example_calendar();
+        if choice == DateFormat::Raw {
+            return raw_date(calendar, DateRepresentation::Extended);
+        }
+        self.date_with(calendar, NativeFormat::Unspecified, choice)
+    }
+
+    pub fn time_example(&self, choice: TimeFormat) -> String {
+        let calendar = example_calendar();
+        if choice == TimeFormat::Raw {
+            return raw_date(calendar, DateRepresentation::Extended);
+        }
+        self.time_with(
+            calendar,
+            DateRepresentation::Extended,
+            NativeFormat::Unspecified,
+            choice,
         )
+    }
+
+    /// Shows the current currency's actual symbol, rounding and minor units.
+    /// This is a display convention, never a conversion of stored currency units.
+    pub fn currency_example(&self) -> String {
+        self.currency(12_345_678, NativeFormat::Unspecified)
     }
 
     pub fn format(&self, presentation: ScalarPresentation) -> String {
@@ -218,6 +233,15 @@ impl Engine {
     }
 
     fn date(&self, calendar: DateTime, native_format: NativeFormat) -> String {
+        self.date_with(calendar, native_format, self.options.date)
+    }
+
+    fn date_with(
+        &self,
+        calendar: DateTime,
+        native_format: NativeFormat,
+        choice: DateFormat,
+    ) -> String {
         let value = Date::try_new_gregorian(
             i32::from(calendar.year()),
             calendar.month() as u8,
@@ -226,7 +250,7 @@ impl Engine {
         let Ok(value) = value else {
             return calendar.date().to_string();
         };
-        match self.options.date {
+        match choice {
             DateFormat::Iso => calendar.date().to_string(),
             DateFormat::DayMonthYear => calendar.strftime("%d/%m/%Y").to_string(),
             DateFormat::MonthDayYear => calendar.strftime("%m/%d/%Y").to_string(),
@@ -253,6 +277,16 @@ impl Engine {
         representation: DateRepresentation,
         native_format: NativeFormat,
     ) -> String {
+        self.time_with(calendar, representation, native_format, self.options.time)
+    }
+
+    fn time_with(
+        &self,
+        calendar: DateTime,
+        representation: DateRepresentation,
+        native_format: NativeFormat,
+        choice: TimeFormat,
+    ) -> String {
         let value = Time::try_new(
             calendar.hour() as u8,
             calendar.minute() as u8,
@@ -262,7 +296,7 @@ impl Engine {
         let Ok(value) = value else {
             return calendar.time().to_string();
         };
-        match self.options.time {
+        match choice {
             TimeFormat::HoursMinutes => calendar.strftime("%H:%M").to_string(),
             TimeFormat::HoursMinutesSeconds => calendar.strftime("%H:%M:%S").to_string(),
             TimeFormat::TwelveHour => self
@@ -302,6 +336,12 @@ impl Engine {
                 .into_owned(),
         }
     }
+}
+
+fn example_calendar() -> DateTime {
+    // Deliberately asymmetric day/month and a fractional time distinguish choices.
+    // No wall clock, source cell or UI language participates in this sample.
+    jiff::civil::date(2026, 4, 12).at(15, 4, 5, 123_456_700)
 }
 
 pub fn raw(presentation: ScalarPresentation) -> String {

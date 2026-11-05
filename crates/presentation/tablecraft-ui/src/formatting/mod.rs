@@ -2,7 +2,7 @@
 mod options;
 
 pub(crate) use options::show_options;
-use tablecraft_display::{Engine, Options, raw};
+use tablecraft_display::{DateFormat, Engine, Options, TimeFormat, raw};
 
 #[derive(Default)]
 pub(crate) struct Cache {
@@ -39,8 +39,20 @@ impl Cache {
         }
     }
 
-    pub fn system_examples(&self) -> Option<(String, String)> {
-        self.engine.as_ref().map(Engine::system_examples)
+    pub fn date_example(&self, choice: DateFormat) -> Option<String> {
+        self.engine
+            .as_ref()
+            .map(|engine| engine.date_example(choice))
+    }
+
+    pub fn time_example(&self, choice: TimeFormat) -> Option<String> {
+        self.engine
+            .as_ref()
+            .map(|engine| engine.time_example(choice))
+    }
+
+    pub fn currency_example(&self) -> Option<String> {
+        self.engine.as_ref().map(Engine::currency_example)
     }
 
     pub fn status(&self) -> Option<(&str, bool, Option<&str>)> {
