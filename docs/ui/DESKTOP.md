@@ -658,12 +658,46 @@ formatting, dependency boundaries and documentation links pass. These include
 independent Text/Memo property cases, exact column allocation accounting, actual
 header rendering, duplicate-label targets and the thin desktop DTO mapping.
 
-The latest native visual check remains unverified. The preview process was live
+The first native visual attempt at this stage remained unverified. The preview process was live
 in its AppKit event loop, but the UI tool reported no capturable window; a later
 attempt to inspect the Dock stalled and was interrupted. This is neither proof
 of a rendering regression nor a successful native check. The earlier native
 observations above remain historical evidence for their corresponding builds.
-No new Windows or Access differential comparison is claimed.
+Subsequent fresh-preview observations are recorded below. No Windows or Access
+differential comparison is claimed.
+
+## Startup visibility and stored Field Properties
+
+The desktop requests visibility once from its first logic callback, including
+an initially occluded logic-only frame. It emits no later reveal request when
+the user hides or minimizes the window. An actual framework-output test covers
+that lifecycle; it is not a claim that the earlier UI tool failure was caused
+by occlusion or has been reproduced and fixed.
+
+Table Design now receives seven inert field-property observations from the same
+object-bound native property service as table pages. General displays Required,
+Allow Zero Length, Default Value, Validation Rule, Validation Text, Description
+and Caption; absence, uninspected metadata and unsupported declarations remain
+distinct. Existing storage and reader diagnostics live in collapsed Native
+details. Defaults and rules are selectable text, never evaluated. The desktop
+only maps the owned runtime observations into the shared UI DTO.
+
+A fresh macOS preview displayed the Open screen, opened an independent Jet 4
+fixture and showed its `Approved?` caption with original `Score` accessibility
+context and `No`/`Yes` text-box values. The blank selector strip and complete-row
+Home Copy were observed; pasting into the SQL editor yielded exactly
+`1\tNo\n`, without headers. Selecting Score in Table Design displayed Required
+Yes, default `0`, rule `In (0,-1)`, description and caption; selecting Id showed
+absent properties without inventing defaults. Canonical property labels were
+made human-readable after this visual review and checked in the actual renderer
+test. The configured content size was 1280 by 820 logical points, with a 2x native
+capture. These are functional observations, not a pixel-exact Access comparison.
+
+The public ACE 2007 example copy also opened and listed tables and saved queries
+inertly. The window later became unavailable to the UI tool before the new
+query-policy run could be completed; that run is not counted as verified native
+UI evidence. Both database copies remained byte-for-byte unchanged. Runtime
+tests cover the stored comparison/wildcard execution path separately.
 
 ## Saved-query objects and typed parameters
 

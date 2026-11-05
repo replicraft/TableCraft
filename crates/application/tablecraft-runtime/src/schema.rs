@@ -1,4 +1,7 @@
 //! Owned native field descriptors for an explicit application inspector request.
+mod properties;
+pub use properties::{FieldProperty, FieldPropertyValue};
+
 use super::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -31,12 +34,14 @@ pub struct Field {
     /// Qualified scalar-reader carrier name; None preserves an unavailable field.
     pub scalar_type: Option<String>,
     /// Reader representation policy, NOT declared Required or a constraint check.
-    /// Required/default/validation property maps are not loaded by describe().
+    /// The independent stored property observations do not change this policy.
     pub reader_nullable: Option<bool>,
     /// Original Decimal precision/scale; not inferred from materialized values.
     pub decimal_parameters: Option<(u8, u8)>,
     /// Native complex-type ID, without opening child tables or decoding collections.
     pub complex_type_id: Option<u32>,
+    /// Inert field-level property observations, distinct from effective constraints.
+    pub properties: Vec<FieldProperty>,
 }
 
 impl Document {
@@ -45,9 +50,17 @@ impl Document {
         table: &str,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
-        let mut browser = NativeBrowser::new(&mut self.source, SCOPE, budget(), cancelled);
+        let mut native_work = budget();
+        let properties = crate::native_properties::inspect(
+            &mut self.source,
+            table,
+            &mut native_work,
+            cancelled,
+        )?;
+        let mut browser = NativeBrowser::new(&mut self.source, SCOPE, native_work, cancelled);
         let description = browser.describe(table)?;
         let schema = description.schema();
+        crate::native_properties::require_binding(properties.as_ref(), schema)?;
         let mut work = ResourceBudget::new(DESCRIPTOR_BYTES, 0, DESCRIPTOR_STEPS);
         check(cancelled)?;
         work.charge_allocation(schema.columns().len() as u64, size_of::<Field>() as u64)?;
@@ -89,6 +102,12 @@ impl Document {
                 reader_nullable,
                 decimal_parameters: native.decimal_parameters(),
                 complex_type_id: native.complex_type_id(),
+                properties: properties::inspect(
+                    native.name(),
+                    properties.as_ref(),
+                    &mut work,
+                    cancelled,
+                )?,
             });
         }
         check(cancelled)?;

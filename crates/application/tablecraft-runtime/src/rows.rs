@@ -22,7 +22,8 @@ impl Document {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         let mut work = budget();
-        let properties = controls::inspect(&mut self.source, table, &mut work, cancelled)?;
+        let properties =
+            crate::native_properties::inspect(&mut self.source, table, &mut work, cancelled)?;
         let mut browser = NativeBrowser::new(&mut self.source, SCOPE, work, cancelled);
         let request = CollectionPageRequest::new(
             TablePageRequest::new(offset, PAGE_ROWS)?,
@@ -35,7 +36,7 @@ impl Document {
         let (columns, mut rows, reached_end) = match page {
             BrowsePage::Scalar(page) => {
                 output.work(1)?;
-                controls::require_binding(properties.as_ref(), page.schema())?;
+                crate::native_properties::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.columns().len())?;
                 for column in page.columns() {
                     columns.push(crate::column::native(
@@ -56,7 +57,7 @@ impl Document {
             }
             BrowsePage::Collections(page) => {
                 output.work(1)?;
-                controls::require_binding(properties.as_ref(), page.schema())?;
+                crate::native_properties::require_binding(properties.as_ref(), page.schema())?;
                 let mut columns = output.columns(page.schema().columns().len())?;
                 for column in page.schema().columns() {
                     columns.push(crate::column::native(
