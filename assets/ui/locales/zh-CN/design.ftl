@@ -37,3 +37,17 @@ design-validation-rule = 验证规则
 design-validation-text = 验证文本
 design-caption = 标题
 design-field-size = 字段大小
+
+design-lookup = 查阅
+design-lookup-uninspected = 尚未检查查阅属性。不会推断设置或默认值。
+design-help-selection = 选择属性以查看说明。值为只读，不会计算存储的表达式。
+design-help-required = 必填是存储的声明，不能根据 NULL 读取支持推断此属性。
+design-help-zero-length = 允许空字符串独立于 NULL 控制空文本。
+design-help-default = 显示存储的默认表达式，不进行计算。
+design-help-validation = 显示存储的验证表达式和消息，不执行它们。
+design-help-label = 按原样显示存储的标题和说明。
+design-help-size = 字段大小是捕获的声明，不是所选值的长度。
+design-resize-panes = 调整字段网格和属性大小
+design-description-optional = 说明（可选）
+design-copy-limit = 属性超出剪贴板的 1 MiB 限制。未复制任何内容。
+design-copy-allocation = 无法分配属性剪贴板文本所需的内存。未复制任何内容。

@@ -5,10 +5,17 @@ pub use properties::{FieldProperty, FieldPropertyValue};
 
 use super::{DocumentView, State};
 use crate::workspace::focus::{self, Pane};
-use egui::{Id, RichText, ScrollArea, Ui};
+use egui::{Id, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
 
 const MAX_PANE_ENTRY_FRAMES: u64 = 8;
+const FIELD_ROW_HEIGHT: f32 = 19.0;
+const SELECTOR_WIDTH: f32 = 18.0;
+const FIELD_NAME_WIDTH: f32 = 192.0;
+const DATA_TYPE_WIDTH: f32 = 160.0;
+const MIN_GRID_HEIGHT: f32 = 90.0;
+const MIN_PROPERTIES_HEIGHT: f32 = 140.0;
+const SPLITTER_HEIGHT: f32 = 6.0;
 
 /// Captured declaration metadata, separate from table pages and query results.
 pub struct Schema {
@@ -127,32 +134,31 @@ impl State {
         )
         .or_else(|| enter_grid.then_some(self.selected_field));
 
-        egui::Resize::default()
-            .id_salt("schema_fields")
-            .default_width(ui.available_width())
-            .min_width(ui.available_width())
-            .max_width(ui.available_width())
-            .default_height((ui.available_height() * 0.68).max(120.0))
-            .min_height(90.0)
-            .max_height((ui.available_height() - 140.0).max(90.0))
-            .resizable([false, true])
-            .show(ui, |ui| {
+        let grid_height = pane_height(ui);
+        ui.allocate_ui_with_layout(
+            egui::vec2(ui.available_width(), grid_height),
+            egui::Layout::top_down(egui::Align::Min),
+            |ui| {
                 ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
-                let mut table = TableBuilder::new(ui).animate_scrolling(false);
+                let mut table = TableBuilder::new(ui)
+                    .animate_scrolling(false)
+                    .max_scroll_height(grid_height - FIELD_ROW_HEIGHT);
                 if let Some(position) = scroll_to {
                     table = table.scroll_to_row(position, None);
                 }
                 table
                     .striped(false)
                     .resizable(true)
-                    .column(Column::initial(210.0).at_least(100.0))
-                    .column(Column::initial(140.0).at_least(90.0))
+                    .column(Column::exact(SELECTOR_WIDTH).resizable(false))
+                    .column(Column::initial(FIELD_NAME_WIDTH).at_least(100.0))
+                    .column(Column::initial(DATA_TYPE_WIDTH).at_least(90.0))
                     .column(Column::remainder().at_least(70.0))
-                    .header(22.0, |mut header| {
+                    .header(FIELD_ROW_HEIGHT, |mut header| {
+                        header.col(|ui| grid::selector(ui, false));
                         for (position, title) in [
                             localizer.text("design-field-name"),
                             localizer.text("design-data-type"),
-                            localizer.text("design-description"),
+                            localizer.text("design-description-optional"),
                         ]
                         .into_iter()
                         .enumerate()
@@ -169,9 +175,19 @@ impl State {
                         }
                     })
                     .body(|body| {
-                        body.rows(22.0, schema.fields.len(), |mut row| {
+                        let visible_slots =
+                            ((grid_height - FIELD_ROW_HEIGHT) / FIELD_ROW_HEIGHT).ceil() as usize;
+                        let row_count = schema.fields.len().max(visible_slots);
+                        body.rows(FIELD_ROW_HEIGHT, row_count, |mut row| {
                             let position = row.index();
-                            let field = &schema.fields[position];
+                            let Some(field) = schema.fields.get(position) else {
+                                row.col(|ui| grid::selector(ui, false));
+                                for _ in 0..3 {
+                                    row.col(grid::blank);
+                                }
+                                return;
+                            };
+                            row.col(|ui| grid::selector(ui, position == self.selected_field));
                             row.col(|ui| {
                                 let response = grid::cell(
                                     ui,
@@ -220,21 +236,37 @@ impl State {
                                 );
                             });
                             row.col(|ui| {
-                                let description = field
+                                let value = field
                                     .properties
                                     .iter()
-                                    .find_map(|property| match (&property.name, &property.value) {
-                                        (&"Description", FieldPropertyValue::Text(value)) => {
-                                            Some(value.as_str())
-                                        }
-                                        _ => None,
-                                    })
-                                    .unwrap_or("");
-                                grid::cell(ui, description, grid::CellStyle::Value);
+                                    .find(|property| property.name == "Description")
+                                    .map(|property| &property.value);
+                                let (description, style) = match value {
+                                    Some(FieldPropertyValue::Text(value)) => {
+                                        (value.clone(), grid::CellStyle::Value)
+                                    }
+                                    Some(FieldPropertyValue::Absent) => {
+                                        (String::new(), grid::CellStyle::Value)
+                                    }
+                                    Some(FieldPropertyValue::Uninspected) | None => (
+                                        localizer.text("design-not-inspected"),
+                                        grid::CellStyle::Unknown,
+                                    ),
+                                    Some(
+                                        FieldPropertyValue::Unsupported
+                                        | FieldPropertyValue::Boolean(_),
+                                    ) => (
+                                        localizer.text("design-unsupported-value"),
+                                        grid::CellStyle::Unknown,
+                                    ),
+                                };
+                                grid::cell(ui, &description, style);
                             });
                         });
                     });
-            });
+            },
+        );
+        pane_splitter(ui, grid_height);
         if let Some(mut entry) = entry
             && !entered_grid
         {
@@ -244,7 +276,6 @@ impl State {
             self.design_focus_pending = Some(entry);
             ui.ctx().request_repaint();
         }
-        ui.separator();
         ui.vertical_centered(|ui| {
             ui.label(
                 RichText::new(crate::localization::tr(ui, "design-field-properties")).size(11.0),
@@ -253,26 +284,71 @@ impl State {
         let Some(field) = schema.fields.get(self.selected_field) else {
             return;
         };
-        ui.scope(|ui| {
-            ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
-            ScrollArea::vertical()
-                .id_salt("field_properties")
-                .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
-                .show(ui, |ui| {
-                    ui.push_id(
-                        (
-                            document_revision,
-                            &schema.table,
-                            self.selected_field,
-                            field.number,
-                        ),
-                        |ui| {
-                            properties::show(ui, field);
-                        },
-                    );
-                });
-        });
+        ui.push_id(
+            (
+                document_revision,
+                &schema.table,
+                self.selected_field,
+                field.number,
+                &field.name,
+                self.focus_publication,
+            ),
+            |ui| properties::show(ui, field),
+        );
     }
+}
+
+/// Keep a presentation-only split per object through its existing parent UI ID.
+fn pane_height(ui: &Ui) -> f32 {
+    let maximum =
+        (ui.available_height() - MIN_PROPERTIES_HEIGHT - SPLITTER_HEIGHT).max(MIN_GRID_HEIGHT);
+    let id = ui.make_persistent_id("schema_grid_height");
+    ui.data(|data| data.get_temp::<f32>(id))
+        .unwrap_or(ui.available_height() * 0.68)
+        .clamp(MIN_GRID_HEIGHT, maximum)
+}
+
+fn pane_splitter(ui: &mut Ui, height: f32) {
+    let id = ui.make_persistent_id("schema_grid_height");
+    let maximum = (height + ui.available_height() - MIN_PROPERTIES_HEIGHT - SPLITTER_HEIGHT)
+        .max(MIN_GRID_HEIGHT);
+    let (rect, response) = ui.allocate_exact_size(
+        egui::vec2(ui.available_width(), SPLITTER_HEIGHT),
+        egui::Sense::click_and_drag(),
+    );
+    let response = response.on_hover_cursor(egui::CursorIcon::ResizeVertical);
+    let label = crate::localization::tr(ui, "design-resize-panes");
+    response.widget_info(|| {
+        egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), label.clone())
+    });
+    let keyboard_delta = if response.has_focus() {
+        ui.input_mut(|input| {
+            let down = input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowDown);
+            let up = input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowUp);
+            (i32::from(down) - i32::from(up)) as f32 * FIELD_ROW_HEIGHT
+        })
+    } else {
+        0.0
+    };
+    if response.clicked() {
+        response.request_focus();
+    }
+    if response.dragged() || keyboard_delta != 0.0 {
+        let next =
+            (height + response.drag_delta().y + keyboard_delta).clamp(MIN_GRID_HEIGHT, maximum);
+        ui.data_mut(|data| data.insert_temp(id, next));
+        ui.ctx().request_repaint();
+    }
+    let palette = crate::theme::palette(ui.ctx());
+    let color = if response.hovered() || response.has_focus() {
+        palette.accent
+    } else {
+        palette.grid_line
+    };
+    ui.painter().line_segment(
+        [rect.left_center(), rect.right_center()],
+        egui::Stroke::new(1.0, color),
+    );
 }
 
 fn field_focus_id(

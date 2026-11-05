@@ -37,3 +37,17 @@ design-validation-rule = Regra de Validação
 design-validation-text = Texto de Validação
 design-caption = Legenda
 design-field-size = Tamanho do Campo
+
+design-lookup = Pesquisa
+design-lookup-uninspected = As propriedades de pesquisa não foram inspecionadas. Nenhuma configuração ou padrão é inferido.
+design-help-selection = Selecione uma propriedade para ler sua explicação. Os valores são somente leitura; expressões armazenadas não são avaliadas.
+design-help-required = Obrigatório é a declaração armazenada. O suporte à leitura de NULL não determina esta propriedade.
+design-help-zero-length = Permitir comprimento zero controla o texto vazio, independentemente de NULL.
+design-help-default = A expressão padrão armazenada é exibida sem avaliação.
+design-help-validation = As expressões e mensagens de validação armazenadas são exibidas sem execução.
+design-help-label = As legendas e descrições armazenadas são exibidas literalmente.
+design-help-size = Tamanho do campo é a declaração capturada, não o comprimento do valor selecionado.
+design-resize-panes = Redimensionar grade de campos e propriedades
+design-description-optional = Descrição (opcional)
+design-copy-limit = A propriedade excede o limite de 1 MiB da área de transferência. Nada foi copiado.
+design-copy-allocation = Não foi possível alocar memória para copiar a propriedade. Nada foi copiado.

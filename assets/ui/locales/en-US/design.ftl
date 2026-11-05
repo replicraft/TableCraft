@@ -37,3 +37,17 @@ design-validation-rule = Validation Rule
 design-validation-text = Validation Text
 design-caption = Caption
 design-field-size = Field Size
+
+design-lookup = Lookup
+design-lookup-uninspected = Lookup properties were not inspected. No lookup settings or defaults are inferred.
+design-help-selection = Select a property to read its explanation. Values are read only; stored expressions are not evaluated.
+design-help-required = Required is the stored declaration. Reader NULL support does not determine this property.
+design-help-zero-length = Allow Zero Length controls empty text, independently of NULL.
+design-help-default = The stored default expression is shown without evaluation.
+design-help-validation = Stored validation expressions and messages are shown without execution.
+design-help-label = Stored captions and descriptions are displayed literally.
+design-help-size = Field Size is the captured declaration, not the length of the selected value.
+design-resize-panes = Resize field grid and properties
+design-description-optional = Description (Optional)
+design-copy-limit = Property copy exceeds the 1 MiB clipboard limit. Nothing was copied.
+design-copy-allocation = Unable to allocate property clipboard text. Nothing was copied.
