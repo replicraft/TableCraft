@@ -33,13 +33,15 @@ ALLOWED = {
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-display": set(),
-    "tablecraft-ui": {"tablecraft-display"},
+    "tablecraft-builders": {"tablecraft-sql", "tablecraft-schema"},
+    "tablecraft-ui": {"tablecraft-display", "tablecraft-builders"},
     "tablecraft-runtime": {"tablecraft-access", "tablecraft-ace", "tablecraft-core",
                            "tablecraft-model", "tablecraft-io", "tablecraft-query",
                            "tablecraft-sql", "tablecraft-testkit", "tablecraft-db",
-                           "tablecraft-schema", "tablecraft-expressions", "tablecraft-display"},
+                           "tablecraft-schema", "tablecraft-expressions", "tablecraft-display",
+                           "tablecraft-builders"},
     "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit",
-                           "tablecraft-display"},
+                           "tablecraft-display", "tablecraft-builders"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",
@@ -70,6 +72,8 @@ def violations(metadata):
             target = dep["name"]
             if name == "tablecraft-display" and target in DISPLAY_GUI_DEPENDENCIES:
                 errors.append(f"{name} -> {target}: display formatting must remain renderer-neutral")
+            if name == "tablecraft-builders" and target in DISPLAY_GUI_DEPENDENCIES:
+                errors.append(f"{name} -> {target}: builder models must remain headless")
             # Cargo metadata exposes all kinds, optional edges and cfg targets.
             # A path dependency outside the workspace cannot bypass the policy.
             path = dep.get("path")

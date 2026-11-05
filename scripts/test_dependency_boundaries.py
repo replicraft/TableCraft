@@ -73,6 +73,40 @@ class BoundaryTests(unittest.TestCase):
         data, _, _ = self.desktop_workspace()
         self.assertEqual(violations(data), [])
 
+    def test_headless_builders_are_shared_by_ui_runtime_and_desktop(self):
+        data, ui, desktop = self.desktop_workspace()
+        builders = package(
+            "tablecraft-builders", "crates/presentation/tablecraft-builders",
+            ["tablecraft-sql", "tablecraft-schema"],
+        )
+        data["packages"].append(builders)
+        data["workspace_members"].append(builders["id"])
+        runtime = next(p for p in data["packages"] if p["name"] == "tablecraft-runtime")
+        for consumer in [ui, runtime, desktop]:
+            consumer["dependencies"].append({"name": "tablecraft-builders"})
+        self.assertEqual(violations(data), [])
+
+    def test_builders_cannot_import_gui_hosts_or_native_backends(self):
+        for target in ["egui", "egui_extras", "eframe", "winit", "rfd", "wgpu",
+                       "tablecraft-ui", "tablecraft-runtime", "tablecraft-desktop",
+                       "tablecraft-ace", "tablecraft-access"]:
+            for kind in [None, "dev", "build"]:
+                with self.subTest(target=target, kind=kind):
+                    data, _, _ = self.desktop_workspace()
+                    builders = package(
+                        "tablecraft-builders", "crates/presentation/tablecraft-builders",
+                    )
+                    builders["dependencies"].append({
+                        "name": target, "kind": kind, "optional": True,
+                        "target": 'cfg(target_os = "windows")',
+                    })
+                    data["packages"].append(builders)
+                    data["workspace_members"].append(builders["id"])
+                    self.assertTrue(any(
+                        f"tablecraft-builders -> {target}" in error
+                        for error in violations(data)
+                    ))
+
     def test_display_formatter_has_no_workspace_or_gui_dependencies(self):
         for target in ["tablecraft-ui", "tablecraft-runtime", "tablecraft-core",
                        "egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"]:

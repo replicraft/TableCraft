@@ -1,0 +1,16 @@
+[package]
+name = "tablecraft-builders"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+tablecraft-sql.workspace = true
+tablecraft-schema.workspace = true
+thiserror.workspace = true
