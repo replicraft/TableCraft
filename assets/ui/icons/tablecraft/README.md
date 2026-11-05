@@ -8,8 +8,11 @@ embedded theme-variant SVG rendering and display-density approach.
 
 Each icon has a 32-unit canvas, a light/dark color variant, and corresponding
 neutral disabled variants. Enabled rendering preserves the source colors;
-disabled rendering selects neutral artwork and retains the host disabled-opacity
-behavior. Files are self-contained vector shapes with no text/font dependency,
+disabled commands use neutral artwork and muted text. The Ribbon preserves full
+artwork opacity for legibility; other controls retain their host disabled styling. Dark variants use brighter outlines and saturated semantic accents so
+small command glyphs remain distinct from the dark Ribbon background. Record
+navigation has dedicated solid silhouettes; Datasheet and Design view glyphs
+have separate geometry from table editing. Files are self-contained vector shapes with no text/font dependency,
 external references, filters, scripts, or linked images. Commands sharing a
 concept may share geometric building blocks; distinct command meanings have
 separate compositions.
