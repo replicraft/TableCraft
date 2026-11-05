@@ -1,5 +1,26 @@
 # Implementation status
 
+## Object loading, retry and keyboard navigation — 5 November 2026
+
+Unloaded table and Design tabs now show loading or failed/not-loaded states with
+an exact-instance Retry action. They no longer display the database-open welcome
+screen. Loaded-empty headers and existing rows during refresh remain intact.
+Retry repeats the selected read; retained filter/sort definitions survive failed
+fresh-source reapplication until a matching publication is accepted, preventing
+an accidental unfiltered fallback. Foreground post-save cursor preferences remain
+separate from filtered display-rank preferences.
+
+Object keyboard switching and closing emit the same source-bound host actions
+as tab controls, with dialog/busy/save guards. Access-style Ctrl+F6 switching and
+Ctrl+W closing are distinct from pane navigation; platform adaptations and native
+window-event qualification remain explicit in the desktop contract.
+
+All 189 UI and 48 desktop tests passed, including native cancellation recovery,
+repeated corruption failure, stale/empty refusal and repeated changed-declaration
+filter failure. The preview matrix now covers 59 × eight × two combinations
+(944). Strict seven-package Clippy passed. See the
+[desktop scope and verification](ui/DESKTOP.md#object-loading-retry-and-shortcuts--5-november-2026).
+
 ## Independent object workspace — 5 November 2026
 
 Tables, saved queries and the scratch SQL editor now have independently owned

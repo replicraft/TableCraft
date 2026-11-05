@@ -162,6 +162,42 @@ impl Desktop {
         self.load_object(open);
     }
 
+    pub(super) fn retry_object(&mut self, tab: ObjectTab) {
+        let _span = tracing::debug_span!("desktop object retry").entered();
+        if self.editing.has_save() || !self.state.can_retry_object(&tab) {
+            return;
+        }
+        if let Some(open) = self.state.active_object_load() {
+            self.load_object(open);
+        }
+    }
+
+    pub(super) fn load_active_object(&mut self, offset: u32) {
+        let Some(mut open) = self.state.active_object_load() else {
+            return;
+        };
+        if let ObjectKind::Table { name } = &open.tab.target.kind {
+            let filtered = self
+                .objects
+                .definitions
+                .iter()
+                .any(|intent| intent.table() == name);
+            if !open.table_design && !filtered {
+                if !self.state.set_object_load_offset(&open.tab, offset) {
+                    return;
+                }
+                open.offset = offset;
+            }
+        }
+        self.load_object(open);
+    }
+
+    pub(super) fn complete_object_filter_restore(&mut self, table: &str) {
+        self.objects
+            .definitions
+            .retain(|definition| definition.table() != table);
+    }
+
     fn load_object(&mut self, open: ObjectOpen) {
         if !open.needs_load {
             return;
@@ -177,8 +213,10 @@ impl Desktop {
                     .iter()
                     .position(|definition| definition.table() == name);
                 if let Some(position) = definition {
-                    self.filter_restore = Some(self.objects.definitions.remove(position));
-                    self.restore_filter_after_save(&name);
+                    // Keep the inert intent until a matching publication is accepted.
+                    // A failed or cancelled retry must not become an ordinary page read.
+                    let retained = self.objects.definitions[position].clone();
+                    self.reapply_object_filter(retained);
                 } else {
                     self.submit(Command::Page {
                         table: name,
@@ -199,10 +237,16 @@ impl Desktop {
 
     pub(super) fn capture_workspace_restore(&mut self) -> Option<WorkspaceRestore> {
         let mut definitions = Vec::new();
-        if definitions
-            .try_reserve_exact(self.objects.filters.len())
-            .is_err()
-        {
+        let Some(count) = self
+            .objects
+            .filters
+            .len()
+            .checked_add(usize::from(self.filter.is_some()))
+        else {
+            self.state.error = Some(self.state.localizer.text("objects-memory-limit"));
+            return None;
+        };
+        if definitions.try_reserve_exact(count).is_err() {
             self.state.error = Some(self.state.localizer.text("objects-memory-limit"));
             return None;
         }
@@ -211,6 +255,13 @@ impl Desktop {
                 &filter.handle,
                 filter.enabled,
                 filter.offset,
+            ));
+        }
+        if let Some(handle) = &self.filter {
+            definitions.push(RestoreFilter::capture(
+                handle,
+                self.state.table_filter_enabled(),
+                self.state.data.as_ref().map_or(0, |data| data.offset),
             ));
         }
         // Definitions from still-unloaded restored tabs contain preferences only.

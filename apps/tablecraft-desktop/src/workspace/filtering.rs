@@ -38,30 +38,11 @@ impl RestoreFilter {
 }
 
 impl Desktop {
-    pub(super) fn retained_filter_after_save(&self, table: &str) -> Option<RestoreFilter> {
-        let target = self.state.active_filter_target()?;
-        if target.table != table {
-            return None;
-        }
-        let handle = self.filter_handle(&target)?;
-        Some(RestoreFilter::capture(
-            &handle,
-            self.state.table_filter_enabled(),
-            self.state.data.as_ref()?.offset,
-        ))
-    }
-
-    pub(super) fn restore_filter_after_save(&mut self, table: &str) -> bool {
-        let Some(retained) = self.filter_restore.take() else {
-            return false;
-        };
+    pub(super) fn reapply_object_filter(&mut self, retained: RestoreFilter) {
+        let table = retained.table().to_owned();
         let Some(database) = &self.state.database else {
-            return false;
+            return;
         };
-        if retained.definition.table() != table {
-            self.state.error = Some(self.state.localizer.text("filtering-stale"));
-            return true;
-        }
         let restore = FilterRestore {
             document_revision: database.document_revision,
             table: table.to_owned(),
@@ -80,11 +61,10 @@ impl Desktop {
         if !self.state.begin_filter_restore(request_id, restore) {
             self.worker.cancel();
             self.state.error = Some(self.state.localizer.text("filtering-stale"));
-            return true;
+            return;
         }
         self.pending = PendingOperation::FilterRestore { request_id };
         self.state.busy = true;
-        true
     }
 
     pub(super) fn filter_selection(
@@ -253,6 +233,7 @@ impl Desktop {
         if accepted {
             // Keep the old capability until the complete new publication passes
             // UI source/request checks. Failed or cancelled candidates drop.
+            self.complete_object_filter_restore(&handle.target().table);
             self.filter = Some(handle);
         }
     }

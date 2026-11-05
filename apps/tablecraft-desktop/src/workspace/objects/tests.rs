@@ -3,15 +3,17 @@ use crate::workspace::Desktop;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use crate::workspace::test_support::finish_save;
 use crate::workspace::test_support::{finish_reads, focus_cell, opened};
+use eframe::App;
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
+use std::time::{Duration, Instant};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::saved_queries::{
     EMPTY_ID, Fragment, QUERY_ID, database_with_query_flags,
 };
 use tablecraft_testkit::fixtures::access::{
-    canonical_multiple_creation, canonical_native17_creation,
+    canonical_multiple_creation, canonical_native17_creation, field_presentation, mutation_fixture,
 };
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_ui::EditTarget;
@@ -474,4 +476,181 @@ fn save_owner_vetoes_other_tabs_and_reopen_revokes_old_object_and_row_rights() {
     let row = data.row_index(1).unwrap();
     assert_eq!(data.rows[row][1].text, "42");
     assert_ne!(std::fs::read(path).unwrap(), original);
+}
+
+fn finish_failed_read(harness: &mut Harness<'_, Desktop>) -> String {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy {
+        assert!(
+            Instant::now() < deadline,
+            "native object failure did not finish"
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    harness.run_steps(2);
+    if let Some(error) = &harness.state().state.error {
+        return error.clone();
+    }
+    let message = tablecraft_runtime::FilterError::UnsupportedField.to_string();
+    assert!(
+        harness
+            .get_all_by_role(Role::Label)
+            .into_iter()
+            .any(|node| node.value().as_deref() == Some(message.as_str())),
+        "the exact native failure must be visible as a diagnostic label"
+    );
+    message
+}
+
+#[test]
+fn cancelled_unloaded_table_retries_its_own_read_and_keeps_the_other_object() {
+    let (_directory, path, original, mut harness) = opened(multiple_tables());
+    let retained_tab = harness.state().state.active_object().unwrap();
+    let retained_rows = harness.state().state.data.as_ref().unwrap().rows.as_ptr();
+    let mixed = table(harness.state(), "Mixed Values");
+    harness.state_mut().open_object(mixed.clone());
+    let mixed_tab = tab(harness.state(), &mixed);
+    assert!(harness.state().state.busy);
+    assert!(harness.state().state.data.is_none());
+
+    // Deliver the real UI cancellation before polling a possibly completed read.
+    // This avoids racing the tiny independent fixture against the worker thread.
+    let input = egui::RawInput {
+        screen_rect: Some(egui::Rect::from_min_size(
+            egui::Pos2::ZERO,
+            egui::vec2(1000.0, 760.0),
+        )),
+        events: vec![egui::Event::Key {
+            key: egui::Key::Escape,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        }],
+        ..Default::default()
+    };
+    let context = harness.ctx.clone();
+    let mut output = context.run_ui(input, |ui| {
+        let mut frame = eframe::Frame::_new_kittest();
+        harness.state_mut().ui(ui, &mut frame);
+    });
+    output.textures_delta.clear();
+    assert!(!harness.state().state.busy);
+    assert!(harness.state().state.error.is_some());
+    assert!(harness.state().state.data.is_none());
+    assert!(harness.state().state.can_retry_object(&mixed_tab));
+
+    harness.state_mut().retry_object(mixed_tab.clone());
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.active_object(), Some(mixed_tab));
+    assert_eq!(
+        harness.state().state.data.as_ref().unwrap().table,
+        "Mixed Values"
+    );
+    assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 3);
+    harness.state_mut().activate_object(retained_tab);
+    assert_eq!(
+        harness.state().state.data.as_ref().unwrap().rows.as_ptr(),
+        retained_rows
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn failed_object_retry_never_falls_back_and_stale_or_loaded_empty_tabs_do_not_retry() {
+    let source = canonical_multiple_creation::source(canonical_multiple_creation::Case::Populated);
+    let broken_page = source
+        .tables
+        .iter()
+        .find(|table| table.name == "Mixed Values")
+        .unwrap()
+        .data_page;
+    let mut bytes = canonical_native17_creation::source(source.bytes);
+    // Independent fixture ledger identifies only this user's DATA page.
+    bytes[usize::try_from(broken_page).unwrap() * 4096] = 0xff;
+    let (_directory, path, original, mut harness) = opened(bytes);
+    let broken = table(harness.state(), "Mixed Values");
+    harness.state_mut().open_object(broken.clone());
+    let broken_tab = tab(harness.state(), &broken);
+    let error = finish_failed_read(&mut harness);
+    assert!(harness.state().state.data.is_none());
+    harness.state_mut().retry_object(broken_tab.clone());
+    assert_eq!(finish_failed_read(&mut harness), error);
+    assert_eq!(
+        harness.state().state.active_object(),
+        Some(broken_tab.clone())
+    );
+    assert!(harness.state().state.data.is_none());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+
+    let empty = canonical_native17_creation::source(
+        canonical_multiple_creation::source(canonical_multiple_creation::Case::TwoEmpty).bytes,
+    );
+    std::fs::write(&path, &empty).unwrap();
+    harness.state_mut().open();
+    finish_reads(&mut harness);
+    let generation = harness.state().generation;
+    harness.state_mut().retry_object(broken_tab);
+    assert_eq!(harness.state().generation, generation);
+    let loaded = harness.state().state.active_object().unwrap();
+    assert!(harness.state().state.data.as_ref().unwrap().rows.is_empty());
+    assert!(!harness.state().state.can_retry_object(&loaded));
+    harness.state_mut().retry_object(loaded);
+    assert_eq!(harness.state().generation, generation);
+    assert!(!harness.state().state.busy);
+    assert_eq!(std::fs::read(path).unwrap(), empty);
+}
+
+#[test]
+fn failed_lazy_filter_restore_retries_the_definition_instead_of_plain_page() {
+    let (_directory, path, _original, mut harness) = opened(mutation_fixture::database());
+    focus_cell(&mut harness, "Score", "1", "10");
+    let selection = harness.state().state.current_filter_selection().unwrap();
+    harness
+        .state_mut()
+        .filter_selection(selection, FilterComparison::Equal);
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 1);
+    let scratch = ObjectTarget {
+        document_revision: harness
+            .state()
+            .state
+            .database
+            .as_ref()
+            .unwrap()
+            .document_revision,
+        kind: ObjectKind::Sql,
+    };
+    harness.state_mut().open_object(scratch);
+    let restore = harness.state_mut().capture_workspace_restore().unwrap();
+
+    let changed = field_presentation::score64(&[], 8, &[2.0_f64.to_bits()]);
+    std::fs::write(&path, &changed).unwrap();
+    harness.state_mut().open();
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.data.as_ref().unwrap().table, "Items");
+    assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 1);
+    assert!(harness.state().state.active_filter_target().is_none());
+
+    // Exercise the source-free layout handoff, without fabricating a save receipt.
+    harness.state_mut().retain_workspace_restore(restore);
+    assert!(harness.state_mut().restore_workspace_after_save("Items"));
+    let items = table(harness.state(), "Items");
+    harness.state_mut().open_object(items.clone());
+    let items_tab = tab(harness.state(), &items);
+    let error = finish_failed_read(&mut harness);
+    assert!(harness.state().state.data.is_none());
+    for _ in 0..2 {
+        assert!(harness.state().state.can_retry_object(&items_tab));
+        harness.state_mut().retry_object(items_tab.clone());
+        assert_eq!(finish_failed_read(&mut harness), error);
+        assert!(harness.state().state.data.is_none());
+        assert!(harness.state().filter.is_none());
+        assert_eq!(
+            harness.state().state.active_object(),
+            Some(items_tab.clone())
+        );
+    }
+    assert_eq!(std::fs::read(path).unwrap(), changed);
 }
