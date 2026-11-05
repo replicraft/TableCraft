@@ -32,7 +32,7 @@ fn harness(width: f32) -> Harness<'static, (State, bool)> {
         declared_rows: 0,
         fields: Vec::new(),
     });
-    Harness::builder()
+    let harness = Harness::builder()
         .with_size(egui::vec2(width, 120.0))
         .build_ui_state(
             |ui, state: &mut (State, bool)| {
@@ -40,7 +40,9 @@ fn harness(width: f32) -> Harness<'static, (State, bool)> {
                 ui.add_enabled_ui(state.1, |ui| state.0.document_tabs(ui));
             },
             (state, true),
-        )
+        );
+    crate::configure(&harness.ctx);
+    harness
 }
 
 #[test]
@@ -62,6 +64,33 @@ fn long_captions_are_single_line_bounded_and_accessibility_retains_full_name() {
         .unwrap();
     assert_eq!(text.galley.rows.len(), 1);
     assert!(text.galley.elided);
+    assert!(text.pos.x >= tab.rect().left() + TAB_TEXT_PADDING + TAB_ICON_SIZE + TAB_ICON_GAP);
+    let colors = palette(&harness.ctx);
+    assert!(
+        harness.output().shapes.iter().any(|shape| {
+            matches!(&shape.shape, egui::Shape::Rect(frame)
+            if frame.rect == tab.rect()
+                && frame.fill == colors.title_fill
+                && frame.stroke.color == colors.grid_line)
+        }),
+        "the selected object tab paints a neutral bordered surface"
+    );
+    assert!(
+        harness.output().shapes.iter().any(|shape| {
+            let egui::Shape::Rect(image) = &shape.shape else {
+                return false;
+            };
+            if image.brush.is_none() {
+                return false;
+            }
+            let bounds = image.rect;
+            tab.rect().contains_rect(bounds)
+                && (bounds.width() - TAB_ICON_SIZE).abs() < 1.0
+                && (bounds.height() - TAB_ICON_SIZE).abs() < 1.0
+                && bounds.right() <= text.pos.x - TAB_ICON_GAP
+        }),
+        "a small object icon is painted without overlapping the literal caption"
+    );
 }
 
 #[test]

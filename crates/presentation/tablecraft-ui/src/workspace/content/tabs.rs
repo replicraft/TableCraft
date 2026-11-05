@@ -3,12 +3,15 @@ use super::{DocumentView, State};
 use crate::localization::tr;
 use crate::theme::palette;
 use crate::workspace::focus::{self, Pane};
+use crate::workspace::ribbon::Icon;
 use egui::{Frame, Id, Margin, Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
 
 const TAB_HEIGHT: f32 = 22.0;
 const MIN_TAB_WIDTH: f32 = 48.0;
 const MAX_TAB_WIDTH: f32 = 220.0;
 const TAB_TEXT_PADDING: f32 = 6.0;
+const TAB_ICON_SIZE: f32 = 14.0;
+const TAB_ICON_GAP: f32 = 4.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
 
 impl State {
@@ -47,15 +50,18 @@ impl State {
                     )
                     .show(ui, |ui| {
                         ui.horizontal(|ui| {
-                            for (view, title, id) in [
+                            ui.spacing_mut().item_spacing.x = 0.0;
+                            for (view, title, icon, id) in [
                                 (
                                     DocumentView::Table,
                                     table_title,
+                                    Icon::Table,
                                     ui.make_persistent_id(("table_tab", document, table)),
                                 ),
                                 (
                                     DocumentView::Query,
                                     tr(ui, "shell-query"),
+                                    Icon::Search,
                                     ui.make_persistent_id((
                                         "query_tab",
                                         document,
@@ -67,6 +73,7 @@ impl State {
                                 (
                                     DocumentView::Design,
                                     tr(ui, "shell-table-design"),
+                                    Icon::TableEdit,
                                     ui.make_persistent_id((
                                         "design_tab",
                                         document,
@@ -77,7 +84,7 @@ impl State {
                                 if view == DocumentView::Design && self.schema.is_none() {
                                     continue;
                                 }
-                                let response = tab(ui, id, &title, self.view == view);
+                                let response = tab(ui, id, &title, icon, self.view == view);
                                 if self.view == view {
                                     focus::register(ui, Pane::Document, &response, false);
                                 }
@@ -95,7 +102,7 @@ impl State {
     }
 }
 
-fn tab(ui: &mut Ui, id: Id, title: &str, selected: bool) -> Response {
+fn tab(ui: &mut Ui, id: Id, title: &str, icon: Icon, selected: bool) -> Response {
     let colors = palette(ui.ctx());
     let color = if ui.is_enabled() {
         colors.ink
@@ -108,20 +115,25 @@ fn tab(ui: &mut Ui, id: Id, title: &str, selected: bool) -> Response {
         .layout_no_wrap(title.to_owned(), font.clone(), color)
         .size()
         .x;
-    let width = (natural_width + TAB_TEXT_PADDING * 2.0).clamp(MIN_TAB_WIDTH, MAX_TAB_WIDTH);
+    let content_inset = TAB_TEXT_PADDING * 2.0 + TAB_ICON_SIZE + TAB_ICON_GAP;
+    let width = (natural_width + content_inset).clamp(MIN_TAB_WIDTH, MAX_TAB_WIDTH);
     let (_, rect) = ui.allocate_space(egui::vec2(width, TAB_HEIGHT));
     let response = ui.interact(rect, id, Sense::click());
 
-    if selected {
-        ui.painter().rect_filled(rect, 0.0, colors.active_row);
-        ui.painter().line_segment(
-            [rect.left_bottom(), rect.right_bottom()],
-            egui::Stroke::new(2.0, colors.accent),
-        );
+    let fill = if selected {
+        colors.title_fill
     } else if response.hovered() {
-        ui.painter()
-            .rect_filled(rect, 0.0, ui.visuals().widgets.hovered.weak_bg_fill);
-    }
+        ui.visuals().widgets.hovered.weak_bg_fill
+    } else {
+        colors.surface
+    };
+    ui.painter().rect(
+        rect,
+        0.0,
+        fill,
+        egui::Stroke::new(1.0, colors.grid_line),
+        egui::StrokeKind::Inside,
+    );
     if response.has_focus() {
         ui.painter().rect_stroke(
             rect,
@@ -130,20 +142,24 @@ fn tab(ui: &mut Ui, id: Id, title: &str, selected: bool) -> Response {
             egui::StrokeKind::Inside,
         );
     }
-    let mut layout = egui::text::LayoutJob::simple(
-        title.to_owned(),
-        font,
-        color,
-        width - TAB_TEXT_PADDING * 2.0,
-    );
+    let mut layout =
+        egui::text::LayoutJob::simple(title.to_owned(), font, color, width - content_inset);
     layout.wrap.max_rows = 1;
     layout.wrap.break_anywhere = true;
     let text = ui.painter().layout_job(layout);
+    let icon_rect = egui::Rect::from_min_size(
+        egui::pos2(
+            rect.left() + TAB_TEXT_PADDING,
+            rect.center().y - TAB_ICON_SIZE * 0.5,
+        ),
+        egui::vec2(TAB_ICON_SIZE, TAB_ICON_SIZE),
+    );
+    icon.image(ui, TAB_ICON_SIZE).paint_at(ui, icon_rect);
     ui.painter()
         .with_clip_rect(rect.intersect(ui.clip_rect()))
         .galley(
             egui::pos2(
-                rect.left() + TAB_TEXT_PADDING,
+                icon_rect.right() + TAB_ICON_GAP,
                 rect.center().y - text.size().y * 0.5,
             ),
             text,
