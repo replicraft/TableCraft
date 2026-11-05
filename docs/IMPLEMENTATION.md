@@ -17,7 +17,10 @@ reports retain their viewport across appearance changes. Long service reports
 scroll and copy through a shared diagnostic presentation, keeping existing query
 controls reachable. Selected text and focused system badges now retain normal
 readable ink; explicit focus accents remain distinct. Compact Russian pane
-traversal is checked at fractional scales. See the
+traversal is checked at fractional scales. Mock retries clear stale failures,
+resource release stays distinct from a saved outcome, and collection reopen
+preserves scene membership. Open failures share the literal diagnostics display;
+host-owned notices and picker labels use Fluent. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
 ## Shared presentation preview — 4 November 2026

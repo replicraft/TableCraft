@@ -370,3 +370,33 @@ strict selected-package Clippy, documentation links and dependency guards pass.
 Focused paint checks inspect actual selected glyphs, selection fills and focus
 rings in both themes, plus badge colors across focus/selection transitions.
 No native application was activated or manipulated for this batch.
+
+## Mock workflow consistency — 5 November 2026
+
+Successful synthetic table, Design and supported SQL responses clear a prior
+workspace failure report. An unsupported SQL draft still produces its explicit
+mock refusal. Releasing retained synthetic save resources now yields the existing
+terminal needs-attention presentation rather than claiming a completed save;
+recovery remains a separate action. Neither path writes a database.
+
+Backstage Open failures reuse the shared bounded literal report display, including
+Copy details and replacement-report scroll behavior. The compact-layout check
+retains the exact path/password and keeps Open/Back reachable; copying reports
+never dispatches a database action. The retained Backstage capture shows Account,
+so Open diagnostic placement remains an adaptation.
+
+The normal desktop picker title/filter and host-generated cancellation/stale-view
+notices now use the selected Fluent locale. Backend error payloads and database
+content remain literal. Native dialog display is deliberately untested while
+non-headless verification is suspended.
+
+Closing and reopening a synthetic collection now retains its original assignment,
+member count and literal NULL/duplicate payloads. Loading/error scenes retain
+their explicit lifecycle state. Scene-specific children apply only to their
+matching parent identity and membership; opening a different row uses that row's
+ordinary fixture. Parent summaries and selection are retained.
+
+The coordinated batch passes 117 UI tests and 23 desktop tests, including all
+688 scene/locale/theme drawing combinations, strict selected-package Clippy,
+formatting, documentation links and dependency boundaries. No native window or
+file dialog was opened for this work, and no new database capability was added.
