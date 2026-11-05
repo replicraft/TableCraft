@@ -83,3 +83,9 @@ editing-input-binary = Binario: pares de bytes hexadecimales
 editing-input-guid = GUID: identificador canónico
 editing-input-date = DATE heredado: fecha y hora civil ISO (sin zona horaria)
 editing-input-date-extended = Fecha y hora extendida: fecha y hora civil ISO (precisión de 100 ns)
+
+editing-paste-text = Pegar texto
+editing-paste-help = Pegue texto literal en una celda nativa seleccionada y revíselo. Use el formato de entrada invariable del campo; no se interpretan valores formateados ni formatos tipados del portapapeles de Access. El texto multilínea permanece en una celda.
+editing-paste-too-large = El texto del portapapeles supera el límite de 1 MiB. No se pegó nada.
+editing-paste-stale = La solicitud del portapapeles ya no corresponde a la celda seleccionada. Se descartó el texto.
+editing-paste-multiple = El portapapeles devolvió varios textos. No se pegó nada.

@@ -223,6 +223,16 @@ user types. Runtime converts replacement text to typed values and invokes normal
 native planning. SQL is never generated from the input. The shared UI's review
 is a display DTO; only the runtime can issue its opaque consuming `ReviewedEdit`.
 
+Literal clipboard text can seed the same replacement input with `is_null=false`;
+review still uses the target field's invariant/ISO syntax and normal native
+admission. It does not infer typed NULL from `NULL` or an empty string, recover
+clipboard source precision, or parse regional display formatting. An exact match
+with this target's initial DATE/Single/Double edit text retains the target's exact
+stored carrier, including residual DATE bits and NaN payloads. This unchanged-edit
+rule is target preservation, not a lossless typed clipboard transfer. The 1 MiB
+UTF-8 input ceiling is checked before that preservation rule; cumulative work and
+publication limits still apply.
+
 The capture is shared through Bytes between the reader and review precondition.
 Apply acquires the existing exclusive offline session and compares the complete
 physical image before resolving fresh snapshot-local handles and reconstructing

@@ -1,6 +1,8 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
 mod inserting;
+#[cfg(test)]
+mod pasting;
 use super::{Desktop, PendingOperation};
 use crate::view_models::cell;
 use std::path::PathBuf;
@@ -78,6 +80,17 @@ impl Desktop {
         if self.editing.has_save() || !self.state.can_edit_cell(&target) {
             return;
         }
+        self.request_edit(target, None);
+    }
+
+    pub(super) fn begin_paste_edit(&mut self, target: EditTarget, text: String) {
+        if self.editing.has_save() || !self.state.can_paste_text(&target, &text) {
+            return;
+        }
+        self.request_edit(target, Some(text));
+    }
+
+    fn request_edit(&mut self, target: EditTarget, pasted_text: Option<String>) {
         self.editing.clear_review();
         let id = self.worker.request(Command::BeginEdit {
             target: RuntimeTarget {
@@ -87,10 +100,17 @@ impl Desktop {
                 parent_ordinal: target.parent_ordinal,
             },
         });
+        if let Some(text) = pasted_text {
+            if !self.state.begin_paste_edit(target, text, id) {
+                self.worker.cancel();
+                return;
+            }
+        } else {
+            self.state.begin_edit(target, id);
+        }
         self.generation = id;
         self.pending = PendingOperation::Edit { request_id: id };
         self.state.busy = true;
-        self.state.begin_edit(target, id);
     }
 
     pub(super) fn review_edit(&mut self, draft_id: u64, input: EditInput) {

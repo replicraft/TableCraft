@@ -95,14 +95,16 @@ mod tests {
             Value::Decimal(Decimal::new(123456, 4).unwrap())
         );
         assert!(parse(ScalarType::Int32, &amount, &mut output).is_err());
-        let text = EditInput {
-            text: "NULL".into(),
-            is_null: false,
-        };
-        assert_eq!(
-            parse(ScalarType::Text, &text, &mut output).unwrap(),
-            Value::Text("NULL".into())
-        );
+        for literal in ["NULL", ""] {
+            let text = EditInput {
+                text: literal.into(),
+                is_null: false,
+            };
+            assert_eq!(
+                parse(ScalarType::Text, &text, &mut output).unwrap(),
+                Value::Text(literal.into())
+            );
+        }
         let null = EditInput {
             text: "ignored draft text".into(),
             is_null: true,
@@ -130,6 +132,10 @@ mod tests {
                 Value::Single(Single::from_bits(0x80000000)),
             ),
             (ScalarType::Double, Value::Double(Double::from_bits(1))),
+            (
+                ScalarType::Double,
+                Value::Double(Double::from_bits(0x7ff8000000000042)),
+            ),
         ] {
             let initial = initial(&value, &mut output).unwrap();
             assert!(!initial.text.starts_with("bits:"));
@@ -138,6 +144,58 @@ mod tests {
                 value
             );
         }
+
+        // Literal pasted text has no source-carrier provenance. Equal initial
+        // text retains this target's bits, including its original NaN payload.
+        let nan = EditInput {
+            text: "NaN".into(),
+            is_null: false,
+        };
+        assert!(
+            parse_original(
+                ScalarType::Double,
+                &nan,
+                &Value::Double(Double::from_bits(0)),
+                &mut output,
+            )
+            .is_err()
+        );
+
+        for (kind, original, literal) in [
+            (
+                ScalarType::Double,
+                Value::Double(Double::from_bits(0)),
+                "1,25",
+            ),
+            (
+                ScalarType::Currency,
+                Value::Currency(Currency::from_scaled(0)),
+                "€1,25",
+            ),
+            (
+                ScalarType::DateTime,
+                Value::DateTime(LegacyDateTime::from_bits(1).unwrap()),
+                "04.11.2026 12:34:56",
+            ),
+        ] {
+            let input = EditInput {
+                text: literal.into(),
+                is_null: false,
+            };
+            assert!(parse_original(kind, &input, &original, &mut output).is_err());
+        }
+
+        let oversized = "x".repeat(1024 * 1024 + 1);
+        let original = Value::Text(oversized.clone());
+        let input = EditInput {
+            text: oversized,
+            is_null: false,
+        };
+        assert!(matches!(
+            parse_original(ScalarType::Text, &input, &original, &mut output),
+            Err(Error::Edit(EditError::InputLimit)),
+        ));
+
         let civil = EditInput {
             text: "2026-11-04T12:34:56".into(),
             is_null: false,

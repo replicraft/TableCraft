@@ -83,3 +83,9 @@ editing-input-binary = Binário: pares de dígitos hexadecimais por byte
 editing-input-guid = GUID: identificador canônico
 editing-input-date = DATE legado: data e hora civil ISO (sem fuso horário)
 editing-input-date-extended = Data e hora estendida: data e hora civil ISO (precisão de 100 ns)
+
+editing-paste-text = Colar texto
+editing-paste-help = Cole texto literal em uma célula nativa selecionada e revise-o. Use o formato de entrada invariável do campo; valores formatados e formatos tipados da área de transferência do Access não são interpretados. O texto com várias linhas permanece em uma célula.
+editing-paste-too-large = O texto da área de transferência excede o limite de 1 MiB. Nada foi colado.
+editing-paste-stale = A solicitação da área de transferência não corresponde mais à célula selecionada. O texto foi descartado.
+editing-paste-multiple = A área de transferência retornou vários textos. Nada foi colado.

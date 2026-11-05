@@ -1039,3 +1039,59 @@ The images are `.cache/ui-native-sort-review/de-light-sorted@1.25x.png` and
 `de-dark-sorted@1.25x.png`; they remain untracked. No native application window
 was opened. No retained Access capture shows this exact sorted synthetic dataset,
 so this is visual approximation and headless interaction evidence only.
+
+## Reviewed single-cell text Paste — 5 November 2026
+
+Home's Paste text command requests the system text clipboard for the selected
+native cell. Keyboard Paste on a focused native scalar cell uses the same typed
+host action. Both open a fresh source-bound edit draft with the literal text as
+the replacement; neither reviews, applies or saves it automatically. Runtime
+validation, exact native planning and the existing consuming save worker remain
+unchanged. A completed save reopens through the existing filter/sort restoration
+path. This is a single-cell text operation, not Access private-format, multi-cell
+or record Paste.
+
+Empty text and the literal string `NULL` do not select stored NULL. Multiline
+text remains one cell's input and is never split into records. Current invariant
+numeric/ISO date entry rules apply; localized currency or date display text is
+not silently parsed using the UI locale. The existing edit dialog shows the
+replacement and its field-specific input hint before Review. Identical canonical
+DATE/float input retains the target's existing carrier; this is not recovery of
+precision from the clipboard source. Exact typed transfer remains planned, with
+its [transport review](../development/DEPENDENCY_REVIEW.md#typed-clipboard-transport-review--5-november-2026)
+recording the required private-format and platform boundaries.
+
+Admission requires a current native scalar cell, current source/publication and
+selection, no pending operation or conflicting dialog, and at most one MiB of
+UTF-8 input. Oversized text reports an error without truncation. Read-only query
+results, selected records, complex/calculated fields and stale native targets do
+not acquire an edit action from Paste. Normal text widgets retain their ordinary
+editing shortcuts.
+
+The toolbar clipboard request captures its target, publication and focus. Since
+egui's clipboard response has no request ID, an invalidated outstanding request
+is retained until its response arrives and is discarded before text widgets can
+consume it. Home cannot replace an unanswered request with another one. There is
+no guessed timeout that could reinterpret a still-late response as a new paste.
+An invalid response is reported; an unanswered OS request can keep Home Paste
+disabled. This limitation does not claim native platform clipboard qualification.
+
+Local acceptance passed 41 desktop and 178 UI cases in the batch, including the
+five new Paste UI cases. Its remaining SQL-editor test initially assumed a single
+global scrollbar; the corrected nearest-editor-scope case passed separately with
+height, paint clipping, Run visibility and keyboard assertions intact. Desktop
+checks cover actual native Paste/Review/Apply/save/reopen, literal localized-input
+refusal with unchanged file bytes, and stale/oversized requests leaving the worker
+unchanged. Two existing runtime input tests were extended and passed, preserving
+exact-target DATE/float behavior and input limits. Strict seven-package Clippy,
+formatting, dependency boundaries and documentation-link checks passed.
+
+The retained actual Home screenshot was reopened. Current German/de-DE light and
+dark datasheet exports were inspected at 1000 × 680 logical pixels, scale 1.25
+(1250 × 850 physical pixels), using the macOS offscreen GPU build. The original
+clipboard icon and two-line `Text einfügen` label fit the Clipboard group and
+retain the reference's large Paste placement. Images remain untracked at
+`.cache/ui-paste-review/de-light-datasheet@1.25x.png` and
+`de-dark-datasheet@1.25x.png`. No native window was opened. The exact text-Paste
+label and reviewed dialog workflow have no corresponding retained Access capture;
+these renders establish local visual approximation, not platform clipboard parity.

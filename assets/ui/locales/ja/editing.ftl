@@ -83,3 +83,9 @@ editing-input-binary = バイナリ: 各バイトを2桁の16進数で入力
 editing-input-guid = GUID: 正規形式の識別子
 editing-input-date = 従来の DATE: ISO形式のローカル日時（タイムゾーンなし）
 editing-input-date-extended = 拡張日時: ISO形式のローカル日時（100 ns精度）
+
+editing-paste-text = テキストを貼り付け
+editing-paste-help = 選択したネイティブセル1個に文字列をそのまま貼り付け、確認します。フィールドのロケールに依存しない入力形式を使用してください。書式付きの値やAccess固有の型付きクリップボード形式は解釈しません。複数行のテキストも1つのセルに保持します。
+editing-paste-too-large = クリップボードのテキストが1 MiBの上限を超えています。貼り付けは行われませんでした。
+editing-paste-stale = クリップボード要求が選択中のセルと一致しなくなりました。テキストを破棄しました。
+editing-paste-multiple = クリップボードから複数のテキストが返されました。貼り付けは行われませんでした。

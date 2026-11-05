@@ -511,6 +511,7 @@ impl eframe::App for Desktop {
                 Action::ApplyInsert { review_id } => self.apply_insert(review_id),
                 Action::CloseInsert { request_id, .. } => self.close_insert(request_id),
                 Action::BeginEdit { target } => self.begin_edit(target),
+                Action::PasteCell { target, text } => self.begin_paste_edit(target, text),
                 Action::ReviewEdit { draft_id, input } => self.review_edit(draft_id, input),
                 Action::ApplyEdit { review_id } => self.apply_edit(review_id),
                 Action::CloseEdit { request_id, .. } => self.close_edit(request_id),

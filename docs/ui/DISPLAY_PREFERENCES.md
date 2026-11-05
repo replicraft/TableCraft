@@ -240,3 +240,32 @@ an explicit read after save, not persisted native OrderBy/FilterOnLoad support.
 Microsoft's [typed sorting guidance](https://support.microsoft.com/en-us/access/sort-records-on-text-numeric-or-date-values)
 and the retained Home screenshot guide the controls. Native application ordering,
 selection and save/reopen comparisons remain separate qualification work.
+
+### Literal single-cell clipboard input
+
+Home **Paste text** requests the host clipboard for the selected editable native
+cell. A focused native scalar cell also accepts the ordinary paste event. Both
+routes emit one typed edit intent and request a fresh runtime draft; neither
+reviews nor applies a write automatically. The deferred Home request retains its
+exact source publication, selection and focus witness. A changed source, selected
+cell, view or foreground dialog invalidates it.
+Because the viewport clipboard event has no reply identifier, an invalidated
+request remains a tombstone until the next clipboard response is consumed. It
+cannot be replaced by another Home request or redirected into a new cell or text
+editor. Discarding that response produces an explicit stale-request warning.
+
+The input is literal UTF-8 text, limited to 1 MiB without truncation. Empty text
+and the literal word `NULL` remain non-NULL input, and tabs/newlines remain in the
+same cell. Review uses the field's invariant input contract; the UI does not parse
+localized display strings or decode Access private clipboard formats. This first
+slice does not implement record paste, TSV splitting, bulk append or destructive
+Cut. Existing text editors retain their ordinary clipboard behavior.
+
+The existing `datasheet` preview was reviewed in German light and dark themes on
+macOS using the offscreen GPU exporter, at 1000 × 680 logical points and 1.25
+pixel scale with `de-DE` regional formatting. The local images are
+`.cache/ui-paste-review/de-light-datasheet@1.25x.png` and
+`.cache/ui-paste-review/de-dark-datasheet@1.25x.png`. The two-line **Text einfügen**
+label and original clipboard icon fit the large Paste position in the retained
+Home reference without overlapping adjacent commands. This is presentation
+evidence; no native application window or Access clipboard comparison was used.

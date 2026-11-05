@@ -111,6 +111,10 @@ pub enum Action {
     BeginEdit {
         target: EditTarget,
     },
+    PasteCell {
+        target: EditTarget,
+        text: String,
+    },
     FilterSelection {
         target: FilterSelectionTarget,
         comparison: FilterComparison,
@@ -209,6 +213,7 @@ pub struct State {
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
+    paste_request: Option<editing::paste::ClipboardRequest>,
     insertion: Option<insertion::Dialog>,
     deletion: Option<deletion::Dialog>,
     /// Host capability; false until the complete native Find service is ready.
@@ -476,6 +481,7 @@ impl State {
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
         let mut actions = Vec::new();
+        let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         let modal_open = self.contents_request_id().is_some()
             || self.edit_dialog_open()
             || self.saved_query_prompt_open()
@@ -534,6 +540,7 @@ impl State {
                 }
             });
         });
+        self.finish_paste(ui.ctx(), &mut actions, paste_receipt);
         self.accept_zoom_request(ui.ctx());
         self.find_window(ui.ctx(), &mut actions);
         self.contents_dialog(ui.ctx(), &mut actions);

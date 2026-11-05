@@ -170,6 +170,17 @@ impl Preview {
                 draft_id,
             } => self.mock_close_insert(request_id, draft_id),
             Action::BeginEdit { target } => self.edit(target),
+            Action::PasteCell { target, text } => {
+                if self.state.can_paste_text(&target, &text) {
+                    self.edit(target);
+                    if let Some(EditDialog::Draft { input, .. }) = &mut self.state.edit {
+                        *input = crate::EditInput {
+                            text,
+                            is_null: false,
+                        };
+                    }
+                }
+            }
             Action::ReviewEdit { draft_id, input } => {
                 if self.state.can_review_edit(draft_id, &input) {
                     self.preview_review(input);

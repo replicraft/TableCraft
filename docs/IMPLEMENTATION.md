@@ -1,5 +1,27 @@
 # Implementation status
 
+## Reviewed text Paste — 5 November 2026
+
+Home Paste text and keyboard Paste on a focused native scalar cell now open a
+fresh edit draft containing literal clipboard text. They use the existing runtime
+validation and explicit Review/Apply save workflow; no automatic mutation occurs.
+The one-cell UTF-8 limit is one MiB. Empty text and `NULL` stay literal text,
+regional numeric/date display is not guessed, and exact typed/private-format,
+multi-cell and record transfer remain separate unfinished clipboard work.
+
+Toolbar requests retain source, publication and focus through delayed responses
+and same-frame controls. A canceled outstanding request consumes its eventual
+response before text widgets can see it; it cannot retarget another cell. The
+reviewed transport candidates are documented without adding an unused dependency.
+See the [desktop scope and verification](ui/DESKTOP.md#reviewed-single-cell-text-paste--5-november-2026).
+
+The batch passed 41 desktop and 178 UI checks; its one failing SQL-editor test
+was corrected to locate the actual editor scrollbar alongside Ribbon overflow,
+then passed its focused height/clipping/shortcut check. The five new Paste UI
+cases and real Paste/Review/Apply/save/reopen scenario passed. Two focused runtime
+input tests and final strict seven-package Clippy passed. Broader Clipboard and
+Home workflows remain unfinished.
+
 ## Native editable sorting — 5 November 2026
 
 Header sorting and Home Ascending/Descending now build a complete native view

@@ -488,6 +488,27 @@ fn collect_contents_action(
     {
         crate::workspace::zoom::request(ui.ctx(), cell, position);
     }
+    if response.has_focus()
+        && !egui::Popup::is_any_open(ui.ctx())
+        && let Some(target) = edit.as_ref()
+    {
+        let pasted = ui.input_mut(|input| {
+            let index = input
+                .events
+                .iter()
+                .position(|event| matches!(event, egui::Event::Paste(_)))?;
+            match input.events.remove(index) {
+                egui::Event::Paste(text) => Some(text),
+                _ => None,
+            }
+        });
+        if let Some(text) = pasted {
+            actions.push(Action::PasteCell {
+                target: target.clone(),
+                text,
+            });
+        }
+    }
     if contents.is_some() && response.has_focus() {
         view_contents |= ui.input_mut(|input| {
             let mut enter = false;

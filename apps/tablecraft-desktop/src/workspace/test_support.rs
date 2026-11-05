@@ -8,6 +8,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+use tablecraft_ui::FluentArgs;
+
 pub(super) fn opened(
     original: Vec<u8>,
 ) -> (
@@ -73,5 +75,19 @@ pub(super) fn request_find(harness: &mut Harness<'_, Desktop>, pattern: &str) {
     harness
         .get_by_role_and_label(Role::Button, "Find Next")
         .click_accesskit();
+    harness.run_steps(1);
+}
+
+pub(super) fn focus_cell(harness: &mut Harness<'_, Desktop>, column: &str, row: &str, text: &str) {
+    let mut arguments = FluentArgs::new();
+    arguments.set("column", column);
+    arguments.set("row", row);
+    arguments.set("text", text);
+    let cell = harness
+        .state()
+        .state
+        .localizer
+        .format("datasheet-cell-context", &arguments);
+    harness.get_by_value(&cell).focus();
     harness.run_steps(1);
 }
