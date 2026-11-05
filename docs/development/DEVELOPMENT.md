@@ -50,6 +50,11 @@ Install Rust through rustup. The repository selects Rust 1.99.0, edition 2024,
 with rustfmt and Clippy. The manifest's current minimum Rust version is 1.99;
 older toolchains have not been qualified. No Access installation is needed for these checks.
 
+The workspace default member is `tablecraft-desktop`: plain `cargo run` launches
+the desktop, and `cargo run -- --mock` starts the presentation preview. Select
+`-p tablecraft-cli` for the CLI. Use `--workspace` or an explicit `-p` selection
+for checks that must cover more than the default desktop package.
+
 Run from the repository root:
 
 ```sh

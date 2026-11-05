@@ -53,10 +53,10 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all sixteen scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 39 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, 1× scale, using Windows keyboard conventions on the
-local renderer. The animated loading scene advances exactly three frames rather than waiting
-for its spinner to become idle. The development-only renderer requires a GPU adapter; it does not
+local renderer. Animated pending scenes advance exactly three frames rather than waiting
+for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
 open an OS window. Keep generated images in ignored local output directories.
 
 Set `TABLECRAFT_PREVIEW_WIDTH` and `TABLECRAFT_PREVIEW_HEIGHT` to review another
@@ -89,7 +89,7 @@ without retained Access captures still require the separate reviews noted above.
 
 ## Follow-on navigation and state review — 4 November 2026
 
-The current scene inventory has sixteen entries. Empty tables retain their
+That review covered sixteen scenes. Empty tables retain their
 actual declared headers alongside the empty notice, with no invented new-record
 row. Loading and read-error scenes preserve the last synthetic snapshot;
 cancellation is local to the mock host. The default mock Table Design command
@@ -119,3 +119,38 @@ empty, loading, error, About, navigation and Design renders were opened for revi
 pass. The 35 curated Fluent SVGs and retained MIT notice match their recorded
 hashes; normalization preserves upstream geometry. These observations retain the
 same local-render/native-platform limits as the preceding review.
+
+## Query, collection and save lifecycle review — 5 November 2026
+
+The preview now has 39 scenes. The additional cases use existing shared UI
+transitions and synthetic responses; they add no database or task service.
+Choose one with `--mock-view NAME` or `TABLECRAFT_PREVIEW_SCENE=NAME`:
+
+| Area | Additional scene names |
+| --- | --- |
+| Queries | `query-running`, `query-error`, `saved-inspecting`, `saved-running`, `saved-error`, `saved-parameters` |
+| Collections | `collection-loading`, `collection-error`, `collection-unassigned`, `collection-empty`, `collection-null`, `attachment-null`, `history-null` |
+| Editing and saves | `edit-checking`, `edit-validating`, `edit-rejected`, `save-applying`, `save-cancelling`, `save-resolving`, `save-saved`, `save-cancelled`, `save-failed`, `recovery-diagnosis` |
+
+Saved-query rerun/error scenes retain their previous complete sample result.
+The parameter pane has an explicit overflow scrollbar; wheel tests reach its
+last date input, NULL control and hint without changing bindings. Collection
+scenes distinguish unassigned, assigned-empty and actual NULL members. Empty
+collections retain declared headers. Initial metadata column sizing samples a
+bounded display prefix while preserving complete values and user resizing.
+Collection resizing is scoped to the document, parent table and field; other
+parent rows of that field retain their widths without affecting unrelated fields.
+
+Terminal save headings distinguish completed, cancelled and needs-attention
+outcomes. The last heading does not imply rollback: the literal host message can
+retain an established save outcome or unresolved resource-release facts.
+Applying/cancelling/resolving scenes exercise existing presentation states only;
+no real save, receipt or journal is created by the mock host.
+
+The coordinated batch passes 86 shared UI tests and 23 desktop tests, strict
+Clippy and formatting. All 624 scene/language/theme drawing combinations pass
+with zero localization diagnostics. Local default-size macOS GPU renders were
+reviewed for parameter scrolling, attachment MIME widths, empty headers and
+terminal outcome presentation. These observations do not qualify native window
+behavior, accessibility tools or Access compatibility. Query parameter,
+collection, edit/save and dark surfaces still lack retained Access captures.
