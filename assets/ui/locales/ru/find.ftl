@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = Поиск
+find-what = Образец:
+find-look-in = Поиск в:
+find-match = Совпадение:
+find-search = Просмотр:
+find-any = С любой частью поля
+find-whole = Поля целиком
+find-start = С начала поля
+find-all = Все
+find-up = Вверх
+find-down = Вниз
+find-match-case = С учётом регистра
+find-formatted = С учётом формата полей
+find-formatted-unavailable = Поиск с учётом формата недоступен для этого источника.
+find-next = Найти далее
+find-searching = Поиск в таблице…
+find-not-found = Совпадений не найдено.
+find-found = Запись { $row }, поле { $column }
+find-invalid-result = Возвращённая позиция или страница не соответствует этому запросу.
+find-mock-help = Только синтетические элементы поиска. Файл базы данных не открывается и не просматривается.
+find-unavailable = Собственный поиск пока недоступен в этом приложении.
+find-pattern-limit = Шаблон превышает ограничение 64 КиБ в UTF-8. Сократите его перед поиском.
+find-query-unavailable = Поиск в результатах запросов пока не реализован.

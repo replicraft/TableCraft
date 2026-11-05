@@ -6,9 +6,12 @@ mod collections;
 mod deletion;
 mod editing;
 mod errors;
+mod find;
 mod fixtures;
 mod insertion;
 mod queries;
+
+mod zoom;
 
 use super::{DocumentView, State};
 use crate::{CollectionKind, ContentsTarget, EditInput, EditSaveOutcome, EditTarget};
@@ -37,6 +40,9 @@ pub enum Scene {
     InsertReview,
     DeleteChecking,
     DeleteReview,
+    Find,
+    FindSearching,
+    Zoom,
     Review,
     Recovery,
     Backstage,
@@ -68,7 +74,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 48] = [
+    pub const ALL: [Self; 51] = [
         Self::Datasheet,
         Self::LongNames,
         Self::LongReadError,
@@ -89,6 +95,9 @@ impl Scene {
         Self::InsertReview,
         Self::DeleteChecking,
         Self::DeleteReview,
+        Self::Find,
+        Self::FindSearching,
+        Self::Zoom,
         Self::Review,
         Self::Recovery,
         Self::Backstage,
@@ -128,6 +137,7 @@ impl Scene {
                 | Self::SavedInspecting
                 | Self::SavedRunning
                 | Self::CollectionLoading
+                | Self::FindSearching
                 | Self::DeleteChecking
                 | Self::EditChecking
                 | Self::EditValidating
@@ -159,6 +169,9 @@ impl Scene {
             Self::InsertReview => "insert-review",
             Self::DeleteChecking => "delete-checking",
             Self::DeleteReview => "delete-review",
+            Self::Find => "find",
+            Self::FindSearching => "find-searching",
+            Self::Zoom => "zoom",
             Self::Review => "review",
             Self::Recovery => "recovery",
             Self::Backstage => "backstage",
@@ -282,6 +295,9 @@ impl Preview {
             Scene::InsertReview => self.prepare_insert_scene(true),
             Scene::DeleteChecking => self.prepare_delete_scene(false),
             Scene::DeleteReview => self.prepare_delete_scene(true),
+            Scene::Find => self.prepare_find_scene(false),
+            Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::Zoom => self.prepare_zoom_scene(),
             Scene::Review | Scene::Recovery => {
                 self.open_edit();
                 let input = EditInput {

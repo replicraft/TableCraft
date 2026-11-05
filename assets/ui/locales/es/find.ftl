@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = Buscar
+find-what = Buscar:
+find-look-in = Buscar en:
+find-match = Coincidir:
+find-search = Dirección:
+find-any = Cualquier parte del campo
+find-whole = Todo el campo
+find-start = Comienzo del campo
+find-all = Todos
+find-up = Arriba
+find-down = Abajo
+find-match-case = Coincidir mayúsculas y minúsculas
+find-formatted = Buscar los campos con formato
+find-formatted-unavailable = La búsqueda con formato no está disponible para este origen.
+find-next = Buscar siguiente
+find-searching = Buscando en la tabla…
+find-not-found = No se encontró ninguna coincidencia.
+find-found = Registro { $row }, campo { $column }
+find-invalid-result = La posición o página devuelta no coincide con esta solicitud.
+find-mock-help = Solo controles de búsqueda sintéticos. No se abre ni busca ningún archivo de base de datos.
+find-unavailable = La búsqueda nativa aún no está disponible en este host.
+find-pattern-limit = El patrón supera el límite de 64 KiB en UTF-8. Acórtelo antes de buscar.
+find-query-unavailable = La búsqueda en resultados de consultas aún no está implementada.

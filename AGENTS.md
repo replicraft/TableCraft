@@ -163,6 +163,10 @@ Follow the [application editing contract](docs/application/RUNTIME.md#reviewed-o
 and [deletion contract](docs/application/RUNTIME.md#reviewed-offline-row-deletion).
 Keep omitted fields distinct from explicit NULL and supplied values; display
 formatting must never become implicit edit input or invented generated defaults.
+`tablecraft-display` owns shared renderer-neutral display facts and regional
+formatting. Import those types from their owner directly; keep egui widgets and
+display caches in UI, platform locale discovery in hosts and native metadata in
+runtime/Access. Display preferences do not select query collation or edit syntax.
 Follow [NATIVE_READING.md](docs/access/NATIVE_READING.md) for supported native
 profiles, read budgets and inert inspection.
 Explicit `rows --stream` uses the existing browser cursor for progressive scalar

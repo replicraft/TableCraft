@@ -80,6 +80,20 @@ impl State {
             if self.mock_preview {
                 ribbon::home(ui, &t);
             }
+            group(ui, &t.text("ribbon-zoom"), |ui| {
+                if command(
+                    ui,
+                    Icon::Zoom,
+                    &t.text("zoom-title"),
+                    self.can_zoom_cell(),
+                    CommandSize::Large,
+                )
+                .on_hover_text(t.text("zoom-read-only"))
+                .clicked()
+                {
+                    self.open_zoom_cell();
+                }
+            });
         });
     }
 
@@ -87,8 +101,21 @@ impl State {
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-find-group"), |ui| {
             ui.horizontal(|ui| {
-                if self.mock_preview {
-                    ribbon::mock_command(ui, &t, Icon::Search, "ribbon-find", CommandSize::Large);
+                if command(
+                    ui,
+                    Icon::Search,
+                    &t.text("ribbon-find"),
+                    self.can_open_find(),
+                    CommandSize::Large,
+                )
+                .on_disabled_hover_text(t.text(if self.view == DocumentView::Query {
+                    "find-query-unavailable"
+                } else {
+                    "find-unavailable"
+                }))
+                .clicked()
+                {
+                    self.open_find();
                 }
                 ui.vertical(|ui| {
                     if self.mock_preview {
@@ -120,6 +147,7 @@ impl State {
     pub fn can_sort_table(&self, document_revision: u64, table: &str, column: &str) -> bool {
         self.view == DocumentView::Table
             && !self.busy
+            && !self.zoom_dialog_open()
             && !self.backstage_visible()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()

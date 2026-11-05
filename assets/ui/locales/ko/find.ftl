@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = 찾기
+find-what = 찾을 내용:
+find-look-in = 찾는 위치:
+find-match = 일치:
+find-search = 검색 방향:
+find-any = 필드의 일부
+find-whole = 필드 전체
+find-start = 필드 시작
+find-all = 모두
+find-up = 위쪽
+find-down = 아래쪽
+find-match-case = 대/소문자 구분
+find-formatted = 필드 서식대로 검색
+find-formatted-unavailable = 이 원본에서는 서식을 적용한 검색을 사용할 수 없습니다.
+find-next = 다음 찾기
+find-searching = 테이블 검색 중…
+find-not-found = 일치하는 항목을 찾지 못했습니다.
+find-found = 레코드 { $row }, 필드 { $column }
+find-invalid-result = 반환된 검색 위치 또는 페이지가 이 요청과 일치하지 않습니다.
+find-mock-help = 합성 찾기 컨트롤만 표시합니다. 데이터베이스 파일을 열거나 검색하지 않습니다.
+find-unavailable = 이 호스트에서는 아직 네이티브 찾기를 사용할 수 없습니다.
+find-pattern-limit = 검색 패턴이 UTF-8 기준 64 KiB 제한을 초과합니다. 검색 전에 줄이세요.
+find-query-unavailable = 쿼리 결과 찾기는 아직 구현되지 않았습니다.

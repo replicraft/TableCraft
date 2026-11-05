@@ -49,9 +49,6 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
             );
         });
     });
-    group(ui, &t.text("ribbon-zoom"), |ui| {
-        mock(ui, t, Icon::Zoom, "ribbon-zoom", CommandSize::Large);
-    });
 }
 
 pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {

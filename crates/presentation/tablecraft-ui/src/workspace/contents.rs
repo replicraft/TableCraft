@@ -68,7 +68,8 @@ impl State {
 
     /// Only actual collection cells in the current native page are actionable.
     pub fn can_view_contents(&self, target: &ContentsTarget) -> bool {
-        if self.edit_dialog_open()
+        if self.zoom_dialog_open()
+            || self.edit_dialog_open()
             || self.view != DocumentView::Table
             || self.table_selection.row_selected()
             || self.backstage_visible()

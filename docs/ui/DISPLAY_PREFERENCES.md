@@ -151,3 +151,50 @@ The original Cell text is retained unchanged, including decomposed Unicode and
 line separators. Explicit single-cell Copy still publishes the complete display
 text. This does not apply the separate record-TSV clipboard limit to a cell or
 represent a preview prefix as a complete stored value.
+
+
+## Modeless Find presentation
+
+Home Find and the command/Ctrl+F shortcut open a modeless native-table Find window
+when the host advertises the complete search service. The capability defaults to
+disabled; synthetic preview controls do not enable a native search. Other modal
+owners, including Zoom, take precedence and cancel the exact pending Find request.
+Query-result Find remains pending, and no Replace control dispatches writes.
+
+Initial controls use current field, whole-field matching, All and case off;
+these are explicit local defaults, not imported Access client settings. Idle
+Find follows a newly selected native field. Requests capture exact source,
+publication, options, formatting policy and a UTF-16 occurrence span. Newer
+selection/options, cancellation or source replacement prevents a stale response
+from moving the datasheet. A failed or not-found search retains the previous page.
+Only a matching checked native page can select the reported record and field.
+The current renderer selects the cell; substring highlighting is not implemented.
+
+Formatted search has a separate host capability and does not silently substitute
+raw values. The search pattern has a 64 KiB UTF-8 ceiling. These controls follow
+Microsoft's [Find workflow](https://support.microsoft.com/en-us/access/use-the-find-and-replace-dialog-box-to-change-data)
+and [keyboard contract](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access);
+full native interaction comparisons remain unverified.
+
+
+## Read-only Zoom box
+
+Home Zoom, a scalar cell's context menu and Shift+F2 on the actual focused cell
+open a resizable shared viewer for table and query values. It retains the complete
+original display text, native provenance and a source/publication/selection binding.
+Changing that binding or display policy closes the viewer. Theme and UI-language
+changes retain the same value. Query results stay read only.
+
+Opening scans at most 8 MiB of UTF-8 text and builds sparse byte checkpoints.
+Painting lays out visible text rows rather than cloning or laying out the full
+value each frame. Very long lines continue on bounded visual rows; original line
+breaks remain intact for explicit complete-value Copy. Values above the explicit ceiling remain outside viewer admission; the original
+cell value is retained. Text-size controls affect this viewer.
+
+OK, Cancel and Escape dismiss the read-only viewer without changing stored data.
+For an eligible native cell, Edit through review delegates to the existing typed
+reviewed-edit workflow; it does not mutate text inline or bypass native admission.
+The [Microsoft Zoom reference](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026)
+guides the rectangular text body and footer. Full native Zoom editing, font/style
+and rich-text behavior are not claimed by this read-only implementation. No
+native Access comparison or OS-window interaction is established here.

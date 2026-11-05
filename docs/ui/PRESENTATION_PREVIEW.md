@@ -67,7 +67,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 48 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 51 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -581,3 +581,19 @@ capture is retained: this bounded confirmation layout remains provisional. It
 shows the actual reviewed row and count, initially focuses Cancel, and exposes no
 implicit acceptance on Enter. Native Access deletion interaction has not been
 verified by these headless previews.
+
+
+The `find` and `find-searching` scenes expose modeless Find controls and a bounded
+synthetic pending state. They never search a file or manufacture a match. Native
+Find remains host-capability gated; query-result Find and Replace are not
+implemented. The public Microsoft Find image in the [reference record](VISUAL_REFERENCES.md)
+guides control arrangement; no native interaction or exact scale is inferred.
+
+
+The `zoom` scene shows the shared resizable read-only viewer over an explicit
+synthetic scalar. Sparse virtual rows make long-value review possible without a
+full per-frame text layout. The source has an explicit 8 MiB UTF-8 ceiling;
+complete Copy retains original line breaks, and eligible native edits delegate
+to the existing reviewed workflow. The [public Zoom reference](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026)
+was opened headlessly; its blue article annotations are not UI assets. This scene
+provides presentation review, not native Access behavior verification.

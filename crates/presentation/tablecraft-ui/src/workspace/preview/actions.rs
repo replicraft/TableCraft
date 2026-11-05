@@ -41,6 +41,8 @@ impl Preview {
             return;
         }
         match action {
+            Action::FindNext { request } => self.mock_find(request),
+            Action::CancelFind { .. } => {}
             Action::ReviewDelete { target } => self.mock_review_delete(target, true),
             Action::ApplyDelete { review_id } => self.mock_apply_delete(review_id),
             Action::CloseDelete { request_id } => self.mock_close_delete(request_id),

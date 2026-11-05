@@ -906,3 +906,45 @@ checks bounded painted/accessibility payloads for large ASCII, CJK and multiline
 values while the emitted Copy command retains the complete text. Strict UI
 Clippy, formatting and documentation links passed. No native application was
 opened and no native clipboard publication is claimed by these headless checks.
+
+## Native Find and complete-value Zoom — 5 November 2026
+
+Home Find and Ctrl+F open a modeless native-table search. The shared runtime
+searches the complete admitted table under cumulative limits, checks EOF and
+returns a source-bound occurrence. Desktop retrieves the matching page with a
+separate native allowance and publishes only an exact revision/table/record/field
+match. Cancel, failed retrieval and Not found preserve the previous page.
+Field/table scope, directions, wrapping, wildcard mode and explicit case/display
+policies follow the [current runtime contract](../application/RUNTIME.md#native-table-find).
+Query-result Find, Replace and substring highlighting are not implemented.
+Unformatted regional date and fractional-number searching still refuse explicitly;
+formatted qualified dates and Currency share the datasheet formatter.
+
+Home Zoom, Shift+F2 on a cell and the cell context menu open a resizable read-only
+viewer. It retains the complete scalar text up to an explicit 8 MiB viewer limit,
+lays out only visible bounded rows and copies the full value on request. Native
+Edit delegates to the existing reviewed cell workflow; displayed text is never
+parsed into an edit, and query results remain read-only. See
+[display preferences](DISPLAY_PREFERENCES.md) for current limits.
+
+The selected package gate passed 159 UI, 73 runtime, 34 desktop and five formatter
+tests, plus the runtime documentation example. Focused review checks additionally
+cover cumulative Find result-copy accounting and dropdown Escape ownership.
+The synthetic matrix contains 51 scenes, eight languages and two explicit themes
+(816 draw combinations). These are headless checks, not Microsoft Access native
+interaction qualification. Native application activation remains suspended.
+
+After review, all seven Zoom and five Find UI tests passed, including a new
+dropdown Escape regression, the strict full-galley last-line check for an 8 MiB
+value and Unicode request-byte refusal. Both desktop Find acceptance tests and
+six runtime Find cases passed again after the relevant corrections. Final strict
+Clippy passed for display/UI/runtime/desktop and the Access/query/testkit helper
+closure; the runtime build without default features also passed. Dependency
+boundaries, their 25 Python tests and documentation links passed.
+
+Six final German/de-DE offscreen exports were rendered and inspected for
+Datasheet, Find and Zoom in both themes: macOS build, 1000×680 logical points,
+1.25× scale (1250×850 pixels). They are retained privately under
+`.cache/find-zoom-review-final/`. Find and Zoom start centered while retaining
+movable window positions. These exports do not exercise native window controls,
+OS clipboard integration or a Windows application.

@@ -1,0 +1,24 @@
+# Modeless native-table Find. No Replace workflow.
+find-title = 查找
+find-what = 查找内容：
+find-look-in = 查找范围：
+find-match = 匹配：
+find-search = 搜索方向：
+find-any = 字段任何部分
+find-whole = 整个字段
+find-start = 字段开头
+find-all = 全部
+find-up = 向上
+find-down = 向下
+find-match-case = 区分大小写
+find-formatted = 按字段格式搜索
+find-formatted-unavailable = 此来源不支持按格式搜索。
+find-next = 查找下一个
+find-searching = 正在搜索表…
+find-not-found = 未找到匹配项。
+find-found = 记录 { $row }，字段 { $column }
+find-invalid-result = 返回的搜索位置或页面与此请求不匹配。
+find-mock-help = 仅显示合成查找控件。不会打开或搜索数据库文件。
+find-unavailable = 此主机尚不支持原生查找。
+find-pattern-limit = 搜索模式超过 UTF-8 的 64 KiB 限制。请缩短后再搜索。
+find-query-unavailable = 尚未实现查询结果中的查找。

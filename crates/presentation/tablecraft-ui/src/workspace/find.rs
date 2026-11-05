@@ -1,0 +1,319 @@
+//! Modeless native-table Find. Search and matching belong to the shared runtime.
+mod dialog;
+
+use super::{Data, DocumentView, State};
+use tablecraft_display::Options;
+
+const MAX_FIND_PATTERN_BYTES: usize = 64 * 1024;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FindTarget {
+    pub document_revision: u64,
+    pub table: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FindSpan {
+    pub start_utf16: u32,
+    pub end_utf16: u32,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FindPosition {
+    pub parent_ordinal: u32,
+    pub column: String,
+    pub span: Option<FindSpan>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum FindScope {
+    Field(String),
+    Table,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum FindMatch {
+    Any,
+    #[default]
+    Whole,
+    Start,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum FindDirection {
+    #[default]
+    All,
+    Up,
+    Down,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct FindRequest {
+    pub target: FindTarget,
+    pub scope: FindScope,
+    pub pattern: String,
+    pub matching: FindMatch,
+    pub direction: FindDirection,
+    pub start: Option<FindPosition>,
+    pub match_case: bool,
+    pub formatted: bool,
+    pub format_options: Options,
+}
+
+pub(super) struct Session {
+    target: FindTarget,
+    field: String,
+    publication: u64,
+    pattern: String,
+    whole_table: bool,
+    matching: FindMatch,
+    direction: FindDirection,
+    match_case: bool,
+    formatted: bool,
+    pending: Option<Pending>,
+    found: Option<FindPosition>,
+    not_found: bool,
+    error: Option<String>,
+    focus_input: bool,
+}
+
+struct Pending {
+    request_id: u64,
+    request: FindRequest,
+    publication: u64,
+}
+
+impl State {
+    fn find_source(&self) -> Option<(FindTarget, FindPosition)> {
+        if self.view != DocumentView::Table || self.backstage_visible() {
+            return None;
+        }
+        let data = self.data.as_ref()?;
+        let revision = data.source_revision?;
+        if self.database.as_ref()?.document_revision != revision {
+            return None;
+        }
+        let (row, column) = self.table_selection.position()?;
+        data.rows.get(row)?.get(column)?;
+        Some((
+            FindTarget {
+                document_revision: revision,
+                table: data.table.clone(),
+            },
+            FindPosition {
+                parent_ordinal: data.offset.checked_add(u32::try_from(row).ok()?)?,
+                column: data.columns.get(column)?.name.clone(),
+                span: None,
+            },
+        ))
+    }
+
+    pub fn can_open_find(&self) -> bool {
+        (self.find_available || self.mock_preview)
+            && !self.busy
+            && !self.zoom_dialog_open()
+            && !self.edit_dialog_open()
+            && self.contents_request_id().is_none()
+            && !self.saved_query_prompt_open()
+            && self.find_source().is_some()
+    }
+
+    pub fn open_find(&mut self) {
+        if !self.can_open_find() {
+            return;
+        }
+        if let Some(session) = &mut self.find {
+            session.focus_input = true;
+            return;
+        }
+        let (target, position) = self.find_source().expect("admitted native selection");
+        self.find = Some(Session {
+            target,
+            field: position.column,
+            publication: self.focus_publication,
+            pattern: String::new(),
+            whole_table: false,
+            matching: FindMatch::default(),
+            direction: FindDirection::default(),
+            match_case: false,
+            formatted: false,
+            pending: None,
+            found: None,
+            not_found: false,
+            error: None,
+            focus_input: true,
+        });
+    }
+
+    pub(super) fn prepare_mock_find(&mut self, request_id: Option<u64>) {
+        if !self.mock_preview {
+            return;
+        }
+        self.open_find();
+        let Some(session) = &mut self.find else {
+            return;
+        };
+        session.pattern = "Customer*".into();
+        if let Some(request_id) = request_id
+            && let Some(request) = self.current_find_request()
+        {
+            self.begin_find(request_id, request);
+        }
+    }
+
+    pub fn find_window_open(&self) -> bool {
+        self.find.is_some()
+    }
+
+    pub(super) fn current_find_request(&self) -> Option<FindRequest> {
+        let session = self.find.as_ref()?;
+        let (target, mut position) = self.find_source()?;
+        if target != session.target || session.publication != self.focus_publication {
+            return None;
+        }
+        if let Some(found) = &session.found
+            && found.parent_ordinal == position.parent_ordinal
+            && found.column == position.column
+        {
+            position.span = found.span.clone();
+        }
+        Some(FindRequest {
+            target,
+            scope: if session.whole_table {
+                FindScope::Table
+            } else {
+                FindScope::Field(position.column.clone())
+            },
+            pattern: session.pattern.clone(),
+            matching: session.matching,
+            direction: session.direction,
+            start: Some(position),
+            match_case: session.match_case,
+            formatted: session.formatted,
+            format_options: self.formatting.clone(),
+        })
+    }
+
+    pub fn can_find_next(&self, request: &FindRequest) -> bool {
+        self.can_open_find()
+            && self
+                .find
+                .as_ref()
+                .is_some_and(|session| session.pending.is_none())
+            && !request.pattern.is_empty()
+            && request.pattern.len() <= MAX_FIND_PATTERN_BYTES
+            && (!request.formatted || self.find_formatted_available || self.mock_preview)
+            && self.current_find_request().as_ref() == Some(request)
+    }
+
+    pub fn begin_find(&mut self, request_id: u64, request: FindRequest) {
+        if !self.can_find_next(&request) {
+            return;
+        }
+        let session = self.find.as_mut().expect("admitted Find session");
+        session.pending = Some(Pending {
+            request_id,
+            request,
+            publication: self.focus_publication,
+        });
+        session.error = None;
+        session.not_found = false;
+    }
+
+    pub fn accepts_find_reply(&self, request_id: u64, request: &FindRequest) -> bool {
+        !self.edit_dialog_open()
+            && !self.zoom_dialog_open()
+            && self.contents_request_id().is_none()
+            && !self.saved_query_prompt_open()
+            && self.current_find_request().as_ref() == Some(request)
+            && self.find.as_ref().is_some_and(|session| {
+                session.pending.as_ref().is_some_and(|pending| {
+                    pending.request_id == request_id
+                        && pending.request == *request
+                        && pending.publication == self.focus_publication
+                })
+            })
+    }
+
+    pub fn set_find_result(
+        &mut self,
+        request_id: u64,
+        request: FindRequest,
+        found: Option<FindPosition>,
+        page: Option<Data>,
+    ) -> bool {
+        if !self.accepts_find_reply(request_id, &request) {
+            return false;
+        }
+        match (found, page) {
+            (None, None) => {
+                let session = self.find.as_mut().expect("accepted Find session");
+                session.pending = None;
+                session.not_found = true;
+                true
+            }
+            (Some(found), Some(page)) => {
+                let valid_span = found
+                    .span
+                    .as_ref()
+                    .is_some_and(|span| span.start_utf16 <= span.end_utf16);
+                let column = page.column_index(&found.column);
+                let matches_scope = match &request.scope {
+                    FindScope::Field(column) => *column == found.column,
+                    FindScope::Table => true,
+                };
+                let valid = valid_span
+                    && matches_scope
+                    && page.source_revision == Some(request.target.document_revision)
+                    && page.table == request.target.table
+                    && page.offset == found.parent_ordinal
+                    && column.is_some_and(|column| {
+                        page.rows.first().and_then(|row| row.get(column)).is_some()
+                    });
+                if !valid {
+                    self.fail_find(request_id, self.localizer.text("find-invalid-result"));
+                    return false;
+                }
+
+                let mut session = self.find.take().expect("accepted Find session");
+                self.set_table_data(page);
+                self.table_selection.select(
+                    self.data.as_ref().expect("published Find page"),
+                    0,
+                    column.expect("validated exact field"),
+                );
+                session.pending = None;
+                session.publication = self.focus_publication;
+                session.field = found.column.clone();
+                session.found = Some(found);
+                session.not_found = false;
+                self.find = Some(session);
+                true
+            }
+            _ => {
+                self.fail_find(request_id, self.localizer.text("find-invalid-result"));
+                false
+            }
+        }
+    }
+
+    pub fn fail_find(&mut self, request_id: u64, message: String) {
+        let accepts = self
+            .find
+            .as_ref()
+            .and_then(|session| session.pending.as_ref())
+            .is_some_and(|pending| self.accepts_find_reply(request_id, &pending.request));
+        if accepts && let Some(session) = &mut self.find {
+            session.pending = None;
+            session.error = Some(message);
+        }
+    }
+
+    /// Closing requests cancellation of the current read; it never changes rows.
+    pub fn close_find(&mut self) -> Option<u64> {
+        self.find.take()?.pending.map(|pending| pending.request_id)
+    }
+}
+
+#[cfg(test)]
+mod tests;

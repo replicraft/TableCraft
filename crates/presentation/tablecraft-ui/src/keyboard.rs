@@ -4,17 +4,20 @@ use egui::{Context, Key, Modifiers};
 #[derive(Default)]
 pub(crate) struct Shortcuts {
     pub focus_path: bool,
+    pub find: bool,
     pub query: bool,
     pub cancel: bool,
 }
 
-pub(crate) fn consume(ctx: &Context, query_ready: bool, busy: bool) -> Shortcuts {
+pub(crate) fn consume(ctx: &Context, query_ready: bool, busy: bool, find_ready: bool) -> Shortcuts {
     ctx.input_mut(|input| {
+        let find = find_ready && input.consume_key(Modifiers::COMMAND, Key::F);
         let focus_path = input.consume_key(Modifiers::COMMAND, Key::O);
         let query = query_ready && input.consume_key(Modifiers::COMMAND, Key::Enter);
         let cancel = busy && input.consume_key(Modifiers::NONE, Key::Escape);
         Shortcuts {
             focus_path,
+            find,
             query,
             cancel,
         }
@@ -49,7 +52,7 @@ mod tests {
                 ..Default::default()
             },
             |ui| {
-                result = Some(consume(ui.ctx(), query_ready, busy));
+                result = Some(consume(ui.ctx(), query_ready, busy, false));
             },
         );
         output.textures_delta.clear();

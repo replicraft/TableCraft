@@ -85,6 +85,7 @@ impl State {
 
     pub fn can_delete_row(&self, target: &DeleteTarget) -> bool {
         !self.busy
+            && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
             && !self.saved_query_prompt_open()

@@ -1,6 +1,6 @@
 //! Real host dispatch and native save ownership through headless insertion widgets.
 use super::*;
-use crate::workspace::editing::test_support::{self, finish_reads, finish_save};
+use crate::workspace::test_support::{self, finish_reads, finish_save};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use std::path::PathBuf;
