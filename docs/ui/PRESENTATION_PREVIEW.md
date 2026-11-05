@@ -53,7 +53,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 39 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 40 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -177,3 +177,33 @@ English frames; datasheet and Design were compared with the private captures.
 A Russian dark datasheet was also reviewed at 900 × 580, 1× scale. View-menu tests
 exercise Enter, Escape, assistive activation and existing source/busy guards.
 These remain local renderer/test observations, not Windows Access comparisons.
+
+## Long names and compact dialogs — 5 November 2026
+
+`--mock-view long-names` supplies a synthetic 64-character table name and a long
+workspace filename. Document tabs use bounded one-line captions, retain complete
+literal names for hover/accessibility and keep source identity independent of
+translated labels. Horizontal overflow remains scrollable; gaining focus reveals
+a tab once without overriding later manual scrolling. Disabled background tabs
+expose no activation/focus actions.
+
+The title bar reserves space for its current status and truncates only the visible
+workspace title. Edit and collection dialog bodies scroll within the viewport;
+critical close, review, apply and recovery actions retain their existing rules
+outside the variable-height content. Full literal diagnoses and edit values remain
+available rather than being shortened to fit. These dialogs still have no retained
+Access visual capture; their layouts remain provisional.
+
+The batch passes 94 UI tests and 23 desktop tests, strict Clippy, formatting,
+documentation links and dependency guards. All 640 scene/locale/theme drawing
+combinations pass with zero localization diagnostics. Compact regressions use
+actual wheel events to reveal the final diagnosis line while retaining visible
+actions. One tab test initially exceeded the harness settling limit because its
+hover tooltip was animating; it now moves the pointer away after scrolling before
+waiting for idle, retaining every behavioral assertion.
+
+Six local GPU frames were exported at 900 × 580, 1× scale: English light long
+names, datasheet, review and attachments; Russian dark long names and recovery.
+The long-name/title, ordinary title, review and recovery layouts were opened for
+visual inspection. These remain macOS offscreen observations; no native Windows
+or assistive-tool qualification follows from them.

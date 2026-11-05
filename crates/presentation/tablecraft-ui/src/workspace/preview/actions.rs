@@ -182,7 +182,9 @@ impl Preview {
         let after = if input.is_null {
             fixtures::null()
         } else {
-            fixtures::text(&input.text)
+            let mut after = fixtures::text(&input.text);
+            after.alignment = before.alignment;
+            after
         };
         let request = self.request();
         self.state.begin_edit_review(draft_id, input, request);
