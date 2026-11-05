@@ -117,6 +117,16 @@ styling is not evidence of a match to these Access captures. Preserve labels,
 keyboard/focus behavior and native embedded application images. Keep the source
 captures private and out of CI requirements.
 
+## Provisional lifecycle surfaces
+
+The 5 November mock review covers query parameter overflow, collection loading,
+errors, unassigned/empty/NULL contents and edit/save/recovery outcomes. No retained
+Access capture establishes these dialog layouts or their dark appearance.
+Their current rendering is provisional, using the existing shared UI states;
+it is not a reproduction qualified against Access. Local review uses the macOS
+offscreen GPU renderer at 1280 × 820 logical pixels, 1× scale and Windows keyboard
+conventions. Native window and assistive-tool behavior remain separately unverified.
+
 ## Verification limits
 
 These references establish observed layout, not complete interaction, keyboard,
