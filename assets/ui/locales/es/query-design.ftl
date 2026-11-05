@@ -34,3 +34,8 @@ qbe-results-previous = Los resultados anteriores siguen visibles hasta que este 
 qbe-ribbon-design = Diseño de consulta
 qbe-results-group = Resultados
 qbe-setup-group = Configuración de consulta
+
+qbe-queries = Consultas
+qbe-both = Ambas
+qbe-query-sources-unavailable = Este diseñador de consultas aún no admite consultas como origen.
+qbe-resize-panes = Ajustar paneles de origen y cuadrícula de consulta

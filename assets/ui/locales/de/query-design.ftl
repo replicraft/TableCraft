@@ -34,3 +34,8 @@ qbe-results-previous = Bisherige Abfrageergebnisse bleiben sichtbar, bis dieser 
 qbe-ribbon-design = Abfrageentwurf
 qbe-results-group = Ergebnisse
 qbe-setup-group = Abfrageeinrichtung
+
+qbe-queries = Abfragen
+qbe-both = Beide
+qbe-query-sources-unavailable = Abfragequellen werden in diesem Abfrageentwurf noch nicht unterstützt.
+qbe-resize-panes = Quellenbereich und Abfrageraster skalieren

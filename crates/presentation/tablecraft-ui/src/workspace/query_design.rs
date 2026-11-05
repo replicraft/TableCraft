@@ -1,5 +1,7 @@
 //! Local QBE drafts require explicit source-bound canonicalization before execution.
 mod click;
+mod dialog;
+mod grid;
 mod preferences;
 mod render;
 mod retention;

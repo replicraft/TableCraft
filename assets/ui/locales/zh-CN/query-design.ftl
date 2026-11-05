@@ -34,3 +34,8 @@ qbe-results-previous = 此设计成功运行之前，继续显示先前的查询
 qbe-ribbon-design = 查询设计
 qbe-results-group = 结果
 qbe-setup-group = 查询设置
+
+qbe-queries = 查询
+qbe-both = 两者
+qbe-query-sources-unavailable = 此查询设计器尚不支持查询源。
+qbe-resize-panes = 调整源窗格和查询网格大小

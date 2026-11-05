@@ -34,3 +34,8 @@ qbe-results-previous = Previous query results remain visible until this design r
 qbe-ribbon-design = Query Design
 qbe-results-group = Results
 qbe-setup-group = Query Setup
+
+qbe-queries = Queries
+qbe-both = Both
+qbe-query-sources-unavailable = Query sources are not supported in this query designer yet.
+qbe-resize-panes = Resize source panes and query grid

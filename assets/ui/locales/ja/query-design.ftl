@@ -34,3 +34,8 @@ qbe-results-previous = このデザインの実行が成功するまで、前の
 qbe-ribbon-design = クエリ デザイン
 qbe-results-group = 結果
 qbe-setup-group = クエリ設定
+
+qbe-queries = クエリ
+qbe-both = 両方
+qbe-query-sources-unavailable = このクエリデザイナーではクエリをソースとして使用できません。
+qbe-resize-panes = ソース領域とクエリグリッドのサイズ変更

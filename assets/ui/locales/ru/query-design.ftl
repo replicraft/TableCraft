@@ -34,3 +34,8 @@ qbe-results-previous = Предыдущие результаты остаютс�
 qbe-ribbon-design = Конструктор запросов
 qbe-results-group = Результаты
 qbe-setup-group = Настройка запроса
+
+qbe-queries = Запросы
+qbe-both = Все
+qbe-query-sources-unavailable = Источники-запросы пока не поддерживаются в этом конструкторе.
+qbe-resize-panes = Изменить размер области источников и сетки запроса

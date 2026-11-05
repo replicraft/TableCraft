@@ -34,3 +34,8 @@ qbe-results-previous = 이 디자인이 성공적으로 실행될 때까지 이�
 qbe-ribbon-design = 쿼리 디자인
 qbe-results-group = 결과
 qbe-setup-group = 쿼리 설정
+
+qbe-queries = 쿼리
+qbe-both = 둘 다
+qbe-query-sources-unavailable = 이 쿼리 디자이너에서는 쿼리 원본을 아직 지원하지 않습니다.
+qbe-resize-panes = 원본 창과 쿼리 그리드 크기 조정
