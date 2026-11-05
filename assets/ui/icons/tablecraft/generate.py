@@ -20,6 +20,7 @@ icons = {
     'arrow_left': '<path d="m14 5-11 11 11 11v-7h15v-8H14z" fill="{blue}"/>',
     'undo': '<path d="M13 4 3 12l10 7v-6h5c7 0 10 6 7 13 8-7 4-19-7-19h-5z" fill="{blue}"/>',
     'redo': '<path d="m19 4 10 8-10 7v-6h-5c-7 0-10 6-7 13C-1 19 3 7 14 7h5z" fill="{green}"/>',
+    'attachment': '<path d="M12 23V10a6 6 0 0 1 12 0v13a9 9 0 0 1-18 0V11" fill="none" stroke="{blue}"/><path d="M12 10v13a3 3 0 0 0 6 0V10" fill="none"/>',
     'table': grid,
     'table_edit': grid + '<path d="m15 25 2-6L26 8l5 4-10 12z" fill="{gold}"/><path d="m17 19 4 5" fill="none"/>',
     'paste': '<rect x="6" y="5" width="21" height="24" rx="2" fill="{gold}"/><rect x="11" y="3" width="11" height="5" rx="2" fill="{paper}"/><path d="M11 13h11M11 18h11M11 23h7" fill="none"/>',

@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = Conteúdo da coleção
+collections-attachments-title = Anexos
 collections-target = { $table } · { $column } · pai { $parent }
 collections-reading = Lendo conteúdo armazenado…
 collections-attachment-help = Somente metadados armazenados. Os anexos permanecem codificados; nada é aberto ou exportado.

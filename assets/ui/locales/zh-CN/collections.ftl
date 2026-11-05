@@ -1,6 +1,7 @@
 # TableCraft UI: collections.
 
 collections-title = 集合内容
+collections-attachments-title = 附件
 collections-target = { $table } · { $column } · 父项 { $parent }
 collections-reading = 正在读取存储的内容…
 collections-attachment-help = 仅包含存储的元数据。附件数据保持编码状态；不会打开或导出内容。
