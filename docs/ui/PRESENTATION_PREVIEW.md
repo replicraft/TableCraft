@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 74 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 76 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -791,3 +791,29 @@ window opened. The retained Home and published Zoom images were reopened for
 comparison. Matching Access captures do not exist for the six added panels, dark
 mode or Options, so those remain visual adaptations. These checks establish
 headless presentation and existing service routing, not Windows Access parity.
+
+## Table Design grid and property inspection — 5 November 2026
+
+The retained Table Design capture was reopened for the selector gutter, column
+proportions, full-width divider and lower General/Lookup property area. The grid
+keeps actual field selection separate from inert blank rows. Its divider supports
+dragging and focused Up/Down keys; F6 enters the current field or a read-only
+property value. Selected properties provide contextual help. Lookup remains
+explicitly uninspected, without inferred defaults or primary-key artwork.
+
+Keyboard Copy publishes the complete focused observation, including text clipped
+in the cell, subject to a 1 MiB ceiling. Explicit text selections keep normal
+subset-copy behavior. Copy failures remain visible; schema replacement cannot
+retarget an old property focus. These controls inspect metadata and never edit
+the schema or evaluate stored expressions.
+
+`design-long` adds 66 synthetic declarations, long literal metadata and mixed
+observation states. `design-uninspected` contrasts missing, absent, uninspected
+and unsupported properties. Both use the existing metadata model; no database
+service or native behavior was added.
+
+Local offscreen review uses en-US light/dark at 1600 × 900 logical pixels and
+German dark at 900 × 580 logical pixels, 1.25× scale, on the macOS GPU renderer.
+Artifacts remain ignored under `.cache/ui-table-design-review/` and
+`.cache/ui-table-design-minimum/`. These renders do not qualify native window,
+assistive-technology or Windows Access interaction behavior.

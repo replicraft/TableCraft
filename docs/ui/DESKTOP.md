@@ -1361,3 +1361,13 @@ Six synthetic Ribbon tabs have grouped disabled command previews. Existing
 commands retain their typed services; no database functionality was expanded.
 Current visual evidence and headless verification are in
 [presentation preview](PRESENTATION_PREVIEW.md#compact-shell-record-strip-and-full-tab-previews--5-november-2026).
+
+## Table Design inspection layout follow-up
+
+The shared inspector now follows the retained field grid, selector gutter and
+General/Lookup property layout. A full-width divider supports dragging and
+focused Up/Down adjustment. Inert blank grid rows never select a nonexistent
+field. Property values support full-value keyboard Copy with a visible bounded
+refusal; field/publication changes do not transfer an old focus to new metadata.
+Lookup remains uninspected and schema editing remains unavailable. See the
+[presentation review](PRESENTATION_PREVIEW.md#table-design-grid-and-property-inspection--5-november-2026).
