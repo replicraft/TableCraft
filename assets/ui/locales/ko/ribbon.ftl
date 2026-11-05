@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = 매크로 이름 바꾸기/삭제
 ribbon-relationships = 관계
 ribbon-object-dependencies = 개체 종속성
 ribbon-filter = 필터
+
+ribbon-undo = 실행 취소
+ribbon-redo = 다시 실행
+ribbon-builder = 작성기
+ribbon-insert-rows = 행 삽입
+ribbon-delete-rows = 행 삭제

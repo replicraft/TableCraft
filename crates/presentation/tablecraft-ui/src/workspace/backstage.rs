@@ -198,13 +198,11 @@ impl State {
         ui.label(tr(ui, "backstage-icons-credit"));
         ui.hyperlink_to(
             tr(ui, "backstage-icons-source"),
-            "https://github.com/microsoft/fluentui-system-icons",
+            "https://github.com/replicraft/TableCraft/tree/main/assets/ui/icons/tablecraft",
         );
         egui::CollapsingHeader::new(tr(ui, "backstage-icons-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
-                ui.label(include_str!(
-                    "../../../../../assets/ui/icons/fluent/LICENSE.txt"
-                ));
+                ui.label(include_str!("../../../../../LICENSE"));
             });
         });
     }

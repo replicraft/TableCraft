@@ -156,8 +156,7 @@ pub(super) fn command(
                 rect.center(),
             ),
         };
-        icon.image(color, image_rect.width())
-            .paint_at(ui, image_rect);
+        icon.image(ui, image_rect.width()).paint_at(ui, image_rect);
         if !matches!(size, CommandSize::IconOnly) {
             ui.painter().galley(text_position, text, color);
         }

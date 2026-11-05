@@ -51,7 +51,7 @@ pub(super) fn show(
         ),
         egui::vec2(ICON_SIZE, ICON_SIZE),
     );
-    icon.image(colors.ink, ICON_SIZE).paint_at(ui, icon_rect);
+    icon.image(ui, ICON_SIZE).paint_at(ui, icon_rect);
     let text_left = icon_rect.right() + ICON_TEXT_GAP;
     let description = badge.map(str::to_owned);
     let badge_color = if selected && response.has_focus() {

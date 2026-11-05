@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = マクロの名前変更/削除
 ribbon-relationships = リレーションシップ
 ribbon-object-dependencies = オブジェクトの依存関係
 ribbon-filter = フィルター
+
+ribbon-undo = 元に戻す
+ribbon-redo = やり直し
+ribbon-builder = ビルダー
+ribbon-insert-rows = 行の挿入
+ribbon-delete-rows = 行の削除

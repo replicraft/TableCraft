@@ -61,3 +61,9 @@ ribbon-rename-delete-macro = 重命名/删除宏
 ribbon-relationships = 关系
 ribbon-object-dependencies = 对象依赖关系
 ribbon-filter = 筛选
+
+ribbon-undo = 撤销
+ribbon-redo = 重做
+ribbon-builder = 生成器
+ribbon-insert-rows = 插入行
+ribbon-delete-rows = 删除行

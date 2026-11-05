@@ -1,8 +1,15 @@
 //! Shared title, contextual ribbon and status; no file or database services.
 use super::focus::{self, Pane};
+use super::ribbon::Icon;
 use super::{Action, DocumentView, State, ribbon};
+use crate::Localizer;
 use crate::theme::palette;
-use egui::{Frame, Margin, RichText, Ui};
+use egui::{Frame, Margin, RichText, Ui, WidgetInfo, WidgetType};
+
+const APPLICATION_ICON_SIZE: f32 = 16.0;
+const QUICK_ACCESS_BUTTON_SIZE: f32 = 20.0;
+const RIBBON_TAB_HEIGHT: f32 = 26.0;
+const RIBBON_TAB_SIDE_PADDING: f32 = 9.0;
 
 impl State {
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
@@ -16,13 +23,16 @@ impl State {
             )
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
-                    ui.label(
-                        RichText::new(t.text("shell-app-name"))
-                            .color(colors.accent)
-                            .strong()
-                            .size(13.0),
-                    );
-                    ui.separator();
+                    ui.add(
+                        Icon::Application
+                            .image(ui, APPLICATION_ICON_SIZE)
+                            .alt_text(t.text("shell-app-name")),
+                    )
+                    .on_hover_text(t.text("shell-app-name"));
+                    if self.mock_preview {
+                        quick_access(ui, &t);
+                        ui.add_space(6.0);
+                    }
                     let title = self
                         .database
                         .as_ref()
@@ -64,11 +74,11 @@ impl State {
                 });
             });
         if !self.backstage_visible() {
-            egui::Panel::top("ribbon")
+            egui::Panel::top("ribbon_tabs")
                 .frame(
                     Frame::new()
-                        .fill(colors.surface)
-                        .inner_margin(Margin::symmetric(8, 3)),
+                        .fill(colors.title_fill)
+                        .inner_margin(Margin::symmetric(8, 0)),
                 )
                 .show(ui, |ui| {
                     egui::ScrollArea::horizontal()
@@ -76,8 +86,15 @@ impl State {
                         .auto_shrink([false, true])
                         .show(ui, |ui| {
                             ui.horizontal(|ui| {
-                                let file =
-                                    ui.add(egui::Button::new(t.text("ribbon-file")).frame(false));
+                                ui.spacing_mut().item_spacing.x = 0.0;
+                                ui.spacing_mut().button_padding = egui::vec2(9.0, 3.0);
+                                let file_label = t.text("ribbon-file");
+                                let file_size = ribbon_tab_size(ui, &file_label);
+                                let file = ui.add(
+                                    egui::Button::new(file_label)
+                                        .frame(false)
+                                        .min_size(file_size),
+                                );
                                 focus::register(ui, Pane::Ribbon, &file, false);
                                 if file.clicked() {
                                     self.show_open();
@@ -88,6 +105,7 @@ impl State {
                                     &t.text("ribbon-home"),
                                     self.ribbon_tab == ribbon::Tab::Home,
                                     true,
+                                    false,
                                 )
                                 .clicked()
                                 {
@@ -100,7 +118,7 @@ impl State {
                                         "ribbon-database-tools",
                                         "ribbon-help",
                                     ] {
-                                        tab(ui, key, &t.text(key), false, false)
+                                        tab(ui, key, &t.text(key), false, false, false)
                                             .on_disabled_hover_text(t.text("ribbon-preview-only"));
                                     }
                                 }
@@ -111,6 +129,7 @@ impl State {
                                         &t.text("ribbon-table-design"),
                                         self.ribbon_tab == ribbon::Tab::TableDesign,
                                         true,
+                                        true,
                                     )
                                     .clicked()
                                     {
@@ -118,14 +137,27 @@ impl State {
                                     }
                                 } else if self.mock_preview && self.data.is_some() {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
-                                        tab(ui, key, &t.text(key), false, false)
+                                        tab(ui, key, &t.text(key), false, false, true)
                                             .on_disabled_hover_text(t.text("ribbon-preview-only"));
                                     }
                                 }
                             });
                         });
-                    ui.separator();
-                    self.home(ui, actions);
+                });
+            egui::Panel::top("ribbon")
+                .frame(Frame::new().fill(colors.title_fill).inner_margin(Margin {
+                    left: 4,
+                    right: 4,
+                    top: 0,
+                    bottom: 4,
+                }))
+                .show(ui, |ui| {
+                    Frame::new()
+                        .fill(colors.surface)
+                        .corner_radius(5)
+                        .stroke(egui::Stroke::new(1.0, colors.grid_line))
+                        .inner_margin(Margin::symmetric(8, 3))
+                        .show(ui, |ui| self.home(ui, actions));
                 });
         }
         egui::Panel::bottom("status")
@@ -162,15 +194,76 @@ impl State {
     }
 }
 
-fn tab(ui: &mut Ui, key: &str, label: &str, selected: bool, enabled: bool) -> egui::Response {
+fn quick_access(ui: &mut Ui, localizer: &Localizer) {
+    ui.scope(|ui| {
+        ui.spacing_mut().item_spacing.x = 2.0;
+        ui.spacing_mut().button_padding = egui::vec2(2.0, 2.0);
+        ui.spacing_mut().interact_size = egui::Vec2::splat(QUICK_ACCESS_BUTTON_SIZE);
+        for (key, icon) in [
+            ("ribbon-save", Icon::Save),
+            ("ribbon-undo", Icon::Undo),
+            ("ribbon-redo", Icon::Redo),
+        ] {
+            let label = localizer.text(key);
+            let response = ui
+                .push_id(("quick_access", key), |ui| {
+                    ui.add_enabled_ui(false, |ui| {
+                        ui.add(
+                            egui::Button::image(icon.image(ui, APPLICATION_ICON_SIZE)).frame(false),
+                        )
+                    })
+                    .inner
+                })
+                .inner;
+            response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, &label));
+            ui.ctx().accesskit_node_builder(response.id, |node| {
+                node.remove_action(egui::accesskit::Action::Click);
+                node.remove_action(egui::accesskit::Action::Focus);
+            });
+            response.on_disabled_hover_text(format!(
+                "{label}: {}",
+                localizer.text("ribbon-preview-only")
+            ));
+        }
+    });
+}
+
+fn ribbon_tab_size(ui: &Ui, label: &str) -> egui::Vec2 {
+    let font = ui.style().text_styles[&egui::TextStyle::Button].clone();
+    let text = ui
+        .painter()
+        .layout_no_wrap(label.to_owned(), font, palette(ui.ctx()).ink);
+    egui::vec2(
+        text.size().x + RIBBON_TAB_SIDE_PADDING * 2.0,
+        RIBBON_TAB_HEIGHT,
+    )
+}
+
+fn tab(
+    ui: &mut Ui,
+    key: &str,
+    label: &str,
+    selected: bool,
+    enabled: bool,
+    contextual: bool,
+) -> egui::Response {
     let colors = palette(ui.ctx());
+    let size = ribbon_tab_size(ui, label);
     let response = ui
         .push_id(key, |ui| {
             ui.add_enabled(
                 enabled,
-                egui::Button::selectable(selected, label)
-                    .fill(colors.surface)
-                    .frame(false),
+                egui::Button::selectable(
+                    selected,
+                    RichText::new(label).color(if contextual {
+                        colors.accent
+                    } else {
+                        colors.ink
+                    }),
+                )
+                .fill(egui::Color32::TRANSPARENT)
+                .frame(false)
+                .min_size(size),
             )
         })
         .inner;

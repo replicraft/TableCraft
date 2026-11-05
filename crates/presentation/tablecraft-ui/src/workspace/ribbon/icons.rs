@@ -1,12 +1,15 @@
-//! Curated Fluent System Icons; source revision and MIT notice live with assets.
-use egui::{Color32, Image};
+//! Original colored TableCraft vectors, with explicit theme/disabled artwork.
+use egui::{Image, Ui};
 
 #[derive(Clone, Copy)]
 pub(in crate::workspace) enum Icon {
+    Application,
     FolderOpen,
     Settings,
     Info,
     ArrowLeft,
+    Undo,
+    Redo,
     Table,
     TableEdit,
     Paste,
@@ -16,13 +19,17 @@ pub(in crate::workspace) enum Icon {
     Ascending,
     Descending,
     Filter,
-    Sort,
+    Selection,
+    Advanced,
+    ToggleFilter,
+    RemoveSort,
     Refresh,
     Add,
     Save,
     Delete,
     Sum,
     Spelling,
+    MoreRecords,
     Search,
     Replace,
     GoTo,
@@ -34,67 +41,170 @@ pub(in crate::workspace) enum Icon {
     Fill,
     Zoom,
     Key,
-    Flash,
+    Validation,
+    Lookups,
+    MacroCreate,
+    MacroRename,
     Relationships,
     Properties,
     Indexes,
+    Dependencies,
+    Builder,
+    InsertRows,
+    DeleteRows,
 }
 
-macro_rules! asset {
-    ($name:literal) => {
+#[derive(Clone, Copy)]
+enum Variant {
+    Light,
+    Dark,
+    DisabledLight,
+    DisabledDark,
+}
+
+macro_rules! source {
+    ($name:literal, $variant:literal) => {
         (
-            concat!("bytes://tablecraft/fluent/", $name, ".svg"),
+            concat!("bytes://tablecraft/original/", $name, "-", $variant, ".svg"),
             include_bytes!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                "/../../../assets/ui/icons/fluent/",
+                "/../../../assets/ui/icons/tablecraft/",
                 $name,
+                "-",
+                $variant,
                 ".svg"
-            )),
+            ))
+            .as_slice(),
         )
     };
 }
 
-impl Icon {
-    pub(in crate::workspace) fn image(self, color: Color32, size: f32) -> Image<'static> {
-        let (uri, bytes): (&'static str, &'static [u8]) = match self {
-            Self::FolderOpen => asset!("folder_open"),
-            Self::Settings => asset!("settings"),
-            Self::Info => asset!("info"),
-            Self::ArrowLeft => asset!("arrow_left"),
-            Self::Table => asset!("table"),
-            Self::TableEdit => asset!("table_edit"),
-            Self::Paste => asset!("clipboard_paste"),
-            Self::Cut => asset!("cut"),
-            Self::Copy => asset!("copy"),
-            Self::PaintBrush => asset!("paint_brush"),
-            Self::Ascending => asset!("text_sort_ascending"),
-            Self::Descending => asset!("text_sort_descending"),
-            Self::Filter => asset!("filter"),
-            Self::Sort => asset!("arrow_sort"),
-            Self::Refresh => asset!("arrow_sync"),
-            Self::Add => asset!("add"),
-            Self::Save => asset!("save"),
-            Self::Delete => asset!("delete"),
-            Self::Sum => asset!("autosum"),
-            Self::Spelling => asset!("text_grammar_checkmark"),
-            Self::Search => asset!("search"),
-            Self::Replace => asset!("arrow_swap"),
-            Self::GoTo => asset!("arrow_right"),
-            Self::Cursor => asset!("cursor"),
-            Self::Bold => asset!("text_bold"),
-            Self::Italic => asset!("text_italic"),
-            Self::Underline => asset!("text_underline"),
-            Self::TextColor => asset!("text_color"),
-            Self::Fill => asset!("paint_bucket"),
-            Self::Zoom => asset!("zoom_in"),
-            Self::Key => asset!("key"),
-            Self::Flash => asset!("flash"),
-            Self::Relationships => asset!("table_link"),
-            Self::Properties => asset!("panel_right"),
-            Self::Indexes => asset!("list"),
-        };
-        Image::from_bytes(uri, bytes)
-            .fit_to_exact_size(egui::vec2(size, size))
-            .tint(color)
-    }
+macro_rules! asset {
+    ($name:literal, $variant:expr) => {
+        match $variant {
+            Variant::Light => source!($name, "light"),
+            Variant::Dark => source!($name, "dark"),
+            Variant::DisabledLight => source!($name, "disabled-light"),
+            Variant::DisabledDark => source!($name, "disabled-dark"),
+        }
+    };
 }
+
+impl Icon {
+    pub(in crate::workspace) fn image(self, ui: &Ui, size: f32) -> Image<'static> {
+        let variant = match (ui.ctx().theme(), ui.is_enabled()) {
+            (egui::Theme::Light, true) => Variant::Light,
+            (egui::Theme::Dark, true) => Variant::Dark,
+            (egui::Theme::Light, false) => Variant::DisabledLight,
+            (egui::Theme::Dark, false) => Variant::DisabledDark,
+        };
+        let (uri, bytes) = match self {
+            Self::Application => asset!("application", variant),
+            Self::FolderOpen => asset!("folder_open", variant),
+            Self::Settings => asset!("settings", variant),
+            Self::Info => asset!("info", variant),
+            Self::ArrowLeft => asset!("arrow_left", variant),
+            Self::Undo => asset!("undo", variant),
+            Self::Redo => asset!("redo", variant),
+            Self::Table => asset!("table", variant),
+            Self::TableEdit => asset!("table_edit", variant),
+            Self::Paste => asset!("paste", variant),
+            Self::Cut => asset!("cut", variant),
+            Self::Copy => asset!("copy", variant),
+            Self::PaintBrush => asset!("paint_brush", variant),
+            Self::Ascending => asset!("ascending", variant),
+            Self::Descending => asset!("descending", variant),
+            Self::Filter => asset!("filter", variant),
+            Self::Selection => asset!("selection", variant),
+            Self::Advanced => asset!("advanced_filter", variant),
+            Self::ToggleFilter => asset!("toggle_filter", variant),
+            Self::RemoveSort => asset!("remove_sort", variant),
+            Self::Refresh => asset!("refresh", variant),
+            Self::Add => asset!("add", variant),
+            Self::Save => asset!("save", variant),
+            Self::Delete => asset!("delete", variant),
+            Self::Sum => asset!("sum", variant),
+            Self::Spelling => asset!("spelling", variant),
+            Self::MoreRecords => asset!("more_records", variant),
+            Self::Search => asset!("search", variant),
+            Self::Replace => asset!("replace", variant),
+            Self::GoTo => asset!("go_to", variant),
+            Self::Cursor => asset!("cursor", variant),
+            Self::Bold => asset!("bold", variant),
+            Self::Italic => asset!("italic", variant),
+            Self::Underline => asset!("underline", variant),
+            Self::TextColor => asset!("text_color", variant),
+            Self::Fill => asset!("fill", variant),
+            Self::Zoom => asset!("zoom", variant),
+            Self::Key => asset!("key", variant),
+            Self::Validation => asset!("validation", variant),
+            Self::Lookups => asset!("lookups", variant),
+            Self::MacroCreate => asset!("macro_create", variant),
+            Self::MacroRename => asset!("macro_rename", variant),
+            Self::Relationships => asset!("relationships", variant),
+            Self::Properties => asset!("properties", variant),
+            Self::Indexes => asset!("indexes", variant),
+            Self::Dependencies => asset!("dependencies", variant),
+            Self::Builder => asset!("builder", variant),
+            Self::InsertRows => asset!("insert_rows", variant),
+            Self::DeleteRows => asset!("delete_rows", variant),
+        };
+        Image::from_bytes(uri, bytes).fit_to_exact_size(egui::vec2(size, size))
+    }
+
+    #[cfg(test)]
+    const ALL: [Self; 49] = [
+        Self::Application,
+        Self::FolderOpen,
+        Self::Settings,
+        Self::Info,
+        Self::ArrowLeft,
+        Self::Undo,
+        Self::Redo,
+        Self::Table,
+        Self::TableEdit,
+        Self::Paste,
+        Self::Cut,
+        Self::Copy,
+        Self::PaintBrush,
+        Self::Ascending,
+        Self::Descending,
+        Self::Filter,
+        Self::Selection,
+        Self::Advanced,
+        Self::ToggleFilter,
+        Self::RemoveSort,
+        Self::Refresh,
+        Self::Add,
+        Self::Save,
+        Self::Delete,
+        Self::Sum,
+        Self::Spelling,
+        Self::MoreRecords,
+        Self::Search,
+        Self::Replace,
+        Self::GoTo,
+        Self::Cursor,
+        Self::Bold,
+        Self::Italic,
+        Self::Underline,
+        Self::TextColor,
+        Self::Fill,
+        Self::Zoom,
+        Self::Key,
+        Self::Validation,
+        Self::Lookups,
+        Self::MacroCreate,
+        Self::MacroRename,
+        Self::Relationships,
+        Self::Properties,
+        Self::Indexes,
+        Self::Dependencies,
+        Self::Builder,
+        Self::InsertRows,
+        Self::DeleteRows,
+    ];
+}
+
+#[cfg(test)]
+mod tests;
