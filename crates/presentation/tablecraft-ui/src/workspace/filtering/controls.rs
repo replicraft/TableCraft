@@ -163,6 +163,7 @@ impl State {
                     comparison: FilterComparison::NotEqual,
                     ..
                 } => "filtering-applying-not-equal",
+                Operation::Field { .. } => "filtering-field-applying",
                 Operation::Page { .. } | Operation::Restore { .. } => "filtering-loading",
                 Operation::Clear { .. } => "filtering-clearing",
                 Operation::Sort { .. } => "filtering-sorting",

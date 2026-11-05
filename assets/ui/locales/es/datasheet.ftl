@@ -49,7 +49,7 @@ datasheet-go = Ir
 
 datasheet-null-value = NULL
 datasheet-close-table = Cerrar tabla
-datasheet-sort-column = Ordenar { $column }
+datasheet-column-menu = Menú de columna { $column }
 
 datasheet-last = Último
 

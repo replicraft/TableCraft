@@ -140,8 +140,19 @@ impl State {
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-sort-filter"), |ui| {
             ui.horizontal(|ui| {
-                if self.mock_preview {
-                    ribbon::mock_command(ui, &t, Icon::Filter, "ribbon-filter", CommandSize::Large);
+                let target = self.current_field_filter_target();
+                if command(
+                    ui,
+                    Icon::Filter,
+                    &t.text("ribbon-filter"),
+                    target.is_some(),
+                    CommandSize::Large,
+                )
+                .on_hover_text(t.text("filtering-field-help"))
+                .clicked()
+                    && let Some(target) = target
+                {
+                    actions.push(Action::DescribeFieldFilter { target });
                 }
                 ui.vertical(|ui| {
                     self.sort_commands(ui, actions);

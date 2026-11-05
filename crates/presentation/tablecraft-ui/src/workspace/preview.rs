@@ -6,6 +6,7 @@ mod collections;
 mod deletion;
 mod editing;
 mod errors;
+mod field_filter;
 mod filtering;
 mod find;
 mod fixtures;
@@ -27,6 +28,8 @@ pub enum Scene {
     Objects,
     ObjectLoading,
     ObjectError,
+    FieldFilter,
+    FieldFilterError,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -85,11 +88,13 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 59] = [
+    pub const ALL: [Self; 61] = [
         Self::Datasheet,
         Self::Objects,
         Self::ObjectLoading,
         Self::ObjectError,
+        Self::FieldFilter,
+        Self::FieldFilterError,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -173,6 +178,8 @@ impl Scene {
             Self::Objects => "objects",
             Self::ObjectLoading => "object-loading",
             Self::ObjectError => "object-error",
+            Self::FieldFilter => "field-filter",
+            Self::FieldFilterError => "field-filter-error",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -317,6 +324,8 @@ impl Preview {
             Scene::Objects => self.prepare_objects_scene(),
             Scene::ObjectLoading => self.prepare_unloaded_object(true),
             Scene::ObjectError => self.prepare_unloaded_object(false),
+            Scene::FieldFilter => self.prepare_field_filter_scene(false),
+            Scene::FieldFilterError => self.prepare_field_filter_scene(true),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError

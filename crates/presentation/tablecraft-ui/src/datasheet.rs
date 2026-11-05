@@ -333,7 +333,7 @@ fn column_header(
             .inner;
         let name = message(
             ui,
-            "datasheet-sort-column",
+            "datasheet-column-menu",
             &[("column", column.name.clone())],
         );
         response
@@ -366,6 +366,19 @@ fn column_header(
             ));
         if response.enabled() {
             egui::Popup::menu(&response).show(|ui| {
+                if ui.button(tr(ui, "filtering-field-title")).clicked() {
+                    actions.push(Action::DescribeFieldFilter {
+                        target: crate::FieldFilterTarget {
+                            document_revision: header.target.document_revision,
+                            table: header.target.table.clone(),
+                            column: column.name.clone(),
+                            filter_id: header.target.filter_id,
+                            enabled: header.enabled,
+                        },
+                    });
+                    ui.close();
+                }
+                ui.separator();
                 ui.small(tr(ui, "filtering-sort-help"));
                 for (descending, key) in [(false, "ribbon-ascending"), (true, "ribbon-descending")]
                 {

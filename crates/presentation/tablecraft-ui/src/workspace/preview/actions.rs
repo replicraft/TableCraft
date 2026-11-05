@@ -42,6 +42,15 @@ impl Preview {
             return;
         }
         match action {
+            Action::DescribeFieldFilter { target } => self.mock_describe_field_filter(target),
+            Action::ApplyFieldFilter {
+                target,
+                operator,
+                inputs,
+            } => self.mock_apply_field_filter(target, operator, inputs),
+            Action::CloseFieldFilter { request_id } => {
+                self.state.close_field_filter(request_id);
+            }
             Action::FilterSelection { target, comparison } => {
                 let request = self.request();
                 if self

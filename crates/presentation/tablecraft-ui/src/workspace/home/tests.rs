@@ -649,7 +649,7 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
         .state()
         .0
         .localizer
-        .format("datasheet-sort-column", &arguments);
+        .format("datasheet-column-menu", &arguments);
     harness
         .get_by_role_and_label(Role::Button, &header_label)
         .click_accesskit();

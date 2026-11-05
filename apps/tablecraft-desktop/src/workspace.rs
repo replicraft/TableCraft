@@ -15,8 +15,8 @@ use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, FilterHandle, Response, Worker,
 };
 use tablecraft_ui::{
-    Action, ContentsTarget, Data, Database, FindPosition, FindRequest, ObjectKind, ObjectTarget,
-    RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
+    Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
+    ObjectKind, ObjectTarget, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
 };
 use zeroize::Zeroize;
 
@@ -27,6 +27,13 @@ enum PendingOperation {
         request_id: u64,
     },
     FilterSelection {
+        request_id: u64,
+    },
+    FieldFilterDescribe {
+        request_id: u64,
+        target: FieldFilterTarget,
+    },
+    FieldFilterApply {
         request_id: u64,
     },
     FilterPage {
@@ -213,6 +220,9 @@ impl Desktop {
             self.state.busy = false;
             match result {
                 Ok(Response::FilteredData(result)) => self.publish_filtered(generation, result),
+                Ok(Response::FieldFilterDescription(description)) => {
+                    self.publish_field_filter_description(generation, description);
+                }
                 Ok(Response::Found { request, position }) => {
                     self.publish_found(generation, request, position);
                 }
@@ -365,6 +375,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::FieldFilterDescribe { request_id, .. }
+                    | PendingOperation::FieldFilterApply { request_id } => {
+                        self.state.fail_field_filter(*request_id, error.to_string());
+                    }
                     PendingOperation::FilterSelection { request_id }
                     | PendingOperation::FilterPage { request_id }
                     | PendingOperation::FilterRestore { request_id }
@@ -463,6 +477,15 @@ impl eframe::App for Desktop {
                         self.submit(Command::Page { table, offset });
                     }
                 }
+                Action::DescribeFieldFilter { target } => self.describe_field_filter(target),
+                Action::ApplyFieldFilter {
+                    target,
+                    operator,
+                    inputs,
+                } => {
+                    self.apply_field_filter(target, operator, inputs);
+                }
+                Action::CloseFieldFilter { request_id } => self.close_field_filter(request_id),
                 Action::FilterSelection { target, comparison } => {
                     self.filter_selection(target, comparison)
                 }
@@ -543,6 +566,13 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::FieldFilterDescribe { request_id, .. }
+                            | PendingOperation::FieldFilterApply { request_id } => {
+                                self.state.fail_field_filter(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::FilterSelection { request_id }
                             | PendingOperation::FilterPage { request_id }
                             | PendingOperation::FilterRestore { request_id }
