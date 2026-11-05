@@ -2,7 +2,7 @@
 
 ## Presentation lifecycle review — 5 November 2026
 
-The shared presentation preview covers 40 synthetic scenes, including long names, query
+The shared presentation preview covers 43 synthetic scenes, including long names, query
 reruns/errors, declared parameters, collection absence/empty/NULL distinctions,
 validation and save/recovery outcomes. Parameter overflow controls, collection
 headers and bounded initial column sizing improve existing views. Terminal save
@@ -11,7 +11,8 @@ literal diagnoses while keeping existing actions reachable. Dated verification
 records live in the preview guide. These slices add no database capability or
 runtime service. Shared F6/Shift+F6 navigation now moves among existing panes,
 retaining virtualized selections and source-bound focus requests; modal and popup
-ownership remains intact. See the
+ownership remains intact. Long service reports now scroll and copy through a
+shared diagnostic presentation, keeping existing query controls reachable. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
 ## Shared presentation preview — 4 November 2026

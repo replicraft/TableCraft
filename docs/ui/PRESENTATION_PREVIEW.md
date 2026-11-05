@@ -25,8 +25,8 @@ Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
 has separate `shell`, `ribbon`, `backstage`, `datasheet`, `query`, `saved-query`,
-`design`, `editing`, `collections`, `navigation` and `settings` `.ftl` files under
-`assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
+`design`, `editing`, `collections`, `navigation`, `diagnostics` and `settings`
+`.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
 variable parity, formatting and fallback diagnostics. Translations are initial
@@ -53,7 +53,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 40 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 43 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -282,3 +282,39 @@ at 2×. Field/property and Ribbon focus outlines were inspected; the Ribbon fram
 was exported again after its outline correction. An oversized renderer F6 sequence
 refuses before output-directory creation. These are offscreen UI observations,
 not native Windows keyboard or screen-reader qualification.
+
+## Long service reports and failure recovery — 5 November 2026
+
+The additional `long-read-error`, `long-query-error` and `long-saved-error` scenes
+retain previous complete table/query snapshots and exact saved-query input
+choices. Their multiline English reports are literal synthetic host payloads;
+interface labels still use the selected Fluent language.
+
+Workspace and saved-query failures share a bounded, full-width scroll region.
+Copy details copies the complete literal report, including line breaks, quotes
+and control characters, independently of the selected cell. Its interface copy
+has a separate `diagnostics.ftl` section in every locale. The report remains
+selectable; a failure never retries an operation or clears a complete result.
+At compact sizes, SQL/parameter viewport heights reserve space for existing
+Run/Inspect controls and a visible previous result.
+
+A reproduced deferred-focus race also now preserves newer Navigation focus:
+queued pane entry compares its focus witness before applying, and discards an
+entry superseded by a newer focus choice. The witness is comparison-only and is
+never requested as a future focus target. Failures do not introduce automatic
+focus moves, reruns or result publication.
+
+The batch passes 107 shared UI tests and 23 desktop tests, strict Clippy,
+formatting, documentation links and dependency guards. All 688 scene/locale/theme
+drawing combinations pass with zero localization diagnostics. Tests cover full
+literal copying, actual wheel access to the report's final line, simultaneous
+long SQL/report layout and 12 saved prompts with a retained visible result.
+The newer-focus race first failed against the prior behavior and passes after
+the comparison guard; existing virtualized pane-entry cases remain passing.
+
+Five compact local GPU frames were exported: English light read/query/saved
+failures, Russian dark saved failure at 1.25× and Japanese light query failure at
+2×. Representative query/saved and Russian layouts were opened for review.
+Inline failure placement remains provisional because no retained Access capture
+establishes this surface. No native window, Access or screen-reader qualification
+follows from these offscreen observations.
