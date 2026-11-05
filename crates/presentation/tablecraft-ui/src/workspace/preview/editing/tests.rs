@@ -177,3 +177,29 @@ fn assert_terminal_presentation(preview: &mut Preview, expected_heading: Option<
             )
     }));
 }
+
+#[test]
+fn mock_release_preserves_needs_attention_without_claiming_a_save() {
+    let mut preview = Preview::new(Scene::Recovery);
+    let Some(EditDialog::Finished {
+        save_id,
+        outcome: EditSaveOutcome::Retained {
+            can_release: true, ..
+        },
+    }) = &preview.state.edit
+    else {
+        panic!("retained mock resources can be released explicitly");
+    };
+    let save_id = *save_id;
+    let rows = preview.state.data.as_ref().unwrap().rows.as_ptr();
+    preview.dispatch(crate::Action::ReleaseEditSave { save_id });
+    assert!(
+        matches!(&preview.state.edit, Some(EditDialog::Finished { outcome: EditSaveOutcome::Failed(message), .. })
+        if message == &preview.state.localizer.text("settings-mock-resolved"))
+    );
+    assert_terminal_presentation(&mut preview, Some("Save needs attention"));
+    assert_eq!(preview.state.data.as_ref().unwrap().rows.as_ptr(), rows);
+    assert!(!preview.state.edit_save_pending());
+    assert!(preview.state.close_edit());
+    assert!(preview.state.mock_preview);
+}

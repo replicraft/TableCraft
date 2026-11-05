@@ -48,3 +48,38 @@ fn long_service_reports_preserve_complete_sources_and_retry_inputs() {
         assert_eq!(state.localizer.diagnostics(), Default::default());
     }
 }
+
+#[test]
+fn successful_mock_read_and_query_retries_clear_the_previous_global_report() {
+    for scene in [
+        Scene::Error,
+        Scene::LongReadError,
+        Scene::QueryError,
+        Scene::LongQueryError,
+    ] {
+        for action in [
+            Action::Query,
+            Action::Page {
+                table: "Customers".into(),
+                offset: 0,
+            },
+            Action::ViewSchema {
+                table: "Customers".into(),
+            },
+        ] {
+            let mut preview = Preview::new(scene);
+            assert!(preview.state.error.is_some());
+            let sql = preview.state.sql.clone();
+            preview.dispatch(action);
+            assert!(
+                preview.state.error.is_none(),
+                "successful mock response replaces the prior failure"
+            );
+            assert_eq!(preview.state.sql, sql);
+            let table = preview.state.data.as_ref().unwrap();
+            assert_eq!(table.table, "Customers");
+            assert!(!table.rows.is_empty());
+            assert!(preview.state.mock_preview);
+        }
+    }
+}
