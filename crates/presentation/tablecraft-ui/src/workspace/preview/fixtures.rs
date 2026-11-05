@@ -49,6 +49,20 @@ pub(super) fn workspace() -> State {
     state
 }
 
+/// Long, literal object names exercise compact presentation without real files.
+pub(super) fn long_names(state: &mut State) {
+    let table = "Customer accounts for international correspondence and follow-up";
+    let database = state.database.as_mut().expect("synthetic database");
+    database.title = format!(
+        "{}2026.accdb · Mock",
+        "International customer and supplier reconciliation workspace — ".repeat(3),
+    );
+    database.tables[0].name = table.into();
+    database.queries[0].name =
+        "Customer account correspondence by region and financial period".into();
+    state.data.as_mut().expect("synthetic page").table = table.into();
+}
+
 pub(super) fn page(table: &str, offset: u32) -> Data {
     let end = offset.saturating_add(PAGE_ROWS).min(TOTAL_ROWS);
     let columns = columns(table);

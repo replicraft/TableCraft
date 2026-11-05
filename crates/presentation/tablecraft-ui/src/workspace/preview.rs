@@ -15,6 +15,7 @@ use std::str::FromStr;
 pub enum Scene {
     #[default]
     Datasheet,
+    LongNames,
     Empty,
     Loading,
     Error,
@@ -56,8 +57,9 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 39] = [
+    pub const ALL: [Self; 40] = [
         Self::Datasheet,
+        Self::LongNames,
         Self::Empty,
         Self::Loading,
         Self::Error,
@@ -118,6 +120,7 @@ impl Scene {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Datasheet => "datasheet",
+            Self::LongNames => "long-names",
             Self::Empty => "empty",
             Self::Loading => "loading",
             Self::Error => "error",
@@ -215,6 +218,7 @@ impl Preview {
 
         match scene {
             Scene::Datasheet => {}
+            Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::Empty => {
                 let mut data = fixtures::page("Customers", 0);
                 data.rows.clear();

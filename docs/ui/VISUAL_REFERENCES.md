@@ -126,6 +126,12 @@ styling is not evidence of a match to these Access captures. Preserve labels,
 keyboard/focus behavior and native embedded application images. Keep the source
 captures private and out of CI requirements.
 
+Long literal document names now use compact, bounded tab captions with full
+hover/accessibility names and conditional horizontal scrolling. Focus follows
+source identity, independently of translation, and reveals overflow only on
+gained focus. The workspace title reserves the existing status label and elides
+only its visible filename; neither change claims exact native tab interaction.
+
 ## Provisional lifecycle surfaces
 
 The 5 November mock review covers query parameter overflow, collection loading,
