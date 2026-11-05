@@ -8,6 +8,8 @@ use tablecraft_ui::{
 };
 
 const ANIMATED_SCENE_STEPS: usize = 3;
+const MIN_SCALE: f32 = 1.0;
+const MAX_SCALE: f32 = 2.0;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let directory = env::var_os("TABLECRAFT_PREVIEW_DIR")
@@ -27,6 +29,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
+    let scale = setting("TABLECRAFT_PREVIEW_SCALE", "1")?.parse::<f32>()?;
+    if !(MIN_SCALE..=MAX_SCALE).contains(&scale) {
+        return Err(io::Error::other("preview scale must be finite and between 1 and 2").into());
+    }
+    let scale_suffix = if scale == MIN_SCALE {
+        String::new()
+    } else {
+        format!("@{scale}x")
+    };
     fs::create_dir_all(&directory)?;
 
     let mut preview = Preview::new(Scene::Datasheet);
@@ -34,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     preview.state_mut().theme = theme;
     let mut harness = Harness::builder()
         .with_size(egui::vec2(width, height))
-        .with_pixels_per_point(1.0)
+        .with_pixels_per_point(scale)
         .with_os(egui::os::OperatingSystem::Windows)
         .with_max_steps(32)
         .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
@@ -51,10 +62,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}.png",
+            "{}-{}-{}{}.png",
             locale.as_str(),
             theme_name,
-            scene.as_str()
+            scene.as_str(),
+            scale_suffix,
         ));
         image.save_with_format(&path, ImageFormat::Png)?;
         println!("{}", path.display());

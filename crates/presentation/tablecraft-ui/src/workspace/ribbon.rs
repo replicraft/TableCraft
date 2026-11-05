@@ -238,56 +238,60 @@ mod tests {
 
     #[test]
     fn gaining_focus_reveals_an_overflow_command_without_overriding_later_manual_scroll() {
-        let context = egui::Context::default();
-        context.enable_accesskit();
-        crate::configure(&context);
-        frame(&context, vec![]);
-        let (id, before, clip, _) = frame(&context, vec![]);
-        assert!(before.left() > clip.right());
+        for scale in [1.0, 1.25, 1.5, 2.0] {
+            let context = egui::Context::default();
+            context.set_pixels_per_point(scale);
+            context.enable_accesskit();
+            crate::configure(&context);
+            frame(&context, vec![]);
+            assert_eq!(context.pixels_per_point(), scale);
+            let (id, before, clip, _) = frame(&context, vec![]);
+            assert!(before.left() > clip.right());
 
-        frame(
-            &context,
-            vec![egui::Event::AccessKitActionRequest(
-                egui::accesskit::ActionRequest {
-                    action: egui::accesskit::Action::Focus,
-                    target_tree: egui::accesskit::TreeId::ROOT,
-                    target_node: id.accesskit_id(),
-                    data: None,
-                },
-            )],
-        );
-        frame(&context, vec![]);
-        let (_, revealed, clip, text_rect) = frame(&context, vec![]);
-        // egui's ScrollArea snaps its content origin to physical pixels. The
-        // fractional measured command width can therefore extend by less than
-        // half a pixel at the maximum offset; compare its rendered edges using
-        // the same pixel grid, while checking its actual glyph bounds exactly.
-        let pixels_per_point = context.pixels_per_point();
-        let physical_bounds = revealed.round_to_pixels(pixels_per_point);
-        let physical_clip = clip.round_to_pixels(pixels_per_point);
-        assert!(
-            physical_clip.contains_rect(physical_bounds),
-            "rendered command {physical_bounds:?}, viewport {physical_clip:?}"
-        );
-        assert!(clip.contains_rect(text_rect.expect("revealed command text was painted")));
-        assert!(clip.contains_rect(revealed.shrink(1.0 / pixels_per_point)));
-        assert!(context.memory(|memory| memory.has_focus(id)));
+            frame(
+                &context,
+                vec![egui::Event::AccessKitActionRequest(
+                    egui::accesskit::ActionRequest {
+                        action: egui::accesskit::Action::Focus,
+                        target_tree: egui::accesskit::TreeId::ROOT,
+                        target_node: id.accesskit_id(),
+                        data: None,
+                    },
+                )],
+            );
+            frame(&context, vec![]);
+            let (_, revealed, clip, text_rect) = frame(&context, vec![]);
+            // egui's ScrollArea snaps its content origin to physical pixels. The
+            // fractional measured command width can therefore extend by less than
+            // half a pixel at the maximum offset; compare its rendered edges using
+            // the same pixel grid, while checking its actual glyph bounds exactly.
+            let pixels_per_point = context.pixels_per_point();
+            let physical_bounds = revealed.round_to_pixels(pixels_per_point);
+            let physical_clip = clip.round_to_pixels(pixels_per_point);
+            assert!(
+                physical_clip.contains_rect(physical_bounds),
+                "rendered command {physical_bounds:?}, viewport {physical_clip:?}"
+            );
+            assert!(clip.contains_rect(text_rect.expect("revealed command text was painted")));
+            assert!(clip.contains_rect(revealed.shrink(1.0 / pixels_per_point)));
+            assert!(context.memory(|memory| memory.has_focus(id)));
 
-        frame(
-            &context,
-            vec![
-                egui::Event::PointerMoved(egui::pos2(16.0, 16.0)),
-                egui::Event::MouseWheel {
-                    unit: egui::MouseWheelUnit::Point,
-                    delta: egui::vec2(360.0, 0.0),
-                    phase: egui::TouchPhase::Move,
-                    modifiers: egui::Modifiers::NONE,
-                },
-            ],
-        );
-        frame(&context, vec![]);
-        let (_, after_manual_scroll, clip, _) = frame(&context, vec![]);
-        assert!(after_manual_scroll.left() > clip.right());
-        assert!(context.memory(|memory| memory.has_focus(id)));
+            frame(
+                &context,
+                vec![
+                    egui::Event::PointerMoved(egui::pos2(16.0, 16.0)),
+                    egui::Event::MouseWheel {
+                        unit: egui::MouseWheelUnit::Point,
+                        delta: egui::vec2(360.0, 0.0),
+                        phase: egui::TouchPhase::Move,
+                        modifiers: egui::Modifiers::NONE,
+                    },
+                ],
+            );
+            frame(&context, vec![]);
+            let (_, after_manual_scroll, clip, _) = frame(&context, vec![]);
+            assert!(after_manual_scroll.left() > clip.right());
+            assert!(context.memory(|memory| memory.has_focus(id)));
+        }
     }
 }
