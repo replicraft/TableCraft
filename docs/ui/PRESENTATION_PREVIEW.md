@@ -37,6 +37,12 @@ error details remain literal. UI language does not select database comparison,
 wildcard, time-zone or regional value-format policies. Missing/invalid messages
 have a diagnosed English fallback; counters retain no message arguments.
 
+The Ribbon uses original generated SVG command icons from
+`assets/ui/icons/tablecraft/`, with light/dark and neutral disabled variants.
+Their generator and hash manifest retain reproducible source geometry; the
+artwork uses the repository license. Earlier dated verification records below
+refer to the prior Microsoft Fluent subset, which remains inert source material.
+
 The actual retained [Access captures](VISUAL_REFERENCES.md) govern light
 Ribbon/datasheet/Table Design/Backstage proportions. No Access captures exist for
 dark mode, query parameter forms or edit/collection dialogs. Those surfaces remain
@@ -456,3 +462,41 @@ checks now compare complete English and German reports, exact counts and retaine
 flags, with zero localization diagnostics. Formatting, strict selected-package
 Clippy, local documentation links and dependency boundaries pass. Verification
 remained headless throughout.
+
+## Ribbon, title and original icon review — 5 November 2026
+
+The title strip now uses a small original app glyph and compact mock-only disabled
+Save/Undo/Redo quick access, followed by the literal document title and existing
+status. Gray Ribbon tabs are separate from the inset rounded command tray;
+contextual tabs retain their red styling. Object tabs now use neutral borders
+and small object glyphs. The retained Access Home/Design captures were opened
+while implementing these surfaces; PaintCraft's legacy Ribbon was consulted for
+compact layout mechanics, without copying its artwork.
+
+The active icon set has 49 original command compositions and 196 light/dark and
+neutral disabled SVG variants. Selection, Advanced, Toggle Filter, Validation,
+Lookups, Macros and Dependencies have distinct artwork. Builder and Insert/Delete
+Rows are inert mock previews in the captured Design arrangement. The owning
+generator reproduces all files and their SHA-256 inventory exactly; the older
+Fluent subset remains inert source material with its original notice. About now
+credits the original artwork and its repository license in every locale.
+
+Seven final PNGs were opened: light/dark icon sheets at 16/32 pixels and five
+assembled workspace frames. English light Home/Design and dark Home use
+1280 by 820 logical points at 1x. German light Design uses 900 by 580 at 1.25x;
+Japanese dark Home uses 900 by 580 at 2x. Initial assembled frames exposed
+run-together Ribbon labels: frameless buttons had suppressed their inner margins.
+Explicit measured tab widths now preserve side padding, and a painted-glyph gap
+assertion covers File/Home/Create/External Data. The frames were regenerated and
+reviewed after that correction; the earlier local frames remain separate.
+
+The taller chrome also reproduced a compact long-SQL/result clipping regression.
+The existing calculated editor height was being overridden by egui's implicit
+64-point scroll minimum. Applying the existing 24-point editor minimum restores
+the intended allocation; the unchanged Run/result visibility regression passes.
+
+The final batch passes 124 UI tests and 23 desktop tests, all 704 scene/locale/theme
+draw combinations, and actual decoding of every icon variant at command sizes.
+Strict selected-package Clippy, formatting, documentation links and dependency
+boundaries pass. No native application window was opened or manipulated. These
+are offscreen macOS observations; native Windows fidelity remains unqualified.

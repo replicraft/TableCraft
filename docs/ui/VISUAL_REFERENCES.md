@@ -76,9 +76,10 @@ Microsoft account services.
 File/Open uses the Backstage reference's full-page structure and narrow left
 navigation. The retained capture shows Account, not Open or Options; TableCraft's
 Open form and theme/language Options are provisional surfaces. Dark colors are a
-TableCraft adaptation: no dark Access capture is retained. Curated Microsoft
-Fluent System Icons supply actual SVG artwork, with source hashes and MIT notice
-under `assets/ui/icons/`, rather than substitute Unicode symbols.
+TableCraft adaptation: no dark Access capture is retained. Original generated TableCraft SVGs supply distinct colored command artwork,
+with reproducible geometry, explicit theme/disabled variants and hashes under
+`assets/ui/icons/tablecraft/`. Their command meanings follow the captures while
+retaining original artwork.
 
 The read-only schema inspector now follows the observed Design-view organization,
 with a central fields grid and lower selected-field pane. Native rendering and
@@ -101,8 +102,8 @@ Plain Up/Down operates only while the currently selected displayed field owns
 focus; one-shot scrolling reveals its next field. Property-text selection,
 modified keys and a replaced declaration do not reuse a stale field target.
 Backstage uses left-aligned icon/text entries, with About and Options at the foot
-of the rail; the four additional Fluent assets retain the same source/license
-provenance as the Ribbon subset. These changes are visual adaptations of the
+of the rail. Its active artwork uses the same original generated set as the
+Ribbon; earlier Fluent provenance remains with the retained source subset. These changes are visual adaptations of the
 retained captures, not a qualification of unseen Access interactions.
 
 ## Review each new surface against the captures
@@ -121,8 +122,8 @@ when implementing those surfaces; record any interim layout as provisional rathe
 than extrapolating it from the datasheet or a library demo.
 
 A library or replacement icon set cannot redefine the reference appearance.
-Choose any Fluent assets individually for working actions; their Windows 11
-styling is not evidence of a match to these Access captures. Preserve labels,
+Use command-specific original artwork and compare its density and meaning with
+the captures; an icon library's styling alone is not evidence of an Access match. Preserve labels,
 keyboard/focus behavior and native embedded application images. Keep the source
 captures private and out of CI requirements.
 
@@ -152,3 +153,26 @@ at representative scales. Headless tests and successful builds alone do not
 establish screenshot fidelity or native Access behavioral compatibility.
 
 [Desktop preview](DESKTOP.md) · [UI index](README.md)
+
+
+## Ribbon and title correction — 5 November 2026
+
+PaintCraft's retained legacy Ribbon implementation supplied a layout reference
+for compact quick-access and tab geometry. TableCraft still follows the actual
+Access Home/Design captures: a small original app mark, mock-only disabled Save /
+Undo / Redo quick-access buttons, a gray tab bar with contextual red labels and
+an inset bordered command tray. Native window decorations remain host-owned.
+No unsupported quick-access action or fake window control is activated.
+
+Document tabs use neutral gray borders, small object glyphs and a compact
+selected surface rather than the former blue fill/red selected underline.
+Existing source identity, focus, full-caption accessibility and overflow behavior
+remain independent of this paint. Close buttons are absent until actual document
+closing exists.
+
+The 49 original vector concepts distinguish Selection, Advanced and Toggle
+Filter; Validation, Lookups, Macros and Dependencies likewise have their own
+compositions. Builder and Insert/Delete Rows remain explicitly disabled mock
+previews placed like the Design capture. Each icon has light/dark and neutral
+disabled artwork; original geometry and hashes live with the root assets. None
+copies Microsoft logos, upstream glyph paths or PaintCraft artwork.
