@@ -17,14 +17,17 @@ impl State {
             }
             group(ui, &t.text("ribbon-clipboard"), |ui| {
                 ui.horizontal(|ui| {
-                    if self.mock_preview {
-                        ribbon::mock_command(
-                            ui,
-                            &t,
-                            Icon::Paste,
-                            "ribbon-paste",
-                            CommandSize::Large,
-                        );
+                    if command(
+                        ui,
+                        Icon::Paste,
+                        &t.text("editing-paste-text"),
+                        self.current_paste_target().is_some(),
+                        CommandSize::Large,
+                    )
+                    .on_hover_text(t.text("editing-paste-help"))
+                    .clicked()
+                    {
+                        self.request_paste(ui.ctx());
                     }
                     ui.vertical(|ui| {
                         if self.mock_preview {

@@ -42,7 +42,23 @@ fn long_sql_remains_bounded_with_existing_run_controls_and_literal_text() {
     let mut harness = harness(state);
     harness.run();
     let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
-    let viewport = harness.get_by_role(Role::ScrollBar).rect();
+    // Egui nests the editor through several generic accessibility containers;
+    // its scrollbar is owned by an enclosing scope, not the text-input node.
+    let mut scope = editor.parent();
+    let viewport = loop {
+        let parent = scope.expect("an enclosing SQL scroll scope exists");
+        let vertical: Vec<_> = parent
+            .children_recursive()
+            .filter(|node| node.accesskit_node().role() == Role::ScrollBar)
+            .map(|bar| bar.rect())
+            .filter(|rect| rect.height() > rect.width())
+            .collect();
+        match vertical.as_slice() {
+            [viewport] => break *viewport,
+            [] => scope = parent.parent(),
+            _ => panic!("the nearest SQL scroll scope must have one vertical scrollbar"),
+        }
+    };
     assert!(viewport.height() <= MAX_SQL_EDITOR_HEIGHT);
     let text_clip = harness
         .output()

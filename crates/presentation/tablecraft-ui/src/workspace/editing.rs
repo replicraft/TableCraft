@@ -1,6 +1,7 @@
 //! Offline edit UI retains runtime-issued drafts/reviews, never native values or SQL.
 mod dialog;
 mod hints;
+pub(super) mod paste;
 pub use hints::InputHint;
 
 use super::{Data, DocumentView, State};
@@ -54,6 +55,7 @@ pub(super) enum EditDialog {
         target: EditTarget,
         request_id: u64,
         error: Option<String>,
+        paste_seed: Option<String>,
     },
     Draft {
         draft: Box<EditDraft>,
@@ -154,6 +156,7 @@ impl State {
                 target,
                 request_id,
                 error: None,
+                paste_seed: None,
             });
         }
     }
@@ -162,7 +165,17 @@ impl State {
         let accepts = matches!(&self.edit, Some(EditDialog::Checking { target, request_id: expected, .. })
             if *expected == request_id && target == &draft.target);
         if accepts && self.can_edit_cell(&draft.target) {
-            let input = draft.initial.clone();
+            let seed = match &mut self.edit {
+                Some(EditDialog::Checking { paste_seed, .. }) => paste_seed.take(),
+                _ => None,
+            };
+            let input = seed.map_or_else(
+                || draft.initial.clone(),
+                |text| EditInput {
+                    text,
+                    is_null: false,
+                },
+            );
             self.edit = Some(EditDialog::Draft {
                 draft: Box::new(draft),
                 input,

@@ -449,9 +449,9 @@ fn disabled_mock_commands_offer_no_assistive_actions_and_reject_forced_activatio
     state.set_table_data(table());
     render(&mut state, &context, vec![]);
     let (_, output) = render(&mut state, &context, vec![]);
-    let paste = command_id(&output, "Paste");
+    let paste = command_id(&output, "Paste text");
     let tree = output.platform_output.accesskit_update.as_ref().unwrap();
-    for label in ["Paste", "Create"] {
+    for label in ["Paste text", "Create"] {
         let (_, node) = tree
             .nodes
             .iter()
@@ -631,4 +631,126 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
         }),
         false
     ));
+}
+
+#[test]
+fn home_paste_requests_clipboard_then_emits_literal_review_intent() {
+    let context = egui::Context::default();
+    let mut state = State::default();
+    state.dismiss_backstage();
+    state.database = Some(crate::workspace::Database {
+        title_path: None,
+        document_revision: 4,
+        title: "Contacts".into(),
+        format: "ACE16".into(),
+        tables: vec![],
+        queries: vec![],
+    });
+    state.set_table_data(table());
+    let (actions, output) = click(&mut state, &context, "Paste text");
+    assert!(actions.is_empty());
+    let requested = output.viewport_output.values().any(|viewport| {
+        viewport
+            .commands
+            .iter()
+            .any(|command| matches!(command, egui::ViewportCommand::RequestPaste))
+    });
+    assert!(requested, "Home requests real clipboard text");
+
+    for _ in 0..2 {
+        let (actions, _) = render(&mut state, &context, Vec::new());
+        assert!(actions.is_empty());
+        assert!(
+            state.paste_request.is_some(),
+            "clipboard reply may be delayed"
+        );
+    }
+
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![Event::Paste("NULL\nnext\tfield".into())],
+    );
+    assert!(matches!(
+        actions.as_slice(),
+        [Action::PasteCell { target, text }]
+            if target.column == "ID" && text == "NULL\nnext\tfield"
+    ));
+    assert!(!state.edit_dialog_open(), "host must request a fresh draft");
+}
+
+#[test]
+fn focused_native_cell_accepts_paste_but_edit_dialog_keeps_local_clipboard_input() {
+    let mut state = State::default();
+    state.dismiss_backstage();
+    state.database = Some(crate::workspace::Database {
+        title_path: None,
+        document_revision: 4,
+        title: "Contacts".into(),
+        format: "ACE16".into(),
+        tables: vec![],
+        queries: vec![],
+    });
+    state.set_table_data(table());
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1100.0, 740.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    let target = harness.state().0.current_paste_target().unwrap();
+    let context = harness.ctx.clone();
+    harness
+        .state_mut()
+        .0
+        .table_selection
+        .focus_selected(&context);
+    harness.run();
+    harness.event(Event::Paste("literal native text".into()));
+    harness.run();
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::PasteCell { target: actual, text }]
+            if actual == &target && text == "literal native text"
+    ));
+
+    let context = harness.ctx.clone();
+    harness.state_mut().0.request_paste(&context);
+    let state = &mut harness.state_mut().0;
+    assert!(state.begin_paste_edit(target.clone(), "".into(), 1));
+    state.set_edit_draft(
+        1,
+        crate::EditDraft {
+            id: 2,
+            target,
+            original: Cell::scalar("original"),
+            initial: crate::EditInput::default(),
+            input_hint: crate::InputHint::Text,
+            nullable: true,
+        },
+    );
+    harness.state_mut().1.clear();
+    harness.run();
+    harness.get_by_role(Role::MultilineTextInput).focus();
+    harness.run();
+    harness.event(Event::Paste("stale Home clipboard".into()));
+    harness.run();
+    assert!(harness.state().1.is_empty());
+    let Some(super::super::editing::EditDialog::Draft { input, .. }) = &harness.state().0.edit
+    else {
+        panic!("draft remains open after stale clipboard response");
+    };
+    assert!(input.text.is_empty());
+    assert!(harness.state().0.error.is_some());
+
+    harness.event(Event::Paste("dialog text".into()));
+    harness.run();
+    assert!(harness.state().1.is_empty());
+    let Some(super::super::editing::EditDialog::Draft { input, .. }) = &harness.state().0.edit
+    else {
+        panic!("draft remains open");
+    };
+    assert_eq!(input.text, "dialog text");
 }

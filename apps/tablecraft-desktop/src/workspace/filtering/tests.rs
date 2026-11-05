@@ -2,7 +2,7 @@
 use super::*;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use crate::workspace::test_support::finish_save;
-use crate::workspace::test_support::{finish_reads, opened, request_find};
+use crate::workspace::test_support::{finish_reads, focus_cell, opened, request_find};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -10,25 +10,10 @@ use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_ui::EditTarget;
-use tablecraft_ui::FluentArgs;
 
 fn source() -> Vec<u8> {
     let rows = (1..=205).map(|id| (id, id % 2)).collect::<Vec<_>>();
     mutation_fixture::with_rows_and_sort_order(&rows, [9, 4, 0, 0])
-}
-
-fn focus_cell(harness: &mut Harness<'_, Desktop>, column: &str, row: &str, text: &str) {
-    let mut arguments = FluentArgs::new();
-    arguments.set("column", column);
-    arguments.set("row", row);
-    arguments.set("text", text);
-    let cell = harness
-        .state()
-        .state
-        .localizer
-        .format("datasheet-cell-context", &arguments);
-    harness.get_by_value(&cell).focus();
-    harness.run_steps(1);
 }
 
 fn select_even_rows(harness: &mut Harness<'_, Desktop>) {

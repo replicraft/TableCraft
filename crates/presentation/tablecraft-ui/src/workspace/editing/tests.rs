@@ -425,3 +425,129 @@ fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing
         }
     }
 }
+
+#[test]
+fn literal_paste_seeds_only_matching_draft_without_review_or_null_conversion() {
+    for text in ["", "NULL", "first\tsecond\nnext line"] {
+        let (mut state, target) = state();
+        assert!(state.begin_paste_edit(target.clone(), text.into(), 1));
+        state.set_edit_draft(9, draft(target.clone()));
+        assert!(matches!(state.edit, Some(EditDialog::Checking { .. })));
+
+        state.set_edit_draft(1, draft(target));
+        let Some(EditDialog::Draft {
+            input,
+            review,
+            pending,
+            ..
+        }) = &state.edit
+        else {
+            panic!("matching draft receives literal text");
+        };
+        assert_eq!(input.text, text);
+        assert!(!input.is_null);
+        assert!(review.is_none());
+        assert!(pending.is_none());
+    }
+
+    let (mut state, target) = state();
+    let oversized = "é".repeat(512 * 1024 + 1);
+    assert!(!state.begin_paste_edit(target.clone(), oversized, 1));
+    assert!(!state.edit_dialog_open());
+    assert!(state.error.as_ref().unwrap().contains("1 MiB"));
+
+    state.begin_edit(target.clone(), 2);
+    state.set_edit_draft(2, draft(target));
+    let Some(EditDialog::Draft { input, .. }) = &state.edit else {
+        panic!("ordinary draft remains available");
+    };
+    assert_eq!(input.text, "12");
+}
+
+#[test]
+fn home_clipboard_witness_rejects_late_source_focus_and_dialog_changes() {
+    for change in ["source", "focus", "dialog"] {
+        let (mut state, target) = state();
+        let context = egui::Context::default();
+        state.request_paste(&context);
+        match change {
+            "source" => state.set_table_data(Data {
+                source_revision: Some(7),
+                row_ordinals: None,
+                table: "Replacement".into(),
+                offset: 100,
+                columns: vec!["Amount".into()],
+                rows: vec![vec!["99".into()]],
+                has_more: false,
+            }),
+            "focus" => context.memory_mut(|memory| {
+                memory.request_focus(egui::Id::new("newer_text_editor"));
+            }),
+            "dialog" => state.begin_edit(target.clone(), 2),
+            _ => unreachable!(),
+        }
+        let mut actions = vec![Action::PasteCell {
+            target,
+            text: "late".into(),
+        }];
+        state.finish_paste(&context, &mut actions, None);
+        assert!(actions.is_empty(), "{change} invalidates clipboard target");
+        assert!(
+            state.paste_request.is_some(),
+            "retain unanswered OS request"
+        );
+        let mut output = context.run_ui(
+            egui::RawInput {
+                events: vec![egui::Event::Paste("delayed OS clipboard".into())],
+                ..Default::default()
+            },
+            |ui| {
+                state.receive_requested_paste(ui.ctx(), &mut actions);
+            },
+        );
+        output.textures_delta.clear();
+        assert!(
+            actions.is_empty(),
+            "late clipboard must not target newer focus"
+        );
+        assert!(state.paste_request.is_none());
+        assert!(state.error.is_some());
+    }
+}
+
+#[test]
+fn received_home_paste_rechecks_same_frame_focus_and_rejects_duplicate_payloads() {
+    for duplicate in [false, true] {
+        let (mut state, _) = state();
+        let context = egui::Context::default();
+        state.request_paste(&context);
+        let mut events = vec![egui::Event::Paste("first payload".into())];
+        if duplicate {
+            events.push(egui::Event::Paste("second payload".into()));
+        }
+        let mut actions = Vec::new();
+        let mut output = context.run_ui(
+            egui::RawInput {
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                let receipt = state.receive_requested_paste(ui.ctx(), &mut actions);
+                assert!(!ui.input(|input| {
+                    input
+                        .events
+                        .iter()
+                        .any(|event| matches!(event, egui::Event::Paste(_)))
+                }));
+                ui.memory_mut(|memory| {
+                    memory.request_focus(egui::Id::new("newer_navigation_search"));
+                });
+                state.finish_paste(ui.ctx(), &mut actions, receipt);
+            },
+        );
+        output.textures_delta.clear();
+        assert!(actions.is_empty());
+        assert!(state.error.is_some());
+        assert!(state.paste_request.is_none());
+    }
+}

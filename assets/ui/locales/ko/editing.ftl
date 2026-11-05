@@ -83,3 +83,9 @@ editing-input-binary = 이진 데이터: 바이트당 두 자리 16진수
 editing-input-guid = GUID: 표준 형식 식별자
 editing-input-date = 기존 DATE: ISO 형식 현지 날짜와 시간(시간대 없음)
 editing-input-date-extended = 확장 날짜와 시간: ISO 형식 현지 날짜와 시간(100 ns 정밀도)
+
+editing-paste-text = 텍스트 붙여넣기
+editing-paste-help = 선택한 네이티브 셀 하나에 텍스트를 그대로 붙여넣고 검토합니다. 필드의 로캘 독립 입력 형식을 사용하세요. 서식이 적용된 값과 Access의 형식 지정 클립보드 데이터는 해석하지 않습니다. 여러 줄 텍스트도 한 셀에 유지됩니다.
+editing-paste-too-large = 클립보드 텍스트가 1 MiB 제한을 초과합니다. 아무것도 붙여넣지 않았습니다.
+editing-paste-stale = 클립보드 요청이 더 이상 선택한 셀과 일치하지 않습니다. 텍스트를 버렸습니다.
+editing-paste-multiple = 클립보드에서 여러 텍스트가 반환되었습니다. 아무것도 붙여넣지 않았습니다.
