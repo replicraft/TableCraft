@@ -16,19 +16,19 @@
       "variants": {
         "light": {
           "file": "application-light.svg",
-          "sha256": "d25512810e8aa29cd40ceb39b0268d5ed81540a646af1bb406d8800f0389bf6d"
+          "sha256": "092ab484c308aa78d0af67ce73f9c6ec2fac41f80830a60ae11f9d57e6a1e903"
         },
         "dark": {
           "file": "application-dark.svg",
-          "sha256": "377f7def238bc9cd70dfcb231d8605123a1d23f60d55b70528ff0d2cfda82c3f"
+          "sha256": "32f3937fd09669a3b5c2a31e9173568dbad6982e53d1337f30d9c745790324d7"
         },
         "disabled-light": {
           "file": "application-disabled-light.svg",
-          "sha256": "c844b6517883b946b1330b0eb1e9b98e228dc21c1615039f403cacd1382f145c"
+          "sha256": "ee0b77a01ce959c13e53f83c2b7360291e561955e2457611031bee45b8474867"
         },
         "disabled-dark": {
           "file": "application-disabled-dark.svg",
-          "sha256": "44e39526c319cf09e7277f11fe1a30715f01cf6485c49a173dbe08faf89afb2e"
+          "sha256": "81bd20fb7590f139bee93b28359fca1f56a73e93caa4e210f1bb0d63d68c4826"
         }
       }
     },
@@ -58,19 +58,19 @@
       "variants": {
         "light": {
           "file": "settings-light.svg",
-          "sha256": "f87eb31240af6cc5753e2347644ccb250a4ee0483a3562db3dddb097b25dbf6e"
+          "sha256": "d473b4a9137bc0a46d19ded8f8e02e02e40bf15b873606ec9c8874db8377421f"
         },
         "dark": {
           "file": "settings-dark.svg",
-          "sha256": "b9ea02ce972fdb9de91388fcdb199921e075d47010c29ef7ade495f456cbd4c7"
+          "sha256": "c253d48a23897aa363038158a8f378837fd64a3bf0d68955dad89ddbf52bca38"
         },
         "disabled-light": {
           "file": "settings-disabled-light.svg",
-          "sha256": "a31c40396ae0c4979ba610e8e7f1994475265caa6d8c5cd0a4d156f5ad0a9eef"
+          "sha256": "713e6e4ee6083d64f97279770037d6373f006967cb4bc0270f491a83bac8d903"
         },
         "disabled-dark": {
           "file": "settings-disabled-dark.svg",
-          "sha256": "fa43e565a6796b9e8074cb7516b555ac8f5052fe86a6b07a32165a0181859d36"
+          "sha256": "7b4344605b5524c4fd2d5b0c2f44b96b34599c920995fd6c09895676dae4ea93"
         }
       }
     },

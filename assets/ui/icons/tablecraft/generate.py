@@ -1,6 +1,7 @@
 from pathlib import Path
 import hashlib
 import json
+import math
 
 root = Path(__file__).resolve().parent
 root.mkdir(parents=True, exist_ok=True)
@@ -12,10 +13,18 @@ check = '<path d="m16 23 4 4 9-11" fill="none" stroke="{green}" stroke-width="3"
 plus = '<path d="M24 17v12M18 23h12" stroke="{green}" stroke-width="3"/>'
 lightning = '<path d="m19 2-10 16h7l-3 12 12-18h-8z" fill="{gold}"/>'
 
+# Eight equally spaced teeth keep the settings silhouette symmetric at 16 px.
+gear_points = []
+for tooth in range(8):
+    for offset, radius in [(-0.5, 10), (-0.3, 10), (-0.3, 13), (0.3, 13), (0.3, 10), (0.5, 10)]:
+        angle = (tooth + offset) * math.tau / 8
+        gear_points.append(f'{16 + math.cos(angle) * radius:.3f},{16 + math.sin(angle) * radius:.3f}')
+gear = '<polygon points="' + ' '.join(gear_points) + '" fill="{pale}"/><circle cx="16" cy="16" r="5" fill="{paper}"/>'
+
 icons = {
-    'application': '<rect x="3" y="3" width="26" height="26" rx="6" fill="{red}" stroke="none"/><path d="M8 10h16M16 10v14M10 17h12" fill="none" stroke="{paper}" stroke-width="3"/><path d="M23 23h2" stroke="{gold}" stroke-width="3"/>',
+    'application': '<path d="M5 8v16c0 3 5 5 11 5s11-2 11-5V8" fill="{red}" stroke="{red}"/><ellipse cx="16" cy="8" rx="11" ry="5" fill="{red}" stroke="{paper}" stroke-width="1.5"/><path d="M5 16c0 3 5 5 11 5s11-2 11-5M5 24c0 3 5 5 11 5s11-2 11-5" fill="none" stroke="{paper}" stroke-width="1.5"/>',
     'folder_open': '<path d="M3 9V6h10l3 3h12v17H3z" fill="{gold}"/><path d="m3 15 5-4h23l-5 16H3z" fill="{palegold}"/>',
-    'settings': '<path d="m12 3 1 4h6l1-4 5 3-2 4 3 5 4 1v6l-4 1-3 4-5-2-5 2-3-4-5-1v-6l4-2 2-4-2-4z" fill="{pale}"/><circle cx="17" cy="17" r="5" fill="{paper}"/>',
+    'settings': gear,
     'info': '<circle cx="16" cy="16" r="13" fill="{blue}" stroke="none"/><circle cx="16" cy="9" r="1.5" fill="{paper}" stroke="none"/><path d="M13 14h3v10h4" fill="none" stroke="{paper}"/>',
     'arrow_left': '<path d="m14 5-11 11 11 11v-7h15v-8H14z" fill="{blue}"/>',
     'undo': '<path d="M13 4 3 12l10 7v-6h5c7 0 10 6 7 13 8-7 4-19-7-19h-5z" fill="{blue}"/>',
