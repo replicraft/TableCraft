@@ -26,6 +26,7 @@ pub use discovery::{execute_collections_with_schema_discovery, execute_with_sche
 mod execution;
 mod external_sources;
 mod heading_names;
+pub mod keys;
 mod named_identity;
 mod output_types;
 mod plan;

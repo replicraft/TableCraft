@@ -72,12 +72,26 @@ Prepared and completed output descriptors retain their selected profile contract
 
 ## Implementation and verification
 
-`execution/keys/numeric.rs` owns the narrow mixed-float view helper. The shared
+`keys/numeric.rs` owns the narrow mixed-float view helper. The shared
 runtime relational comparison boundary uses those views with the existing strict
 comparer. Retained key comparisons and scalar crosstab key helpers both use this
 boundary; ordinary predicates keep their original service. No payload allocation,
 new dependency or source scan is introduced. Existing cancellation, work checks,
 provider routing, eager failures and buffered result publication remain intact.
+
+The public `tablecraft_query::keys` boundary also supplies stored-scalar key
+validation and comparison for native view ordering. It shares the same exact
+mixed fixed/binary and Single/Double views used by query execution; it does not
+parse displayed values or use Variant predicate coercion. NULL sorts first in
+ascending order. Nonfinite values, Binary and GUID ordering refuse in this
+stored-key profile, including singleton validation. Text comparisons need an
+explicit qualified provider. Callers own cumulative traversal/comparison work,
+cancellation and provider quotas; this pure boundary performs no source I/O.
+
+The focused key gate passed 28 tests after moving the numeric owner, including
+the unchanged independent IEEE/fixed-point properties and two public-boundary
+cases. Existing expression-only Error/String keys retain their execution-local
+policy and are not admitted by the new stored-value API.
 
 The focused unit tests reconstruct IEEE binary64 fields from binary32 sign,
 exponent and fraction fields without a floating-point cast. Explicit independent
