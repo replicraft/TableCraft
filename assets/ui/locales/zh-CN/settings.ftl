@@ -22,3 +22,5 @@ settings-mock-save-cancelled = 模拟取消，未更改任何文件。
 settings-mock-resolved = 仅为模拟处理，不存在日志或数据库文件。
 settings-mock-cancelled = 模拟操作已取消。
 settings-mock-retained = 合成的保留结果示例，不存在日志或数据库文件。
+
+settings-mock-read-error = 模拟读取错误示例。未打开或更改任何数据库。

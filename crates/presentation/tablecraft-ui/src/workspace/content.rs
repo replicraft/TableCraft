@@ -86,16 +86,16 @@ impl State {
                 if let Some(data) = data {
                     if data.rows.is_empty() {
                         ui.weak(tr(ui, "datasheet-no-rows"));
-                    } else {
-                        let selection = if self.view == DocumentView::Table {
-                            &mut self.table_selection
-                        } else if self.saved_query.active {
-                            &mut self.saved_query.selection
-                        } else {
-                            &mut self.query_selection
-                        };
-                        actions.extend(datasheet::show(ui, data, selection));
                     }
+
+                    let selection = if self.view == DocumentView::Table {
+                        &mut self.table_selection
+                    } else if self.saved_query.active {
+                        &mut self.saved_query.selection
+                    } else {
+                        &mut self.query_selection
+                    };
+                    actions.extend(datasheet::show(ui, data, selection));
                 } else if self.view == DocumentView::Query {
                     ui.weak(tr(
                         ui,

@@ -12,6 +12,9 @@ use std::str::FromStr;
 pub enum Scene {
     #[default]
     Datasheet,
+    Empty,
+    Loading,
+    Error,
     Design,
     Query,
     SavedQuery,
@@ -23,11 +26,15 @@ pub enum Scene {
     Recovery,
     Backstage,
     Options,
+    About,
 }
 
 impl Scene {
-    pub const ALL: [Self; 12] = [
+    pub const ALL: [Self; 16] = [
         Self::Datasheet,
+        Self::Empty,
+        Self::Loading,
+        Self::Error,
         Self::Design,
         Self::Query,
         Self::SavedQuery,
@@ -39,11 +46,15 @@ impl Scene {
         Self::Recovery,
         Self::Backstage,
         Self::Options,
+        Self::About,
     ];
 
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Datasheet => "datasheet",
+            Self::Empty => "empty",
+            Self::Loading => "loading",
+            Self::Error => "error",
             Self::Design => "design",
             Self::Query => "query",
             Self::SavedQuery => "saved-query",
@@ -55,13 +66,14 @@ impl Scene {
             Self::Recovery => "recovery",
             Self::Backstage => "backstage",
             Self::Options => "options",
+            Self::About => "about",
         }
     }
 }
 
 #[derive(Clone, Copy, Debug, thiserror::Error)]
 #[error(
-    "unknown mock view; use datasheet, design, query, saved-query, attachments, multivalue, history, edit, review, recovery, backstage or options"
+    "unknown mock view; use datasheet, empty, loading, error, design, query, saved-query, attachments, multivalue, history, edit, review, recovery, backstage, options or about"
 )]
 pub struct UnknownScene;
 
@@ -116,6 +128,16 @@ impl Preview {
 
         match scene {
             Scene::Datasheet => {}
+            Scene::Empty => {
+                let mut data = fixtures::page("Customers", 0);
+                data.rows.clear();
+                data.has_more = false;
+                self.state.set_table_data(data);
+            }
+            Scene::Loading => self.state.busy = true,
+            Scene::Error => {
+                self.state.error = Some(self.state.localizer.text("settings-mock-read-error"));
+            }
             Scene::Design => {
                 self.state.prepare_schema_view();
                 self.state.set_schema(fixtures::schema("Customers"));
@@ -156,6 +178,7 @@ impl Preview {
             }
             Scene::Backstage => self.state.show_open(),
             Scene::Options => self.state.backstage = super::backstage::Backstage::Options,
+            Scene::About => self.state.backstage = super::backstage::Backstage::About,
         }
     }
 

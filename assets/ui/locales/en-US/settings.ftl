@@ -22,3 +22,5 @@ settings-mock-save-cancelled = Mock cancellation. No file was changed.
 settings-mock-resolved = Mock resolution only. No journal or database file exists.
 settings-mock-cancelled = Mock operation cancelled.
 settings-mock-retained = Synthetic retained-outcome example. No journal or database file exists.
+
+settings-mock-read-error = Synthetic read error example. No database was opened or changed.

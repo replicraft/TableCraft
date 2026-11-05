@@ -7,6 +7,8 @@ use tablecraft_ui::{
     preview::{Preview, Scene},
 };
 
+const ANIMATED_SCENE_STEPS: usize = 3;
+
 fn main() -> Result<(), Box<dyn Error>> {
     let directory = env::var_os("TABLECRAFT_PREVIEW_DIR")
         .map(PathBuf::from)
@@ -40,7 +42,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for scene in scenes {
         harness.state_mut().set_scene(scene);
-        harness.run();
+        if scene == Scene::Loading {
+            // A busy spinner deliberately requests another repaint forever.
+            // Advance a fixed number of frames instead of waiting for idle.
+            harness.run_steps(ANIMATED_SCENE_STEPS);
+        } else {
+            harness.run();
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
             "{}-{}-{}.png",

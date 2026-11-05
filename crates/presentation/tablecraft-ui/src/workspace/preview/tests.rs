@@ -4,6 +4,7 @@ use crate::{Action, EditSaveOutcome};
 #[test]
 fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
     let context = egui::Context::default();
+    context.enable_accesskit();
     crate::configure(&context);
     let mut preview = Preview::new(Scene::Datasheet);
     for locale in crate::Locale::ALL {
@@ -13,6 +14,18 @@ fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
             for scene in Scene::ALL {
                 preview.set_scene(scene);
                 assert!(preview.state().mock_preview);
+                let empty_identity = if scene == Scene::Empty {
+                    let data = preview.state.data.as_ref().unwrap();
+                    Some((
+                        data.source_revision,
+                        data.table.clone(),
+                        data.offset,
+                        data.columns.clone(),
+                    ))
+                } else {
+                    None
+                };
+
                 for _ in 0..2 {
                     let mut output = context.run_ui(
                         egui::RawInput {
@@ -22,14 +35,65 @@ fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
                             )),
                             ..Default::default()
                         },
-                        |ui| preview.show(ui),
+                        |ui| {
+                            if scene == Scene::Empty {
+                                assert!(preview.state.show(ui).is_empty());
+                            } else {
+                                preview.show(ui);
+                            }
+                        },
                     );
+                    output.textures_delta.clear();
+                    if let Some(identity) = &empty_identity {
+                        let painted = output
+                            .shapes
+                            .iter()
+                            .filter_map(|shape| match &shape.shape {
+                                egui::epaint::Shape::Text(text) => {
+                                    Some(text.galley.job.text.as_str())
+                                }
+                                _ => None,
+                            })
+                            .collect::<Vec<_>>();
+                        for label in ["Customer ID", "Customer", "Company"] {
+                            assert!(
+                                painted.contains(&label),
+                                "missing declared empty-table header: {label}"
+                            );
+                        }
+                        let notice = preview.state.localizer.text("datasheet-no-rows");
+                        assert!(painted.contains(&notice.as_str()));
+
+                        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+                        assert!(
+                            !tree
+                                .nodes
+                                .iter()
+                                .any(|(_, node)| node.role() == egui::accesskit::Role::RowHeader)
+                        );
+                        assert!(tree.nodes.iter().any(|(_, node)| {
+                            node.description()
+                                .is_some_and(|description| description.contains("CustomerID"))
+                        }));
+
+                        let data = preview.state.data.as_ref().unwrap();
+                        assert_eq!(
+                            &(
+                                data.source_revision,
+                                data.table.clone(),
+                                data.offset,
+                                data.columns.clone()
+                            ),
+                            identity
+                        );
+                        assert!(data.rows.is_empty());
+                        assert!(!preview.state.can_copy_selection());
+                    }
                     assert!(
                         !output.shapes.is_empty(),
                         "{locale}/{theme:?}/{} did not draw",
                         scene.as_str()
                     );
-                    output.textures_delta.clear();
                 }
                 assert_eq!(
                     preview.state().localizer.diagnostics(),
@@ -71,5 +135,45 @@ fn preview_open_never_reads_a_user_path_and_mock_recovery_is_only_presentation()
             ..
         })
     ));
+    assert!(preview.state.mock_preview);
+}
+
+#[test]
+fn cancelling_the_busy_mock_keeps_the_buffered_snapshot_and_never_opens_a_file() {
+    let mut preview = Preview::new(Scene::Loading);
+    preview.state.path = "/a/user/path/that/does/not/exist.accdb".into();
+    let original_rows = preview
+        .state
+        .data
+        .as_ref()
+        .unwrap()
+        .rows
+        .iter()
+        .map(|row| row.iter().map(|cell| cell.text.clone()).collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    assert!(preview.state.busy);
+
+    preview.dispatch(Action::Cancel);
+
+    assert!(!preview.state.busy);
+    assert_eq!(
+        preview.state.error.as_deref(),
+        Some("Mock operation cancelled."),
+    );
+    let retained_rows = preview
+        .state
+        .data
+        .as_ref()
+        .unwrap()
+        .rows
+        .iter()
+        .map(|row| row.iter().map(|cell| cell.text.clone()).collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    assert_eq!(retained_rows, original_rows);
+    assert_eq!(
+        preview.state.database.as_ref().unwrap().document_revision,
+        1
+    );
+    assert!(preview.state.query_data.is_none());
     assert!(preview.state.mock_preview);
 }

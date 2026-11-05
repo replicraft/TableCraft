@@ -22,3 +22,5 @@ settings-mock-save-cancelled = 모의 취소이며 파일은 변경되지 않았
 settings-mock-resolved = 모의 처리일 뿐이며 저널이나 데이터베이스 파일은 존재하지 않습니다.
 settings-mock-cancelled = 모의 작업이 취소되었습니다.
 settings-mock-retained = 결과가 유지된 합성 예제입니다. 저널이나 데이터베이스 파일은 존재하지 않습니다.
+
+settings-mock-read-error = 가상 읽기 오류 예시입니다. 데이터베이스를 열거나 변경하지 않았습니다.

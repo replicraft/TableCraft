@@ -22,3 +22,5 @@ settings-mock-save-cancelled = Cancelación simulada. No se modificó ningún ar
 settings-mock-resolved = Solo es una resolución simulada. No existe ningún archivo de diario ni base de datos.
 settings-mock-cancelled = Operación simulada cancelada.
 settings-mock-retained = Ejemplo sintético de un resultado retenido. No existe ningún archivo de diario ni base de datos.
+
+settings-mock-read-error = Ejemplo de error de lectura simulado. No se ha abierto ni modificado ninguna base de datos.
