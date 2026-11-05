@@ -318,3 +318,30 @@ failures, Russian dark saved failure at 1.25× and Japanese light query failure 
 Inline failure placement remains provisional because no retained Access capture
 establishes this surface. No native window, Access or screen-reader qualification
 follows from these offscreen observations.
+
+## Replacement reports and delayed pane focus — 5 November 2026
+
+A replacement literal service report now starts at its beginning, even when its
+length and geometry match the previous report. An unchanged report retains its
+scroll position through theme and language changes. The existing scroll/copy
+scenario exercises both transitions and copies the complete replacement text.
+The replacement assertion failed against the previous scroll identity before the
+fix; reports remain scoped to their owning source.
+
+Pane entry also yields to a newer focus choice after the queued request has been
+consumed but before its virtualized cell, record or Design field appears. The
+comparison-only witness never becomes a restored focus target. Existing logical
+selection and cell/record mode remain unchanged.
+
+The coordinated batch passes 108 UI tests and 23 desktop tests, including all
+688 scene/locale/theme drawing combinations. Formatting, strict selected-package
+Clippy and the native desktop build pass. These are presentation checks, with no
+new database functionality or native Access compatibility claim.
+
+A subsequent focused Options round-trip check passes through the actual shared
+File, Options, Dark, Japanese and Back controls. It retains typed saved-query
+inputs, their exact retry target, both original complete result allocations and
+an independent ad-hoc SQL draft. Returning to the workspace exposes the enabled
+translated saved-query Run control without localization diagnostics. This is a
+headless interaction check; it does not close the native locale-selection limit
+recorded in the [desktop observation](DESKTOP.md#native-mock-observation--5-november-2026).

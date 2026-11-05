@@ -754,3 +754,29 @@ aggregate lint invocation's Cargo feature-closure failure and subsequent valid
 explicit-testkit run are distinguished in the
 [development guide](../development/DEVELOPMENT.md). No full engine-suite rerun or
 native Access comparison is claimed.
+
+
+## Native mock observation — 5 November 2026
+
+The current debug desktop build was launched on macOS in its resource-free mock
+mode through an ignored local application bundle. The requested content size was
+1280 by 820 logical points; the observed capture measured 2560 by 1700 including
+native title chrome, consistent with 2x capture scale. This is not independent
+measurement of the operating system display configuration.
+
+The Home datasheet and open View menu were visibly inspected. Choosing Table
+Design displayed the read-only field grid and General property sheet. A native
+coordinate click on City changed its description, caption and field size to the
+corresponding synthetic metadata. File opened Backstage, Options displayed its
+appearance controls, and a coordinate click on Dark visibly changed the theme.
+The expanded language menu displayed all eight supported locale choices with CJK
+glyphs. These observations used the current binary and did not open or save a
+real database.
+
+Automation was intermittent: some accessibility actions and keyboard inputs
+produced no observable change, and selecting Japanese was not verified. The
+initial loss of a window handle was followed by reattachment to the live process;
+it does not establish an application crash. This session therefore does not
+qualify native keyboard traversal, screen-reader actions, the complete locale
+round-trip or Windows behavior. Offscreen interaction tests remain separate
+coverage, and a complete native workflow review is still outstanding.

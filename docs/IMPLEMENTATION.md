@@ -11,7 +11,9 @@ literal diagnoses while keeping existing actions reachable. Dated verification
 records live in the preview guide. These slices add no database capability or
 runtime service. Shared F6/Shift+F6 navigation now moves among existing panes,
 retaining virtualized selections and source-bound focus requests; modal and popup
-ownership remains intact. Long service reports now scroll and copy through a
+ownership remains intact, including newer focus choices made while a virtualized
+entry is materializing. Replacement reports start at the beginning while unchanged
+reports retain their viewport across appearance changes. Long service reports now scroll and copy through a
 shared diagnostic presentation, keeping existing query controls reachable. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
