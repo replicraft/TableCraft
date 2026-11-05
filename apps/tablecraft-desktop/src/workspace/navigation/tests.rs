@@ -126,3 +126,95 @@ fn automatic_first_table_and_title_belong_to_the_successfully_opened_file() {
     assert_eq!(data.rows.len(), 3);
     assert_eq!(data.source_revision, Some(database.document_revision));
 }
+
+#[test]
+fn native_regional_display_survives_sorting_and_policy_changes_without_parsing_text() {
+    use tablecraft_testkit::fixtures::access::{field_presentation, wide_properties};
+    use tablecraft_ui::formatting::{CurrencyChoice, DateFormat, TimeFormat};
+
+    for (kind, values, initial, raw) in [
+        (
+            5,
+            [12_345_678, (-1_i64) as u64],
+            ["€ 1.234,57", "-€ 0,00"],
+            ["1234.5678", "-0.0001"],
+        ),
+        (
+            8,
+            [46124.0_f64.to_bits(), (-0.5_f64).to_bits()],
+            ["12.04.2026", "12:00:00"],
+            ["DATE(0x40e6858000000000)", "DATE(0xbfe0000000000000)"],
+        ),
+    ] {
+        let blocks = if kind == 5 {
+            vec![
+                wide_properties::names(&["Format"]),
+                field_presentation::score_group(
+                    1,
+                    &[field_presentation::property(
+                        0,
+                        1,
+                        10,
+                        &wide_properties::text("€ #,##0.00;-€ #,##0.00"),
+                    )],
+                ),
+            ]
+        } else {
+            // No Format declaration, matching Access's General Date default.
+            vec![]
+        };
+        let original = field_presentation::score64(&blocks, kind, &values);
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("regional.mdb");
+        std::fs::write(&path, &original).unwrap();
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), Some(path.clone()));
+        desktop.state.formatting.system_locale = Some("de-DE".into());
+        finish(&mut desktop, &context);
+
+        let data = desktop.state.data.as_ref().unwrap();
+        for (row, expected) in data.rows.iter().zip(initial) {
+            assert_eq!(row[1].text, expected);
+        }
+        let revision = desktop.state.database.as_ref().unwrap().document_revision;
+        assert!(desktop.state.can_sort_table(revision, "Items", "Id"));
+        desktop.submit(Command::SortTable {
+            document_revision: revision,
+            table: "Items".into(),
+            column: "Id".into(),
+            descending: true,
+        });
+        finish(&mut desktop, &context);
+        let sorted = desktop.state.query_data.as_ref().unwrap();
+        assert_eq!(sorted.source_revision, None);
+        assert!(!sorted.has_more);
+        assert_eq!(sorted.rows.len(), 2);
+        assert_eq!(sorted.rows[0][0].text, "2");
+        assert_eq!(sorted.rows[0][1].text, initial[1]);
+        assert_eq!(sorted.rows[1][1].text, initial[0]);
+
+        desktop.state.formatting.currency = CurrencyChoice::Raw;
+        desktop.state.formatting.date = DateFormat::Raw;
+        desktop.state.formatting.time = TimeFormat::Raw;
+        let mut output = context.run_ui(egui::RawInput::default(), |ui| {
+            desktop.state.show(ui);
+        });
+        output.textures_delta.clear();
+        let sorted = desktop.state.query_data.as_ref().unwrap();
+        assert_eq!(sorted.rows[0][1].text, raw[1]);
+        assert_eq!(sorted.rows[1][1].text, raw[0]);
+
+        desktop.state.formatting.currency = CurrencyChoice::SystemLocale;
+        desktop.state.formatting.date = DateFormat::SystemLocale;
+        desktop.state.formatting.time = TimeFormat::SystemLocale;
+        let mut output = context.run_ui(egui::RawInput::default(), |ui| {
+            desktop.state.show(ui);
+        });
+        output.textures_delta.clear();
+        assert_eq!(
+            desktop.state.query_data.as_ref().unwrap().rows[0][1].text,
+            initial[1]
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), original);
+    }
+}
