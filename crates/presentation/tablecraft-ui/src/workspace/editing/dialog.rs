@@ -6,6 +6,10 @@ use crate::{
     workspace::{Action, State},
 };
 
+// Reserve the fixed title and action rows before scrolling variable host content.
+const MODAL_VERTICAL_RESERVE: f32 = 180.0;
+const MIN_BODY_HEIGHT: f32 = 120.0;
+
 impl State {
     pub(in crate::workspace) fn edit_dialog(
         &mut self,
@@ -18,20 +22,130 @@ impl State {
 
         let mut close = false;
         let response = egui::Modal::new(egui::Id::new("offline_edit")).show(ctx, |ui| {
+            ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
             ui.set_width((ctx.content_rect().width() - 80.0).clamp(320.0, 640.0));
             ui.heading(tr(ui, "editing-title"));
             ui.label(tr(ui, "editing-exclusive-help"));
             ui.separator();
 
-            match dialog {
-                EditDialog::Checking { target, error, .. } => {
-                    target_label(ui, target);
-                    if let Some(error) = error {
-                        ui.label(error.as_str());
-                    } else {
-                        ui.spinner();
-                        ui.label(tr(ui, "editing-checking"));
+            egui::ScrollArea::vertical()
+                .id_salt("edit_body")
+                .auto_shrink([false, true])
+                .max_height(
+                    (ctx.content_rect().height() - MODAL_VERTICAL_RESERVE).max(MIN_BODY_HEIGHT),
+                )
+                .show(ui, |ui| match dialog {
+                    EditDialog::Checking { target, error, .. } => {
+                        target_label(ui, target);
+                        if let Some(error) = error {
+                            ui.label(error.as_str());
+                        } else {
+                            ui.spinner();
+                            ui.label(tr(ui, "editing-checking"));
+                        }
                     }
+                    EditDialog::Draft {
+                        draft,
+                        input,
+                        pending,
+                        review,
+                        reviewed_input,
+                        error,
+                        ..
+                    } => {
+                        target_label(ui, &draft.target);
+                        ui.label(tr(ui, "editing-original"));
+                        stored_cell(ui, &draft.original);
+
+                        ui.label(&draft.input_kind);
+                        let label = ui.label(tr(ui, "editing-replacement"));
+                        let text = ui
+                            .add_enabled(
+                                !input.is_null,
+                                egui::TextEdit::multiline(&mut input.text).desired_rows(3),
+                            )
+                            .labelled_by(label.id);
+                        crate::theme::input_border(ui, &text);
+                        let null = ui.add_enabled(
+                            draft.nullable,
+                            egui::Checkbox::new(&mut input.is_null, tr(ui, "editing-use-null")),
+                        );
+
+                        if text.changed() || null.changed() {
+                            *pending = None;
+                            *review = None;
+                            *reviewed_input = None;
+                            *error = None;
+                        }
+
+                        if let Some(error) = error {
+                            ui.label(error.as_str());
+                        }
+                        if pending.is_some() {
+                            ui.spinner();
+                            ui.label(tr(ui, "editing-validating"));
+                        }
+
+                        if let Some(review) = review {
+                            ui.separator();
+                            ui.label(tr(ui, "editing-reviewed"));
+                            ui.label(tr(ui, "editing-before"));
+                            stored_cell(ui, &review.before);
+                            ui.label(tr(ui, "editing-after"));
+                            stored_cell(ui, &review.after);
+                            ui.label(message(
+                                ui,
+                                "editing-changed-rows",
+                                &[("count", review.changed_rows.to_string())],
+                            ));
+                        }
+                    }
+                    EditDialog::Saving {
+                        cancel_requested,
+                        resolving,
+                        ..
+                    } => {
+                        ui.spinner();
+                        ui.label(tr(
+                            ui,
+                            if *resolving {
+                                "editing-resolving"
+                            } else {
+                                "editing-applying"
+                            },
+                        ));
+
+                        if *cancel_requested {
+                            ui.label(tr(ui, "editing-cancellation-requested"));
+                        }
+                    }
+                    EditDialog::Finished { outcome, .. } => match outcome {
+                        EditSaveOutcome::Retained {
+                            message,
+                            can_recover,
+                            can_release,
+                        } => {
+                            ui.label(message.as_str());
+                            ui.label(tr(ui, "editing-recovery-owned"));
+
+                            if !*can_recover && !*can_release {
+                                ui.label(tr(ui, "editing-diagnosis-required"));
+                            }
+                        }
+                        EditSaveOutcome::Saved(message) => {
+                            terminal_outcome(ui, "editing-outcome-saved", message);
+                        }
+                        EditSaveOutcome::Cancelled(message) => {
+                            terminal_outcome(ui, "editing-outcome-cancelled", message);
+                        }
+                        EditSaveOutcome::Failed(message) => {
+                            terminal_outcome(ui, "editing-outcome-failed", message);
+                        }
+                    },
+                });
+
+            ui.horizontal_wrapped(|ui| match dialog {
+                EditDialog::Checking { .. } => {
                     close = ui.button(tr(ui, "shell-cancel")).clicked();
                 }
                 EditDialog::Draft {
@@ -39,130 +153,57 @@ impl State {
                     input,
                     pending,
                     review,
-                    reviewed_input,
-                    error,
                     ..
                 } => {
-                    target_label(ui, &draft.target);
-                    ui.label(tr(ui, "editing-original"));
-                    stored_cell(ui, &draft.original);
-
-                    ui.label(&draft.input_kind);
-                    let label = ui.label(tr(ui, "editing-replacement"));
-                    let text = ui
+                    if let Some(review) = review
+                        && ui.button(tr(ui, "editing-apply")).clicked()
+                    {
+                        actions.push(Action::ApplyEdit {
+                            review_id: review.id,
+                        });
+                    }
+                    if ui
                         .add_enabled(
-                            !input.is_null,
-                            egui::TextEdit::multiline(&mut input.text).desired_rows(3),
+                            pending.is_none(),
+                            egui::Button::new(tr(ui, "editing-review")),
                         )
-                        .labelled_by(label.id);
-                    crate::theme::input_border(ui, &text);
-                    let null = ui.add_enabled(
-                        draft.nullable,
-                        egui::Checkbox::new(&mut input.is_null, tr(ui, "editing-use-null")),
-                    );
-
-                    if text.changed() || null.changed() {
-                        *pending = None;
-                        *review = None;
-                        *reviewed_input = None;
-                        *error = None;
+                        .clicked()
+                    {
+                        actions.push(Action::ReviewEdit {
+                            draft_id: draft.id,
+                            input: input.clone(),
+                        });
                     }
-
-                    if let Some(error) = error {
-                        ui.label(error.as_str());
-                    }
-                    if pending.is_some() {
-                        ui.spinner();
-                        ui.label(tr(ui, "editing-validating"));
-                    }
-
-                    if let Some(review) = review {
-                        ui.separator();
-                        ui.label(tr(ui, "editing-reviewed"));
-                        ui.label(tr(ui, "editing-before"));
-                        stored_cell(ui, &review.before);
-                        ui.label(tr(ui, "editing-after"));
-                        stored_cell(ui, &review.after);
-                        ui.label(message(
-                            ui,
-                            "editing-changed-rows",
-                            &[("count", review.changed_rows.to_string())],
-                        ));
-                        if ui.button(tr(ui, "editing-apply")).clicked() {
-                            actions.push(Action::ApplyEdit {
-                                review_id: review.id,
-                            });
-                        }
-                    }
-
-                    ui.horizontal(|ui| {
-                        if ui
-                            .add_enabled(
-                                pending.is_none(),
-                                egui::Button::new(tr(ui, "editing-review")),
-                            )
-                            .clicked()
-                        {
-                            actions.push(Action::ReviewEdit {
-                                draft_id: draft.id,
-                                input: input.clone(),
-                            });
-                        }
-                        close = ui.button(tr(ui, "shell-cancel")).clicked();
-                    });
+                    close = ui.button(tr(ui, "shell-cancel")).clicked();
                 }
                 EditDialog::Saving {
                     save_id,
                     cancel_requested,
-                    resolving,
+                    ..
                 } => {
-                    ui.spinner();
-                    ui.label(tr(
-                        ui,
-                        if *resolving {
-                            "editing-resolving"
-                        } else {
-                            "editing-applying"
-                        },
-                    ));
-
-                    if *cancel_requested {
-                        ui.label(tr(ui, "editing-cancellation-requested"));
-                    } else if ui.button(tr(ui, "editing-request-cancellation")).clicked() {
+                    if !*cancel_requested
+                        && ui.button(tr(ui, "editing-request-cancellation")).clicked()
+                    {
                         *cancel_requested = true;
                         actions.push(Action::CancelEditSave { save_id: *save_id });
                     }
                 }
                 EditDialog::Finished { save_id, outcome } => match outcome {
                     EditSaveOutcome::Retained {
-                        message,
                         can_recover,
                         can_release,
+                        ..
                     } => {
-                        ui.label(message.as_str());
-                        ui.label(tr(ui, "editing-recovery-owned"));
-
                         if *can_recover && ui.button(tr(ui, "editing-recover")).clicked() {
                             actions.push(Action::RecoverEditSave { save_id: *save_id });
                         }
                         if *can_release && ui.button(tr(ui, "editing-release")).clicked() {
                             actions.push(Action::ReleaseEditSave { save_id: *save_id });
                         }
-                        if !*can_recover && !*can_release {
-                            ui.label(tr(ui, "editing-diagnosis-required"));
-                        }
                     }
-                    EditSaveOutcome::Saved(message) => {
-                        close = terminal_outcome(ui, "editing-outcome-saved", message);
-                    }
-                    EditSaveOutcome::Cancelled(message) => {
-                        close = terminal_outcome(ui, "editing-outcome-cancelled", message);
-                    }
-                    EditSaveOutcome::Failed(message) => {
-                        close = terminal_outcome(ui, "editing-outcome-failed", message);
-                    }
+                    _ => close = ui.button(tr(ui, "backstage-close")).clicked(),
                 },
-            }
+            });
         });
 
         if response.should_close() {
@@ -224,8 +265,7 @@ fn stored_cell(ui: &mut egui::Ui, value: &Cell) {
     );
 }
 
-fn terminal_outcome(ui: &mut egui::Ui, heading: &str, message: &str) -> bool {
+fn terminal_outcome(ui: &mut egui::Ui, heading: &str, message: &str) {
     ui.heading(tr(ui, heading));
     ui.label(message);
-    ui.button(tr(ui, "backstage-close")).clicked()
 }

@@ -4,6 +4,9 @@ use crate::localization::{for_context, message, tr};
 use crate::{CellKind, datasheet};
 
 const EMPTY_CONTENTS_HEIGHT: f32 = 48.0;
+const MODAL_VERTICAL_RESERVE: f32 = 100.0;
+const MIN_BODY_HEIGHT: f32 = 120.0;
+const MAX_CHILD_HEIGHT: f32 = 440.0;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ContentsTarget {
@@ -198,80 +201,95 @@ impl State {
         let dialog = self.contents.as_mut().expect("validated open dialog");
         let mut close = false;
         let response = egui::Modal::new(egui::Id::new("collection_contents")).show(ctx, |ui| {
+            ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
             ui.set_width((ctx.content_rect().width() - 80.0).clamp(320.0, 880.0));
             ui.horizontal(|ui| {
                 ui.heading(tr(ui, "collections-title"));
                 close = ui.button(tr(ui, "backstage-close")).clicked();
             });
-            ui.label(message(
-                ui,
-                "collections-target",
-                &[
-                    ("table", dialog.target.table.clone()),
-                    ("column", dialog.target.column.clone()),
-                    (
-                        "parent",
-                        (u64::from(dialog.target.parent_ordinal) + 1).to_string(),
-                    ),
-                ],
-            ));
-            ui.separator();
-
-            match &dialog.result {
-                ContentsResult::Loading => {
-                    ui.horizontal(|ui| {
-                        ui.spinner();
-                        ui.label(tr(ui, "collections-reading"));
-                    });
-                }
-                ContentsResult::Failed(message) => {
-                    ui.label(message);
-                }
-                ContentsResult::Ready {
-                    kind,
-                    assigned,
-                    data,
-                } => {
-                    ui.label(crate::cells::membership(
-                        &for_context(ui.ctx()),
-                        *kind,
-                        *assigned,
-                        data.rows.len(),
+            let body_height =
+                (ctx.content_rect().height() - MODAL_VERTICAL_RESERVE).max(MIN_BODY_HEIGHT);
+            egui::ScrollArea::vertical()
+                .id_salt("collection_body")
+                .auto_shrink([false, true])
+                .max_height(body_height)
+                .show(ui, |ui| {
+                    let body_top = ui.cursor().top();
+                    ui.label(message(
+                        ui,
+                        "collections-target",
+                        &[
+                            ("table", dialog.target.table.clone()),
+                            ("column", dialog.target.column.clone()),
+                            (
+                                "parent",
+                                (u64::from(dialog.target.parent_ordinal) + 1).to_string(),
+                            ),
+                        ],
                     ));
-                    if *kind == CollectionKind::Attachments {
-                        ui.small(tr(ui, "collections-attachment-help"));
-                    }
-                    if *kind == CollectionKind::VersionHistory {
-                        ui.small(tr(ui, "collections-history-help"));
-                    }
-                    ui.add_space(4.0);
-                    let height = if data.rows.is_empty() {
-                        EMPTY_CONTENTS_HEIGHT
-                    } else {
-                        (ctx.content_rect().height() - 260.0).clamp(160.0, 440.0)
-                    };
-                    let size = egui::vec2(ui.available_width(), height);
-                    // Keep the child viewport below modal controls and membership
-                    // metadata. Empty collections retain their declared headers.
-                    ui.allocate_ui_with_layout(
-                        size,
-                        egui::Layout::top_down(egui::Align::LEFT),
-                        |ui| {
-                            ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                            ui.push_id(
-                                (
-                                    dialog.target.document_revision,
-                                    &dialog.target.table,
-                                    &dialog.target.column,
-                                ),
+                    ui.separator();
+
+                    match &dialog.result {
+                        ContentsResult::Loading => {
+                            ui.horizontal(|ui| {
+                                ui.spinner();
+                                ui.label(tr(ui, "collections-reading"));
+                            });
+                        }
+                        ContentsResult::Failed(message) => {
+                            ui.label(message);
+                        }
+                        ContentsResult::Ready {
+                            kind,
+                            assigned,
+                            data,
+                        } => {
+                            ui.label(crate::cells::membership(
+                                &for_context(ui.ctx()),
+                                *kind,
+                                *assigned,
+                                data.rows.len(),
+                            ));
+                            if *kind == CollectionKind::Attachments {
+                                ui.small(tr(ui, "collections-attachment-help"));
+                            }
+                            if *kind == CollectionKind::VersionHistory {
+                                ui.small(tr(ui, "collections-history-help"));
+                            }
+                            ui.add_space(4.0);
+                            let height = if data.rows.is_empty() {
+                                EMPTY_CONTENTS_HEIGHT
+                            } else {
+                                (body_height - (ui.cursor().top() - body_top))
+                                    .clamp(EMPTY_CONTENTS_HEIGHT, MAX_CHILD_HEIGHT)
+                            };
+                            let size = egui::vec2(ui.available_width(), height);
+                            // Keep the child viewport below modal controls and membership
+                            // metadata. Empty collections retain their declared headers.
+                            ui.allocate_ui_with_layout(
+                                size,
+                                egui::Layout::top_down(egui::Align::LEFT),
                                 |ui| {
-                                    datasheet::show_collection(ui, data, &mut dialog.selection);
+                                    ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
+                                    ui.push_id(
+                                        (
+                                            dialog.target.document_revision,
+                                            &dialog.target.table,
+                                            &dialog.target.column,
+                                        ),
+                                        |ui| {
+                                            datasheet::show_collection(
+                                                ui,
+                                                data,
+                                                &mut dialog.selection,
+                                            );
+                                        },
+                                    );
                                 },
                             );
-                        },
-                    );
-                }
-            }
+                        }
+                    }
+                });
         });
         if close || response.should_close() {
             self.close_contents();

@@ -223,3 +223,122 @@ fn edited_input_rejects_late_review_and_validation_error_preserves_replacement()
     assert_eq!(input.text, "not an integer");
     assert!(error.is_some());
 }
+
+#[test]
+fn compact_edit_dialog_keeps_actions_visible_beside_long_literal_content() {
+    let literal =
+        "Literal service detail and replacement text\n".repeat(100) + "FINAL EDIT DIAGNOSIS";
+    for variant in 0..4 {
+        let (mut state, target) = state();
+        state.begin_edit(target.clone(), 1);
+        let expected = match variant {
+            0 => {
+                state.fail_edit(1, literal.clone());
+                "Cancel"
+            }
+            1 => {
+                let mut draft = draft(target);
+                draft.initial.text = literal.clone();
+                state.set_edit_draft(1, draft);
+                "Review change"
+            }
+            _ => {
+                state.edit = Some(EditDialog::Finished {
+                    save_id: 40,
+                    outcome: if variant == 2 {
+                        EditSaveOutcome::Failed(literal.clone())
+                    } else {
+                        EditSaveOutcome::Retained {
+                            message: literal.clone(),
+                            can_recover: true,
+                            can_release: false,
+                        }
+                    },
+                });
+                if variant == 2 {
+                    "Close"
+                } else {
+                    "Recover save"
+                }
+            }
+        };
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        for frame in 0..12 {
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(900.0, 580.0),
+                    )),
+                    time: Some(f64::from(frame) * 0.1),
+                    events: if frame >= 4 {
+                        vec![
+                            egui::Event::PointerMoved(egui::pos2(450.0, 280.0)),
+                            egui::Event::MouseWheel {
+                                unit: egui::MouseWheelUnit::Point,
+                                delta: egui::vec2(0.0, -10000.0),
+                                modifiers: egui::Modifiers::NONE,
+                                phase: egui::TouchPhase::Move,
+                            },
+                        ]
+                    } else {
+                        vec![]
+                    },
+                    ..Default::default()
+                },
+                |ui| assert!(state.show(ui).is_empty()),
+            );
+            if frame == 3 || frame == 11 {
+                let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+                let button = tree
+                    .nodes
+                    .iter()
+                    .find_map(|(_, node)| {
+                        (node.role() == egui::accesskit::Role::Button
+                            && node.label() == Some(expected))
+                        .then(|| node.bounds())
+                        .flatten()
+                    })
+                    .unwrap_or_else(|| panic!("missing action {expected}"));
+                assert!(
+                    button.y0 >= 0.0 && button.y1 <= 580.0,
+                    "action outside compact viewport: {button:?}"
+                );
+                let (text, clip) = output
+                    .shapes
+                    .iter()
+                    .find_map(|shape| {
+                        let egui::epaint::Shape::Text(text) = &shape.shape else {
+                            return None;
+                        };
+                        (text.galley.job.text == literal).then_some((text, shape.clip_rect))
+                    })
+                    .expect("full literal content retained inside its scroll region");
+                let final_row = text
+                    .galley
+                    .rows
+                    .last()
+                    .unwrap()
+                    .rect()
+                    .translate(text.pos.to_vec2());
+                if frame == 3 {
+                    assert!(
+                        !clip.contains_rect(final_row),
+                        "diagnosis initially extends beyond body"
+                    );
+                } else {
+                    assert!(
+                        clip.contains_rect(final_row),
+                        "wheel reveals final unique diagnosis line: variant={variant}, row={final_row:?}, clip={clip:?}"
+                    );
+                }
+            }
+            output.textures_delta.clear();
+        }
+        if variant == 3 {
+            assert!(state.edit_save_pending());
+            assert!(!state.close_edit());
+        }
+    }
+}

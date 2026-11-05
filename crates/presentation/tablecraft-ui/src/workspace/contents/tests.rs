@@ -504,3 +504,92 @@ fn collection_widths_are_shared_by_parent_rows_but_isolated_between_fields() {
     let revisited = frame(&context, &mut state, vec![]);
     assert!((revisited.width() - resized.width()).abs() < 1.0);
 }
+
+#[test]
+fn compact_collection_keeps_close_visible_with_long_target_and_error() {
+    for failed in [false, true] {
+        let mut state = state();
+        let long_name = "Literal table and column name\n".repeat(20);
+        let parent = state.data.as_mut().unwrap();
+        parent.table = long_name.clone();
+        parent.columns[0] = long_name.clone().into();
+        let target = target(&state);
+        state.begin_contents(target.clone(), 25);
+        let detail = "Literal service diagnosis\n".repeat(100) + "FINAL COLLECTION DIAGNOSIS";
+        if failed {
+            state.fail_contents(25, target, detail.clone());
+        } else {
+            state.set_contents(25, target, CollectionKind::Multivalue, true, data());
+        }
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        for frame in 0..12 {
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(900.0, 580.0),
+                    )),
+                    time: Some(f64::from(frame) * 0.1),
+                    events: if frame >= 4 {
+                        vec![
+                            egui::Event::PointerMoved(egui::pos2(450.0, 280.0)),
+                            egui::Event::MouseWheel {
+                                unit: egui::MouseWheelUnit::Point,
+                                delta: egui::vec2(0.0, -10000.0),
+                                modifiers: egui::Modifiers::NONE,
+                                phase: egui::TouchPhase::Move,
+                            },
+                        ]
+                    } else {
+                        vec![]
+                    },
+                    ..Default::default()
+                },
+                |ui| assert!(state.show(ui).is_empty()),
+            );
+            if frame == 3 || frame == 11 {
+                let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+                let close = tree
+                    .nodes
+                    .iter()
+                    .find_map(|(_, node)| {
+                        (node.role() == egui::accesskit::Role::Button
+                            && node.label() == Some("Close"))
+                        .then(|| node.bounds())
+                        .flatten()
+                    })
+                    .expect("collection Close control");
+                assert!(
+                    close.y0 >= 0.0 && close.y1 <= 580.0,
+                    "Close outside compact viewport: {close:?}"
+                );
+                if failed && frame == 11 {
+                    let (text, clip) = output
+                        .shapes
+                        .iter()
+                        .find_map(|shape| {
+                            let egui::epaint::Shape::Text(text) = &shape.shape else {
+                                return None;
+                            };
+                            (text.galley.job.text == detail).then_some((text, shape.clip_rect))
+                        })
+                        .expect("full diagnosis retained inside scroll region");
+                    let final_row = text
+                        .galley
+                        .rows
+                        .last()
+                        .unwrap()
+                        .rect()
+                        .translate(text.pos.to_vec2());
+                    assert!(
+                        clip.contains_rect(final_row),
+                        "wheel reveals final unique diagnosis line"
+                    );
+                }
+            }
+            output.textures_delta.clear();
+        }
+        assert_eq!(state.contents_request_id(), Some(25));
+    }
+}
