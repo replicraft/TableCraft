@@ -8,6 +8,7 @@ ribbon-database-tools = 数据库工具
 ribbon-help = 帮助
 ribbon-table-fields = 表字段
 ribbon-table = 表
+ribbon-view = 视图
 ribbon-views = 视图
 ribbon-datasheet = 数据表
 ribbon-table-design = 表设计

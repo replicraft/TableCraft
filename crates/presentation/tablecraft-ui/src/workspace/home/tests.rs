@@ -158,23 +158,23 @@ fn home_copy_uses_retained_cell_selection_after_toolbar_focus_changes() {
 }
 
 #[test]
-fn home_view_buttons_use_existing_table_navigation_and_schema_actions() {
+fn home_view_menu_uses_existing_table_navigation_and_schema_actions() {
     let context = egui::Context::default();
     let mut state = State::default();
     state.dismiss_backstage();
     state.set_table_data(table());
     state.select_view(DocumentView::Query);
 
-    let (actions, _) = click(&mut state, &context, "Datasheet");
+    let (actions, _) = click(&mut state, &context, "View");
     assert!(actions.is_empty());
-    assert!(state.view == DocumentView::Query);
-    let (actions, _) = click(&mut state, &context, "Table Design");
-    assert!(actions.is_empty());
+    assert!(!egui::Popup::is_any_open(&context));
     assert!(state.view == DocumentView::Query);
 
     state.select_view(DocumentView::Table);
+    click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Table Design");
     assert!(matches!(actions.as_slice(), [Action::ViewSchema { table }] if table == "Contacts"));
+    assert!(!egui::Popup::is_any_open(&context));
 
     state.prepare_schema_view();
     state.set_schema(crate::Schema {
@@ -182,9 +182,11 @@ fn home_view_buttons_use_existing_table_navigation_and_schema_actions() {
         declared_rows: 0,
         fields: Vec::new(),
     });
+    click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Datasheet");
     assert!(actions.is_empty());
     assert!(state.view == DocumentView::Design);
+    click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Table Design");
     assert!(
         matches!(actions.as_slice(), [Action::ViewSchema { table }] if table == "Another table")
@@ -195,13 +197,17 @@ fn home_view_buttons_use_existing_table_navigation_and_schema_actions() {
         declared_rows: 1,
         fields: Vec::new(),
     });
+    click(&mut state, &context, "View");
     let (actions, _) = click(&mut state, &context, "Datasheet");
     assert!(actions.is_empty());
     assert!(state.view == DocumentView::Table);
 
+    // Becoming busy closes an already open menu and refuses its trigger.
+    click(&mut state, &context, "View");
     state.busy = true;
-    let (actions, _) = click(&mut state, &context, "Table Design");
+    let (actions, _) = click(&mut state, &context, "View");
     assert!(actions.is_empty());
+    assert!(!egui::Popup::is_any_open(&context));
     let (actions, _) = click(&mut state, &context, "File");
     assert!(actions.is_empty());
     assert!(state.backstage_visible());
@@ -367,6 +373,59 @@ fn working_ribbon_commands_accept_keyboard_and_assistive_activation() {
             .contains(&egui::OutputCommand::CopyText("Old first cell".into(),))
     );
 
+    let view = command_id(&output, "View");
+    let view_node = output
+        .platform_output
+        .accesskit_update
+        .as_ref()
+        .unwrap()
+        .nodes
+        .iter()
+        .find(|(id, _)| *id == view)
+        .map(|(_, node)| node)
+        .unwrap();
+    assert_eq!(view_node.has_popup(), Some(egui::accesskit::HasPopup::Menu));
+    assert_eq!(view_node.is_expanded(), Some(false));
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![assistive_action(view, egui::accesskit::Action::Focus)],
+    );
+    assert!(actions.is_empty());
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![Event::Key {
+            key: egui::Key::Enter,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        }],
+    );
+    assert!(actions.is_empty());
+    assert!(egui::Popup::is_any_open(&context));
+    let (actions, _) = render(
+        &mut state,
+        &context,
+        vec![Event::Key {
+            key: egui::Key::Escape,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        }],
+    );
+    assert!(actions.is_empty());
+    assert!(!egui::Popup::is_any_open(&context));
+
+    // Assistive activation can reopen the same menu and choose an existing view.
+    render(
+        &mut state,
+        &context,
+        vec![assistive_action(view, egui::accesskit::Action::Click)],
+    );
+    let (_, output) = render(&mut state, &context, vec![]);
     let design = command_id(&output, "Table Design");
     let (actions, _) = render(
         &mut state,
@@ -444,6 +503,8 @@ fn mock_table_design_command_prepares_missing_schema_through_the_isolated_previe
     crate::configure(&harness.ctx);
     harness.run();
 
+    harness.get_by_role_and_label(Role::Button, "View").click();
+    harness.run();
     let design = harness.get_by_role_and_label(Role::Button, "Table Design");
     assert!(!design.accesskit_node().is_disabled());
     design.click();
@@ -461,6 +522,8 @@ fn mock_table_design_command_prepares_missing_schema_through_the_isolated_previe
     assert_eq!(state.data.as_ref().unwrap().table, "Customers");
     assert_eq!(state.data.as_ref().unwrap().source_revision, Some(1));
 
+    harness.get_by_role_and_label(Role::Button, "View").click();
+    harness.run();
     harness
         .get_by_role_and_label(Role::Button, "Datasheet")
         .click();
@@ -472,7 +535,7 @@ fn mock_table_design_command_prepares_missing_schema_through_the_isolated_previe
     harness.run_steps(3);
     assert!(
         harness
-            .get_by_role_and_label(Role::Button, "Table Design")
+            .get_by_role_and_label(Role::Button, "View")
             .accesskit_node()
             .is_disabled()
     );

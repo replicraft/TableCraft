@@ -8,6 +8,7 @@ ribbon-database-tools = Работа с базами данных
 ribbon-help = Справка
 ribbon-table-fields = Поля таблицы
 ribbon-table = Таблица
+ribbon-view = Режим
 ribbon-views = Представления
 ribbon-datasheet = Режим таблицы
 ribbon-table-design = Конструктор таблиц

@@ -8,6 +8,7 @@ ribbon-database-tools = 데이터베이스 도구
 ribbon-help = 도움말
 ribbon-table-fields = 테이블 필드
 ribbon-table = 테이블
+ribbon-view = 보기
 ribbon-views = 보기
 ribbon-datasheet = 데이터시트
 ribbon-table-design = 테이블 디자인

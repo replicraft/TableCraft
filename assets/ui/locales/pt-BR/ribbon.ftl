@@ -8,6 +8,7 @@ ribbon-database-tools = Ferramentas de Banco de Dados
 ribbon-help = Ajuda
 ribbon-table-fields = Campos da Tabela
 ribbon-table = Tabela
+ribbon-view = Exibir
 ribbon-views = Modos de Exibição
 ribbon-datasheet = Folha de Dados
 ribbon-table-design = Design da Tabela
