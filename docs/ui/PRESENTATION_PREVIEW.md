@@ -430,3 +430,29 @@ The final coordinated batch passes 118 UI tests and 23 desktop tests, with all
 Strict selected-package Clippy, formatting, documentation links and dependency
 boundaries pass. No new backend functionality or native interaction qualification
 is implied.
+
+## Mock action admission and localized save reports — 5 November 2026
+
+The synthetic host checks save ownership independently of the visible disabled
+controls. Stale close/acknowledge actions must match the current request or save
+identity; recovery/release additionally require their retained capability flag.
+A cancellation request leaves the matching save pending and cannot overwrite an
+already finished outcome or imply rollback. Terminal cancelled outcomes remain
+separate explicit fixtures. Unrelated open/read actions cannot replace a save
+owner before acknowledgement.
+
+Host-authored save reports use the shared `editing.ftl` section in each locale.
+Current-operation status stays distinct from the last completed receipt, including
+matched/changed counts and recovery/release restrictions. This formats typed host
+outcomes; it does not translate arbitrary backend errors or database content.
+The [acceptance boundaries](DESKTOP.md#current-acceptance-boundaries) distinguish
+source/headless evidence from the remaining native/reference/language review.
+
+Verification covers all 122 UI tests and 23 desktop tests: 121 UI tests and the
+desktop suite passed in the final coordinated run; the expensive scene-matrix
+function passed separately and was deliberately skipped in that repeat. Its
+704 scene/locale/theme combinations remain passing. Existing desktop receipt
+checks now compare complete English and German reports, exact counts and retained
+flags, with zero localization diagnostics. Formatting, strict selected-package
+Clippy, local documentation links and dependency boundaries pass. Verification
+remained headless throughout.

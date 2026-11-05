@@ -20,7 +20,9 @@ readable ink; explicit focus accents remain distinct. Compact Russian pane
 traversal is checked at fractional scales. Mock retries clear stale failures,
 resource release stays distinct from a saved outcome, and collection reopen
 preserves scene membership. Open failures share the literal diagnostics display;
-host-owned notices and picker labels use Fluent. See the
+host-owned notices, picker labels and typed save reports use Fluent. Mock action
+admission also retains save ownership, exact IDs and recovery/release flags;
+cancellation requests do not fabricate terminal outcomes. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
 ## Shared presentation preview — 4 November 2026
