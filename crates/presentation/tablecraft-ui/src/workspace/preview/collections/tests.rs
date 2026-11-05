@@ -283,3 +283,21 @@ fn nullable_collection_fixture_does_not_replace_another_parent_rows_members() {
             .any(|text| { text.starts_with("Value, row 1: NULL; NULL value") })
     );
 }
+
+#[test]
+fn stale_collection_close_preserves_the_newer_request() {
+    let mut preview = Preview::new(Scene::Multivalue);
+    let old = preview.state.contents_request_id().unwrap();
+    let data = preview.state.data.as_ref().unwrap();
+    let column = data.column_index("Categories").unwrap();
+    let target = data.contents_target(0, column).unwrap();
+    preview.collection(target, CollectionKind::Multivalue);
+    let current = preview.state.contents_request_id().unwrap();
+    assert_ne!(current, old);
+    preview.dispatch(Action::CloseContents { request_id: old });
+    assert_eq!(preview.state.contents_request_id(), Some(current));
+    preview.dispatch(Action::CloseContents {
+        request_id: current,
+    });
+    assert!(preview.state.contents_request_id().is_none());
+}
