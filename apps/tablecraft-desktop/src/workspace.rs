@@ -44,6 +44,7 @@ pub(super) struct Desktop {
     file_dialog: FileDialog,
     selected_file: Option<SelectedFile>,
     editing: Editing,
+    startup_visibility_pending: bool,
 }
 
 impl Desktop {
@@ -58,6 +59,7 @@ impl Desktop {
             file_dialog: FileDialog::default(),
             selected_file: None,
             editing,
+            startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
         if let Some(path) = path {
@@ -317,6 +319,12 @@ impl Desktop {
 
 impl eframe::App for Desktop {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // A hidden startup frame can run logic without painting. Request the
+        // initial window once, leaving later user hide/minimize choices alone.
+        if std::mem::take(&mut self.startup_visibility_pending) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
+        }
+
         // eframe also calls logic for repaint requests while the viewport is
         // hidden. Task completion must not depend on drawing a visible frame.
         self.poll_file_dialog();
@@ -423,6 +431,40 @@ mod tests {
             std::thread::yield_now();
         }
         assert!(!desktop.state.busy, "desktop task did not finish");
+    }
+
+    #[test]
+    fn startup_logic_requests_visibility_once_without_revealing_later_hidden_frames() {
+        let context = egui::Context::default();
+        let mut desktop = Desktop::new(context.clone(), None);
+        let mut frame = eframe::Frame::_new_kittest();
+        let mut input = egui::RawInput::default();
+        let viewport = input.viewports.get_mut(&egui::ViewportId::ROOT).unwrap();
+        viewport.occluded = Some(true);
+        viewport.minimized = Some(false);
+
+        // Use the same logic-only entry point as eframe's hidden-window path;
+        // no UI pass is needed to issue the initial visibility request.
+        let initial = context.run_logic(&input, |ctx| desktop.logic(ctx, &mut frame));
+        assert_eq!(
+            initial.viewport_commands[&egui::ViewportId::ROOT],
+            [egui::ViewportCommand::Visible(true)]
+        );
+
+        for minimized in [false, true, false] {
+            input
+                .viewports
+                .get_mut(&egui::ViewportId::ROOT)
+                .unwrap()
+                .minimized = Some(minimized);
+            let later = context.run_logic(&input, |ctx| desktop.logic(ctx, &mut frame));
+            assert!(
+                later
+                    .viewport_commands
+                    .values()
+                    .all(|commands| !commands.contains(&egui::ViewportCommand::Visible(true)))
+            );
+        }
     }
 
     #[test]
