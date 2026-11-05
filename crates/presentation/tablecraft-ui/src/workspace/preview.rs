@@ -14,6 +14,7 @@ mod insertion;
 mod object_status;
 mod queries;
 mod query_design;
+mod schema;
 mod totals;
 
 mod zoom;
@@ -52,6 +53,8 @@ pub enum Scene {
     Loading,
     Error,
     Design,
+    DesignLong,
+    DesignUninspected,
     Query,
     SavedQuery,
     Attachments,
@@ -103,7 +106,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 74] = [
+    pub const ALL: [Self; 76] = [
         Self::Datasheet,
         Self::RibbonCreate,
         Self::RibbonExternalData,
@@ -130,6 +133,8 @@ impl Scene {
         Self::Loading,
         Self::Error,
         Self::Design,
+        Self::DesignLong,
+        Self::DesignUninspected,
         Self::Query,
         Self::SavedQuery,
         Self::Attachments,
@@ -231,6 +236,8 @@ impl Scene {
             Self::Loading => "loading",
             Self::Error => "error",
             Self::Design => "design",
+            Self::DesignLong => "design-long",
+            Self::DesignUninspected => "design-uninspected",
             Self::Query => "query",
             Self::SavedQuery => "saved-query",
             Self::Attachments => "attachments",
@@ -390,6 +397,8 @@ impl Preview {
             Scene::Error => {
                 self.state.error = Some(self.state.localizer.text("settings-mock-read-error"));
             }
+            Scene::DesignLong => self.prepare_long_design(),
+            Scene::DesignUninspected => self.prepare_uninspected_design(),
             Scene::Design => {
                 self.state.prepare_schema_view();
                 self.state.set_schema(fixtures::schema("Customers"));

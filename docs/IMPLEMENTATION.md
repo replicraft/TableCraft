@@ -1,5 +1,20 @@
 # Implementation status
 
+## Screenshot-guided Table Design inspection — 5 November 2026
+
+The shared read-only schema inspector now has a ruled field grid, inert blank
+rows, selector gutter and keyboard-adjustable full-width divider. General and
+Lookup tabs separate observed properties from explicitly uninspected lookup
+metadata. Property selection supplies contextual help; keyboard Copy retains
+full literal values under a visible size ceiling. Existing source/publication
+focus guards remain intact. No database functionality or schema editing was added.
+
+All 212 UI tests and 63 desktop tests passed across the batch and focused
+follow-ups, including 1,216 scene/language/theme combinations. Strict selected
+Clippy, formatting and dependency/documentation checks passed. Eight offscreen
+light/dark and compact translated renders were reviewed; native window checks
+remain suspended. See the [presentation record](ui/PRESENTATION_PREVIEW.md#table-design-grid-and-property-inspection--5-november-2026).
+
 ## Screenshot-guided shell and Ribbon polish — 5 November 2026
 
 The shared shell now has the TableCraft brand, spaced Quick Access controls,

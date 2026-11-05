@@ -354,3 +354,17 @@ visible command previews. They must not be presented as exhaustive native
 dropdowns or working macro/VBA, forms, reports, imports or administration.
 Light/dark offscreen review and exact sizes are recorded in
 [presentation preview](PRESENTATION_PREVIEW.md#compact-shell-record-strip-and-full-tab-previews--5-november-2026).
+
+## Table Design inspection follow-up — 5 November 2026
+
+The actual retained Table Design image was reopened for this pass. Its narrow
+selector gutter, Field Name/Data Type/Description columns, ruled blank area,
+full-width split and General/Lookup tabs guide the shared inspector. The lower
+property sheet and help area have separate bounded scrollports. A field selector
+triangle indicates selection; no primary-key icon is invented from unrelated
+column flags. Uninspected lookup facts remain explicit.
+
+The capture supplies light-layout evidence. Dark styling, translated compact
+layouts, keyboard Copy and contextual help remain adaptations rather than native
+interaction qualification. The [presentation review](PRESENTATION_PREVIEW.md#table-design-grid-and-property-inspection--5-november-2026) records
+render dimensions and synthetic scenarios.
