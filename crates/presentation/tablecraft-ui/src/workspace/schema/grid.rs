@@ -1,13 +1,13 @@
 //! Fixed-height declaration cells retain their full read-only accessible text.
 use crate::theme::palette;
-use egui::{Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
+use egui::{Id, Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
 
 const TEXT_PADDING: f32 = 3.0;
 
 #[derive(Clone, Copy)]
 pub(super) enum CellStyle {
     Header { active: bool },
-    FieldName { selected: bool },
+    FieldName { selected: bool, id: Id },
     Value,
 }
 
@@ -17,12 +17,19 @@ pub(super) fn cell(ui: &mut Ui, text: &str, style: CellStyle) -> Response {
         CellStyle::FieldName { .. } => Sense::click(),
         CellStyle::Header { .. } | CellStyle::Value => Sense::hover(),
     };
-    let (rect, response) = ui.allocate_exact_size(ui.available_size(), sense);
+    let (rect, allocated) = ui.allocate_exact_size(ui.available_size(), Sense::hover());
+    let response = match style {
+        CellStyle::FieldName { id, .. } => ui.interact(rect, id, sense),
+        CellStyle::Header { .. } | CellStyle::Value => allocated,
+    };
     let fill = match style {
         CellStyle::Header { active: true } => colors.active_header,
         CellStyle::Header { active: false } => colors.grid_header,
-        CellStyle::FieldName { selected: true } => colors.active_cell,
-        CellStyle::FieldName { selected: false } | CellStyle::Value => colors.surface,
+        CellStyle::FieldName { selected: true, .. } => colors.active_cell,
+        CellStyle::FieldName {
+            selected: false, ..
+        }
+        | CellStyle::Value => colors.surface,
     };
     ui.painter().rect_filled(rect, 0.0, fill);
     let line = egui::Stroke::new(0.5, colors.grid_line);
@@ -50,9 +57,18 @@ pub(super) fn cell(ui: &mut Ui, text: &str, style: CellStyle) -> Response {
         colors.ink,
     );
     match style {
-        CellStyle::FieldName { selected } => {
+        CellStyle::FieldName { selected, .. } => {
             response.widget_info(|| {
                 WidgetInfo::selected(WidgetType::SelectableLabel, ui.is_enabled(), selected, text)
+            });
+            let enabled = ui.is_enabled();
+            ui.ctx().accesskit_node_builder(response.id, |node| {
+                node.clear_toggled();
+                node.set_selected(selected);
+                if !enabled {
+                    node.remove_action(egui::accesskit::Action::Click);
+                    node.remove_action(egui::accesskit::Action::Focus);
+                }
             });
             if selected {
                 ui.painter().rect_stroke(
@@ -64,6 +80,17 @@ pub(super) fn cell(ui: &mut Ui, text: &str, style: CellStyle) -> Response {
             }
             if response.clicked() {
                 response.request_focus();
+            }
+            if ui.is_enabled() && response.has_focus() {
+                ui.memory_mut(|memory| {
+                    memory.set_focus_lock_filter(
+                        response.id,
+                        egui::EventFilter {
+                            vertical_arrows: true,
+                            ..Default::default()
+                        },
+                    );
+                });
             }
         }
         CellStyle::Header { .. } | CellStyle::Value => {
