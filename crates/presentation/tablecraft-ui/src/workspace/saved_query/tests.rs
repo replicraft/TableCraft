@@ -171,11 +171,12 @@ fn object_click_inspects_only_and_explicit_run_emits_exact_typed_parameters() {
     assert!(render(&mut state, &context, vec![]).0.is_empty());
     assert!(state.set_saved_query_details(1, target.clone(), specs()));
     state.saved_query.inputs[0].text = "7".into();
-    assert!(click(&mut state, &context, "Choose a value type").is_empty());
-    assert!(click(&mut state, &context, "Text").is_empty());
-    assert_eq!(state.saved_query.inputs[1].kind, "text");
+    state.saved_query.inputs[1].kind = "text".into();
     state.saved_query.inputs[1].text = "literal 'text'".into();
-    let actions = click(&mut state, &context, "Run saved query");
+    assert!(click(&mut state, &context, "Run saved query").is_empty());
+    assert!(state.saved_query_prompt_open());
+    assert!(click(&mut state, &context, "OK").is_empty());
+    let actions = click(&mut state, &context, "OK");
     assert!(
         matches!(actions.as_slice(), [Action::RunSavedQuery { target: actual, parameters }]
         if actual == &target && parameters[0].kind == "int32" && parameters[0].text == "7"
@@ -367,7 +368,7 @@ fn wrong_saved_result_envelopes_preserve_previous_results_and_allow_a_new_run() 
 }
 
 #[test]
-fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
+fn sequential_parameter_controls_retain_exact_prompt_labels_and_cancel_discards_staging() {
     use egui::accesskit::Role;
 
     let (mut state, target) = state();
@@ -383,124 +384,94 @@ fn parameter_type_and_null_controls_reference_their_actual_prompt_labels() {
     let original_inputs = state.saved_query.inputs.clone();
     let context = egui::Context::default();
     context.enable_accesskit();
-    let (actions, output) = render(&mut state, &context, vec![]);
-    assert!(actions.is_empty());
-    let tree = output
-        .platform_output
-        .accesskit_update
-        .as_ref()
-        .expect("actual accessibility tree");
-    let prompt_id = |text| {
-        tree.nodes
-            .iter()
-            .find_map(|(id, node)| {
-                (node.role() == Role::Label
-                    && node
-                        .value()
-                        .is_some_and(|value| value.replace(['\u{2068}', '\u{2069}'], "") == text))
-                .then_some(*id)
-            })
-            .expect("actual visible parameter prompt")
-    };
-    let choice = prompt_id("Choice · VALUE");
-    assert!(tree.nodes.iter().any(|(_, node)| {
-        node.role() == Role::ComboBox
-            && node.labelled_by().contains(&choice)
-            && node.description() == Some("Parameter value type")
-    }));
-    for prompt in ["Minimum · LONG", "Choice · VALUE"] {
-        let id = prompt_id(prompt);
-        assert_eq!(
-            tree.nodes
-                .iter()
-                .filter(|(_, node)| {
-                    node.role() == Role::CheckBox
-                        && node.labelled_by().contains(&id)
-                        && node.description() == Some("Use NULL for this parameter")
-                })
-                .count(),
-            1,
-            "NULL control for {prompt}"
-        );
-    }
+    crate::configure(&context);
+    assert!(click(&mut state, &context, "Run saved query").is_empty());
 
-    // A third typed prompt overflows the bounded pane. Its lower controls
-    // remain reachable without altering input values or running the query.
-    let visible_text = |output: &egui::FullOutput, expected: &str| {
-        output.shapes.iter().find_map(|shape| match &shape.shape {
-            egui::epaint::Shape::Text(text)
-                if text.galley.job.text.replace(['\u{2068}', '\u{2069}'], "") == expected =>
-            {
-                let rect = egui::Rect::from_min_size(text.pos, text.galley.size());
-                shape
-                    .clip_rect
-                    .contains_rect(rect)
-                    .then_some((rect, shape.clip_rect))
-            }
-            _ => None,
-        })
-    };
-    assert!(
-        tree.nodes.iter().any(|(_, node)| {
-            node.role() == Role::ScrollBar
-                && node.bounds().is_some_and(|bounds| bounds.height() > 150.0)
-        }),
-        "overflow has a visible parameter-pane scrollbar"
-    );
-    let date_hint = "ISO date and time, without a time zone.";
-    assert!(visible_text(&output, date_hint).is_none());
-    let anchor = visible_text(&output, "Minimum · LONG").unwrap().0.center();
-    let (actions, _) = render(
-        &mut state,
-        &context,
-        vec![
-            egui::Event::PointerMoved(anchor),
-            egui::Event::MouseWheel {
-                phase: egui::TouchPhase::Move,
-                unit: egui::MouseWheelUnit::Point,
-                delta: egui::vec2(0.0, -500.0),
-                modifiers: egui::Modifiers::NONE,
-            },
-        ],
-    );
-    assert!(actions.is_empty());
-    render(&mut state, &context, vec![]);
-    let (actions, scrolled) = render(&mut state, &context, vec![]);
-    assert!(actions.is_empty());
-    let (_, parameter_clip) = visible_text(&scrolled, date_hint)
-        .expect("the last parameter's complete hint is reachable");
-    assert!(visible_text(&scrolled, "From date · DATETIME").is_some());
-    let tree = scrolled.platform_output.accesskit_update.as_ref().unwrap();
-    let date_prompt = tree
-        .nodes
-        .iter()
-        .find_map(|(id, node)| {
-            (node.role() == Role::Label
-                && node.value().is_some_and(|value| {
-                    value.replace(['\u{2068}', '\u{2069}'], "") == "From date · DATETIME"
-                }))
-            .then_some(*id)
-        })
-        .expect("the date prompt retains its actual accessible identity");
-    for role in [Role::TextInput, Role::CheckBox] {
-        let node = tree
+    for (name, roles) in [
+        ("Minimum", vec![Role::TextInput, Role::CheckBox]),
+        (
+            "Choice",
+            vec![Role::ComboBox, Role::TextInput, Role::CheckBox],
+        ),
+        ("From date", vec![Role::TextInput, Role::CheckBox]),
+    ] {
+        let (_, output) = render(&mut state, &context, vec![]);
+        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+        let prompt = tree
             .nodes
             .iter()
-            .find_map(|(_, node)| {
-                (node.role() == role && node.labelled_by().contains(&date_prompt)).then_some(node)
+            .find_map(|(id, node)| {
+                (node.role() == Role::Label && node.value().or_else(|| node.label()) == Some(name))
+                    .then_some(*id)
             })
-            .expect("the final prompt retains its actual input and NULL control");
-        let bounds = node.bounds().expect("control bounds");
-        let rect = egui::Rect::from_min_max(
-            egui::pos2(bounds.x0 as f32, bounds.y0 as f32),
-            egui::pos2(bounds.x1 as f32, bounds.y1 as f32),
-        );
-        assert!(
-            parameter_clip.contains_rect(rect),
-            "complete {role:?} is visible after scrolling"
-        );
-        assert!(!node.is_disabled());
+            .expect("the actual prompt keeps its literal name");
+        for role in roles {
+            assert!(
+                tree.nodes.iter().any(|(_, node)| {
+                    node.role() == role && node.labelled_by().contains(&prompt)
+                }),
+                "{role:?} retains its actual prompt relationship"
+            );
+        }
+        if name == "Choice" {
+            let chooser = tree
+                .nodes
+                .iter()
+                .find_map(|(id, node)| {
+                    (node.role() == Role::ComboBox && node.labelled_by().contains(&prompt))
+                        .then_some(*id)
+                })
+                .unwrap();
+            let focus = egui::Event::AccessKitActionRequest(egui::accesskit::ActionRequest {
+                action: egui::accesskit::Action::Focus,
+                target_tree: egui::accesskit::TreeId::ROOT,
+                target_node: chooser,
+                data: None,
+            });
+            assert!(render(&mut state, &context, vec![focus]).0.is_empty());
+            assert!(
+                render(
+                    &mut state,
+                    &context,
+                    vec![enter(true, egui::Modifiers::NONE)]
+                )
+                .0
+                .is_empty()
+            );
+            assert!(
+                egui::Popup::is_any_open(&context),
+                "Enter belongs to the closed type chooser"
+            );
+            assert!(state.saved_query_prompt_open());
+            assert!(
+                render(
+                    &mut state,
+                    &context,
+                    vec![egui::Event::Key {
+                        key: egui::Key::Escape,
+                        physical_key: None,
+                        pressed: true,
+                        repeat: false,
+                        modifiers: egui::Modifiers::NONE,
+                    }]
+                )
+                .0
+                .is_empty()
+            );
+            assert!(
+                state.saved_query_prompt_open(),
+                "Escape closes the type popup only"
+            );
+            assert!(click(&mut state, &context, "Choose a value type").is_empty());
+            assert!(click(&mut state, &context, "Boolean").is_empty());
+            assert_eq!(state.saved_query.inputs, original_inputs);
+        }
+        if name != "From date" {
+            assert!(click(&mut state, &context, "OK").is_empty());
+        }
     }
+    assert!(click(&mut state, &context, "Cancel").is_empty());
+    assert!(!state.saved_query_prompt_open());
     assert_eq!(state.saved_query.inputs, original_inputs);
     assert!(state.saved_query.pending.is_none());
 }

@@ -117,4 +117,40 @@ fn saved_inspection_and_unselected_variant_prompts_never_admit_a_run_implicitly(
     assert!(preview.state.saved_query.data.is_none());
     assert!(preview.state.query_data.is_none());
     assert_eq!(preview.state.sql, fixtures::SQL);
+    assert!(preview.state.saved_query_prompt_open());
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    crate::configure(&context);
+    for _ in 0..3 {
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1280.0, 820.0),
+                )),
+                ..Default::default()
+            },
+            |ui| assert!(preview.state.show(ui).is_empty()),
+        );
+        output.textures_delta.clear();
+        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+        let ok_label = preview.state.localizer.text("saved-query-prompt-ok");
+        let ok = tree
+            .nodes
+            .iter()
+            .find_map(|(_, node)| {
+                (node.role() == egui::accesskit::Role::Button
+                    && node.label() == Some(ok_label.as_str()))
+                .then_some(node)
+            })
+            .expect("VALUE acquisition displays an explicit confirmation control");
+        assert!(
+            ok.is_disabled(),
+            "VALUE requires a concrete kind before confirmation"
+        );
+        assert!(preview.state.saved_query_run_action().is_none());
+        assert!(preview.state.saved_query.data.is_none());
+        assert_eq!(preview.state.sql, fixtures::SQL);
+    }
+    assert_eq!(preview.state.localizer.diagnostics(), Default::default());
 }

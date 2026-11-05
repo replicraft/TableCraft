@@ -37,3 +37,8 @@ saved-query-type-binary = バイナリ
 saved-query-type-guid = GUID
 saved-query-type-date = 日付/時刻
 saved-query-type-datetime-extended = 日付/時刻（拡張）
+
+saved-query-prompt-title = パラメーター値の入力
+saved-query-prompt-ok = OK
+saved-query-prompt-cancel = キャンセル
+saved-query-prompt-validation = 型付きの値はクエリの実行時に検証されます。

@@ -65,7 +65,7 @@ fn long_sql_remains_bounded_with_existing_run_controls_and_literal_text() {
 }
 
 #[test]
-fn keyboard_traversal_reveals_each_parameter_and_null_control_without_running() {
+fn sequential_prompt_tab_order_preserves_all_inputs_and_dispatches_only_after_last_ok() {
     let mut state = state();
     let target = SavedQueryTarget {
         document_revision: 7,
@@ -89,22 +89,14 @@ fn keyboard_traversal_reveals_each_parameter_and_null_control_without_running() 
     );
     let mut harness = harness(state);
     harness.run();
-    let parameter_label = |ordinal| {
-        let mut arguments = fluent_bundle::FluentArgs::new();
-        arguments.set("name", format!("Prompt {ordinal:02}"));
-        arguments.set("kind", "LONG");
-        crate::Localizer::default().format("saved-query-parameter-label", &arguments)
-    };
-    let viewport = harness.get_by_role(Role::ScrollBar).rect();
     harness
-        .get_by_role_and_label(Role::TextInput, &parameter_label(1))
-        .focus();
+        .get_by_role_and_label(Role::Button, "Run saved query")
+        .click();
     harness.run();
     for ordinal in 1..=12 {
-        let label = parameter_label(ordinal);
+        let label = format!("Prompt {ordinal:02}");
         let input = harness.get_by_role_and_label(Role::TextInput, &label);
         assert!(input.is_focused());
-        assert!(input.rect().top() >= viewport.top() && input.rect().bottom() <= viewport.bottom());
         harness.key_press(Key::Tab);
         harness.run();
         let null = harness
@@ -115,16 +107,14 @@ fn keyboard_traversal_reveals_each_parameter_and_null_control_without_running() 
                     .labelled_by()
                     .any(|prompt| prompt.value().as_deref() == Some(label.as_str()))
             })
-            .expect("the nullable control belongs to the actual parameter prompt");
+            .expect("the nullable control belongs to the current prompt");
         assert!(null.is_focused());
-        assert!(null.rect().top() >= viewport.top() && null.rect().bottom() <= viewport.bottom());
-        harness.key_press(Key::Tab);
+        assert!(harness.state().1.is_empty());
+        harness.get_by_role_and_label(Role::Button, "OK").click();
         harness.run();
     }
-    assert!(harness.state().1.is_empty());
+    assert!(!harness.state().0.saved_query_prompt_open());
     assert!(
-        harness
-            .get_by_role_and_label(Role::Button, "Run saved query")
-            .is_focused()
+        matches!(harness.state().1.as_slice(), [Action::RunSavedQuery { parameters, .. }] if parameters.len() == 12)
     );
 }

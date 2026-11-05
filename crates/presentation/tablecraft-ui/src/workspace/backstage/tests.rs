@@ -295,28 +295,27 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
     crate::configure(&harness.ctx);
     harness.run();
-    for (name, kind, value) in [
-        ("Minimum", "LONG", "7"),
-        ("Literal choice", "TEXT", "NULL; <literal> & [name]"),
-    ] {
-        let mut args = crate::FluentArgs::new();
-        args.set("name", name);
-        args.set("kind", kind);
-        let label = harness
-            .state()
-            .state()
-            .localizer
-            .format("saved-query-parameter-label", &args);
-        harness
-            .get_by_role_and_label(Role::TextInput, &label)
-            .focus();
-        harness.run();
-        harness.event(egui::Event::Text(value.into()));
-        harness.run();
-    }
     let run = harness.state().state().localizer.text("saved-query-run");
     harness.get_by_role_and_label(Role::Button, &run).click();
     harness.run();
+    for (name, value) in [
+        ("Minimum", "7"),
+        ("Literal choice", "NULL; <literal> & [name]"),
+    ] {
+        assert!(harness.state().state().saved_query_prompt_open());
+        harness.get_by_role_and_label(Role::TextInput, name).focus();
+        harness.run();
+        harness.event(egui::Event::Text(value.into()));
+        harness.run();
+        let ok = harness
+            .state()
+            .state()
+            .localizer
+            .text("saved-query-prompt-ok");
+        harness.get_by_role_and_label(Role::Button, &ok).click();
+        harness.run();
+    }
+    assert!(!harness.state().state().saved_query_prompt_open());
     let Action::RunSavedQuery {
         target: original_target,
         parameters: original_inputs,
@@ -345,6 +344,23 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         .unwrap()
         .rows
         .as_ptr();
+
+    harness.get_by_role_and_label(Role::Button, &run).click();
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::TextInput, "Minimum")
+        .focus();
+    harness.run();
+    harness.event(egui::Event::Text("999".into()));
+    harness.run();
+    let cancel = harness
+        .state()
+        .state()
+        .localizer
+        .text("saved-query-prompt-cancel");
+    harness.get_by_role_and_label(Role::Button, &cancel).click();
+    harness.run();
+    assert!(!harness.state().state().saved_query_prompt_open());
 
     let context = harness.ctx.clone();
     assert!(click(harness.state_mut().state_mut(), "File", &context).is_empty());
@@ -379,6 +395,32 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
             .get_by_role_and_label(Role::Button, &saved_run)
             .accesskit_node()
             .is_disabled()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, &saved_run)
+        .click();
+    harness.run();
+    assert!(harness.state().state().saved_query_prompt_open());
+    let title = harness
+        .state()
+        .state()
+        .localizer
+        .text("saved-query-prompt-title");
+    assert!(harness.query_by_label(&title).is_some());
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Minimum")
+            .accesskit_node()
+            .value()
+            .as_deref()
+            == Some("7")
+    );
+    harness.key_press(egui::Key::Escape);
+    harness.run();
+    assert!(!harness.state().state().saved_query_prompt_open());
+    assert_eq!(
+        harness.state().state().localizer.diagnostics(),
+        Default::default()
     );
 }
 

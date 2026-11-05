@@ -37,3 +37,8 @@ saved-query-type-binary = Binary
 saved-query-type-guid = GUID
 saved-query-type-date = Date/time
 saved-query-type-datetime-extended = Extended date/time
+
+saved-query-prompt-title = Enter Parameter Value
+saved-query-prompt-ok = OK
+saved-query-prompt-cancel = Cancel
+saved-query-prompt-validation = Typed values are validated when the query runs.

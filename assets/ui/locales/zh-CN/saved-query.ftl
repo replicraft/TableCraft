@@ -37,3 +37,8 @@ saved-query-type-binary = 二进制
 saved-query-type-guid = GUID
 saved-query-type-date = 日期/时间
 saved-query-type-datetime-extended = 扩展日期/时间
+
+saved-query-prompt-title = 输入参数值
+saved-query-prompt-ok = 确定
+saved-query-prompt-cancel = 取消
+saved-query-prompt-validation = 带类型的值会在运行查询时进行验证。

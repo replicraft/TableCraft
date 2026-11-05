@@ -287,18 +287,34 @@ fn compact_localized_saved_query_cycles_prompts_results_navigation_and_ribbon_at
         let rows = state.saved_query.data.as_ref().unwrap().rows.as_ptr();
         let sql = state.sql.clone();
         let home = state.localizer.text("ribbon-home");
-        let mut args = crate::FluentArgs::new();
-        args.set("name", parameters[0].name.clone());
-        args.set("kind", "TEXT(64)");
-        let prompt = state.localizer.format("saved-query-parameter-label", &args);
+        let run = state.localizer.text("saved-query-run");
+        let document = state.localizer.text("shell-query");
         harness.get_by_role_and_label(Role::Tab, &home).focus();
         harness.run();
 
         harness.key_press(Key::F6);
         harness.run();
-        let input = harness.get_by_role_and_label(Role::TextInput, &prompt);
-        assert!(input.is_focused());
-        assert!(input.rect().top() >= 0.0 && input.rect().bottom() <= 580.0);
+        let document_control = harness.get_by_role_and_label(Role::Tab, &document);
+        assert!(document_control.is_focused());
+        assert!(document_control.rect().top() >= 0.0 && document_control.rect().bottom() <= 580.0);
+
+        harness.get_by_role_and_label(Role::Button, &run).click();
+        harness.run();
+        assert!(harness.state().saved_query_prompt_open());
+        harness
+            .get_by_role_and_label(Role::TextInput, &parameters[0].name)
+            .focus();
+        harness.run();
+        let prompt_focus = harness.ctx.memory(|memory| memory.focused());
+        harness.key_press(Key::F6);
+        harness.run();
+        assert!(harness.state().saved_query_prompt_open());
+        assert_eq!(harness.ctx.memory(|memory| memory.focused()), prompt_focus);
+        harness.key_press(Key::Escape);
+        harness.run();
+        assert!(!harness.state().saved_query_prompt_open());
+        harness.get_by_role_and_label(Role::Button, &run).focus();
+        harness.run();
 
         harness.key_press(Key::F6);
         harness.run();

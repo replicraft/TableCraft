@@ -353,7 +353,9 @@ impl State {
         crate::theme::set_theme(ui.ctx(), self.theme);
         crate::fonts::configure(ui.ctx(), self.localizer.locale());
         let mut actions = Vec::new();
-        let modal_open = self.contents_request_id().is_some() || self.edit_dialog_open();
+        let modal_open = self.contents_request_id().is_some()
+            || self.edit_dialog_open()
+            || self.saved_query_prompt_open();
         if !modal_open
             && self.backstage_visible()
             && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
@@ -365,12 +367,18 @@ impl State {
         } else {
             keyboard::consume(
                 ui.ctx(),
-                self.query_ready() || self.saved_query_run_ready(),
+                self.query_ready() || self.saved_query_command_ready(),
                 self.busy,
             )
         };
         if shortcuts.query {
-            actions.push(self.saved_query_run_action().unwrap_or(Action::Query));
+            if self.saved_query_visible() {
+                if let Some(action) = self.request_saved_query_run() {
+                    actions.push(action);
+                }
+            } else {
+                actions.push(Action::Query);
+            }
         }
         if shortcuts.cancel {
             actions.push(Action::Cancel);
@@ -384,6 +392,7 @@ impl State {
                 ui.memory_mut(|memory| memory.request_focus(path_id));
             }
         }
+        let modal_open = modal_open || self.saved_query_prompt_open();
         self.begin_pane_focus(ui, modal_open);
         ui.add_enabled_ui(!modal_open, |ui| {
             self.chrome(ui, &mut actions);
@@ -396,7 +405,10 @@ impl State {
         });
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
-        self.finish_pane_focus(ui);
+        self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
+        if !self.saved_query_prompt_open() {
+            self.finish_pane_focus(ui);
+        }
         actions
     }
 }
