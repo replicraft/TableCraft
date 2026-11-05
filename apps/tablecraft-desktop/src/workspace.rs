@@ -5,6 +5,7 @@ mod navigation;
 mod objects;
 mod opening;
 mod query_design;
+mod replacing;
 mod saved;
 #[cfg(test)]
 mod test_support;
@@ -84,6 +85,9 @@ enum PendingOperation {
         position: FindPosition,
         filter: Option<find::FilterWitness>,
     },
+    ReplaceFind {
+        request_id: u64,
+    },
     SavedInspection {
         target: SavedQueryTarget,
         request_id: u64,
@@ -143,6 +147,7 @@ impl Desktop {
         app.state.file_picker_available = true;
         app.state.find_available = true;
         app.state.find_formatted_available = true;
+        app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux"));
         app.state.formatting.system_locale = sys_locale::get_locale();
         if let Some(path) = path {
             app.select_file(path);
@@ -276,7 +281,13 @@ impl Desktop {
                 Ok(Response::InsertReviewed { review, capability }) => {
                     self.publish_insert_review(generation, review, capability);
                 }
-                Ok(Response::EditDraft(draft)) => self.publish_edit_draft(generation, draft),
+                Ok(Response::EditDraft(draft)) => {
+                    if matches!(self.pending, PendingOperation::ReplaceFind { .. }) {
+                        self.publish_replace_find_draft(generation, draft);
+                    } else {
+                        self.publish_edit_draft(generation, draft);
+                    }
+                }
                 Ok(Response::EditReviewed { review, capability }) => {
                     self.publish_edit_review(generation, review, capability);
                 }
@@ -426,6 +437,9 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::ReplaceFind { request_id } => {
+                        self.state.fail_replace_find(*request_id, error.to_string());
+                    }
                     PendingOperation::QueryDesignDescribe { request_id, .. }
                     | PendingOperation::QueryDesignBuild { request_id, .. }
                     | PendingOperation::QueryDesignImport { request_id, .. }
@@ -585,6 +599,7 @@ impl eframe::App for Desktop {
                 Action::ViewObjectDatasheet { tab } => self.view_object_datasheet(tab),
                 Action::NavigateRecord { target } => self.navigate_record(target),
                 Action::FindNext { request } => self.find_next(request),
+                Action::ReplaceFindMatch { request } => self.replace_find_match(request),
                 Action::CancelFind { request_id } => self.cancel_find(request_id),
                 Action::ViewSchema { table } => self.view_object_schema(table),
                 Action::ViewContents { target } => self.submit(Command::InspectCollection {
@@ -642,6 +657,12 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         match &self.pending {
+                            PendingOperation::ReplaceFind { request_id } => {
+                                self.state.fail_replace_find(
+                                    *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
                             PendingOperation::QueryDesignDescribe { request_id, .. }
                             | PendingOperation::QueryDesignBuild { request_id, .. }
                             | PendingOperation::QueryDesignImport { request_id, .. }

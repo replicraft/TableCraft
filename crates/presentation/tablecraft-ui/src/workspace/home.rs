@@ -114,14 +114,17 @@ impl State {
                     self.open_find();
                 }
                 ui.vertical(|ui| {
-                    if self.mock_preview {
-                        ribbon::mock_command(
-                            ui,
-                            &t,
-                            Icon::Replace,
-                            "ribbon-replace",
-                            CommandSize::Small,
-                        );
+                    if command(
+                        ui,
+                        Icon::Replace,
+                        &t.text("ribbon-replace"),
+                        self.can_open_find() && (self.replace_available || self.mock_preview),
+                        CommandSize::Small,
+                    )
+                    .on_disabled_hover_text(t.text("find-replace-unavailable"))
+                    .clicked()
+                    {
+                        self.open_replace();
                     }
                     self.record_menu(ui, actions);
                     if command(

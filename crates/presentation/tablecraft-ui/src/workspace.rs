@@ -34,6 +34,7 @@ pub use filtering::{
 };
 pub use find::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
+    ReplaceFindRequest,
 };
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
@@ -169,6 +170,9 @@ pub enum Action {
     ClearTableFilter {
         target: FilterTarget,
     },
+    ReplaceFindMatch {
+        request: ReplaceFindRequest,
+    },
     FindNext {
         request: FindRequest,
     },
@@ -276,6 +280,7 @@ pub struct State {
     deletion: Option<deletion::Dialog>,
     /// Host capability; false until the complete native Find service is ready.
     pub find_available: bool,
+    pub replace_available: bool,
     /// Host-qualified formatted-search capability, separate from raw Find.
     pub find_formatted_available: bool,
     find: Option<find::Session>,

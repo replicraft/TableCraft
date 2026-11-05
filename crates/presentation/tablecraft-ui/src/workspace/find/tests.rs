@@ -6,7 +6,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 
-fn state() -> State {
+pub(super) fn state() -> State {
     let mut state = State::default();
     state.dismiss_backstage();
     state.find_available = true;
@@ -32,7 +32,7 @@ fn state() -> State {
     state
 }
 
-fn page(offset: u32) -> Data {
+pub(super) fn page(offset: u32) -> Data {
     Data {
         row_ordinals: None,
         source_revision: Some(7),

@@ -58,6 +58,8 @@ pub enum Scene {
     DeleteReview,
     Find,
     FindSearching,
+    Replace,
+    ReplaceError,
     Filtered,
     FilterEmpty,
     FilterDisabled,
@@ -95,7 +97,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 66] = [
+    pub const ALL: [Self; 68] = [
         Self::Datasheet,
         Self::Objects,
         Self::ObjectLoading,
@@ -128,6 +130,8 @@ impl Scene {
         Self::DeleteReview,
         Self::Find,
         Self::FindSearching,
+        Self::Replace,
+        Self::ReplaceError,
         Self::Filtered,
         Self::FilterEmpty,
         Self::FilterDisabled,
@@ -164,7 +168,7 @@ impl Scene {
         Self::RecoveryDiagnosis,
     ];
 
-    /// Animated mock states cannot settle while their existing spinner is visible.
+    /// Pending spinners and focused input carets advance through bounded frames.
     pub const fn is_animated(self) -> bool {
         matches!(
             self,
@@ -174,7 +178,10 @@ impl Scene {
                 | Self::SavedInspecting
                 | Self::SavedRunning
                 | Self::CollectionLoading
+                | Self::Find
                 | Self::FindSearching
+                | Self::Replace
+                | Self::ReplaceError
                 | Self::DeleteChecking
                 | Self::EditChecking
                 | Self::EditValidating
@@ -218,6 +225,8 @@ impl Scene {
             Self::DeleteReview => "delete-review",
             Self::Find => "find",
             Self::FindSearching => "find-searching",
+            Self::Replace => "replace",
+            Self::ReplaceError => "replace-error",
             Self::Filtered => "filtered",
             Self::FilterEmpty => "filter-empty",
             Self::FilterDisabled => "filter-disabled",
@@ -388,6 +397,8 @@ impl Preview {
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),
             Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::Replace => self.state.prepare_mock_replace(false),
+            Scene::ReplaceError => self.state.prepare_mock_replace(true),
             Scene::Filtered => self.prepare_filter_scene(filtering::FilterScene::Applied),
             Scene::FilterEmpty => self.prepare_filter_scene(filtering::FilterScene::Empty),
             Scene::FilterDisabled => self.prepare_filter_scene(filtering::FilterScene::Disabled),

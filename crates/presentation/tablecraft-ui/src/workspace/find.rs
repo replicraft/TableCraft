@@ -1,5 +1,7 @@
 //! Modeless native-table Find. Search and matching belong to the shared runtime.
 mod dialog;
+mod replace;
+pub use replace::ReplaceFindRequest;
 
 use super::filtering::{FilterPublication, FilterTarget};
 use super::{Data, DocumentView, State};
@@ -75,6 +77,8 @@ pub(super) struct Session {
     formatted: bool,
     pending: Option<Pending>,
     found: Option<FindPosition>,
+    found_request: Option<FindRequest>,
+    replacement: replace::Replacement,
     not_found: bool,
     error: Option<String>,
     focus_input: bool,
@@ -164,6 +168,7 @@ impl State {
             return;
         }
         if let Some(session) = &mut self.find {
+            session.replacement.visible = false;
             session.focus_input = true;
             return;
         }
@@ -181,6 +186,8 @@ impl State {
             formatted: false,
             pending: None,
             found: None,
+            found_request: None,
+            replacement: replace::Replacement::default(),
             not_found: false,
             error: None,
             focus_input: true,
@@ -200,6 +207,20 @@ impl State {
             && let Some(request) = self.current_find_request()
         {
             self.begin_find(request_id, request);
+        }
+    }
+
+    pub(super) fn prepare_mock_replace(&mut self, error: bool) {
+        if !self.mock_preview {
+            return;
+        }
+        self.prepare_mock_find(None);
+        if let Some(session) = &mut self.find {
+            session.replacement.visible = true;
+            session.replacement.text = "Updated customer".into();
+            if error {
+                session.error = Some(self.localizer.text("find-replace-mock-help"));
+            }
         }
     }
 
@@ -241,10 +262,9 @@ impl State {
 
     pub fn can_find_next(&self, request: &FindRequest) -> bool {
         self.can_open_find()
-            && self
-                .find
-                .as_ref()
-                .is_some_and(|session| session.pending.is_none())
+            && self.find.as_ref().is_some_and(|session| {
+                session.pending.is_none() && session.replacement.pending.is_none()
+            })
             && !request.pattern.is_empty()
             && request.pattern.len() <= MAX_FIND_PATTERN_BYTES
             && (!request.formatted || self.find_formatted_available || self.mock_preview)
@@ -325,6 +345,8 @@ impl State {
                 let session = self.find.as_mut().expect("accepted Find session");
                 session.pending = None;
                 session.not_found = true;
+                session.found = None;
+                session.found_request = None;
                 true
             }
             (Some(found), Some(publication)) => {
@@ -381,6 +403,7 @@ impl State {
                 session.publication = self.focus_publication;
                 session.field = found.column.clone();
                 session.found = Some(found);
+                session.found_request = Some(request);
                 session.not_found = false;
                 self.find = Some(session);
                 true
@@ -400,13 +423,20 @@ impl State {
             .is_some_and(|pending| self.accepts_find_reply(request_id, &pending.request));
         if accepts && let Some(session) = &mut self.find {
             session.pending = None;
+            session.found = None;
+            session.found_request = None;
             session.error = Some(message);
         }
     }
 
     /// Closing requests cancellation of the current read; it never changes rows.
     pub fn close_find(&mut self) -> Option<u64> {
-        self.find.take()?.pending.map(|pending| pending.request_id)
+        let replace = self.replace_request_id();
+        self.find
+            .take()?
+            .pending
+            .map(|pending| pending.request_id)
+            .or(replace)
     }
 }
 

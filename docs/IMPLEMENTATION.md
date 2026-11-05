@@ -1,5 +1,33 @@
 # Implementation status
 
+## Reviewed current-occurrence Replace — 5 November 2026
+
+Home Replace now opens the shared Find and Replace window. A successful native
+Find receipt, unchanged search options, source/view publication and exact selected
+record/field are required. Runtime verifies the raw occurrence and UTF-16
+boundaries, computes literal replacement text, and returns an ordinary edit draft.
+The existing Review/Apply and retained journal save workflow remain explicit.
+Accepted drafts transfer to the ordinary edit owner, including Cancel before
+Review. Late replies cannot reopen an edit after closing/reopening Find.
+
+Supported carriers are raw Text and invariant unformatted integers, subject to
+normal native write admission. Lookup controls, stored NULL matches and
+unqualified regional numeric/date conversions visibly refuse. Empty replacement
+can remove matched text without silently inferring NULL. Replace All still needs
+its own atomic batch service; this route never loops single-cell commits. See
+[Find and Replace](ui/FIND_REPLACE.md) and the
+[runtime contract](application/RUNTIME.md#reviewed-replacement-of-a-find-occurrence).
+
+The final coordinated gate passed 108 runtime tests, the payload-free diagnostics
+check, 63 desktop tests and 202 UI tests, including all 68 × eight × two preview
+combinations (1,088). Real host tests cover Review/Apply/save/reopen, cancellation
+before review and rejection of a completed late receipt. Runtime cases include
+Unicode/surrogate boundaries, literal wildcard characters, integer partial edits,
+lookup refusal and filtered membership. Strict four-package and minimal-runtime
+Clippy, workspace formatting, documentation links and dependency checks passed.
+Four German light/dark replacement/error PNGs were opened offscreen at
+1000 × 680 logical points, scale 1.25; no native window or Access comparison ran.
+
 ## Visual SELECT design — 5 November 2026
 
 The scratch SQL object now exposes source cards and a Field/Table/Sort/Show/

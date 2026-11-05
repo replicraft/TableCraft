@@ -1,10 +1,11 @@
 //! Modeless Find follows Microsoft's public dialog layout; matching is host-owned.
+use super::replace::MAX_REPLACEMENT_BYTES;
 use super::{FindDirection, FindMatch, MAX_FIND_PATTERN_BYTES, Session};
 use crate::localization::{message, tr};
 use crate::workspace::{Action, State, diagnostics};
 use egui::{ComboBox, Id, Ui};
 
-const MAX_EDITOR_SCALARS: usize = 64 * 1024;
+const MAX_EDITOR_SCALARS: usize = crate::text_input::MAX_EDITOR_SCALARS;
 const FIND_WINDOW_WIDTH: f32 = 560.0;
 const FIND_BUTTON_WIDTH: f32 = 110.0;
 const FIND_VERTICAL_RESERVE: f32 = 160.0;
@@ -33,6 +34,14 @@ impl State {
             return;
         };
         let current_request = self.current_find_request();
+        let replace_ready = self
+            .current_replace_find_request()
+            .as_ref()
+            .is_some_and(|request| self.can_replace_find(request));
+        let found_current = self.found_receipt_current();
+        let stale_replace = self
+            .replace_request_id()
+            .filter(|id| !self.accepts_replace_find_reply(*id));
         let Some(session) = &mut self.find else {
             return;
         };
@@ -51,20 +60,31 @@ impl State {
                 request_id: pending.request_id,
             });
         }
+        if let Some(request_id) = stale_replace {
+            session.replacement.pending = None;
+            actions.push(Action::CancelFind { request_id });
+        }
+        if session.found.is_some() && !found_current {
+            session.found = None;
+            session.found_request = None;
+        }
         if session.field != position.column {
             session.field = position.column;
             session.found = None;
+            session.found_request = None;
             session.not_found = false;
             session.error = None;
         }
 
-        let enabled = !self.busy && session.pending.is_none();
+        let enabled =
+            !self.busy && session.pending.is_none() && session.replacement.pending.is_none();
         let ready = self.find_available || self.mock_preview;
         let formatted_available = self.find_formatted_available || self.mock_preview;
         let popup_open = egui::Popup::is_any_open(context);
         let mut open = true;
         let mut close = false;
         let mut submit = false;
+        let mut replace = false;
         egui::Window::new(self.localizer.text("find-title"))
             .id(Id::new("native_find_window"))
             .open(&mut open)
@@ -77,6 +97,17 @@ impl State {
             )
             .constrain_to(context.content_rect())
             .show(context, |ui| {
+                ui.add_enabled_ui(enabled, |ui| {
+                    ui.horizontal(|ui| {
+                        find_tab(ui, false, "find-tab", &mut session.replacement.visible);
+                        find_tab(
+                            ui,
+                            true,
+                            "find-replace-tab",
+                            &mut session.replacement.visible,
+                        );
+                    });
+                });
                 ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
                 let height = (context.content_rect().height() - FIND_VERTICAL_RESERVE)
                     .clamp(120.0, FIND_BODY_HEIGHT);
@@ -107,6 +138,21 @@ impl State {
                                         .min_size(egui::vec2(FIND_BUTTON_WIDTH, 0.0)),
                                 );
                                 submit |= search.clicked();
+                                if session.replacement.visible {
+                                    replace |= ui
+                                        .add_enabled(
+                                            enabled && replace_ready,
+                                            egui::Button::new(tr(ui, "find-replace-tab"))
+                                                .min_size(egui::vec2(FIND_BUTTON_WIDTH, 0.0)),
+                                        )
+                                        .clicked();
+                                    ui.add_enabled(
+                                        false,
+                                        egui::Button::new(tr(ui, "find-replace-all"))
+                                            .min_size(egui::vec2(FIND_BUTTON_WIDTH, 0.0)),
+                                    )
+                                    .on_disabled_hover_text(tr(ui, "find-replace-all-unavailable"));
+                                }
                                 close = ui
                                     .add_sized(
                                         egui::vec2(FIND_BUTTON_WIDTH, ui.spacing().interact_size.y),
@@ -118,10 +164,23 @@ impl State {
                         if session.pattern.len() > MAX_FIND_PATTERN_BYTES {
                             ui.label(tr(ui, "find-pattern-limit"));
                         }
-                        if session.pending.is_some() {
+                        if session.replacement.visible {
+                            ui.small(tr(ui, "find-replace-review-help"));
+                            if !self.replace_available && !self.mock_preview {
+                                ui.small(tr(ui, "find-replace-unavailable"));
+                            }
+                        }
+                        if session.pending.is_some() || session.replacement.pending.is_some() {
                             ui.horizontal(|ui| {
                                 ui.spinner();
-                                ui.label(tr(ui, "find-searching"));
+                                ui.label(tr(
+                                    ui,
+                                    if session.replacement.pending.is_some() {
+                                        "find-replacing"
+                                    } else {
+                                        "find-searching"
+                                    },
+                                ));
                             });
                         }
                         if session.not_found {
@@ -141,7 +200,14 @@ impl State {
                             diagnostics::show(ui, ui.id().with("find_error"), error);
                         }
                         if self.mock_preview {
-                            ui.small(tr(ui, "find-mock-help"));
+                            ui.small(tr(
+                                ui,
+                                if session.replacement.visible {
+                                    "find-replace-mock-help"
+                                } else {
+                                    "find-mock-help"
+                                },
+                            ));
                         }
                         if !ready {
                             ui.small(tr(ui, "find-unavailable"));
@@ -157,6 +223,12 @@ impl State {
             if let Some(request_id) = self.close_find() {
                 actions.push(Action::CancelFind { request_id });
             }
+        } else if replace
+            && enabled
+            && let Some(request) = self.current_replace_find_request()
+            && self.can_replace_find(&request)
+        {
+            actions.push(Action::ReplaceFindMatch { request });
         } else if submit
             && enabled
             && ready
@@ -171,13 +243,22 @@ impl State {
 fn controls(ui: &mut Ui, session: &mut Session, formatted_available: bool) -> bool {
     let mut submit = false;
     let mut changed = false;
+    let mut rejected = None;
     egui::Grid::new("find_controls")
         .num_columns(2)
         .show(ui, |ui| {
             let label = ui.label(tr(ui, "find-what"));
+            let id = ui.make_persistent_id("find_pattern");
+            let rejected_pattern = crate::text_input::reject_oversized_events(
+                ui,
+                id,
+                &session.pattern,
+                MAX_FIND_PATTERN_BYTES,
+            );
             let input = ui
                 .add(
                     egui::TextEdit::singleline(&mut session.pattern)
+                        .id(id)
                         // Bound editor layout by scalars. The independent UTF-8
                         // request byte limit still rejects large non-ASCII input.
                         .char_limit(MAX_EDITOR_SCALARS)
@@ -189,9 +270,34 @@ fn controls(ui: &mut Ui, session: &mut Session, formatted_available: bool) -> bo
                 session.focus_input = false;
             }
             changed |= input.changed();
+            if rejected_pattern {
+                rejected = Some("find-pattern-limit");
+            }
             submit |= (input.has_focus() || input.lost_focus())
                 && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
             ui.end_row();
+
+            if session.replacement.visible {
+                let label = ui.label(tr(ui, "find-replace-with"));
+                let id = ui.make_persistent_id("find_replacement");
+                let rejected_replacement = crate::text_input::reject_oversized_events(
+                    ui,
+                    id,
+                    &session.replacement.text,
+                    MAX_REPLACEMENT_BYTES,
+                );
+                ui.add(
+                    egui::TextEdit::singleline(&mut session.replacement.text)
+                        .id(id)
+                        .char_limit(MAX_EDITOR_SCALARS)
+                        .desired_width(ui.available_width()),
+                )
+                .labelled_by(label.id);
+                if rejected_replacement {
+                    rejected = Some("find-replacement-limit");
+                }
+                ui.end_row();
+            }
 
             let label = ui.label(tr(ui, "find-look-in"));
             ComboBox::from_id_salt("find_scope")
@@ -260,8 +366,12 @@ fn controls(ui: &mut Ui, session: &mut Session, formatted_available: bool) -> bo
         .changed();
     if changed {
         session.found = None;
+        session.found_request = None;
         session.not_found = false;
         session.error = None;
+    }
+    if let Some(key) = rejected {
+        session.error = Some(tr(ui, key));
     }
     submit
 }
@@ -280,4 +390,17 @@ fn direction_key(value: FindDirection) -> &'static str {
         FindDirection::Up => "find-up",
         FindDirection::Down => "find-down",
     }
+}
+
+fn find_tab(ui: &mut Ui, replacement: bool, key: &str, selected: &mut bool) {
+    let active = *selected == replacement;
+    let response = ui.selectable_label(active, tr(ui, key));
+    if response.clicked() {
+        *selected = replacement;
+    }
+    ui.ctx().accesskit_node_builder(response.id, |node| {
+        node.set_role(egui::accesskit::Role::Tab);
+        node.clear_toggled();
+        node.set_selected(active);
+    });
 }

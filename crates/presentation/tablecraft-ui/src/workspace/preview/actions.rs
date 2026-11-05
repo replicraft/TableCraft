@@ -120,6 +120,15 @@ impl Preview {
                     );
                 }
             }
+            Action::ReplaceFindMatch { request } => {
+                let request_id = self.request();
+                if self.state.begin_replace_find(request_id, request) {
+                    self.state.fail_replace_find(
+                        request_id,
+                        self.state.localizer.text("find-replace-mock-help"),
+                    );
+                }
+            }
             Action::FindNext { request } => self.mock_find(request),
             Action::CancelFind { .. } => {}
             Action::ReviewDelete { target } => self.mock_review_delete(target, true),

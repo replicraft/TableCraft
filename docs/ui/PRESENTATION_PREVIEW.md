@@ -68,9 +68,9 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 66 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 68 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
-local renderer. Animated pending scenes advance exactly three frames rather than waiting
+local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
 open an OS window. Keep generated images in ignored local output directories.
 
@@ -721,3 +721,20 @@ The table chooser uses a full-width bounded list and right-aligned Add/Close.
 The full 66 × eight × two drawing matrix passes (1,056 combinations). Native
 window-manager behavior and Windows Access interaction remain unverified; joins
 use the documented context-menu workflow rather than native drag-and-drop.
+
+## Find and Replace — 5 November 2026
+
+The current inventory is 68 scenes. `replace` and `replace-error` add the
+modeless Find/Replace tabs, literal replacement input, explicit Review/Apply
+explanation and unavailable atomic Replace All. These are synthetic controls;
+the preview never verifies a native match or manufactures an edit capability.
+Active Find/Replace carets use the renderer's bounded animated-scene frames.
+
+All 202 UI tests pass, including 68 scenes × eight locales × two themes
+(1,088 combinations). Four German light/dark replacement and error PNGs were
+exported and opened at 1000 × 680 logical points, scale 1.25 (1250 × 850 physical
+pixels), using `de-DE` on the macOS offscreen renderer with Windows keyboard
+conventions. Inputs, tab labels, right-side buttons and error reports remained
+visible. The actual Microsoft Find dialog image was reopened; it depicts only
+the Find tab, so the replacement panel remains a documented visual adaptation.
+No native window or Windows Access interaction was exercised.

@@ -1,5 +1,5 @@
-# Modeless native-table Find. No Replace workflow.
-find-title = Find
+# Modeless Find and reviewed single-occurrence replacement.
+find-title = Find and Replace
 find-what = Find What:
 find-look-in = Look In:
 find-match = Match:
@@ -22,3 +22,13 @@ find-mock-help = Synthetic Find controls only. No database file is opened or sea
 find-unavailable = Native Find is not available in this host yet.
 find-pattern-limit = The search pattern exceeds the 64 KiB UTF-8 limit. Shorten it before searching.
 find-query-unavailable = Finding in query results is not implemented yet.
+find-tab = Find
+find-replace-tab = Replace
+find-replace-with = Replace With:
+find-replace-all = Replace All
+find-replace-all-unavailable = Replace All requires a safe atomic batch service and is not available yet.
+find-replace-review-help = Find a match, then Replace opens an edit for review. Nothing is saved until Apply.
+find-replace-unavailable = Reviewed replacement is not available in this host.
+find-replacement-limit = Replacement text exceeds the 64 KiB UTF-8 limit. The previous input was retained.
+find-replacing = Preparing replacement…
+find-replace-mock-help = Synthetic replacement controls only. No match is verified and no edit is prepared.
