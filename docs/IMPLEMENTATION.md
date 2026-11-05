@@ -2,13 +2,14 @@
 
 ## Presentation lifecycle review — 5 November 2026
 
-The shared presentation preview now covers 39 synthetic scenes, including query
+The shared presentation preview covers 40 synthetic scenes, including long names, query
 reruns/errors, declared parameters, collection absence/empty/NULL distinctions,
 validation and save/recovery outcomes. Parameter overflow controls, collection
 headers and bounded initial column sizing improve existing views. Terminal save
-headings preserve literal host outcome details. The batch passes 86 shared UI
-and 23 desktop tests, strict lint and all 624 locale/theme/scene drawing cases.
-No database capability or runtime service was added. See the
+headings preserve literal host outcome details. Bounded dialog bodies retain full
+literal diagnoses while keeping existing actions reachable. Dated verification
+records live in the preview guide. These slices add no database capability or
+runtime service. See the
 [review scope and limits](ui/PRESENTATION_PREVIEW.md#query-collection-and-save-lifecycle-review--5-november-2026).
 
 ## Shared presentation preview — 4 November 2026

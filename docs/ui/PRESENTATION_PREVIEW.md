@@ -54,7 +54,7 @@ cargo run -p tablecraft-ui --example render_preview
 ```
 
 Omit `TABLECRAFT_PREVIEW_SCENE` to export all 40 scenes. Artifacts are PNGs at
-1280 × 820 logical pixels, 1× scale, using Windows keyboard conventions on the
+1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
 open an OS window. Keep generated images in ignored local output directories.
@@ -62,6 +62,14 @@ open an OS window. Keep generated images in ignored local output directories.
 Set `TABLECRAFT_PREVIEW_WIDTH` and `TABLECRAFT_PREVIEW_HEIGHT` to review another
 viewport, for example the desktop minimum of 900 × 580. Use a different output
 directory to keep those artifacts separate from the default-size review.
+
+Set `TABLECRAFT_PREVIEW_SCALE` to a finite value from 1 to 2 to review display
+scaling (for example `1.25`, `1.5` or `2`). Width and height remain logical
+points; a 900 × 580 frame at 2× exports 1800 × 1160 physical pixels. Scaled
+filenames include an `@2x` or corresponding fractional-scale suffix so they do
+not overwrite the default 1× frames. Use distinct directories for different
+logical viewport sizes. Offscreen DPI simulation does not verify native monitor
+switching, operating-system scaling or a platform's window chrome.
 
 ## Local verification — 4 November 2026
 
@@ -207,3 +215,32 @@ names, datasheet, review and attachments; Russian dark long names and recovery.
 The long-name/title, ordinary title, review and recovery layouts were opened for
 visual inspection. These remain macOS offscreen observations; no native Windows
 or assistive-tool qualification follows from them.
+
+## Display scaling and query keyboard review — 5 November 2026
+
+The renderer now accepts explicit 1×–2× scale while keeping logical viewport
+sizes fixed. The existing Ribbon overflow/focus test runs at 1×, 1.25×, 1.5× and
+2×, retaining physical-pixel edge checks, exact glyph clipping and manual scroll
+assertions. Four scaled frames were exported and their physical dimensions checked:
+English light datasheet at 1350 × 870, Russian dark long names at 1125 × 725,
+Japanese light Design at 2560 × 1640 and Chinese dark parameters at 1800 × 1160.
+Cyrillic/CJK and existing selection/focus presentation were reviewed. The Japanese
+navigation heading exposed an orphaned final character; it now truncates on one
+line with its full name retained for hover/accessibility, following the Access
+capture. No speculative pixel-snapping changes were needed.
+
+Long multiline SQL is now bounded by a scrollable editor so Run remains visible.
+Full SQL and the existing run shortcut remain unchanged. Actual Tab traversal of
+12 saved-query prompts reproduced a focused NULL control outside the viewport;
+parameter controls now reveal themselves on gained focus only. Modal Tab/ShiftTab
+and Escape probes found no additional defect and retained save-owner restrictions.
+Existing SQL-editor Tab indentation is unchanged. Full workspace pane cycling
+remains work; [Microsoft's keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents F6/Shift+F6 navigation and is the contract for that next slice.
+
+The batch passes 96 UI tests and 23 desktop tests, strict Clippy, formatting,
+documentation links and dependency guards. The complete 640 locale/theme/scene
+draw checks remain passing; the four Ribbon scales are a separate focused
+geometry check. Invalid zero, oversized, NaN and infinite renderer scales refuse
+before output-directory creation. Offscreen review still does not qualify native
+monitor transitions, Windows interaction or screen-reader tools.
