@@ -50,3 +50,5 @@ datasheet-go = Ir
 datasheet-null-value = NULL
 datasheet-close-table = Fechar tabela
 datasheet-sort-column = Ordenar { $column }
+
+datasheet-last = Último

@@ -15,16 +15,6 @@ pub(in crate::workspace) fn mock(
 }
 
 pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
-    group(ui, &t.text("ribbon-find-group"), |ui| {
-        ui.horizontal(|ui| {
-            mock(ui, t, Icon::Search, "ribbon-find", CommandSize::Large);
-            ui.vertical(|ui| {
-                mock(ui, t, Icon::Replace, "ribbon-replace", CommandSize::Small);
-                mock(ui, t, Icon::GoTo, "ribbon-go-to", CommandSize::Small);
-                mock(ui, t, Icon::Cursor, "ribbon-select", CommandSize::Small);
-            });
-        });
-    });
     group(ui, &t.text("ribbon-text-formatting"), |ui| {
         ui.add_enabled(
             false,

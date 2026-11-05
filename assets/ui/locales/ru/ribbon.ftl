@@ -73,3 +73,5 @@ ribbon-refresh-table = Обновить
 ribbon-refresh-table-help = Загрузить текущую страницу таблицы заново.
 ribbon-sorted-results = Отсортированная таблица (только чтение)
 ribbon-mock-sort-disabled = Сортировка всей таблицы недоступна в этом синтетическом просмотре. Порядок строк не изменён.
+
+ribbon-select-record = Выбрать запись

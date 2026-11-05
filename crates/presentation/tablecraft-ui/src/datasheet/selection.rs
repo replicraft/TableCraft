@@ -44,6 +44,25 @@ impl Selection {
         }
     }
 
+    /// Explicit Select record preserves the current native row and field.
+    pub(crate) fn select_record(&mut self, data: &Data, context: &egui::Context) -> bool {
+        let Some((row, column)) = self.position else {
+            return false;
+        };
+        if data
+            .rows
+            .get(row)
+            .and_then(|values| values.get(column))
+            .is_none()
+        {
+            return false;
+        }
+        self.row_selected = true;
+        self.copy_error = None;
+        self.focus_selected(context);
+        true
+    }
+
     /// Pane entry reveals the existing selection without changing cell/record mode.
     pub(crate) fn focus_selected(&mut self, context: &egui::Context) {
         if let Some((row, _)) = self.position {

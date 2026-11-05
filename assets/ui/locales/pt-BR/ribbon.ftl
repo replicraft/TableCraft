@@ -73,3 +73,5 @@ ribbon-refresh-table = Atualizar
 ribbon-refresh-table-help = Recarregar a página atual da tabela.
 ribbon-sorted-results = Resultados da tabela ordenados (somente leitura)
 ribbon-mock-sort-disabled = A ordenação da tabela inteira não está disponível nesta prévia sintética. Nenhuma linha foi reordenada.
+
+ribbon-select-record = Selecionar registro

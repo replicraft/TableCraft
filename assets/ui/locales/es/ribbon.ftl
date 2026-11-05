@@ -73,3 +73,5 @@ ribbon-refresh-table = Actualizar
 ribbon-refresh-table-help = Volver a cargar la página actual de la tabla.
 ribbon-sorted-results = Resultados de tabla ordenados (solo lectura)
 ribbon-mock-sort-disabled = La ordenación de la tabla completa no está disponible en esta vista previa sintética. No se reordenaron filas.
+
+ribbon-select-record = Seleccionar registro
