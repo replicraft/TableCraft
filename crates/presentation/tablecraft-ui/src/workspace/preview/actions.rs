@@ -289,7 +289,7 @@ impl Preview {
                 target,
                 original,
                 initial,
-                input_kind: "text".into(),
+                input_hint: crate::InputHint::Text,
                 nullable: true,
             },
         );

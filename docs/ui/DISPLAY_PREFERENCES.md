@@ -113,3 +113,11 @@ release and acknowledgement. Successful refresh uses complete native membership
 so deleting a later page's last record does not leave an unexplained empty page.
 This is a provisional explicit offline confirmation, not native Access autosave
 or an Undo implementation. See [runtime limits](../application/RUNTIME.md#reviewed-offline-row-deletion).
+
+
+## Input instructions
+
+Cell edits and New row fields use shared typed instruction tags, translated
+through Fluent in all eight UI languages. Original field names are not translated.
+Decimal input explicitly uses `.` even when regional display uses a comma. The
+UI never reparses formatted Currency/date text as a replacement value.

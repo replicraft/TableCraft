@@ -2,12 +2,14 @@
 mod deleting;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod draft;
+mod hint;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod ids;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod input;
 mod inserting;
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
+pub use hint::InputHint;
 mod save;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 mod unsupported;
@@ -56,7 +58,7 @@ pub struct EditDraft {
     pub target: EditTarget,
     pub original: Cell,
     pub initial: EditInput,
-    pub input_kind: String,
+    pub input_hint: InputHint,
     /// Reader nullability only; Required and all other backend gates still apply.
     pub nullable: bool,
 }

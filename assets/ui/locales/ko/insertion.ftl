@@ -14,4 +14,3 @@ insertion-review = 새 행 검토
 insertion-field-limit = 이 테이블에는 제한된 새 행 대화 상자에서 지원하는 것보다 많은 필드가 있습니다.
 insertion-input-limit = 새 행이 지원되는 입력 크기를 초과합니다. 검토하기 전에 값을 줄이세요.
 insertion-mock-help = 합성 입력 전용입니다. 데이터베이스 파일을 열거나 변경하지 않습니다.
-insertion-mock-kind = 합성 텍스트 입력

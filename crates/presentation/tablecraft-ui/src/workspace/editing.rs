@@ -1,5 +1,7 @@
 //! Offline edit UI retains runtime-issued drafts/reviews, never native values or SQL.
 mod dialog;
+mod hints;
+pub use hints::InputHint;
 
 use super::{Data, DocumentView, State};
 use crate::{Cell, CellKind};
@@ -23,7 +25,7 @@ pub struct EditDraft {
     pub target: EditTarget,
     pub original: Cell,
     pub initial: EditInput,
-    pub input_kind: String,
+    pub input_hint: InputHint,
     pub nullable: bool,
 }
 

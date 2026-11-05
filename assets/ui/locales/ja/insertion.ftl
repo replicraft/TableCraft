@@ -14,4 +14,3 @@ insertion-review = 新しい行を確認
 insertion-field-limit = このテーブルのフィールド数は、新しい行ダイアログの上限を超えています。
 insertion-input-limit = 新しい行の入力サイズが上限を超えています。確認する前に値を短くしてください。
 insertion-mock-help = 合成入力のみです。データベースファイルは開かれず、変更されません。
-insertion-mock-kind = 合成テキスト入力

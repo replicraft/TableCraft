@@ -45,7 +45,7 @@ fn state() -> (State, InsertTarget) {
             target: target.clone(),
             fields: vec![InsertField {
                 name: "Name".into(),
-                input_kind: "text".into(),
+                input_hint: crate::InputHint::Text,
                 nullable: true,
             }],
         },

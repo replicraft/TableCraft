@@ -19,7 +19,7 @@ mod schema;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use deletion::{DeleteReview, DeleteTarget};
-pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget};
+pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use records::RecordTarget;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};

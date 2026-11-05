@@ -14,4 +14,3 @@ insertion-review = Revisar nueva fila
 insertion-field-limit = Esta tabla tiene demasiados campos para el diálogo limitado de nueva fila.
 insertion-input-limit = La nueva fila supera el tamaño de entrada admitido. Acorte los valores antes de revisarla.
 insertion-mock-help = Solo entrada sintética. No se abre ni modifica ningún archivo de base de datos.
-insertion-mock-kind = Entrada de texto sintética

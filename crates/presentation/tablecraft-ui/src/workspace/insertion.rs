@@ -1,7 +1,7 @@
 //! Runtime-owned row insertion decisions, independent of cell-edit row handles.
 mod dialog;
 
-use super::{DocumentView, EditInput, EditSaveOutcome, State};
+use super::{DocumentView, EditInput, EditSaveOutcome, InputHint, State};
 
 const MAX_INSERT_FIELDS: usize = 256;
 const MAX_INSERT_TEXT_BYTES: usize = 8 * 1024 * 1024;
@@ -14,7 +14,7 @@ pub struct InsertTarget {
 
 pub struct InsertField {
     pub name: String,
-    pub input_kind: String,
+    pub input_hint: InputHint,
     pub nullable: bool,
 }
 

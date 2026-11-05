@@ -33,7 +33,7 @@ fn draft(target: EditTarget) -> EditDraft {
             text: "12".into(),
             is_null: false,
         },
-        input_kind: "Signed integer".into(),
+        input_hint: InputHint::Int32,
         nullable: true,
     }
 }
@@ -340,6 +340,87 @@ fn compact_edit_dialog_keeps_actions_visible_beside_long_literal_content() {
         if variant == 3 {
             assert!(state.edit_save_pending());
             assert!(!state.close_edit());
+        }
+    }
+}
+
+#[test]
+fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing_inputs() {
+    for (locale, hint, expected) in [
+        (
+            crate::Locale::De,
+            InputHint::Currency,
+            r#"Währung: Dezimalbetrag (vier Nachkommastellen) Als Dezimaltrennzeichen "." verwenden."#,
+        ),
+        (
+            crate::Locale::Ja,
+            InputHint::DateTimeExtendedIso,
+            "拡張日時: ISO形式のローカル日時（100 ns精度）",
+        ),
+    ] {
+        for insertion in [false, true] {
+            let (mut state, target) = state();
+            state.localizer = crate::Localizer::new(locale).unwrap();
+            if insertion {
+                state.database.as_mut().unwrap().tables.push(crate::Table {
+                    name: target.table.clone(),
+                    system: false,
+                    storage: "Local".into(),
+                });
+                let target = crate::InsertTarget {
+                    document_revision: target.document_revision,
+                    table: target.table,
+                };
+                state.begin_insert(target.clone(), 1);
+                state.set_insert_draft(
+                    1,
+                    crate::InsertDraft {
+                        id: 20,
+                        target,
+                        fields: vec![crate::InsertField {
+                            name: "Amount".into(),
+                            input_hint: hint,
+                            nullable: true,
+                        }],
+                    },
+                );
+            } else {
+                state.begin_edit(target.clone(), 1);
+                let mut draft = draft(target);
+                draft.input_hint = hint;
+                state.set_edit_draft(1, draft);
+            }
+
+            let context = egui::Context::default();
+            let mut hint_visible = false;
+            for _ in 0..2 {
+                let mut output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(900.0, 580.0),
+                        )),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        assert!(state.show(ui).is_empty());
+                    },
+                );
+                hint_visible |= output.shapes.iter().any(|shape| match &shape.shape {
+                    egui::epaint::Shape::Text(text) => {
+                        let bounds = egui::Rect::from_min_size(text.pos, text.galley.size());
+                        text.galley.job.text == expected && shape.clip_rect.contains_rect(bounds)
+                    }
+                    _ => false,
+                });
+                output.textures_delta.clear();
+            }
+            assert!(hint_visible, "{locale:?}, insertion={insertion}");
+            if let Some(EditDialog::Draft { input, .. }) = &state.edit {
+                assert_eq!(input.text, "12");
+                assert!(!input.is_null);
+            }
+            assert_eq!(state.localizer.diagnostics(), Default::default());
         }
     }
 }

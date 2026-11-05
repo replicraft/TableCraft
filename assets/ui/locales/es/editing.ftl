@@ -67,3 +67,19 @@ editing-save-reason-recovery = la recuperación no finalizó normalmente
 editing-save-reason-finalization = la finalización del guardado no terminó normalmente
 editing-save-reason-release = no se confirmó la liberación del bloqueo
 editing-save-reason-state = la sesión de guardado requiere diagnóstico
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = Booleano: true o false
+editing-input-byte = Byte: de 0 a 255
+editing-input-int16 = Entero de 16 bits con signo
+editing-input-int32 = Entero de 32 bits con signo
+editing-input-int64 = Entero de 64 bits con signo
+editing-input-single = Single: número decimal Use "." como separador decimal.
+editing-input-double = Double: número decimal Use "." como separador decimal.
+editing-input-currency = Moneda: importe decimal (cuatro decimales) Use "." como separador decimal.
+editing-input-decimal = Número decimal Use "." como separador decimal.
+editing-input-text = Texto literal
+editing-input-binary = Binario: pares de bytes hexadecimales
+editing-input-guid = GUID: identificador canónico
+editing-input-date = DATE heredado: fecha y hora civil ISO (sin zona horaria)
+editing-input-date-extended = Fecha y hora extendida: fecha y hora civil ISO (precisión de 100 ns)

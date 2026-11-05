@@ -249,6 +249,18 @@ return an explicit unsupported result. This reviewed-cell workflow is a bounded
 offline workflow, not Access autosave, record navigation or query-result
 updateability parity.
 
+## Localized input instructions
+
+EditDraft and InsertField publish an inert InputHint tag derived from the actual
+schema type. The desktop mirrors that tag exhaustively; the shared UI selects
+Fluent instructions in the current language. Original field names remain literal
+metadata. These hints neither choose a parser nor grant native write eligibility.
+
+Single, Double, Currency and Decimal instructions explicitly require the invariant
+`.` decimal separator. Regional display choices, symbols and translated prose
+never become implicit input syntax. Parsing and unchanged DATE/float preservation
+continue to use actual schema/native values, independently of the hint tag.
+
 ## Reviewed offline row insertion
 
 The same `offline-edit` worker now accepts BeginInsert/ReviewInsert. InsertTarget

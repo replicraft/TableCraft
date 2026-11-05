@@ -24,7 +24,7 @@ pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
-    DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
+    DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget, InputHint,
     InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedDelete,
     ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveSessionState,

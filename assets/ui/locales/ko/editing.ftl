@@ -67,3 +67,19 @@ editing-save-reason-recovery = 복구가 정상적으로 완료되지 않았습�
 editing-save-reason-finalization = 저장 마무리 처리가 정상적으로 완료되지 않았습니다
 editing-save-reason-release = 잠금 해제가 확인되지 않았습니다
 editing-save-reason-state = 저장 세션의 진단이 필요합니다
+
+# Typed input instructions; literal true/false and ISO syntax stay invariant.
+editing-input-boolean = 논리값: true 또는 false
+editing-input-byte = 바이트: 0~255
+editing-input-int16 = 부호 있는 16비트 정수
+editing-input-int32 = 부호 있는 32비트 정수
+editing-input-int64 = 부호 있는 64비트 정수
+editing-input-single = Single: 십진수 소수 구분 기호로 "."을 사용하세요.
+editing-input-double = Double: 십진수 소수 구분 기호로 "."을 사용하세요.
+editing-input-currency = 통화: 십진 금액(소수점 이하 네 자리) 소수 구분 기호로 "."을 사용하세요.
+editing-input-decimal = 십진수 소수 구분 기호로 "."을 사용하세요.
+editing-input-text = 입력한 그대로의 텍스트
+editing-input-binary = 이진 데이터: 바이트당 두 자리 16진수
+editing-input-guid = GUID: 표준 형식 식별자
+editing-input-date = 기존 DATE: ISO 형식 현지 날짜와 시간(시간대 없음)
+editing-input-date-extended = 확장 날짜와 시간: ISO 형식 현지 날짜와 시간(100 ns 정밀도)
