@@ -14,6 +14,7 @@ pub mod preview;
 mod query;
 mod records;
 mod ribbon;
+mod row_identity;
 mod save_display;
 mod saved_query;
 mod schema;
@@ -27,6 +28,7 @@ pub use find::{
 };
 pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
 pub use records::RecordTarget;
+pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 
@@ -56,6 +58,8 @@ pub struct Database {
 /// One bounded buffered page or query result supplied by the host.
 pub struct Data {
     pub source_revision: Option<u64>,
+    /// Physical native membership for a sparse display page; offset stays visible.
+    pub row_ordinals: Option<RowOrdinals>,
     pub table: String,
     pub offset: u32,
     pub columns: Vec<Column>,
@@ -242,6 +246,10 @@ impl State {
 
     /// Publish a table response without replacing the query result.
     pub fn set_table_data(&mut self, mut data: Data) {
+        if data.validate_row_ordinals().is_err() {
+            self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
+            return;
+        }
         self.bump_focus_publication();
         self.reset_record_navigation();
         self.invalidate_edit();
@@ -253,6 +261,10 @@ impl State {
 
     /// Publish a query response without changing the table page or its offset.
     pub fn set_query_data(&mut self, mut data: Data) {
+        if data.source_revision.is_some() || data.row_ordinals.is_some() {
+            self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
+            return;
+        }
         self.sorted_query = false;
         self.bump_focus_publication();
         self.reset_record_navigation();
@@ -527,6 +539,7 @@ mod tests {
 
     fn data(table: &str, offset: u32) -> Data {
         Data {
+            row_ordinals: None,
             source_revision: None,
             table: table.into(),
             offset,
@@ -652,6 +665,7 @@ mod selection_tests {
 
     fn data(text: &str) -> Data {
         Data {
+            row_ordinals: None,
             source_revision: None,
             table: "Same result name".into(),
             offset: 0,

@@ -29,6 +29,7 @@ struct Binding {
     saved_query: bool,
     document_revision: Option<u64>,
     source_revision: Option<u64>,
+    parent_ordinal: Option<u32>,
     table: String,
     offset: u32,
     row: usize,
@@ -68,7 +69,8 @@ impl Binding {
             return None;
         }
         let data = state.visible_data()?;
-        if data.source_revision != self.source_revision
+        if data.parent_ordinal(self.row) != self.parent_ordinal
+            || data.source_revision != self.source_revision
             || data.table != self.table
             || data.offset != self.offset
         {
@@ -144,6 +146,7 @@ impl State {
                 .as_ref()
                 .map(|database| database.document_revision),
             source_revision: data.source_revision,
+            parent_ordinal: data.parent_ordinal(row),
             table: data.table.clone(),
             offset: data.offset,
             row,

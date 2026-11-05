@@ -8,6 +8,7 @@ use egui_kittest::{
 
 fn page(offset: u32, count: usize, has_more: bool) -> Data {
     Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),
         offset,
@@ -472,4 +473,39 @@ fn home_select_record_uses_visible_query_and_saved_result_without_native_handles
                 .contains(&egui::OutputCommand::CopyText("1\tvalue\n".into()),)
         );
     }
+}
+
+#[test]
+fn sparse_navigation_moves_displayed_neighbors_without_unfiltered_reads() {
+    let mut state = state();
+    let mut sparse = page(50, 2, true);
+    sparse.row_ordinals = Some(crate::RowOrdinals::new(vec![7, 100]).unwrap());
+    state.set_table_data(sparse);
+    state
+        .table_selection
+        .select(state.data.as_ref().unwrap(), 0, 1);
+    let target = state.selected_record_target().unwrap();
+    assert_eq!(target.parent_ordinal, 7);
+    assert!(!state.can_navigate_record(&target));
+    assert_eq!(
+        state.record_positions(),
+        Some(RecordPositions {
+            current: 50,
+            first: None,
+            previous: None,
+            next: Some(51),
+            last: None,
+        })
+    );
+
+    let mut actions = Vec::new();
+    state.request_display_record(target.clone(), 51, &mut actions);
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+    assert_eq!(state.selected_record_target().unwrap().parent_ordinal, 100);
+    assert!(actions.is_empty());
+
+    state.request_display_record(target, 52, &mut actions);
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+    assert!(state.records.error.is_some());
+    assert!(actions.is_empty());
 }

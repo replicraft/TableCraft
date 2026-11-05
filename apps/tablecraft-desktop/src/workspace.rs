@@ -265,6 +265,7 @@ impl Desktop {
                     has_more,
                 }) => {
                     let data = Data {
+                        row_ordinals: None,
                         source_revision,
                         table,
                         offset,
@@ -313,6 +314,7 @@ impl Desktop {
                     if let PendingOperation::Contents { request_id, .. } = &self.pending {
                         let target = crate::view_models::contents_target(&target);
                         let data = Data {
+                            row_ordinals: None,
                             table: target.column.clone(),
                             source_revision: None,
                             offset: 0,

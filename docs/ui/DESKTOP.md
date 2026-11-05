@@ -1,5 +1,13 @@
 # Native desktop preview
 
+Native table pages can carry checked sparse row membership independently of
+their displayed offset. Editing, deletion and collection targets resolve the
+original snapshot ordinal through that membership; query results cannot acquire
+native identity from their row position. Malformed maps refuse publication or
+target construction without a contiguous fallback. Visible numbering remains a
+separate display position. Complete filtered-view workflows are being integrated;
+generic unfiltered navigation and Find do not silently bypass a mapped view.
+
 For the current presentation-only mock mode, light/dark themes and bundled
 Fluent languages, see [presentation preview](PRESENTATION_PREVIEW.md). The native
 interaction records below retain the scope and state observed at their capture.

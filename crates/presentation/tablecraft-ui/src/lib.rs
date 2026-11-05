@@ -22,7 +22,8 @@ pub use workspace::{
     EditInput, EditReview, EditSaveOutcome, EditTarget, Field, FieldProperty, FieldPropertyValue,
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
     InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ParameterInput,
-    ParameterSpec, RecordTarget, SavedQuery, SavedQueryTarget, Schema, State, Table,
+    ParameterSpec, RecordTarget, RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget,
+    Schema, State, Table,
 };
 
 #[cfg(test)]
@@ -50,6 +51,7 @@ mod tests {
                 });
                 state.dismiss_backstage();
                 state.data = Some(Data {
+                    row_ordinals: None,
                     source_revision: None,
                     table: "Customers".into(),
                     offset: 0,

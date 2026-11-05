@@ -14,6 +14,7 @@ fn state() -> State {
         ..Default::default()
     };
     state.set_table_data(Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Original table".into(),
         offset: 100,
@@ -41,6 +42,7 @@ fn state() -> State {
 
 fn data() -> Data {
     Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Contents".into(),
         offset: 0,

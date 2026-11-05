@@ -153,7 +153,9 @@ impl State {
                         .any(|table| table.name == target.table && !table.system)
             })
             && self.data.as_ref().is_some_and(|data| {
-                data.source_revision == Some(target.document_revision) && data.table == target.table
+                data.source_revision == Some(target.document_revision)
+                    && data.validate_row_ordinals().is_ok()
+                    && data.table == target.table
             })
     }
 

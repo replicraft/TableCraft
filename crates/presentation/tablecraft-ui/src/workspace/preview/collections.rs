@@ -24,14 +24,10 @@ impl Preview {
         let Some(column) = parent.column_index(&target.column) else {
             return;
         };
-        let Some(row) = target.parent_ordinal.checked_sub(parent.offset) else {
+        let Some(row) = parent.row_index(target.parent_ordinal) else {
             return;
         };
-        let Some(cell) = parent
-            .rows
-            .get(row as usize)
-            .and_then(|row| row.get(column))
-        else {
+        let Some(cell) = parent.rows.get(row).and_then(|row| row.get(column)) else {
             return;
         };
         let (assigned, members) = match cell.kind {

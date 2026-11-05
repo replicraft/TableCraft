@@ -20,6 +20,7 @@ fn input(events: Vec<Event>) -> RawInput {
 fn ten_thousand_rows_only_draw_the_visible_subset() {
     let context = Context::default();
     let data = Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Large table".into(),
         offset: 100,
@@ -281,6 +282,7 @@ fn horizontal_wheel_and_scrollbar_drag_move_actual_one_and_hundred_row_tables() 
     for rows in [1, 100] {
         let context = Context::default();
         let data = Data {
+            row_ordinals: None,
             source_revision: None,
             table: format!("Wide table with {rows} rows"),
             offset: 0,
@@ -363,6 +365,7 @@ fn horizontal_wheel_and_scrollbar_drag_move_actual_one_and_hundred_row_tables() 
 fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_enter_do_not() {
     let context = Context::default();
     let mut data = Data {
+        row_ordinals: None,
         source_revision: Some(9),
         table: "Parents".into(),
         offset: 100,
@@ -487,6 +490,7 @@ fn selection_frame(
 fn full_cell_click_and_arrows_select_loaded_cells_and_reveal_offscreen_columns_once() {
     let context = Context::default();
     let data = Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Wide selected table".into(),
         offset: 100,
@@ -668,6 +672,7 @@ fn click_grid_cell(
 fn same_identity_publication_surrenders_old_grid_focus_before_contents_enter() {
     let context = Context::default();
     let mut data = Data {
+        row_ordinals: None,
         source_revision: Some(9),
         table: "Parents".into(),
         offset: 0,
@@ -870,6 +875,7 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     let context = Context::default();
     context.enable_accesskit();
     let data = Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Parents".into(),
         offset: 0,
@@ -1111,6 +1117,7 @@ fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
         display_control: crate::DisplayControl::Absent,
     };
     let data = Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Null and empty text".into(),
         offset: 0,

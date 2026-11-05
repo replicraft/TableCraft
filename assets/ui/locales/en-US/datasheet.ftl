@@ -54,3 +54,6 @@ datasheet-sort-column = Sort { $column }
 datasheet-last = Last
 
 datasheet-value-preview-truncated = Preview shortened. Copy preserves the complete displayed value.
+
+datasheet-row-identity-invalid = The row identities do not match this page.
+datasheet-filter-page-unavailable = Only the loaded filtered records are available here.

@@ -337,6 +337,7 @@ fn observed_properties_are_read_only_and_follow_actual_field_selection() {
 fn design_publication_and_source_reset_preserve_independent_result_slots() {
     let mut state = State::default();
     state.set_table_data(Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Records".into(),
         offset: 100,
@@ -345,6 +346,7 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
         has_more: false,
     });
     state.set_query_data(Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Query result".into(),
         offset: 0,

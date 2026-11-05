@@ -21,6 +21,7 @@ fn harness(width: f32) -> Harness<'static, (State, bool, Vec<Action>)> {
         queries: Vec::new(),
     });
     state.set_table_data(Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Customer accounts with a very long literal name repeated beyond the available tab width".into(),
         offset: 0,
@@ -204,6 +205,7 @@ fn close_table_dispatches_exact_source_and_retains_database_and_query_slots() {
     let data = harness.state().0.data.as_ref().unwrap();
     let table = data.table.clone();
     harness.state_mut().0.set_query_data(Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Independent query".into(),
         offset: 0,

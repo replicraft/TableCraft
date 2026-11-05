@@ -19,7 +19,9 @@ impl Preview {
             return;
         }
         let data = self.state.data.as_ref().expect("admitted selected row");
-        let position = (target.parent_ordinal - data.offset) as usize;
+        let Some(position) = data.row_index(target.parent_ordinal) else {
+            return;
+        };
         let columns = data.columns.clone();
         let row = data.rows[position].iter().map(copy_cell).collect();
         let request = self.request();

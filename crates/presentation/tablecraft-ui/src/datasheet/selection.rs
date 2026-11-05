@@ -361,6 +361,7 @@ mod tests {
     #[test]
     fn failed_record_copy_publishes_no_clipboard_prefix() {
         let data = Data {
+            row_ordinals: None,
             source_revision: None,
             table: "Result".into(),
             offset: 0,

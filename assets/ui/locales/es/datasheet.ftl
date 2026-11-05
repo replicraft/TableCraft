@@ -54,3 +54,6 @@ datasheet-sort-column = Ordenar { $column }
 datasheet-last = Último
 
 datasheet-value-preview-truncated = Vista previa abreviada. Copiar conserva el valor mostrado completo.
+
+datasheet-row-identity-invalid = Las identidades de los registros no coinciden con esta página.
+datasheet-filter-page-unavailable = Aquí solo están disponibles los registros filtrados cargados.

@@ -70,6 +70,7 @@ pub(super) fn page(table: &str, offset: u32) -> Data {
     let columns = columns(table);
     let rows = (offset..end).map(|index| row(table, index)).collect();
     Data {
+        row_ordinals: None,
         source_revision: Some(REVISION),
         table: table.into(),
         offset,
@@ -276,6 +277,7 @@ pub(super) fn contents(kind: CollectionKind) -> Data {
         ),
     };
     Data {
+        row_ordinals: None,
         source_revision: None,
         table: "Collection contents".into(),
         offset: 0,

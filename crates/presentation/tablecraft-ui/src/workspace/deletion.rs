@@ -56,10 +56,7 @@ impl State {
             && self.data.as_ref().is_some_and(|data| {
                 data.source_revision == Some(target.document_revision)
                     && data.table == target.table
-                    && target
-                        .parent_ordinal
-                        .checked_sub(data.offset)
-                        .is_some_and(|row| data.rows.get(row as usize).is_some())
+                    && data.row_index(target.parent_ordinal).is_some()
             })
     }
 
@@ -78,7 +75,7 @@ impl State {
         let target = DeleteTarget {
             document_revision: data.source_revision?,
             table: data.table.clone(),
-            parent_ordinal: data.offset.checked_add(u32::try_from(row).ok()?)?,
+            parent_ordinal: data.parent_ordinal(row)?,
         };
         self.can_delete_row(&target).then_some(target)
     }

@@ -52,7 +52,7 @@ impl Data {
             document_revision: self.source_revision?,
             table: self.table.clone(),
             column: self.columns.get(column)?.name.clone(),
-            parent_ordinal: self.offset.checked_add(u32::try_from(row).ok()?)?,
+            parent_ordinal: self.parent_ordinal(row)?,
         })
     }
 }
@@ -84,11 +84,7 @@ impl State {
         if data.source_revision != Some(target.document_revision) || data.table != target.table {
             return false;
         }
-        let Some(row) = target
-            .parent_ordinal
-            .checked_sub(data.offset)
-            .map(|row| row as usize)
-        else {
+        let Some(row) = data.row_index(target.parent_ordinal) else {
             return false;
         };
         let Some(column) = data.column_index(&target.column) else {
@@ -127,6 +123,14 @@ impl State {
         mut data: Data,
     ) {
         if !self.accepts_contents(request_id, &target) {
+            return;
+        }
+        if data.row_ordinals.is_some() {
+            self.fail_contents(
+                request_id,
+                target,
+                self.localizer.text("datasheet-row-identity-invalid"),
+            );
             return;
         }
         // Child rows are observations, never a new native parent capability.

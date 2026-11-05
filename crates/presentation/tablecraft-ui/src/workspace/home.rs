@@ -6,7 +6,11 @@ use ribbon::{CommandSize, Icon, command, group};
 
 impl State {
     pub fn set_sorted_query_data(&mut self, data: super::Data) -> bool {
-        if data.source_revision.is_some() || data.offset != 0 || data.has_more {
+        if data.source_revision.is_some()
+            || data.row_ordinals.is_some()
+            || data.offset != 0
+            || data.has_more
+        {
             return false;
         }
         self.set_query_data(data);
@@ -158,6 +162,7 @@ impl State {
                 .is_some_and(|database| database.document_revision == document_revision)
             && self.data.as_ref().is_some_and(|data| {
                 data.source_revision == Some(document_revision)
+                    && data.row_ordinals.is_none()
                     && data.table == table
                     && data.columns.iter().any(|field| field.name == column)
             })
@@ -222,8 +227,9 @@ impl State {
         });
         group(ui, &t.text("ribbon-records"), |ui| {
             ui.horizontal(|ui| {
-                let page = self.data.as_ref().filter(|_| {
-                    self.view == DocumentView::Table
+                let page = self.data.as_ref().filter(|data| {
+                    data.row_ordinals.is_none()
+                        && self.view == DocumentView::Table
                         && !self.busy
                         && !self.edit_dialog_open()
                         && self.contents_request_id().is_none()

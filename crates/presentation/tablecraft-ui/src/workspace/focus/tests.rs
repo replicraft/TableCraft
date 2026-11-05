@@ -74,6 +74,7 @@ fn pane_entry_rechecks_source_publication_and_exact_modifiers_are_not_hijacked()
     let mut state = State::default();
     state.dismiss_backstage();
     let publication = |text: &str| crate::Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Same table".into(),
         offset: 0,
@@ -199,6 +200,7 @@ fn disabled_host_and_subtree_cannot_declare_or_enter_loaded_panes() {
     let mut state = State::default();
     state.dismiss_backstage();
     state.set_table_data(crate::Data {
+        row_ordinals: None,
         source_revision: Some(7),
         table: "Loaded data".into(),
         offset: 0,

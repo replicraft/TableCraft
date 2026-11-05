@@ -20,6 +20,7 @@ fn state(value: String, native: bool) -> State {
         queries: Vec::new(),
     });
     let data = Data {
+        row_ordinals: None,
         source_revision: native.then_some(1),
         table: "Items".into(),
         offset: 0,
@@ -171,6 +172,7 @@ fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_b
     state.validate_zoom();
     assert!(state.zoom_dialog_open());
     let replacement = Data {
+        row_ordinals: None,
         source_revision: Some(1),
         table: "Items".into(),
         offset: 0,

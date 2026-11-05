@@ -267,10 +267,10 @@ impl Preview {
         let Some(column) = data.column_index(&target.column) else {
             return;
         };
-        let Some(row) = target.parent_ordinal.checked_sub(data.offset) else {
+        let Some(row) = data.row_index(target.parent_ordinal) else {
             return;
         };
-        let Some(original) = data.rows.get(row as usize).and_then(|row| row.get(column)) else {
+        let Some(original) = data.rows.get(row).and_then(|row| row.get(column)) else {
             return;
         };
         let original = copy_cell(original);

@@ -89,6 +89,10 @@ impl State {
             return None;
         }
         let data = self.data.as_ref()?;
+        // Native Find currently searches the whole source, not a filter handle.
+        if data.row_ordinals.is_some() {
+            return None;
+        }
         let revision = data.source_revision?;
         if self.database.as_ref()?.document_revision != revision {
             return None;
@@ -101,7 +105,7 @@ impl State {
                 table: data.table.clone(),
             },
             FindPosition {
-                parent_ordinal: data.offset.checked_add(u32::try_from(row).ok()?)?,
+                parent_ordinal: data.parent_ordinal(row)?,
                 column: data.columns.get(column)?.name.clone(),
                 span: None,
             },
@@ -264,6 +268,8 @@ impl State {
                 };
                 let valid = valid_span
                     && matches_scope
+                    && page.row_ordinals.is_none()
+                    && page.parent_ordinal(0) == Some(found.parent_ordinal)
                     && page.source_revision == Some(request.target.document_revision)
                     && page.table == request.target.table
                     && page.offset == found.parent_ordinal

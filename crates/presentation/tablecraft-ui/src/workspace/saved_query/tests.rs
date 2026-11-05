@@ -28,6 +28,7 @@ fn state() -> (State, SavedQueryTarget) {
 
 fn data(name: &str, text: &str) -> Data {
     Data {
+        row_ordinals: None,
         source_revision: None,
         table: name.into(),
         offset: 0,

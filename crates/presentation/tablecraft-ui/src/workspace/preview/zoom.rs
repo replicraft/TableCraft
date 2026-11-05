@@ -14,6 +14,7 @@ impl Preview {
         text.push_str("End of the complete synthetic note.");
         self.state.sql = "SELECT [Notes] FROM [Customers];".into();
         self.state.set_query_data(Data {
+            row_ordinals: None,
             source_revision: None,
             table: "Query results".into(),
             offset: 0,
