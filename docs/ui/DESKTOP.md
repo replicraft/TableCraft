@@ -99,8 +99,8 @@ unqualified concurrent Access session.
 
 The initial browse surface remains a snapshot. An explicit offline cell-edit
 preview now invokes normal typed editing; the SQL editor executes admitted reads only;
-it is not an unrestricted action-query or scripting console. A later editing UI
-must call the same typed command/session services as other hosts, with fresh
+it is not an unrestricted action-query or scripting console. The connected
+cell-edit UI calls the same typed command/session services as other hosts, with fresh
 source/constraint checks, exact target capability, consuming revision/lease
 semantics and durable recovery where required. No button may bypass unsupported
 validation, data macros, locking or native-save restrictions.
@@ -116,7 +116,8 @@ Keep query-result updateability separate from direct table editing. Apply must
 retain validation, journal/recovery outcomes and fallible release, then publish a
 fresh read view only after acknowledged completion. A cancelled or failed
 operation cannot be represented as a successful toggle or edited cell. This is
-the integration direction, not a currently implemented GUI write capability.
+the current restricted offline cell-edit contract. General GUI writes and
+query-result updateability remain outside that implemented slice.
 
 Before calling the first desktop slice usable, verify a real file-open → catalog
 → table page → explicit SELECT workflow, unsupported/corrupt file errors, empty
@@ -133,6 +134,27 @@ save/reopen behavior for its claimed operations. Shared-file concurrency,
 application workflows, accessibility and platform packaging each need their own
 observed evidence. None follows from a passing desktop build or independent
 reader comparisons.
+
+## Current acceptance boundaries
+
+The current request prioritizes polished mocks of existing functionality. The
+broader Access-compatible GUI goal is not complete merely because this slice
+builds or its mock scenarios pass.
+
+| Requirement | Current evidence | Remaining qualification |
+| --- | --- | --- |
+| Shared presentation and thin desktop | UI/runtime dependency guards; desktop command and DTO bridge; resource-free mock host | Eventual web host is not implemented or implied. |
+| Selawik and root font assets | Root assets, recorded source hashes/OFL notices, locale-prioritized CJK fallbacks and glyph checks | Native font/DPI behavior on each claimed platform. |
+| Fluent translations | Eight locales, twelve section catalogs each, key/variable parity and literal-data separation | Native-speaker review of engineering translations. |
+| Light and dark themes | Shared semantic palette, actual selected-text/badge paint checks, inspected offscreen frames | No retained Access dark-mode capture establishes visual parity. |
+| Ribbon artwork | Thirty-five source/hash-verified Microsoft Fluent SVGs with MIT notice; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
+| Existing mock workflows | Source-bound scenes, admission/state checks and the dated [presentation verification](PRESENTATION_PREVIEW.md) | Synthetic outcomes do not qualify backend operations. |
+| Access reference fidelity | Retained Home/datasheet, Table Design and Account Backstage captures guide their corresponding surfaces | Query/parameter, edit/collection and Open/error layouts remain adaptations without matching captures. |
+| Native behavior | Earlier macOS observations are recorded below with their scope and dates | Current full keyboard/assistive-tool traversal, Windows/Linux window behavior and monitor-scale transitions remain unqualified. Native checks are suspended at the user's request. |
+
+These limits do not authorize new database functionality or resume deferred
+SQLite, project or VBA work. Headless checks can continue while native testing is
+suspended; they cannot establish native compatibility by substitution.
 
 [UI index](README.md) · [Native reads](../access/NATIVE_READING.md) ·
 [Native queries](../access/queries/NATIVE_QUERIES.md) ·
