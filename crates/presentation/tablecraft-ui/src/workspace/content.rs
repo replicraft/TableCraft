@@ -17,7 +17,7 @@ impl State {
             )
             .show(ui, |ui| {
                 self.document_tabs(ui);
-                if let Some(pane) = self.take_pane_entry() {
+                if let Some(pane) = self.take_pane_entry(ui.ctx()) {
                     self.prepare_pane_entry(pane, ui.ctx());
                 }
                 if let Some(error) = &self.error {

@@ -163,3 +163,32 @@ fn compact_design_pane_entry_reveals_selected_field_and_focuses_readonly_propert
     assert!(property.rect().top() >= 0.0 && property.rect().bottom() <= 580.0);
     assert_eq!(harness.state().selected_field, 0);
 }
+
+#[test]
+fn newer_navigation_focus_after_read_failure_supersedes_deferred_pane_entry() {
+    let mut harness = harness(Scene::Datasheet);
+    harness.get_by_role_and_label(Role::Tab, "Home").focus();
+    harness.run();
+    harness.event(Event::Key {
+        key: Key::F6,
+        physical_key: None,
+        pressed: true,
+        repeat: false,
+        modifiers: egui::Modifiers::NONE,
+    });
+    harness.step();
+    assert!(harness.state().pane_focus_entry.is_some());
+
+    harness.state_mut().error = Some("Read failed; previous page retained.".into());
+    harness
+        .get_by_role_and_label(Role::TextInput, "Search objects")
+        .focus();
+    harness.run();
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Search objects")
+            .is_focused()
+    );
+    assert!(harness.state().pane_focus_entry.is_none());
+    assert_eq!(harness.state().table_selection.position(), Some((0, 0)));
+}

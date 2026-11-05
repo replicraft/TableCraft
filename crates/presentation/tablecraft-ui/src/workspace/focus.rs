@@ -46,6 +46,9 @@ struct Frame {
 pub(super) struct Entry {
     scope: Id,
     pane: Pane,
+    // Comparison only: a newer user focus choice supersedes deferred entry.
+    // This identifier is never used as a future focus target.
+    focus_witness: Option<Id>,
 }
 
 /// Declare a currently loaded, selected pane whose virtual row needs revealing.
@@ -217,6 +220,7 @@ impl State {
             self.pane_focus_entry = Some(Entry {
                 scope: frame.scope,
                 pane,
+                focus_witness: ui.ctx().memory(|memory| memory.focused()),
             });
         }
     }
@@ -227,9 +231,10 @@ impl State {
         self.design_focus_pending = None;
     }
 
-    pub(super) fn take_pane_entry(&mut self) -> Option<Pane> {
+    pub(super) fn take_pane_entry(&mut self, context: &Context) -> Option<Pane> {
         let entry = self.pane_focus_entry.take()?;
-        (entry.scope == self.pane_scope()).then_some(entry.pane)
+        let unchanged_focus = context.memory(|memory| memory.focused()) == entry.focus_witness;
+        (entry.scope == self.pane_scope() && unchanged_focus).then_some(entry.pane)
     }
 }
 

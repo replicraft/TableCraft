@@ -86,19 +86,21 @@ fn pane_entry_rechecks_source_publication_and_exact_modifiers_are_not_hijacked()
     state.pane_focus_entry = Some(Entry {
         scope,
         pane: Pane::Document,
+        focus_witness: None,
     });
 
     // A fresh publication may retain the exact same source/name/page metadata.
     state.set_table_data(publication("Replacement"));
-    assert!(state.take_pane_entry().is_none());
+    assert!(state.take_pane_entry(&context).is_none());
     assert_eq!(state.selected_cell_text(), Some("Replacement"));
     assert_ne!(scope, state.pane_scope());
 
     state.pane_focus_entry = Some(Entry {
         scope,
         pane: Pane::Document,
+        focus_witness: None,
     });
-    assert!(state.take_pane_entry().is_none());
+    assert!(state.take_pane_entry(&context).is_none());
 
     for modifiers in [
         Modifiers::CTRL,
@@ -131,7 +133,7 @@ fn pane_entry_rechecks_source_publication_and_exact_modifiers_are_not_hijacked()
                 let button = ui.button("Current anchor");
                 register(ui, Pane::Document, &button, true);
                 state.finish_pane_focus(ui);
-                assert!(state.take_pane_entry().is_none());
+                assert!(state.take_pane_entry(&context).is_none());
             },
         );
         output.textures_delta.clear();
@@ -184,7 +186,7 @@ fn modal_backstage_and_popups_suppress_pane_navigation_before_and_after_render()
                 }
                 state.finish_pane_focus(ui);
                 assert_eq!(context.memory(|memory| memory.focused()), Some(current.id));
-                assert!(state.take_pane_entry().is_none());
+                assert!(state.take_pane_entry(&context).is_none());
             },
         );
         output.textures_delta.clear();
@@ -218,7 +220,7 @@ fn disabled_host_and_subtree_cannot_declare_or_enter_loaded_panes() {
         |ui| {
             ui.add_enabled_ui(false, |ui| {
                 assert!(state.show(ui).is_empty());
-                assert!(state.take_pane_entry().is_none());
+                assert!(state.take_pane_entry(&context).is_none());
                 assert!(ui.input(|input| input.events.iter().any(|event| {
                     matches!(
                         event,
@@ -241,7 +243,7 @@ fn disabled_host_and_subtree_cannot_declare_or_enter_loaded_panes() {
                 .expect("the enabled workspace frame is active");
             assert!(frame.panes.is_empty());
             state.finish_pane_focus(ui);
-            assert!(state.take_pane_entry().is_none());
+            assert!(state.take_pane_entry(&context).is_none());
         },
     );
     output.textures_delta.clear();
