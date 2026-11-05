@@ -8,10 +8,16 @@ const SORT_ORDER_MASK: [u8; 4] = [1, 27, 152, 253];
 /// These original header bytes do not use the production decoder or key encoder.
 pub fn with_rows_and_sort_order(records: &[(i32, i32)], order: [u8; 4]) -> Vec<u8> {
     let mut bytes = with_rows(records);
+    set_sort_order(&mut bytes, order);
+    bytes
+}
+
+/// Assign a literal comparison descriptor to another independent fixture image.
+/// This shares header construction, not the production decoder or comparer.
+pub fn set_sort_order(bytes: &mut [u8], order: [u8; 4]) {
     for (position, mask) in SORT_ORDER_MASK.into_iter().enumerate() {
         bytes[SORT_ORDER_OFFSET + position] = order[position] ^ mask;
     }
-    bytes
 }
 
 // Original independent golden format bytes. No external fixture/tool is needed.

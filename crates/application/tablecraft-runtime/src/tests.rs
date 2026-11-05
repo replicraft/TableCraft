@@ -20,6 +20,11 @@ mod formatting;
 ))]
 mod inserting;
 mod query_design;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
+mod replacing;
 mod saved;
 mod schema;
 mod stored;

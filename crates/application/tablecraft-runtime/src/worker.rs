@@ -67,6 +67,22 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .import_query_design(target, sql, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::ReplaceFindMatch {
+                request,
+                found,
+                replacement,
+                filter,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .replace_find_match(
+                    request,
+                    found,
+                    replacement,
+                    filter.as_ref().map(|(handle, enabled)| (handle, *enabled)),
+                    cancelled,
+                ),
             Command::Page { table, offset } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -247,6 +263,8 @@ impl Worker {
                     Command::DescribeQueryDesign { .. } => "describe_query_design",
                     Command::BuildQueryDesign { .. } => "build_query_design",
                     Command::ImportQueryDesign { .. } => "import_query_design",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReplaceFindMatch { .. } => "replace_find_match",
                     Command::DescribeTotals { .. } => "describe_totals",
                     Command::Totals { .. } => "totals",
                     Command::DescribeFieldFilter { .. } => "describe_field_filter",

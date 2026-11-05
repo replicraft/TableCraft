@@ -10,7 +10,7 @@ use tablecraft_testkit::fixtures::access::{
     canonical_fixed_creation, canonical_native17_creation, complex_links, mutation_fixture,
 };
 
-fn search(revision: u64, pattern: &str) -> FindRequest {
+pub(super) fn search(revision: u64, pattern: &str) -> FindRequest {
     FindRequest {
         target: FindTarget {
             document_revision: revision,
@@ -30,7 +30,7 @@ fn search(revision: u64, pattern: &str) -> FindRequest {
     }
 }
 
-fn find(worker: &Worker, expected: FindRequest) -> Result<Option<FindPosition>, Error> {
+pub(super) fn find(worker: &Worker, expected: FindRequest) -> Result<Option<FindPosition>, Error> {
     let Response::Found {
         request: actual,
         position,

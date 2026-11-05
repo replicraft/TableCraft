@@ -7,7 +7,9 @@ mod ids;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod input;
 mod inserting;
+mod replacing;
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
+pub use replacing::ReplaceError;
 mod save;
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 mod unsupported;

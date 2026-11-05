@@ -26,10 +26,10 @@ pub use contents::{CollectionKind, ContentsTarget};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
-    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedDelete,
-    ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
-    SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveSessionState,
-    SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReplaceError,
+    ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind,
+    SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport,
+    SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
@@ -63,6 +63,9 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    Replace(#[from] ReplaceError),
     #[error(transparent)]
     QueryDesign(#[from] QueryDesignError),
     #[error(transparent)]
@@ -135,6 +138,13 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(feature = "offline-edit")]
+    ReplaceFindMatch {
+        request: FindRequest,
+        found: FindPosition,
+        replacement: String,
+        filter: Option<(FilterHandle, bool)>,
+    },
     DescribeQueryDesign {
         target: QueryDesignTarget,
         table: String,

@@ -1,5 +1,5 @@
 //! Revision-bound native Find requests, independent of page publications and SQL.
-mod matching;
+pub(crate) mod matching;
 mod native;
 
 use tablecraft_display::Options;

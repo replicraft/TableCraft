@@ -53,6 +53,21 @@ impl Metadata {
         crate::column::native(name, self.properties.as_ref(), output)
     }
 
+    #[cfg(feature = "offline-edit")]
+    pub(crate) fn require_replace_control(
+        &self,
+        name: &str,
+        output: &mut Presentation<'_>,
+    ) -> Result<(), Error> {
+        let control = controls::field(self.properties.as_ref(), name, output)?;
+        if matches!(control, DisplayControl::Native(code) if code != TEXT_BOX_CONTROL)
+            || control == DisplayControl::Unsupported
+        {
+            return Err(crate::editing::ReplaceError::UnsupportedControl.into());
+        }
+        Ok(())
+    }
+
     pub(crate) fn require_find_format(
         &self,
         position: usize,
