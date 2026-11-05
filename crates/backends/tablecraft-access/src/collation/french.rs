@@ -77,6 +77,30 @@ impl<'a> FrenchLegacyCollation<'a> {
 }
 
 impl Collation for FrenchLegacyCollation<'_> {
+    fn sensitive_like_profile(&self) -> LikeProfile {
+        LikeProfile::Utf16Weights
+    }
+
+    fn compare_sensitive_like_units(
+        &self,
+        left: &[u16],
+        right: &[u16],
+    ) -> Result<Ordering, EvalError> {
+        super::sensitive::compare(left, right, &self.budget, self.cancelled)
+    }
+
+    fn sensitive_like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        super::sensitive::literal(candidate, literal, &self.budget, self.cancelled)
+    }
+
+    fn sensitive_like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        super::sensitive::unit(candidate, &self.budget, self.cancelled)
+    }
+
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
         let mut budget = self
             .budget

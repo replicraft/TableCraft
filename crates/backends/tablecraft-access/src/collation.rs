@@ -7,6 +7,7 @@ pub use resolver::NativeCollationResolver;
 pub(crate) use resolver::identity;
 mod like;
 mod search;
+mod sensitive;
 use std::{cell::RefCell, cmp::Ordering};
 use tablecraft_ace::{InspectError, NativeSortOrder, compare_general_text, compare_general_utf16};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -82,6 +83,30 @@ impl<'a> GeneralCollation<'a> {
 }
 
 impl Collation for GeneralCollation<'_> {
+    fn sensitive_like_profile(&self) -> LikeProfile {
+        LikeProfile::Utf16Weights
+    }
+
+    fn compare_sensitive_like_units(
+        &self,
+        left: &[u16],
+        right: &[u16],
+    ) -> Result<Ordering, EvalError> {
+        sensitive::compare(left, right, &self.budget, self.cancelled)
+    }
+
+    fn sensitive_like_literal_step(
+        &self,
+        candidate: &[u16],
+        literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        sensitive::literal(candidate, literal, &self.budget, self.cancelled)
+    }
+
+    fn sensitive_like_unit_step(&self, candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        sensitive::unit(candidate, &self.budget, self.cancelled)
+    }
+
     fn string_comparison_profile(&self) -> StringComparisonProfile {
         StringComparisonProfile::Utf16
     }

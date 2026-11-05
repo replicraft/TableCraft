@@ -266,3 +266,217 @@ fn weighted_range_providers_wait_for_the_first_nonempty_reachable_class() {
         assert_eq!(provider.calls.get(), calls);
     }
 }
+
+#[test]
+fn find_spans_preserve_weighted_consumption_reverse_bounds_and_repeated_occurrences() {
+    use crate::{
+        comparison::StringSearch,
+        predicates::{LikeCase, LikeMatch, find_like_utf16},
+    };
+
+    let find = |pattern: &str, matching, search| {
+        find_like_utf16(
+            LikeString::Text("😀ss ss"),
+            LikeString::Text(pattern),
+            LikeMode::Ansi89,
+            matching,
+            search,
+            LikeCase::Database,
+            &Weighted,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            None,
+        )
+        .unwrap()
+    };
+    assert_eq!(
+        find("ß", LikeMatch::Any, StringSearch::ForwardFrom(0)),
+        Some(2..4)
+    );
+    assert_eq!(
+        find("ß", LikeMatch::Any, StringSearch::ForwardFrom(4)),
+        Some(5..7)
+    );
+    assert_eq!(
+        find("ß", LikeMatch::Any, StringSearch::ReverseThrough(7)),
+        Some(5..7)
+    );
+    assert_eq!(
+        find("ß", LikeMatch::Any, StringSearch::ReverseThrough(4)),
+        Some(2..4)
+    );
+    assert_eq!(
+        find("??ß", LikeMatch::Start, StringSearch::ForwardFrom(0)),
+        Some(0..4)
+    );
+    assert_eq!(
+        find("*ß", LikeMatch::Whole, StringSearch::ForwardFrom(0)),
+        Some(0..7)
+    );
+    assert_eq!(
+        find("x", LikeMatch::Any, StringSearch::ForwardFrom(0)),
+        None
+    );
+}
+
+#[test]
+fn find_zero_width_and_cursor_bounds_never_split_surrogate_pairs() {
+    use crate::{
+        comparison::StringSearch,
+        predicates::{
+            LikeCase, LikeMatch, find_like_utf16, next_like_offset, previous_like_offset,
+        },
+    };
+
+    let find = |search| {
+        find_like_utf16(
+            LikeString::Text("😀"),
+            LikeString::Text(""),
+            LikeMode::Ansi89,
+            LikeMatch::Any,
+            search,
+            LikeCase::Database,
+            &Weighted,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            None,
+        )
+    };
+    assert_eq!(find(StringSearch::ForwardFrom(0)).unwrap(), Some(0..0));
+    let units: Vec<_> = "😀".encode_utf16().collect();
+    let shortest_nonempty = crate::predicates::PreparedLikeSearch::new(
+        LikeString::Text("*"),
+        LikeMode::Ansi89,
+        LikeMatch::Any,
+        LikeCase::Database,
+        &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+        None,
+    )
+    .unwrap();
+    assert_eq!(
+        shortest_nonempty
+            .find(
+                LikeString::Text("😀"),
+                StringSearch::ForwardFrom(0),
+                &Weighted,
+                &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+                None,
+            )
+            .unwrap(),
+        Some(0..2)
+    );
+    assert_eq!(next_like_offset(&units, 0), Some(2));
+    assert_eq!(next_like_offset(&units, 2), None);
+    assert_eq!(previous_like_offset(&units, 2), Some(0));
+    assert_eq!(previous_like_offset(&units, 0), None);
+    assert_eq!(find(StringSearch::ForwardFrom(2)).unwrap(), Some(2..2));
+    assert_eq!(find(StringSearch::ReverseThrough(2)).unwrap(), Some(2..2));
+    assert!(matches!(
+        find(StringSearch::ForwardFrom(1)),
+        Err(EvalError::InvalidTextMatch)
+    ));
+}
+
+#[test]
+fn find_wildcard_grammars_provider_refusal_and_cumulative_limits_remain_explicit() {
+    use crate::{
+        comparison::StringSearch,
+        predicates::{LikeCase, LikeMatch, find_like_utf16},
+    };
+
+    let find = |pattern: &str, mode, case, budget: &mut ResourceBudget, cancelled| {
+        find_like_utf16(
+            LikeString::Text("x s2 s3"),
+            LikeString::Text(pattern),
+            mode,
+            LikeMatch::Any,
+            StringSearch::ForwardFrom(0),
+            case,
+            &Weighted,
+            budget,
+            cancelled,
+        )
+    };
+    assert_eq!(
+        find(
+            "[s]#",
+            LikeMode::Ansi89,
+            LikeCase::Database,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            None
+        )
+        .unwrap(),
+        Some(2..4)
+    );
+    assert_eq!(
+        find(
+            "s_",
+            LikeMode::Ansi92,
+            LikeCase::Database,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            None
+        )
+        .unwrap(),
+        Some(2..4)
+    );
+    assert!(matches!(
+        find(
+            "s",
+            LikeMode::Ansi89,
+            LikeCase::Sensitive,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            None
+        ),
+        Err(EvalError::UnsupportedExpression)
+    ));
+    assert!(matches!(
+        find(
+            "s",
+            LikeMode::Ansi89,
+            LikeCase::Database,
+            &mut ResourceBudget::new(1, 0, 1),
+            None
+        ),
+        Err(EvalError::Limit(_))
+    ));
+    assert!(matches!(
+        find(
+            "s",
+            LikeMode::Ansi89,
+            LikeCase::Database,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            Some(&|| true)
+        ),
+        Err(EvalError::Cancelled)
+    ));
+}
+
+#[test]
+fn prepared_find_reuses_one_pattern_and_merges_origins_without_losing_best_span() {
+    use crate::{
+        comparison::StringSearch,
+        predicates::{LikeCase, LikeMatch, PreparedLikeSearch},
+    };
+
+    let mut work = ResourceBudget::new(1_000_000, 0, 1_000_000);
+    let prepared = PreparedLikeSearch::new(
+        LikeString::Text("a*b"),
+        LikeMode::Ansi89,
+        LikeMatch::Any,
+        LikeCase::Database,
+        &mut work,
+        None,
+    )
+    .unwrap();
+    for (text, search, expected) in [
+        ("xaabxab", StringSearch::ForwardFrom(0), Some(1..4)),
+        ("xaabxab", StringSearch::ReverseThrough(7), Some(5..7)),
+        ("xaabxab", StringSearch::ForwardFrom(4), Some(5..7)),
+        ("zzz", StringSearch::ForwardFrom(0), None),
+    ] {
+        assert_eq!(
+            prepared
+                .find(LikeString::Text(text), search, &Weighted, &mut work, None)
+                .unwrap(),
+            expected
+        );
+    }
+}

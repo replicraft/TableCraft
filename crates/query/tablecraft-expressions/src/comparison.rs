@@ -32,6 +32,34 @@ pub enum StringCompareMode {
 
 /// Explicit text ordering supplied by the host; no implicit Rust/locale collation.
 pub trait Collation {
+    /// Explicit case-sensitive Find profile; never inferred from insensitive LIKE.
+    fn sensitive_like_profile(&self) -> LikeProfile {
+        LikeProfile::Unsupported
+    }
+
+    /// Compare complete case-sensitive Find class elements under an explicit profile.
+    fn compare_sensitive_like_units(
+        &self,
+        _left: &[u16],
+        _right: &[u16],
+    ) -> Result<Ordering, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+
+    /// Classify a case-sensitive literal span, with conservative extension pruning.
+    fn sensitive_like_literal_step(
+        &self,
+        _candidate: &[u16],
+        _literal: &[u16],
+    ) -> Result<LikeSpanState, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+
+    /// Recognize one case-sensitive class element without using insensitive weights.
+    fn sensitive_like_unit_step(&self, _candidate: &[u16]) -> Result<LikeSpanState, EvalError> {
+        Err(EvalError::UnsupportedExpression)
+    }
+
     /// Compare decoded strings according to the selected database policy.
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError>;
     /// Select raw-unit comparison explicitly, independently of the LIKE profile.

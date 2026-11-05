@@ -66,7 +66,7 @@ impl States {
                     continue;
                 }
                 if self.candidates[end] == if negated { OUTSIDE } else { INSIDE } {
-                    self.current[end] = 1;
+                    self.mark(end, start);
                 }
             }
         }
