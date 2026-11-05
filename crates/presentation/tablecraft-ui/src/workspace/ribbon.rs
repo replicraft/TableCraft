@@ -16,6 +16,8 @@ const LARGE_ICON_SIZE: f32 = 28.0;
 const SMALL_ICON_SIZE: f32 = 16.0;
 const LABEL_SIZE: f32 = 11.5;
 const GROUP_LABEL_HEIGHT: f32 = 14.0;
+const GROUP_LABEL_SIZE: f32 = 10.5;
+const GROUP_LABEL_PADDING: f32 = 8.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
@@ -72,7 +74,15 @@ pub(super) fn strip(ui: &mut Ui, contents: impl FnOnce(&mut Ui)) {
 
 pub(super) fn group(ui: &mut Ui, label: &str, contents: impl FnOnce(&mut Ui)) {
     let colors = palette(ui.ctx());
+    let caption = ui.painter().layout_no_wrap(
+        label.to_owned(),
+        FontId::proportional(GROUP_LABEL_SIZE),
+        colors.muted,
+    );
     ui.vertical(|ui| {
+        // Reserve the translated caption before laying out narrow command groups.
+        // Measuring it afterwards lets Extend paint into the adjacent group.
+        ui.set_min_width(caption.size().x + GROUP_LABEL_PADDING);
         ui.spacing_mut().item_spacing.y = 1.0;
         ui.set_min_height(COMMAND_AREA_HEIGHT);
         let start = ui.cursor().top();
@@ -87,8 +97,12 @@ pub(super) fn group(ui: &mut Ui, label: &str, contents: impl FnOnce(&mut Ui)) {
             egui::Layout::top_down(Align::Center),
             |ui| {
                 ui.add(
-                    egui::Label::new(RichText::new(label).size(10.5).color(colors.muted))
-                        .wrap_mode(egui::TextWrapMode::Extend),
+                    egui::Label::new(
+                        RichText::new(label)
+                            .size(GROUP_LABEL_SIZE)
+                            .color(colors.muted),
+                    )
+                    .wrap_mode(egui::TextWrapMode::Extend),
                 );
             },
         );
@@ -319,6 +333,54 @@ mod tests {
             let (_, after_manual_scroll, clip, _) = frame(&context, vec![]);
             assert!(after_manual_scroll.left() > clip.right());
             assert!(context.memory(|memory| memory.has_focus(id)));
+        }
+    }
+
+    #[test]
+    fn translated_group_captions_reserve_width_before_narrow_commands() {
+        for theme in [crate::Theme::Light, crate::Theme::Dark] {
+            let context = egui::Context::default();
+            crate::configure(&context);
+            crate::theme::set_theme(&context, theme);
+            context.set_pixels_per_point(1.25);
+            for _ in 0..2 {
+                let mut output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(900.0, 240.0),
+                        )),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        ui.horizontal_top(|ui| {
+                            for caption in ["Ergebnisse", "Abfrageeinrichtung"] {
+                                group(ui, caption, |ui| {
+                                    ui.allocate_space(egui::vec2(24.0, COMMAND_AREA_HEIGHT));
+                                });
+                            }
+                        });
+                    },
+                );
+                output.textures_delta.clear();
+                let captions: Vec<_> = output
+                    .shapes
+                    .iter()
+                    .filter_map(|shape| {
+                        let egui::Shape::Text(text) = &shape.shape else {
+                            return None;
+                        };
+                        ["Ergebnisse", "Abfrageeinrichtung"]
+                            .contains(&text.galley.job.text.as_str())
+                            .then(|| text.galley.rect.translate(text.pos.to_vec2()))
+                    })
+                    .collect();
+                assert_eq!(captions.len(), 2);
+                assert!(
+                    captions[0].right() + GROUP_LABEL_PADDING <= captions[1].left(),
+                    "translated captions overlap: {captions:?}"
+                );
+            }
         }
     }
 }
