@@ -16,6 +16,7 @@ mod saved;
 mod scalar_input;
 mod schema;
 mod source;
+mod totals;
 mod worker;
 
 pub use cell::{Cell, CellKind, DisplayControl, HorizontalAlignment};
@@ -45,6 +46,10 @@ pub use saved::{
 };
 pub use scalar_input::InputHint;
 pub use schema::{Field, FieldProperty, FieldPropertyValue};
+pub use totals::{
+    MAX_TOTAL_FIELDS, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError,
+    TotalsField, TotalsTarget,
+};
 pub use worker::Worker;
 
 use std::path::PathBuf;
@@ -53,6 +58,8 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error(transparent)]
+    Totals(#[from] TotalsError),
     #[cfg(feature = "offline-edit")]
     #[error("a reserved journal entry requires explicit recovery or diagnosis before opening")]
     RetainedJournal,
@@ -121,6 +128,14 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    DescribeTotals {
+        target: TotalsTarget,
+    },
+    Totals {
+        target: TotalsTarget,
+        specs: Vec<TotalSpec>,
+        base: Option<FilterHandle>,
+    },
     Open {
         path: PathBuf,
         password: String,
@@ -228,6 +243,8 @@ pub struct Table {
 }
 
 pub enum Response {
+    TotalsDescription(TotalsDescription),
+    Totals(TotalsData),
     FieldFilterDescription(FieldFilterDescription),
     SavedQuery {
         target: SavedQueryTarget,

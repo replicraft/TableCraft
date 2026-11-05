@@ -185,3 +185,22 @@ fn option_examples_use_captured_region_and_the_same_typed_formatter_as_cells() {
         assert_eq!(Engine::new(&policy).unwrap().currency_example(), expected);
     }
 }
+
+#[test]
+fn derived_currency_mean_rounds_once_without_four_place_storage_coercion() {
+    let presentation = ScalarPresentation::CurrencyAverage {
+        bits: 0.00495_f64.to_bits(),
+        native_format: NativeFormat::Currency,
+    };
+    let mut policy = options("en-US");
+    for (currency, expected) in [
+        (CurrencyChoice::Usd, "$0.00"),
+        (CurrencyChoice::Jpy, "¥0"),
+        (CurrencyChoice::Kwd, "KWD\u{a0}0.005"),
+        (CurrencyChoice::Raw, "0.00495"),
+    ] {
+        policy.currency = currency;
+        assert_eq!(Engine::new(&policy).unwrap().format(presentation), expected);
+    }
+    assert_eq!(raw(presentation), "0.00495");
+}

@@ -141,6 +141,10 @@ impl Engine {
                 scaled,
                 native_format,
             } => self.currency(scaled, native_format),
+            ScalarPresentation::CurrencyAverage {
+                bits,
+                native_format,
+            } => self.currency_average(bits, native_format),
             ScalarPresentation::DateTime {
                 calendar,
                 representation,
@@ -180,6 +184,44 @@ impl Engine {
                     .into_owned()
             },
         )
+    }
+
+    fn currency_average(&self, bits: u64, native_format: NativeFormat) -> String {
+        let value = f64::from_bits(bits);
+        let raw = value.to_string();
+        if !value.is_finite() || self.options.currency == CurrencyChoice::Raw {
+            return raw;
+        }
+        // Parse the binary64 carrier's shortest decimal spelling once. ICU then
+        // applies the selected currency's rounding, without an intermediate CCur.
+        let Ok(amount) = raw.parse::<Decimal>() else {
+            return raw;
+        };
+        if self.options.currency == CurrencyChoice::SystemLocale
+            && native_format == NativeFormat::EuroPrefixTwoDecimals
+        {
+            let Ok(magnitude) = value.abs().to_string().parse::<Decimal>() else {
+                return raw;
+            };
+            let number = self.euro_number.format_fixed_decimal(&magnitude);
+            let sign = if value.is_sign_negative() { "-" } else { "" };
+            return format!("{sign}€ {number}");
+        }
+        let code = match self.options.currency {
+            CurrencyChoice::SystemLocale if native_format == NativeFormat::Euro => Some("EUR"),
+            CurrencyChoice::SystemLocale if native_format == NativeFormat::Unsupported => {
+                return raw;
+            }
+            CurrencyChoice::SystemLocale => self.system_currency.as_deref(),
+            explicit => explicit.code(),
+        };
+        code.and_then(|code| self.currencies.get(code))
+            .map_or(raw, |formatter| {
+                formatter
+                    .format_fixed_decimal(&amount)
+                    .write_to_string()
+                    .into_owned()
+            })
     }
 
     fn datetime(
@@ -351,6 +393,7 @@ pub fn raw(presentation: ScalarPresentation) -> String {
             amount.multiply_pow10(CURRENCY_SCALE);
             amount.to_string()
         }
+        ScalarPresentation::CurrencyAverage { bits, .. } => f64::from_bits(bits).to_string(),
         ScalarPresentation::DateTime {
             calendar,
             representation,
