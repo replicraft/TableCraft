@@ -148,7 +148,14 @@ fn tab(ui: &mut Ui, label: &str, selected: bool, enabled: bool) -> egui::Respons
         node.set_role(egui::accesskit::Role::Tab);
         node.clear_toggled();
         node.set_selected(selected);
+        if !response.enabled() {
+            node.remove_action(egui::accesskit::Action::Click);
+            node.remove_action(egui::accesskit::Action::Focus);
+        }
     });
+    if response.enabled() && response.gained_focus() {
+        response.scroll_to_me(None);
+    }
     if selected {
         ui.painter().line_segment(
             [response.rect.left_bottom(), response.rect.right_bottom()],

@@ -32,29 +32,18 @@ impl State {
                     DocumentView::Design => self.schema.as_ref().map(|schema| schema.table.clone()),
                     DocumentView::Query => None,
                 };
-                let design_available = table.as_ref().is_some_and(|table| {
-                    !self.mock_preview
-                        || self
-                            .schema
-                            .as_ref()
-                            .is_some_and(|schema| schema.table == *table)
-                });
                 if command(
                     ui,
                     Icon::TableEdit,
                     &t.text("ribbon-table-design"),
-                    !self.busy && design_available,
+                    !self.busy && table.is_some(),
                     CommandSize::Small,
                 )
                 .clicked()
                 {
-                    if self.mock_preview {
-                        self.select_view(DocumentView::Design);
-                    } else {
-                        actions.push(Action::ViewSchema {
-                            table: table.expect("enabled for an existing table"),
-                        });
-                    }
+                    actions.push(Action::ViewSchema {
+                        table: table.expect("enabled for an existing table"),
+                    });
                 }
             });
             if self.ribbon_tab == ribbon::Tab::TableDesign && self.mock_preview {

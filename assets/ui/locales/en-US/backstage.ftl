@@ -1,6 +1,6 @@
 # TableCraft UI: backstage.
 
-backstage-back = ‹ Back
+backstage-back = Back
 backstage-home = Home
 backstage-new = New
 backstage-open = Open

@@ -13,7 +13,8 @@ cargo run -p tablecraft-desktop -- --mock --mock-language ja --mock-dark
 ```
 
 Other scenes cover Options, ad-hoc SQL, saved queries, attachments, multivalues, stored
-history, edit drafts, reviewed edits, recovery and File/Open. They review existing
+history, edit drafts, reviewed edits, recovery, File/Open, About, empty tables,
+loading and read errors. They review existing
 presentation states; simulated validation/save outcomes are not engine evidence.
 The normal optional database path conflicts with mock mode.
 
@@ -24,7 +25,7 @@ Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
 has separate `shell`, `ribbon`, `backstage`, `datasheet`, `query`, `saved-query`,
-`design`, `editing`, `collections` and `settings` `.ftl` files under
+`design`, `editing`, `collections`, `navigation` and `settings` `.ftl` files under
 `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
@@ -52,9 +53,10 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all twelve scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all sixteen scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, 1× scale, using Windows keyboard conventions on the
-local renderer. The development-only renderer requires a GPU adapter; it does not
+local renderer. The animated loading scene advances exactly three frames rather than waiting
+for its spinner to become idle. The development-only renderer requires a GPU adapter; it does not
 open an OS window. Keep generated images in ignored local output directories.
 
 Set `TABLECRAFT_PREVIEW_WIDTH` and `TABLECRAFT_PREVIEW_HEIGHT` to review another
@@ -84,3 +86,36 @@ horizontally scrollable rather than clipping inaccessible commands.
 These are local mock/render observations, not Windows execution, screen-reader
 qualification or native Access behavioral comparisons. Translations and surfaces
 without retained Access captures still require the separate reviews noted above.
+
+## Follow-on navigation and state review — 4 November 2026
+
+The current scene inventory has sixteen entries. Empty tables retain their
+actual declared headers alongside the empty notice, with no invented new-record
+row. Loading and read-error scenes preserve the last synthetic snapshot;
+cancellation is local to the mock host. The default mock Table Design command
+now uses the same existing ViewSchema intent as the native host and prepares its
+synthetic declaration locally instead of requiring a preloaded schema.
+
+Object navigation uses full-row hit regions and stable document/object widget
+IDs, including distinct identities for a table and saved query with the same
+name. Filtering earlier rows preserves focus; replacing the document discards
+it. Its eight navigation messages now have their own `navigation.ftl` in every
+language. Backstage has left-aligned Back/Open/About/Options SVG controls and
+independent section scroll state.
+
+The lower General property sheet is compact, full-width, left-aligned and
+read-only. Its overflow scrollbar appears only when needed; actual scroll tests
+reach Validation Text and the collapsed Native details. Plain Up/Down moves only
+the focused current field and reveals it once, including across virtual rows.
+Modified keys, property-text selection, replaced metadata and modal overlays
+remain isolated. Ribbon commands similarly reveal only on gained focus; manual
+scrolling is preserved. Disabled mock and background field controls expose no
+Click/Focus actions and reject forced assistive activation.
+
+The coordinated batch passes 78 shared UI tests and 23 desktop tests, including
+all 256 language/theme/scene drawing combinations with zero localization
+errors. The updated renderer exported all 256 default-size PNGs; representative
+empty, loading, error, About, navigation and Design renders were opened for review. Strict Clippy, formatting, documentation links and dependency guards
+pass. The 35 curated Fluent SVGs and retained MIT notice match their recorded
+hashes; normalization preserves upstream geometry. These observations retain the
+same local-render/native-platform limits as the preceding review.

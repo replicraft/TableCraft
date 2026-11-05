@@ -7,7 +7,10 @@ UI work now prioritizes synthetic visual review without new database features.
 for eight interface languages and the existing workspace presentation.
 `tablecraft-desktop --mock` starts a separate presentation-only host; no runtime
 worker, native file dialog or save service is constructed. Existing views have
-controlled synthetic scenes, while future Ribbon commands remain disabled.
+controlled synthetic scenes, including empty/loading/error/About states, while
+future Ribbon commands remain disabled. Full-row object navigation retains
+source-bound widget identity, and the read-only Design grid supports local
+keyboard field selection beside its full-width General property sheet.
 
 Microsoft Fluent SVG icons and Selawik with regional CJK fallback fonts retain
 source hashes and licenses under root `assets/ui/`. The retained Access captures

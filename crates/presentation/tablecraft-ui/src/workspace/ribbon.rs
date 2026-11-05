@@ -106,6 +106,10 @@ pub(super) fn command(
             CommandSize::IconOnly => (egui::vec2(24.0, SMALL_COMMAND_HEIGHT), 0.0),
         };
         let (rect, response) = ui.allocate_exact_size(desired, Sense::click());
+        if response.enabled() && response.gained_focus() {
+            response.scroll_to_me(None);
+        }
+
         if ui.is_enabled() && (response.hovered() || response.has_focus()) {
             let visuals = ui.style().interact(&response);
             ui.painter().rect_filled(rect, 2.0, visuals.weak_bg_fill);
@@ -156,6 +160,14 @@ pub(super) fn command(
             ui.painter().galley(text_position, text, color);
         }
         response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label));
+        if !response.enabled() {
+            // Disabled previews have no callable or focusable command contract,
+            // including when an assistive host sends an unsolicited request.
+            ui.ctx().accesskit_node_builder(response.id, |node| {
+                node.remove_action(egui::accesskit::Action::Click);
+                node.remove_action(egui::accesskit::Action::Focus);
+            });
+        }
         response
     })
     .inner
@@ -183,4 +195,99 @@ fn large_command_width(ui: &Ui, label: &str, font: &FontId, color: egui::Color32
     }
 
     LARGE_COMMAND_WIDTH.max(text_width.ceil() + 8.0)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use egui::emath::GuiRounding;
+
+    fn frame(
+        context: &egui::Context,
+        events: Vec<egui::Event>,
+    ) -> (egui::Id, egui::Rect, egui::Rect, Option<egui::Rect>) {
+        let mut observation = None;
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(300.0, 120.0),
+                )),
+                time: Some(context.cumulative_frame_nr() as f64 * 0.25),
+                events,
+                ..Default::default()
+            },
+            |ui| {
+                strip(ui, |ui| {
+                    ui.add_space(360.0);
+                    let response = command(ui, Icon::Copy, "Copy", true, CommandSize::Small);
+                    observation = Some((response.id, response.rect, ui.clip_rect()));
+                });
+            },
+        );
+        let text_rect = output.shapes.iter().find_map(|shape| match &shape.shape {
+            egui::epaint::Shape::Text(text) if text.galley.job.text == "Copy" => {
+                Some(egui::Rect::from_min_size(text.pos, text.galley.size()))
+            }
+            _ => None,
+        });
+        output.textures_delta.clear();
+        let (id, rect, clip) = observation.expect("actual overflow command geometry");
+        (id, rect, clip, text_rect)
+    }
+
+    #[test]
+    fn gaining_focus_reveals_an_overflow_command_without_overriding_later_manual_scroll() {
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        crate::configure(&context);
+        frame(&context, vec![]);
+        let (id, before, clip, _) = frame(&context, vec![]);
+        assert!(before.left() > clip.right());
+
+        frame(
+            &context,
+            vec![egui::Event::AccessKitActionRequest(
+                egui::accesskit::ActionRequest {
+                    action: egui::accesskit::Action::Focus,
+                    target_tree: egui::accesskit::TreeId::ROOT,
+                    target_node: id.accesskit_id(),
+                    data: None,
+                },
+            )],
+        );
+        frame(&context, vec![]);
+        let (_, revealed, clip, text_rect) = frame(&context, vec![]);
+        // egui's ScrollArea snaps its content origin to physical pixels. The
+        // fractional measured command width can therefore extend by less than
+        // half a pixel at the maximum offset; compare its rendered edges using
+        // the same pixel grid, while checking its actual glyph bounds exactly.
+        let pixels_per_point = context.pixels_per_point();
+        let physical_bounds = revealed.round_to_pixels(pixels_per_point);
+        let physical_clip = clip.round_to_pixels(pixels_per_point);
+        assert!(
+            physical_clip.contains_rect(physical_bounds),
+            "rendered command {physical_bounds:?}, viewport {physical_clip:?}"
+        );
+        assert!(clip.contains_rect(text_rect.expect("revealed command text was painted")));
+        assert!(clip.contains_rect(revealed.shrink(1.0 / pixels_per_point)));
+        assert!(context.memory(|memory| memory.has_focus(id)));
+
+        frame(
+            &context,
+            vec![
+                egui::Event::PointerMoved(egui::pos2(16.0, 16.0)),
+                egui::Event::MouseWheel {
+                    unit: egui::MouseWheelUnit::Point,
+                    delta: egui::vec2(360.0, 0.0),
+                    phase: egui::TouchPhase::Move,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        );
+        frame(&context, vec![]);
+        let (_, after_manual_scroll, clip, _) = frame(&context, vec![]);
+        assert!(after_manual_scroll.left() > clip.right());
+        assert!(context.memory(|memory| memory.has_focus(id)));
+    }
 }

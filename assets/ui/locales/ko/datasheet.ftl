@@ -1,13 +1,5 @@
 # TableCraft UI: datasheet.
 
-datasheet-all-objects = 모든 Access 개체
-datasheet-search-objects = 개체 검색
-datasheet-show-system = 시스템 개체 표시
-datasheet-tables = 테이블
-datasheet-queries = 쿼리
-datasheet-view-schema = 스키마 보기
-datasheet-system = 시스템
-datasheet-open-first = 데이터베이스를 열면 개체가 표시됩니다.
 datasheet-column-count = 열 수: { $count }
 datasheet-previous-page = ‹ 이전 페이지
 datasheet-next-page = 다음 페이지 ›
