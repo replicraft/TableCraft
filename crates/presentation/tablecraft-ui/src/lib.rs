@@ -25,10 +25,11 @@ pub use workspace::{
     FieldPropertyValue, FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget,
     FilterTarget, FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
     FindTarget, InputHint, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget,
-    ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, RecordTarget,
-    RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget,
-    State, Table, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
-    TotalsTarget, WorkspaceLayout,
+    ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput, ParameterSpec,
+    QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget, RowOrdinalError,
+    RowOrdinals, SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
+    TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
+    WorkspaceLayout,
 };
 
 #[cfg(test)]
@@ -49,6 +50,7 @@ mod tests {
                     format: "Ace2016".into(),
                     queries: vec![],
                     tables: vec![Table {
+                        local: true,
                         name: "Customers".into(),
                         system: false,
                         storage: "Local".into(),

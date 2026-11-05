@@ -42,6 +42,8 @@ gear = '<path d="' + ' '.join(gear_commands) + '" fill="{ink}" stroke="none"/>'
 gear += '<circle cx="16" cy="16" r="4.7" fill="{paper}" stroke="none"/>'
 
 icons = {
+    'run': '<path d="M12 3h8l-2 18h-4z" fill="{red}" stroke="none"/><circle cx="16" cy="27" r="3" fill="{red}" stroke="none"/>',
+    'add_tables': grid + '<circle cx="24" cy="24" r="7" fill="{paper}" stroke="none"/>' + plus,
     'application': '<path d="M5 8v16c0 3 5 5 11 5s11-2 11-5V8" fill="{app_red}" stroke="{app_red}"/><ellipse cx="16" cy="8" rx="11" ry="5" fill="{app_red}" stroke="{paper}" stroke-width="1.5"/><path d="M5 16c0 3 5 5 11 5s11-2 11-5M5 24c0 3 5 5 11 5s11-2 11-5" fill="none" stroke="{paper}" stroke-width="1.5"/>',
     'folder_open': '<path d="M3 9V6h10l3 3h12v17H3z" fill="{gold}"/><path d="m3 15 5-4h23l-5 16H3z" fill="{palegold}"/>',
     'settings': gear,

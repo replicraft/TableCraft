@@ -12,6 +12,48 @@
   ],
   "icons": [
     {
+      "name": "run",
+      "variants": {
+        "light": {
+          "file": "run-light.svg",
+          "sha256": "f2ec87c8fe06ce323c465d53040080574e1f075a4e2ae22517e4456835ebc7dd"
+        },
+        "dark": {
+          "file": "run-dark.svg",
+          "sha256": "3d4c105b1c22fa15408f8c354a94eb968f3cfd9ff834bcee021ef78e601f1db6"
+        },
+        "disabled-light": {
+          "file": "run-disabled-light.svg",
+          "sha256": "3e61bfed75f1ccaf926d34f0c3c2615e8b86b229c3b6993412e8a4275c60d21d"
+        },
+        "disabled-dark": {
+          "file": "run-disabled-dark.svg",
+          "sha256": "e90e63a91264b3a7735e387fa8f50fd23e6174a868db1cd0dc9725b879d9ee6f"
+        }
+      }
+    },
+    {
+      "name": "add_tables",
+      "variants": {
+        "light": {
+          "file": "add_tables-light.svg",
+          "sha256": "0ace1334451f07bf94f7fd7b5e9016a28a3cca6ad3fa008ced824477f64e9a23"
+        },
+        "dark": {
+          "file": "add_tables-dark.svg",
+          "sha256": "f8857f35f54aa83fccfc9feed55c475757eddbb1312f86eae0dc3f2a0f8e9041"
+        },
+        "disabled-light": {
+          "file": "add_tables-disabled-light.svg",
+          "sha256": "56f7a6750cd1633284f4c9b6ae40cf55fbee868b496a957f1ce7b42c8068b104"
+        },
+        "disabled-dark": {
+          "file": "add_tables-disabled-dark.svg",
+          "sha256": "4e2230a3143de9fe9e128978fac8de7d6e55907388d37ea262fef226852a3a60"
+        }
+      }
+    },
+    {
       "name": "application",
       "variants": {
         "light": {

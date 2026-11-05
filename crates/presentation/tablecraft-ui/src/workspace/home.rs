@@ -6,6 +6,10 @@ use ribbon::{CommandSize, Icon, command, group};
 
 impl State {
     pub(super) fn home(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        if self.ribbon_tab == ribbon::Tab::QueryDesign && self.query_design_context() {
+            self.query_design_ribbon(ui, actions);
+            return;
+        }
         let t = self.localizer.clone();
         ribbon::strip(ui, |ui| {
             group(ui, &t.text("ribbon-views"), |ui| {

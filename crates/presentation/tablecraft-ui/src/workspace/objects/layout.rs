@@ -2,6 +2,7 @@
 use super::session::Entry;
 use super::{MAX_OBJECTS, NEXT_OBJECT_ID, ObjectKind, ObjectTab, ObjectTarget, Objects, Session};
 use crate::SavedQueryTarget;
+use crate::workspace::query_design::{Preferences as QueryDesignPreferences, QueryDesign};
 use crate::workspace::saved_query::InputPreferences;
 use crate::workspace::totals::{Totals, TotalsPreferences};
 use crate::workspace::{DocumentView, State};
@@ -19,6 +20,7 @@ struct Preference {
     offset: u32,
     parameters: Option<InputPreferences>,
     totals: Option<TotalsPreferences>,
+    query_design: Option<QueryDesignPreferences>,
 }
 
 impl State {
@@ -60,7 +62,16 @@ impl State {
                         _ => None,
                     }
                 };
+                let query_design = if active {
+                    self.query_design.preferences()
+                } else {
+                    match &entry.session {
+                        Some(Session::Sql { design, .. }) => design.preferences(),
+                        _ => None,
+                    }
+                };
                 Preference {
+                    query_design,
                     totals,
                     kind: entry.tab.target.kind.clone(),
                     design,
@@ -143,7 +154,12 @@ impl State {
                         preference.parameters,
                     );
                 }
-                Session::Sql { .. } => {}
+                Session::Sql { design, .. } => {
+                    *design = preference
+                        .query_design
+                        .map(QueryDesign::from_preferences)
+                        .unwrap_or_default();
+                }
             }
             let retained_bytes = session.retained_bytes();
             restored.entries.push(Entry {

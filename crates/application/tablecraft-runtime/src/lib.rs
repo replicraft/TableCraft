@@ -11,6 +11,7 @@ mod filtering;
 mod find;
 mod native_properties;
 mod query;
+mod query_design;
 mod rows;
 mod saved;
 mod scalar_input;
@@ -40,6 +41,7 @@ pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
     FindTarget, MAX_FIND_PATTERN_BYTES,
 };
+pub use query_design::QueryDesignTarget;
 pub use saved::{
     MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
     SavedQuery, SavedQueryTarget,
@@ -53,11 +55,16 @@ pub use totals::{
 pub use worker::Worker;
 
 use std::path::PathBuf;
+use tablecraft_builders::query::{
+    BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
+};
 use zeroize::Zeroize;
 
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error(transparent)]
+    QueryDesign(#[from] QueryDesignError),
     #[error(transparent)]
     Totals(#[from] TotalsError),
     #[cfg(feature = "offline-edit")]
@@ -128,6 +135,18 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    DescribeQueryDesign {
+        target: QueryDesignTarget,
+        table: String,
+    },
+    BuildQueryDesign {
+        target: QueryDesignTarget,
+        draft: QueryDesignDraft,
+    },
+    ImportQueryDesign {
+        target: QueryDesignTarget,
+        sql: String,
+    },
     DescribeTotals {
         target: TotalsTarget,
     },
@@ -243,6 +262,15 @@ pub struct Table {
 }
 
 pub enum Response {
+    QueryDesignTable {
+        target: QueryDesignTarget,
+        metadata: DesignTableMetadata,
+    },
+    QueryDesignBuilt {
+        target: QueryDesignTarget,
+        built: BuiltQueryDesign,
+        metadata: Vec<DesignTableMetadata>,
+    },
     TotalsDescription(TotalsDescription),
     Totals(TotalsData),
     FieldFilterDescription(FieldFilterDescription),

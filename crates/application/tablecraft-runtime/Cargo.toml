@@ -17,6 +17,7 @@ offline-edit = [
 ]
 
 [dependencies]
+tablecraft-builders.workspace = true
 tablecraft-display.workspace = true
 bytes.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }

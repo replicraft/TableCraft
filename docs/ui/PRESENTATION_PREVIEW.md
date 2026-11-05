@@ -21,8 +21,8 @@ The normal optional database path conflicts with mock mode.
 Saved-query Run now collects declared parameters in staged dialogs, one value at
 a time. The `saved-parameters` scene starts at the first prompt for visual review;
 normal inspection stays inert. Earlier inline-parameter-pane records below refer
-to the preceding presentation. The current original icon inventory is 50 designs
-with 200 themed/disabled SVGs, including the attachment paperclip.
+to the preceding presentation. The current original icon inventory is 52 designs
+with 208 themed/disabled SVGs, including the attachment paperclip.
 
 File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
@@ -30,9 +30,9 @@ Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
 Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
-has 19 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
+has 20 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
 `saved-query`, `design`, `editing`, `insertion`, `deletion`, `collections`,
-`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering`, `zoom` and `totals`
+`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering`, `zoom`, `totals` and `query-design`
 `.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 63 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 66 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -701,3 +701,23 @@ reviewed. Final error frames were re-exported after removing duplicate mock text
 No application window opened. The four viewed Microsoft references establish
 short-table placement and operation choices; adaptive overflow placement remains
 provisional. See the [feature contract](DATASHEET_TOTALS.md).
+
+## Visual SELECT design — 5 November 2026
+
+The inventory contains 66 scenes. The new `query-design`,
+`query-design-tables` and `query-design-error` scenes render authored synthetic
+drafts without querying a database. The dedicated `query-design.ftl` brings each
+locale to 20 sections. Run and Add Tables have original generated SVGs, bringing
+the icon inventory to 52 concepts and 208 themed/disabled files.
+
+Six German light/dark PNGs were exported and opened at 1000 × 680 logical points,
+scale 1.25 (1250 × 850 physical pixels), with `de-DE` regional formatting on the
+macOS offscreen renderer using Windows UI conventions. Actual Microsoft source
+card/QBE and Show Table images were reopened for comparison. Explicit vertical
+card layout and a bounded upper pane fix a rendered horizontal-field overflow;
+a 900 × 580 interaction check now observes field positions and visible criteria.
+The table chooser uses a full-width bounded list and right-aligned Add/Close.
+
+The full 66 × eight × two drawing matrix passes (1,056 combinations). Native
+window-manager behavior and Windows Access interaction remain unverified; joins
+use the documented context-menu workflow rather than native drag-and-drop.

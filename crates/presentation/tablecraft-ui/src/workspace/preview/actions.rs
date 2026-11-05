@@ -42,6 +42,33 @@ impl Preview {
             return;
         }
         match action {
+            Action::DescribeQueryDesign { request, table } => {
+                self.mock_describe_query_design(request, table)
+            }
+            Action::BuildQueryDesign {
+                request,
+                draft,
+                completion,
+            } => {
+                let id = self.request();
+                if self
+                    .state
+                    .begin_query_design_build(request, draft, completion, id)
+                {
+                    self.state
+                        .fail_query_design(id, self.state.localizer.text("qbe-mock-unavailable"));
+                }
+            }
+            Action::ImportQueryDesign { request, sql } => {
+                let id = self.request();
+                if self.state.begin_query_design_import(request, sql, id) {
+                    self.state
+                        .fail_query_design(id, self.state.localizer.text("qbe-mock-unavailable"));
+                }
+            }
+            Action::CancelQueryDesign { request_id } => {
+                self.state.cancel_query_design(request_id);
+            }
             Action::DescribeTotals { target } => self.mock_describe_totals(target),
             Action::ComputeTotals { target, specs } => self.mock_compute_totals(target, specs),
             Action::CancelTotals { request_id } => {

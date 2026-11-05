@@ -24,6 +24,22 @@ impl State {
                 self.saved_query_editor(ui, actions);
                 return;
             }
+            self.query_design_report(ui);
+            if self.query_design_results_visible() {
+                self.query_design_views(ui, actions);
+                if self.query_data.is_some() && self.query_design_results_previous() {
+                    ui.weak(tr(ui, "qbe-results-previous"));
+                }
+                return;
+            }
+            if self.query_design_visible() {
+                self.query_design_editor(ui, actions);
+                return;
+            }
+            self.query_design_views(ui, actions);
+            if self.query_design_visible() {
+                return;
+            }
             let sql_label = ui.heading(tr(ui, "query-title"));
             ui.label(
                 RichText::new(tr(ui, "query-help")).color(crate::theme::palette(ui.ctx()).muted),

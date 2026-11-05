@@ -15,6 +15,7 @@ fn missing_publications_show_loading_then_retry_without_confusing_loaded_empty_o
             title: "Object publication states".into(),
             format: "ACE16".into(),
             tables: vec![Table {
+                local: true,
                 name: "Items".into(),
                 system: false,
                 storage: "Local".into(),

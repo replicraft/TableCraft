@@ -120,6 +120,7 @@ fn native_database() -> crate::Database {
         tables: ["Contacts", "Another table"]
             .into_iter()
             .map(|name| crate::Table {
+                local: true,
                 name: name.into(),
                 system: false,
                 storage: "Local".into(),

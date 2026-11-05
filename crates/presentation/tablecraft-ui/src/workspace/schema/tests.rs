@@ -342,6 +342,7 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
             title: "Managed design".into(),
             format: "Ace2016".into(),
             tables: vec![Table {
+                local: true,
                 name: "Mixed".into(),
                 system: false,
                 storage: "Local".into(),

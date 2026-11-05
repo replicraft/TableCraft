@@ -23,6 +23,7 @@ pub(super) enum Tab {
     #[default]
     Home,
     TableDesign,
+    QueryDesign,
 }
 
 #[derive(Clone, Copy)]

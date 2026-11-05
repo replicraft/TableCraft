@@ -15,6 +15,7 @@ fn state() -> (State, InsertTarget) {
         title: "Insertion".into(),
         format: "ACE 16".into(),
         tables: vec![Table {
+            local: true,
             name: "Empty table".into(),
             system: false,
             storage: "Local".into(),

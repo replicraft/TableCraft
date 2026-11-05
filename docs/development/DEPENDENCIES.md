@@ -1,5 +1,15 @@
 # Adopted dependency and licensing baseline
 
+## Headless query builders — 5 November 2026
+
+The local `tablecraft-builders` package shares query-design drafts, bounds and
+owned SQL construction/import between runtime and UI. It inherits existing
+workspace SQL, schema and thiserror dependencies. UI and desktop import the real
+model owner directly; runtime keeps native metadata and execution orchestration.
+The dependency guard prevents builders from importing GUI libraries, native
+backends, runtime or application hosts. No registry version, checksum, feature or
+third-party license changes accompany this local package.
+
 ## Desktop workspace (4 November 2026)
 
 Working consumers introduce `egui`, `egui_extras` and `eframe` 0.36.2 (MIT OR

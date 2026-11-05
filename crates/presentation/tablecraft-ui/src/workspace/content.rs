@@ -56,6 +56,9 @@ impl State {
             return;
         }
         self.query_editor(ui, actions);
+        if self.query_design_visible() {
+            return;
+        }
         if self.view == DocumentView::Table {
             egui::Panel::bottom(ui.make_persistent_id("record_navigation")).show(ui, |ui| {
                 if self.active_filter_target().is_some() || self.table_filter_pending() {

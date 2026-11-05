@@ -479,6 +479,58 @@ failed/canceled candidates preserving old handles, cross-worker witness rejectio
 EOF failure and explicit fresh-source reapplication. These headless checks do not
 establish native Access filtering or cross-platform GUI parity.
 
+## Visual SELECT design services
+
+`tablecraft-builders::query` owns the working headless visual draft, native QBE
+criteria composition, typed owned-AST construction and conservative SQL import.
+It depends on the owned SQL/schema contracts, without GUI, runtime, engine or
+file dependencies. Runtime commands only qualify current-document metadata and
+compose this service. Shared UI imports that actual model rather than defining
+a second draft or interpolating source identifiers into SQL.
+
+`DescribeQueryDesign` returns exact native table/field names and independently
+qualified scalar-reader facts. It reads metadata without fetching user records;
+unknown/complex declarations remain visible without acquiring execution rights.
+`BuildQueryDesign` and `ImportQueryDesign` check the document revision, capture
+fresh source descriptors under one cumulative native allowance and return both
+the owned draft/canonical SQL and those descriptors. Build and import do not
+execute SQL, open stored linked targets or modify saved queries or the database.
+A successful design is syntax and source metadata, not a promise that every
+expression or source is executable by the current query profile.
+
+The initial editor permits eight source instances with optional explicit aliases,
+seven explicit field-equality join edges, 32 grid columns and eight alternative
+criteria rows. Fields selected from metadata become typed source-ID/column
+references; native identifiers never become SQL prefix/suffix fragments. The
+owned formatter supplies canonical quoting. Projection, optional alias, Show and
+left-to-right sort choices remain distinct. Hidden columns can still filter or
+sort. Grid cells on the same criteria row combine with AND; nonempty rows combine
+with OR, while blank rows add no unconditional branch. Contextual field criteria
+support comparison shorthand, compound comparisons, Between, In, Like, Is Null
+and quoted or simple bare Text values. Computed operands require explicit
+predicate syntax or scalar operands; bare wildcard patterns require explicit
+Like. Join orientation and Inner/Left/Right kinds are explicit, never guessed
+from names. Cyclic and compound-edge join graphs remain outside this initial
+profile.
+
+SQL import accepts only a SELECT representable by this model. It rejects
+parameters, UNION, TOP/DISTINCT, GROUP/HAVING/aggregates, external/derived sources,
+subqueries, unsupported join conditions and other omitted clauses. A canonical
+round-trip proof preserves the represented projection, aliases, join tree,
+criteria grouping/order and sorting; only transparent relation parentheses are
+normalized. Unsupported criteria decompositions and changes to evaluation order
+refuse, leaving the caller's existing SQL and draft intact. SQL execution remains
+available independently and is always an explicit host action.
+
+Combined editable text is limited to 64 KiB. The public parser additionally
+retains its byte/token/depth ceilings; generated SQL must pass those same bounds.
+Metadata has separate eight-table/1,024-fields-per-table/1 MiB name envelopes and
+rejects duplicate or invalid names. Hosts use the owning text-accounting and
+metadata validators for admission. Runtime retains ordinary native/presentation
+pools and checks cancellation before/after bounded pure construction. No mutable
+runtime design registry, native lock while editing or implicit preview execution
+is introduced.
+
 ## Native datasheet totals
 
 `DescribeTotals` returns native headings and their eligible aggregate operations

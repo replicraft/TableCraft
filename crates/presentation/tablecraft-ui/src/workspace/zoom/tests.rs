@@ -13,6 +13,7 @@ fn state(value: String, native: bool) -> State {
         title_path: None,
         format: "ACE 16".into(),
         tables: vec![Table {
+            local: true,
             name: "Items".into(),
             system: false,
             storage: "Local".into(),

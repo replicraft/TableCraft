@@ -364,6 +364,7 @@ fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing
             state.localizer = crate::Localizer::new(locale).unwrap();
             if insertion {
                 state.database.as_mut().unwrap().tables.push(crate::Table {
+                    local: true,
                     name: target.table.clone(),
                     system: false,
                     storage: "Local".into(),

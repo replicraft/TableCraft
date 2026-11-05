@@ -356,6 +356,7 @@ impl State {
     }
     pub fn edit_dialog_open(&self) -> bool {
         self.edit.is_some()
+            || self.query_design_dialog_open()
             || self.insertion_dialog_open()
             || self.deletion_dialog_open()
             || self.field_filter_dialog_open()

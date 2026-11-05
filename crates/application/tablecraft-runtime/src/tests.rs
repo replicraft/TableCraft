@@ -19,6 +19,7 @@ mod formatting;
     any(target_os = "macos", target_os = "linux")
 ))]
 mod inserting;
+mod query_design;
 mod saved;
 mod schema;
 mod stored;
