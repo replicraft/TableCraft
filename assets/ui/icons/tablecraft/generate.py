@@ -96,11 +96,80 @@ icons = {
     'delete_rows': grid + '<path d="M16 23h15" stroke="{red}" stroke-width="4"/>',
 }
 
+
+# Native record navigation uses simple solid shapes that survive 12–16pt sizes.
+icons.update({
+    'first_record': '<path d="M7 5v22M26 5 11 16l15 11z" fill="{ink}" stroke="{ink}"/>',
+    'previous_record': '<path d="M24 5 8 16l16 11z" fill="{ink}" stroke="none"/>',
+    'next_record': '<path d="m8 5 16 11-16 11z" fill="{ink}" stroke="none"/>',
+    'last_record': '<path d="M25 5v22M6 5l15 11L6 27z" fill="{ink}" stroke="{ink}"/>',
+    'new_record': '<path d="m3 7 12 9-12 9z" fill="{ink}" stroke="none"/><path d="m24 4 2 7 7 2-6 4 1 7-6-4-6 4 2-7-5-4 7-2z" fill="{gold}" stroke="none"/>',
+    'no_filter': funnel + '<path d="m6 27 21-22" stroke="{red}" stroke-width="3"/>',
+    'view_datasheet': grid,
+    'view_design': '<path d="M4 3h8v26H4zM17 29V4l12 25z" fill="{paper}"/><path d="M4 9h5M4 15h5M4 21h5M21 21h4" stroke="{blue}"/>',
+    'quick_access': '<path d="M5 7h22M5 13h22M5 19h22" stroke="{ink}"/><path d="m11 25 5 5 5-5z" fill="{ink}" stroke="none"/>',
+})
+
+form = '<rect x="3" y="4" width="26" height="24" rx="2" fill="{paper}"/><path d="M3 10h26" stroke="{blue}" stroke-width="5"/><path d="M7 15h5M7 22h5M16 15h9M16 22h9" stroke="{ink}"/>'
+report = paper + '<path d="M11 12h10M11 17h10M11 22h6" stroke="{blue}"/>'
+pencil = '<path d="m18 27 1-6L27 9l4 4-9 12z" fill="{gold}" stroke="{ink}"/>'
+wand = '<path d="m17 29 11-14M23 9v-6M20 6h6" stroke="{gold}" stroke-width="3"/>'
+arrow_in = '<path d="M1 19h13m-4-4 4 4-4 4" stroke="{green}" stroke-width="3" fill="none"/>'
+arrow_out = '<path d="M18 22h13m-4-4 4 4-4 4" stroke="{blue}" stroke-width="3" fill="none"/>'
+
+icons.update({
+    'query_design': grid + '<path d="m17 27 1-5 9-12 4 4-10 12z" fill="{gold}"/>',
+    'query_wizard': grid + wand,
+    'form': form,
+    'form_design': form + pencil,
+    'blank_form': '<rect x="3" y="4" width="26" height="24" rx="2" fill="{paper}"/><path d="M3 10h26" stroke="{blue}" stroke-width="5"/>',
+    'form_wizard': form + wand,
+    'report': report,
+    'report_design': report + pencil,
+    'blank_report': paper,
+    'report_wizard': report + wand,
+    'labels': '<rect x="3" y="4" width="26" height="24" rx="2" fill="{paper}"/><path d="M16 4v24M3 16h26" stroke="{blue}"/><path d="M7 10h5M20 10h5M7 22h5M20 22h5" stroke="{ink}"/>',
+    'code': paper + '<path d="m14 13-4 5 4 5m6-10 4 5-4 5" fill="none" stroke="{blue}"/>',
+    'class_module': paper + '<rect x="10" y="12" width="12" height="12" rx="2" fill="{pale}"/><path d="M10 17h12M15 17v7" stroke="{blue}"/>',
+    'import': paper + arrow_in,
+    'export': paper + arrow_out,
+    'saved_imports': icons['save'] + arrow_in,
+    'saved_exports': icons['save'] + arrow_out,
+    'linked_tables': grid + '<path d="m13 20 4-4a5 5 0 0 1 7 7l-4 4m-2-6-4 4a5 5 0 0 1-7-7l4-4" fill="none" stroke="{green}" stroke-width="3"/>',
+    'spreadsheet': grid + '<path d="m12 13 9 12m0-12-9 12" stroke="{green}" stroke-width="3"/>',
+    'text_file': paper + '<path d="M11 13h11M11 18h11M11 23h11" stroke="{ink}"/>',
+    'xml': paper + '<path d="m13 13-4 5 4 5m8-10 4 5-4 5m-6 0 3-10" fill="none" stroke="{green}"/>',
+    'database_file': icons['application'] + arrow_out,
+    'compact_repair': icons['application'] + '<path d="M25 3v10m-4-5 4 5 4-5" stroke="{gold}" stroke-width="3"/>',
+    'documenter': report + '<circle cx="23" cy="23" r="7" fill="{palegold}"/><path d="M20 20h6M20 24h6" stroke="{ink}"/>',
+    'performance': '<path d="M3 27V5M3 27h26" fill="none"/><path d="m6 22 6-8 6 3L27 5" fill="none" stroke="{green}" stroke-width="3"/>',
+    'analyze_table': grid + '<circle cx="23" cy="22" r="7" fill="{palegold}"/><path d="m18 22 3 3 7-8" fill="none" stroke="{green}"/>',
+    'help': '<circle cx="16" cy="16" r="13" fill="{blue}" stroke="none"/><path d="M11 11c0-7 13-7 11 0-1 4-6 3-6 8" fill="none" stroke="{paper}" stroke-width="3"/><circle cx="16" cy="25" r="1.6" fill="{paper}" stroke="none"/>',
+    'feedback': '<path d="M3 4h26v19H14l-8 6v-6H3z" fill="{pale}"/><path d="M8 10h16M8 16h11" stroke="{blue}"/>',
+    'before_change': icons['macro_create'] + '<path d="m9 6-6 5 6 5" fill="none" stroke="{blue}" stroke-width="3"/>',
+    'before_delete': icons['macro_rename'] + '<path d="m9 6-6 5 6 5" fill="none" stroke="{red}" stroke-width="3"/>',
+    'after_insert': icons['macro_create'] + '<path d="m23 3 6 5-6 5" fill="none" stroke="{green}" stroke-width="3"/>',
+    'after_update': icons['macro_rename'] + '<path d="m23 3 6 5-6 5" fill="none" stroke="{blue}" stroke-width="3"/>',
+    'after_delete': paper + '<path d="m12 14 10 10m0-10L12 24m11-21 6 5-6 5" fill="none" stroke="{red}" stroke-width="3"/>',
+})
+
+icons.update({
+    'align_left': '<path d="M4 6h24M4 13h15M4 20h24M4 27h15" stroke="{ink}"/>',
+    'align_center': '<path d="M4 6h24M9 13h14M4 20h24M9 27h14" stroke="{ink}"/>',
+    'align_right': '<path d="M4 6h24M13 13h15M4 20h24M13 27h15" stroke="{ink}"/>',
+    'borders': '<rect x="4" y="4" width="24" height="24" fill="{paper}"/><path d="M4 16h24M16 4v24" stroke="{blue}"/>',
+    'alternate_rows': grid + '<path d="M4 17h24M4 24h24" stroke="{palegold}" stroke-width="5"/>',
+    'decrease_indent': '<path d="M15 5h14M15 12h10M15 20h14M15 27h10m-15-16-7 5 7 5" fill="none" stroke="{ink}"/>',
+    'increase_indent': '<path d="M15 5h14M15 12h10M15 20h14M15 27h10M3 11l7 5-7 5" fill="none" stroke="{ink}"/>',
+    'bullets': '<path d="M11 6h18M11 16h18M11 26h18" stroke="{ink}"/><circle cx="4" cy="6" r="2" fill="{blue}"/><circle cx="4" cy="16" r="2" fill="{blue}"/><circle cx="4" cy="26" r="2" fill="{blue}"/>',
+    'numbering': '<path d="M12 6h17M12 16h17M12 26h17M3 3h2v6M2 13h5l-5 6h5M2 23h5l-3 3h3v3H2" fill="none" stroke="{ink}"/>',
+})
+
 palettes = {
     'light': dict(ink='#445367', paper='#fbfdff', pale='#d8e9f8', blue='#4788bd', green='#3e9365', gold='#d8a039', palegold='#f5dfa0', red='#bf5962', app_red='#b12b3d'),
-    'dark': dict(ink='#b9cadb', paper='#273646', pale='#355c7b', blue='#83b7e3', green='#8acba4', gold='#e9bf68', palegold='#6b572e', red='#ee929b', app_red='#dc6572'),
+    'dark': dict(ink='#e6edf5', paper='#34485b', pale='#4f7799', blue='#88c9ff', green='#81e3a7', gold='#ffd16e', palegold='#92723a', red='#ff9caa', app_red='#dc6572'),
     'disabled-light': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red', 'app_red'], '#777f89') | dict(paper='#e7eaee', pale='#d5d9df', palegold='#d5d9df'),
-    'disabled-dark': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red', 'app_red'], '#a5aeba') | dict(paper='#303841', pale='#46505d', palegold='#46505d'),
+    'disabled-dark': dict.fromkeys(['ink', 'blue', 'green', 'gold', 'red', 'app_red'], '#c2ccd7') | dict(paper='#303841', pale='#46505d', palegold='#46505d'),
 }
 
 records = []
@@ -136,8 +205,11 @@ embedded theme-variant SVG rendering and display-density approach.
 
 Each icon has a 32-unit canvas, a light/dark color variant, and corresponding
 neutral disabled variants. Enabled rendering preserves the source colors;
-disabled rendering selects neutral artwork and retains the host disabled-opacity
-behavior. Files are self-contained vector shapes with no text/font dependency,
+disabled commands use neutral artwork and muted text. The Ribbon preserves full
+artwork opacity for legibility; other controls retain their host disabled styling. Dark variants use brighter outlines and saturated semantic accents so
+small command glyphs remain distinct from the dark Ribbon background. Record
+navigation has dedicated solid silhouettes; Datasheet and Design view glyphs
+have separate geometry from table editing. Files are self-contained vector shapes with no text/font dependency,
 external references, filters, scripts, or linked images. Commands sharing a
 concept may share geometric building blocks; distinct command meanings have
 separate compositions.
