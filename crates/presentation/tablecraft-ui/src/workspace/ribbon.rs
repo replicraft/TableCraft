@@ -366,7 +366,14 @@ fn command_inner(
                 node.set_description(unavailable_help.clone());
             });
         }
-        response.on_disabled_hover_text(unavailable_help)
+        if matches!(size, CommandSize::IconOnly) {
+            response.on_hover_text(label).on_disabled_hover_ui(|ui| {
+                ui.strong(label);
+                ui.label(unavailable_help);
+            })
+        } else {
+            response.on_disabled_hover_text(unavailable_help)
+        }
     })
     .inner
 }
@@ -748,6 +755,69 @@ mod caption_arrow_tests {
             } else {
                 assert!(arrow.top() > line.bottom());
             }
+        }
+    }
+
+    #[test]
+    fn hovering_icon_only_controls_names_the_command_and_its_unavailable_state() {
+        for locale in [crate::Locale::EnUs, crate::Locale::De] {
+            let context = egui::Context::default();
+            crate::configure(&context);
+            let localizer = crate::Localizer::new(locale).unwrap();
+            crate::localization::install(&context, &localizer);
+            let label = localizer.text("ribbon-font-color");
+            let unavailable = localizer.text("ribbon-unavailable");
+            let render = |events, time, enabled| {
+                let mut rect = egui::Rect::NOTHING;
+                let mut output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(egui::Rect::from_min_size(
+                            egui::Pos2::ZERO,
+                            egui::vec2(500.0, 220.0),
+                        )),
+                        time: Some(time),
+                        events,
+                        ..Default::default()
+                    },
+                    |ui| {
+                        let response =
+                            command(ui, Icon::TextColor, &label, enabled, CommandSize::IconOnly);
+                        assert!(!response.clicked());
+                        rect = response.rect;
+                    },
+                );
+                output.textures_delta.clear();
+                (rect, output)
+            };
+            let (rect, initial) = render(Vec::new(), 0.0, false);
+            let painted = |output: &egui::FullOutput, expected: &str| {
+                output.shapes.iter().any(|shape| {
+                    matches!(&shape.shape, egui::Shape::Text(text) if text.galley.job.text == expected)
+                })
+            };
+            assert!(
+                !painted(&initial, &label),
+                "icon-only control has no persistent caption"
+            );
+            render(vec![egui::Event::PointerMoved(rect.center())], 0.1, false);
+            // The first delayed hover opens a new Area for its sizing pass.
+            // A following frame paints the settled tooltip at its measured size.
+            render(Vec::new(), 1.0, false);
+            let (_, hovered) = render(Vec::new(), 1.25, false);
+            assert!(
+                painted(&hovered, &label),
+                "hover identifies the translated command"
+            );
+            assert!(painted(&hovered, &unavailable));
+            assert!(context.memory(|memory| memory.focused()).is_none());
+            assert!(hovered.platform_output.commands.is_empty());
+
+            render(vec![egui::Event::PointerGone], 1.5, true);
+            render(vec![egui::Event::PointerMoved(rect.center())], 1.6, true);
+            render(Vec::new(), 2.6, true);
+            let (_, enabled_hover) = render(Vec::new(), 2.85, true);
+            assert!(painted(&enabled_hover, &label));
+            assert!(!painted(&enabled_hover, &unavailable));
         }
     }
 }
