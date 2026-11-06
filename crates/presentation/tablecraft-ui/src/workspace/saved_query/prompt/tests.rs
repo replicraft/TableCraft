@@ -19,6 +19,168 @@ fn harness() -> Harness<'static, (State, Vec<Action>)> {
 }
 
 #[test]
+fn oversized_parameter_events_preserve_the_literal_and_require_a_real_correction() {
+    let mut harness = harness();
+    harness.run();
+    let original = harness.state().0.saved_query.inputs.clone();
+    let rows = harness
+        .state()
+        .0
+        .saved_query
+        .data
+        .as_ref()
+        .unwrap()
+        .rows
+        .as_ptr();
+    let name = original[0].name.clone();
+    harness
+        .get_by_role_and_label(Role::Button, "Run saved query")
+        .click_accesskit();
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::TextInput, &name)
+        .focus();
+    harness.run();
+    harness.event(egui::Event::Text("keep this literal".into()));
+    harness.run();
+    let valid = harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0]
+        .text
+        .clone();
+
+    let oversized = "x".repeat(1_048_577);
+    harness.event(egui::Event::Text(oversized.clone()));
+    harness.event(egui::Event::Paste(oversized.clone()));
+    harness.event(egui::Event::Ime(egui::ImeEvent::Commit(oversized)));
+    harness.run();
+    assert_eq!(
+        harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0].text,
+        valid
+    );
+    assert!(
+        harness
+            .state()
+            .0
+            .saved_query
+            .prompt
+            .as_ref()
+            .unwrap()
+            .input_rejected
+    );
+    let label = harness.state().0.localizer.text("saved-query-input-limit");
+    assert!(harness.query_by_label(&label).is_some());
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness.key_press(Key::Enter);
+    harness.run();
+    assert!(harness.state().0.saved_query_prompt_open());
+    assert!(harness.state().1.is_empty());
+    assert_eq!(harness.state().0.saved_query.inputs, original);
+    assert_eq!(
+        harness
+            .state()
+            .0
+            .saved_query
+            .data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        rows
+    );
+
+    harness
+        .get_by_role_and_label(Role::TextInput, &name)
+        .focus();
+    harness.run();
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
+    harness.event(egui::Event::Text("corrected".into()));
+    harness.run();
+    assert_eq!(
+        harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0].text,
+        "corrected"
+    );
+    assert!(
+        !harness
+            .state()
+            .0
+            .saved_query
+            .prompt
+            .as_ref()
+            .unwrap()
+            .input_rejected
+    );
+    assert!(harness.query_by_label(&label).is_none());
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(harness.state().1.is_empty());
+    harness.key_press(Key::Escape);
+    harness.run();
+    assert_eq!(harness.state().0.saved_query.inputs, original);
+    assert_eq!(
+        harness
+            .state()
+            .0
+            .saved_query
+            .data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        rows
+    );
+}
+
+#[test]
+fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_editor_limits() {
+    let mut harness = harness();
+    harness.run();
+    let original = harness.state().0.saved_query.inputs.clone();
+    let name = original[0].name.clone();
+    let limit = 1_048_576 - original[0].name.len() - original[0].kind.len();
+    harness
+        .get_by_role_and_label(Role::Button, "Run saved query")
+        .click_accesskit();
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::TextInput, &name)
+        .focus();
+    harness.run();
+    harness.event(egui::Event::Paste("a".repeat(limit)));
+    harness.run();
+    let staged = &harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0].text;
+    assert_eq!(staged.len(), limit);
+    assert!(staged.bytes().all(|byte| byte == b'a'));
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled()
+    );
+
+    harness.event(egui::Event::Paste("b".into()));
+    harness.run();
+    let staged = &harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0].text;
+    assert_eq!(staged.len(), limit);
+    assert!(staged.bytes().all(|byte| byte == b'a'));
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert_eq!(harness.state().0.saved_query.inputs, original);
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
 fn cancelling_staged_input_retains_committed_inputs_results_and_source_identity() {
     let mut harness = harness();
     harness.run();
