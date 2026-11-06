@@ -39,3 +39,9 @@ qbe-queries = Запросы
 qbe-both = Все
 qbe-query-sources-unavailable = Источники-запросы пока не поддерживаются в этом конструкторе.
 qbe-resize-panes = Изменить размер области источников и сетки запроса
+
+qbe-builder = Построитель
+qbe-show-hide-group = Показать или скрыть
+qbe-totals = Итоги
+qbe-parameters = Параметры
+qbe-property-sheet = Лист свойств

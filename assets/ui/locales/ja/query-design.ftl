@@ -39,3 +39,9 @@ qbe-queries = クエリ
 qbe-both = 両方
 qbe-query-sources-unavailable = このクエリデザイナーではクエリをソースとして使用できません。
 qbe-resize-panes = ソース領域とクエリグリッドのサイズ変更
+
+qbe-builder = ビルダー
+qbe-show-hide-group = 表示/非表示
+qbe-totals = 集計
+qbe-parameters = パラメーター
+qbe-property-sheet = プロパティシート

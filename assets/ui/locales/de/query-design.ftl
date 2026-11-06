@@ -39,3 +39,9 @@ qbe-queries = Abfragen
 qbe-both = Beide
 qbe-query-sources-unavailable = Abfragequellen werden in diesem Abfrageentwurf noch nicht unterstützt.
 qbe-resize-panes = Quellenbereich und Abfrageraster skalieren
+
+qbe-builder = Generator
+qbe-show-hide-group = Einblenden/Ausblenden
+qbe-totals = Summen
+qbe-parameters = Parameter
+qbe-property-sheet = Eigenschaftenblatt

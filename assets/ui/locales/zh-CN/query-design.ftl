@@ -39,3 +39,9 @@ qbe-queries = 查询
 qbe-both = 两者
 qbe-query-sources-unavailable = 此查询设计器尚不支持查询源。
 qbe-resize-panes = 调整源窗格和查询网格大小
+
+qbe-builder = 生成器
+qbe-show-hide-group = 显示/隐藏
+qbe-totals = 汇总
+qbe-parameters = 参数
+qbe-property-sheet = 属性表
