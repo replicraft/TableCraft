@@ -262,3 +262,156 @@ fn collapse_control_then_same_tab_pair_expands_without_an_idle_gap() {
     assert_eq!(harness.state().0.data.as_ref().unwrap().rows.as_ptr(), rows);
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn temporary_font_catalog_owns_text_and_f6_and_dismisses_without_document_actions() {
+    use egui_kittest::kittest::NodeT;
+
+    let mut harness = workspace(Scene::Datasheet);
+    harness.state_mut().0.font_families =
+        crate::FontFamilies::from_system(["Example Serif", "Verdana"]).unwrap();
+    let rows = harness.state().0.data.as_ref().unwrap().rows.as_ptr();
+    let selection = harness.state().0.table_selection.position();
+    let sql = harness.state().0.sql.clone();
+    harness.state_mut().0.set_ribbon_collapsed(true);
+    harness.run_steps(3);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::ComboBox, "Font")
+            .is_none()
+    );
+    harness
+        .get_by_role_and_label(Role::Tab, "Home")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::ComboBox, "Font")
+        .click_accesskit();
+    harness.run_steps(3);
+    let search = harness.get_by_role_and_label(Role::TextInput, "Search fonts");
+    assert!(search.accesskit_node().is_focused());
+    harness.event(egui::Event::Text("Verdana".into()));
+    harness.run_steps(3);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Verdana")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Example Serif")
+            .is_none()
+    );
+    harness.key_press(Key::F6);
+    harness.run_steps(3);
+    let search = harness.get_by_role_and_label(Role::TextInput, "Search fonts");
+    assert!(search.accesskit_node().is_focused());
+    assert_eq!(search.value().as_deref(), Some("Verdana"));
+    assert!(harness.state().0.ribbon_temporarily_open());
+    assert_eq!(harness.state().0.sql, sql);
+    assert_eq!(harness.state().0.table_selection.position(), selection);
+
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
+    harness.event(egui::Event::Paste("sElA".into()));
+    harness.run_steps(3);
+    let search = harness.get_by_role_and_label(Role::TextInput, "Search fonts");
+    assert!(search.accesskit_node().is_focused());
+    assert_eq!(search.value().as_deref(), Some("sElA"));
+    harness.get_by_role_and_label(Role::Button, "Selawik");
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Verdana")
+            .is_none()
+    );
+    assert!(harness.state().1.is_empty());
+    assert!(!harness.state().0.edit_dialog_open());
+    assert_eq!(harness.state().0.sql, sql);
+    assert_eq!(harness.state().0.table_selection.position(), selection);
+
+    harness.state_mut().0.busy = true;
+    harness.key_press(Key::Escape);
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().0.ribbon_temporarily_open());
+    assert!(harness.state().1.is_empty());
+    assert!(harness.state().0.busy);
+    harness.key_press(Key::Escape);
+    harness.run_steps(3);
+    assert!(!harness.state().0.ribbon_temporarily_open());
+    assert!(harness.state().0.ribbon_collapsed());
+    assert!(harness.state().0.busy);
+    assert!(harness.state().1.is_empty());
+    harness.state_mut().0.busy = false;
+
+    harness
+        .get_by_role_and_label(Role::Tab, "Home")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::ComboBox, "Font")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Search fonts")
+            .value()
+            .as_deref(),
+        Some("")
+    );
+    let outside = harness
+        .get_all_by_role(Role::RowHeader)
+        .nth(20)
+        .unwrap()
+        .rect()
+        .center();
+    harness.event(egui::Event::PointerMoved(outside));
+    for pressed in [true, false] {
+        harness.event(egui::Event::PointerButton {
+            pos: outside,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: Modifiers::NONE,
+        });
+    }
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(!harness.state().0.ribbon_temporarily_open());
+    assert_eq!(harness.state().0.data.as_ref().unwrap().rows.as_ptr(), rows);
+    assert!(harness.state().1.is_empty());
+
+    harness
+        .get_by_role_and_label(Role::Tab, "Home")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::ComboBox, "Font")
+        .click_accesskit();
+    harness.run_steps(3);
+    let revision = harness
+        .state()
+        .0
+        .database
+        .as_ref()
+        .unwrap()
+        .document_revision;
+    assert!(
+        harness
+            .state_mut()
+            .0
+            .prepare_object_open(ObjectTarget {
+                document_revision: revision,
+                kind: ObjectKind::Sql,
+            })
+            .is_some()
+    );
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(!harness.state().0.ribbon_temporarily_open());
+    assert!(
+        harness
+            .query_by_role_and_label(Role::TextInput, "Search fonts")
+            .is_none()
+    );
+    assert!(harness.state().1.is_empty());
+}
