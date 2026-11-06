@@ -42,7 +42,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
         ui.horizontal(|ui| {
             ui.add_enabled_ui(false, |ui| {
                 let response = egui::ComboBox::from_id_salt("unavailable_font_family")
-                    .width(130.0)
+                    .width(120.0)
                     .selected_text("Selawik")
                     .show_ui(ui, |ui| {
                         let _ = ui.selectable_label(true, "Selawik");
@@ -53,7 +53,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
             });
             ui.add_enabled_ui(false, |ui| {
                 let response = egui::ComboBox::from_id_salt("unavailable_font_size")
-                    .width(44.0)
+                    .width(42.0)
                     .selected_text("11")
                     .show_ui(ui, |ui| {
                         let _ = ui.selectable_label(true, "11");
@@ -62,6 +62,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                     .on_disabled_hover_text(t.text("ribbon-unavailable"));
                 describe_combo(ui, &response, &t.text("ribbon-font-size"), "11", t);
             });
+            ui.separator();
             unavailable(
                 ui,
                 t,
@@ -76,6 +77,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 "ribbon-numbering",
                 CommandSize::IconOnly,
             );
+            ui.separator();
             unavailable(
                 ui,
                 t,
@@ -90,6 +92,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 "ribbon-increase-indent",
                 CommandSize::IconOnly,
             );
+            ui.separator();
             unavailable(
                 ui,
                 t,
@@ -112,6 +115,12 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 (Icon::Borders, "ribbon-borders"),
                 (Icon::AlternateRows, "ribbon-alternate-rows"),
             ] {
+                if matches!(
+                    key,
+                    "ribbon-font-color" | "ribbon-align-left" | "ribbon-borders"
+                ) {
+                    ui.separator();
+                }
                 unavailable(ui, t, icon, key, CommandSize::IconOnly);
             }
         });

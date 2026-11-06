@@ -1020,3 +1020,62 @@ fn normal_home_keeps_all_native_groups_and_unavailable_controls_without_granting
             .contains(&egui::OutputCommand::CopyText(original.unwrap()))
     );
 }
+
+#[test]
+fn complete_english_home_fits_the_default_window_without_ribbon_overflow() {
+    for scale in [1.0, 1.25, 1.5, 2.0] {
+        let mut preview = Preview::new(Scene::Datasheet);
+        let mut state = std::mem::take(preview.state_mut());
+        state.mock_preview = false;
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(1280.0, 820.0))
+            .with_pixels_per_point(scale)
+            .build_ui_state(
+                |ui, state: &mut State| {
+                    state.show(ui);
+                },
+                state,
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(3);
+        let zoom = harness.get_by_role_and_label(Role::Button, "Zoom");
+        assert!(
+            zoom.rect().right() <= 1276.0,
+            "Zoom overflows at {scale}: {:?}",
+            zoom.rect()
+        );
+        assert!(
+            zoom.rect().width() <= 44.0,
+            "Zoom has excessive side margins"
+        );
+        let view = harness.get_by_role_and_label(Role::Button, "View");
+        assert!(
+            view.rect().width() <= 44.0,
+            "View has excessive side margins"
+        );
+        harness.get_by_role_and_label(Role::Button, "Alternate Row Color");
+        let font = harness.get_by_role_and_label(Role::ComboBox, "Font").rect();
+        let dividers = harness
+            .output()
+            .shapes
+            .iter()
+            .filter(|shape| {
+                let egui::Shape::LineSegment { points, .. } = &shape.shape else {
+                    return false;
+                };
+                let bounds = egui::Rect::from_points(points);
+                bounds.left() > font.left()
+                    && bounds.right() < zoom.rect().left()
+                    && bounds.top() >= font.top()
+                    && bounds.bottom() < zoom.rect().bottom()
+                    && bounds.width() < 1.0
+                    && bounds.height() > 8.0
+                    && bounds.height() < 30.0
+            })
+            .count();
+        assert!(
+            dividers >= 6,
+            "formatting subgroups need dividers: {dividers}"
+        );
+    }
+}

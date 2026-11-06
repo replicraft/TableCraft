@@ -179,20 +179,7 @@ impl State {
                         "ribbon-save",
                         CommandSize::Small,
                     );
-                    let target = self.current_delete_target();
-                    if command(
-                        ui,
-                        Icon::Delete,
-                        &t.text("ribbon-delete"),
-                        target.is_some(),
-                        CommandSize::Small,
-                    )
-                    .on_hover_text(t.text("deletion-checking"))
-                    .clicked()
-                        && let Some(target) = target
-                    {
-                        actions.push(Action::ReviewDelete { target });
-                    }
+                    self.delete_menu(ui, actions);
                 });
                 ui.vertical(|ui| {
                     self.totals_command(ui, actions);
