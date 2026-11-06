@@ -387,6 +387,7 @@ impl Preview {
         std::mem::swap(&mut state.localizer, &mut self.state.localizer);
         std::mem::swap(&mut state.theme, &mut self.state.theme);
         std::mem::swap(&mut state.formatting, &mut self.state.formatting);
+        std::mem::swap(&mut state.font_families, &mut self.state.font_families);
         self.state = state;
         self.next_request = 1;
         self.scene = scene;
@@ -534,6 +535,7 @@ impl Preview {
                 std::mem::swap(&mut startup.localizer, &mut self.state.localizer);
                 std::mem::swap(&mut startup.theme, &mut self.state.theme);
                 std::mem::swap(&mut startup.formatting, &mut self.state.formatting);
+                std::mem::swap(&mut startup.font_families, &mut self.state.font_families);
                 self.state = startup;
                 if scene == Scene::StartupOpen {
                     self.state.show_open();

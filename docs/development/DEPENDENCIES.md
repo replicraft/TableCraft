@@ -1,5 +1,28 @@
 # Adopted dependency and licensing baseline
 
+## Desktop font-family discovery — 5 November 2026
+
+The desktop host consumes [Fontique 0.12.0](https://docs.rs/fontique/0.12.0/fontique/)
+(Apache-2.0 OR MIT), with default features disabled and host-local `system` and
+`fontconfig-dlopen` features. Its [collection API](https://docs.rs/fontique/latest/fontique/struct.Collection.html)
+enumerates system family names through platform backends: DirectWrite on Windows,
+Core Text on Apple platforms and Fontconfig on Linux. Dynamic Fontconfig loading
+avoids requiring a link-time Fontconfig installation; unavailable system discovery
+can yield no system families. The application always retains its bundled inventory.
+
+One process-local host cache supplies names to both live and mock applications.
+Shared UI receives an inert `FontFamilies` catalog, merges Selawik and bundled
+Noto fallbacks, and sorts/deduplicates family names independently of database
+collation. Catalog admission bounds names to 16,384 inputs, 4 KiB per name and
+4 MiB total literal name bytes; those bounds do not bound the platform provider's
+internal enumeration work. Invalid catalogs produce a payload-free diagnostic and
+retain the bundled inventory. Standalone synthetic previews remain deterministic.
+
+This consumer does not request font-face data, load system font binaries into egui,
+apply field formatting or replace Selawik as the default. No Fontique dependency
+is added to shared UI, runtime, query, engine or CLI packages. Cross-platform
+discovery still requires execution on the corresponding platforms.
+
 ## Headless query builders — 5 November 2026
 
 The local `tablecraft-builders` package shares query-design drafts, bounds and

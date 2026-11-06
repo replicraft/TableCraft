@@ -22,6 +22,13 @@ independent of this deferral.
 
 ## Adopted now
 
+Desktop system-font family enumeration uses Fontique, the dedicated enumeration
+component of Parley, rather than adding shaping/layout solely to list names.
+Keep platform discovery host-owned and cached, pass inert family names to shared
+presentation, and retain bundled Selawik/CJK fallbacks. Browsing an installed
+family does not grant document-formatting behavior or load its binary into egui.
+See the [adopted feature and platform boundary](DEPENDENCIES.md#desktop-font-family-discovery--5-november-2026).
+
 Cryptographic primitives are integrated through the working
 [`tablecraft-crypto`](../platform/CRYPTO.md) package; native policy remains ACE-owned.
 ZIP/OPC/XML/CAB codecs belong to
