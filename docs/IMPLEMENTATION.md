@@ -1,5 +1,17 @@
 # Implementation status
 
+## Parameter input guards and Options accessibility — 5 November 2026
+
+Saved parameter prompts reject oversized input events before editing while
+preserving the existing 1 MiB aggregate allowance, previous draft and committed
+results. Options selectors expose their real setting labels. Font-popup workspace
+checks now include pasted text, F6, Escape and source changes without database
+actions. No backend functionality was added.
+
+All 254 UI cases passed across the full batch/focused follow-up, along with all
+64 desktop tests and strict selected Clippy/formatting. Offscreen Options/prompt
+frames were reviewed without opening native windows. See the [verification record](ui/PRESENTATION_PREVIEW.md#parameter-input-guards-and-settings-labels--5-november-2026).
+
 ## Caption alignment and desktop font discovery — 5 November 2026
 
 View/Paste/Zoom chevrons follow their captions, the font selectors share aligned

@@ -111,6 +111,11 @@ and a trailing chevron. No collapsed, temporary or pinned Access capture is
 retained; overlay dismissal and pin placement are current UI adaptations, not
 qualified native interaction parity. No fullscreen Ribbon mode is implemented.
 
+Headless workspace integration also checks the Font search as a child popup:
+typing and clipboard paste stay in search without editing records or SQL; F6
+retains that input owner, Escape closes the catalog before the temporary strip,
+and outside record clicks or object switches dismiss stale presentation.
+
 The synthetic scenes `ribbon-collapsed` and `ribbon-temporary` share the ordinary
 workspace presentation and retain the same resource-free host. Native app-window
 verification remains suspended; use the offscreen renderer and headless tests.
