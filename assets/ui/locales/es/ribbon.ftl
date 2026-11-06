@@ -176,3 +176,7 @@ ribbon-delete-columns = Eliminar columnas
 ribbon-select-all = Seleccionar todo
 
 ribbon-font-size = Tamaño de fuente
+
+ribbon-collapse = Contraer la cinta (Ctrl+F1)
+ribbon-expand = Expandir la cinta (Ctrl+F1)
+ribbon-pin = Anclar la cinta

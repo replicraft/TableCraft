@@ -176,3 +176,7 @@ ribbon-delete-columns = Удалить столбцы
 ribbon-select-all = Выделить всё
 
 ribbon-font-size = Размер шрифта
+
+ribbon-collapse = Свернуть ленту (Ctrl+F1)
+ribbon-expand = Развернуть ленту (Ctrl+F1)
+ribbon-pin = Закрепить ленту

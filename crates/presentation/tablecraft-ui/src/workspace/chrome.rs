@@ -1,5 +1,6 @@
 //! Shared title, contextual ribbon and status; no file or database services.
 mod quick_access;
+pub(super) mod ribbon_display;
 mod window;
 use super::focus::{self, Pane};
 use super::objects::ObjectKind;
@@ -34,6 +35,7 @@ impl State {
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if !self.ribbon_tab_available(self.ribbon_tab) {
             self.ribbon_tab = ribbon::Tab::Home;
+            self.set_ribbon_collapsed(self.ribbon_collapsed());
         }
         let colors = palette(ui.ctx());
         let t = self.localizer.clone();
@@ -134,12 +136,17 @@ impl State {
                 });
             });
         if !self.backstage_visible() {
-            egui::Panel::top("ribbon_tabs")
-                .frame(
-                    Frame::new()
-                        .fill(colors.title_fill)
-                        .inner_margin(Margin::symmetric(8, 0)),
-                )
+            let tabs = egui::Panel::top("ribbon_tabs")
+                .frame(Frame::new().fill(colors.title_fill).inner_margin(Margin {
+                    left: 8,
+                    right: if self.ribbon_collapsed() {
+                        ribbon_display::TOGGLE_GUTTER
+                    } else {
+                        8
+                    },
+                    top: 0,
+                    bottom: 0,
+                }))
                 .show(ui, |ui| {
                     egui::ScrollArea::horizontal()
                         .id_salt("ribbon_tabs")
@@ -159,18 +166,15 @@ impl State {
                                 if file.clicked() {
                                     self.show_open();
                                 }
-                                if tab(
+                                let response = tab(
                                     ui,
                                     "ribbon-home",
                                     &t.text("ribbon-home"),
                                     self.ribbon_tab == ribbon::Tab::Home,
                                     true,
                                     false,
-                                )
-                                .clicked()
-                                {
-                                    self.ribbon_tab = ribbon::Tab::Home;
-                                }
+                                );
+                                self.ribbon_tab_response(&response, ribbon::Tab::Home);
                                 for key in [
                                     "ribbon-create",
                                     "ribbon-external-data",
@@ -179,81 +183,57 @@ impl State {
                                 ] {
                                     let candidate =
                                         ribbon::Tab::from_key(key).expect("Ribbon tab key");
-                                    if tab(
+                                    let response = tab(
                                         ui,
                                         key,
                                         &t.text(key),
                                         self.ribbon_tab == candidate,
                                         true,
                                         false,
-                                    )
-                                    .clicked()
-                                    {
-                                        self.ribbon_tab = candidate;
-                                    }
+                                    );
+                                    self.ribbon_tab_response(&response, candidate);
                                 }
                                 if self.query_design_context() {
-                                    if tab(
+                                    let response = tab(
                                         ui,
                                         "qbe-ribbon-design",
                                         &t.text("qbe-ribbon-design"),
                                         self.ribbon_tab == ribbon::Tab::QueryDesign,
                                         true,
                                         true,
-                                    )
-                                    .clicked()
-                                    {
-                                        self.ribbon_tab = ribbon::Tab::QueryDesign;
-                                    }
+                                    );
+                                    self.ribbon_tab_response(&response, ribbon::Tab::QueryDesign);
                                 } else if self.ribbon_tab_available(ribbon::Tab::TableDesign) {
-                                    if tab(
+                                    let response = tab(
                                         ui,
                                         "ribbon-table-design",
                                         &t.text("ribbon-table-design"),
                                         self.ribbon_tab == ribbon::Tab::TableDesign,
                                         true,
                                         true,
-                                    )
-                                    .clicked()
-                                    {
-                                        self.ribbon_tab = ribbon::Tab::TableDesign;
-                                    }
+                                    );
+                                    self.ribbon_tab_response(&response, ribbon::Tab::TableDesign);
                                 } else if self.ribbon_tab_available(ribbon::Tab::TableFields) {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
                                         let candidate = ribbon::Tab::from_key(key)
                                             .expect("contextual Ribbon tab key");
-                                        if tab(
+                                        let response = tab(
                                             ui,
                                             key,
                                             &t.text(key),
                                             self.ribbon_tab == candidate,
                                             true,
                                             true,
-                                        )
-                                        .clicked()
-                                        {
-                                            self.ribbon_tab = candidate;
-                                        }
+                                        );
+                                        self.ribbon_tab_response(&response, candidate);
                                     }
                                 }
                             });
                         });
                 });
-            egui::Panel::top("ribbon")
-                .frame(Frame::new().fill(colors.title_fill).inner_margin(Margin {
-                    left: 4,
-                    right: 4,
-                    top: 0,
-                    bottom: 4,
-                }))
-                .show(ui, |ui| {
-                    Frame::new()
-                        .fill(colors.surface)
-                        .corner_radius(5)
-                        .stroke(egui::Stroke::new(1.0, colors.grid_line))
-                        .inner_margin(Margin::symmetric(8, 3))
-                        .show(ui, |ui| self.home(ui, actions));
-                });
+            self.finish_ribbon_tab_clicks(ui);
+            self.collapsed_ribbon_toggle(ui, tabs.response.rect);
+            self.show_ribbon_commands(ui, tabs.response.rect, actions);
         }
         egui::Panel::bottom("status")
             .frame(

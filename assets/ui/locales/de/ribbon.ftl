@@ -176,3 +176,7 @@ ribbon-delete-columns = Spalten löschen
 ribbon-select-all = Alles auswählen
 
 ribbon-font-size = Schriftgrad
+
+ribbon-collapse = Menüband reduzieren (Strg+F1)
+ribbon-expand = Menüband erweitern (Strg+F1)
+ribbon-pin = Menüband anheften

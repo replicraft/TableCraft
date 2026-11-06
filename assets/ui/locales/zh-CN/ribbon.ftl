@@ -176,3 +176,7 @@ ribbon-delete-columns = 删除列
 ribbon-select-all = 全选
 
 ribbon-font-size = 字号
+
+ribbon-collapse = 折叠功能区 (Ctrl+F1)
+ribbon-expand = 展开功能区 (Ctrl+F1)
+ribbon-pin = 固定功能区

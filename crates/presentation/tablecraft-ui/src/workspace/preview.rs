@@ -28,6 +28,8 @@ use std::str::FromStr;
 pub enum Scene {
     #[default]
     Datasheet,
+    RibbonCollapsed,
+    RibbonTemporary,
     RibbonCreate,
     RibbonExternalData,
     RibbonDatabaseTools,
@@ -111,8 +113,10 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 81] = [
+    pub const ALL: [Self; 83] = [
         Self::Datasheet,
+        Self::RibbonCollapsed,
+        Self::RibbonTemporary,
         Self::RibbonCreate,
         Self::RibbonExternalData,
         Self::RibbonDatabaseTools,
@@ -221,6 +225,8 @@ impl Scene {
     pub const fn as_str(self) -> &'static str {
         match self {
             Self::Datasheet => "datasheet",
+            Self::RibbonCollapsed => "ribbon-collapsed",
+            Self::RibbonTemporary => "ribbon-temporary",
             Self::RibbonCreate => "ribbon-create",
             Self::RibbonExternalData => "ribbon-external-data",
             Self::RibbonDatabaseTools => "ribbon-database-tools",
@@ -441,6 +447,11 @@ impl Preview {
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),
             Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::RibbonCollapsed => self.state.set_ribbon_collapsed(true),
+            Scene::RibbonTemporary => {
+                self.state.set_ribbon_collapsed(true);
+                self.state.show_ribbon_temporarily();
+            }
             Scene::RibbonCreate => self.state.ribbon_tab = Tab::Create,
             Scene::RibbonExternalData => self.state.ribbon_tab = Tab::ExternalData,
             Scene::RibbonDatabaseTools => self.state.ribbon_tab = Tab::DatabaseTools,

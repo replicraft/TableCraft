@@ -176,3 +176,7 @@ ribbon-delete-columns = 列の削除
 ribbon-select-all = すべて選択
 
 ribbon-font-size = フォントサイズ
+
+ribbon-collapse = リボンを折りたたむ (Ctrl+F1)
+ribbon-expand = リボンを展開する (Ctrl+F1)
+ribbon-pin = リボンを固定する
