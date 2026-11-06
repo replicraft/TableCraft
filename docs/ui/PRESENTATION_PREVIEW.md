@@ -1,5 +1,37 @@
 # Presentation preview
 
+## Field labels and unused datasheet space — 5 November 2026
+
+Query Design displays bound local Field names separately from their Table row,
+matching the reopened published criteria capture. Focus, unchanged replacement,
+wildcards and incremental known-name editing preserve the exact typed source.
+Other text remains ordinary checked expression input; the editor does not guess
+a source after an ambiguous correction. This does not qualify native field-editor
+interaction parity.
+
+Datasheets continue subtle grid rules below real records and the insertion row,
+following measured columns, row pitch, zoom and scroll geometry. The reopened
+private Home capture supplies the light-layout reference. Background rules create
+no rows, selection targets or clipboard cells; empty messages and totals remain
+above them. Collection layouts are unchanged.
+
+The full UI batch passed 262 of 263 cases. The sole failure was a new SQL-string
+assertion that omitted the builder's expression parentheses; after correcting it,
+all three new Field-editor tests passed. Both new filler tests passed in the full
+batch, covering 150% zoom, offset 100, empty/insertion/totals, blank pointer clicks,
+clipping and scrolled row phase. Strict all-target UI/desktop Clippy, formatting,
+dependency boundaries and 7,791 documentation targets passed. Desktop tests were
+not repeated for this shared-presentation change.
+
+Six normal-host offscreen frames were reviewed at 1280×820 logical pixels, 1×:
+datasheet, empty and wide Query Design in light/dark. Twelve compact German and
+Japanese frames cover Options, File/Open and wide Query Design in both themes at
+900×580 logical pixels, 1.25× (1125×725 PNGs). Controls do not overlap; compact
+Query Design uses its existing scrollports for later groups, columns and criteria.
+Rendering ran on macOS with Windows OS simulation and no native windows. Dark
+styling, complete modern Query Design Ribbon geometry and native interaction
+remain unqualified by retained Access captures.
+
 ## Normal startup, Query Design and paging polish — 5 November 2026
 
 Normal startup now includes the unavailable template search and Blank Database
