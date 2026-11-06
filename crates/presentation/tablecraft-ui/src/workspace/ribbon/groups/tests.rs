@@ -148,6 +148,12 @@ fn font_catalog_lists_host_families_without_applying_unavailable_formatting() {
     selector.click_accesskit();
     harness.run_steps(3);
     for family in ["Example Serif", "Literal Font Name", "Selawik"] {
+        harness
+            .get_by_role_and_label(Role::TextInput, "Search fonts")
+            .focus();
+        harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+        harness.event(Event::Text(family.to_owned()));
+        harness.run_steps(3);
         let entry = harness.get_by_role_and_label(Role::Button, family);
         assert!(entry.accesskit_node().is_disabled());
         entry.click_accesskit();

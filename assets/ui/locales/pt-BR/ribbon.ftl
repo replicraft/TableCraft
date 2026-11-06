@@ -183,3 +183,6 @@ ribbon-pin = Fixar a faixa de opções
 
 ribbon-paste-special = Colar especial…
 ribbon-paste-append = Acrescentar por colagem
+
+ribbon-font-search = Buscar fontes
+ribbon-font-no-results = Nenhuma fonte correspondente

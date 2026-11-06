@@ -1,4 +1,5 @@
 //! Dense Access-style commands; unavailable controls remain disabled and inert.
+mod font_picker;
 mod groups;
 mod icons;
 

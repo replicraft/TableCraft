@@ -183,3 +183,6 @@ ribbon-pin = Закрепить ленту
 
 ribbon-paste-special = Специальная вставка…
 ribbon-paste-append = Добавить из буфера
+
+ribbon-font-search = Поиск шрифтов
+ribbon-font-no-results = Подходящие шрифты не найдены

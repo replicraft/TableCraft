@@ -1,5 +1,5 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
-use egui_kittest::Harness;
+use egui_kittest::{Harness, kittest::Queryable};
 use image::ImageFormat;
 use std::{env, error::Error, fs, io, path::PathBuf};
 use tablecraft_ui::{
@@ -35,6 +35,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !matches!(host.as_str(), "synthetic" | "normal") {
         return Err(io::Error::other("preview host must be synthetic or normal").into());
     }
+    let font_search = match env::var("TABLECRAFT_PREVIEW_FONT_SEARCH") {
+        Ok(query) => Some(query),
+        Err(env::VarError::NotPresent) => None,
+        Err(error) => return Err(error.into()),
+    };
+    if font_search.is_some() && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("font-search rendering requires the datasheet scene").into());
+    }
+    let search_suffix = if font_search.is_some() {
+        "-font-search"
+    } else {
+        ""
+    };
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
     let scale = setting("TABLECRAFT_PREVIEW_SCALE", "1")?.parse::<f32>()?;
@@ -116,13 +129,23 @@ fn main() -> Result<(), Box<dyn Error>> {
                 harness.run();
             }
         }
+        if let Some(query) = &font_search {
+            let label = harness.state().state().localizer.text("ribbon-font");
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::ComboBox, &label)
+                .click_accesskit();
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+            harness.event(egui::Event::Text(query.clone()));
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}.png",
+            "{}-{}-{}{}{}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
             focus_suffix,
+            search_suffix,
             scale_suffix,
         ));
         image.save_with_format(&path, ImageFormat::Png)?;

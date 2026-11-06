@@ -183,3 +183,6 @@ ribbon-pin = リボンを固定する
 
 ribbon-paste-special = 形式を選択して貼り付け…
 ribbon-paste-append = 追加貼り付け
+
+ribbon-font-search = フォントを検索
+ribbon-font-no-results = 一致するフォントがありません

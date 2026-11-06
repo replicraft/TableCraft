@@ -183,3 +183,6 @@ ribbon-pin = Pin the ribbon
 
 ribbon-paste-special = Paste Special…
 ribbon-paste-append = Paste Append
+
+ribbon-font-search = Search fonts
+ribbon-font-no-results = No matching fonts
