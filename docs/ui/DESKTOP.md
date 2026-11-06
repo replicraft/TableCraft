@@ -1381,3 +1381,21 @@ create projections. Centered Show controls retain hidden-field criteria. Add
 Tables preserves local user-table selection and cancellation, with unsupported
 source-kind tabs disabled. Existing explicit build/Run and stale-response guards
 are unchanged. See the [presentation review](PRESENTATION_PREVIEW.md#query-design-layout-follow-up--5-november-2026).
+
+## Localized schema presentation labels
+
+The Design grid localizes recognized host-supplied Access presentation names and
+separately describes qualified reader carriers. An `Int32` reader does not prove
+an AutoNumber declaration; absent presentation metadata uses a descriptive
+32-bit-integer label with a reader-only explanation. Unknown labels stay literal.
+The UI does not decode native type codes or flags to invent a presentation name.
+
+Known host-authored Field Size summaries localize independently of stored
+property text. Numeric sizes, unknown summaries, field names, captions,
+descriptions and stored expressions remain literal. Native Details retains exact
+carrier identifiers, hexadecimal codes and other diagnostic values. No native
+metadata scan, storage behavior or editing capability was added by this change.
+
+German Field Size terms follow Microsoft's [field-size reference](https://support.microsoft.com/de-de/access/set-the-field-size),
+which itself uses Byte, Integer, Long Integer, Single and Double. Other bundled
+translations remain subject to the existing native-speaker review boundary.

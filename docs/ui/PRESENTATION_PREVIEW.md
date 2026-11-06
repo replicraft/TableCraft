@@ -929,3 +929,29 @@ all 536 original SVG hashes passed. Actual interaction tests cover meaningful
 startup return paths, hidden unusable footer controls, mock menu delegation,
 whole disabled-command refusal and separate caption/launcher geometry. These
 checks do not establish native Access compatibility or implement disabled tools.
+
+## Schema type labels and translated File rail — 5 November 2026
+
+All eight Design catalogs now distinguish declared presentation names, reader
+carrier descriptions and host-authored Field Size summaries. Existing synthetic
+scenes use these labels without changing their source metadata or stored text.
+Unknown labels stay literal; Native Details keeps exact diagnostic identifiers.
+See the [schema label contract](DESKTOP.md#localized-schema-presentation-labels).
+
+File rail width is measured from the complete translated interface labels, with
+separate allowance for cell padding, the panel separator and configured scroll
+gutter. This preserves wording such as German Save As instead of abbreviating
+it. The minimum/maximum width remain bounded and existing navigation is unchanged.
+
+Offscreen review uses all eight languages in light/dark Design at 1600 × 900
+logical pixels, 1×. German and Japanese Design/File/Open also use 900 × 580 logical
+pixels at 1.25×. Artifacts remain ignored in `.cache/ui-type-labels/` and
+`.cache/ui-type-labels-minimum/`; the local renderer is macOS. Native windows
+remain suspended and these images do not qualify Windows Access interaction.
+
+All 227 UI tests passed across the batch and focused follow-ups, including the
+final 1,296 scene/language/theme matrix. Strict UI/desktop Clippy, formatting and
+dependency/documentation checks passed. Review covered 16 Design frames at
+1600 × 900 and eight compact German/Japanese Design/File frames at 900 × 580,
+1.25×. The full-label regression pays the actual panel separator reservation
+rather than weakening the non-elision check.
