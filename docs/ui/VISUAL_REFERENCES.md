@@ -382,3 +382,13 @@ These references have no complete modern Query Design Ribbon capture or dark
 mode. Existing commands and their execution boundaries are preserved; this layout
 pass does not qualify the full native designer. Current synthetic scenarios are
 recorded in the [presentation preview](PRESENTATION_PREVIEW.md#query-design-layout-follow-up--5-november-2026).
+
+## Ribbon dropdown and query-command follow-up — 5 November 2026
+
+The actual retained Home capture was reopened to compare menu disclosure marks.
+Existing View, Selection, Advanced and Go To popups now use shared chevrons and
+menu accessibility. Direct actions keep their existing plain-button appearance.
+The Query Design mock adds only documented Builder and Show/Hide command
+previews; its full grouping remains provisional without a complete retained
+Ribbon image. See the [presentation record](PRESENTATION_PREVIEW.md#ribbon-menu-affordances-and-query-command-previews--5-november-2026)
+for the primary command references and original Parameters artwork boundary.

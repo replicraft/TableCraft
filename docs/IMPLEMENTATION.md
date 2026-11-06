@@ -1,5 +1,20 @@
 # Implementation status
 
+## Ribbon menu affordances and query previews — 5 November 2026
+
+Existing View, Selection, Advanced and Go To popups now use shared visible menu
+indicators with translated-label spacing and popup accessibility. Direct actions
+retain plain buttons. Query Design mock mode adds disabled Builder, Totals,
+Parameters and Property Sheet previews without changing working services. The
+original Parameters artwork raises the inventory to 104 concepts / 416 SVGs.
+
+All 220 UI tests and 63 desktop tests passed, including 1,248 preview
+combinations. Strict selected Clippy, formatting, dependency/documentation checks
+and all 416 SVG hashes passed. Eight offscreen frames were reviewed. The full
+Query Design Ribbon grouping remains provisional without a complete matching
+capture. Current light/dark and translated offscreen evidence is in the
+[presentation record](ui/PRESENTATION_PREVIEW.md#ribbon-menu-affordances-and-query-command-previews--5-november-2026).
+
 ## Screenshot-guided Query Design layout — 5 November 2026
 
 The shared visual query editor now uses compact source-card headers and field
