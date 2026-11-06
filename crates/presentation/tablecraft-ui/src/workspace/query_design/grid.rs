@@ -3,7 +3,9 @@ use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session};
 use crate::localization::tr;
 use egui::{Align, Layout, ScrollArea, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
-use tablecraft_builders::query::{DesignColumn, DesignExpression, DesignSort, expression_text};
+use tablecraft_builders::query::{
+    DesignColumn, DesignExpression, DesignField, DesignSort, DesignTableMetadata, QueryDesignDraft,
+};
 
 const GRID_COLUMN_WIDTH: f32 = 175.0;
 const GRID_LABEL_WIDTH: f32 = 85.0;
@@ -69,13 +71,14 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                             grid_cell(ui, false, |ui| {
                                 ui.push_id(("qbe_cell", index, row), |ui| match row {
                                     0 => {
-                                        let mut text = expression_text(&draft, &column.expression)
-                                            .unwrap_or_default();
+                                        let original = field_text(&column.expression);
+                                        let mut text = original.clone();
                                         let cost = match &column.expression {
                                             DesignExpression::Field(field) => field.column.len(),
                                             DesignExpression::Expression(text) => text.len(),
                                             DesignExpression::AllFields(_) => 0,
                                         };
+                                        let previous_budget = budget.remaining;
                                         let response = bounded_input(
                                             ui,
                                             &mut text,
@@ -83,9 +86,18 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             cost,
                                             &mut budget,
                                         );
-                                        if response.changed() {
-                                            column.expression = DesignExpression::Expression(text);
+                                        if response.changed() && text != original {
+                                            column.expression = edited_field(
+                                                &draft,
+                                                &session.metadata,
+                                                &column.expression,
+                                                text,
+                                            );
                                             changed = true;
+                                        } else {
+                                            // A no-op replacement must not discard a bound
+                                            // source or charge display-only wildcard text.
+                                            budget.remaining = previous_budget;
                                         }
                                         response.context_menu(|ui| {
                                             let mut alias =
@@ -250,6 +262,64 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
     changed
 }
 
+fn field_text(expression: &DesignExpression) -> String {
+    match expression {
+        DesignExpression::Field(field) => field.column.clone(),
+        DesignExpression::AllFields(_) => "*".into(),
+        DesignExpression::Expression(text) => text.clone(),
+    }
+}
+
+fn edited_field(
+    draft: &QueryDesignDraft,
+    metadata: &[DesignTableMetadata],
+    original: &DesignExpression,
+    text: String,
+) -> DesignExpression {
+    let source_id = match original {
+        DesignExpression::Field(field) => Some(field.source_id),
+        DesignExpression::AllFields(source) => *source,
+        DesignExpression::Expression(_) => None,
+    };
+    if let Some(source_id) = source_id {
+        if text == "*" {
+            return DesignExpression::AllFields(Some(source_id));
+        }
+        let source = draft.sources.iter().find(|source| source.id == source_id);
+        let table =
+            source.and_then(|source| metadata.iter().find(|table| table.table == source.table));
+        if let Some(field) = table.and_then(|table| {
+            table
+                .fields
+                .iter()
+                .find(|field| field.name.eq_ignore_ascii_case(&text))
+        }) {
+            return DesignExpression::Field(DesignField {
+                source_id,
+                column: field.name.clone(),
+            });
+        }
+        if table.is_some_and(|table| {
+            table.fields.iter().any(|field| {
+                field
+                    .name
+                    .get(..text.len())
+                    .is_some_and(|prefix| prefix.eq_ignore_ascii_case(&text))
+            })
+        }) {
+            // Keep the Table row's source while a known local name is typed
+            // one character at a time. Build still rejects incomplete names.
+            return DesignExpression::Field(DesignField {
+                source_id,
+                column: text,
+            });
+        }
+    }
+    // Other text becomes an ordinary checked expression. The Table row clears;
+    // ambiguous unqualified names must pass the builder's normal resolution.
+    DesignExpression::Expression(text)
+}
+
 struct InputBudget {
     remaining: usize,
     rejected: bool,
@@ -306,3 +376,6 @@ fn grid_cell(ui: &mut Ui, label: bool, contents: impl FnOnce(&mut Ui)) {
         contents,
     );
 }
+
+#[cfg(test)]
+mod tests;
