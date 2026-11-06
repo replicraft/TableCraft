@@ -359,6 +359,16 @@ fn status_zoom_scales_the_datasheet_and_view_buttons_use_existing_actions() {
     harness.run();
     assert!(harness.state().state().view == DocumentView::Design);
     assert!(harness.state().state().schema.is_some());
+    assert!(
+        harness
+            .query_by_role_and_label(egui::accesskit::Role::Button, "Zoom in")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(egui::accesskit::Role::Button, "Design view")
+            .is_none()
+    );
     harness
         .get_by_role_and_label(egui::accesskit::Role::Button, "Datasheet view")
         .click();
@@ -421,4 +431,83 @@ fn quick_access_spacing_and_visibility_do_not_create_document_actions() {
             .is_none()
     );
     assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn footer_hides_unusable_sections_without_hiding_empty_grid_zoom() {
+    use egui::accesskit::Role;
+
+    let mut preview = crate::preview::Preview::new(crate::preview::Scene::Datasheet);
+    let mut state = std::mem::take(preview.state_mut());
+    state.data.as_mut().unwrap().rows.clear();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 80.0))
+        .build_ui_state(
+            |ui, state: &mut State| state.status_bar(ui, &mut Vec::new()),
+            state,
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Slider, "Zoom")
+            .is_some()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Design view")
+            .is_some()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Datasheet view")
+            .is_none()
+    );
+
+    harness.state_mut().show_open();
+    harness.run();
+    for (role, label) in [
+        (Role::Slider, "Zoom"),
+        (Role::Button, "Design view"),
+        (Role::Button, "Datasheet view"),
+    ] {
+        assert!(harness.query_by_role_and_label(role, label).is_none());
+    }
+    harness.state_mut().dismiss_backstage();
+    harness.state_mut().busy = true;
+    harness.state_mut().data = None;
+    harness.run_steps(2);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Slider, "Zoom")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Design view")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Datasheet view")
+            .is_none()
+    );
+
+    *harness.state_mut() = State::default();
+    harness.run();
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Slider, "Zoom")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Design view")
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Datasheet view")
+            .is_none()
+    );
 }

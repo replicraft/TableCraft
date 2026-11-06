@@ -38,12 +38,15 @@ impl State {
                     )
                     .on_hover_text(t.text("shell-app-name"));
                     ui.label(RichText::new(t.text("shell-app-name")).strong());
-                    ui.add_space(8.0);
-                    ui.separator();
-                    let open_available =
-                        !self.busy && !self.edit_dialog_open() && !self.saved_query_prompt_open();
-                    quick_access::show(ui, &t, open_available, actions);
-                    ui.add_space(12.0);
+                    if !self.backstage_visible() {
+                        ui.add_space(8.0);
+                        ui.separator();
+                        let open_available = !self.busy
+                            && !self.edit_dialog_open()
+                            && !self.saved_query_prompt_open();
+                        quick_access::show(ui, &t, open_available, actions);
+                        ui.add_space(12.0);
+                    }
                     let title = self
                         .database
                         .as_ref()
@@ -271,116 +274,129 @@ impl State {
                 }
             }
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                let zoom_available = !self.backstage_visible() && self.visible_data().is_some();
-                ui.add_enabled_ui(zoom_available, |ui| {
-                    let mut zoom = crate::theme::datasheet_zoom(ui.ctx());
-                    ui.small(format!("{zoom}%"));
-                    let increase = ui.add(egui::Button::new("+").frame(false));
-                    increase.widget_info(|| {
-                        WidgetInfo::labeled(
-                            WidgetType::Button,
-                            increase.enabled(),
-                            t.text("shell-zoom-in"),
-                        )
-                    });
-                    if increase.on_hover_text(t.text("shell-zoom-in")).clicked() {
-                        zoom = zoom.saturating_add(ZOOM_STEP_PERCENT);
-                    }
-                    let mut style = (**ui.style()).clone();
-                    style.spacing.slider_width = ZOOM_SLIDER_WIDTH;
-                    style.spacing.slider_rail_height = 2.0;
-                    style.spacing.interact_size.y = 14.0;
-                    for widget in [
-                        &mut style.visuals.widgets.inactive,
-                        &mut style.visuals.widgets.hovered,
-                        &mut style.visuals.widgets.active,
-                    ] {
-                        widget.corner_radius = egui::CornerRadius::ZERO;
-                        widget.bg_fill = colors.muted;
-                        widget.fg_stroke = egui::Stroke::NONE;
-                    }
+                let zoom_available = ui.is_enabled()
+                    && !self.backstage_visible()
+                    && self
+                        .visible_data()
+                        .is_some_and(|data| !data.columns.is_empty());
+                if zoom_available {
                     ui.scope(|ui| {
-                        ui.set_style(style);
-                        let slider = ui.add(
-                            egui::Slider::new(
-                                &mut zoom,
-                                crate::theme::MIN_DATASHEET_ZOOM..=crate::theme::MAX_DATASHEET_ZOOM,
-                            )
-                            .show_value(false)
-                            .logarithmic(true)
-                            .trailing_fill(false)
-                            .handle_shape(egui::style::HandleShape::Rect { aspect_ratio: 0.2 }),
-                        );
-                        slider.widget_info(|| {
+                        let mut zoom = crate::theme::datasheet_zoom(ui.ctx());
+                        ui.small(format!("{zoom}%"));
+                        let increase = ui.add(egui::Button::new("+").frame(false));
+                        increase.widget_info(|| {
                             WidgetInfo::labeled(
-                                WidgetType::Slider,
-                                slider.enabled(),
-                                t.text("shell-zoom"),
+                                WidgetType::Button,
+                                increase.enabled(),
+                                t.text("shell-zoom-in"),
                             )
                         });
+                        if increase.on_hover_text(t.text("shell-zoom-in")).clicked() {
+                            zoom = zoom.saturating_add(ZOOM_STEP_PERCENT);
+                        }
+                        let mut style = (**ui.style()).clone();
+                        style.spacing.slider_width = ZOOM_SLIDER_WIDTH;
+                        style.spacing.slider_rail_height = 2.0;
+                        style.spacing.interact_size.y = 14.0;
+                        for widget in [
+                            &mut style.visuals.widgets.inactive,
+                            &mut style.visuals.widgets.hovered,
+                            &mut style.visuals.widgets.active,
+                        ] {
+                            widget.corner_radius = egui::CornerRadius::ZERO;
+                            widget.bg_fill = colors.muted;
+                            widget.fg_stroke = egui::Stroke::NONE;
+                        }
+                        ui.scope(|ui| {
+                            ui.set_style(style);
+                            let slider = ui.add(
+                                egui::Slider::new(
+                                    &mut zoom,
+                                    crate::theme::MIN_DATASHEET_ZOOM
+                                        ..=crate::theme::MAX_DATASHEET_ZOOM,
+                                )
+                                .show_value(false)
+                                .logarithmic(true)
+                                .trailing_fill(false)
+                                .handle_shape(egui::style::HandleShape::Rect { aspect_ratio: 0.2 }),
+                            );
+                            slider.widget_info(|| {
+                                WidgetInfo::labeled(
+                                    WidgetType::Slider,
+                                    slider.enabled(),
+                                    t.text("shell-zoom"),
+                                )
+                            });
+                        });
+                        let decrease = ui.add(egui::Button::new("−").frame(false));
+                        decrease.widget_info(|| {
+                            WidgetInfo::labeled(
+                                WidgetType::Button,
+                                decrease.enabled(),
+                                t.text("shell-zoom-out"),
+                            )
+                        });
+                        if decrease.on_hover_text(t.text("shell-zoom-out")).clicked() {
+                            zoom = zoom.saturating_sub(ZOOM_STEP_PERCENT);
+                        }
+                        if zoom != crate::theme::datasheet_zoom(ui.ctx()) {
+                            crate::theme::set_datasheet_zoom(ui.ctx(), zoom);
+                        }
                     });
-                    let decrease = ui.add(egui::Button::new("−").frame(false));
-                    decrease.widget_info(|| {
-                        WidgetInfo::labeled(
-                            WidgetType::Button,
-                            decrease.enabled(),
-                            t.text("shell-zoom-out"),
-                        )
-                    });
-                    if decrease.on_hover_text(t.text("shell-zoom-out")).clicked() {
-                        zoom = zoom.saturating_sub(ZOOM_STEP_PERCENT);
-                    }
-                    if zoom != crate::theme::datasheet_zoom(ui.ctx()) {
-                        crate::theme::set_datasheet_zoom(ui.ctx(), zoom);
-                    }
-                });
-                ui.separator();
+                }
                 let active = self.active_object();
                 let table = active.as_ref().and_then(|tab| match &tab.target.kind {
                     ObjectKind::Table { name } => Some(name.clone()),
                     _ => None,
                 });
-                let design = ui.add_enabled(
-                    table.is_some()
-                        && active
-                            .as_ref()
-                            .is_some_and(|tab| self.can_activate_object(tab)),
-                    egui::Button::image(Icon::ViewDesign.image(ui, STATUS_VIEW_ICON_SIZE))
-                        .frame(false)
-                        .selected(self.view == DocumentView::Design),
-                );
-                design.widget_info(|| {
-                    WidgetInfo::labeled(
-                        WidgetType::Button,
-                        design.enabled(),
-                        t.text("shell-view-design"),
-                    )
-                });
-                if design.clicked() && self.view != DocumentView::Design {
-                    actions.push(Action::ViewSchema {
-                        table: table.clone().expect("enabled table view"),
-                    });
+                let design_available = ui.is_enabled()
+                    && self.view != DocumentView::Design
+                    && active
+                        .as_ref()
+                        .is_some_and(|tab| self.can_view_object_design(tab));
+                let datasheet_available = ui.is_enabled()
+                    && self.view != DocumentView::Table
+                    && active
+                        .as_ref()
+                        .is_some_and(|tab| self.can_view_object_datasheet(tab));
+                if zoom_available && (design_available || datasheet_available) {
+                    ui.separator();
                 }
-                let datasheet_available = active
-                    .as_ref()
-                    .is_some_and(|tab| self.can_view_object_datasheet(tab));
-                let datasheet = ui.add_enabled(
-                    datasheet_available,
-                    egui::Button::image(Icon::ViewDatasheet.image(ui, STATUS_VIEW_ICON_SIZE))
-                        .frame(false)
-                        .selected(self.view == DocumentView::Table),
-                );
-                datasheet.widget_info(|| {
-                    WidgetInfo::labeled(
-                        WidgetType::Button,
-                        datasheet.enabled(),
-                        t.text("shell-view-datasheet"),
-                    )
-                });
-                if datasheet.clicked()
-                    && let Some(tab) = active
-                {
-                    actions.push(Action::ViewObjectDatasheet { tab });
+                if design_available {
+                    let design = ui.add(
+                        egui::Button::image(Icon::ViewDesign.image(ui, STATUS_VIEW_ICON_SIZE))
+                            .frame(false),
+                    );
+                    design.widget_info(|| {
+                        WidgetInfo::labeled(
+                            WidgetType::Button,
+                            design.enabled(),
+                            t.text("shell-view-design"),
+                        )
+                    });
+                    if design.clicked() && self.view != DocumentView::Design {
+                        actions.push(Action::ViewSchema {
+                            table: table.clone().expect("enabled table view"),
+                        });
+                    }
+                }
+                if datasheet_available {
+                    let datasheet = ui.add(
+                        egui::Button::image(Icon::ViewDatasheet.image(ui, STATUS_VIEW_ICON_SIZE))
+                            .frame(false),
+                    );
+                    datasheet.widget_info(|| {
+                        WidgetInfo::labeled(
+                            WidgetType::Button,
+                            datasheet.enabled(),
+                            t.text("shell-view-datasheet"),
+                        )
+                    });
+                    if datasheet.clicked()
+                        && let Some(tab) = active
+                    {
+                        actions.push(Action::ViewObjectDatasheet { tab });
+                    }
                 }
             });
         });
