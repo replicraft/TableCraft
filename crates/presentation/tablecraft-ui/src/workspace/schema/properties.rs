@@ -1,5 +1,5 @@
 //! Inert field-property observations, distinct from native storage diagnostics.
-use super::{Field, property, yes_no};
+use super::{Field, property, type_labels, yes_no};
 use crate::workspace::focus::{self, Pane};
 use crate::{Localizer, theme::palette};
 use egui::text_selection::LabelSelectionState;
@@ -131,7 +131,7 @@ fn show_general(ui: &mut Ui, field: &Field, selection: &mut PropertySelection) {
         observations.push((
             "FieldSize",
             localizer.text("design-field-size"),
-            size.clone(),
+            type_labels::field_size(&localizer, size),
         ));
     }
     for observation in &field.properties {
