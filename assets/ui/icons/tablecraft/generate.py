@@ -165,6 +165,18 @@ icons.update({
     'numbering': '<path d="M12 6h17M12 16h17M12 26h17M3 3h2v6M2 13h5l-5 6h5M2 23h5l-3 3h3v3H2" fill="none" stroke="{ink}"/>',
 })
 
+# A query-shaped panel with three independently positioned parameter controls.
+# The geometry is authored here and deliberately distinct from the settings gear.
+icons['parameters'] = (
+    '<rect x="3" y="3" width="26" height="26" rx="2" fill="{paper}"/>'
+    '<path d="M3 9h26" stroke="{blue}" stroke-width="5"/>'
+    '<path d="M7 14h4M7 20h4M7 26h4" stroke="{ink}"/>'
+    '<path d="M15 14h10M15 20h10M15 26h10" stroke="{blue}"/>'
+    '<circle cx="18" cy="14" r="2.3" fill="{palegold}" stroke="{gold}"/>'
+    '<circle cx="24" cy="20" r="2.3" fill="{palegold}" stroke="{gold}"/>'
+    '<circle cx="20" cy="26" r="2.3" fill="{palegold}" stroke="{gold}"/>'
+)
+
 palettes = {
     'light': dict(ink='#445367', paper='#fbfdff', pale='#d8e9f8', blue='#4788bd', green='#3e9365', gold='#d8a039', palegold='#f5dfa0', red='#bf5962', app_red='#b12b3d'),
     'dark': dict(ink='#e6edf5', paper='#34485b', pale='#4f7799', blue='#88c9ff', green='#81e3a7', gold='#ffd16e', palegold='#92723a', red='#ff9caa', app_red='#dc6572'),
