@@ -6,7 +6,83 @@ use egui::{Popup, Ui, accesskit::HasPopup};
 
 impl State {
     pub(in crate::workspace) fn query_design_context(&self) -> bool {
-        self.query_design_visible()
+        self.query_design_request().is_some()
+    }
+
+    pub(in crate::workspace) fn query_design_view_menu(
+        &mut self,
+        ui: &mut Ui,
+        actions: &mut Vec<Action>,
+    ) {
+        let ready = self.query_design_ready();
+        let design = self.query_design_visible();
+        let results = self.query_design_results_visible();
+        let sql = !design && !results;
+        let view = command_menu(
+            ui,
+            if design {
+                Icon::ViewDatasheet
+            } else {
+                Icon::ViewDesign
+            },
+            &tr(ui, "ribbon-view"),
+            ready,
+            CommandSize::Large,
+        );
+        if !view.enabled() {
+            Popup::close_id(ui.ctx(), Popup::default_response_id(&view));
+        } else {
+            Popup::menu(&view).show(|ui| {
+                if command(
+                    ui,
+                    Icon::ViewDatasheet,
+                    &tr(ui, "ribbon-datasheet"),
+                    !results && self.query_data.is_some(),
+                    CommandSize::Small,
+                )
+                .clicked()
+                {
+                    self.query_design
+                        .session
+                        .get_or_insert_with(Default::default)
+                        .mode = super::Mode::Results;
+                    ui.close();
+                }
+                if command(
+                    ui,
+                    Icon::ViewDesign,
+                    &tr(ui, "query-design-view"),
+                    !design,
+                    CommandSize::Small,
+                )
+                .clicked()
+                {
+                    if let Some(action) = self.show_query_design() {
+                        actions.push(action);
+                    }
+                    ui.close();
+                }
+                if command(
+                    ui,
+                    Icon::QuerySelect,
+                    &tr(ui, "query-sql-view"),
+                    !sql,
+                    CommandSize::Small,
+                )
+                .clicked()
+                {
+                    if let Some(action) = self.show_query_design_sql() {
+                        actions.push(action);
+                    }
+                    ui.close();
+                }
+            });
+        }
+        let expanded = Popup::is_id_open(ui.ctx(), Popup::default_response_id(&view));
+        ui.ctx().accesskit_node_builder(view.id, |node| {
+            node.set_has_popup(HasPopup::Menu);
+            node.set_expanded(expanded);
+        });
     }
 
     pub(in crate::workspace) fn query_design_ribbon(
@@ -17,35 +93,22 @@ impl State {
         let ready = self.query_design_ready();
         ribbon::strip(ui, |ui| {
             group(ui, &tr(ui, "ribbon-views"), |ui| {
-                let view = command_menu(
-                    ui,
-                    Icon::ViewDesign,
-                    &tr(ui, "ribbon-view"),
-                    ready,
-                    CommandSize::Large,
-                );
-                if !view.enabled() {
-                    Popup::close_id(ui.ctx(), Popup::default_response_id(&view));
-                }
-                if view.enabled() {
-                    Popup::menu(&view).show(|ui| {
-                        if ui.button(tr(ui, "query-sql-view")).clicked() {
-                            if let Some(action) = self.show_query_design_sql() {
-                                actions.push(action);
-                            }
-                            ui.close();
-                        }
-                        ui.add_enabled(false, egui::Button::new(tr(ui, "query-design-view")));
-                    });
-                }
-                let expanded = Popup::is_id_open(ui.ctx(), Popup::default_response_id(&view));
-                ui.ctx().accesskit_node_builder(view.id, |node| {
-                    node.set_has_popup(HasPopup::Menu);
-                    node.set_expanded(expanded);
-                });
+                self.query_design_view_menu(ui, actions);
             });
             group(ui, &tr(ui, "qbe-results-group"), |ui| {
-                let run = self.query_design_run_action();
+                let run = if self.query_ready() && ready {
+                    Some(Action::Query)
+                } else if self.query_design_results_visible()
+                    && self
+                        .query_design_draft()
+                        .is_none_or(|draft| draft.columns.is_empty())
+                {
+                    // A cached raw-SQL result does not establish an authored
+                    // QBE draft. SQL View retains the existing rerun route.
+                    None
+                } else {
+                    self.query_design_run_action()
+                };
                 if command(
                     ui,
                     Icon::Run,
@@ -98,7 +161,7 @@ impl State {
                         ui,
                         Icon::AddTables,
                         &tr(ui, "qbe-add-tables"),
-                        ready,
+                        ready && self.query_design_visible(),
                         CommandSize::Large,
                     )
                     .clicked()

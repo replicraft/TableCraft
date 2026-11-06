@@ -1,8 +1,188 @@
+use crate::QueryDesignCompletion;
 use crate::preview::{Preview, Scene};
+use crate::workspace::{Action as WorkspaceAction, State};
 use egui::{
     Event,
     accesskit::{Action, ActionRequest, Role, TreeId},
 };
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
+use tablecraft_builders::query::build;
+
+#[test]
+fn ribbon_owns_query_views_and_requests_checked_sql_without_implicit_run() {
+    let mut preview = Preview::new(Scene::QueryDesign);
+    let state = std::mem::take(preview.state_mut());
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1600.0, 900.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<WorkspaceAction>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Run query")
+            .count(),
+        1
+    );
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Add Tables")
+            .count(),
+        1
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Design View")
+            .is_none()
+    );
+
+    harness
+        .get_by_role_and_label(Role::Button, "View")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Design View")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Datasheet")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "SQL View")
+        .click_accesskit();
+    harness.run_steps(3);
+    let WorkspaceAction::BuildQueryDesign {
+        request,
+        draft,
+        completion,
+    } = harness.state_mut().1.remove(0)
+    else {
+        panic!("SQL View must request the existing checked builder");
+    };
+    assert_eq!(completion, QueryDesignCompletion::ShowSql);
+    let metadata = harness
+        .state()
+        .0
+        .query_design
+        .session
+        .as_ref()
+        .unwrap()
+        .metadata
+        .clone();
+    let built = build(&draft, &metadata).unwrap();
+    assert!(
+        harness
+            .state_mut()
+            .0
+            .begin_query_design_build(request, draft, completion, 900)
+    );
+    assert_eq!(
+        harness
+            .state_mut()
+            .0
+            .set_query_design_built(900, built, metadata),
+        Some(QueryDesignCompletion::ShowSql)
+    );
+    harness.run_steps(3);
+    assert!(!harness.state().0.query_design_visible());
+    assert!(harness.query_by_role(Role::MultilineTextInput).is_some());
+    assert!(harness.state().1.is_empty());
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Run query")
+            .count(),
+        1
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Run query")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [WorkspaceAction::Query]
+    ));
+    harness.state_mut().1.clear();
+
+    harness
+        .get_by_role_and_label(Role::Tab, "Home")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::Button, "Run query")
+            .count(),
+        1
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Run query")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [WorkspaceAction::Query]
+    ));
+}
+
+#[test]
+fn bare_sql_view_menu_can_visit_cached_results_and_return_without_a_design_import() {
+    let mut preview = Preview::new(Scene::Query);
+    let state = std::mem::take(preview.state_mut());
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1600.0, 900.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<WorkspaceAction>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    let sql = harness.state().0.sql.clone();
+    let rows = harness.state().0.query_data.as_ref().unwrap().rows.as_ptr();
+    harness
+        .get_by_role_and_label(Role::Button, "View")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::Button, "Datasheet")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(harness.state().0.query_design_results_visible());
+    assert!(harness.query_by_role(Role::MultilineTextInput).is_none());
+    harness
+        .get_by_role_and_label(Role::Tab, "Query Design")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Run query")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "View")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::Button, "SQL View")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(harness.query_by_role(Role::MultilineTextInput).is_some());
+    assert_eq!(harness.state().0.sql, sql);
+    assert_eq!(
+        harness.state().0.query_data.as_ref().unwrap().rows.as_ptr(),
+        rows
+    );
+    assert!(harness.state().1.is_empty());
+}
 
 #[test]
 fn query_design_unavailable_commands_are_visible_in_both_hosts_and_cannot_dispatch() {

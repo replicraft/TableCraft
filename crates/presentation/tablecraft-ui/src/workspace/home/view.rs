@@ -6,6 +6,10 @@ use egui::{Popup, accesskit::HasPopup};
 
 impl State {
     pub(super) fn view_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
+        if self.query_design_request().is_some() {
+            self.query_design_view_menu(ui, actions);
+            return;
+        }
         let t = self.localizer.clone();
         let active = self.active_object();
         let table = active.as_ref().and_then(|tab| match &tab.target.kind {

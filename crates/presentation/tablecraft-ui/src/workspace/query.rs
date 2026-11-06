@@ -1,5 +1,5 @@
 //! Query editor admission is shared with keyboard command handling.
-use super::{Action, DocumentView, State};
+use super::{Action, DocumentView, State, ribbon};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Frame, Margin, RichText, TextEdit, Ui};
@@ -26,18 +26,13 @@ impl State {
             }
             self.query_design_report(ui);
             if self.query_design_results_visible() {
-                self.query_design_views(ui, actions);
                 if self.query_data.is_some() && self.query_design_results_previous() {
                     ui.weak(tr(ui, "qbe-results-previous"));
                 }
                 return;
             }
             if self.query_design_visible() {
-                self.query_design_editor(ui, actions);
-                return;
-            }
-            self.query_design_views(ui, actions);
-            if self.query_design_visible() {
+                self.query_design_editor(ui);
                 return;
             }
             let sql_label = ui.heading(tr(ui, "query-title"));
@@ -80,9 +75,12 @@ impl State {
                         focus::register(ui, Pane::Document, &sql, true);
                     });
             });
-            if ui
-                .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))
-                .clicked()
+            let run_in_ribbon =
+                self.ribbon_tab == ribbon::Tab::QueryDesign && self.query_design_context();
+            if !run_in_ribbon
+                && ui
+                    .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))
+                    .clicked()
             {
                 actions.push(Action::Query);
             }

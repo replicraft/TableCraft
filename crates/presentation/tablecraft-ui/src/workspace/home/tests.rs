@@ -200,8 +200,12 @@ fn home_view_menu_uses_existing_table_navigation_and_schema_actions() {
 
     let (actions, _) = click(&mut state, &context, "View");
     assert!(actions.is_empty());
-    assert!(!egui::Popup::is_any_open(&context));
+    assert!(egui::Popup::is_any_open(&context));
     assert!(state.view == DocumentView::Query);
+
+    // SQL shares the Ribbon View selector; opening it does not run a query.
+    click(&mut state, &context, "View");
+    assert!(!egui::Popup::is_any_open(&context));
 
     state.prepare_object_open(contacts.clone()).unwrap();
     click(&mut state, &context, "View");
