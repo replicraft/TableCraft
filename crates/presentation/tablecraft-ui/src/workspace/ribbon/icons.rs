@@ -3,6 +3,7 @@ use egui::{Image, Ui};
 
 #[derive(Clone, Copy)]
 pub(crate) enum Icon {
+    Parameters,
     AlignLeft,
     AlignCenter,
     AlignRight,
@@ -153,6 +154,7 @@ impl Icon {
             (egui::Theme::Dark, false) => Variant::DisabledDark,
         };
         let (uri, bytes) = match self {
+            Self::Parameters => asset!("parameters", variant),
             Self::AlignLeft => asset!("align_left", variant),
             Self::AlignCenter => asset!("align_center", variant),
             Self::AlignRight => asset!("align_right", variant),
@@ -261,7 +263,8 @@ impl Icon {
     }
 
     #[cfg(test)]
-    const ALL: [Self; 103] = [
+    const ALL: [Self; 104] = [
+        Self::Parameters,
         Self::AlignLeft,
         Self::AlignCenter,
         Self::AlignRight,

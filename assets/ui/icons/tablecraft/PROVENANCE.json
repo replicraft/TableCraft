@@ -2173,6 +2173,27 @@
           "sha256": "6be2a66df567e928b2c9182ef767ec49820ccf32c32d09a4286a5a33b1bce946"
         }
       }
+    },
+    {
+      "name": "parameters",
+      "variants": {
+        "light": {
+          "file": "parameters-light.svg",
+          "sha256": "78ec7ada9318485aed3505a9b7d7e2e3de06c408b416f602f15f8c5c29cc3d05"
+        },
+        "dark": {
+          "file": "parameters-dark.svg",
+          "sha256": "00f8e7a906718ef2979d4b9ec85c1bafb32643b5c7bc55534400ef87764e7711"
+        },
+        "disabled-light": {
+          "file": "parameters-disabled-light.svg",
+          "sha256": "c8a54d26e74485433f02f0097fac09f71bb11cc0c2f62f6ed3b060e7e6e65511"
+        },
+        "disabled-dark": {
+          "file": "parameters-disabled-dark.svg",
+          "sha256": "a106fa6b62a9d23202bb1683f3dd7a897affff344eff9ce4226641ea30a50568"
+        }
+      }
     }
   ]
 }
