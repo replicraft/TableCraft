@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 76 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 78 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -817,3 +817,37 @@ German dark at 900 × 580 logical pixels, 1.25× scale, on the macOS GPU rendere
 Artifacts remain ignored under `.cache/ui-table-design-review/` and
 `.cache/ui-table-design-minimum/`. These renders do not qualify native window,
 assistive-technology or Windows Access interaction behavior.
+
+## Query Design layout follow-up — 5 November 2026
+
+The actual published criteria, join-line and Show Table images were reopened for
+this pass. Source cards now have compact header bands and full-width field rows;
+only explicit existing join edges are drawn. A full-width divider supports
+dragging and focused Up/Down keys. The lower QBE sheet uses ruled cells, centered
+Show checkboxes and inert blank columns outside the draft model. Field expressions,
+sorts and AND/OR criteria retain the existing bounded local edit and explicit
+canonicalization/Run workflow. Changing layout never builds or executes SQL.
+
+Add Tables now follows the reference's tabs, list and right-aligned footer.
+Queries and Both remain disabled with an explanation because this source picker
+currently supports only local user tables. Opening the dialog stays metadata-only;
+Add and target-bound double-click retain their existing service requests.
+
+`query-design-empty` shows an authored empty editor without invented sources or
+results. `query-design-wide` has 32 bounded synthetic projections, eight criteria
+rows, a hidden criterion column and an explicitly authored two-source join. These
+are presentation fixtures, not evidence of native Access execution.
+
+Offscreen review used eight en-US frames at 1600 × 900 logical pixels, 1×,
+and six German light/dark frames at 900 × 580 logical pixels, 1.25×, on the
+local macOS GPU renderer. Artifacts remain ignored in
+`.cache/ui-query-design-polish/` and `.cache/ui-query-design-polish-minimum/`.
+The review caught and corrected a blank-label checkbox offset and translated
+Ribbon-caption overlap. Native window checks remain suspended.
+
+The final UI gate passed all 218 tests, including 78 scenes × eight languages ×
+two themes (1,248 drawing combinations). The earlier host batch passed all 63
+desktop tests. Strict UI/desktop Clippy, formatting and dependency/documentation
+checks passed. Interaction cases preserve full OR rows and whole oversized-input
+refusal, exact Add Tables requests, bounded double-click targeting, blank-cell
+inertness and keyboard splitter movement without query actions.

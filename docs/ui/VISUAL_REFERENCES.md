@@ -368,3 +368,17 @@ The capture supplies light-layout evidence. Dark styling, translated compact
 layouts, keyboard Copy and contextual help remain adaptations rather than native
 interaction qualification. The [presentation review](PRESENTATION_PREVIEW.md#table-design-grid-and-property-inspection--5-november-2026) records
 render dimensions and synthetic scenarios.
+
+## Query Design composition follow-up — 5 November 2026
+
+The actual published criteria and join-line images and Show Table dialog were
+reopened from the ignored local cache. Compact source-card headers, vertical field
+rows, visible explicit join edges, a horizontal divider and ruled QBE cells follow
+those observed structures. Blank columns have no draft identity; no primary-key
+glyph, relationship or join is inferred. The Add Tables dialog retains its local
+user-table capability and displays unsupported source-kind tabs as disabled.
+
+These references have no complete modern Query Design Ribbon capture or dark
+mode. Existing commands and their execution boundaries are preserved; this layout
+pass does not qualify the full native designer. Current synthetic scenarios are
+recorded in the [presentation preview](PRESENTATION_PREVIEW.md#query-design-layout-follow-up--5-november-2026).

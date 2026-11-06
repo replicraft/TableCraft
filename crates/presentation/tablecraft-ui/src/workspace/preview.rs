@@ -44,6 +44,8 @@ pub enum Scene {
     QueryDesign,
     QueryDesignTables,
     QueryDesignError,
+    QueryDesignWide,
+    QueryDesignEmpty,
     LongNames,
     LongReadError,
     LongOpenError,
@@ -106,7 +108,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 76] = [
+    pub const ALL: [Self; 78] = [
         Self::Datasheet,
         Self::RibbonCreate,
         Self::RibbonExternalData,
@@ -124,6 +126,8 @@ impl Scene {
         Self::QueryDesign,
         Self::QueryDesignTables,
         Self::QueryDesignError,
+        Self::QueryDesignWide,
+        Self::QueryDesignEmpty,
         Self::LongNames,
         Self::LongReadError,
         Self::LongOpenError,
@@ -227,6 +231,8 @@ impl Scene {
             Self::QueryDesign => "query-design",
             Self::QueryDesignTables => "query-design-tables",
             Self::QueryDesignError => "query-design-error",
+            Self::QueryDesignWide => "query-design-wide",
+            Self::QueryDesignEmpty => "query-design-empty",
             Self::LongNames => "long-names",
             Self::LongReadError => "long-read-error",
             Self::LongOpenError => "long-open-error",
@@ -382,6 +388,8 @@ impl Preview {
             Scene::QueryDesign => self.prepare_query_design(false, false),
             Scene::QueryDesignTables => self.prepare_query_design(true, false),
             Scene::QueryDesignError => self.prepare_query_design(false, true),
+            Scene::QueryDesignWide => self.prepare_wide_query_design(),
+            Scene::QueryDesignEmpty => self.prepare_empty_query_design(),
             Scene::LongNames => fixtures::long_names(&mut self.state),
             Scene::LongReadError
             | Scene::LongOpenError

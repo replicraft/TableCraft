@@ -1371,3 +1371,13 @@ field. Property values support full-value keyboard Copy with a visible bounded
 refusal; field/publication changes do not transfer an old focus to new metadata.
 Lookup remains uninspected and schema editing remains unavailable. See the
 [presentation review](PRESENTATION_PREVIEW.md#table-design-grid-and-property-inspection--5-november-2026).
+
+## Query Design presentation follow-up
+
+The existing bounded visual query editor now uses compact source cards, explicit
+join connectors and a resizable source/grid split above ruled QBE cells. Blank
+columns remain outside the draft; only the existing Add expression/field actions
+create projections. Centered Show controls retain hidden-field criteria. Add
+Tables preserves local user-table selection and cancellation, with unsupported
+source-kind tabs disabled. Existing explicit build/Run and stale-response guards
+are unchanged. See the [presentation review](PRESENTATION_PREVIEW.md#query-design-layout-follow-up--5-november-2026).

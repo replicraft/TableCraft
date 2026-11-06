@@ -1,5 +1,22 @@
 # Implementation status
 
+## Screenshot-guided Query Design layout — 5 November 2026
+
+The shared visual query editor now uses compact source-card headers and field
+rows, explicit existing join connectors, a keyboard-adjustable full-width divider
+and ruled QBE cells. Blank visible columns have no draft identity. Show controls
+are centered while hidden-field criteria retain their existing behavior. Add
+Tables follows the native tabs/list/footer structure; unsupported source kinds
+remain disabled. Translated Ribbon captions reserve their own group width.
+
+New empty/wide synthetic designs exercise existing metadata and bounded editor
+contracts without opening or querying a file. No database functionality or
+query-builder capability was added. All 218 UI tests and 63 desktop tests
+passed across the final gate and earlier host batch, including 1,248 preview
+combinations. Strict selected Clippy, formatting and dependency/documentation
+checks passed. Fourteen offscreen light/dark and compact translated frames were
+reviewed; native window checks remain suspended. See the [presentation review](ui/PRESENTATION_PREVIEW.md#query-design-layout-follow-up--5-november-2026).
+
 ## Screenshot-guided Table Design inspection — 5 November 2026
 
 The shared read-only schema inspector now has a ruled field grid, inert blank
