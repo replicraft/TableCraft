@@ -2,11 +2,113 @@
 use super::{Preview, fixtures};
 use crate::{ObjectKind, ObjectTarget, QueryDesignCompletion, QueryDesignRequest};
 use tablecraft_builders::query::{
-    BuiltQueryDesign, DesignColumn, DesignFieldMetadata, DesignSource, DesignTableMetadata,
-    QueryDesignDraft,
+    BuiltQueryDesign, DesignColumn, DesignField, DesignFieldMetadata, DesignJoin, DesignJoinKind,
+    DesignSort, DesignSource, DesignTableMetadata, QueryDesignDraft, build,
 };
 
 impl Preview {
+    pub(super) fn prepare_wide_query_design(&mut self) {
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
+        let mut columns = Vec::new();
+        for position in 0..32 {
+            let mut column = if position % 2 == 0 {
+                DesignColumn::field(1, "CustomerName".into())
+            } else {
+                DesignColumn::field(2, "OrderTotal".into())
+            };
+            column.alias = Some(format!(
+                "Synthetic_projection_with_a_long_caption_{position:02}"
+            ));
+            column.show = position != 1;
+            if position == 0 {
+                column.sort = Some(DesignSort::Ascending);
+                column.criteria = vec!["Like \"A*\"".into(); 8];
+            }
+            if position == 1 {
+                column.criteria = vec![">= 0".into(); 8];
+            }
+            columns.push(column);
+        }
+        let draft = QueryDesignDraft {
+            sources: vec![
+                DesignSource {
+                    id: 1,
+                    table: "Customers".into(),
+                    alias: None,
+                },
+                DesignSource {
+                    id: 2,
+                    table: "Orders".into(),
+                    alias: None,
+                },
+            ],
+            joins: vec![DesignJoin {
+                left: DesignField {
+                    source_id: 1,
+                    column: "CustomerID".into(),
+                },
+                right: DesignField {
+                    source_id: 2,
+                    column: "CustomerID".into(),
+                },
+                kind: DesignJoinKind::Left,
+            }],
+            columns,
+        };
+        let metadata = vec![table_metadata("Customers"), table_metadata("Orders")];
+        let built = build(&draft, &metadata).expect("bounded authored synthetic QBE");
+        self.state.sql = built.sql.clone();
+        let request = self
+            .state
+            .query_design_request()
+            .expect("synthetic scratch tab");
+        let id = self.request();
+        assert!(
+            self.state
+                .begin_query_design_import(request, self.state.sql.clone(), id)
+        );
+        assert!(
+            self.state
+                .set_query_design_built(id, built, metadata)
+                .is_some()
+        );
+    }
+
+    pub(super) fn prepare_empty_query_design(&mut self) {
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
+        self.state.sql.clear();
+        let request = self
+            .state
+            .query_design_request()
+            .expect("synthetic scratch tab");
+        let id = self.request();
+        assert!(
+            self.state
+                .begin_query_design_import(request, String::new(), id)
+        );
+        // This authored empty editor model has no executable query or native
+        // metadata. Use the same source-bound fixture publication as the other
+        // Design scenes, without fabricating a table or running a builder.
+        assert!(
+            self.state
+                .set_query_design_built(
+                    id,
+                    BuiltQueryDesign {
+                        draft: QueryDesignDraft::default(),
+                        sql: String::new()
+                    },
+                    Vec::new(),
+                )
+                .is_some()
+        );
+    }
+
     pub(super) fn prepare_query_design(&mut self, tables: bool, error: bool) {
         self.mock_open_object(ObjectTarget {
             document_revision: fixtures::REVISION,
@@ -99,3 +201,6 @@ fn table_metadata(table: &str) -> DesignTableMetadata {
             .collect(),
     }
 }
+
+#[cfg(test)]
+mod tests;
