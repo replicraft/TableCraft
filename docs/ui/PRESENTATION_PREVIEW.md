@@ -1090,3 +1090,26 @@ macOS with Windows chrome emulation. The icon contact sheet also reviewed light,
 dark and disabled variants at 16, 28 and 56 pixels. Native reference evidence
 remains the retained Windows Access Home image. Font-picker layout is a UI
 adaptation without a retained Access picker capture.
+
+
+## Font-dropdown search — 5 November 2026
+
+The requested search field is the first dropdown item and receives focus on open.
+Names filter case-insensitively as text changes; clearing restores the catalog,
+empty results have a localized message and reopening starts with an empty filter.
+The search is capped at 128 characters and stays above the virtualized list.
+Applying font formatting remains unavailable. Search labels and empty-state text
+are translated in all eight Ribbon catalogs.
+
+Four focused font tests and four localization tests pass, plus strict UI Clippy
+and formatting. Actual input tests cover English/German focus, field clicks that
+keep the dropdown open, filtering, empty results, clear and reopen. The existing
+500-family test retains one scrollbar and visible-row rendering. No broader
+backend or desktop suite was rerun for this presentation-only change.
+
+Offscreen normal-host light/dark frames at 1280×820, 1× on macOS with Windows
+chrome emulation were reviewed with a `noto` filter. Use the existing renderer
+with `TABLECRAFT_PREVIEW_SCENE=datasheet` and
+`TABLECRAFT_PREVIEW_FONT_SEARCH=noto`; output uses the `-font-search` suffix.
+Standalone previews use bundled font names. This requested picker extension has
+no retained Access capture, and no native app windows were opened.

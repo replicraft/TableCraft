@@ -29,8 +29,10 @@ its separators measure available height, retaining the compact default strip.
 Refresh All and Format Painter use updated original artwork in all four variants.
 
 The Font selector browses a host-supplied catalog, including bundled families and
-installed system families discovered through desktop-only Fontique. It uses
-virtualized rows and one scrollbar. Selawik remains selected; applying family,
+installed system families discovered through desktop-only Fontique. A focused search field is its
+first item and filters names case-insensitively while typing. Empty matches have
+a localized message; closing/reopening clears the search. The bounded 128-character
+filter sits above the virtualized, independently scrolling results with one scrollbar. Selawik remains selected; applying family,
 size and other text formatting is unavailable. Font discovery does not load
 system faces into egui or change database fields. See the [dependency contract](../development/DEPENDENCIES.md#desktop-font-family-discovery--5-november-2026).
 

@@ -183,3 +183,6 @@ ribbon-pin = Menüband anheften
 
 ribbon-paste-special = Inhalte einfügen…
 ribbon-paste-append = Am Ende anfügen
+
+ribbon-font-search = Schriftarten suchen
+ribbon-font-no-results = Keine passenden Schriftarten

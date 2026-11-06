@@ -183,3 +183,6 @@ ribbon-pin = 固定功能区
 
 ribbon-paste-special = 选择性粘贴…
 ribbon-paste-append = 追加粘贴
+
+ribbon-font-search = 搜索字体
+ribbon-font-no-results = 没有匹配的字体

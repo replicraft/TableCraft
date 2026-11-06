@@ -183,3 +183,6 @@ ribbon-pin = Anclar la cinta
 
 ribbon-paste-special = Pegado especial…
 ribbon-paste-append = Pegar datos anexados
+
+ribbon-font-search = Buscar fuentes
+ribbon-font-no-results = No hay fuentes coincidentes

@@ -183,3 +183,6 @@ ribbon-pin = 리본 고정
 
 ribbon-paste-special = 선택하여 붙여넣기…
 ribbon-paste-append = 추가하여 붙여넣기
+
+ribbon-font-search = 글꼴 검색
+ribbon-font-no-results = 일치하는 글꼴 없음

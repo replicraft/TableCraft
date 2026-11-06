@@ -6,7 +6,6 @@ use egui::Ui;
 const FONT_SELECTOR_HEIGHT: f32 = 22.0;
 const FONT_SELECTOR_TEXT_SIZE: f32 = 11.5;
 const FONT_ROW_GAP: f32 = 7.0;
-const FONT_MENU_HEIGHT: f32 = 240.0;
 
 pub(in crate::workspace) fn unavailable(
     ui: &mut Ui,
@@ -49,27 +48,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer, families: &[String]
             // Bound the row before separators measure its available height.
             ui.set_height(FONT_SELECTOR_HEIGHT);
             ui.spacing_mut().interact_size.y = FONT_SELECTOR_HEIGHT;
-            let response = egui::ComboBox::from_id_salt("font_family_catalog")
-                .width(120.0)
-                .height(FONT_MENU_HEIGHT)
-                .selected_text(egui::RichText::new("Selawik").size(FONT_SELECTOR_TEXT_SIZE))
-                .show_ui(ui, |ui| {
-                    let row_height = ui.spacing().interact_size.y;
-                    egui::ScrollArea::vertical()
-                        .id_salt("font_family_catalog_rows")
-                        .max_height(FONT_MENU_HEIGHT)
-                        .show_rows(ui, row_height, families.len(), |ui, range| {
-                            for family in &families[range] {
-                                ui.add_enabled(
-                                    false,
-                                    egui::Button::selectable(family == "Selawik", family)
-                                        .truncate(),
-                                )
-                                .on_disabled_hover_text(t.text("ribbon-unavailable"));
-                            }
-                        });
-                })
-                .response;
+            let response = super::font_picker::show(ui, t, families, FONT_SELECTOR_TEXT_SIZE);
             describe_combo(ui, &response, &t.text("ribbon-font"), "Selawik", t);
             ui.add_enabled_ui(false, |ui| {
                 let response = egui::ComboBox::from_id_salt("unavailable_font_size")
