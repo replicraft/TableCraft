@@ -258,6 +258,7 @@ enum DocumentView {
 pub struct State {
     pub localizer: crate::Localizer,
     pub theme: crate::Theme,
+    pub font_families: crate::FontFamilies,
     pub formatting: Options,
     format_cache: crate::formatting::Cache,
     /// Synthetic presentation only; never grants database capabilities.

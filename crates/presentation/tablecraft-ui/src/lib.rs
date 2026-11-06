@@ -15,6 +15,7 @@ pub use application_icon::{ApplicationIconError, application_icon};
 pub use cells::{Cell, CellKind, DisplayControl, HorizontalAlignment};
 pub use columns::Column;
 pub use fluent_bundle::FluentArgs;
+pub use fonts::{FontFamilies, FontInventoryError};
 pub use localization::{Locale, Localizer};
 pub use theme::{Theme, configure};
 pub use workspace::preview;

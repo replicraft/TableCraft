@@ -1,4 +1,8 @@
 //! Bundled UI fonts, independent of database sort and regional value policies.
+mod inventory;
+
+pub use inventory::{FontFamilies, FontInventoryError};
+
 use crate::Locale;
 use egui::{Context, FontData, FontDefinitions, FontFamily, Id};
 

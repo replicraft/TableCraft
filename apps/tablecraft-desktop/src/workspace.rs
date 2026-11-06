@@ -145,6 +145,7 @@ impl Desktop {
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
+        app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
         app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux"));
