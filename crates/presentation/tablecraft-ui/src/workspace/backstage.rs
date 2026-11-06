@@ -7,6 +7,8 @@ use crate::localization::tr;
 use crate::{Locale, Localizer, Theme, theme::palette};
 use egui::{Frame, Margin, ScrollArea, TextEdit, Ui};
 
+const FOOTER_ENTRIES: usize = 3;
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub(super) enum Backstage {
     Closed,
@@ -25,7 +27,7 @@ impl State {
             return;
         }
         let colors = palette(ui.ctx());
-        let rail_width = rail::width(ui, &self.localizer, self.mock_preview);
+        let rail_width = rail::width(ui, &self.localizer);
         egui::Panel::left("file_rail")
             .exact_size(rail_width)
             .frame(
@@ -41,40 +43,29 @@ impl State {
                     ui.add_space(18.0);
                 }
 
-                let footer_rows = if self.mock_preview { 3.0 } else { 2.0 };
-                let footer_height = footer_rows * (rail::ROW_HEIGHT + ui.spacing().item_spacing.y);
+                let footer_height =
+                    FOOTER_ENTRIES as f32 * (rail::ROW_HEIGHT + ui.spacing().item_spacing.y);
                 ScrollArea::vertical()
                     .id_salt("file_rail_sections")
                     .max_height((ui.available_height() - footer_height).max(rail::ROW_HEIGHT))
                     .auto_shrink([false, true])
                     .show(ui, |ui| {
                         self.file_section(ui, Backstage::Home, Icon::Home, "backstage-home");
-                        if self.mock_preview {
-                            self.file_section(
-                                ui,
-                                Backstage::New,
-                                Icon::NewDocument,
-                                "backstage-new",
-                            );
-                        }
+                        self.file_section(ui, Backstage::New, Icon::NewDocument, "backstage-new");
                         self.file_section(ui, Backstage::Open, Icon::FolderOpen, "backstage-open");
-                        if self.mock_preview {
-                            ui.separator();
-                            for key in [
-                                "backstage-info",
-                                "backstage-save",
-                                "backstage-save-as",
-                                "backstage-print",
-                                "backstage-close",
-                            ] {
-                                self.mock_file_section(ui, key);
-                            }
+                        ui.separator();
+                        for key in [
+                            "backstage-info",
+                            "backstage-save",
+                            "backstage-save-as",
+                            "backstage-print",
+                            "backstage-close",
+                        ] {
+                            self.unavailable_file_section(ui, key);
                         }
                     });
                 ui.add_space((ui.available_height() - footer_height).max(0.0));
-                if self.mock_preview {
-                    self.mock_file_section(ui, "backstage-account");
-                }
+                self.unavailable_file_section(ui, "backstage-account");
                 self.file_section(ui, Backstage::About, Icon::Info, "backstage-about");
                 self.file_section(ui, Backstage::Options, Icon::Settings, "backstage-options");
             });
@@ -113,7 +104,7 @@ impl State {
         }
     }
 
-    fn mock_file_section(&self, ui: &mut Ui, key: &str) {
+    fn unavailable_file_section(&self, ui: &mut Ui, key: &str) {
         ui.push_id(key, |ui| {
             ui.add_enabled_ui(false, |ui| {
                 let icon = match key {
@@ -126,7 +117,7 @@ impl State {
                     _ => return,
                 };
                 rail::entry(ui, icon, &tr(ui, key), None)
-                    .on_disabled_hover_text(tr(ui, "backstage-preview-only"));
+                    .on_disabled_hover_text(tr(ui, "backstage-unavailable"));
             });
         });
     }

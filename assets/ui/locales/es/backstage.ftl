@@ -35,9 +35,9 @@ backstage-icons-credit = Iconos de la cinta de TableCraft · gráficos vectorial
 backstage-icons-source = Origen de los iconos: TableCraft
 backstage-icons-license = Licencia de los iconos (Apache-2.0)
 
-backstage-preview-only = Comando de vista previa no disponible; no realiza ninguna acción.
+backstage-unavailable = Aún no disponible
 backstage-recent-empty = No hay bases de datos recientes disponibles en esta sesión.
-backstage-creation-unavailable = La creación de bases de datos no está disponible en esta vista previa.
+backstage-creation-unavailable = La creación de bases de datos aún no está disponible.
 backstage-blank-database = Base de datos en blanco
 backstage-open-other = Abrir otros archivos
 backstage-template-search = Buscar plantillas (no disponible)

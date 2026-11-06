@@ -35,9 +35,9 @@ backstage-icons-credit = TableCraft-Menübandsymbole · eigene Vektorgrafiken
 backstage-icons-source = Symbolquelle: TableCraft
 backstage-icons-license = Symbollizenz (Apache-2.0)
 
-backstage-preview-only = Nicht verfügbarer Vorschaubefehl; es wird keine Aktion ausgeführt.
+backstage-unavailable = Noch nicht verfügbar
 backstage-recent-empty = In dieser Sitzung sind keine zuletzt verwendeten Datenbanken verfügbar.
-backstage-creation-unavailable = Das Erstellen von Datenbanken ist in dieser Vorschau nicht verfügbar.
+backstage-creation-unavailable = Das Erstellen von Datenbanken ist noch nicht verfügbar.
 backstage-blank-database = Leere Datenbank
 backstage-open-other = Weitere Dateien öffnen
 backstage-template-search = Vorlagen suchen (nicht verfügbar)

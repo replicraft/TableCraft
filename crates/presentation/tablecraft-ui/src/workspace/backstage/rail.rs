@@ -12,26 +12,25 @@ const CONTENT_PADDING: f32 = 10.0;
 const ICON_TEXT_GAP: f32 = 12.0;
 
 /// Reserve translated interface labels without changing their wording or keys.
-pub(super) fn width(ui: &Ui, localizer: &Localizer, mock: bool) -> f32 {
+pub(super) fn width(ui: &Ui, localizer: &Localizer) -> f32 {
     let font = ui.style().text_styles[&TextStyle::Body].clone();
     let labels = [
-        ("backstage-back", false),
-        ("backstage-home", false),
-        ("backstage-open", false),
-        ("backstage-about", false),
-        ("backstage-options", false),
-        ("backstage-new", true),
-        ("backstage-info", true),
-        ("backstage-save", true),
-        ("backstage-save-as", true),
-        ("backstage-print", true),
-        ("backstage-close", true),
-        ("backstage-account", true),
+        "backstage-back",
+        "backstage-home",
+        "backstage-open",
+        "backstage-about",
+        "backstage-options",
+        "backstage-new",
+        "backstage-info",
+        "backstage-save",
+        "backstage-save-as",
+        "backstage-print",
+        "backstage-close",
+        "backstage-account",
     ];
     let text_width = labels
         .into_iter()
-        .filter(|(_, preview)| mock || !preview)
-        .map(|(key, _)| {
+        .map(|key| {
             ui.painter()
                 .layout_no_wrap(localizer.text(key), font.clone(), palette(ui.ctx()).ink)
                 .size()

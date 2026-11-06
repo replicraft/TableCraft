@@ -35,9 +35,9 @@ backstage-icons-credit = TableCraft 功能区图标 · 原创矢量图形
 backstage-icons-source = 图标来源：TableCraft
 backstage-icons-license = 图标许可证（Apache-2.0）
 
-backstage-preview-only = 不可用的预览命令，不会执行任何操作。
+backstage-unavailable = 暂不可用
 backstage-recent-empty = 此会话中没有可用的最近使用的数据库。
-backstage-creation-unavailable = 此预览中无法创建数据库。
+backstage-creation-unavailable = 暂不支持创建数据库。
 backstage-blank-database = 空白数据库
 backstage-open-other = 打开其他文件
 backstage-template-search = 搜索模板（不可用）
