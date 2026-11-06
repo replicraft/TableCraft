@@ -34,3 +34,11 @@ backstage-noto-license = Noto Sans CJK license
 backstage-icons-credit = TableCraft ribbon icons · original vector artwork
 backstage-icons-source = Icon source: TableCraft
 backstage-icons-license = Icon license (Apache-2.0)
+
+backstage-preview-only = Unavailable preview command; no action is performed.
+backstage-recent-empty = No recent databases are available in this session.
+backstage-creation-unavailable = Database creation is not available in this preview.
+backstage-blank-database = Blank database
+backstage-open-other = Open Other Files
+backstage-template-search = Search templates (unavailable)
+backstage-templates = Templates

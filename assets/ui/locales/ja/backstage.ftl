@@ -34,3 +34,11 @@ backstage-noto-license = Noto Sans CJK のライセンス
 backstage-icons-credit = TableCraft リボン アイコン · オリジナルのベクター画像
 backstage-icons-source = アイコンの提供元: TableCraft
 backstage-icons-license = アイコンのライセンス（Apache-2.0）
+
+backstage-preview-only = 利用できないプレビューコマンドです。操作は実行されません。
+backstage-recent-empty = このセッションには最近使用したデータベースがありません。
+backstage-creation-unavailable = このプレビューではデータベースを作成できません。
+backstage-blank-database = 空のデータベース
+backstage-open-other = 他のファイルを開く
+backstage-template-search = テンプレートの検索（利用不可）
+backstage-templates = テンプレート

@@ -13,7 +13,13 @@ pub(super) fn entry(ui: &mut Ui, icon: Icon, label: &str, selected: Option<bool>
     let (rect, response) =
         ui.allocate_exact_size(egui::vec2(ui.available_width(), ROW_HEIGHT), Sense::click());
     let active = selected == Some(true);
-    let color = if active { colors.accent } else { colors.ink };
+    let color = if !ui.is_enabled() {
+        colors.muted
+    } else if active {
+        colors.accent
+    } else {
+        colors.ink
+    };
     if response.hovered() {
         ui.painter()
             .rect_filled(rect, 0.0, ui.visuals().widgets.hovered.weak_bg_fill);

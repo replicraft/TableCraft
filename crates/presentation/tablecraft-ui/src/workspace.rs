@@ -603,9 +603,10 @@ impl State {
             || self.zoom_dialog_open();
         if !modal_open
             && self.backstage_visible()
+            && self.backstage_return_available()
             && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
         {
-            self.dismiss_backstage();
+            self.return_from_backstage();
         }
         let shortcuts = if modal_open {
             keyboard::Shortcuts::default()

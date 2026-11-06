@@ -3,6 +3,13 @@ use egui::{Image, Ui};
 
 #[derive(Clone, Copy)]
 pub(crate) enum Icon {
+    Home,
+    NewDocument,
+    SaveAs,
+    Print,
+    CloseDocument,
+    Account,
+
     Parameters,
     AlignLeft,
     AlignCenter,
@@ -154,6 +161,12 @@ impl Icon {
             (egui::Theme::Dark, false) => Variant::DisabledDark,
         };
         let (uri, bytes) = match self {
+            Self::Home => asset!("home", variant),
+            Self::NewDocument => asset!("new_document", variant),
+            Self::SaveAs => asset!("save_as", variant),
+            Self::Print => asset!("print", variant),
+            Self::CloseDocument => asset!("close_document", variant),
+            Self::Account => asset!("account", variant),
             Self::Parameters => asset!("parameters", variant),
             Self::AlignLeft => asset!("align_left", variant),
             Self::AlignCenter => asset!("align_center", variant),
@@ -263,7 +276,14 @@ impl Icon {
     }
 
     #[cfg(test)]
-    const ALL: [Self; 104] = [
+    const ALL: [Self; 110] = [
+        Self::Home,
+        Self::NewDocument,
+        Self::SaveAs,
+        Self::Print,
+        Self::CloseDocument,
+        Self::Account,
+
         Self::Parameters,
         Self::AlignLeft,
         Self::AlignCenter,

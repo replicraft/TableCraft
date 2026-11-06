@@ -79,6 +79,9 @@ pub enum Scene {
     Zoom,
     Review,
     Recovery,
+    Startup,
+    StartupOpen,
+    Templates,
     Backstage,
     Options,
     About,
@@ -108,7 +111,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 78] = [
+    pub const ALL: [Self; 81] = [
         Self::Datasheet,
         Self::RibbonCreate,
         Self::RibbonExternalData,
@@ -161,6 +164,9 @@ impl Scene {
         Self::Zoom,
         Self::Review,
         Self::Recovery,
+        Self::Startup,
+        Self::StartupOpen,
+        Self::Templates,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -266,6 +272,9 @@ impl Scene {
             Self::Zoom => "zoom",
             Self::Review => "review",
             Self::Recovery => "recovery",
+            Self::Startup => "startup",
+            Self::StartupOpen => "startup-open",
+            Self::Templates => "templates",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -505,6 +514,21 @@ impl Preview {
             Scene::SaveCancelled => self.show_editing_scene(scene),
             Scene::SaveFailed => self.show_editing_scene(scene),
             Scene::RecoveryDiagnosis => self.show_editing_scene(scene),
+            Scene::Startup | Scene::StartupOpen => {
+                let mut startup = State {
+                    mock_preview: true,
+                    file_picker_available: true,
+                    ..State::default()
+                };
+                std::mem::swap(&mut startup.localizer, &mut self.state.localizer);
+                std::mem::swap(&mut startup.theme, &mut self.state.theme);
+                std::mem::swap(&mut startup.formatting, &mut self.state.formatting);
+                self.state = startup;
+                if scene == Scene::StartupOpen {
+                    self.state.show_open();
+                }
+            }
+            Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
             Scene::Backstage => self.state.show_open(),
             Scene::Options => self.state.backstage = super::backstage::Backstage::Options,
             Scene::About => self.state.backstage = super::backstage::Backstage::About,
