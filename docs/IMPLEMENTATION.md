@@ -1,5 +1,21 @@
 # Implementation status
 
+## Localized Design labels and complete File rail wording — 5 November 2026
+
+Recognized host-supplied type and Field Size presentation labels now localize
+in all eight languages. Reader-carrier descriptions remain separate from
+declared Access presentation names; no native type/flag inference was added.
+Unknown labels, stored field names, property text and diagnostic identifiers
+remain literal. The actual German UI regression retains raw Int32 diagnostics.
+
+The File rail now measures complete translated labels and includes panel
+separator/scroll gutters, avoiding abbreviated German and Japanese commands.
+All 227 UI tests passed across the batch and focused follow-ups, including
+1,296 scene/language/theme combinations. Strict selected UI/desktop Clippy,
+formatting and dependency/documentation checks passed. Twenty-four localized
+light/dark and compact offscreen frames were reviewed; native window checks
+remain suspended. See the [presentation record](ui/PRESENTATION_PREVIEW.md#schema-type-labels-and-translated-file-rail--5-november-2026).
+
 ## Startup, footer capability and Ribbon coverage — 5 November 2026
 
 Startup is now a distinct Recent/templates surface with no document Back action.
