@@ -35,7 +35,7 @@ pub(crate) fn show_options(
         .num_columns(2)
         .spacing(egui::vec2(18.0, 8.0))
         .show(ui, |ui| {
-            ui.label(localizer.text("settings-date-format"));
+            let date_label_id = ui.label(localizer.text("settings-date-format")).id;
             egui::ComboBox::from_id_salt("display_date_format")
                 .width(FORMAT_CHOICE_WIDTH)
                 .truncate()
@@ -46,10 +46,12 @@ pub(crate) fn show_options(
                         ui.selectable_value(&mut options.date, choice, &label)
                             .on_hover_text(label);
                     }
-                });
+                })
+                .response
+                .labelled_by(date_label_id);
             ui.end_row();
 
-            ui.label(localizer.text("settings-time-format"));
+            let time_label_id = ui.label(localizer.text("settings-time-format")).id;
             egui::ComboBox::from_id_salt("display_time_format")
                 .width(FORMAT_CHOICE_WIDTH)
                 .truncate()
@@ -60,10 +62,12 @@ pub(crate) fn show_options(
                         ui.selectable_value(&mut options.time, choice, &label)
                             .on_hover_text(label);
                     }
-                });
+                })
+                .response
+                .labelled_by(time_label_id);
             ui.end_row();
 
-            ui.label(localizer.text("settings-currency-format"));
+            let currency_label_id = ui.label(localizer.text("settings-currency-format")).id;
             egui::ComboBox::from_id_salt("display_currency_format")
                 .selected_text(currency_label(
                     options.currency,
@@ -78,7 +82,9 @@ pub(crate) fn show_options(
                             currency_label(choice, regional_currency, localizer),
                         );
                     }
-                });
+                })
+                .response
+                .labelled_by(currency_label_id);
             ui.end_row();
         });
 
