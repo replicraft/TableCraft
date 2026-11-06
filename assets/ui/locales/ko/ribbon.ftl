@@ -176,3 +176,7 @@ ribbon-delete-columns = 열 삭제
 ribbon-select-all = 모두 선택
 
 ribbon-font-size = 글꼴 크기
+
+ribbon-collapse = 리본 축소 (Ctrl+F1)
+ribbon-expand = 리본 확장 (Ctrl+F1)
+ribbon-pin = 리본 고정

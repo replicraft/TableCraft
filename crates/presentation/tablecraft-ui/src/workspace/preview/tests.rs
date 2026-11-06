@@ -217,3 +217,45 @@ fn objects_scene_retains_independent_tabs_without_running_saved_queries() {
     assert_eq!(preview.state.data.as_ref().unwrap().table, "Customers");
     assert_eq!(preview.state.object_tabs().len(), 4);
 }
+
+#[test]
+fn ribbon_display_scenes_keep_real_layout_states_and_the_same_loaded_records() {
+    use egui::accesskit::Role;
+    use egui_kittest::{Harness, kittest::Queryable};
+
+    for scene in [Scene::RibbonCollapsed, Scene::RibbonTemporary] {
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(1280.0, 820.0))
+            .build_ui_state(
+                |ui, preview: &mut Preview| preview.show(ui),
+                Preview::new(scene),
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(3);
+        let rows = harness.state().state().data.as_ref().unwrap().rows.as_ptr();
+        let object = harness.state().state().active_object();
+        assert!(harness.state().state().ribbon_collapsed());
+        assert_eq!(
+            harness.state().state().ribbon_temporarily_open(),
+            scene == Scene::RibbonTemporary
+        );
+        harness.get_by_role_and_label(Role::Tab, "Home");
+        assert_eq!(
+            harness
+                .query_by_role_and_label(Role::Button, "Copy")
+                .is_some(),
+            scene == Scene::RibbonTemporary
+        );
+
+        harness.state_mut().state_mut().set_ribbon_collapsed(false);
+        harness.run_steps(3);
+        assert!(!harness.state().state().ribbon_collapsed());
+        assert!(!harness.state().state().ribbon_temporarily_open());
+        harness.get_by_role_and_label(Role::Button, "Copy");
+        assert_eq!(harness.state().state().active_object(), object);
+        assert_eq!(
+            harness.state().state().data.as_ref().unwrap().rows.as_ptr(),
+            rows
+        );
+    }
+}

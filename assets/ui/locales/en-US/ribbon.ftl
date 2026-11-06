@@ -176,3 +176,7 @@ ribbon-delete-columns = Delete Columns
 ribbon-select-all = Select All
 
 ribbon-font-size = Font Size
+
+ribbon-collapse = Collapse the ribbon (Ctrl+F1)
+ribbon-expand = Expand the ribbon (Ctrl+F1)
+ribbon-pin = Pin the ribbon

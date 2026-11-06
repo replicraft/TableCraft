@@ -176,3 +176,7 @@ ribbon-delete-columns = Excluir Colunas
 ribbon-select-all = Selecionar Tudo
 
 ribbon-font-size = Tamanho da Fonte
+
+ribbon-collapse = Recolher a faixa de opções (Ctrl+F1)
+ribbon-expand = Expandir a faixa de opções (Ctrl+F1)
+ribbon-pin = Fixar a faixa de opções
