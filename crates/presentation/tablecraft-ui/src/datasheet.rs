@@ -1,6 +1,7 @@
 mod add_column;
 mod clipboard;
 mod collection_columns;
+mod empty_grid;
 mod layout;
 mod preview;
 mod selection;
@@ -200,6 +201,9 @@ fn render_rows(
                     (ui.available_height() - HEADER_ROW_HEIGHT * scale - totals_height)
                         .max(DATA_ROW_HEIGHT * scale);
                 let mut column_rects = Vec::new();
+                // Reserve background paint before cells and the empty-state
+                // message; the rules must never cover actual record contents.
+                let empty_grid = (!collection_layout).then(|| ui.painter().add(egui::Shape::Noop));
                 let mut table = TableBuilder::new(ui).max_scroll_height(body_height);
                 if page_layout
                     .as_ref()
@@ -396,6 +400,20 @@ fn render_rows(
                             }
                         });
                     });
+                if let Some(background) = empty_grid {
+                    let content_bottom =
+                        body.inner_rect.top() + body.content_size.y - body.state.offset.y;
+                    ui.painter().set(
+                        background,
+                        empty_grid::shape(
+                            &column_rects,
+                            body.inner_rect,
+                            content_bottom,
+                            DATA_ROW_HEIGHT * scale,
+                            crate::theme::palette(ui.ctx()).grid_line,
+                        ),
+                    );
+                }
                 if let Some(row) = &view.totals {
                     let header_bottom = column_rects
                         .first()

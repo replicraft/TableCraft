@@ -6,6 +6,12 @@ selection and widget identities remain page-local. A different object, source
 or column schema gets its own geometry; collection layouts retain their separate
 width policy. This is session presentation state, not saved database formatting.
 
+The unused datasheet viewport continues subtle grid rules below real records and
+the available insertion row, following measured widths, zoom and scroll position.
+These lines are background decoration: they add no records, selection targets or
+clipboard cells. Empty-state messages and totals remain above the background;
+collection layouts retain their separate presentation.
+
 Native table pages can carry checked sparse row membership independently of
 their displayed offset. Editing, deletion and collection targets resolve the
 original snapshot ordinal through that membership; query results cannot acquire
