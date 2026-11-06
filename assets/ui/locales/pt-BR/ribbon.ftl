@@ -180,3 +180,6 @@ ribbon-font-size = Tamanho da Fonte
 ribbon-collapse = Recolher a faixa de opções (Ctrl+F1)
 ribbon-expand = Expandir a faixa de opções (Ctrl+F1)
 ribbon-pin = Fixar a faixa de opções
+
+ribbon-paste-special = Colar especial…
+ribbon-paste-append = Acrescentar por colagem

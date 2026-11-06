@@ -13,6 +13,8 @@ pub(crate) struct Selection {
     pane_focus_witness: Option<PaneFocusWitness>,
     scroll_pending: Option<usize>,
     reveal_pending: Option<egui::Rect>,
+    // Current-frame observation only; this identifier is never restored as a target.
+    rendered_cell: Option<(u64, Id)>,
 }
 
 /// Comparison only; this identifier is never requested as a future target.
@@ -71,6 +73,18 @@ impl Selection {
                 Some(PaneFocusWitness(context.memory(|memory| memory.focused())));
             self.scroll_pending = Some(row);
         }
+    }
+
+    /// A deferred UI command may proceed only after its selected cell has been
+    /// rendered and focused through the current publication's actual response.
+    pub(crate) fn focused_cell_ready(&self, context: &egui::Context) -> bool {
+        let frame = context.cumulative_frame_nr();
+        let focused = context.memory(|memory| memory.focused());
+        !self.row_selected
+            && !self.focus_pending
+            && self
+                .rendered_cell
+                .is_some_and(|(rendered, id)| rendered == frame && focused == Some(id))
     }
 
     pub(crate) fn clear(&mut self) {
@@ -349,6 +363,9 @@ impl Selection {
             self.focus = Some(response.id);
             self.focus_pending = false;
             self.pane_focus_witness = None;
+        }
+        if self.selected(row, column) {
+            self.rendered_cell = Some((ui.ctx().cumulative_frame_nr(), response.id));
         }
     }
 }

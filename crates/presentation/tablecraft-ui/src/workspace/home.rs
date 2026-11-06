@@ -1,5 +1,5 @@
 //! Working commands and visible unavailable controls share the native Ribbon layout.
-mod menus;
+pub(super) mod menus;
 mod view;
 
 use super::{Action, DocumentView, State, ribbon};
@@ -25,18 +25,7 @@ impl State {
             }
             ribbon::group_with_launcher(ui, &t.text("ribbon-clipboard"), true, |ui| {
                 ui.horizontal(|ui| {
-                    if command(
-                        ui,
-                        Icon::Paste,
-                        &t.text("ribbon-paste"),
-                        self.current_paste_target().is_some(),
-                        CommandSize::Large,
-                    )
-                    .on_hover_text(t.text("editing-paste-help"))
-                    .clicked()
-                    {
-                        self.request_paste(ui.ctx());
-                    }
+                    self.paste_menu(ui);
                     ui.vertical(|ui| {
                         ribbon::unavailable_command(
                             ui,
@@ -73,7 +62,7 @@ impl State {
             });
             self.read_commands(ui, actions);
             self.find_commands(ui, actions);
-            ribbon::home(ui, &t);
+            ribbon::home(ui, &t, self.font_families.families());
             group(ui, &t.text("ribbon-zoom"), |ui| self.zoom_menu(ui));
         });
     }

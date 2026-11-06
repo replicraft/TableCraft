@@ -36,7 +36,7 @@ impl State {
     }
 
     pub(in crate::workspace) fn current_paste_target(&self) -> Option<EditTarget> {
-        if self.paste_request.is_some() {
+        if self.paste_request.is_some() || self.ribbon_paste.is_some() {
             return None;
         }
         let target = self.current_paste_target_unchecked()?;

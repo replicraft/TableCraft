@@ -180,3 +180,6 @@ ribbon-font-size = 글꼴 크기
 ribbon-collapse = 리본 축소 (Ctrl+F1)
 ribbon-expand = 리본 확장 (Ctrl+F1)
 ribbon-pin = 리본 고정
+
+ribbon-paste-special = 선택하여 붙여넣기…
+ribbon-paste-append = 추가하여 붙여넣기

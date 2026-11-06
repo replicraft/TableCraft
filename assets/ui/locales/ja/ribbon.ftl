@@ -180,3 +180,6 @@ ribbon-font-size = フォントサイズ
 ribbon-collapse = リボンを折りたたむ (Ctrl+F1)
 ribbon-expand = リボンを展開する (Ctrl+F1)
 ribbon-pin = リボンを固定する
+
+ribbon-paste-special = 形式を選択して貼り付け…
+ribbon-paste-append = 追加貼り付け

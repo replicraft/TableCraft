@@ -180,3 +180,6 @@ ribbon-font-size = Font Size
 ribbon-collapse = Collapse the ribbon (Ctrl+F1)
 ribbon-expand = Expand the ribbon (Ctrl+F1)
 ribbon-pin = Pin the ribbon
+
+ribbon-paste-special = Paste Special…
+ribbon-paste-append = Paste Append

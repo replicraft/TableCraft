@@ -726,41 +726,75 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
 
 #[test]
 fn home_paste_requests_clipboard_then_emits_literal_review_intent() {
-    let context = egui::Context::default();
-    let mut state = State::default();
-    state.dismiss_backstage();
-    state.database = Some(native_database());
-    state.set_table_data(table());
-    let (actions, output) = click(&mut state, &context, "Paste");
-    assert!(actions.is_empty());
-    let requested = output.viewport_output.values().any(|viewport| {
-        viewport
-            .commands
-            .iter()
-            .any(|command| matches!(command, egui::ViewportCommand::RequestPaste))
-    });
-    assert!(requested, "Home requests real clipboard text");
-
-    for _ in 0..2 {
-        let (actions, _) = render(&mut state, &context, Vec::new());
+    for temporary in [false, true] {
+        let context = egui::Context::default();
+        let mut state = State::default();
+        state.dismiss_backstage();
+        state.database = Some(native_database());
+        state.set_table_data(table());
+        state.set_ribbon_collapsed(temporary);
+        if temporary {
+            state.show_ribbon_temporarily();
+        }
+        let (actions, closed) = click(&mut state, &context, "Paste");
         assert!(actions.is_empty());
+        assert!(state.paste_request.is_none());
+        assert!(closed.viewport_output.values().all(|viewport| {
+            !viewport
+                .commands
+                .iter()
+                .any(|command| matches!(command, egui::ViewportCommand::RequestPaste))
+        }));
+        let (actions, output) = click(&mut state, &context, "Paste text");
+        assert!(actions.is_empty());
+        let requested = output.viewport_output.values().any(|viewport| {
+            viewport
+                .commands
+                .iter()
+                .any(|command| matches!(command, egui::ViewportCommand::RequestPaste))
+        });
         assert!(
-            state.paste_request.is_some(),
-            "clipboard reply may be delayed"
+            requested,
+            "temporary={temporary}, error={:?}, staged={}, focus={:?}, selected={:?}, ready={}",
+            state.error,
+            state.ribbon_paste.is_some(),
+            context.memory(|memory| memory.focused()),
+            state.table_selection.position(),
+            state.table_selection.focused_cell_ready(&context)
         );
-    }
 
-    let (actions, _) = render(
-        &mut state,
-        &context,
-        vec![Event::Paste("NULL\nnext\tfield".into())],
-    );
-    assert!(matches!(
-        actions.as_slice(),
-        [Action::PasteCell { target, text }]
-            if target.column == "ID" && text == "NULL\nnext\tfield"
-    ));
-    assert!(!state.edit_dialog_open(), "host must request a fresh draft");
+        for _ in 0..2 {
+            let (actions, _) = render(&mut state, &context, Vec::new());
+            assert!(actions.is_empty());
+            assert!(
+                state.paste_request.is_some(),
+                "clipboard reply may be delayed"
+            );
+            assert!(
+                !state.ribbon_temporarily_open(),
+                "the temporary strip may close after focus reaches the actual target cell"
+            );
+        }
+
+        let (actions, _) = render(
+            &mut state,
+            &context,
+            vec![Event::Paste("NULL\nnext\tfield".into())],
+        );
+        assert!(
+            matches!(
+                actions.as_slice(),
+                [Action::PasteCell { target, text }]
+                    if target.column == "ID" && text == "NULL\nnext\tfield"
+            ),
+            "temporary={temporary}, actions={}, error={:?}, focus={:?}",
+            actions.len(),
+            state.error,
+            context.memory(|memory| memory.focused())
+        );
+        assert!(!state.edit_dialog_open(), "host must request a fresh draft");
+        assert!(!state.ribbon_temporarily_open());
+    }
 }
 
 #[test]
@@ -970,7 +1004,8 @@ fn normal_home_keeps_all_native_groups_and_unavailable_controls_without_granting
         node.focus();
         node.click_accesskit();
     }
-    for key in ["ribbon-font", "ribbon-font-size"] {
+    {
+        let key = "ribbon-font-size";
         let label = harness.state().0.localizer.text(key);
         let node = harness.get_by_role_and_label(Role::ComboBox, &label);
         assert!(node.accesskit_node().is_disabled());
@@ -1043,6 +1078,10 @@ fn complete_english_home_fits_the_default_window_without_ribbon_overflow() {
             zoom.rect().right() <= 1276.0,
             "Zoom overflows at {scale}: {:?}",
             zoom.rect()
+        );
+        assert!(
+            zoom.rect().bottom() < 155.0,
+            "Ribbon must remain compact vertically"
         );
         assert!(
             zoom.rect().width() <= 44.0,
