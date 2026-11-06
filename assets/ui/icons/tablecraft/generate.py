@@ -177,6 +177,158 @@ icons['parameters'] = (
     '<circle cx="20" cy="26" r="2.3" fill="{palegold}" stroke="{gold}"/>'
 )
 
+# File navigation uses its own original silhouettes instead of unrelated tools.
+icons['home'] = (
+    '<path d="m3 14 13-11 13 11" fill="{pale}"/>'
+    '<path d="M7 12v17h18V12" fill="{paper}"/>'
+    '<path d="M13 29V18h6v11" fill="{blue}"/>'
+)
+icons['new_document'] = paper + (
+    '<path d="M23 17v12M17 23h12" stroke="{green}" stroke-width="3"/>'
+)
+icons['save_as'] = (
+    '<path d="M4 3h20l5 5v21H4z" fill="{blue}"/>'
+    '<path d="M10 3v9h12V3M9 29V18h12v11" fill="{paper}"/>'
+    '<path d="m18 24 10-10 3 3-10 10-5 2z" fill="{palegold}"/>'
+)
+icons['print'] = (
+    '<path d="M9 11V3h14v8" fill="{paper}"/>'
+    '<rect x="3" y="10" width="26" height="15" rx="2" fill="{pale}"/>'
+    '<path d="M9 20h14v9H9z" fill="{paper}"/>'
+    '<path d="M12 24h8M12 27h8" stroke="{blue}"/>'
+    '<circle cx="25" cy="14" r="1" fill="{green}"/>'
+)
+icons['close_document'] = paper + (
+    '<path d="m18 19 11 10m0-10L18 29" stroke="{red}" stroke-width="3"/>'
+)
+icons['account'] = (
+    '<circle cx="16" cy="10" r="6" fill="{paper}"/>'
+    '<path d="M5 29v-3a11 11 0 0 1 22 0v3z" fill="{pale}"/>'
+)
+
+# Original command compositions: query kinds share a table motif but retain
+# separate semantic silhouettes. No product marks or imported paths are used.
+icons.update({
+    'text_highlight': (
+        '<path d="m7 19 13-14 7 7-14 13z" fill="{palegold}"/>'
+        '<path d="m7 19-2 7 8-1M18 7l7 7" fill="none"/>'
+        '<path d="M3 29h26" stroke="{gold}" stroke-width="4"/>'
+    ),
+    'paragraph': (
+        '<path d="M18 4H11a7 7 0 0 0 0 14h4V4h10M20 4v25M15 4v25" '
+        'fill="none" stroke="{ink}" stroke-width="3"/>'
+    ),
+    'dialog_launcher': (
+        '<path d="M4 18V4h24v14" fill="{paper}"/>'
+        '<path d="m8 10 18 18M17 28h9v-9" fill="none" stroke="{blue}" stroke-width="3"/>'
+    ),
+    'application_parts': (
+        '<path d="M3 5h10V3a3 3 0 0 1 6 0v2h10v10h-3a3 3 0 0 0 0 6h3v8H18v-3a3 3 0 0 0-6 0v3H3V18h3a3 3 0 0 0 0-6H3z" '
+        'fill="{pale}"/>'
+    ),
+    'sharepoint_list': (
+        '<rect x="3" y="3" width="20" height="25" rx="2" fill="{paper}"/>'
+        '<path d="M7 9h11M7 15h8M7 21h8" stroke="{blue}"/>'
+        '<path d="M20 14h8v13h-8z" fill="{pale}"/>'
+        '<circle cx="24" cy="12" r="3" fill="{green}"/>'
+    ),
+    'navigation_form': (
+        '<rect x="3" y="4" width="26" height="24" rx="2" fill="{paper}"/>'
+        '<path d="M3 10h26M11 10v18" fill="none" stroke="{blue}"/>'
+        '<path d="M4 12h6v5H4zM4 20h6v5H4z" fill="{palegold}"/>'
+        '<path d="M15 15h10M15 20h8M15 25h10" stroke="{blue}"/>'
+    ),
+    'more_forms': (
+        '<rect x="3" y="3" width="21" height="21" fill="{pale}"/>'
+        '<rect x="9" y="9" width="20" height="20" fill="{paper}"/>'
+        '<path d="M9 15h20M13 21h1m5 0h1m5 0h1" stroke="{blue}" stroke-width="3"/>'
+    ),
+    'query_select': grid + (
+        '<rect x="11" y="12" width="9" height="10" fill="{palegold}" stroke="{gold}"/>'
+    ),
+    'query_make_table': (
+        '<path d="M3 4h15v13H3z" fill="{paper}"/>'
+        '<path d="M3 9h15M8 9v8M13 9v8" stroke="{blue}"/>'
+        '<path d="M15 17h15v13H15z" fill="{pale}"/>'
+        '<path d="M15 22h15M20 22v8M25 22v8M4 23h7m-3-4 4 4-4 4" fill="none"/>'
+    ),
+    'query_append': grid + (
+        '<path d="M15 24h15" stroke="{paper}" stroke-width="10"/>'
+        '<path d="M14 24h10m-4-4 4 4-4 4M28 19v10" fill="none" stroke="{green}" stroke-width="3"/>'
+    ),
+    'query_update': grid + (
+        '<path d="m15 25 3-6L27 9l4 4-10 11-6 3z" fill="{gold}"/>'
+        '<path d="m24 12 4 4" fill="none"/>'
+    ),
+    'query_crosstab': grid + (
+        '<path d="M12 13h8v9h-8z" fill="{palegold}" stroke="{gold}"/>'
+        '<path d="M5 2v6m-3-3 3-3 3 3M24 29h6m-3-3 3 3-3 3" fill="none" stroke="{green}"/>'
+    ),
+    'query_delete': grid + (
+        '<path d="M13 16h17v14H13z" fill="{paper}" stroke="none"/>'
+        '<path d="m17 19 10 8m0-8-10 8" stroke="{red}" stroke-width="3"/>'
+    ),
+    'query_union': (
+        '<path d="M3 3h10v10H3zM19 3h10v10H19z" fill="{pale}"/>'
+        '<path d="M3 7h10M19 7h10M8 14v5h16v-5M16 19v5" fill="none"/>'
+        '<path d="M8 24h16v6H8z" fill="{blue}"/>'
+    ),
+    'query_pass_through': (
+        '<path d="M2 7h12v18H2z" fill="{paper}"/>'
+        '<path d="M2 12h12M6 12v13M10 12v13" stroke="{blue}"/>'
+        '<path d="M23 8v16c0 4 8 4 8 0V8" fill="{pale}"/>'
+        '<ellipse cx="27" cy="8" rx="4" ry="3" fill="{pale}"/>'
+        '<path d="M11 18h13m-4-4 4 4-4 4" fill="none" stroke="{green}" stroke-width="3"/>'
+    ),
+    'query_definition': paper + (
+        '<path d="M13 12h-2v5l-2 2 2 2v5h2M20 12h2v5l2 2-2 2v5h-2" '
+        'fill="none" stroke="{blue}"/>'
+        '<path d="M16 13v12" stroke="{gold}"/>'
+    ),
+    'query_return': (
+        '<rect x="3" y="5" width="26" height="11" rx="1" fill="{paper}"/>'
+        '<path d="M7 9h9M7 12h6m9-3 3 3 3-3" fill="none"/>'
+        '<path d="M26 20v8H7m4-4-4 4 4 4" fill="none" stroke="{blue}"/>'
+    ),
+    'table_names': (
+        '<path d="M3 5h20v10H3zM9 18h20v10H9z" fill="{paper}"/>'
+        '<path d="M3 5h20M9 18h20" stroke="{blue}" stroke-width="4"/>'
+        '<path d="M6 10h12M12 23h12" stroke="{ink}"/>'
+    ),
+    'pdf_xps': paper + (
+        '<path d="M11 13h10M11 18h7" stroke="{red}"/>'
+        '<path d="M17 24h13m-4-4 4 4-4 4" fill="none" stroke="{red}" stroke-width="3"/>'
+    ),
+    'email': (
+        '<path d="M2 6h28v22H2z" fill="{paper}"/>'
+        '<path d="m2 6 14 12L30 6M2 28l10-10M30 28 20 18" fill="none" stroke="{blue}"/>'
+    ),
+    'word_merge': (
+        '<path d="M3 3h15v20H3z" fill="{paper}"/>'
+        '<path d="M7 8h7M7 12h7M7 16h5" stroke="{blue}"/>'
+        '<path d="M17 13h13v17H17z" fill="{pale}"/>'
+        '<path d="M20 21h7M20 25h7M11 25h3v-6m-3 3 3-3 3 3" fill="none"/>'
+    ),
+    'odbc_database': (
+        '<path d="M3 7v17c0 5 18 5 18 0V7" fill="{pale}"/>'
+        '<ellipse cx="12" cy="7" rx="9" ry="4" fill="{paper}"/>'
+        '<path d="M3 15c0 5 18 5 18 0" fill="none"/>'
+        '<path d="M21 18h7v8h-7zM24 14v4M28 14v4M24 26v5" fill="{gold}"/>'
+    ),
+})
+
+# Column operations use a vertical highlighted band, distinct from row tools.
+icons['insert_columns'] = grid + (
+    '<path d="M12 12h8v14h-8z" fill="{palegold}" stroke="{gold}"/>'
+    '<circle cx="25" cy="24" r="7" fill="{paper}" stroke="none"/>'
+    '<path d="M25 19v10M20 24h10" stroke="{green}" stroke-width="3"/>'
+)
+icons['delete_columns'] = grid + (
+    '<path d="M12 12h8v14h-8z" fill="{palegold}" stroke="{gold}"/>'
+    '<circle cx="25" cy="24" r="7" fill="{paper}" stroke="none"/>'
+    '<path d="m21 20 8 8m0-8-8 8" stroke="{red}" stroke-width="3"/>'
+)
+
 palettes = {
     'light': dict(ink='#445367', paper='#fbfdff', pale='#d8e9f8', blue='#4788bd', green='#3e9365', gold='#d8a039', palegold='#f5dfa0', red='#bf5962', app_red='#b12b3d'),
     'dark': dict(ink='#e6edf5', paper='#34485b', pale='#4f7799', blue='#88c9ff', green='#81e3a7', gold='#ffd16e', palegold='#92723a', red='#ff9caa', app_red='#dc6572'),
