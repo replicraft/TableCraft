@@ -139,6 +139,81 @@ fn oversized_parameter_events_preserve_the_literal_and_require_a_real_correction
 }
 
 #[test]
+fn pointer_focus_and_oversized_paste_in_one_frame_cannot_bypass_parameter_guard() {
+    let mut harness = harness();
+    harness.run();
+    let original = harness.state().0.saved_query.inputs.clone();
+    let name = original[0].name.clone();
+    harness
+        .get_by_role_and_label(Role::Button, "Run saved query")
+        .click_accesskit();
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::TextInput, &name)
+        .focus();
+    harness.run();
+    harness.event(egui::Event::Text("retained literal".into()));
+    harness.run();
+    let previous = harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0]
+        .text
+        .clone();
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .focus();
+    harness.run();
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Cancel")
+            .is_focused()
+    );
+
+    let position = harness
+        .get_by_role_and_label(Role::TextInput, &name)
+        .rect()
+        .center();
+    harness.event(egui::Event::PointerMoved(position));
+    for pressed in [true, false] {
+        harness.event(egui::Event::PointerButton {
+            pos: position,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: Modifiers::NONE,
+        });
+    }
+    harness.event(egui::Event::Paste("z".repeat(1_048_577)));
+    harness.run();
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, &name)
+            .is_focused()
+    );
+    assert_eq!(
+        harness.state().0.saved_query.prompt.as_ref().unwrap().draft[0].text,
+        previous
+    );
+    assert!(
+        harness
+            .state()
+            .0
+            .saved_query
+            .prompt
+            .as_ref()
+            .unwrap()
+            .input_rejected
+    );
+    let label = harness.state().0.localizer.text("saved-query-input-limit");
+    assert!(harness.query_by_label(&label).is_some());
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert_eq!(harness.state().0.saved_query.inputs, original);
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
 fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_editor_limits() {
     let mut harness = harness();
     harness.run();
