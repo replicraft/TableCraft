@@ -100,3 +100,73 @@ fn query_design_unavailable_commands_are_visible_in_both_hosts_and_cannot_dispat
     output.textures_delta.clear();
     assert_eq!(state.query_design_draft(), Some(&original));
 }
+
+#[test]
+fn normal_return_selector_exposes_localized_disabled_semantics_and_rejects_forced_activation() {
+    let mut preview = Preview::new(Scene::QueryDesign);
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = false;
+    state.localizer = crate::Localizer::new(crate::Locale::De).unwrap();
+    let label = state.localizer.text("ribbon-return");
+    let value = state.localizer.text("ribbon-all");
+    let description = state.localizer.text("ribbon-unavailable");
+    assert_eq!(value, "Alle");
+    let original_sql = state.sql.clone();
+    let original_draft = state.query_design_draft().unwrap().clone();
+    let context = egui::Context::default();
+    context.enable_accesskit();
+    crate::configure(&context);
+    let mut render = |events| {
+        let mut actions = Vec::new();
+        let mut output = context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(
+                    egui::Pos2::ZERO,
+                    egui::vec2(1400.0, 800.0),
+                )),
+                events,
+                ..Default::default()
+            },
+            |ui| actions.extend(state.show(ui)),
+        );
+        output.textures_delta.clear();
+        (actions, output)
+    };
+    render(Vec::new());
+    let (_, output) = render(Vec::new());
+    let tree = output.platform_output.accesskit_update.unwrap();
+    let (id, selector) = tree
+        .nodes
+        .iter()
+        .find(|(_, node)| node.role() == Role::ComboBox && node.label() == Some(label.as_str()))
+        .expect("actual localized Return selector in the normal Ribbon");
+    assert_eq!(selector.value(), Some(value.as_str()));
+    assert_eq!(selector.description(), Some(description.as_str()));
+    assert!(selector.is_disabled());
+    assert!(!selector.supports_action(Action::Click));
+    assert!(!selector.supports_action(Action::Focus));
+
+    let events = [Action::Focus, Action::Click]
+        .into_iter()
+        .map(|action| {
+            Event::AccessKitActionRequest(ActionRequest {
+                action,
+                target_tree: TreeId::ROOT,
+                target_node: *id,
+                data: None,
+            })
+        })
+        .collect();
+    let (actions, _) = render(events);
+    assert!(actions.is_empty());
+    assert!(!egui::Popup::is_any_open(&context));
+    assert_ne!(
+        context
+            .memory(|memory| memory.focused())
+            .map(|id| id.accesskit_id()),
+        Some(*id)
+    );
+    assert_eq!(state.sql, original_sql);
+    assert_eq!(state.query_design_draft(), Some(&original_draft));
+    assert!(state.query_data.is_none());
+}
