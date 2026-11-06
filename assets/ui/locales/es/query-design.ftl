@@ -39,3 +39,9 @@ qbe-queries = Consultas
 qbe-both = Ambas
 qbe-query-sources-unavailable = Este diseñador de consultas aún no admite consultas como origen.
 qbe-resize-panes = Ajustar paneles de origen y cuadrícula de consulta
+
+qbe-builder = Generador
+qbe-show-hide-group = Mostrar u ocultar
+qbe-totals = Totales
+qbe-parameters = Parámetros
+qbe-property-sheet = Hoja de propiedades

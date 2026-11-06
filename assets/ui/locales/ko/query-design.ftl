@@ -39,3 +39,9 @@ qbe-queries = 쿼리
 qbe-both = 둘 다
 qbe-query-sources-unavailable = 이 쿼리 디자이너에서는 쿼리 원본을 아직 지원하지 않습니다.
 qbe-resize-panes = 원본 창과 쿼리 그리드 크기 조정
+
+qbe-builder = 작성기
+qbe-show-hide-group = 표시/숨기기
+qbe-totals = 요약
+qbe-parameters = 매개 변수
+qbe-property-sheet = 속성 시트

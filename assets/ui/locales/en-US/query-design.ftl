@@ -39,3 +39,9 @@ qbe-queries = Queries
 qbe-both = Both
 qbe-query-sources-unavailable = Query sources are not supported in this query designer yet.
 qbe-resize-panes = Resize source panes and query grid
+
+qbe-builder = Builder
+qbe-show-hide-group = Show/Hide
+qbe-totals = Totals
+qbe-parameters = Parameters
+qbe-property-sheet = Property Sheet
