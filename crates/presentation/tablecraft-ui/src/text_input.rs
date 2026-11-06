@@ -7,6 +7,18 @@ use egui::{Event, Id, ImeEvent, Key, Ui};
 pub(crate) const MAX_EDITOR_SCALARS: usize = 64 * 1024;
 
 pub(crate) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str, max_bytes: usize) -> bool {
+    reject_events_with_limits(ui, id, text, max_bytes, MAX_EDITOR_SCALARS)
+}
+
+/// Explicit policy for editors whose existing admission differs from the
+/// standard small editor. Byte and scalar ceilings remain independent units.
+pub(crate) fn reject_events_with_limits(
+    ui: &mut Ui,
+    id: Id,
+    text: &str,
+    max_bytes: usize,
+    max_scalars: usize,
+) -> bool {
     if !ui.memory(|memory| memory.has_focus(id)) {
         return false;
     }
@@ -96,7 +108,7 @@ pub(crate) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str, max_bytes
             let next_bytes = bytes
                 .saturating_sub(selected_bytes)
                 .saturating_add(inserted.len());
-            if next_chars > MAX_EDITOR_SCALARS || next_bytes > max_bytes {
+            if next_chars > max_scalars || next_bytes > max_bytes {
                 rejected = true;
                 return false;
             }

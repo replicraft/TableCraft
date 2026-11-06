@@ -88,22 +88,24 @@ pub(super) fn parameters(
     ui: &mut egui::Ui,
     parameters: &[ParameterSpec],
     inputs: &mut [ParameterInput],
-    idle: bool,
     max_height: f32,
     focus_input: bool,
-) -> bool {
+    max_text_bytes: usize,
+) -> ParameterResponse {
     ui.scope(|ui| {
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
-        let mut submitted = false;
+        let mut result = ParameterResponse::default();
         egui::ScrollArea::vertical()
             .id_salt("saved_query_parameters")
             .scroll_bar_visibility(egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded)
             .max_height(max_height)
             .show(ui, |ui| {
                 for (index, (spec, input)) in parameters.iter().zip(inputs).enumerate() {
+                    let previous_kind = input.kind.clone();
+                    let previous_null = input.is_null;
                     ui.push_id(index, |ui| {
                         let label = ui.label(&spec.name);
-                        ui.add_enabled_ui(idle, |ui| {
+                        ui.scope(|ui| {
                             if spec.kind == "value" {
                                 let kind = egui::ComboBox::from_id_salt("parameter_kind")
                                     .selected_text(
@@ -145,6 +147,16 @@ pub(super) fn parameters(
                                 }
                             }
                             let value_id = ui.make_persistent_id("parameter_value");
+                            let text_limit = max_text_bytes
+                                .saturating_add(previous_kind.len())
+                                .saturating_sub(input.kind.len());
+                            result.rejected |= crate::text_input::reject_events_with_limits(
+                                ui,
+                                value_id,
+                                &input.text,
+                                text_limit,
+                                super::MAX_INPUT_BYTES,
+                            );
                             let owns_default = ui.memory(|memory| memory.has_focus(value_id))
                                 && !egui::Popup::is_any_open(ui.ctx());
                             let text = ui
@@ -152,10 +164,12 @@ pub(super) fn parameters(
                                     !input.is_null,
                                     egui::TextEdit::singleline(&mut input.text)
                                         .id(value_id)
+                                        .char_limit(super::MAX_INPUT_BYTES)
                                         .desired_width(f32::INFINITY),
                                 )
                                 .labelled_by(label.id);
                             input_border(ui, &text);
+                            result.changed |= text.changed();
                             if focus_input && !input.is_null && !input.kind.is_empty() {
                                 text.request_focus();
                             }
@@ -170,7 +184,7 @@ pub(super) fn parameters(
                             if text.gained_focus() {
                                 text.scroll_to_me(None);
                             }
-                            submitted |= owns_default
+                            result.submitted |= owns_default
                                 && text.lost_focus()
                                 && ui.input(|input| {
                                     input.modifiers == egui::Modifiers::NONE
@@ -203,14 +217,23 @@ pub(super) fn parameters(
                             }
 
                             ui.small(hint(ui, &input.kind));
+                            result.changed |=
+                                previous_kind != input.kind || previous_null != input.is_null;
                         });
                         ui.add_space(4.0);
                     });
                 }
             });
-        submitted
+        result
     })
     .inner
+}
+
+#[derive(Default)]
+pub(super) struct ParameterResponse {
+    pub submitted: bool,
+    pub rejected: bool,
+    pub changed: bool,
 }
 
 fn type_label(ui: &egui::Ui, kind: &str) -> String {

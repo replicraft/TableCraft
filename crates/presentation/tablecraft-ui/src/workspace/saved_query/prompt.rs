@@ -17,6 +17,7 @@ pub(super) struct Session {
     publication: u64,
     index: usize,
     focus_input: bool,
+    input_rejected: bool,
 }
 
 impl Session {
@@ -72,6 +73,7 @@ impl State {
             publication: self.focus_publication,
             index: 0,
             focus_input: true,
+            input_rejected: false,
         });
         None
     }
@@ -100,20 +102,29 @@ impl State {
             ui.set_width(PROMPT_WIDTH);
             ui.label(egui::RichText::new(tr(ui, "saved-query-prompt-title")).strong());
             ui.separator();
-            confirm |= ui
+            let used_bytes = super::input_bytes(&session.draft).unwrap_or(usize::MAX);
+            let other_bytes = used_bytes.saturating_sub(session.draft[session.index].text.len());
+            let text_limit = super::MAX_INPUT_BYTES.saturating_sub(other_bytes);
+            let response = ui
                 .push_id(session.index, |ui| {
                     editor::parameters(
                         ui,
                         std::slice::from_ref(&session.declarations[session.index]),
                         &mut session.draft[session.index..=session.index],
-                        true,
                         MAX_PROMPT_BODY_HEIGHT,
                         session.focus_input,
+                        text_limit,
                     )
                 })
                 .inner;
+            confirm |= response.submitted;
+            if response.rejected {
+                session.input_rejected = true;
+            } else if response.changed {
+                session.input_rejected = false;
+            }
             session.focus_input = false;
-            if !super::inputs_within_limits(&session.draft) {
+            if session.input_rejected || !super::inputs_within_limits(&session.draft) {
                 ui.small(tr(ui, "saved-query-input-limit"));
             }
             ui.small(tr(ui, "saved-query-prompt-validation"));
@@ -138,7 +149,8 @@ impl State {
                 let admitted = input_admitted(
                     &session.declarations[session.index],
                     &session.draft[session.index],
-                ) && super::inputs_within_limits(&session.draft);
+                ) && !session.input_rejected
+                    && super::inputs_within_limits(&session.draft);
                 let ok = ui
                     .add_enabled_ui(admitted, |ui| {
                         ui.add_sized(

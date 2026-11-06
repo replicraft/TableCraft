@@ -403,15 +403,16 @@ impl State {
 
 fn inputs_within_limits(parameters: &[ParameterInput]) -> bool {
     parameters.len() <= MAX_PARAMETERS
-        && parameters
-            .iter()
-            .try_fold(0usize, |bytes, parameter| {
-                bytes
-                    .checked_add(parameter.name.len())?
-                    .checked_add(parameter.kind.len())?
-                    .checked_add(parameter.text.len())
-            })
-            .is_some_and(|bytes| bytes <= MAX_INPUT_BYTES)
+        && input_bytes(parameters).is_some_and(|bytes| bytes <= MAX_INPUT_BYTES)
+}
+
+fn input_bytes(parameters: &[ParameterInput]) -> Option<usize> {
+    parameters.iter().try_fold(0usize, |bytes, parameter| {
+        bytes
+            .checked_add(parameter.name.len())?
+            .checked_add(parameter.kind.len())?
+            .checked_add(parameter.text.len())
+    })
 }
 
 #[cfg(test)]
