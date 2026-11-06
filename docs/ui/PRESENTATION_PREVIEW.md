@@ -992,3 +992,28 @@ across the batch and follow-up. Strict UI/desktop Clippy, formatting, documentat
 links and dependency boundaries passed. Disabled formatting controls have explicit
 names/values and reject unsolicited accessibility activation. Existing Copy,
 record selection, refresh, editing and query workflows retain their checks.
+
+
+## Compact Home Ribbon — 5 November 2026
+
+The default 1280×820 normal-host Home frame now fits the complete English strip.
+View/Zoom command widths and caption gutters are tighter; font selectors and
+formatting icons are compact, with six visible subgroup dividers across the two
+formatting rows. Refresh All's chevron is beside All rather than below the whole
+caption. Its caption lines are centered. Delete opens a real menu before the
+existing Delete row review action; changed target/publication/capability closes
+its old menu. Native layout evidence comes from the retained Home capture, not an
+opened Delete-menu capture.
+
+Headless regressions inspect actual command bounds, divider geometry and caption
+arrow placement at 1×, 1.25×, 1.5× and 2×. The default-size light/dark frames were
+rendered offscreen on macOS with Windows chrome emulation. Other languages can
+still overflow; existing pointer scrolling and focused-command reveal remain.
+An attempted keyboard extension to egui's nonfocusable native scrollbar did not
+pass its focused test and was excluded. No keyboard-scrollbar claim is made.
+
+Final verification passed all 234 UI tests (including the 1,296 scene/language/theme
+combinations), all 63 desktop tests, strict selected Clippy and formatting. Link
+and dependency-boundary checks passed. A 900×580 German dark frame at 1.25× also
+retained complete translated captions with pointer overflow; native window checks
+remain suspended.

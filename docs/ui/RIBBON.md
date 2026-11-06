@@ -42,6 +42,29 @@ and Help are visible in normal mode; table tabs retain their object context.
 Query Design also shows its unavailable query-type and setup controls.
 These presentation changes add no database operations or editing permissions.
 
+## Compact default layout and contextual controls — 5 November 2026
+
+The English Home strip fits the desktop's default 1280×820 logical window without
+horizontal overflow at 1×, 1.25×, 1.5× and 2×. View and Zoom use narrower command
+widths; formatting uses compact selectors and icon spacing with visible dividers
+between font, list/indent, color, alignment and border controls. Refresh All places
+its chevron beside the final caption line; View and Zoom retain below-caption
+arrows. Light and dark offscreen frames were reviewed at the actual default size
+on macOS with Windows chrome emulation, against the retained Windows Access Home
+capture. Other locales and narrower windows may still require overflow.
+
+Delete now opens a real dropdown whose Delete row entry uses the existing
+reviewed deletion route. Merely opening it performs no operation. Changing its
+selected native row, object, presentation publication or capability closes the
+stale menu; selection rechecks the captured target. No broader delete modes are
+implemented. The retained Home image establishes the dropdown affordance; there
+is no retained Access capture of its opened menu.
+
+Contextual Table Fields, Table, Table Design and Query Design selections return
+to Home when their object context ends. Global tabs remain available. The disabled
+Query Design Return selector has a localized accessible name/value and no callable
+activation contract.
+
 ## Remaining qualification
 
 This inventory does not establish complete native Ribbon parity. Full galleries,
