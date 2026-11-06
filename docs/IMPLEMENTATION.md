@@ -1,5 +1,16 @@
 # Implementation status
 
+## Query field labels and datasheet background — 5 November 2026
+
+Query Design now shows local bound Field names with a separate Table association.
+Typed source identity survives focus, unchanged replacement and known-name
+editing. Datasheets continue subtle noninteractive rules below actual rows,
+including empty tables, without inventing records or changing editing capability.
+
+All 263 UI cases passed across the full batch and focused SQL-assertion correction;
+strict selected lint/format checks passed. Default and compact translated
+light/dark offscreen frames were reviewed. See the [verification record](ui/PRESENTATION_PREVIEW.md#field-labels-and-unused-datasheet-space--5-november-2026).
+
 ## Normal File surfaces and query/datasheet layout — 5 November 2026
 
 Normal startup and File now show existing unavailable template/maintenance
