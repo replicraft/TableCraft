@@ -1,12 +1,51 @@
 //! Working File sections use a full-width rail with licensed command artwork.
 use super::super::ribbon::Icon;
-use crate::theme::palette;
+use crate::{Localizer, theme::palette};
 use egui::{Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
 
 pub(super) const ROW_HEIGHT: f32 = 34.0;
+pub(super) const OUTER_PADDING: i8 = 10;
+const MIN_WIDTH: f32 = 160.0;
+const MAX_WIDTH: f32 = 240.0;
 const ICON_SIZE: f32 = 18.0;
 const CONTENT_PADDING: f32 = 10.0;
 const ICON_TEXT_GAP: f32 = 12.0;
+
+/// Reserve translated interface labels without changing their wording or keys.
+pub(super) fn width(ui: &Ui, localizer: &Localizer, mock: bool) -> f32 {
+    let font = ui.style().text_styles[&TextStyle::Body].clone();
+    let labels = [
+        ("backstage-back", false),
+        ("backstage-home", false),
+        ("backstage-open", false),
+        ("backstage-about", false),
+        ("backstage-options", false),
+        ("backstage-new", true),
+        ("backstage-info", true),
+        ("backstage-save", true),
+        ("backstage-save-as", true),
+        ("backstage-print", true),
+        ("backstage-close", true),
+        ("backstage-account", true),
+    ];
+    let text_width = labels
+        .into_iter()
+        .filter(|(_, preview)| mock || !preview)
+        .map(|(key, _)| {
+            ui.painter()
+                .layout_no_wrap(localizer.text(key), font.clone(), palette(ui.ctx()).ink)
+                .size()
+                .x
+        })
+        .fold(0.0, f32::max);
+    let padding = 2.0 * f32::from(OUTER_PADDING) + 2.0 * CONTENT_PADDING;
+    // Panel reserves its separator in the frame's outer margin. Scrolled rails
+    // can also spend horizontal space on a non-floating scrollbar.
+    let separator = ui.visuals().widgets.noninteractive.bg_stroke.width.round();
+    let scroll_gutter = ui.spacing().scroll.allocated_width();
+    (text_width.ceil() + ICON_SIZE + ICON_TEXT_GAP + padding + separator + scroll_gutter)
+        .clamp(MIN_WIDTH, MAX_WIDTH)
+}
 
 pub(super) fn entry(ui: &mut Ui, icon: Icon, label: &str, selected: Option<bool>) -> Response {
     let colors = palette(ui.ctx());
