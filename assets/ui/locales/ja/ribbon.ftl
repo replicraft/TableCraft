@@ -47,7 +47,7 @@ ribbon-underline = 下線
 ribbon-font-color = フォントの色
 ribbon-fill-color = 塗りつぶしの色
 ribbon-zoom = ズーム
-ribbon-preview-only = プレビュー専用 — このコマンドは未実装です
+ribbon-unavailable = まだ利用できません
 ribbon-primary-key = 主キー
 ribbon-tools = ツール
 ribbon-test-validation-rules = 入力規則のテスト
@@ -174,3 +174,5 @@ ribbon-insert-columns = 列の挿入
 ribbon-delete-columns = 列の削除
 
 ribbon-select-all = すべて選択
+
+ribbon-font-size = フォントサイズ

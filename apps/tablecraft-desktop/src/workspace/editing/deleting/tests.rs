@@ -28,7 +28,7 @@ fn review_second(harness: &mut Harness<'_, Desktop>) {
         Some(1),
     );
     harness
-        .get_by_role_and_label(Role::Button, "Delete row")
+        .get_by_role_and_label(Role::Button, "Delete")
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);

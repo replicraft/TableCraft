@@ -156,27 +156,25 @@ impl State {
                                 {
                                     self.ribbon_tab = ribbon::Tab::Home;
                                 }
-                                if self.mock_preview {
-                                    for key in [
-                                        "ribbon-create",
-                                        "ribbon-external-data",
-                                        "ribbon-database-tools",
-                                        "ribbon-help",
-                                    ] {
-                                        let candidate =
-                                            ribbon::Tab::mock(key).expect("mock tab key");
-                                        if tab(
-                                            ui,
-                                            key,
-                                            &t.text(key),
-                                            self.ribbon_tab == candidate,
-                                            true,
-                                            false,
-                                        )
-                                        .clicked()
-                                        {
-                                            self.ribbon_tab = candidate;
-                                        }
+                                for key in [
+                                    "ribbon-create",
+                                    "ribbon-external-data",
+                                    "ribbon-database-tools",
+                                    "ribbon-help",
+                                ] {
+                                    let candidate =
+                                        ribbon::Tab::from_key(key).expect("Ribbon tab key");
+                                    if tab(
+                                        ui,
+                                        key,
+                                        &t.text(key),
+                                        self.ribbon_tab == candidate,
+                                        true,
+                                        false,
+                                    )
+                                    .clicked()
+                                    {
+                                        self.ribbon_tab = candidate;
                                     }
                                 }
                                 if self.query_design_context() {
@@ -205,10 +203,10 @@ impl State {
                                     {
                                         self.ribbon_tab = ribbon::Tab::TableDesign;
                                     }
-                                } else if self.mock_preview && self.data.is_some() {
+                                } else if self.view == DocumentView::Table && self.data.is_some() {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
-                                        let candidate = ribbon::Tab::mock(key)
-                                            .expect("mock contextual tab key");
+                                        let candidate = ribbon::Tab::from_key(key)
+                                            .expect("contextual Ribbon tab key");
                                         if tab(
                                             ui,
                                             key,

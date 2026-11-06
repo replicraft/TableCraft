@@ -47,7 +47,7 @@ ribbon-underline = 밑줄
 ribbon-font-color = 글꼴 색
 ribbon-fill-color = 채우기 색
 ribbon-zoom = 확대/축소
-ribbon-preview-only = 미리 보기 전용 — 아직 구현되지 않은 명령입니다
+ribbon-unavailable = 아직 사용할 수 없음
 ribbon-primary-key = 기본 키
 ribbon-tools = 도구
 ribbon-test-validation-rules = 유효성 검사 규칙 테스트
@@ -174,3 +174,5 @@ ribbon-insert-columns = 열 삽입
 ribbon-delete-columns = 열 삭제
 
 ribbon-select-all = 모두 선택
+
+ribbon-font-size = 글꼴 크기

@@ -40,12 +40,10 @@ fn enter_id(harness: &mut Harness<'_, Desktop>, text: &str) {
 }
 
 fn begin(harness: &mut Harness<'_, Desktop>, id: &str) {
-    // The Ribbon and datasheet footer expose the same admitted action.
-    // Enter through the first (Ribbon) command here.
+    // The native Ribbon caption opens the same reviewed workflow as the
+    // separate New row affordance in the datasheet footer.
     harness
-        .get_all_by_role_and_label(Role::Button, "New row")
-        .next()
-        .unwrap()
+        .get_by_role_and_label(Role::Button, "New")
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);

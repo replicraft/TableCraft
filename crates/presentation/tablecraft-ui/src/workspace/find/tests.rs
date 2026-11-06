@@ -248,10 +248,11 @@ fn escape_dismisses_the_find_popup_before_closing_the_modeless_window() {
         );
     crate::configure(&harness.ctx);
     harness.run();
-    // Find's second combo is Match; changing this test to a non-popup button
+    // Find's second enabled combo is Match; changing this test to a non-popup button
     // would miss Escape ownership while its options are being inspected.
     harness
         .get_all_by_role(Role::ComboBox)
+        .filter(|node| !node.accesskit_node().is_disabled())
         .nth(1)
         .unwrap()
         .click_accesskit();

@@ -511,3 +511,50 @@ fn footer_hides_unusable_sections_without_hiding_empty_grid_zoom() {
             .is_none()
     );
 }
+
+#[test]
+fn normal_workspace_tabs_retain_unavailable_commands_without_changing_object_or_dispatching() {
+    let mut preview = crate::preview::Preview::new(crate::preview::Scene::Datasheet);
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = false;
+    let object = state.active_object().unwrap();
+    let rows = state.data.as_ref().unwrap().rows.as_ptr();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1600.0, 900.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    for (tab, unavailable) in [
+        ("Create", "Query Wizard"),
+        ("External Data", "New Data Source"),
+        ("Database Tools", "Compact and Repair"),
+        ("Help", "Help"),
+        ("Table Fields", "New Field"),
+        ("Table", "Before Change"),
+    ] {
+        harness
+            .get_by_role_and_label(egui::accesskit::Role::Tab, tab)
+            .click_accesskit();
+        harness.run_steps(3);
+        let command = harness.get_by_role_and_label(egui::accesskit::Role::Button, unavailable);
+        assert!(command.accesskit_node().is_disabled());
+        assert!(
+            !command
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Click)
+        );
+        assert!(
+            !command
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Focus)
+        );
+        assert_eq!(harness.state().0.active_object(), Some(object.clone()));
+        assert_eq!(harness.state().0.data.as_ref().unwrap().rows.as_ptr(), rows);
+        assert!(harness.state().1.is_empty());
+    }
+}

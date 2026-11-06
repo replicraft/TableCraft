@@ -47,7 +47,7 @@ ribbon-underline = 下划线
 ribbon-font-color = 字体颜色
 ribbon-fill-color = 填充颜色
 ribbon-zoom = 缩放
-ribbon-preview-only = 仅供预览，此命令尚未实现
+ribbon-unavailable = 暂不可用
 ribbon-primary-key = 主键
 ribbon-tools = 工具
 ribbon-test-validation-rules = 测试验证规则
@@ -174,3 +174,5 @@ ribbon-insert-columns = 插入列
 ribbon-delete-columns = 删除列
 
 ribbon-select-all = 全选
+
+ribbon-font-size = 字号
