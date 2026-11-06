@@ -1,6 +1,7 @@
 //! Read-only Table Design uses host-supplied facts without interpreting storage.
 mod grid;
 mod properties;
+mod type_labels;
 pub use properties::{FieldProperty, FieldPropertyValue};
 
 use super::{DocumentView, State};
@@ -33,9 +34,13 @@ pub struct Field {
     pub fixed: bool,
     pub flags: u8,
     pub extended_flags: u8,
+    /// Exact reader-carrier identifier, retained verbatim in native diagnostics.
     pub scalar_type: Option<String>,
     /// Optional host-supplied Access presentation name, never inferred from flags.
+    /// Known UI names localize; unknown labels remain literal.
     pub display_type: Option<String>,
+    /// Host-authored display summary, distinct from raw stored property text.
+    /// Numeric and unknown summaries remain literal; known UI labels localize.
     pub field_size: Option<String>,
     pub reader_nullable: Option<bool>,
     pub decimal_parameters: Option<(u8, u8)>,
@@ -224,16 +229,11 @@ impl State {
                                 }
                             });
                             row.col(|ui| {
-                                let fallback = crate::localization::tr(ui, "design-unsupported");
-                                grid::cell(
-                                    ui,
-                                    field
-                                        .display_type
-                                        .as_deref()
-                                        .or(field.scalar_type.as_deref())
-                                        .unwrap_or(&fallback),
-                                    grid::CellStyle::Value,
-                                );
+                                let label = type_labels::display(&localizer, field);
+                                let response = grid::cell(ui, &label.text, grid::CellStyle::Value);
+                                if label.reader_fallback {
+                                    response.on_hover_text(localizer.text("design-carrier-help"));
+                                }
                             });
                             row.col(|ui| {
                                 let value = field
