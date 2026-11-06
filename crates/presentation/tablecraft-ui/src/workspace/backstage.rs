@@ -230,7 +230,7 @@ impl State {
             );
         });
         ui.add_space(18.0);
-        ui.label(localizer.text("settings-language"));
+        let language_label = ui.label(localizer.text("settings-language"));
         let mut locale = localizer.locale();
         egui::ComboBox::from_id_salt("ui_language")
             .selected_text(locale.native_name())
@@ -238,7 +238,9 @@ impl State {
                 for choice in Locale::ALL {
                     ui.selectable_value(&mut locale, choice, choice.native_name());
                 }
-            });
+            })
+            .response
+            .labelled_by(language_label.id);
         if locale != localizer.locale() {
             match Localizer::new(locale) {
                 Ok(next) => self.localizer = next,
