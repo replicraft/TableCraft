@@ -558,3 +558,76 @@ fn normal_workspace_tabs_retain_unavailable_commands_without_changing_object_or_
         assert!(harness.state().1.is_empty());
     }
 }
+
+#[test]
+fn contextual_ribbon_returns_home_when_its_object_closes_and_global_tabs_stay_selected() {
+    use crate::preview::{Preview, Scene};
+    use egui::accesskit::Role;
+
+    for (scene, selected, caption, unavailable) in [
+        (
+            Scene::Datasheet,
+            ribbon::Tab::TableFields,
+            "Table Fields",
+            "New Field",
+        ),
+        (
+            Scene::Datasheet,
+            ribbon::Tab::Table,
+            "Table",
+            "Before Change",
+        ),
+        (
+            Scene::Design,
+            ribbon::Tab::TableDesign,
+            "Table Design",
+            "Primary Key",
+        ),
+        (
+            Scene::QueryDesign,
+            ribbon::Tab::QueryDesign,
+            "Query Design",
+            "Make Table",
+        ),
+    ] {
+        let mut preview = Preview::new(scene);
+        let mut state = std::mem::take(preview.state_mut());
+        state.mock_preview = false;
+        state.ribbon_tab = selected;
+        let object = state.active_object().expect("scene has an open object");
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(1600.0, 900.0))
+            .build_ui_state(
+                |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                (state, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(3);
+        harness.get_by_role_and_label(Role::Tab, caption);
+        harness.get_by_role_and_label(Role::Button, unavailable);
+
+        assert!(harness.state_mut().0.close_object(&object));
+        harness.run_steps(3);
+        assert!(harness.state().0.ribbon_tab == ribbon::Tab::Home);
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Tab, caption)
+                .is_none()
+        );
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Button, unavailable)
+                .is_none()
+        );
+        harness.get_by_role_and_label(Role::Button, "Copy");
+        assert!(harness.state().1.is_empty());
+
+        harness
+            .get_by_role_and_label(Role::Tab, "Create")
+            .click_accesskit();
+        harness.run_steps(3);
+        assert!(harness.state().0.ribbon_tab == ribbon::Tab::Create);
+        harness.get_by_role_and_label(Role::Button, "Query Wizard");
+        assert!(harness.state().1.is_empty());
+    }
+}

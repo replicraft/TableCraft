@@ -16,8 +16,23 @@ const ZOOM_SLIDER_WIDTH: f32 = 96.0;
 const STATUS_VIEW_ICON_SIZE: f32 = 16.0;
 
 impl State {
+    fn ribbon_tab_available(&self, candidate: ribbon::Tab) -> bool {
+        match candidate {
+            ribbon::Tab::QueryDesign => self.query_design_context(),
+            ribbon::Tab::TableDesign => {
+                !self.query_design_context() && self.view == DocumentView::Design
+            }
+            ribbon::Tab::TableFields | ribbon::Tab::Table => {
+                !self.query_design_context()
+                    && self.view == DocumentView::Table
+                    && self.data.is_some()
+            }
+            _ => true,
+        }
+    }
+
     pub(super) fn chrome(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
-        if self.ribbon_tab == ribbon::Tab::QueryDesign && !self.query_design_context() {
+        if !self.ribbon_tab_available(self.ribbon_tab) {
             self.ribbon_tab = ribbon::Tab::Home;
         }
         let colors = palette(ui.ctx());
@@ -190,7 +205,7 @@ impl State {
                                     {
                                         self.ribbon_tab = ribbon::Tab::QueryDesign;
                                     }
-                                } else if self.view == DocumentView::Design {
+                                } else if self.ribbon_tab_available(ribbon::Tab::TableDesign) {
                                     if tab(
                                         ui,
                                         "ribbon-table-design",
@@ -203,7 +218,7 @@ impl State {
                                     {
                                         self.ribbon_tab = ribbon::Tab::TableDesign;
                                     }
-                                } else if self.view == DocumentView::Table && self.data.is_some() {
+                                } else if self.ribbon_tab_available(ribbon::Tab::TableFields) {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
                                         let candidate = ribbon::Tab::from_key(key)
                                             .expect("contextual Ribbon tab key");

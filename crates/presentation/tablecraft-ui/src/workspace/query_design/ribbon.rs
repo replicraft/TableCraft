@@ -136,15 +136,26 @@ impl State {
                         ui.horizontal(|ui| {
                             ui.add_enabled_ui(false, |ui| {
                                 ui.add(Icon::QueryReturn.image(ui, 16.0));
-                                ui.label(tr(ui, "ribbon-return"));
-                                egui::ComboBox::from_id_salt("query_return")
+                                let label = tr(ui, "ribbon-return");
+                                let value = tr(ui, "ribbon-all");
+                                let unavailable = tr(ui, "ribbon-unavailable");
+                                let caption = ui.label(&label);
+                                let response = egui::ComboBox::from_id_salt("query_return")
                                     .width(70.0)
-                                    .selected_text(tr(ui, "ribbon-all"))
+                                    .selected_text(&value)
                                     .show_ui(ui, |ui| {
-                                        ui.label(tr(ui, "ribbon-all"));
+                                        ui.label(&value);
                                     })
                                     .response
-                                    .on_disabled_hover_text(tr(ui, "ribbon-unavailable"));
+                                    .labelled_by(caption.id)
+                                    .on_disabled_hover_text(&unavailable);
+                                ui.ctx().accesskit_node_builder(response.id, |node| {
+                                    node.set_label(label.as_str());
+                                    node.set_value(value.as_str());
+                                    node.set_description(unavailable.as_str());
+                                    node.remove_action(egui::accesskit::Action::Click);
+                                    node.remove_action(egui::accesskit::Action::Focus);
+                                });
                             });
                         });
                     });
