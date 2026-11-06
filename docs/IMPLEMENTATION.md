@@ -1,5 +1,16 @@
 # Implementation status
 
+## Query Design keyboard flow — 5 November 2026
+
+F6 now reaches source lists and the query grid. Source arrows and output keys
+preserve typed field ownership and existing projection details; Shift+F10 opens
+the Field alias/remove menu. Focused inputs have visible outlines in both themes.
+No backend capability or desktop-host contract was added.
+
+All 269 UI tests passed in the full gate, with a focused follow-up for the final
+paint refinement; strict UI lint/format checks passed. Offscreen light/dark focus
+frames were reviewed without opening native windows. See the [verification record](ui/PRESENTATION_PREVIEW.md#query-design-keyboard-panes-and-menus--5-november-2026).
+
 ## Query field labels and datasheet background — 5 November 2026
 
 Query Design now shows local bound Field names with a separate Table association.

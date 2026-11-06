@@ -1,5 +1,34 @@
 # Presentation preview
 
+## Query Design keyboard panes and menus — 5 November 2026
+
+The shared designer exposes separate source-list and grid focus panes. F6 and
+Shift+F6 use current enabled controls, with object/view scope checks on deferred
+entry. Each source card has one Tab stop; arrows/Home/End reveal its selected
+field. Space/+/− change typed projection visibility or use existing bounded
+append admission. Ordered keys retain their event positions, repeated output keys
+do not repeat mutations, and imported name casing, aliases, criteria and duplicate
+projections remain intact. Field Shift+F10 opens the existing alias/remove menu;
+Escape returns to that editor. Focused text inputs have an explicit theme-accent
+outline that remains visible when the caret blinks off.
+
+The full UI gate passed all 269 cases. All 21 Query Design cases passed again in
+a focused follow-up covering the final focus-outline paint refinement. Earlier source tests exposed an arrow-focus
+reset; it was fixed before the full gate. The initial repeat fixture was corrected
+to establish a genuinely held key, since egui normalizes repeat from its key state.
+Strict UI all-target Clippy, formatting, dependency boundaries and documentation
+links passed. Desktop tests were not repeated; no public action or host contract
+changed and no backend functionality was introduced.
+
+Four normal-host offscreen frames were reviewed on macOS with Windows OS
+simulation at 1280×820 logical pixels, 1×: upper-source and lower-grid F6 focus in
+light/dark. The actual published criteria capture was reopened. Its selected
+cell outline guides the focus refinement; the [Microsoft keyboard contract](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+provides the query-pane and context-menu commands. The broader workspace cycle,
+bounded-list Home/End behavior and dark styling remain adaptations. Native
+multiselection, complete cell navigation and Windows/Access interaction parity
+are unqualified. No native windows were opened.
+
 ## Field labels and unused datasheet space — 5 November 2026
 
 Query Design displays bound local Field names separately from their Table row,
