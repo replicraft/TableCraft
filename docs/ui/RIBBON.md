@@ -1,8 +1,8 @@
 # Ribbon presentation coverage
 
-The shared UI keeps working commands separate from disabled synthetic previews.
-The `--mock` host exposes the preview tabs; selecting a disabled command never
-runs a database operation. Captured layout, visible command coverage and native
+Normal and synthetic hosts display the same complete Ribbon structure.
+Unavailable commands remain disabled with “Not available yet” tooltips and
+accessible descriptions; they never run a database operation. Captured layout, visible command coverage and native
 interaction compatibility are separate claims.
 
 ## Current groups
@@ -22,7 +22,7 @@ interaction compatibility are separate claims.
 ## Menus and unavailable controls
 
 Working menus use visible chevrons, actual popup accessibility and exact existing
-capability checks. In mock mode, Select, Refresh All and Zoom expose their native
+capability checks. Select, Refresh All and Zoom expose their native
 menu shape while delegating only to the existing record selection, current-table
 refresh and read-only cell viewer; additional choices remain disabled. Preview dropdowns use disabled chevrons to show their native
 role; they do not open fabricated working menus. Clipboard and Text Formatting
@@ -33,11 +33,20 @@ current object. The percentage zoom controls appear only when a visible datashee
 has columns whose metrics can be scaled. These rules do not change the separate
 cell-value Zoom dialog or enable schema editing.
 
+## Normal-host coverage correction — 5 November 2026
+
+Previously, the normal host hid controls that were present only in synthetic
+previews. Home now always includes Cut, Format Painter, Save, Spelling, More,
+Text Formatting and both group launchers. Create, External Data, Database Tools
+and Help are visible in normal mode; table tabs retain their object context.
+Query Design also shows its unavailable query-type and setup controls.
+These presentation changes add no database operations or editing permissions.
+
 ## Remaining qualification
 
 This inventory does not establish complete native Ribbon parity. Full galleries,
 contextual control states, native keyboard access keys and complete modern
-captures for the uncaptured tabs remain unfinished. The mock panels are useful
+captures for the uncaptured tabs remain unfinished. The unavailable controls are useful
 for layout review while preserving explicit implementation boundaries. See the
 [visual references](VISUAL_REFERENCES.md) and [presentation review](PRESENTATION_PREVIEW.md)
 for observed captures, render dimensions and actual checks.

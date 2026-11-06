@@ -1,5 +1,19 @@
 # Implementation status
 
+## Complete normal-host Ribbon presentation — 5 November 2026
+
+The normal app now shows the full Home Ribbon rather than hiding commands behind
+synthetic-preview mode. Text Formatting, clipboard commands, Records commands and
+group launchers remain visible; unavailable actions have localized “Not available
+yet” tooltips and stay disabled. Main tabs and contextual Query Design groups use
+the same presentation in both hosts. No database capabilities were added.
+
+All 63 desktop tests passed. The 230 UI tests passed across the full batch and a
+focused Home-test correction; strict Clippy, formatting and boundary/link checks
+also passed. Normal-mode offscreen light/dark and compact German frames were
+reviewed, without opening native windows. See the [Ribbon record](ui/RIBBON.md)
+and [verification details](ui/PRESENTATION_PREVIEW.md#normal-host-ribbon-visibility--5-november-2026).
+
 ## Localized Design labels and complete File rail wording — 5 November 2026
 
 Recognized host-supplied type and Field Size presentation labels now localize
