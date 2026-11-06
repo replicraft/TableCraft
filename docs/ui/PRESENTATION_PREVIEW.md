@@ -21,8 +21,8 @@ The normal optional database path conflicts with mock mode.
 Saved-query Run now collects declared parameters in staged dialogs, one value at
 a time. The `saved-parameters` scene starts at the first prompt for visual review;
 normal inspection stays inert. Earlier inline-parameter-pane records below refer
-to the preceding presentation. The current original icon inventory is 103 designs
-with 412 themed/disabled SVGs, including the attachment paperclip.
+to the preceding presentation. The current original icon inventory is 104 designs
+with 416 themed/disabled SVGs, including the attachment paperclip.
 
 File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
@@ -851,3 +851,41 @@ desktop tests. Strict UI/desktop Clippy, formatting and dependency/documentation
 checks passed. Interaction cases preserve full OR rows and whole oversized-input
 refusal, exact Add Tables requests, bounded double-click targeting, blank-cell
 inertness and keyboard splitter movement without query actions.
+
+## Ribbon menu affordances and query command previews — 5 November 2026
+
+The actual retained Home image was reopened for menu indicators. View, Selection,
+Advanced and Go To now share a menu-aware renderer. Small commands reserve a
+separate arrow slot; large menus reserve space below their complete translated
+label. Plain Run/Find/Zoom actions do not acquire a false dropdown contract.
+Menu accessibility retains enabled state and the actual popup's expanded state.
+
+The synthetic Query Design Ribbon adds disabled Builder, Totals, Parameters and
+Property Sheet commands. They have no accessible Click/Focus action, do not
+dispatch even after forged activation, and are absent from the ordinary host.
+The existing View, Run and Add Tables actions retain their original workflows.
+Parameters uses original query-panel/control artwork, with light/dark and neutral
+disabled variants. The generator and manifest now describe 104 concepts and 416
+SVGs. No backend functionality or query-builder capability was added.
+
+Microsoft's [basic-query training](https://support.microsoft.com/en-us/access/training/video-create-basic-queries),
+[query introduction](https://support.microsoft.com/en-us/access/introduction-to-queries) and
+[lookup query guidance](https://support.microsoft.com/en-us/access/using-lookup-and-multivalued-fields-in-queries)
+support the command/group associations. No complete modern Query Design Ribbon
+capture is retained; its added grouping and density remain provisional. The
+private Home capture supplies light-layout evidence, not dark or native
+interaction qualification.
+
+Offscreen review covered eight frames: en-US light/dark Home and Query Design
+at 1600 × 900 logical pixels, 1×, and German light/dark versions at 900 × 580
+logical pixels, 1.25×, on the local macOS GPU renderer. Ignored artifacts are
+in `.cache/ui-ribbon-menus/` and `.cache/ui-ribbon-menus-minimum/`. The Parameters
+icon remains distinct from the adjacent Property Sheet and Builder artwork at
+actual small-command size. Native window checks remain suspended.
+
+The coordinated final gate passed 220 UI tests and 63 desktop tests, including
+all 1,248 scene/language/theme combinations. Strict UI/desktop Clippy, formatting,
+dependency/documentation checks and all 416 manifest hashes passed. This evidence
+qualifies the local shared presentation and mocked dispatch boundaries; it does
+not qualify native Access interactions or backend operations represented by
+disabled commands.
