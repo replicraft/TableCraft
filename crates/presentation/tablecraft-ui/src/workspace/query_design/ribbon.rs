@@ -59,6 +59,41 @@ impl State {
                     actions.push(action);
                 }
             });
+            if self.mock_preview {
+                group(ui, &tr(ui, "ribbon-query-type"), |ui| {
+                    ui.horizontal_top(|ui| {
+                        for column in [
+                            &[
+                                (Icon::QuerySelect, "ribbon-query-select"),
+                                (Icon::QueryMakeTable, "ribbon-query-make-table"),
+                                (Icon::QueryAppend, "ribbon-query-append"),
+                            ][..],
+                            &[
+                                (Icon::QueryUpdate, "ribbon-query-update"),
+                                (Icon::QueryCrosstab, "ribbon-query-crosstab"),
+                                (Icon::QueryDelete, "ribbon-query-delete"),
+                            ][..],
+                            &[
+                                (Icon::QueryUnion, "ribbon-query-union"),
+                                (Icon::QueryPassThrough, "ribbon-query-pass-through"),
+                                (Icon::QueryDefinition, "ribbon-query-definition"),
+                            ][..],
+                        ] {
+                            ui.vertical(|ui| {
+                                for (icon, key) in column {
+                                    ribbon::mock_command(
+                                        ui,
+                                        &self.localizer,
+                                        *icon,
+                                        key,
+                                        CommandSize::Small,
+                                    );
+                                }
+                            });
+                        }
+                    });
+                });
+            }
             group(ui, &tr(ui, "qbe-setup-group"), |ui| {
                 ui.horizontal_top(|ui| {
                     if command(
@@ -73,25 +108,78 @@ impl State {
                         self.show_query_design_tables();
                     }
                     if self.mock_preview {
-                        ribbon::mock_command(
-                            ui,
-                            &self.localizer,
-                            Icon::Builder,
-                            "qbe-builder",
-                            CommandSize::Large,
-                        );
+                        ui.vertical(|ui| {
+                            for (icon, key) in [
+                                (Icon::InsertRows, "ribbon-insert-rows"),
+                                (Icon::DeleteRows, "ribbon-delete-rows"),
+                                (Icon::Builder, "qbe-builder"),
+                            ] {
+                                ribbon::mock_command(
+                                    ui,
+                                    &self.localizer,
+                                    icon,
+                                    key,
+                                    CommandSize::Small,
+                                );
+                            }
+                        });
+                        ui.vertical(|ui| {
+                            for (icon, key) in [
+                                (Icon::InsertColumns, "ribbon-insert-columns"),
+                                (Icon::DeleteColumns, "ribbon-delete-columns"),
+                            ] {
+                                ribbon::mock_command(
+                                    ui,
+                                    &self.localizer,
+                                    icon,
+                                    key,
+                                    CommandSize::Small,
+                                );
+                            }
+                            ui.horizontal(|ui| {
+                                ui.add_enabled_ui(false, |ui| {
+                                    ui.add(Icon::QueryReturn.image(ui, 16.0));
+                                    ui.label(tr(ui, "ribbon-return"));
+                                    egui::ComboBox::from_id_salt("mock_query_return")
+                                        .width(70.0)
+                                        .selected_text(tr(ui, "ribbon-all"))
+                                        .show_ui(ui, |ui| {
+                                            ui.label(tr(ui, "ribbon-all"));
+                                        })
+                                        .response
+                                        .on_disabled_hover_text(tr(ui, "ribbon-preview-only"));
+                                });
+                            });
+                        });
                     }
                 });
             });
             if self.mock_preview {
                 group(ui, &tr(ui, "qbe-show-hide-group"), |ui| {
-                    for (icon, key) in [
-                        (Icon::Sum, "qbe-totals"),
-                        (Icon::Parameters, "qbe-parameters"),
-                        (Icon::Properties, "qbe-property-sheet"),
-                    ] {
-                        ribbon::mock_command(ui, &self.localizer, icon, key, CommandSize::Small);
-                    }
+                    ui.horizontal_top(|ui| {
+                        ui.vertical(|ui| {
+                            for (icon, key) in [
+                                (Icon::Sum, "qbe-totals"),
+                                (Icon::Parameters, "qbe-parameters"),
+                                (Icon::Properties, "qbe-property-sheet"),
+                            ] {
+                                ribbon::mock_command(
+                                    ui,
+                                    &self.localizer,
+                                    icon,
+                                    key,
+                                    CommandSize::Small,
+                                );
+                            }
+                        });
+                        ribbon::mock_command(
+                            ui,
+                            &self.localizer,
+                            Icon::TableNames,
+                            "ribbon-table-names",
+                            CommandSize::Small,
+                        );
+                    });
                 });
             }
         });

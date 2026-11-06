@@ -140,3 +140,37 @@ ribbon-align-center = 中央揃え
 ribbon-align-right = 右揃え
 ribbon-borders = 罫線
 ribbon-alternate-rows = 交互の行の色
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = アドイン
+ribbon-all = すべて
+ribbon-application-parts = アプリケーション パーツ
+ribbon-email = 電子メール
+ribbon-export-more = その他
+ribbon-group-options = グループのオプション
+ribbon-more-forms = その他のフォーム
+ribbon-move-data = データの移動
+ribbon-navigation-form = ナビゲーション
+ribbon-odbc-database = ODBC データベース
+ribbon-pdf-xps = PDF または XPS
+ribbon-query-append = 追加
+ribbon-query-crosstab = クロス集計
+ribbon-query-definition = データ定義
+ribbon-query-delete = 削除
+ribbon-query-make-table = テーブルの作成
+ribbon-query-pass-through = パススルー
+ribbon-query-select = 選択
+ribbon-query-type = クエリの種類
+ribbon-query-union = ユニオン
+ribbon-query-update = 更新
+ribbon-return = 戻り値:
+ribbon-sharepoint-list = SharePoint リスト
+ribbon-table-names = テーブル名
+ribbon-templates = テンプレート
+ribbon-text-direction = 文字列の方向
+ribbon-text-highlight = 文字の強調表示の色
+ribbon-word-merge = Word の差し込み印刷
+ribbon-insert-columns = 列の挿入
+ribbon-delete-columns = 列の削除
+
+ribbon-select-all = すべて選択

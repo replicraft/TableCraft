@@ -140,3 +140,37 @@ ribbon-align-center = Centralizar
 ribbon-align-right = Alinhar à Direita
 ribbon-borders = Bordas
 ribbon-alternate-rows = Cor de Linha Alternada
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = Suplementos
+ribbon-all = Todos
+ribbon-application-parts = Partes de Aplicativo
+ribbon-email = Email
+ribbon-export-more = Mais
+ribbon-group-options = Opções do grupo
+ribbon-more-forms = Mais Formulários
+ribbon-move-data = Mover Dados
+ribbon-navigation-form = Navegação
+ribbon-odbc-database = Banco de Dados ODBC
+ribbon-pdf-xps = PDF ou XPS
+ribbon-query-append = Acrescentar
+ribbon-query-crosstab = Referência Cruzada
+ribbon-query-definition = Definição de Dados
+ribbon-query-delete = Excluir
+ribbon-query-make-table = Criar Tabela
+ribbon-query-pass-through = Passagem
+ribbon-query-select = Selecionar
+ribbon-query-type = Tipo de Consulta
+ribbon-query-union = União
+ribbon-query-update = Atualizar
+ribbon-return = Retornar:
+ribbon-sharepoint-list = Listas do SharePoint
+ribbon-table-names = Nomes de Tabelas
+ribbon-templates = Modelos
+ribbon-text-direction = Direção do Texto
+ribbon-text-highlight = Cor de Realce do Texto
+ribbon-word-merge = Mala Direta do Word
+ribbon-insert-columns = Inserir Colunas
+ribbon-delete-columns = Excluir Colunas
+
+ribbon-select-all = Selecionar Tudo

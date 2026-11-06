@@ -140,3 +140,37 @@ ribbon-align-center = 가운데 맞춤
 ribbon-align-right = 오른쪽 맞춤
 ribbon-borders = 테두리
 ribbon-alternate-rows = 대체 행 색
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = 추가 기능
+ribbon-all = 모두
+ribbon-application-parts = 응용 프로그램 요소
+ribbon-email = 전자 메일
+ribbon-export-more = 기타
+ribbon-group-options = 그룹 옵션
+ribbon-more-forms = 기타 폼
+ribbon-move-data = 데이터 이동
+ribbon-navigation-form = 탐색
+ribbon-odbc-database = ODBC 데이터베이스
+ribbon-pdf-xps = PDF 또는 XPS
+ribbon-query-append = 추가
+ribbon-query-crosstab = 크로스탭
+ribbon-query-definition = 데이터 정의
+ribbon-query-delete = 삭제
+ribbon-query-make-table = 테이블 만들기
+ribbon-query-pass-through = 통과
+ribbon-query-select = 선택
+ribbon-query-type = 쿼리 유형
+ribbon-query-union = 통합
+ribbon-query-update = 업데이트
+ribbon-return = 반환:
+ribbon-sharepoint-list = SharePoint 목록
+ribbon-table-names = 테이블 이름
+ribbon-templates = 서식 파일
+ribbon-text-direction = 텍스트 방향
+ribbon-text-highlight = 텍스트 강조 색
+ribbon-word-merge = Word 병합
+ribbon-insert-columns = 열 삽입
+ribbon-delete-columns = 열 삭제
+
+ribbon-select-all = 모두 선택
