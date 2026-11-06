@@ -1,6 +1,7 @@
 mod add_column;
 mod clipboard;
 mod collection_columns;
+mod layout;
 mod preview;
 mod selection;
 mod totals;
@@ -155,22 +156,29 @@ fn render_rows(
     let pane = view.pane;
     selection.prepare(ui, data);
     let scroll_to = selection.scroll_to_row();
-    ui.push_id((&data.table, data.offset), |ui| {
-        let scale = crate::theme::datasheet_scale(ui.ctx());
-        for text_style in [egui::TextStyle::Body, egui::TextStyle::Button] {
-            if let Some(font) = ui.style_mut().text_styles.get_mut(&text_style) {
-                font.size *= scale;
+    let mut page_layout = (!collection_layout).then(|| layout::PageLayout::load(ui, data));
+    let scroll = ui
+        .push_id((&data.table, data.offset), |ui| {
+            let scale = crate::theme::datasheet_scale(ui.ctx());
+            for text_style in [egui::TextStyle::Body, egui::TextStyle::Button] {
+                if let Some(font) = ui.style_mut().text_styles.get_mut(&text_style) {
+                    font.size *= scale;
+                }
             }
-        }
-        ui.spacing_mut().icon_width = BOOLEAN_BOX_SIZE * scale;
-        // Reserve scrollbar space below the viewport, including one-row pages.
-        // The style change is scoped to this datasheet and its nested table.
-        ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
-        ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
-        ScrollArea::horizontal()
-            .id_salt("datasheet_horizontal")
-            .auto_shrink([false, false])
-            .show(ui, |ui| {
+            ui.spacing_mut().icon_width = BOOLEAN_BOX_SIZE * scale;
+            // Reserve scrollbar space below the viewport, including one-row pages.
+            // The style change is scoped to this datasheet and its nested table.
+            ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
+            ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
+            let mut horizontal = ScrollArea::horizontal()
+                .id_salt("datasheet_horizontal")
+                .auto_shrink([false, false]);
+            if let Some(layout) = &page_layout
+                && layout.reset_page()
+            {
+                horizontal = horizontal.horizontal_scroll_offset(layout.horizontal_offset());
+            }
+            horizontal.show(ui, |ui| {
                 let initial_widths =
                     collection_layout.then(|| collection_columns::initial_widths(ui, data));
                 let insert = view.insert_target.as_ref().filter(|target| {
@@ -193,6 +201,12 @@ fn render_rows(
                         .max(DATA_ROW_HEIGHT * scale);
                 let mut column_rects = Vec::new();
                 let mut table = TableBuilder::new(ui).max_scroll_height(body_height);
+                if page_layout
+                    .as_ref()
+                    .is_some_and(|layout| layout.reset_page())
+                {
+                    table.reset();
+                }
                 if let Some(row) = scroll_to {
                     table = table.scroll_to_row(row, Some(egui::Align::Center));
                 }
@@ -205,9 +219,11 @@ fn render_rows(
                     let column = if collection_layout && index + 1 == data.columns.len() {
                         Column::remainder().at_least(128.0)
                     } else {
-                        let width = initial_widths
+                        let width = page_layout
                             .as_ref()
-                            .map_or(128.0, |widths| widths[index]);
+                            .and_then(|layout| layout.width(index))
+                            .or_else(|| initial_widths.as_ref().map(|widths| widths[index]))
+                            .unwrap_or(128.0);
                         Column::initial(width).at_least(60.0)
                     };
                     table = table.column(column);
@@ -254,6 +270,9 @@ fn render_rows(
                         }
                     })
                     .body(|mut body| {
+                        if let Some(layout) = &mut page_layout {
+                            layout.observe_columns(body.widths(), data.columns.len());
+                        }
                         if data.rows.is_empty() {
                             let mut bounds = body.max_rect();
                             if insert.is_some() {
@@ -401,8 +420,12 @@ fn render_rows(
                     ui.scroll_to_rect(rect, Some(egui::Align::Center));
                 }
             })
-    })
-    .inner
+        })
+        .inner;
+    if let Some(layout) = page_layout {
+        layout.finish(ui, scroll.state.offset.x);
+    }
+    scroll
 }
 
 fn empty_body(ui: &mut Ui, bounds: egui::Rect, scale: f32) {
