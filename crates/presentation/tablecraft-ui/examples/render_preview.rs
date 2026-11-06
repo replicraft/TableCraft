@@ -31,6 +31,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         Err(env::VarError::NotPresent) => Scene::ALL.to_vec(),
         Err(error) => return Err(error.into()),
     };
+    let host = setting("TABLECRAFT_PREVIEW_HOST", "synthetic")?;
+    if !matches!(host.as_str(), "synthetic" | "normal") {
+        return Err(io::Error::other("preview host must be synthetic or normal").into());
+    }
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
     let scale = setting("TABLECRAFT_PREVIEW_SCALE", "1")?.parse::<f32>()?;
@@ -88,6 +92,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for scene in scenes {
         harness.state_mut().set_scene(scene);
+        // Retain synthetic data and the resource-free host while exercising
+        // normal presentation gates explicitly.
+        harness.state_mut().state_mut().mock_preview = host == "synthetic";
         // Layout captures should not acquire a tooltip from the harness cursor.
         // Interaction tests choose their pointer position explicitly.
         harness.remove_cursor();

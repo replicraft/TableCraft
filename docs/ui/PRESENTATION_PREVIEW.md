@@ -4,7 +4,7 @@ The synthetic preview supports screenshot-guided visual and interaction review
 independently of database behavior. It reuses the shared workspace
 renderer and existing view/action model. Its separate desktop host never creates
 a database worker, file dialog or save worker. Synthetic responses cannot open,
-query or modify a real file. Preview-only future Ribbon commands remain disabled.
+query or modify a real file. Unavailable Ribbon commands remain disabled in both normal and synthetic hosts.
 
 ```sh
 cargo run -p tablecraft-desktop -- --mock
@@ -955,3 +955,40 @@ dependency/documentation checks passed. Review covered 16 Design frames at
 1600 × 900 and eight compact German/Japanese Design/File frames at 900 × 580,
 1.25×. The full-label regression pays the actual panel separator reservation
 rather than weakening the non-elision check.
+
+
+## Normal-host Ribbon visibility — 5 November 2026
+
+Normal and synthetic hosts now share the complete Home strip, including Text
+Formatting, Cut, Format Painter, Save, Spelling, More and both group launchers.
+Unavailable controls expose localized “Not available yet” tooltips and accessible
+descriptions. Native captions Paste, New and Delete retain the existing narrow
+reviewed workflows; normal Replace still requires its actual capability.
+Main tabs and contextual Query Design groups also remain visible outside mock mode.
+
+The resource-free offscreen renderer accepts `TABLECRAFT_PREVIEW_HOST=normal` to
+use synthetic data with the normal presentation flag. It opens no database or OS
+window. Set a separate output directory to distinguish these observations:
+
+```sh
+TABLECRAFT_PREVIEW_HOST=normal TABLECRAFT_PREVIEW_SCENE=datasheet \
+TABLECRAFT_PREVIEW_WIDTH=1600 TABLECRAFT_PREVIEW_HEIGHT=900 \
+TABLECRAFT_PREVIEW_THEME=dark TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/normal-ribbon \
+cargo run -p tablecraft-ui --example render_preview
+```
+
+The retained Windows Access Home image and the user's comparison were reviewed.
+Normal-presentation light/dark frames were rendered offscreen on macOS at
+1600×900, 1×, with Windows chrome emulation. A German dark frame used 900×580
+logical points at 1.25×; the overflowing Ribbon remains horizontally scrollable.
+These renders establish visible coverage, not native Access interaction parity.
+Native window verification remains suspended.
+
+Verification: the selected desktop suite passed all 63 tests. The UI batch passed
+229 tests, including the 1,296 scene/language/theme matrix; its new Home inventory
+test initially selected both Quick Access and Ribbon Save. After selecting the
+Home control explicitly, that focused test passed, covering all 230 UI tests
+across the batch and follow-up. Strict UI/desktop Clippy, formatting, documentation
+links and dependency boundaries passed. Disabled formatting controls have explicit
+names/values and reject unsolicited accessibility activation. Existing Copy,
+record selection, refresh, editing and query workflows retain their checks.
