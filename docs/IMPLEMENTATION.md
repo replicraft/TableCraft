@@ -1,5 +1,28 @@
 # Implementation status
 
+## Startup, footer capability and Ribbon coverage — 5 November 2026
+
+Startup is now a distinct Recent/templates surface with no document Back action.
+File pages without a database return to startup; pages over an open database
+return to its workspace. Existing local Browse and explicit path/password opening
+remain available. Mock creation, maintenance and account controls stay disabled.
+
+Footer view buttons require an admitted switch to another view of the current
+object. Percentage zoom requires a visible datasheet with columns. Backstage and
+unloaded/design-only surfaces hide unusable controls. Quick Access document
+commands are hidden while Backstage is visible.
+
+The screenshot-guided Ribbon pass adds the missing visible query-type/setup,
+template, export and formatting groups, with original artwork, proper mock menu
+shapes and separate caption/launcher bounds. The [inventory](ui/RIBBON.md) keeps
+visible coverage separate from unfinished native galleries and keyboard parity.
+
+All 224 UI tests and 63 desktop tests passed across the final UI gate and host
+batch, including 1,296 scene/language/theme combinations. Strict selected Clippy,
+formatting and dependency/documentation checks passed; all 536 original SVG
+hashes were verified. Offscreen review used 34 light/dark and compact translated
+frames. Native window checks remain suspended. See the [presentation record](ui/PRESENTATION_PREVIEW.md#startup-capability-aware-footer-and-expanded-ribbon--5-november-2026).
+
 ## Ribbon menu affordances and query previews — 5 November 2026
 
 Existing View, Selection, Advanced and Go To popups now use shared visible menu

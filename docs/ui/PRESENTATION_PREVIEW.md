@@ -21,8 +21,8 @@ The normal optional database path conflicts with mock mode.
 Saved-query Run now collects declared parameters in staged dialogs, one value at
 a time. The `saved-parameters` scene starts at the first prompt for visual review;
 normal inspection stays inert. Earlier inline-parameter-pane records below refer
-to the preceding presentation. The current original icon inventory is 104 designs
-with 416 themed/disabled SVGs, including the attachment paperclip.
+to the preceding presentation. The current original icon inventory is 134 designs
+with 536 themed/disabled SVGs, including the attachment paperclip.
 
 File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
@@ -68,7 +68,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 78 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 81 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -889,3 +889,43 @@ dependency/documentation checks and all 416 manifest hashes passed. This evidenc
 qualifies the local shared presentation and mocked dispatch boundaries; it does
 not qualify native Access interactions or backend operations represented by
 disabled commands.
+
+## Startup, capability-aware footer and expanded Ribbon — 5 November 2026
+
+`startup`, `startup-open` and `templates` extend the synthetic inventory to 81
+scenes. Startup has no database, no document Back action and no inactive view or
+zoom controls. File/Open, Options and About can return to startup; File pages
+with an open database return to the current workspace. The mock New page and
+unavailable file commands perform no creation, save, print or account operation.
+Recent history stays explicitly unavailable rather than displaying invented
+user files. The original manual path/password opening controls remain working.
+
+Footer view buttons now require an admitted change to another view of the exact
+active object. Percentage zoom requires a visible datasheet with columns, even
+when it has zero records; design-only, startup, Backstage and unloaded surfaces
+hide the section. This does not change the separate cell-value Zoom dialog.
+
+The Ribbon pass extends visible mock groups and command artwork throughout the
+covered tabs. See the [explicit inventory](RIBBON.md) for current coverage and
+remaining native galleries/keyboard/capture qualification. All added command
+previews and group launchers remain disabled and have no dispatch authority.
+
+The mock Home Select/Refresh All/Zoom popups delegate only to existing commands;
+opening a menu alone does not run an action. Unsupported bulk selection and
+refresh-all entries remain disabled. Group captions and launchers have separate
+paint bounds, with a shared compact command baseline for two-line menus.
+
+Final offscreen review exported 26 en-US light/dark frames at 1600 × 900 logical
+pixels, 1×, covering startup, File/Open, New and all currently selectable Ribbon
+surfaces. Eight German frames at 900 × 580 logical pixels, 1.25×, cover startup,
+File/Open, Home and Query Design. They were rendered on the local macOS GPU
+without native windows. Ignored artifacts are in `.cache/ui-startup-ribbon/` and
+`.cache/ui-startup-ribbon-minimum/`.
+
+The final UI gate passed all 224 tests, including 81 scenes × eight languages ×
+two themes (1,296 drawing combinations). The host batch passed all 63 desktop
+tests. Strict UI/desktop Clippy, formatting, dependency/documentation checks and
+all 536 original SVG hashes passed. Actual interaction tests cover meaningful
+startup return paths, hidden unusable footer controls, mock menu delegation,
+whole disabled-command refusal and separate caption/launcher geometry. These
+checks do not establish native Access compatibility or implement disabled tools.

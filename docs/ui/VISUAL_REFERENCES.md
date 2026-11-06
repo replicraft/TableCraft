@@ -392,3 +392,33 @@ The Query Design mock adds only documented Builder and Show/Hide command
 previews; its full grouping remains provisional without a complete retained
 Ribbon image. See the [presentation record](PRESENTATION_PREVIEW.md#ribbon-menu-affordances-and-query-command-previews--5-november-2026)
 for the primary command references and original Parameters artwork boundary.
+
+## Startup, File/Open and expanded Ribbon references — 5 November 2026
+
+Two actual Access 2016 tutorial captures were downloaded to ignored local cache
+and opened for this correction. They are third-party tutorial screenshots, not
+TableCraft/native comparison results; orange circles/arrows are tutorial
+annotations and are not application controls. Rendered application build,
+platform configuration and display scale are unknown.
+
+| Capture | Observed composition | SHA-256 |
+| --- | --- | --- |
+| [Access 2016 start screen](https://www.quackit.com/pix/microsoft_access/microsoft_access_2016/howto/how_to_create_a_blank_database_in_microsoft_access_2016_1.png) | 952 × 686 image; red Recent/Open Other Files region beside a template gallery; no Back action. | `f70fffe39cf4313e11778f7735733ec29112161c3be90fa465a591166918f4b9` |
+| [Access 2016 File/Open](https://www.quackit.com/pix/microsoft_access/microsoft_access_2016/howto/how_to_open_a_database_in_exclusive_mode_in_microsoft_access_2016_2.png) | 960 × 686 image; File rail, locations/Browse and recent files; Back can return to the start screen. | `02e3ef0fc4c2fb388dba941d734797d1aa29849caab1e0820ba89edc8feb2f90` |
+
+Microsoft's [Access interface guide](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface)
+corroborates the startup-without-database and File/Open workflow, but its older
+version does not qualify modern pixel geometry. The retained private Account
+capture continues to guide the modern full File rail. TableCraft keeps its
+existing explicit path/password opening controls and local picker; recent-history,
+creation, cloud locations and account services are not invented. Mock template
+and maintenance commands remain visibly unavailable.
+
+Two additional Microsoft images were opened for Ribbon coverage:
+
+- [Access 2010 Create crop](https://support.microsoft.com/en-us/access/media/o14-ac-create-a-crop.gif): actual older Templates/Tables/Queries/Forms/Reports/Macros groups; SHA-256 `be8383425bdaa39e4bc1e3c6230420905bb0f14c5bfbdf7082e988c98d62c6a0`.
+- [Query Setup crop](https://support.microsoft.com/en-us/access/media/o15-ac-addorrow.png): actual insertion/deletion rows and columns, Builder and Return arrangement; SHA-256 `49546726264c65bfbe5b536e41326187cd7b054e23fbfd5e53f7d5b85f957ce8`.
+
+The [Ribbon inventory](RIBBON.md) records current groups and remaining
+qualification. An older crop or documented command name does not establish a
+complete modern Ribbon match.
