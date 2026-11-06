@@ -55,6 +55,10 @@ fn run(harness: &mut Harness<'_, Desktop>) {
 
 fn design(harness: &mut Harness<'_, Desktop>) {
     harness
+        .get_by_role_and_label(Role::Button, "View")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
         .get_by_role_and_label(Role::Button, "Design View")
         .click_accesskit();
     harness.run_steps(1);

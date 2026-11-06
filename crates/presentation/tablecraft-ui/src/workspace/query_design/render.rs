@@ -1,9 +1,8 @@
 //! The source area and QBE rows follow the retained native Design captures.
-use super::Mode;
 use super::grid::{GRID_ROW_HEIGHT, design_grid};
 use super::sources::source_area;
 use crate::localization::tr;
-use crate::workspace::{Action, State, diagnostics};
+use crate::workspace::{State, diagnostics};
 use egui::Ui;
 
 const MIN_SOURCE_HEIGHT: f32 = 80.0;
@@ -11,12 +10,7 @@ const MIN_GRID_HEIGHT: f32 = 180.0;
 const SPLITTER_HEIGHT: f32 = 7.0;
 
 impl State {
-    pub(in crate::workspace) fn query_design_editor(
-        &mut self,
-        ui: &mut Ui,
-        actions: &mut Vec<Action>,
-    ) {
-        self.query_design_views(ui, actions);
+    pub(in crate::workspace) fn query_design_editor(&mut self, ui: &mut Ui) {
         if !self.query_design_visible() {
             return;
         }
@@ -26,19 +20,6 @@ impl State {
             .session
             .take()
             .expect("visible Design session");
-        let mut run_clicked = false;
-        ui.horizontal(|ui| {
-            if ui
-                .add_enabled(ready, egui::Button::new(tr(ui, "qbe-add-tables")))
-                .clicked()
-            {
-                session.add_tables = true;
-            }
-            run_clicked = ui
-                .add_enabled(ready, egui::Button::new(tr(ui, "query-run")))
-                .clicked();
-            ui.small(tr(ui, "qbe-help"));
-        });
         ui.add_enabled_ui(ready, |ui| {
             let source_height = source_height(ui);
             let mut changed = source_area(ui, &mut session, source_height);
@@ -49,9 +30,6 @@ impl State {
             }
         });
         self.query_design.session = Some(session);
-        if run_clicked && let Some(action) = self.query_design_run_action() {
-            actions.push(action);
-        }
     }
 
     pub(in crate::workspace) fn query_design_report(&self, ui: &mut Ui) {
@@ -66,58 +44,6 @@ impl State {
         {
             diagnostics::show(ui, ui.make_persistent_id("query_design_error"), error);
         }
-    }
-
-    pub(in crate::workspace) fn query_design_views(
-        &mut self,
-        ui: &mut Ui,
-        actions: &mut Vec<Action>,
-    ) {
-        if self.query_design_request().is_none() {
-            return;
-        }
-        let ready = self.query_design_ready();
-        ui.horizontal(|ui| {
-            let sql = !self.query_design_visible() && !self.query_design_results_visible();
-            if ui
-                .add_enabled(
-                    ready,
-                    egui::Button::selectable(sql, tr(ui, "query-sql-view")),
-                )
-                .clicked()
-                && let Some(action) = self.show_query_design_sql()
-            {
-                actions.push(action);
-            }
-            if ui
-                .add_enabled(
-                    ready,
-                    egui::Button::selectable(
-                        self.query_design_visible(),
-                        tr(ui, "query-design-view"),
-                    ),
-                )
-                .clicked()
-                && let Some(action) = self.show_query_design()
-            {
-                actions.push(action);
-            }
-            if ui
-                .add_enabled(
-                    ready && self.query_data.is_some(),
-                    egui::Button::selectable(
-                        self.query_design_results_visible(),
-                        tr(ui, "ribbon-datasheet"),
-                    ),
-                )
-                .clicked()
-            {
-                self.query_design
-                    .session
-                    .get_or_insert_with(Default::default)
-                    .mode = Mode::Results;
-            }
-        });
     }
 }
 

@@ -13,6 +13,8 @@ const FIELD_ROW_HEIGHT: f32 = 18.0;
 const CARD_GAP: f32 = 48.0;
 const FIELD_TEXT_PADDING: f32 = 7.0;
 const JOIN_LEAD: f32 = 12.0;
+const CANVAS_MARGIN: i8 = 8;
+const DEFAULT_CARD_HEIGHT: f32 = 160.0;
 
 #[derive(Default)]
 struct SourceEvents {
@@ -29,22 +31,35 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
         ..SourceEvents::default()
     };
     let mut joins_changed = false;
-    ScrollArea::both()
-        .id_salt("qbe_sources")
-        .max_height(height)
-        .min_scrolled_height(height)
-        .auto_shrink([false, false])
+    let canvas_height = (height - f32::from(CANVAS_MARGIN) * 2.0).max(FIELD_ROW_HEIGHT);
+    let colors = crate::theme::palette(ui.ctx());
+    Frame::new()
+        .fill(colors.title_fill)
+        .inner_margin(egui::Margin::same(CANVAS_MARGIN))
         .show(ui, |ui| {
-            ui.horizontal_top(|ui| {
-                ui.spacing_mut().item_spacing.x = CARD_GAP;
-                for source in &session.draft.sources {
-                    ui.push_id(("qbe_source", source.id), |ui| {
-                        source_card(ui, session, source, &mut events, height);
+            ScrollArea::both()
+                .id_salt("qbe_sources")
+                .max_height(canvas_height)
+                .min_scrolled_height(canvas_height)
+                .auto_shrink([false, false])
+                .show(ui, |ui| {
+                    ui.horizontal_top(|ui| {
+                        ui.spacing_mut().item_spacing.x = CARD_GAP;
+                        for source in &session.draft.sources {
+                            ui.push_id(("qbe_source", source.id), |ui| {
+                                source_card(
+                                    ui,
+                                    session,
+                                    source,
+                                    &mut events,
+                                    canvas_height.min(DEFAULT_CARD_HEIGHT),
+                                );
+                            });
+                        }
                     });
-                }
-            });
-            draw_joins(ui, session, &events.anchors);
-            joins_changed = join_controls(ui, session);
+                    draw_joins(ui, session, &events.anchors);
+                    joins_changed = join_controls(ui, session);
+                });
         });
 
     if ui.is_enabled() && !events.clicked && ui.input(|input| input.pointer.any_released()) {
@@ -95,6 +110,7 @@ fn source_card(
             ui.vertical(|ui| {
                 ui.set_width(SOURCE_WIDTH);
                 ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
+                ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
                 Frame::new()
                     .fill(colors.grid_header)
                     .inner_margin(egui::Margin::symmetric(6, 2))
@@ -108,6 +124,9 @@ fn source_card(
                     });
                 ScrollArea::vertical()
                     .id_salt("source_fields")
+                    .scroll_bar_visibility(
+                        egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded,
+                    )
                     .max_height((height - SOURCE_HEADING_HEIGHT - 2.0).max(FIELD_ROW_HEIGHT))
                     .auto_shrink([false, false])
                     .show(ui, |ui| source_fields(ui, session, source, events));

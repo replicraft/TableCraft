@@ -90,3 +90,55 @@ fn source_cards_keep_compact_vertical_fields_and_join_edges_in_both_themes() {
         );
     }
 }
+
+#[test]
+fn bounded_source_card_scroll_reaches_all_fields_without_moving_the_canvas_or_draft() {
+    let mut source = session();
+    source.metadata[0]
+        .fields
+        .extend((0..30).map(|index| DesignFieldMetadata {
+            name: format!("Synthetic field {index:02}"),
+            scalar_type: None,
+        }));
+    let original = source.draft.clone();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(600.0, 400.0))
+        .build_ui_state(
+            |ui, session: &mut Session| {
+                source_area(ui, session, 300.0);
+            },
+            source,
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    let title = harness.get_by_label("Customers").rect();
+    let field = harness.get_by_label("CustomerID").rect();
+    let canvas = harness
+        .output()
+        .shapes
+        .iter()
+        .find_map(|shape| {
+            let egui::Shape::Rect(rectangle) = &shape.shape else {
+                return None;
+            };
+            (rectangle.fill == crate::theme::palette(&harness.ctx).title_fill
+                && rectangle.rect.width() > 500.0
+                && rectangle.rect.height() >= 290.0)
+                .then_some(rectangle.rect)
+        })
+        .expect("the complete upper source canvas has a theme-aware gray fill");
+    harness.event(egui::Event::PointerMoved(field.center()));
+    harness.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(0.0, -10000.0),
+        modifiers: egui::Modifiers::NONE,
+        phase: egui::TouchPhase::Move,
+    });
+    harness.run_steps(4);
+    let last = harness.get_by_label("Synthetic field 29").rect();
+    assert_eq!(harness.get_by_label("Customers").rect(), title);
+    assert!(last.top() >= title.bottom());
+    assert!(last.bottom() < title.top() + 165.0);
+    assert!(canvas.contains_rect(last));
+    assert_eq!(harness.state().draft, original);
+}

@@ -58,7 +58,15 @@ impl Preview {
             }],
             columns,
         };
-        let metadata = vec![table_metadata("Customers"), table_metadata("Orders")];
+        let mut metadata = vec![table_metadata("Customers"), table_metadata("Orders")];
+        for table in &mut metadata {
+            table
+                .fields
+                .extend((0..20).map(|index| DesignFieldMetadata {
+                    name: format!("Synthetic_scrollable_field_{index:02}"),
+                    scalar_type: None,
+                }));
+        }
         let built = build(&draft, &metadata).expect("bounded authored synthetic QBE");
         self.state.sql = built.sql.clone();
         let request = self
