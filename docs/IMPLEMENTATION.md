@@ -1,5 +1,19 @@
 # Implementation status
 
+## Ribbon display states and named icon tooltips — 5 November 2026
+
+The shared workspace supports expanded, tabs-only and temporarily overlaid Ribbon
+commands, using Ctrl+F1, tab double-click, trailing controls and pinning. Child
+menus, modal owners, object changes and document focus retain their own dismissal
+and command guards. Icon-only controls now identify themselves on hover in the
+selected language, alongside the unavailable message where appropriate.
+
+The 242 UI cases passed across the full batch and focused follow-up, plus all 63
+desktop tests, strict selected Clippy and formatting. Offscreen light/dark and
+compact translated frames were reviewed. Temporary overlay/pin behavior has no
+retained Access capture and remains unqualified for native parity. See the
+[presentation verification](ui/PRESENTATION_PREVIEW.md#ribbon-display-states-and-command-discovery--5-november-2026).
+
 ## Compact default-window Home Ribbon — 5 November 2026
 
 The full English Home strip now fits the default 1280×820 window at 1× through

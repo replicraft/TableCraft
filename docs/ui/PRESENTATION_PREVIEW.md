@@ -1017,3 +1017,33 @@ combinations), all 63 desktop tests, strict selected Clippy and formatting. Link
 and dependency-boundary checks passed. A 900×580 German dark frame at 1.25× also
 retained complete translated captions with pointer overflow; native window checks
 remain suspended.
+
+
+## Ribbon display states and command discovery — 5 November 2026
+
+`ribbon-collapsed` retains the tabs and expands the document's available height;
+`ribbon-temporary` overlays the ordinary commands without moving the records.
+Both synthetic scenes remain resource-free and can exercise normal presentation
+with `TABLECRAFT_PREVIEW_HOST=normal`. The trailing control, Ctrl+F1 and tab-owned
+pointer pairs change only session UI state. Pin restores the expanded strip.
+The source contracts and uncaptured Access interaction limits are in
+[Ribbon coverage](RIBBON.md#expanded-tabs-only-and-temporary-display).
+
+The full selected batch passed 241 UI tests, including the 83-scene × eight-locale
+× two-theme matrix (1,328 combinations), and all 63 desktop tests. An additional
+rapid-click case reproduced a wrong toggle after clicking Collapse followed by
+Home twice; typed same-tab pairs fixed it without accepting the prior control's
+click as part of the pair. All seven focused display tests passed afterward,
+covering all 242 UI cases across the batch and follow-up. Strict selected Clippy,
+formatting, documentation links and dependency boundaries passed.
+
+Focused tests cover actual Ctrl+F1/tab clicks, child-menu Escape ownership,
+outside record selection, F6 dismissal, object changes, Backstage/modal guards,
+working Refresh dispatch, pinning and loaded-row identity. An English/German
+actual hover test also verifies translated names on icon-only commands and the
+unchanged unavailable message. No new native write or query functionality was added.
+
+Default 1280×820 normal-host collapsed/temporary frames were rendered offscreen
+in light and dark themes on macOS with Windows chrome emulation at 1×. The
+expanded Home strip still fits that window; a German temporary frame used
+900×580 at 1.25× with horizontal overflow. Native app windows were not opened.

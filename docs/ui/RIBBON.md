@@ -21,6 +21,11 @@ interaction compatibility are separate claims.
 
 ## Menus and unavailable controls
 
+Icon-only formatting commands identify themselves by translated name on hover.
+Unavailable icons also show “Not available yet”; these descriptive tooltips do
+not make the commands callable. English and German pointer-hover regressions
+check the settled tooltip text and unchanged disabled behavior.
+
 Working menus use visible chevrons, actual popup accessibility and exact existing
 capability checks. Select, Refresh All and Zoom expose their native
 menu shape while delegating only to the existing record selection, current-table
@@ -64,6 +69,28 @@ Contextual Table Fields, Table, Table Design and Query Design selections return
 to Home when their object context ends. Global tabs remain available. The disabled
 Query Design Return selector has a localized accessible name/value and no callable
 activation contract.
+
+## Expanded, tabs-only and temporary display
+
+The session starts with the command strip expanded. The trailing chevron,
+Ctrl+F1 or a tab double-click toggles tabs-only display. Clicking a collapsed tab
+shows its current commands over the document; Pin restores the expanded layout.
+Escape dismisses an open child menu before the temporary strip. Outside clicks,
+focus leaving the strip, object/context changes, Backstage and modal workflows
+also dismiss temporary controls. This presentation state never requests database
+operations or changes the loaded records; working commands retain their normal
+capability and target checks.
+
+[Microsoft's keyboard contract](https://support.microsoft.com/en-us/accessibility/windows/use-the-keyboard-to-work-with-the-ribbon)
+includes Access and documents Ctrl+F1. The [Access 2010 interface guide](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface)
+documents tab double-click. The retained Home capture shows the expanded strip
+and a trailing chevron. No collapsed, temporary or pinned Access capture is
+retained; overlay dismissal and pin placement are current UI adaptations, not
+qualified native interaction parity. No fullscreen Ribbon mode is implemented.
+
+The synthetic scenes `ribbon-collapsed` and `ribbon-temporary` share the ordinary
+workspace presentation and retain the same resource-free host. Native app-window
+verification remains suspended; use the offscreen renderer and headless tests.
 
 ## Remaining qualification
 
