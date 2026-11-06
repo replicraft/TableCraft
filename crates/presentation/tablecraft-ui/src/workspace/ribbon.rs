@@ -11,14 +11,14 @@ use egui::{FontId, Response, Sense, Ui, WidgetInfo, WidgetType};
 
 // Two-line menu labels and their arrows share one baseline across groups.
 const COMMAND_AREA_HEIGHT: f32 = 68.0;
-const LARGE_COMMAND_WIDTH: f32 = 54.0;
+const LARGE_COMMAND_WIDTH: f32 = 40.0;
 const SMALL_COMMAND_HEIGHT: f32 = 20.0;
 const LARGE_ICON_SIZE: f32 = 28.0;
 const SMALL_ICON_SIZE: f32 = 16.0;
 const LABEL_SIZE: f32 = 11.5;
 const GROUP_LABEL_HEIGHT: f32 = 14.0;
 const GROUP_LABEL_SIZE: f32 = 10.5;
-const GROUP_LABEL_PADDING: f32 = 8.0;
+const GROUP_LABEL_PADDING: f32 = 4.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
 const GROUP_LAUNCHER_SIZE: f32 = 12.0;
 const GROUP_LAUNCHER_GAP: f32 = 2.0;
@@ -167,7 +167,7 @@ pub(super) fn command(
     enabled: bool,
     size: CommandSize,
 ) -> Response {
-    command_inner(ui, icon, label, enabled, size, false)
+    command_inner(ui, icon, label, enabled, size, None)
 }
 
 /// Only real popup consumers use this affordance; it creates no menu or action.
@@ -178,7 +178,35 @@ pub(super) fn command_menu(
     enabled: bool,
     size: CommandSize,
 ) -> Response {
-    let response = command_inner(ui, icon, label, enabled, size, true);
+    menu_with_arrow(ui, icon, label, enabled, size, MenuArrow::BelowLabel)
+}
+
+/// Refresh All places its chevron beside the last caption line, as Access does.
+pub(super) fn command_menu_inline(
+    ui: &mut Ui,
+    icon: Icon,
+    label: &str,
+    enabled: bool,
+    size: CommandSize,
+) -> Response {
+    menu_with_arrow(ui, icon, label, enabled, size, MenuArrow::AfterLabel)
+}
+
+#[derive(Clone, Copy)]
+enum MenuArrow {
+    BelowLabel,
+    AfterLabel,
+}
+
+fn menu_with_arrow(
+    ui: &mut Ui,
+    icon: Icon,
+    label: &str,
+    enabled: bool,
+    size: CommandSize,
+    placement: MenuArrow,
+) -> Response {
+    let response = command_inner(ui, icon, label, enabled, size, Some(placement));
     let popup = egui::Popup::default_response_id(&response);
     if !response.enabled() {
         egui::Popup::close_id(ui.ctx(), popup);
@@ -197,7 +225,7 @@ fn command_inner(
     label: &str,
     enabled: bool,
     size: CommandSize,
-    menu: bool,
+    menu: Option<MenuArrow>,
 ) -> Response {
     ui.add_enabled_ui(enabled, |ui| {
         if !ui.is_enabled() {
@@ -226,20 +254,29 @@ fn command_inner(
                     f32::INFINITY,
                 )
             }
-            CommandSize::IconOnly => (egui::vec2(24.0, SMALL_COMMAND_HEIGHT), 0.0),
+            CommandSize::IconOnly => (egui::vec2(22.0, SMALL_COMMAND_HEIGHT), 0.0),
         };
         let mut layout = egui::text::LayoutJob::simple(label.to_owned(), font, color, text_width);
         layout.wrap.max_rows = match size {
             CommandSize::Large => 2,
             CommandSize::Small | CommandSize::IconOnly => 1,
         };
+        if matches!(size, CommandSize::Large) {
+            layout.halign = egui::Align::Center;
+        }
         let text = ui.painter().layout_job(layout);
-        if menu {
+        if menu.is_some() {
             match size {
                 CommandSize::Large => {
-                    desired.y = desired
-                        .y
-                        .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_VERTICAL_SPACE);
+                    if matches!(menu, Some(MenuArrow::AfterLabel)) {
+                        if let Some(last) = text.rows.last() {
+                            desired.x = desired.x.max(last.size.x + MENU_ARROW_SPACE + 6.0);
+                        }
+                    } else {
+                        desired.y = desired
+                            .y
+                            .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_VERTICAL_SPACE);
+                    }
                 }
                 CommandSize::Small | CommandSize::IconOnly => desired.x += MENU_ARROW_SPACE,
             }
@@ -268,10 +305,7 @@ fn command_inner(
                     egui::pos2(rect.center().x, rect.top() + LARGE_ICON_SIZE * 0.5 + 3.0),
                     egui::vec2(LARGE_ICON_SIZE, LARGE_ICON_SIZE),
                 ),
-                egui::pos2(
-                    rect.center().x - text.size().x * 0.5,
-                    rect.top() + LARGE_TEXT_TOP,
-                ),
+                egui::pos2(rect.center().x, rect.top() + LARGE_TEXT_TOP),
             ),
             CommandSize::Small => (
                 egui::Rect::from_center_size(
@@ -293,10 +327,17 @@ fn command_inner(
         };
         icon.image(ui, image_rect.width()).paint_at(ui, image_rect);
         if !matches!(size, CommandSize::IconOnly) {
-            ui.painter().galley(text_position, text, color);
+            ui.painter().galley(text_position, text.clone(), color);
         }
-        if menu {
+        if let Some(placement) = menu {
             let center = match size {
+                CommandSize::Large if matches!(placement, MenuArrow::AfterLabel) => {
+                    let last = text.rows.last().expect("menu caption has a line");
+                    egui::pos2(
+                        text_position.x + last.pos.x + last.size.x + MENU_ARROW_SPACE * 0.5,
+                        text_position.y + last.pos.y + last.size.y * 0.5,
+                    )
+                }
                 CommandSize::Large => {
                     egui::pos2(rect.center().x, rect.bottom() - MENU_ARROW_BOTTOM_PADDING)
                 }
@@ -650,5 +691,63 @@ mod tests {
         assert!(launcher.is_disabled());
         assert!(!launcher.supports_action(egui::accesskit::Action::Click));
         assert!(!launcher.supports_action(egui::accesskit::Action::Focus));
+    }
+}
+
+#[cfg(test)]
+mod caption_arrow_tests {
+    use super::*;
+    use egui_kittest::{Harness, kittest::Queryable};
+
+    #[test]
+    fn refresh_chevron_sits_beside_all_while_view_keeps_its_arrow_below() {
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(300.0, 140.0))
+            .build_ui(|ui| {
+                ui.horizontal_top(|ui| {
+                    command_menu_inline(ui, Icon::Refresh, "Refresh All", true, CommandSize::Large);
+                    command_menu(ui, Icon::ViewDesign, "View", true, CommandSize::Large);
+                });
+            });
+        crate::configure(&harness.ctx);
+        harness.run_steps(3);
+        for label in ["Refresh All", "View"] {
+            let rect = harness
+                .get_by_role_and_label(egui::accesskit::Role::Button, label)
+                .rect();
+            let text = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Text(text) = &shape.shape else {
+                        return None;
+                    };
+                    (text.galley.job.text == label).then_some(text)
+                })
+                .unwrap();
+            let last = text.galley.rows.last().unwrap();
+            let line = egui::Rect::from_min_size(text.pos + last.pos.to_vec2(), last.size);
+            let arrow = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Path(path) = &shape.shape else {
+                        return None;
+                    };
+                    (path.points.len() == 3
+                        && path.points.iter().all(|point| rect.contains(*point)))
+                    .then(|| egui::Rect::from_points(&path.points))
+                })
+                .expect("menu chevron inside its command");
+            if label == "Refresh All" {
+                assert_eq!(text.galley.rows.len(), 2);
+                assert!(arrow.left() > line.right());
+                assert!(line.contains(egui::pos2(line.center().x, arrow.center().y)));
+            } else {
+                assert!(arrow.top() > line.bottom());
+            }
+        }
     }
 }

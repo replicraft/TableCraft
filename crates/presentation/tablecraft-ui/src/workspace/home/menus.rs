@@ -1,7 +1,15 @@
 //! Native menu shapes delegate solely to existing qualified working commands.
 use super::{Action, CommandSize, Icon, State, command};
-use crate::workspace::ribbon::command_menu;
+use crate::workspace::ribbon::{command_menu, command_menu_inline};
+use crate::{DeleteTarget, ObjectTab};
 use egui::{Popup, Response, Ui, accesskit::HasPopup};
+
+#[derive(Clone, PartialEq, Eq)]
+struct DeleteMenuWitness {
+    target: DeleteTarget,
+    publication: u64,
+    object: Option<ObjectTab>,
+}
 
 impl State {
     pub(super) fn select_menu(&mut self, ui: &mut Ui) {
@@ -45,7 +53,7 @@ impl State {
         actions: &mut Vec<Action>,
     ) {
         let t = self.localizer.clone();
-        let response = command_menu(
+        let response = command_menu_inline(
             ui,
             Icon::Refresh,
             &t.text("ribbon-refresh-all"),
@@ -76,6 +84,62 @@ impl State {
                 CommandSize::Small,
             )
             .on_disabled_hover_text(t.text("ribbon-unavailable"));
+        });
+    }
+
+    pub(super) fn delete_menu(&self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        let t = self.localizer.clone();
+        let current = self
+            .current_delete_target()
+            .map(|target| DeleteMenuWitness {
+                target,
+                publication: self.focus_publication,
+                object: self.active_object(),
+            });
+        let response = command_menu(
+            ui,
+            Icon::Delete,
+            &t.text("ribbon-delete"),
+            current.is_some(),
+            CommandSize::Small,
+        )
+        .on_hover_text(t.text("deletion-checking"));
+        let popup = Popup::default_response_id(&response);
+        let witness_id = response.id.with("delete_review_target");
+        let captured = ui.data(|data| data.get_temp::<DeleteMenuWitness>(witness_id));
+        if Popup::is_id_open(ui.ctx(), popup) && captured != current {
+            Popup::close_id(ui.ctx(), popup);
+        }
+        if !Popup::is_id_open(ui.ctx(), popup) {
+            ui.data_mut(|data| data.remove::<DeleteMenuWitness>(witness_id));
+        }
+        show_menu(ui, &response, |ui| {
+            let Some(current) = current else {
+                return;
+            };
+            let captured = ui.data_mut(|data| {
+                let captured = data
+                    .get_temp::<DeleteMenuWitness>(witness_id)
+                    .unwrap_or_else(|| current.clone());
+                data.insert_temp(witness_id, captured.clone());
+                captured
+            });
+            let enabled = captured == current && self.can_delete_row(&captured.target);
+            if command(
+                ui,
+                Icon::Delete,
+                &t.text("deletion-title"),
+                enabled,
+                CommandSize::Small,
+            )
+            .on_hover_text(t.text("deletion-checking"))
+            .clicked()
+            {
+                actions.push(Action::ReviewDelete {
+                    target: captured.target,
+                });
+                ui.close();
+            }
         });
     }
 

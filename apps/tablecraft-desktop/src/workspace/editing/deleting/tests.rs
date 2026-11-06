@@ -30,6 +30,11 @@ fn review_second(harness: &mut Harness<'_, Desktop>) {
     harness
         .get_by_role_and_label(Role::Button, "Delete")
         .click_accesskit();
+    harness.run_steps(2);
+    assert!(harness.state().editing.delete_review.is_none());
+    harness
+        .get_by_role_and_label(Role::Button, "Delete row")
+        .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);
     assert!(harness.state().editing.delete_review.is_some());

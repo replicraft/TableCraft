@@ -91,9 +91,56 @@ fn normal_home_menus_delegate_only_existing_select_refresh_and_readonly_zoom_com
     );
     assert!(!Popup::is_any_open(&harness.ctx));
 
+    let delete_target = harness.state().0.current_delete_target().unwrap();
+    harness
+        .get_by_role_and_label(Role::Button, "Delete")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().1.is_empty());
+    assert!(!harness.state().0.deletion_dialog_open());
+    harness
+        .get_by_role_and_label(Role::Button, "Delete row")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::ReviewDelete { target }] if target == &delete_target
+    ));
+    harness.state_mut().1.clear();
+    harness
+        .get_by_role_and_label(Role::Button, "Delete")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(Popup::is_any_open(&harness.ctx));
+    {
+        let state = &mut harness.state_mut().0;
+        state
+            .table_selection
+            .select(state.data.as_ref().unwrap(), 1, 0);
+    }
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().1.is_empty());
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Delete row")
+            .is_none()
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Delete")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(Popup::is_any_open(&harness.ctx));
     harness.state_mut().0.busy = true;
     harness.run_steps(3);
-    for label in ["Select", "Refresh All", "Zoom"] {
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Delete row")
+            .is_none()
+    );
+    for label in ["Select", "Refresh All", "Zoom", "Delete"] {
         assert!(
             harness
                 .get_by_role_and_label(Role::Button, label)
