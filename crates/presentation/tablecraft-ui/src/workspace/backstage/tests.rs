@@ -597,3 +597,56 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
     assert_eq!(harness.state().0.password, "unchanged secret");
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn translated_file_rail_labels_fit_without_elision_in_both_themes() {
+    for theme in [Theme::Light, Theme::Dark] {
+        let mut preview = Preview::new(Scene::Backstage);
+        let mut state = std::mem::take(preview.state_mut());
+        state.localizer = Localizer::new(Locale::De).unwrap();
+        state.theme = theme;
+        let original_rows = state.data.as_ref().unwrap().rows.as_ptr();
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(900.0, 580.0))
+            .build_ui_state(
+                |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                (state, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(3);
+
+        for label in ["Speichern unter", "Optionen"] {
+            let (clip, text) = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| match &shape.shape {
+                    egui::Shape::Text(text) if text.galley.job.text == label => {
+                        Some((shape.clip_rect, text))
+                    }
+                    _ => None,
+                })
+                .expect("actual translated rail label");
+            let font = text.galley.job.sections[0].format.font_id.clone();
+            let full_width = harness.ctx.fonts_mut(|fonts| {
+                fonts
+                    .layout_no_wrap(label.to_owned(), font.clone(), egui::Color32::WHITE)
+                    .size()
+                    .x
+            });
+            assert!(
+                !text.galley.elided,
+                "command {label:?} must remain visible; clip {clip:?}, font {font:?}, full width {full_width}, wrapping {:?}",
+                text.galley.job.wrap
+            );
+            let painted = text.galley.rect.translate(text.pos.to_vec2());
+            assert!(painted.left() >= clip.left());
+            assert!(painted.right() <= clip.right() + 0.5);
+        }
+        assert!(harness.state().1.is_empty());
+        assert_eq!(
+            harness.state().0.data.as_ref().unwrap().rows.as_ptr(),
+            original_rows
+        );
+    }
+}

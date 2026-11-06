@@ -25,12 +25,13 @@ impl State {
             return;
         }
         let colors = palette(ui.ctx());
+        let rail_width = rail::width(ui, &self.localizer, self.mock_preview);
         egui::Panel::left("file_rail")
-            .exact_size(160.0)
+            .exact_size(rail_width)
             .frame(
                 Frame::new()
                     .fill(colors.title_fill)
-                    .inner_margin(Margin::symmetric(10, 10)),
+                    .inner_margin(Margin::symmetric(rail::OUTER_PADDING, 10)),
             )
             .show(ui, |ui| {
                 if self.backstage_return_available() {
