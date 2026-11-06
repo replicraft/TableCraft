@@ -7,9 +7,10 @@ pub(crate) use icons::Icon;
 pub(super) use mock_groups::{design, home, mock as mock_command, tab as mock_tab};
 
 use crate::theme::palette;
-use egui::{Align, FontId, Response, RichText, Sense, Ui, WidgetInfo, WidgetType};
+use egui::{FontId, Response, Sense, Ui, WidgetInfo, WidgetType};
 
-const COMMAND_AREA_HEIGHT: f32 = 64.0;
+// Two-line menu labels and their arrows share one baseline across groups.
+const COMMAND_AREA_HEIGHT: f32 = 68.0;
 const LARGE_COMMAND_WIDTH: f32 = 54.0;
 const SMALL_COMMAND_HEIGHT: f32 = 20.0;
 const LARGE_ICON_SIZE: f32 = 28.0;
@@ -19,9 +20,13 @@ const GROUP_LABEL_HEIGHT: f32 = 14.0;
 const GROUP_LABEL_SIZE: f32 = 10.5;
 const GROUP_LABEL_PADDING: f32 = 8.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
+const GROUP_LAUNCHER_SIZE: f32 = 12.0;
+const GROUP_LAUNCHER_GAP: f32 = 2.0;
 const MENU_ARROW_SPACE: f32 = 12.0;
 const MENU_ARROW_HALF_WIDTH: f32 = 2.5;
-const LARGE_TEXT_TOP: f32 = 34.0;
+const LARGE_TEXT_TOP: f32 = 31.0;
+const MENU_ARROW_VERTICAL_SPACE: f32 = 6.0;
+const MENU_ARROW_BOTTOM_PADDING: f32 = 3.5;
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) enum Tab {
@@ -76,6 +81,15 @@ pub(super) fn strip(ui: &mut Ui, contents: impl FnOnce(&mut Ui)) {
 }
 
 pub(super) fn group(ui: &mut Ui, label: &str, contents: impl FnOnce(&mut Ui)) {
+    group_with_launcher(ui, label, false, contents);
+}
+
+pub(super) fn group_with_launcher(
+    ui: &mut Ui,
+    label: &str,
+    preview_launcher: bool,
+    contents: impl FnOnce(&mut Ui),
+) {
     let colors = palette(ui.ctx());
     let caption = ui.painter().layout_no_wrap(
         label.to_owned(),
@@ -85,30 +99,62 @@ pub(super) fn group(ui: &mut Ui, label: &str, contents: impl FnOnce(&mut Ui)) {
     ui.vertical(|ui| {
         // Reserve the translated caption before laying out narrow command groups.
         // Measuring it afterwards lets Extend paint into the adjacent group.
-        ui.set_min_width(caption.size().x + GROUP_LABEL_PADDING);
+        let launcher_width = if preview_launcher {
+            GROUP_LAUNCHER_SIZE + GROUP_LAUNCHER_GAP
+        } else {
+            0.0
+        };
+        ui.set_min_width(caption.size().x + GROUP_LABEL_PADDING + launcher_width);
         ui.spacing_mut().item_spacing.y = 1.0;
-        ui.set_min_height(COMMAND_AREA_HEIGHT);
-        let start = ui.cursor().top();
-        contents(ui);
-        let remaining = COMMAND_AREA_HEIGHT - (ui.cursor().top() - start);
-        if remaining > 0.0 {
-            ui.add_space(remaining);
-        }
+        ui.scope(|ui| {
+            ui.set_min_height(COMMAND_AREA_HEIGHT);
+            contents(ui);
+        });
         let width = ui.min_rect().width();
-        ui.allocate_ui_with_layout(
-            egui::vec2(width, GROUP_LABEL_HEIGHT),
-            egui::Layout::top_down(Align::Center),
-            |ui| {
-                ui.add(
-                    egui::Label::new(
-                        RichText::new(label)
-                            .size(GROUP_LABEL_SIZE)
-                            .color(colors.muted),
-                    )
-                    .wrap_mode(egui::TextWrapMode::Extend),
-                );
-            },
+        let (caption_rect, caption_response) =
+            ui.allocate_exact_size(egui::vec2(width, GROUP_LABEL_HEIGHT), Sense::hover());
+        let text_width = width - launcher_width;
+        let text_position = egui::pos2(
+            caption_rect.left() + (text_width - caption.size().x) * 0.5,
+            caption_rect.center().y - caption.size().y * 0.5,
         );
+        ui.painter().galley(text_position, caption, colors.muted);
+        caption_response
+            .widget_info(|| WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), label));
+        if preview_launcher {
+            let rect = egui::Rect::from_min_size(
+                egui::pos2(
+                    caption_rect.right() - GROUP_LAUNCHER_SIZE,
+                    caption_rect.top(),
+                ),
+                egui::vec2(GROUP_LAUNCHER_SIZE, GROUP_LAUNCHER_SIZE),
+            );
+            let help = crate::localization::tr(ui, "ribbon-preview-only");
+            let name = format!(
+                "{label}: {}",
+                crate::localization::tr(ui, "ribbon-group-options")
+            );
+            ui.add_enabled_ui(false, |ui| {
+                ui.set_opacity(1.0);
+                // A standard Button enforces its own padding/minimum size,
+                // expanding this native-size launcher into the caption. Keep
+                // the actual disabled hit region and artwork inside the gutter.
+                let response = ui.interact(
+                    rect,
+                    ui.make_persistent_id(("group_launcher", label)),
+                    Sense::hover(),
+                );
+                let image = egui::Rect::from_center_size(rect.center(), egui::vec2(10.0, 10.0));
+                Icon::DialogLauncher.image(ui, 10.0).paint_at(ui, image);
+                response
+                    .widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, name.clone()));
+                ui.ctx().accesskit_node_builder(response.id, |node| {
+                    node.remove_action(egui::accesskit::Action::Click);
+                    node.remove_action(egui::accesskit::Action::Focus);
+                });
+                response.on_disabled_hover_text(help);
+            });
+        }
     });
     ui.separator();
 }
@@ -192,7 +238,7 @@ fn command_inner(
                 CommandSize::Large => {
                     desired.y = desired
                         .y
-                        .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_SPACE);
+                        .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_VERTICAL_SPACE);
                 }
                 CommandSize::Small | CommandSize::IconOnly => desired.x += MENU_ARROW_SPACE,
             }
@@ -251,7 +297,7 @@ fn command_inner(
         if menu {
             let center = match size {
                 CommandSize::Large => {
-                    egui::pos2(rect.center().x, rect.bottom() - MENU_ARROW_SPACE * 0.5)
+                    egui::pos2(rect.center().x, rect.bottom() - MENU_ARROW_BOTTOM_PADDING)
                 }
                 CommandSize::Small | CommandSize::IconOnly => {
                     egui::pos2(rect.right() - MENU_ARROW_SPACE * 0.5, rect.center().y)
@@ -421,11 +467,18 @@ mod tests {
                     },
                     |ui| {
                         ui.horizontal_top(|ui| {
-                            for caption in ["Ergebnisse", "Abfrageeinrichtung"] {
-                                group(ui, caption, |ui| {
-                                    ui.allocate_space(egui::vec2(24.0, COMMAND_AREA_HEIGHT));
-                                });
-                            }
+                            group(ui, "Ergebnisse", |ui| {
+                                command_menu(
+                                    ui,
+                                    Icon::Refresh,
+                                    "Alles aktualisieren",
+                                    false,
+                                    CommandSize::Large,
+                                );
+                            });
+                            group(ui, "Abfrageeinrichtung", |ui| {
+                                command(ui, Icon::Builder, "Builder", false, CommandSize::Small);
+                            });
                         });
                     },
                 );
@@ -443,6 +496,10 @@ mod tests {
                     })
                     .collect();
                 assert_eq!(captions.len(), 2);
+                assert!(
+                    (captions[0].top() - captions[1].top()).abs() < 0.1,
+                    "command groups must share a caption baseline: {captions:?}"
+                );
                 assert!(
                     captions[0].right() + GROUP_LABEL_PADDING <= captions[1].left(),
                     "translated captions overlap: {captions:?}"
@@ -534,5 +591,61 @@ mod tests {
             .click();
         harness.run();
         assert!(*harness.state());
+    }
+
+    #[test]
+    fn caption_dominant_group_reserves_a_separate_disabled_launcher_rectangle() {
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        crate::configure(&context);
+        let caption = "An intentionally long command group caption";
+        let frame = || {
+            let mut output = context.run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::vec2(600.0, 160.0),
+                    )),
+                    ..Default::default()
+                },
+                |ui| {
+                    group_with_launcher(ui, caption, true, |ui| {
+                        command(ui, Icon::Cut, "Cut", false, CommandSize::Small);
+                    });
+                },
+            );
+            output.textures_delta.clear();
+            output
+        };
+        let _ = frame();
+        let output = frame();
+        let text = output
+            .shapes
+            .iter()
+            .find_map(|shape| match &shape.shape {
+                egui::epaint::Shape::Text(text) if text.galley.job.text == caption => {
+                    Some(egui::Rect::from_min_size(text.pos, text.galley.size()))
+                }
+                _ => None,
+            })
+            .expect("actual group caption paint bounds");
+        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+        let launcher = tree
+            .nodes
+            .iter()
+            .find_map(|(_, node)| {
+                (node.role() == egui::accesskit::Role::Button
+                    && node.label().is_some_and(|label| label.starts_with(caption)))
+                .then_some(node)
+            })
+            .expect("actual disabled group launcher");
+        let bounds = launcher.bounds().unwrap();
+        assert!(
+            f64::from(text.right()) + 1.0 <= bounds.x0,
+            "caption {text:?} must remain left of launcher {bounds:?}"
+        );
+        assert!(launcher.is_disabled());
+        assert!(!launcher.supports_action(egui::accesskit::Action::Click));
+        assert!(!launcher.supports_action(egui::accesskit::Action::Focus));
     }
 }

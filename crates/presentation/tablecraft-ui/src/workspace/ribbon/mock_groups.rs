@@ -1,5 +1,5 @@
 //! Visual command previews. Every control is disabled and produces no action.
-use super::{CommandSize, Icon, command, group};
+use super::{CommandSize, Icon, command, command_menu, group};
 use crate::Localizer;
 use egui::Ui;
 
@@ -10,12 +10,35 @@ pub(in crate::workspace) fn mock(
     key: &str,
     size: CommandSize,
 ) {
-    command(ui, icon, &t.text(key), false, size)
-        .on_disabled_hover_text(t.text("ribbon-preview-only"));
+    let menu = matches!(
+        key,
+        "ribbon-create-data-macros"
+            | "ribbon-rename-delete-macro"
+            | "ribbon-application-parts"
+            | "ribbon-sharepoint-list"
+            | "ribbon-navigation-form"
+            | "ribbon-more-forms"
+            | "ribbon-new-data-source"
+            | "ribbon-export-more"
+            | "ribbon-add-ins"
+            | "ribbon-validation"
+            | "ribbon-font-color"
+            | "ribbon-text-highlight"
+            | "ribbon-fill-color"
+            | "ribbon-borders"
+            | "ribbon-alternate-rows"
+            | "ribbon-text-direction"
+    );
+    let response = if menu {
+        command_menu(ui, icon, &t.text(key), false, size)
+    } else {
+        command(ui, icon, &t.text(key), false, size)
+    };
+    response.on_disabled_hover_text(t.text("ribbon-preview-only"));
 }
 
 pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
-    group(ui, &t.text("ribbon-text-formatting"), |ui| {
+    super::group_with_launcher(ui, &t.text("ribbon-text-formatting"), true, |ui| {
         ui.horizontal(|ui| {
             ui.add_enabled_ui(false, |ui| {
                 egui::ComboBox::from_id_salt("mock_font_family")
@@ -65,6 +88,13 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 "ribbon-increase-indent",
                 CommandSize::IconOnly,
             );
+            mock(
+                ui,
+                t,
+                Icon::Paragraph,
+                "ribbon-text-direction",
+                CommandSize::IconOnly,
+            );
         });
         ui.horizontal(|ui| {
             for (icon, key) in [
@@ -72,6 +102,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 (Icon::Italic, "ribbon-italic"),
                 (Icon::Underline, "ribbon-underline"),
                 (Icon::TextColor, "ribbon-font-color"),
+                (Icon::TextHighlight, "ribbon-text-highlight"),
                 (Icon::Fill, "ribbon-fill-color"),
                 (Icon::AlignLeft, "ribbon-align-left"),
                 (Icon::AlignCenter, "ribbon-align-center"),
@@ -180,10 +211,15 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
     let groups: &[(&str, &[(Icon, &str)])] = match tab {
         Tab::Create => &[
             (
+                "ribbon-templates",
+                &[(Icon::ApplicationParts, "ribbon-application-parts")],
+            ),
+            (
                 "ribbon-tables",
                 &[
                     (Icon::Table, "ribbon-table"),
                     (Icon::TableEdit, "ribbon-table-design"),
+                    (Icon::SharePointList, "ribbon-sharepoint-list"),
                 ],
             ),
             (
@@ -200,6 +236,8 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
                     (Icon::FormDesign, "ribbon-form-design"),
                     (Icon::BlankForm, "ribbon-blank-form"),
                     (Icon::FormWizard, "ribbon-form-wizard"),
+                    (Icon::NavigationForm, "ribbon-navigation-form"),
+                    (Icon::MoreForms, "ribbon-more-forms"),
                 ],
             ),
             (
@@ -239,6 +277,12 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
                     (Icon::TextFile, "ribbon-text-file"),
                     (Icon::Xml, "ribbon-xml-file"),
                     (Icon::DatabaseFile, "ribbon-access-database"),
+                    (Icon::PdfXps, "ribbon-pdf-xps"),
+                    (Icon::Email, "ribbon-email"),
+                    (Icon::WordMerge, "ribbon-word-merge"),
+                    (Icon::OdbcDatabase, "ribbon-odbc-database"),
+                    (Icon::SharePointList, "ribbon-sharepoint-list"),
+                    (Icon::Export, "ribbon-export-more"),
                 ],
             ),
         ],
@@ -265,6 +309,14 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
                     (Icon::Performance, "ribbon-analyze-performance"),
                     (Icon::AnalyzeTable, "ribbon-analyze-table"),
                 ],
+            ),
+            (
+                "ribbon-move-data",
+                &[(Icon::DatabaseFile, "ribbon-access-database")],
+            ),
+            (
+                "ribbon-add-ins",
+                &[(Icon::ApplicationParts, "ribbon-add-ins")],
             ),
         ],
         Tab::Help => &[(

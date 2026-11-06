@@ -140,3 +140,37 @@ ribbon-align-center = Zentriert
 ribbon-align-right = Rechtsbündig
 ribbon-borders = Rahmen
 ribbon-alternate-rows = Alternative Zeilenfarbe
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = Add-Ins
+ribbon-all = Alle
+ribbon-application-parts = Anwendungsparts
+ribbon-email = E-Mail
+ribbon-export-more = Weitere
+ribbon-group-options = Gruppenoptionen
+ribbon-more-forms = Weitere Formulare
+ribbon-move-data = Daten verschieben
+ribbon-navigation-form = Navigation
+ribbon-odbc-database = ODBC-Datenbank
+ribbon-pdf-xps = PDF oder XPS
+ribbon-query-append = Anfügen
+ribbon-query-crosstab = Kreuztabelle
+ribbon-query-definition = Datendefinition
+ribbon-query-delete = Löschen
+ribbon-query-make-table = Tabelle erstellen
+ribbon-query-pass-through = Pass-Through
+ribbon-query-select = Auswahl
+ribbon-query-type = Abfragetyp
+ribbon-query-union = Union
+ribbon-query-update = Aktualisieren
+ribbon-return = Rückgabe:
+ribbon-sharepoint-list = SharePoint-Listen
+ribbon-table-names = Tabellennamen
+ribbon-templates = Vorlagen
+ribbon-text-direction = Textrichtung
+ribbon-text-highlight = Texthervorhebungsfarbe
+ribbon-word-merge = Word-Seriendruck
+ribbon-insert-columns = Spalten einfügen
+ribbon-delete-columns = Spalten löschen
+
+ribbon-select-all = Alles auswählen

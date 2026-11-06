@@ -1,4 +1,5 @@
 //! Working commands share the dense ribbon with explicitly disabled previews.
+mod mock_menus;
 mod view;
 
 use super::{Action, DocumentView, State, ribbon};
@@ -22,7 +23,7 @@ impl State {
                 ribbon::design(ui, &t);
                 return;
             }
-            group(ui, &t.text("ribbon-clipboard"), |ui| {
+            ribbon::group_with_launcher(ui, &t.text("ribbon-clipboard"), self.mock_preview, |ui| {
                 ui.horizontal(|ui| {
                     if command(
                         ui,
@@ -80,7 +81,9 @@ impl State {
                 ribbon::home(ui, &t);
             }
             group(ui, &t.text("ribbon-zoom"), |ui| {
-                if command(
+                if self.mock_preview {
+                    self.mock_zoom_menu(ui);
+                } else if command(
                     ui,
                     Icon::Zoom,
                     &t.text("zoom-title"),
@@ -130,7 +133,9 @@ impl State {
                         self.open_replace();
                     }
                     self.record_menu(ui, actions);
-                    if command(
+                    if self.mock_preview {
+                        self.mock_select_menu(ui);
+                    } else if command(
                         ui,
                         Icon::Cursor,
                         &t.text("ribbon-select-record"),
@@ -180,7 +185,13 @@ impl State {
                         && self.contents_request_id().is_none()
                         && !self.saved_query_prompt_open()
                 });
-                if command(
+                if self.mock_preview {
+                    let refresh = page.map(|data| Action::Page {
+                        table: data.table.clone(),
+                        offset: data.offset,
+                    });
+                    self.mock_refresh_menu(ui, refresh, actions);
+                } else if command(
                     ui,
                     Icon::Refresh,
                     &t.text("ribbon-refresh-table"),

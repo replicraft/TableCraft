@@ -140,3 +140,37 @@ ribbon-align-center = По центру
 ribbon-align-right = По правому краю
 ribbon-borders = Границы
 ribbon-alternate-rows = Цвет чередующихся строк
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = Надстройки
+ribbon-all = Все
+ribbon-application-parts = Части приложения
+ribbon-email = Электронная почта
+ribbon-export-more = Дополнительно
+ribbon-group-options = Параметры группы
+ribbon-more-forms = Другие формы
+ribbon-move-data = Переместить данные
+ribbon-navigation-form = Навигация
+ribbon-odbc-database = База данных ODBC
+ribbon-pdf-xps = PDF или XPS
+ribbon-query-append = Добавление
+ribbon-query-crosstab = Перекрёстный
+ribbon-query-definition = Определение данных
+ribbon-query-delete = Удаление
+ribbon-query-make-table = Создание таблицы
+ribbon-query-pass-through = Сквозной запрос
+ribbon-query-select = Выборка
+ribbon-query-type = Тип запроса
+ribbon-query-union = Объединение
+ribbon-query-update = Обновление
+ribbon-return = Возврат:
+ribbon-sharepoint-list = Списки SharePoint
+ribbon-table-names = Имена таблиц
+ribbon-templates = Шаблоны
+ribbon-text-direction = Направление текста
+ribbon-text-highlight = Цвет выделения текста
+ribbon-word-merge = Слияние с Word
+ribbon-insert-columns = Вставить столбцы
+ribbon-delete-columns = Удалить столбцы
+
+ribbon-select-all = Выделить всё

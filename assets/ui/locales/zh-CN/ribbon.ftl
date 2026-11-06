@@ -140,3 +140,37 @@ ribbon-align-center = 居中
 ribbon-align-right = 右对齐
 ribbon-borders = 边框
 ribbon-alternate-rows = 交替行颜色
+
+# Disabled Ribbon previews; these labels do not enable database operations.
+ribbon-add-ins = 加载项
+ribbon-all = 全部
+ribbon-application-parts = 应用程序部件
+ribbon-email = 电子邮件
+ribbon-export-more = 更多
+ribbon-group-options = 组选项
+ribbon-more-forms = 其他窗体
+ribbon-move-data = 移动数据
+ribbon-navigation-form = 导航
+ribbon-odbc-database = ODBC 数据库
+ribbon-pdf-xps = PDF 或 XPS
+ribbon-query-append = 追加
+ribbon-query-crosstab = 交叉表
+ribbon-query-definition = 数据定义
+ribbon-query-delete = 删除
+ribbon-query-make-table = 生成表
+ribbon-query-pass-through = 传递
+ribbon-query-select = 选择
+ribbon-query-type = 查询类型
+ribbon-query-union = 联合
+ribbon-query-update = 更新
+ribbon-return = 返回:
+ribbon-sharepoint-list = SharePoint 列表
+ribbon-table-names = 表名称
+ribbon-templates = 模板
+ribbon-text-direction = 文字方向
+ribbon-text-highlight = 文本突出显示颜色
+ribbon-word-merge = Word 合并
+ribbon-insert-columns = 插入列
+ribbon-delete-columns = 删除列
+
+ribbon-select-all = 全选
