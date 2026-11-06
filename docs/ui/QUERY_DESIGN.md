@@ -73,13 +73,17 @@ design that can be represented syntactically.
 The upper cards, divider, QBE row organization and Add Tables list follow the
 actual Microsoft images recorded in [visual references](VISUAL_REFERENCES.md).
 Source cards have a bounded field-list viewport with their own vertical scroll
-on a gray canvas. The current Field cells retain qualified expressions rather
-than Access's shorter local field labels; the Table row still identifies the
-source separately.
+on a gray canvas. Bound Field cells show their local names, with the source alias
+or table in the separate Table row. Focus and unchanged replacement retain the
+typed source identity. Known local-name replacements and their incremental
+prefixes keep that source; incomplete names still require checked Build admission.
+Other text uses the existing expression path and clears the Table association.
+Correcting such text does not guess a source for an ambiguous unqualified name.
+This is a bounded editor, not general native Access field-editor parity.
 The current join workflow uses field context menus and explicit join-kind
 controls; native drag-and-drop and the Join Properties dialog are not qualified.
-The Add Tables surface exposes the implemented native-table source profile,
-without nonfunctional Queries/Both tabs. Field aliases use a context editor.
+The Add Tables surface exposes the implemented native-table source profile;
+Queries/Both tabs remain visible but disabled. Field aliases use a context editor.
 These distinctions remain visual and interaction approximations, not verified
 Access behavior.
 
