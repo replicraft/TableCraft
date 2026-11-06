@@ -4,6 +4,8 @@ use egui::{Context, Event, Id, Key, Modifiers, Popup, Response, Ui};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Pane {
+    QuerySources,
+    QueryGrid,
     Document,
     Results,
     Properties,
@@ -12,7 +14,9 @@ pub(crate) enum Pane {
 }
 
 impl Pane {
-    const ORDER: [Self; 5] = [
+    const ORDER: [Self; 7] = [
+        Self::QuerySources,
+        Self::QueryGrid,
         Self::Document,
         Self::Results,
         Self::Properties,
@@ -153,6 +157,11 @@ impl State {
             saved,
             self.saved_query.active,
             self.focus_publication,
+            self.active_object().map(|object| object.id),
+            (
+                self.query_design_visible(),
+                self.query_design_results_visible(),
+            ),
         ))
     }
 
@@ -240,9 +249,13 @@ impl State {
 
 fn cycle(context: &Context, frame: &Frame, direction: Direction) -> Option<Pane> {
     let anchors = &frame.anchors;
+    let query_design =
+        frame.panes.contains(&Pane::QuerySources) || frame.panes.contains(&Pane::QueryGrid);
+    // Object tabs also publish Document anchors. In Query Design they must not
+    // become an extra stop between the two working panes and the app chrome.
     let panes: Vec<_> = Pane::ORDER
         .into_iter()
-        .filter(|pane| frame.panes.contains(pane))
+        .filter(|pane| frame.panes.contains(pane) && (!query_design || *pane != Pane::Document))
         .collect();
     if panes.is_empty() {
         return None;
@@ -274,3 +287,6 @@ fn cycle(context: &Context, frame: &Frame, direction: Direction) -> Option<Pane>
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod query_design_tests;

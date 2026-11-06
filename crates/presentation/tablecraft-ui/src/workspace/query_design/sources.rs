@@ -1,4 +1,6 @@
 //! Source cards expose exact metadata fields and explicit, owned join edges.
+mod keyboard;
+
 use super::{Session, click};
 use crate::localization::tr;
 use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
@@ -23,11 +25,25 @@ struct SourceEvents {
     anchors: Vec<(DesignField, Rect)>,
     clicked: bool,
     pair: Option<click::Pair>,
+    outputs: Vec<(DesignExpression, keyboard::Output)>,
+    selected_source: Option<u64>,
 }
 
 pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bool {
+    let selection_id = ui.make_persistent_id("qbe_selected_source");
+    let selected_source = ui
+        .data(|data| data.get_temp::<u64>(selection_id))
+        .filter(|selected| {
+            session
+                .draft
+                .sources
+                .iter()
+                .any(|source| source.id == *selected)
+        })
+        .or_else(|| session.draft.sources.first().map(|source| source.id));
     let mut events = SourceEvents {
         pair: session.click_pair.take(),
+        selected_source,
         ..SourceEvents::default()
     };
     let mut joins_changed = false;
@@ -66,16 +82,40 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
         events.pair = None;
     }
     session.click_pair = events.pair;
+    if let Some(selected) = events.selected_source {
+        ui.data_mut(|data| data.insert_temp(selection_id, selected));
+    }
     let mut changed = false;
-    if let Some(column) = events.column {
-        let mut candidate = session.draft.clone();
-        candidate.columns.push(column);
-        if candidate.columns.len() <= MAX_DESIGN_COLUMNS && draft_text_bytes(&candidate).is_ok() {
-            session.draft = candidate;
-            changed = true;
-        } else {
-            session.error = Some(tr(ui, "qbe-limit"));
+    for (expression, output) in events.outputs {
+        let position = session.draft.columns.iter().position(|column| {
+            keyboard::same_projection(&column.expression, &expression)
+                && (output != keyboard::Output::Hide || column.show)
+        });
+        if let Some(position) = position {
+            let column = &mut session.draft.columns[position];
+            let show = match output {
+                keyboard::Output::Show => true,
+                keyboard::Output::Hide => false,
+                keyboard::Output::Toggle => !column.show,
+            };
+            changed |= column.show != show;
+            column.show = show;
+        } else if output != keyboard::Output::Hide {
+            changed |= append_column(
+                ui,
+                session,
+                DesignColumn {
+                    expression,
+                    alias: None,
+                    show: true,
+                    sort: None,
+                    criteria: Vec::new(),
+                },
+            );
         }
+    }
+    if let Some(column) = events.column {
+        changed |= append_column(ui, session, column);
     }
     if let Some(join) = events.join {
         let duplicate = session.draft.joins.contains(&join);
@@ -92,6 +132,18 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
         }
     }
     changed | joins_changed
+}
+
+fn append_column(ui: &Ui, session: &mut Session, column: DesignColumn) -> bool {
+    let mut candidate = session.draft.clone();
+    candidate.columns.push(column);
+    if candidate.columns.len() <= MAX_DESIGN_COLUMNS && draft_text_bytes(&candidate).is_ok() {
+        session.draft = candidate;
+        true
+    } else {
+        session.error = Some(tr(ui, "qbe-limit"));
+        false
+    }
 }
 
 fn source_card(
@@ -135,11 +187,20 @@ fn source_card(
 }
 
 fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: &mut SourceEvents) {
-    let all_fields = ui.push_id("all_fields", |ui| field_row(ui, "*")).inner;
-    if all_fields.clicked() {
+    let metadata = session
+        .metadata
+        .iter()
+        .find(|table| table.table.eq_ignore_ascii_case(&source.table));
+    let mut keyboard = keyboard::List::load(ui, source, metadata);
+    let all_fields = ui
+        .push_id("all_fields", |ui| field_row(ui, "*", keyboard.selected(0)))
+        .inner;
+    if all_fields.clicked_by(egui::PointerButton::Primary) {
         events.clicked = true;
     }
-    if all_fields.clicked() && click::activate(ui, &all_fields, &mut events.pair) {
+    if all_fields.clicked_by(egui::PointerButton::Primary)
+        && click::activate(ui, &all_fields, &mut events.pair)
+    {
         events.column = Some(DesignColumn {
             expression: DesignExpression::AllFields(Some(source.id)),
             alias: None,
@@ -148,28 +209,28 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
             criteria: Vec::new(),
         });
     }
-    let Some(metadata) = session
-        .metadata
-        .iter()
-        .find(|table| table.table.eq_ignore_ascii_case(&source.table))
-    else {
+    keyboard.row(all_fields, DesignExpression::AllFields(Some(source.id)));
+    let Some(metadata) = metadata else {
         ui.weak(tr(ui, "qbe-metadata-needed"));
+        keyboard.finish(ui, events);
         return;
     };
-    for field in &metadata.fields {
+    for (index, field) in metadata.fields.iter().enumerate() {
         let reference = DesignField {
             source_id: source.id,
             column: field.name.clone(),
         };
         let response = ui
-            .push_id(("field", &field.name), |ui| field_row(ui, &field.name))
+            .push_id(("field", &field.name), |ui| {
+                field_row(ui, &field.name, keyboard.selected(index + 1))
+            })
             .inner;
         if response.rect.intersects(ui.clip_rect()) {
             events
                 .anchors
                 .push((reference.clone(), response.rect.intersect(ui.clip_rect())));
         }
-        if response.clicked() {
+        if response.clicked_by(egui::PointerButton::Primary) {
             events.clicked = true;
             if click::activate(ui, &response, &mut events.pair) {
                 events.column = Some(DesignColumn::field(source.id, field.name.clone()));
@@ -178,16 +239,21 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
         response.context_menu(|ui| {
             join_menu(ui, session, &reference, events);
         });
+        keyboard.row(response, DesignExpression::Field(reference));
     }
+    keyboard.finish(ui, events);
 }
 
 /// A compact full-width row keeps join anchors at card edges, never at the
 /// end of a short field name. Full metadata names remain accessible and hoverable.
-fn field_row(ui: &mut Ui, name: &str) -> Response {
-    let (rect, response) = ui.allocate_exact_size(
-        egui::vec2(ui.available_width(), FIELD_ROW_HEIGHT),
-        egui::Sense::click(),
-    );
+fn field_row(ui: &mut Ui, name: &str, selected: bool) -> Response {
+    let sense = if selected {
+        egui::Sense::click()
+    } else {
+        egui::Sense::CLICK
+    };
+    let (rect, response) =
+        ui.allocate_exact_size(egui::vec2(ui.available_width(), FIELD_ROW_HEIGHT), sense);
     let colors = crate::theme::palette(ui.ctx());
     if response.hovered() || response.has_focus() {
         ui.painter().rect_filled(rect, 0.0, colors.active_row);
@@ -213,7 +279,7 @@ fn field_row(ui: &mut Ui, name: &str) -> Response {
         egui::WidgetInfo::selected(
             egui::WidgetType::SelectableLabel,
             ui.is_enabled(),
-            false,
+            selected,
             name,
         )
     });

@@ -1,6 +1,9 @@
 //! Column-oriented QBE cells preserve local drafts and bounded literal input.
+mod field_menu;
+
 use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session};
 use crate::localization::tr;
+use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
 use tablecraft_builders::query::{
@@ -86,6 +89,12 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             cost,
                                             &mut budget,
                                         );
+                                        focus::register(
+                                            ui,
+                                            Pane::QueryGrid,
+                                            &response,
+                                            index == 0 || response.has_focus(),
+                                        );
                                         if response.changed() && text != original {
                                             column.expression = edited_field(
                                                 &draft,
@@ -99,19 +108,21 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             // source or charge display-only wildcard text.
                                             budget.remaining = previous_budget;
                                         }
-                                        response.context_menu(|ui| {
+                                        field_menu::show(ui, &response, |ui, keyboard_open| {
                                             let mut alias =
                                                 column.alias.clone().unwrap_or_default();
                                             ui.label(tr(ui, "qbe-alias"));
-                                            if bounded_input(
+                                            let alias_input = bounded_input(
                                                 ui,
                                                 &mut alias,
                                                 "qbe-alias-input",
                                                 column.alias.as_ref().map_or(0, String::len),
                                                 &mut budget,
-                                            )
-                                            .changed()
-                                            {
+                                            );
+                                            if keyboard_open {
+                                                alias_input.request_focus();
+                                            }
+                                            if alias_input.changed() {
                                                 column.alias = (!alias.is_empty()).then_some(alias);
                                                 changed = true;
                                             }
@@ -137,7 +148,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                         }));
                                     }
                                     2 => {
-                                        egui::ComboBox::from_id_salt("qbe_sort")
+                                        let response = egui::ComboBox::from_id_salt("qbe_sort")
                                             .selected_text(tr(
                                                 ui,
                                                 match column.sort {
@@ -165,7 +176,14 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                                         )
                                                         .changed();
                                                 }
-                                            });
+                                            })
+                                            .response;
+                                        focus::register(
+                                            ui,
+                                            Pane::QueryGrid,
+                                            &response,
+                                            response.has_focus(),
+                                        );
                                     }
                                     3 => {
                                         let response = ui
@@ -185,6 +203,12 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             node.set_label(label)
                                         });
                                         changed |= response.changed();
+                                        focus::register(
+                                            ui,
+                                            Pane::QueryGrid,
+                                            &response,
+                                            response.has_focus(),
+                                        );
                                     }
                                     _ => {
                                         let criterion = row - 4;
@@ -193,15 +217,20 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             .get(criterion)
                                             .cloned()
                                             .unwrap_or_default();
-                                        if bounded_input(
+                                        let response = bounded_input(
                                             ui,
                                             &mut text,
                                             "qbe-criterion-input",
                                             column.criteria.get(criterion).map_or(0, String::len),
                                             &mut budget,
-                                        )
-                                        .changed()
-                                        {
+                                        );
+                                        focus::register(
+                                            ui,
+                                            Pane::QueryGrid,
+                                            &response,
+                                            response.has_focus(),
+                                        );
+                                        if response.changed() {
                                             if column.criteria.len() <= criterion {
                                                 column
                                                     .criteria
@@ -222,13 +251,17 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
             });
         });
         ui.horizontal(|ui| {
-            if ui
-                .add_enabled(
-                    session.draft.columns.len() < MAX_DESIGN_COLUMNS,
-                    egui::Button::new(tr(ui, "qbe-add-expression")),
-                )
-                .clicked()
-            {
+            let add_expression = ui.add_enabled(
+                session.draft.columns.len() < MAX_DESIGN_COLUMNS,
+                egui::Button::new(tr(ui, "qbe-add-expression")),
+            );
+            focus::register(
+                ui,
+                Pane::QueryGrid,
+                &add_expression,
+                session.draft.columns.is_empty() || add_expression.has_focus(),
+            );
+            if add_expression.clicked() {
                 session.draft.columns.push(DesignColumn {
                     expression: DesignExpression::Expression(String::new()),
                     alias: None,
@@ -238,13 +271,12 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                 });
                 changed = true;
             }
-            if ui
-                .add_enabled(
-                    criteria_rows < MAX_CRITERIA_ROWS,
-                    egui::Button::new(tr(ui, "qbe-add-or")),
-                )
-                .clicked()
-            {
+            let add_criteria = ui.add_enabled(
+                criteria_rows < MAX_CRITERIA_ROWS,
+                egui::Button::new(tr(ui, "qbe-add-or")),
+            );
+            focus::register(ui, Pane::QueryGrid, &add_criteria, add_criteria.has_focus());
+            if add_criteria.clicked() {
                 for column in &mut session.draft.columns {
                     column.criteria.resize(criteria_rows + 1, String::new());
                 }
@@ -349,6 +381,15 @@ fn bounded_input(
     }
     ui.ctx()
         .accesskit_node_builder(response.id, |node| node.set_label(label.as_str()));
+    if response.has_focus() {
+        ui.painter().rect_stroke(
+            response.rect,
+            0.0,
+            egui::Stroke::new(1.0, crate::theme::palette(ui.ctx()).accent),
+            egui::StrokeKind::Inside,
+        );
+        response.scroll_to_me(None);
+    }
     response.on_hover_text(label)
 }
 

@@ -39,6 +39,32 @@ nonrepresentable clauses refuse with a visible diagnosis while preserving the
 original SQL, prior draft and previous results. Import is not permission to
 execute the query. Inspecting a saved query remains inert and separate.
 
+## Keyboard flow
+
+F6 reaches the source lists and lower grid as separate panes, followed by the
+existing Navigation and Ribbon stops; Shift+F6 reverses that cycle. Only enabled
+controls rendered for the current object and view are focus targets. An empty
+grid can be entered through Add expression. Modal dialogs and child popups retain
+their input ownership.
+
+Each source list has one Tab stop. Up/Down and Home/End move its current field and
+reveal it inside the card. Space toggles that exact typed field's output; `+`
+shows it or adds it if absent, and `-` hides a visible matching projection. These
+operations retain aliases, criteria and unrelated projections. Duplicate matches
+are handled one at a time rather than bulk-deleted. Enter does not add a query
+field; pointer double-click retains its existing append behavior.
+
+The Field editor's Shift+F10 opens its existing alias/remove context menu. Escape
+from a keyboard-opened menu returns focus to that editor. Tab and Shift+Tab use
+the actual input controls; text-editing arrows remain text-editing keys.
+
+Microsoft's [Access keyboard contract](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents F6 between Query Design panes, diagram arrows/output keys and the
+context-menu shortcut. Home/End and continuing the cycle through Navigation and
+Ribbon are current list/workspace adaptations. Native column-selection,
+multiselection, overtype and complete cell-navigation parity remain unfinished.
+No Windows/Access interaction comparison has qualified this implementation.
+
 ## Source and resource rules
 
 Each operation captures the database revision, exact scratch object instance,

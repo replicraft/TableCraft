@@ -3,7 +3,7 @@ use crate::Theme;
 use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_builders::query::{DesignFieldMetadata, DesignTableMetadata};
 
-fn session() -> Session {
+pub(super) fn session() -> Session {
     let mut session = Session::default();
     for (id, table, field) in [
         (1, "Customers", "CustomerID"),
