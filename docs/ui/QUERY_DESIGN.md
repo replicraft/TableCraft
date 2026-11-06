@@ -10,6 +10,12 @@ executor.
 
 ## Working flow
 
+The Ribbon View dropdown selects SQL, Design and cached Datasheet results. It is
+available from Home as well as the contextual Query Design tab. Selecting a
+cached result does not rerun SQL. The contextual tab remains available across
+these views; Run appears once in each layout. Add Tables belongs to the Design
+Ribbon rather than a second toolbar above the canvas.
+
 Switching an empty SQL object to Design opens Add Tables. Selecting a table is
 inert; Add explicitly requests its field metadata. Double-clicking an upper
 source field adds a typed projection to the lower QBE grid. A source's `*` adds
@@ -66,6 +72,10 @@ design that can be represented syntactically.
 
 The upper cards, divider, QBE row organization and Add Tables list follow the
 actual Microsoft images recorded in [visual references](VISUAL_REFERENCES.md).
+Source cards have a bounded field-list viewport with their own vertical scroll
+on a gray canvas. The current Field cells retain qualified expressions rather
+than Access's shorter local field labels; the Table row still identifies the
+source separately.
 The current join workflow uses field context menus and explicit join-kind
 controls; native drag-and-drop and the Join Properties dialog are not qualified.
 The Add Tables surface exposes the implemented native-table source profile,

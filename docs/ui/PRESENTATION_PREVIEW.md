@@ -1,5 +1,38 @@
 # Presentation preview
 
+## Normal startup, Query Design and paging polish — 5 November 2026
+
+Normal startup now includes the unavailable template search and Blank Database
+tile. File shows New, Info, Save, Save As, Print, Close and Account in the normal
+host as well as the synthetic preview. Unsupported commands remain disabled;
+New only displays an unavailable creation page. No recent files, account identity
+or cloud connections are invented. All eight Backstage catalogs use neutral
+unavailable wording.
+
+Query Design uses Ribbon View/Run/Add Tables instead of a duplicate body toolbar.
+Home's View menu also handles the scratch SQL object. Switching to cached results
+does not execute a query. Bounded source cards scroll their own field lists on
+the gray canvas. Datasheets retain measured column widths and horizontal position
+across page changes, scoped to the object/source/ordered schema; row selection
+identities remain page-local.
+
+The selected batch passed all 64 desktop tests and 257 of 258 UI tests. The sole
+failure was an old assertion that SQL's Home View menu was disabled; its updated
+test passed separately, preserving the table-navigation and schema-action checks.
+Strict UI/desktop all-target Clippy, formatting, dependency boundaries and 7,790
+documentation targets passed. The geometry test uses actual pointer resize and
+horizontal scrolling through page offsets 0 → 100 → 0, checking separate object,
+table, source and schema identities. Query tests check one Run control in each
+SQL layout and the existing checked service actions.
+
+Eight normal-host frames were rendered offscreen on macOS at 1280×820 logical
+pixels, 1×: startup, File/Open, Query Design and wide Query Design in light/dark.
+Startup, File/Open and wide Query Design frames were reviewed against the actual
+cached startup/Open and published criteria references. Dark styling and the full
+modern Query Design Ribbon have no matching retained Access capture. Qualified
+Field labels and the explicit join controls remain approximations. No native
+window was opened and no Windows/Access interaction comparison was performed.
+
 The synthetic preview supports screenshot-guided visual and interaction review
 independently of database behavior. It reuses the shared workspace
 renderer and existing view/action model. Its separate desktop host never creates

@@ -1,5 +1,17 @@
 # Implementation status
 
+## Normal File surfaces and query/datasheet layout — 5 November 2026
+
+Normal startup and File now show existing unavailable template/maintenance
+controls. Query Design consolidates view switching and Run into the Ribbon and
+uses bounded scrolling source cards. Datasheet column widths and horizontal
+position survive native page changes without changing row identities or database
+formatting. No backend capability was added.
+
+All 258 UI cases passed across the batch and focused assertion update, plus all
+64 desktop tests and strict selected lint/format checks. Offscreen light/dark
+frames were reviewed without native windows. See the [verification record](ui/PRESENTATION_PREVIEW.md#normal-startup-query-design-and-paging-polish--5-november-2026).
+
 ## Parameter input guards and Options accessibility — 5 November 2026
 
 Saved parameter prompts reject oversized input events before editing while

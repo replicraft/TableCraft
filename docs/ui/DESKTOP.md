@@ -1,5 +1,11 @@
 # Native desktop preview
 
+Datasheet column widths and horizontal position follow the current object,
+source revision and ordered column names across native page changes. Record
+selection and widget identities remain page-local. A different object, source
+or column schema gets its own geometry; collection layouts retain their separate
+width policy. This is session presentation state, not saved database formatting.
+
 Native table pages can carry checked sparse row membership independently of
 their displayed offset. Editing, deletion and collection targets resolve the
 original snapshot ordinal through that membership; query results cannot acquire
