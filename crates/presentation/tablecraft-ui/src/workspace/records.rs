@@ -1,7 +1,7 @@
 //! Visible record positions remain distinct from native snapshot ordinals.
 mod toolbar;
 
-use super::ribbon::{CommandSize, Icon, command};
+use super::ribbon::{CommandSize, Icon, command_menu};
 use super::{Action, Data, DocumentView, State};
 use crate::localization::tr;
 use egui::{Popup, accesskit::HasPopup};
@@ -336,7 +336,7 @@ impl State {
                 && !self.table_filter_pending()
                 && self.record_source_matches(target)
         });
-        let response = command(
+        let response = command_menu(
             ui,
             Icon::GoTo,
             &tr(ui, "ribbon-go-to"),

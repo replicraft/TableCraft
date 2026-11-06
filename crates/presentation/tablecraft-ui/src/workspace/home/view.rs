@@ -1,10 +1,8 @@
 //! The existing table views share the Access-style large View dropdown.
 use super::{Action, CommandSize, DocumentView, Icon, State, command};
 use crate::workspace::objects::ObjectKind;
-use egui::{Popup, Stroke, accesskit::HasPopup};
-
-const VIEW_ARROW_HALF_WIDTH: f32 = 3.0;
-const VIEW_ARROW_BOTTOM_PADDING: f32 = 6.0;
+use crate::workspace::ribbon::command_menu;
+use egui::{Popup, accesskit::HasPopup};
 
 impl State {
     pub(super) fn view_menu(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
@@ -25,32 +23,13 @@ impl State {
         } else {
             Icon::ViewDesign
         };
-        let response = command(
+        let response = command_menu(
             ui,
             icon,
             &t.text("ribbon-view"),
             enabled,
             CommandSize::Large,
         );
-        let colors = crate::theme::palette(ui.ctx());
-        let color = if response.enabled() {
-            colors.ink
-        } else {
-            colors.muted
-        };
-        let center = egui::pos2(
-            response.rect.center().x,
-            response.rect.bottom() - VIEW_ARROW_BOTTOM_PADDING,
-        );
-        ui.painter().add(egui::Shape::convex_polygon(
-            vec![
-                center + egui::vec2(-VIEW_ARROW_HALF_WIDTH, -VIEW_ARROW_HALF_WIDTH),
-                center + egui::vec2(VIEW_ARROW_HALF_WIDTH, -VIEW_ARROW_HALF_WIDTH),
-                center,
-            ],
-            color,
-            Stroke::NONE,
-        ));
 
         if !response.enabled() {
             Popup::close_id(ui.ctx(), Popup::default_response_id(&response));
