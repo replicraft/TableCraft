@@ -1047,3 +1047,46 @@ Default 1280×820 normal-host collapsed/temporary frames were rendered offscreen
 in light and dark themes on macOS with Windows chrome emulation at 1×. The
 expanded Home strip still fits that window; a German temporary frame used
 900×580 at 1.25× with horizontal overflow. Native app windows were not opened.
+
+
+## Caption chevrons, font catalog and replacement artwork — 5 November 2026
+
+View/Paste/Zoom arrows now follow the caption instead of the shared command
+bottom; the geometry regression observes all three plus Refresh All's inline
+arrow. Family and size selectors use equal bounds at 1×, 1.25×, 1.5× and 2×,
+with a seven-point second-row gap. An initial offscreen frame exposed separators
+stretching the top row, so its height is explicitly bounded before layout. The
+complete English strip retains its default-window width and height limits.
+Refresh All and Format Painter now have original stacked-record/refresh and
+broad-bristle artwork; all 536 generated icon variants decode successfully.
+
+Fontique discovers platform families once in the desktop host. The local macOS
+headless probe observed 451 system names and 455 merged families, retaining the
+four bundled families. Its cache retains one shared family allocation. This is
+local discovery evidence, not Windows/Linux qualification. The pure UI catalog
+admits bounded names and browses virtualized rows; a 500-family regression checks
+one scrollbar and visible-row rendering. Applying font formatting is unavailable;
+Selawik stays selected and no system font binary is imported into egui.
+
+Paste Special and Paste Append are visible disabled choices. Paste text uses the
+existing exact-target review intent. The first menu approach tied clipboard focus
+to a disappearing/disabled Ribbon control; the final bounded UI intent focuses
+the actual rendered cell first. A current-frame cell stamp avoids replaying egui
+interaction through `Context::read_response`. Normal and temporary Ribbon tests
+retain delayed clipboard ownership and the original literal payload without
+weakening source/focus checks or requesting a remembered widget ID.
+
+The full batch passed 246 UI and all 64 desktop tests. Its combined menu case
+initially selected the same row twice across Paste/Delete subcases; after making
+that precondition actually change DeleteTarget, the focused case passed. A new
+large-catalog case also passed, covering all 248 UI cases across batch/follow-ups.
+Final strict selected Clippy, formatting, documentation links and dependency
+boundaries pass. CLI normal dependencies exclude Fontique; its CLI-specific
+license bundle is unchanged. A future desktop archive needs desktop dependency
+notices. No native app windows were opened.
+
+Normal-host offscreen light/dark Home frames were reviewed at 1280×820, 1× on
+macOS with Windows chrome emulation. The icon contact sheet also reviewed light,
+dark and disabled variants at 16, 28 and 56 pixels. Native reference evidence
+remains the retained Windows Access Home image. Font-picker layout is a UI
+adaptation without a retained Access picker capture.

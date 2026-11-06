@@ -19,6 +19,27 @@ interaction compatibility are separate claims.
 | Table Fields | Views, Add & Delete, Properties, Validation | Disabled field-management previews. Full galleries and their native interaction remain unfinished. |
 | Table | Properties, Before Events, After Events, Macros & Code | Disabled table/data-macro previews. No VBA or data-macro execution is supplied by these controls. |
 
+## Font catalog and caption alignment — 5 November 2026
+
+View, Paste and Zoom place their chevrons 3.5 logical points below the actual
+caption, independently of the command's shared height. Refresh All retains its
+inline final-line arrow. Font family and size selectors share a 22-point row;
+the second formatting row has a seven-point gap. The top row is bounded before
+its separators measure available height, retaining the compact default strip.
+Refresh All and Format Painter use updated original artwork in all four variants.
+
+The Font selector browses a host-supplied catalog, including bundled families and
+installed system families discovered through desktop-only Fontique. It uses
+virtualized rows and one scrollbar. Selawik remains selected; applying family,
+size and other text formatting is unavailable. Font discovery does not load
+system faces into egui or change database fields. See the [dependency contract](../development/DEPENDENCIES.md#desktop-font-family-discovery--5-november-2026).
+
+Paste opens its existing literal-text workflow, with Paste Special and Paste
+Append visible but unavailable. The menu stages an exact UI target and returns
+focus to the actual rendered native cell before requesting clipboard text. A
+bounded focus wait never requests an old widget ID. Delayed replies retain the
+existing source/focus validation and still require the normal edit review.
+
 ## Menus and unavailable controls
 
 Icon-only formatting commands identify themselves by translated name on hover.
