@@ -34,3 +34,11 @@ backstage-noto-license = Licencia de Noto Sans CJK
 backstage-icons-credit = Iconos de la cinta de TableCraft · gráficos vectoriales originales
 backstage-icons-source = Origen de los iconos: TableCraft
 backstage-icons-license = Licencia de los iconos (Apache-2.0)
+
+backstage-preview-only = Comando de vista previa no disponible; no realiza ninguna acción.
+backstage-recent-empty = No hay bases de datos recientes disponibles en esta sesión.
+backstage-creation-unavailable = La creación de bases de datos no está disponible en esta vista previa.
+backstage-blank-database = Base de datos en blanco
+backstage-open-other = Abrir otros archivos
+backstage-template-search = Buscar plantillas (no disponible)
+backstage-templates = Plantillas

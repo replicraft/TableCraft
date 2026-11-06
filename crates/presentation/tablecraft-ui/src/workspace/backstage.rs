@@ -1,4 +1,5 @@
 //! Working File/Open and About surfaces using the observed Backstage rail layout.
+mod home;
 mod rail;
 
 use super::{Action, State, diagnostics, ribbon::Icon};
@@ -10,13 +11,19 @@ use egui::{Frame, Margin, ScrollArea, TextEdit, Ui};
 pub(super) enum Backstage {
     Closed,
     #[default]
+    Home,
     Open,
+    New,
     About,
     Options,
 }
 
 impl State {
     pub(super) fn backstage(&mut self, ui: &mut Ui, actions: &mut Vec<Action>, path_id: egui::Id) {
+        if self.backstage == Backstage::Home && self.database.is_none() {
+            self.startup(ui, actions);
+            return;
+        }
         let colors = palette(ui.ctx());
         egui::Panel::left("file_rail")
             .exact_size(160.0)
@@ -26,14 +33,47 @@ impl State {
                     .inner_margin(Margin::symmetric(10, 10)),
             )
             .show(ui, |ui| {
-                if rail::entry(ui, Icon::ArrowLeft, &tr(ui, "backstage-back"), None).clicked() {
-                    self.dismiss_backstage();
+                if self.backstage_return_available() {
+                    if rail::entry(ui, Icon::ArrowLeft, &tr(ui, "backstage-back"), None).clicked() {
+                        self.return_from_backstage();
+                    }
+                    ui.add_space(18.0);
                 }
-                ui.add_space(18.0);
-                self.file_section(ui, Backstage::Open, Icon::FolderOpen, "backstage-open");
 
-                let footer_height = 2.0 * rail::ROW_HEIGHT + ui.spacing().item_spacing.y;
+                let footer_rows = if self.mock_preview { 3.0 } else { 2.0 };
+                let footer_height = footer_rows * (rail::ROW_HEIGHT + ui.spacing().item_spacing.y);
+                ScrollArea::vertical()
+                    .id_salt("file_rail_sections")
+                    .max_height((ui.available_height() - footer_height).max(rail::ROW_HEIGHT))
+                    .auto_shrink([false, true])
+                    .show(ui, |ui| {
+                        self.file_section(ui, Backstage::Home, Icon::Home, "backstage-home");
+                        if self.mock_preview {
+                            self.file_section(
+                                ui,
+                                Backstage::New,
+                                Icon::NewDocument,
+                                "backstage-new",
+                            );
+                        }
+                        self.file_section(ui, Backstage::Open, Icon::FolderOpen, "backstage-open");
+                        if self.mock_preview {
+                            ui.separator();
+                            for key in [
+                                "backstage-info",
+                                "backstage-save",
+                                "backstage-save-as",
+                                "backstage-print",
+                                "backstage-close",
+                            ] {
+                                self.mock_file_section(ui, key);
+                            }
+                        }
+                    });
                 ui.add_space((ui.available_height() - footer_height).max(0.0));
+                if self.mock_preview {
+                    self.mock_file_section(ui, "backstage-account");
+                }
                 self.file_section(ui, Backstage::About, Icon::Info, "backstage-about");
                 self.file_section(ui, Backstage::Options, Icon::Settings, "backstage-options");
             });
@@ -48,6 +88,8 @@ impl State {
                         ui.horizontal(|ui| {
                             ui.add_space(22.0);
                             ui.vertical(|ui| match self.backstage {
+                                Backstage::Home => self.start_pane(ui, actions),
+                                Backstage::New => self.new_pane(ui),
                                 Backstage::Open => self.open_pane(ui, actions, path_id),
                                 Backstage::About => self.about_pane(ui),
                                 Backstage::Options => self.options_pane(ui),
@@ -56,6 +98,36 @@ impl State {
                         });
                     });
             });
+    }
+
+    pub(super) fn backstage_return_available(&self) -> bool {
+        self.database.is_some() || self.backstage != Backstage::Home
+    }
+
+    pub(super) fn return_from_backstage(&mut self) {
+        if self.database.is_some() {
+            self.dismiss_backstage();
+        } else {
+            self.backstage = Backstage::Home;
+        }
+    }
+
+    fn mock_file_section(&self, ui: &mut Ui, key: &str) {
+        ui.push_id(key, |ui| {
+            ui.add_enabled_ui(false, |ui| {
+                let icon = match key {
+                    "backstage-info" => Icon::Info,
+                    "backstage-save" => Icon::Save,
+                    "backstage-save-as" => Icon::SaveAs,
+                    "backstage-print" => Icon::Print,
+                    "backstage-close" => Icon::CloseDocument,
+                    "backstage-account" => Icon::Account,
+                    _ => return,
+                };
+                rail::entry(ui, icon, &tr(ui, key), None)
+                    .on_disabled_hover_text(tr(ui, "backstage-preview-only"));
+            });
+        });
     }
 
     fn file_section(&mut self, ui: &mut Ui, view: Backstage, icon: Icon, key: &str) {
@@ -68,8 +140,29 @@ impl State {
 
     fn open_pane(&mut self, ui: &mut Ui, actions: &mut Vec<Action>, path_id: egui::Id) {
         ui.heading(tr(ui, "backstage-open"));
+        ui.horizontal_top(|ui| {
+            ui.vertical(|ui| {
+                ui.set_min_width(140.0);
+                ui.label(tr(ui, "backstage-computer"));
+                if self.file_picker_available
+                    && ui
+                        .add_enabled(
+                            self.file_picker_ready(),
+                            egui::Button::new(tr(ui, "backstage-browse")),
+                        )
+                        .clicked()
+                {
+                    actions.push(Action::ChooseFile);
+                }
+            });
+            ui.vertical(|ui| {
+                ui.heading(tr(ui, "backstage-recent"));
+                ui.label(tr(ui, "backstage-recent-empty"));
+            });
+        });
+        ui.add_space(12.0);
+        ui.separator();
         ui.label(tr(ui, "backstage-open-title"));
-        ui.add_space(14.0);
         if let Some(error) = &self.error {
             diagnostics::show(ui, ui.id().with("open_error"), error);
             ui.add_space(8.0);
@@ -84,16 +177,6 @@ impl State {
             )
             .labelled_by(path_label.id);
         crate::theme::input_border(ui, &path);
-        if self.file_picker_available
-            && ui
-                .add_enabled(
-                    self.file_picker_ready(),
-                    egui::Button::new(tr(ui, "backstage-browse")),
-                )
-                .clicked()
-        {
-            actions.push(Action::ChooseFile);
-        }
         ui.add_space(10.0);
         let password_label = ui.label(tr(ui, "backstage-password"));
         let password = ui

@@ -34,3 +34,11 @@ backstage-noto-license = Noto Sans CJK 라이선스
 backstage-icons-credit = TableCraft 리본 아이콘 · 자체 벡터 그래픽
 backstage-icons-source = 아이콘 출처: TableCraft
 backstage-icons-license = 아이콘 라이선스 (Apache-2.0)
+
+backstage-preview-only = 사용할 수 없는 미리 보기 명령입니다. 아무 작업도 수행하지 않습니다.
+backstage-recent-empty = 이 세션에는 최근 데이터베이스가 없습니다.
+backstage-creation-unavailable = 이 미리 보기에서는 데이터베이스를 만들 수 없습니다.
+backstage-blank-database = 빈 데이터베이스
+backstage-open-other = 다른 파일 열기
+backstage-template-search = 서식 파일 검색 (사용 불가)
+backstage-templates = 서식 파일

@@ -88,12 +88,13 @@ fn click(state: &mut State, label: &str, context: &egui::Context) -> Vec<Action>
 }
 
 #[test]
-fn default_open_pane_has_real_open_and_picker_actions_at_supported_sizes() {
+fn explicit_open_pane_has_real_open_and_picker_actions_at_supported_sizes() {
     for size in [egui::vec2(900.0, 580.0), egui::vec2(1280.0, 820.0)] {
         let context = egui::Context::default();
         let mut state = State {
             path: "sample.accdb".into(),
             file_picker_available: true,
+            backstage: Backstage::Open,
             ..Default::default()
         };
         assert!(state.backstage_visible());
@@ -127,6 +128,7 @@ fn default_open_pane_has_real_open_and_picker_actions_at_supported_sizes() {
     let mut state = State {
         path: "sample.accdb".into(),
         file_picker_available: true,
+        backstage: Backstage::Open,
         ..Default::default()
     };
     assert!(matches!(
@@ -458,6 +460,7 @@ fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_a
         path: path.into(),
         password: password.into(),
         error: Some(report.clone()),
+        backstage: Backstage::Open,
         ..Default::default()
     };
     let mut harness = Harness::builder()
@@ -470,7 +473,7 @@ fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_a
     crate::configure(&harness.ctx);
     harness.run();
 
-    for label in ["Copy details", "Open database", "Back"] {
+    for label in ["Copy details", "Open database"] {
         let button = harness.get_by_role_and_label(Role::Button, label);
         assert!(button.rect().top() >= 0.0 && button.rect().bottom() <= 580.0);
         assert!(!button.accesskit_node().is_disabled());
@@ -506,8 +509,91 @@ fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_a
         .get_by_role_and_label(Role::Button, "Back")
         .click_accesskit();
     harness.step();
-    assert!(!harness.state().0.backstage_visible());
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
     assert!(harness.state().1.is_empty());
     assert_eq!(harness.state().0.path, path);
     assert_eq!(harness.state().0.password, password);
+}
+
+#[test]
+fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
+    let state = State {
+        mock_preview: true,
+        path: "unchanged.accdb".into(),
+        password: "unchanged secret".into(),
+        ..State::default()
+    };
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Back")
+            .is_none()
+    );
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Blank database")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness.key_press(egui::Key::Escape);
+    harness.step();
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+
+    harness
+        .get_by_role_and_label(Role::Button, "Open Other Files")
+        .click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::Open);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, "Back")
+            .is_some()
+    );
+    for label in ["Info", "Save", "Save As", "Print", "Close", "Account"] {
+        let command = harness.get_by_role_and_label(Role::Button, label);
+        let node = command.accesskit_node();
+        assert!(node.is_disabled());
+        assert!(!node.data().supports_action(egui::accesskit::Action::Click));
+        assert!(!node.data().supports_action(egui::accesskit::Action::Focus));
+    }
+    harness.get_by_role_and_label(Role::Tab, "New").click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::New);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Blank database")
+            .accesskit_node()
+            .is_disabled()
+    );
+    harness.get_by_role_and_label(Role::Button, "Back").click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+
+    harness
+        .get_by_role_and_label(Role::Button, "Options")
+        .click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::Options);
+    harness.key_press(egui::Key::Escape);
+    harness.step();
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+
+    harness.get_by_role_and_label(Role::Button, "About").click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::About);
+    harness.get_by_role_and_label(Role::Button, "Back").click();
+    harness.run_steps(2);
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+    assert!(harness.state().0.database.is_none());
+    assert_eq!(harness.state().0.path, "unchanged.accdb");
+    assert_eq!(harness.state().0.password, "unchanged secret");
+    assert!(harness.state().1.is_empty());
 }
