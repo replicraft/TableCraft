@@ -518,7 +518,7 @@ fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_a
 #[test]
 fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
     let state = State {
-        mock_preview: true,
+        mock_preview: false,
         path: "unchanged.accdb".into(),
         password: "unchanged secret".into(),
         ..State::default()
@@ -543,6 +543,17 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
             .accesskit_node()
             .is_disabled()
     );
+    let template_search =
+        harness.get_by_role_and_label(Role::TextInput, "Search templates (unavailable)");
+    assert!(template_search.accesskit_node().is_disabled());
+    template_search.focus();
+    harness
+        .get_by_role_and_label(Role::Button, "Blank database")
+        .click_accesskit();
+    harness.step();
+    assert_eq!(harness.state().0.backstage, Backstage::Home);
+    assert!(harness.state().1.is_empty());
+
     harness.key_press(egui::Key::Escape);
     harness.step();
     assert_eq!(harness.state().0.backstage, Backstage::Home);
@@ -563,6 +574,11 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
         assert!(node.is_disabled());
         assert!(!node.data().supports_action(egui::accesskit::Action::Click));
         assert!(!node.data().supports_action(egui::accesskit::Action::Focus));
+        command.focus();
+        command.click_accesskit();
+        harness.step();
+        assert_eq!(harness.state().0.backstage, Backstage::Open);
+        assert!(harness.state().1.is_empty());
     }
     harness.get_by_role_and_label(Role::Tab, "New").click();
     harness.run_steps(2);
@@ -603,6 +619,7 @@ fn translated_file_rail_labels_fit_without_elision_in_both_themes() {
     for theme in [Theme::Light, Theme::Dark] {
         let mut preview = Preview::new(Scene::Backstage);
         let mut state = std::mem::take(preview.state_mut());
+        state.mock_preview = false;
         state.localizer = Localizer::new(Locale::De).unwrap();
         state.theme = theme;
         let original_rows = state.data.as_ref().unwrap().rows.as_ptr();

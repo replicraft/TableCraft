@@ -35,9 +35,9 @@ backstage-icons-credit = TableCraft リボン アイコン · オリジナルの
 backstage-icons-source = アイコンの提供元: TableCraft
 backstage-icons-license = アイコンのライセンス（Apache-2.0）
 
-backstage-preview-only = 利用できないプレビューコマンドです。操作は実行されません。
+backstage-unavailable = まだ利用できません
 backstage-recent-empty = このセッションには最近使用したデータベースがありません。
-backstage-creation-unavailable = このプレビューではデータベースを作成できません。
+backstage-creation-unavailable = データベースの作成はまだ利用できません。
 backstage-blank-database = 空のデータベース
 backstage-open-other = 他のファイルを開く
 backstage-template-search = テンプレートの検索（利用不可）

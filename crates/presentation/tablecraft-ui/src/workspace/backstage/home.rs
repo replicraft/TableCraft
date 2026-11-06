@@ -60,22 +60,23 @@ impl State {
                         {
                             actions.push(Action::ChooseFile);
                         }
-                        if self.mock_preview {
-                            ui.add_space(18.0);
-                            let mut search = String::new();
-                            ui.add_enabled(
+                        ui.add_space(18.0);
+                        let mut search = String::new();
+                        let search_label = tr(ui, "backstage-template-search");
+                        let response = ui
+                            .add_enabled(
                                 false,
                                 egui::TextEdit::singleline(&mut search)
                                     .desired_width(280.0)
-                                    .hint_text(tr(ui, "backstage-template-search")),
+                                    .hint_text(&search_label),
                             )
                             .on_disabled_hover_text(tr(ui, "backstage-creation-unavailable"));
-                            ui.add_space(18.0);
-                            ui.heading(tr(ui, "backstage-templates"));
-                            self.blank_template(ui);
-                        } else {
-                            ui.label(tr(ui, "backstage-open-title"));
-                        }
+                        ui.ctx().accesskit_node_builder(response.id, |node| {
+                            node.set_label(search_label);
+                        });
+                        ui.add_space(18.0);
+                        ui.heading(tr(ui, "backstage-templates"));
+                        self.blank_template(ui);
                     });
             });
     }
@@ -101,11 +102,9 @@ impl State {
         ui.add_space(24.0);
         ui.heading(tr(ui, "backstage-recent"));
         ui.label(tr(ui, "backstage-recent-empty"));
-        if self.mock_preview {
-            ui.add_space(24.0);
-            ui.heading(tr(ui, "backstage-new"));
-            self.blank_template(ui);
-        }
+        ui.add_space(24.0);
+        ui.heading(tr(ui, "backstage-new"));
+        self.blank_template(ui);
     }
 
     pub(super) fn new_pane(&self, ui: &mut Ui) {
