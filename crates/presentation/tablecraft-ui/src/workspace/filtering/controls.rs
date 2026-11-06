@@ -2,7 +2,7 @@
 use super::{FilterComparison, Operation};
 use crate::CellKind;
 use crate::localization::{message, tr};
-use crate::workspace::ribbon::{CommandSize, Icon, command};
+use crate::workspace::ribbon::{CommandSize, Icon, command, command_menu};
 use crate::workspace::{Action, State, diagnostics};
 use egui::{Popup, Ui, accesskit::HasPopup};
 
@@ -37,7 +37,7 @@ impl State {
 
     fn filter_selection_menu(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         let target = self.current_filter_selection();
-        let response = command(
+        let response = command_menu(
             ui,
             Icon::Selection,
             &tr(ui, "ribbon-selection"),
@@ -92,7 +92,7 @@ impl State {
 
     fn filter_clear_menu(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         let target = self.active_filter_target();
-        let response = command(
+        let response = command_menu(
             ui,
             Icon::Advanced,
             &tr(ui, "ribbon-advanced"),

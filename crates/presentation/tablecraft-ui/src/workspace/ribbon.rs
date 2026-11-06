@@ -19,6 +19,9 @@ const GROUP_LABEL_HEIGHT: f32 = 14.0;
 const GROUP_LABEL_SIZE: f32 = 10.5;
 const GROUP_LABEL_PADDING: f32 = 8.0;
 const SCROLLBAR_THICKNESS: f32 = 6.0;
+const MENU_ARROW_SPACE: f32 = 12.0;
+const MENU_ARROW_HALF_WIDTH: f32 = 2.5;
+const LARGE_TEXT_TOP: f32 = 34.0;
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) enum Tab {
@@ -117,6 +120,38 @@ pub(super) fn command(
     enabled: bool,
     size: CommandSize,
 ) -> Response {
+    command_inner(ui, icon, label, enabled, size, false)
+}
+
+/// Only real popup consumers use this affordance; it creates no menu or action.
+pub(super) fn command_menu(
+    ui: &mut Ui,
+    icon: Icon,
+    label: &str,
+    enabled: bool,
+    size: CommandSize,
+) -> Response {
+    let response = command_inner(ui, icon, label, enabled, size, true);
+    let popup = egui::Popup::default_response_id(&response);
+    if !response.enabled() {
+        egui::Popup::close_id(ui.ctx(), popup);
+    }
+    let expanded = egui::Popup::is_id_open(ui.ctx(), popup);
+    ui.ctx().accesskit_node_builder(response.id, |node| {
+        node.set_has_popup(egui::accesskit::HasPopup::Menu);
+        node.set_expanded(expanded);
+    });
+    response
+}
+
+fn command_inner(
+    ui: &mut Ui,
+    icon: Icon,
+    label: &str,
+    enabled: bool,
+    size: CommandSize,
+    menu: bool,
+) -> Response {
     ui.add_enabled_ui(enabled, |ui| {
         if !ui.is_enabled() {
             // Neutral artwork and muted text already mark unavailable commands.
@@ -130,7 +165,7 @@ pub(super) fn command(
             colors.muted
         };
         let font = FontId::proportional(LABEL_SIZE);
-        let (desired, text_width) = match size {
+        let (mut desired, text_width) = match size {
             CommandSize::Large => {
                 let width = large_command_width(ui, label, &font, color);
                 (egui::vec2(width, COMMAND_AREA_HEIGHT), width - 6.0)
@@ -146,6 +181,22 @@ pub(super) fn command(
             }
             CommandSize::IconOnly => (egui::vec2(24.0, SMALL_COMMAND_HEIGHT), 0.0),
         };
+        let mut layout = egui::text::LayoutJob::simple(label.to_owned(), font, color, text_width);
+        layout.wrap.max_rows = match size {
+            CommandSize::Large => 2,
+            CommandSize::Small | CommandSize::IconOnly => 1,
+        };
+        let text = ui.painter().layout_job(layout);
+        if menu {
+            match size {
+                CommandSize::Large => {
+                    desired.y = desired
+                        .y
+                        .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_SPACE);
+                }
+                CommandSize::Small | CommandSize::IconOnly => desired.x += MENU_ARROW_SPACE,
+            }
+        }
         let (rect, response) = ui.allocate_exact_size(desired, Sense::click());
         focus::register(ui, Pane::Ribbon, &response, false);
         if response.enabled() && response.gained_focus() {
@@ -164,19 +215,16 @@ pub(super) fn command(
                 );
             }
         }
-        let mut layout = egui::text::LayoutJob::simple(label.to_owned(), font, color, text_width);
-        layout.wrap.max_rows = match size {
-            CommandSize::Large => 2,
-            CommandSize::Small | CommandSize::IconOnly => 1,
-        };
-        let text = ui.painter().layout_job(layout);
         let (image_rect, text_position) = match size {
             CommandSize::Large => (
                 egui::Rect::from_center_size(
                     egui::pos2(rect.center().x, rect.top() + LARGE_ICON_SIZE * 0.5 + 3.0),
                     egui::vec2(LARGE_ICON_SIZE, LARGE_ICON_SIZE),
                 ),
-                egui::pos2(rect.center().x - text.size().x * 0.5, rect.top() + 34.0),
+                egui::pos2(
+                    rect.center().x - text.size().x * 0.5,
+                    rect.top() + LARGE_TEXT_TOP,
+                ),
             ),
             CommandSize::Small => (
                 egui::Rect::from_center_size(
@@ -199,6 +247,25 @@ pub(super) fn command(
         icon.image(ui, image_rect.width()).paint_at(ui, image_rect);
         if !matches!(size, CommandSize::IconOnly) {
             ui.painter().galley(text_position, text, color);
+        }
+        if menu {
+            let center = match size {
+                CommandSize::Large => {
+                    egui::pos2(rect.center().x, rect.bottom() - MENU_ARROW_SPACE * 0.5)
+                }
+                CommandSize::Small | CommandSize::IconOnly => {
+                    egui::pos2(rect.right() - MENU_ARROW_SPACE * 0.5, rect.center().y)
+                }
+            };
+            ui.painter().add(egui::Shape::convex_polygon(
+                vec![
+                    center + egui::vec2(-MENU_ARROW_HALF_WIDTH, -1.5),
+                    center + egui::vec2(MENU_ARROW_HALF_WIDTH, -1.5),
+                    center + egui::vec2(0.0, 1.5),
+                ],
+                color,
+                egui::Stroke::NONE,
+            ));
         }
         response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label));
         if !response.enabled() {
@@ -382,5 +449,90 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn real_menu_commands_reserve_chevrons_without_relabeling_plain_actions() {
+        use egui::accesskit::{HasPopup, Role};
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(600.0, 240.0))
+            .build_ui_state(
+                |ui, selected: &mut bool| {
+                    ui.horizontal_top(|ui| {
+                        for (label, size) in [
+                            ("Entwurfsansicht wechseln", CommandSize::Large),
+                            ("Auswahl", CommandSize::Small),
+                        ] {
+                            let response = command_menu(ui, Icon::ViewDesign, label, true, size);
+                            egui::Popup::menu(&response).show(|ui| {
+                                if ui.button("Existing view").clicked() {
+                                    *selected = true;
+                                    ui.close();
+                                }
+                            });
+                        }
+                        command(ui, Icon::Run, "Run", true, CommandSize::Small);
+                    });
+                },
+                false,
+            );
+        crate::configure(&harness.ctx);
+        harness.run();
+        for label in ["Entwurfsansicht wechseln", "Auswahl"] {
+            let node = harness.get_by_role_and_label(Role::Button, label);
+            assert_eq!(node.accesskit_node().has_popup(), Some(HasPopup::Menu));
+            assert_eq!(node.accesskit_node().data().is_expanded(), Some(false));
+            let rect = node.rect();
+            let text = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Text(text) = &shape.shape else {
+                        return None;
+                    };
+                    (text.galley.job.text == label)
+                        .then(|| text.galley.rect.translate(text.pos.to_vec2()))
+                })
+                .unwrap();
+            let arrow = harness
+                .output()
+                .shapes
+                .iter()
+                .find_map(|shape| {
+                    let egui::Shape::Path(path) = &shape.shape else {
+                        return None;
+                    };
+                    (path.points.len() == 3
+                        && path.points.iter().all(|point| rect.contains(*point)))
+                    .then(|| egui::Rect::from_points(&path.points))
+                })
+                .expect("real menu has a visible chevron inside its hit target");
+            assert!(text.bottom() < arrow.top() || text.right() < arrow.left());
+        }
+        assert_eq!(
+            harness.get_by_label("Run").accesskit_node().has_popup(),
+            None
+        );
+        harness.get_by_label("Auswahl").click();
+        harness.run();
+        assert_eq!(
+            harness
+                .get_by_label("Auswahl")
+                .accesskit_node()
+                .data()
+                .is_expanded(),
+            Some(true)
+        );
+        harness
+            .get_by_role_and_label(Role::Button, "Existing view")
+            .click();
+        harness.run();
+        assert!(*harness.state());
     }
 }
