@@ -1113,3 +1113,39 @@ with `TABLECRAFT_PREVIEW_SCENE=datasheet` and
 `TABLECRAFT_PREVIEW_FONT_SEARCH=noto`; output uses the `-font-search` suffix.
 Standalone previews use bundled font names. This requested picker extension has
 no retained Access capture, and no native app windows were opened.
+
+
+## Parameter input guards and settings labels — 5 November 2026
+
+Saved-query parameter prompts now reject oversized Text, Paste and IME insertions
+whole before editing/layout. The existing 1 MiB aggregate admission includes names,
+kinds and all other literals; it is not reduced to the standard small editor's
+64 KiB scalar allowance. The old staged value and committed parameters/results
+remain unchanged on rejection. The existing input-limit diagnostic stays visible
+and OK/Enter refuse until an actual text/type/NULL correction. Other editor
+profiles retain their previous limits through the shared helper's default entry.
+
+Actual-widget tests cover mixed same-frame events, delayed correction and the
+exact 1 MiB boundary followed by one extra byte. A separate actual Cancel→pointer
+value-focus plus oversized paste in one frame also passes unchanged production;
+the guard already sees egui's resolved focus before editing. This test checks
+both the real focus handoff and unchanged literal/diagnostic/refused confirmation.
+
+Language/date/time/currency selectors now reference their existing visible label
+nodes. German/Japanese AccessKit tests resolve each by its setting name while
+retaining values, locale, loaded rows and an empty action queue. This does not
+establish native screen-reader traversal. Options remains an uncaptured Access
+layout adaptation; parameter layout retains its recorded public reference.
+
+The font-popup workspace regression also passes actual typing/clipboard paste,
+F6 ownership, nested/parent Escape while busy, outside record clicks and object
+switching without SQL/native-selection mutation or database actions. No new
+backend functionality is supplied by this slice.
+
+The selected batch passed all 253 UI and 64 desktop tests, including the
+1,328 scene/language/theme matrix; the additional focus-acquisition regression
+then passed, covering all 254 UI cases across the batch/follow-up. Strict selected
+Clippy, formatting, links and dependency guards passed. Four normal-host Options
+and saved-parameter frames were rendered offscreen in light/dark at 1280×820, 1×
+on macOS with Windows chrome emulation; representative light Options/dark prompt
+frames were inspected. No native app windows were opened.

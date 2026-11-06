@@ -250,7 +250,7 @@ builds or its mock scenarios pass.
 | --- | --- | --- |
 | Shared presentation and thin desktop | UI/runtime dependency guards; desktop command and DTO bridge; resource-free mock host | Eventual web host is not implemented or implied. |
 | Selawik and root font assets | Root assets, recorded source hashes/OFL notices, locale-prioritized CJK fallbacks and glyph checks | Native font/DPI behavior on each claimed platform. |
-| Fluent translations | Eight locales, twelve section catalogs each, key/variable parity and literal-data separation | Native-speaker review of engineering translations. |
+| Fluent translations | Eight locales, twenty section catalogs each, key/variable parity and literal-data separation | Native-speaker review of engineering translations. |
 | Light and dark themes | Shared semantic palette, actual selected-text/badge paint checks, inspected offscreen frames | No retained Access dark-mode capture establishes visual parity. |
 | Ribbon artwork | Original generated, hash-inventoried SVGs with theme/disabled variants; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
 | Existing mock workflows | Source-bound scenes, admission/state checks and the dated [presentation verification](PRESENTATION_PREVIEW.md) | Synthetic outcomes do not qualify backend operations. |
