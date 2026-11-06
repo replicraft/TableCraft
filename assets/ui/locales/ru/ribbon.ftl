@@ -180,3 +180,6 @@ ribbon-font-size = Размер шрифта
 ribbon-collapse = Свернуть ленту (Ctrl+F1)
 ribbon-expand = Развернуть ленту (Ctrl+F1)
 ribbon-pin = Закрепить ленту
+
+ribbon-paste-special = Специальная вставка…
+ribbon-paste-append = Добавить из буфера

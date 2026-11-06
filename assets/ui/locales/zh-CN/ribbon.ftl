@@ -180,3 +180,6 @@ ribbon-font-size = 字号
 ribbon-collapse = 折叠功能区 (Ctrl+F1)
 ribbon-expand = 展开功能区 (Ctrl+F1)
 ribbon-pin = 固定功能区
+
+ribbon-paste-special = 选择性粘贴…
+ribbon-paste-append = 追加粘贴

@@ -22,6 +22,62 @@ fn normal_home_menus_delegate_only_existing_select_refresh_and_readonly_zoom_com
     let original = harness.state().0.data.as_ref().unwrap().rows.as_ptr();
 
     harness
+        .get_by_role_and_label(Role::Button, "Paste")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().0.paste_request.is_none());
+    for label in ["Paste Special…", "Paste Append"] {
+        let node = harness.get_by_role_and_label(Role::Button, label);
+        assert!(node.accesskit_node().is_disabled());
+        assert!(
+            !node
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Click)
+        );
+        assert!(
+            !node
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Focus)
+        );
+        node.focus();
+        node.click_accesskit();
+    }
+    harness.run_steps(3);
+    assert!(harness.state().0.paste_request.is_none());
+    assert!(harness.state().1.is_empty());
+    {
+        let state = &mut harness.state_mut().0;
+        state
+            .table_selection
+            .select(state.data.as_ref().unwrap(), 1, 0);
+    }
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().0.paste_request.is_none());
+    let paste_target = harness.state().0.current_paste_target().unwrap();
+    harness
+        .get_by_role_and_label(Role::Button, "Paste")
+        .click_accesskit();
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::Button, "Paste text")
+        .click_accesskit();
+    harness.run_steps(3);
+    assert!(!Popup::is_any_open(&harness.ctx));
+    assert!(harness.state().0.paste_request.is_some());
+    harness.event(egui::Event::Paste("Literal NULL\nnext\tfield".into()));
+    harness.run_steps(1);
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::PasteCell { target, text }] if target == &paste_target && text == "Literal NULL\nnext\tfield"
+    ));
+    assert!(!harness.state().0.edit_dialog_open());
+    harness.state_mut().1.clear();
+
+    harness
         .get_by_role_and_label(Role::Button, "Zoom")
         .click_accesskit();
     harness.run_steps(3);
@@ -115,9 +171,12 @@ fn normal_home_menus_delegate_only_existing_select_refresh_and_readonly_zoom_com
     assert!(Popup::is_any_open(&harness.ctx));
     {
         let state = &mut harness.state_mut().0;
+        let selected = state.table_selection.position().unwrap();
+        let other_row = if selected.0 == 0 { 1 } else { 0 };
         state
             .table_selection
-            .select(state.data.as_ref().unwrap(), 1, 0);
+            .select(state.data.as_ref().unwrap(), other_row, selected.1);
+        assert_ne!(state.current_delete_target().as_ref(), Some(&delete_target));
     }
     harness.run_steps(3);
     assert!(!Popup::is_any_open(&harness.ctx));

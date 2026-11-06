@@ -208,7 +208,6 @@ impl State {
             let before_actions = actions.len();
             let before_output = ui.ctx().output(|output| output.commands.len());
             let previous_menu = Popup::is_any_open(ui.ctx());
-            let before_paste = self.paste_request.is_some();
             let focus_before = ui.ctx().memory(|memory| memory.focused());
             let response = egui::Area::new(Id::new(OVERLAY_MARKER))
                 .order(egui::Order::Foreground)
@@ -234,13 +233,16 @@ impl State {
                 )
             });
             let accepted = actions.len() != before_actions
+                || actions
+                    .iter()
+                    .any(|action| matches!(action, Action::PasteCell { .. }))
                 || ui.ctx().output(|output| output.commands.len()) != before_output
-                || (!before_paste && self.paste_request.is_some())
                 || self.edit_dialog_open()
                 || self.find_window_open()
                 || self.zoom_dialog_open()
                 || self.backstage_visible()
                 || previous_menu
+                    && self.paste_request.is_none()
                     && !Popup::is_any_open(ui.ctx())
                     && !ui.input(|input| input.key_pressed(Key::Escape));
             let outside = !Popup::is_any_open(ui.ctx())

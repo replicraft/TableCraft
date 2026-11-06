@@ -1,4 +1,5 @@
 //! Native menu shapes delegate solely to existing qualified working commands.
+pub(in crate::workspace) mod paste;
 use super::{Action, CommandSize, Icon, State, command};
 use crate::workspace::ribbon::{command_menu, command_menu_inline};
 use crate::{DeleteTarget, ObjectTab};

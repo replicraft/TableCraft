@@ -180,3 +180,6 @@ ribbon-font-size = Schriftgrad
 ribbon-collapse = Menüband reduzieren (Strg+F1)
 ribbon-expand = Menüband erweitern (Strg+F1)
 ribbon-pin = Menüband anheften
+
+ribbon-paste-special = Inhalte einfügen…
+ribbon-paste-append = Am Ende anfügen

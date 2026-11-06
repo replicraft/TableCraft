@@ -248,13 +248,10 @@ fn escape_dismisses_the_find_popup_before_closing_the_modeless_window() {
         );
     crate::configure(&harness.ctx);
     harness.run();
-    // Find's second enabled combo is Match; changing this test to a non-popup button
-    // would miss Escape ownership while its options are being inspected.
+    // Target Find's named control, independently of other visible Ribbon combos.
+    // A plain button would miss Escape ownership while inspecting its options.
     harness
-        .get_all_by_role(Role::ComboBox)
-        .filter(|node| !node.accesskit_node().is_disabled())
-        .nth(1)
-        .unwrap()
+        .get_by_role_and_label(Role::ComboBox, "Match:")
         .click_accesskit();
     harness.run();
     assert!(egui::Popup::is_any_open(&harness.ctx));

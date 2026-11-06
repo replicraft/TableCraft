@@ -277,6 +277,7 @@ pub struct State {
     contents: Option<contents::ContentsDialog>,
     edit: Option<editing::EditDialog>,
     paste_request: Option<editing::paste::ClipboardRequest>,
+    ribbon_paste: Option<home::menus::paste::PendingPaste>,
     insertion: Option<insertion::Dialog>,
     deletion: Option<deletion::Dialog>,
     /// Host capability; false until the complete native Find service is ready.
@@ -668,6 +669,7 @@ impl State {
                 }
             });
         });
+        self.finish_ribbon_paste(ui, &actions);
         self.finish_paste(ui.ctx(), &mut actions, paste_receipt);
         self.accept_zoom_request(ui.ctx());
         self.find_window(ui.ctx(), &mut actions);

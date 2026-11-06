@@ -25,8 +25,8 @@ const GROUP_LAUNCHER_GAP: f32 = 2.0;
 const MENU_ARROW_SPACE: f32 = 12.0;
 const MENU_ARROW_HALF_WIDTH: f32 = 2.5;
 const LARGE_TEXT_TOP: f32 = 31.0;
-const MENU_ARROW_VERTICAL_SPACE: f32 = 6.0;
-const MENU_ARROW_BOTTOM_PADDING: f32 = 3.5;
+const MENU_ARROW_CAPTION_GAP: f32 = 3.5;
+const MENU_ARROW_HALF_HEIGHT: f32 = 1.5;
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) enum Tab {
@@ -273,9 +273,12 @@ fn command_inner(
                             desired.x = desired.x.max(last.size.x + MENU_ARROW_SPACE + 6.0);
                         }
                     } else {
-                        desired.y = desired
-                            .y
-                            .max(LARGE_TEXT_TOP + text.size().y + MENU_ARROW_VERTICAL_SPACE);
+                        desired.y = desired.y.max(
+                            LARGE_TEXT_TOP
+                                + text.size().y
+                                + MENU_ARROW_CAPTION_GAP
+                                + MENU_ARROW_HALF_HEIGHT * 2.0,
+                        );
                     }
                 }
                 CommandSize::Small | CommandSize::IconOnly => desired.x += MENU_ARROW_SPACE,
@@ -339,7 +342,15 @@ fn command_inner(
                     )
                 }
                 CommandSize::Large => {
-                    egui::pos2(rect.center().x, rect.bottom() - MENU_ARROW_BOTTOM_PADDING)
+                    let last = text.rows.last().expect("menu caption has a line");
+                    egui::pos2(
+                        rect.center().x,
+                        text_position.y
+                            + last.pos.y
+                            + last.size.y
+                            + MENU_ARROW_CAPTION_GAP
+                            + MENU_ARROW_HALF_HEIGHT,
+                    )
                 }
                 CommandSize::Small | CommandSize::IconOnly => {
                     egui::pos2(rect.right() - MENU_ARROW_SPACE * 0.5, rect.center().y)
@@ -347,9 +358,9 @@ fn command_inner(
             };
             ui.painter().add(egui::Shape::convex_polygon(
                 vec![
-                    center + egui::vec2(-MENU_ARROW_HALF_WIDTH, -1.5),
-                    center + egui::vec2(MENU_ARROW_HALF_WIDTH, -1.5),
-                    center + egui::vec2(0.0, 1.5),
+                    center + egui::vec2(-MENU_ARROW_HALF_WIDTH, -MENU_ARROW_HALF_HEIGHT),
+                    center + egui::vec2(MENU_ARROW_HALF_WIDTH, -MENU_ARROW_HALF_HEIGHT),
+                    center + egui::vec2(0.0, MENU_ARROW_HALF_HEIGHT),
                 ],
                 color,
                 egui::Stroke::NONE,
@@ -707,18 +718,20 @@ mod caption_arrow_tests {
     use egui_kittest::{Harness, kittest::Queryable};
 
     #[test]
-    fn refresh_chevron_sits_beside_all_while_view_keeps_its_arrow_below() {
+    fn refresh_keeps_inline_chevron_while_view_paste_and_zoom_follow_the_caption() {
         let mut harness = Harness::builder()
             .with_size(egui::vec2(300.0, 140.0))
             .build_ui(|ui| {
                 ui.horizontal_top(|ui| {
                     command_menu_inline(ui, Icon::Refresh, "Refresh All", true, CommandSize::Large);
                     command_menu(ui, Icon::ViewDesign, "View", true, CommandSize::Large);
+                    command_menu(ui, Icon::Paste, "Paste", true, CommandSize::Large);
+                    command_menu(ui, Icon::Zoom, "Zoom", true, CommandSize::Large);
                 });
             });
         crate::configure(&harness.ctx);
         harness.run_steps(3);
-        for label in ["Refresh All", "View"] {
+        for label in ["Refresh All", "View", "Paste", "Zoom"] {
             let rect = harness
                 .get_by_role_and_label(egui::accesskit::Role::Button, label)
                 .rect();
@@ -753,7 +766,8 @@ mod caption_arrow_tests {
                 assert!(arrow.left() > line.right());
                 assert!(line.contains(egui::pos2(line.center().x, arrow.center().y)));
             } else {
-                assert!(arrow.top() > line.bottom());
+                assert!((arrow.top() - line.bottom() - 3.5).abs() < 0.5);
+                assert_eq!(rect.height(), 68.0);
             }
         }
     }

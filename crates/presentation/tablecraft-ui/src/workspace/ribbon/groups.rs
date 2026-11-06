@@ -3,6 +3,11 @@ use super::{CommandSize, Icon, command, command_menu, group};
 use crate::Localizer;
 use egui::Ui;
 
+const FONT_SELECTOR_HEIGHT: f32 = 22.0;
+const FONT_SELECTOR_TEXT_SIZE: f32 = 11.5;
+const FONT_ROW_GAP: f32 = 7.0;
+const FONT_MENU_HEIGHT: f32 = 240.0;
+
 pub(in crate::workspace) fn unavailable(
     ui: &mut Ui,
     t: &Localizer,
@@ -37,24 +42,39 @@ pub(in crate::workspace) fn unavailable(
     }
 }
 
-pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
+pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer, families: &[String]) {
     super::group_with_launcher(ui, &t.text("ribbon-text-formatting"), true, |ui| {
-        ui.horizontal(|ui| {
-            ui.add_enabled_ui(false, |ui| {
-                let response = egui::ComboBox::from_id_salt("unavailable_font_family")
-                    .width(120.0)
-                    .selected_text("Selawik")
-                    .show_ui(ui, |ui| {
-                        let _ = ui.selectable_label(true, "Selawik");
-                    })
-                    .response
-                    .on_disabled_hover_text(t.text("ribbon-unavailable"));
-                describe_combo(ui, &response, &t.text("ribbon-font"), "Selawik", t);
-            });
+        ui.spacing_mut().item_spacing.y = FONT_ROW_GAP;
+        ui.horizontal_top(|ui| {
+            // Bound the row before separators measure its available height.
+            ui.set_height(FONT_SELECTOR_HEIGHT);
+            ui.spacing_mut().interact_size.y = FONT_SELECTOR_HEIGHT;
+            let response = egui::ComboBox::from_id_salt("font_family_catalog")
+                .width(120.0)
+                .height(FONT_MENU_HEIGHT)
+                .selected_text(egui::RichText::new("Selawik").size(FONT_SELECTOR_TEXT_SIZE))
+                .show_ui(ui, |ui| {
+                    let row_height = ui.spacing().interact_size.y;
+                    egui::ScrollArea::vertical()
+                        .id_salt("font_family_catalog_rows")
+                        .max_height(FONT_MENU_HEIGHT)
+                        .show_rows(ui, row_height, families.len(), |ui, range| {
+                            for family in &families[range] {
+                                ui.add_enabled(
+                                    false,
+                                    egui::Button::selectable(family == "Selawik", family)
+                                        .truncate(),
+                                )
+                                .on_disabled_hover_text(t.text("ribbon-unavailable"));
+                            }
+                        });
+                })
+                .response;
+            describe_combo(ui, &response, &t.text("ribbon-font"), "Selawik", t);
             ui.add_enabled_ui(false, |ui| {
                 let response = egui::ComboBox::from_id_salt("unavailable_font_size")
                     .width(42.0)
-                    .selected_text("11")
+                    .selected_text(egui::RichText::new("11").size(FONT_SELECTOR_TEXT_SIZE))
                     .show_ui(ui, |ui| {
                         let _ = ui.selectable_label(true, "11");
                     })
@@ -433,8 +453,10 @@ fn describe_combo(ui: &Ui, response: &egui::Response, label: &str, value: &str, 
         node.set_label(label);
         node.set_value(value);
         node.set_description(t.text("ribbon-unavailable"));
-        node.remove_action(egui::accesskit::Action::Click);
-        node.remove_action(egui::accesskit::Action::Focus);
+        if !response.enabled() {
+            node.remove_action(egui::accesskit::Action::Click);
+            node.remove_action(egui::accesskit::Action::Focus);
+        }
     });
 }
 

@@ -180,3 +180,6 @@ ribbon-font-size = Tamaño de fuente
 ribbon-collapse = Contraer la cinta (Ctrl+F1)
 ribbon-expand = Expandir la cinta (Ctrl+F1)
 ribbon-pin = Anclar la cinta
+
+ribbon-paste-special = Pegado especial…
+ribbon-paste-append = Pegar datos anexados
