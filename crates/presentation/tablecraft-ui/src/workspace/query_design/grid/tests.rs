@@ -54,6 +54,98 @@ fn replace_field(harness: &mut Harness<'_, (Session, bool)>, text: &str) {
     harness.run_steps(3);
 }
 
+fn assert_input_focus_outline(harness: &Harness<'_, (Session, bool)>, label: &str) {
+    let input = harness.get_by_role_and_label(Role::TextInput, label);
+    let rect = input.rect();
+    let accent = crate::theme::palette(&harness.ctx).accent;
+    assert!(input.is_focused());
+    assert!(
+        harness.output().shapes.iter().any(|shape| {
+            matches!(
+                &shape.shape,
+                egui::Shape::Rect(outline)
+                    if outline.rect == rect
+                        && outline.stroke.color == accent
+                        && outline.stroke.width == 1.0
+                        && outline.stroke_kind == egui::StrokeKind::Inside
+            )
+        }),
+        "the actual focused input needs an outline independent of caret blink"
+    );
+}
+
+#[test]
+fn tab_and_shift_tab_visit_grid_controls_without_changing_text_or_source() {
+    let mut harness = harness(session());
+    let original = harness.state().0.draft.clone();
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field expression")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press(Key::Tab);
+    harness.run_steps(2);
+    assert!(harness.get_by_role(Role::ComboBox).is_focused());
+    harness.key_press_modifiers(Modifiers::SHIFT, Key::Tab);
+    harness.run_steps(2);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Field expression")
+            .is_focused()
+    );
+    assert_input_focus_outline(&harness, "Field expression");
+    assert_eq!(harness.state().0.draft, original);
+    assert!(!harness.state().1);
+}
+
+#[test]
+fn focused_field_shortcut_menu_edits_alias_and_escape_returns_to_exact_field() {
+    let mut harness = harness(session());
+    let expression = harness.state().0.draft.columns[0].expression.clone();
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field expression")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(Modifiers::SHIFT, Key::F10);
+    harness.run_steps(2);
+    assert!(egui::Popup::is_any_open(&harness.ctx));
+    assert!(!harness.state().1);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Output alias")
+            .is_focused()
+    );
+    assert_input_focus_outline(&harness, "Output alias");
+    harness.event(Event::Text("Keyboard alias".into()));
+    harness.run_steps(2);
+    assert_eq!(
+        harness.state().0.draft.columns[0].alias.as_deref(),
+        Some("Keyboard alias")
+    );
+    assert_eq!(harness.state().0.draft.columns[0].expression, expression);
+    harness.key_press(Key::Escape);
+    harness.run_steps(2);
+    assert!(!egui::Popup::is_any_open(&harness.ctx));
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Field expression")
+            .is_focused()
+    );
+
+    harness.key_press_modifiers(Modifiers::SHIFT, Key::F10);
+    harness.run_steps(2);
+    harness.key_press(Key::Tab);
+    harness.run_steps(2);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Remove column")
+            .is_focused()
+    );
+    harness.key_press(Key::Enter);
+    harness.run_steps(2);
+    assert!(harness.state().0.draft.columns.is_empty());
+    assert!(!egui::Popup::is_any_open(&harness.ctx));
+}
+
 #[test]
 fn local_field_text_keeps_the_owning_source_across_focus_alias_and_noop_replacement() {
     let mut harness = harness(session());
