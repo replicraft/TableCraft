@@ -1,5 +1,18 @@
 # Implementation status
 
+## Compact default-window Home Ribbon — 5 November 2026
+
+The full English Home strip now fits the default 1280×820 window at 1× through
+2×. View/Zoom spacing is tighter, Text Formatting has subgroup dividers, Refresh
+All uses an inline final-line chevron and Delete opens the existing guarded review
+action through a dropdown. Contextual tabs reset when their object context ends;
+the unavailable Query Design Return selector has explicit accessible semantics.
+
+All 234 UI and 63 desktop tests passed in the final batch, along with strict
+selected Clippy, formatting and documentation/dependency checks. Default-size
+light/dark and compact German offscreen frames were reviewed without opening
+native windows. See [Ribbon coverage](ui/RIBBON.md#compact-default-layout-and-contextual-controls--5-november-2026).
+
 ## Complete normal-host Ribbon presentation — 5 November 2026
 
 The normal app now shows the full Home Ribbon rather than hiding commands behind
