@@ -1,10 +1,10 @@
-//! Mock-only native menu shapes delegate solely to existing working commands.
+//! Native menu shapes delegate solely to existing qualified working commands.
 use super::{Action, CommandSize, Icon, State, command};
 use crate::workspace::ribbon::command_menu;
 use egui::{Popup, Response, Ui, accesskit::HasPopup};
 
 impl State {
-    pub(super) fn mock_select_menu(&mut self, ui: &mut Ui) {
+    pub(super) fn select_menu(&mut self, ui: &mut Ui) {
         let t = self.localizer.clone();
         let enabled = self.can_select_record();
         let response = command_menu(
@@ -34,11 +34,11 @@ impl State {
                 false,
                 CommandSize::Small,
             )
-            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+            .on_disabled_hover_text(t.text("ribbon-unavailable"));
         });
     }
 
-    pub(super) fn mock_refresh_menu(
+    pub(super) fn refresh_menu(
         &self,
         ui: &mut Ui,
         refresh: Option<Action>,
@@ -75,11 +75,11 @@ impl State {
                 false,
                 CommandSize::Small,
             )
-            .on_disabled_hover_text(t.text("ribbon-preview-only"));
+            .on_disabled_hover_text(t.text("ribbon-unavailable"));
         });
     }
 
-    pub(super) fn mock_zoom_menu(&mut self, ui: &mut Ui) {
+    pub(super) fn zoom_menu(&mut self, ui: &mut Ui) {
         let t = self.localizer.clone();
         let enabled = self.can_zoom_cell();
         let response = command_menu(

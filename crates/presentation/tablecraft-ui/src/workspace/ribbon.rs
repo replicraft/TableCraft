@@ -1,10 +1,10 @@
-//! Dense Access-style command groups; mock commands remain disabled and inert.
+//! Dense Access-style commands; unavailable controls remain disabled and inert.
+mod groups;
 mod icons;
-mod mock_groups;
 
 pub(super) use super::focus::{self, Pane};
+pub(super) use groups::{design, home, tab, unavailable as unavailable_command};
 pub(crate) use icons::Icon;
-pub(super) use mock_groups::{design, home, mock as mock_command, tab as mock_tab};
 
 use crate::theme::palette;
 use egui::{FontId, Response, Sense, Ui, WidgetInfo, WidgetType};
@@ -43,7 +43,7 @@ pub(super) enum Tab {
 }
 
 impl Tab {
-    pub(super) fn mock(key: &str) -> Option<Self> {
+    pub(super) fn from_key(key: &str) -> Option<Self> {
         match key {
             "ribbon-create" => Some(Self::Create),
             "ribbon-external-data" => Some(Self::ExternalData),
@@ -87,7 +87,7 @@ pub(super) fn group(ui: &mut Ui, label: &str, contents: impl FnOnce(&mut Ui)) {
 pub(super) fn group_with_launcher(
     ui: &mut Ui,
     label: &str,
-    preview_launcher: bool,
+    unavailable_launcher: bool,
     contents: impl FnOnce(&mut Ui),
 ) {
     let colors = palette(ui.ctx());
@@ -99,7 +99,7 @@ pub(super) fn group_with_launcher(
     ui.vertical(|ui| {
         // Reserve the translated caption before laying out narrow command groups.
         // Measuring it afterwards lets Extend paint into the adjacent group.
-        let launcher_width = if preview_launcher {
+        let launcher_width = if unavailable_launcher {
             GROUP_LAUNCHER_SIZE + GROUP_LAUNCHER_GAP
         } else {
             0.0
@@ -121,7 +121,7 @@ pub(super) fn group_with_launcher(
         ui.painter().galley(text_position, caption, colors.muted);
         caption_response
             .widget_info(|| WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), label));
-        if preview_launcher {
+        if unavailable_launcher {
             let rect = egui::Rect::from_min_size(
                 egui::pos2(
                     caption_rect.right() - GROUP_LAUNCHER_SIZE,
@@ -129,7 +129,7 @@ pub(super) fn group_with_launcher(
                 ),
                 egui::vec2(GROUP_LAUNCHER_SIZE, GROUP_LAUNCHER_SIZE),
             );
-            let help = crate::localization::tr(ui, "ribbon-preview-only");
+            let help = crate::localization::tr(ui, "ribbon-unavailable");
             let name = format!(
                 "{label}: {}",
                 crate::localization::tr(ui, "ribbon-group-options")
@@ -151,6 +151,7 @@ pub(super) fn group_with_launcher(
                 ui.ctx().accesskit_node_builder(response.id, |node| {
                     node.remove_action(egui::accesskit::Action::Click);
                     node.remove_action(egui::accesskit::Action::Focus);
+                    node.set_description(help.clone());
                 });
                 response.on_disabled_hover_text(help);
             });
@@ -314,15 +315,17 @@ fn command_inner(
             ));
         }
         response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label));
+        let unavailable_help = crate::localization::tr(ui, "ribbon-unavailable");
         if !response.enabled() {
-            // Disabled previews have no callable or focusable command contract,
+            // Unavailable controls have no callable or focusable command contract,
             // including when an assistive host sends an unsolicited request.
             ui.ctx().accesskit_node_builder(response.id, |node| {
                 node.remove_action(egui::accesskit::Action::Click);
                 node.remove_action(egui::accesskit::Action::Focus);
+                node.set_description(unavailable_help.clone());
             });
         }
-        response
+        response.on_disabled_hover_text(unavailable_help)
     })
     .inner
 }

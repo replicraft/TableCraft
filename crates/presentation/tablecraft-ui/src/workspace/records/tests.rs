@@ -330,6 +330,10 @@ fn home_select_record_preserves_field_and_copies_one_complete_loaded_record() {
     crate::configure(&harness.ctx);
     harness.run();
     harness
+        .get_by_role_and_label(Role::Button, "Select")
+        .click_accesskit();
+    harness.run();
+    harness
         .get_by_role_and_label(Role::Button, "Select record")
         .click_accesskit();
     harness.run();
@@ -404,6 +408,10 @@ fn home_select_record_uses_visible_query_and_saved_result_without_native_handles
                 .accesskit_node()
                 .is_disabled()
         );
+        harness
+            .get_by_role_and_label(Role::Button, "Select")
+            .click_accesskit();
+        harness.run();
         harness
             .get_by_role_and_label(Role::Button, "Select record")
             .click_accesskit();

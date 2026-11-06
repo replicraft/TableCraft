@@ -47,7 +47,7 @@ ribbon-underline = Underline
 ribbon-font-color = Font Color
 ribbon-fill-color = Fill Color
 ribbon-zoom = Zoom
-ribbon-preview-only = Preview only — this command is not implemented
+ribbon-unavailable = Not available yet
 ribbon-primary-key = Primary Key
 ribbon-tools = Tools
 ribbon-test-validation-rules = Test Validation Rules
@@ -174,3 +174,5 @@ ribbon-insert-columns = Insert Columns
 ribbon-delete-columns = Delete Columns
 
 ribbon-select-all = Select All
+
+ribbon-font-size = Font Size

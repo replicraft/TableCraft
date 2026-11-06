@@ -2,7 +2,10 @@
 use crate::workspace::Desktop;
 use crate::workspace::test_support::{finish_reads, opened};
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::Response;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
@@ -126,7 +129,7 @@ fn sql_import_loads_source_fields_and_real_qbe_edits_run_through_the_existing_qu
     harness.run_steps(2);
     harness
         .get_all_by_role(Role::ComboBox)
-        .next()
+        .find(|node| !node.accesskit_node().is_disabled())
         .unwrap()
         .click_accesskit();
     harness.run_steps(2);

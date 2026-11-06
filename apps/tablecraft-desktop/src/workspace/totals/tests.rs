@@ -79,7 +79,7 @@ fn totals_cover_all_native_rows_and_track_current_filter_mode_without_changing_r
         })
     );
 
-    for label in ["Paste text", "Delete row"] {
+    for label in ["Paste", "Delete"] {
         assert!(
             harness
                 .get_by_role_and_label(Role::Button, label)

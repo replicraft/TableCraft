@@ -47,7 +47,7 @@ ribbon-underline = Подчёркнутый
 ribbon-font-color = Цвет шрифта
 ribbon-fill-color = Цвет заливки
 ribbon-zoom = Масштаб
-ribbon-preview-only = Только предпросмотр — эта команда ещё не реализована
+ribbon-unavailable = Пока недоступно
 ribbon-primary-key = Ключевое поле
 ribbon-tools = Инструменты
 ribbon-test-validation-rules = Проверить правила проверки
@@ -174,3 +174,5 @@ ribbon-insert-columns = Вставить столбцы
 ribbon-delete-columns = Удалить столбцы
 
 ribbon-select-all = Выделить всё
+
+ribbon-font-size = Размер шрифта

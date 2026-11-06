@@ -7,9 +7,10 @@ use egui_kittest::{
 };
 
 #[test]
-fn mock_home_menus_delegate_only_existing_select_refresh_and_readonly_zoom_commands() {
+fn normal_home_menus_delegate_only_existing_select_refresh_and_readonly_zoom_commands() {
     let mut preview = Preview::new(Scene::Datasheet);
-    let state = std::mem::take(preview.state_mut());
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = false;
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1600.0, 900.0))
         .build_ui_state(

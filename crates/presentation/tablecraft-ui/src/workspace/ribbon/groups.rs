@@ -1,9 +1,9 @@
-//! Visual command previews. Every control is disabled and produces no action.
+//! Visible unavailable command groups preserve layout without dispatching actions.
 use super::{CommandSize, Icon, command, command_menu, group};
 use crate::Localizer;
 use egui::Ui;
 
-pub(in crate::workspace) fn mock(
+pub(in crate::workspace) fn unavailable(
     ui: &mut Ui,
     t: &Localizer,
     icon: Icon,
@@ -12,7 +12,8 @@ pub(in crate::workspace) fn mock(
 ) {
     let menu = matches!(
         key,
-        "ribbon-create-data-macros"
+        "ribbon-more"
+            | "ribbon-create-data-macros"
             | "ribbon-rename-delete-macro"
             | "ribbon-application-parts"
             | "ribbon-sharepoint-list"
@@ -29,66 +30,67 @@ pub(in crate::workspace) fn mock(
             | "ribbon-alternate-rows"
             | "ribbon-text-direction"
     );
-    let response = if menu {
-        command_menu(ui, icon, &t.text(key), false, size)
+    if menu {
+        command_menu(ui, icon, &t.text(key), false, size);
     } else {
-        command(ui, icon, &t.text(key), false, size)
-    };
-    response.on_disabled_hover_text(t.text("ribbon-preview-only"));
+        command(ui, icon, &t.text(key), false, size);
+    }
 }
 
 pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
     super::group_with_launcher(ui, &t.text("ribbon-text-formatting"), true, |ui| {
         ui.horizontal(|ui| {
             ui.add_enabled_ui(false, |ui| {
-                egui::ComboBox::from_id_salt("mock_font_family")
+                let response = egui::ComboBox::from_id_salt("unavailable_font_family")
                     .width(130.0)
                     .selected_text("Selawik")
                     .show_ui(ui, |ui| {
                         let _ = ui.selectable_label(true, "Selawik");
                     })
                     .response
-                    .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                    .on_disabled_hover_text(t.text("ribbon-unavailable"));
+                describe_combo(ui, &response, &t.text("ribbon-font"), "Selawik", t);
             });
             ui.add_enabled_ui(false, |ui| {
-                egui::ComboBox::from_id_salt("mock_font_size")
+                let response = egui::ComboBox::from_id_salt("unavailable_font_size")
                     .width(44.0)
                     .selected_text("11")
                     .show_ui(ui, |ui| {
                         let _ = ui.selectable_label(true, "11");
                     })
                     .response
-                    .on_disabled_hover_text(t.text("ribbon-preview-only"));
+                    .on_disabled_hover_text(t.text("ribbon-unavailable"));
+                describe_combo(ui, &response, &t.text("ribbon-font-size"), "11", t);
             });
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Bullets,
                 "ribbon-bullets",
                 CommandSize::IconOnly,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Numbering,
                 "ribbon-numbering",
                 CommandSize::IconOnly,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::DecreaseIndent,
                 "ribbon-decrease-indent",
                 CommandSize::IconOnly,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::IncreaseIndent,
                 "ribbon-increase-indent",
                 CommandSize::IconOnly,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Paragraph,
@@ -110,7 +112,7 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
                 (Icon::Borders, "ribbon-borders"),
                 (Icon::AlternateRows, "ribbon-alternate-rows"),
             ] {
-                mock(ui, t, icon, key, CommandSize::IconOnly);
+                unavailable(ui, t, icon, key, CommandSize::IconOnly);
             }
         });
     });
@@ -119,9 +121,9 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer) {
 pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     group(ui, &t.text("ribbon-tools"), |ui| {
         ui.horizontal(|ui| {
-            mock(ui, t, Icon::Key, "ribbon-primary-key", CommandSize::Large);
-            mock(ui, t, Icon::Builder, "ribbon-builder", CommandSize::Large);
-            mock(
+            unavailable(ui, t, Icon::Key, "ribbon-primary-key", CommandSize::Large);
+            unavailable(ui, t, Icon::Builder, "ribbon-builder", CommandSize::Large);
+            unavailable(
                 ui,
                 t,
                 Icon::Validation,
@@ -129,21 +131,21 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
                 CommandSize::Large,
             );
             ui.vertical(|ui| {
-                mock(
+                unavailable(
                     ui,
                     t,
                     Icon::InsertRows,
                     "ribbon-insert-rows",
                     CommandSize::Small,
                 );
-                mock(
+                unavailable(
                     ui,
                     t,
                     Icon::DeleteRows,
                     "ribbon-delete-rows",
                     CommandSize::Small,
                 );
-                mock(
+                unavailable(
                     ui,
                     t,
                     Icon::Lookups,
@@ -155,26 +157,26 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     });
     group(ui, &t.text("ribbon-show-hide"), |ui| {
         ui.horizontal(|ui| {
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Properties,
                 "ribbon-property-sheet",
                 CommandSize::Large,
             );
-            mock(ui, t, Icon::Indexes, "ribbon-indexes", CommandSize::Large);
+            unavailable(ui, t, Icon::Indexes, "ribbon-indexes", CommandSize::Large);
         });
     });
     group(ui, &t.text("ribbon-field-record-table-events"), |ui| {
         ui.horizontal(|ui| {
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::MacroCreate,
                 "ribbon-create-data-macros",
                 CommandSize::Large,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::MacroRename,
@@ -185,14 +187,14 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     });
     group(ui, &t.text("ribbon-relationships"), |ui| {
         ui.horizontal(|ui| {
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Relationships,
                 "ribbon-relationships",
                 CommandSize::Large,
             );
-            mock(
+            unavailable(
                 ui,
                 t,
                 Icon::Dependencies,
@@ -203,7 +205,7 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     });
 }
 
-/// The additional tabs are selectable presentation previews, never services.
+/// Additional tabs expose their unavailable command groups without services.
 /// No retained Access capture currently qualifies these tab compositions.
 pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> bool {
     use super::Tab;
@@ -401,12 +403,12 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
                         1
                     };
                     for (icon, key) in &commands[..large_count] {
-                        mock(ui, t, *icon, key, CommandSize::Large);
+                        unavailable(ui, t, *icon, key, CommandSize::Large);
                     }
                     for column in commands[large_count..].chunks(3) {
                         ui.vertical(|ui| {
                             for (icon, key) in column {
-                                mock(ui, t, *icon, key, CommandSize::Small);
+                                unavailable(ui, t, *icon, key, CommandSize::Small);
                             }
                         });
                     }
@@ -416,3 +418,16 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
     });
     true
 }
+
+fn describe_combo(ui: &Ui, response: &egui::Response, label: &str, value: &str, t: &Localizer) {
+    ui.ctx().accesskit_node_builder(response.id, |node| {
+        node.set_label(label);
+        node.set_value(value);
+        node.set_description(t.text("ribbon-unavailable"));
+        node.remove_action(egui::accesskit::Action::Click);
+        node.remove_action(egui::accesskit::Action::Focus);
+    });
+}
+
+#[cfg(test)]
+mod tests;

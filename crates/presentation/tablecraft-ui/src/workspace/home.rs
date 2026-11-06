@@ -1,5 +1,5 @@
-//! Working commands share the dense ribbon with explicitly disabled previews.
-mod mock_menus;
+//! Working commands and visible unavailable controls share the native Ribbon layout.
+mod menus;
 mod view;
 
 use super::{Action, DocumentView, State, ribbon};
@@ -12,23 +12,23 @@ impl State {
             return;
         }
         let t = self.localizer.clone();
-        if self.mock_preview && ribbon::mock_tab(ui, &t, self.ribbon_tab) {
+        if ribbon::tab(ui, &t, self.ribbon_tab) {
             return;
         }
         ribbon::strip(ui, |ui| {
             group(ui, &t.text("ribbon-views"), |ui| {
                 self.view_menu(ui, actions);
             });
-            if self.ribbon_tab == ribbon::Tab::TableDesign && self.mock_preview {
+            if self.ribbon_tab == ribbon::Tab::TableDesign {
                 ribbon::design(ui, &t);
                 return;
             }
-            ribbon::group_with_launcher(ui, &t.text("ribbon-clipboard"), self.mock_preview, |ui| {
+            ribbon::group_with_launcher(ui, &t.text("ribbon-clipboard"), true, |ui| {
                 ui.horizontal(|ui| {
                     if command(
                         ui,
                         Icon::Paste,
-                        &t.text("editing-paste-text"),
+                        &t.text("ribbon-paste"),
                         self.current_paste_target().is_some(),
                         CommandSize::Large,
                     )
@@ -38,15 +38,13 @@ impl State {
                         self.request_paste(ui.ctx());
                     }
                     ui.vertical(|ui| {
-                        if self.mock_preview {
-                            ribbon::mock_command(
-                                ui,
-                                &t,
-                                Icon::Cut,
-                                "ribbon-cut",
-                                CommandSize::Small,
-                            );
-                        }
+                        ribbon::unavailable_command(
+                            ui,
+                            &t,
+                            Icon::Cut,
+                            "ribbon-cut",
+                            CommandSize::Small,
+                        );
                         if command(
                             ui,
                             Icon::Copy,
@@ -63,39 +61,20 @@ impl State {
                         {
                             self.copy_selected(ui.ctx());
                         }
-                        if self.mock_preview {
-                            ribbon::mock_command(
-                                ui,
-                                &t,
-                                Icon::PaintBrush,
-                                "ribbon-format-painter",
-                                CommandSize::Small,
-                            );
-                        }
+                        ribbon::unavailable_command(
+                            ui,
+                            &t,
+                            Icon::PaintBrush,
+                            "ribbon-format-painter",
+                            CommandSize::Small,
+                        );
                     });
                 });
             });
             self.read_commands(ui, actions);
             self.find_commands(ui, actions);
-            if self.mock_preview {
-                ribbon::home(ui, &t);
-            }
-            group(ui, &t.text("ribbon-zoom"), |ui| {
-                if self.mock_preview {
-                    self.mock_zoom_menu(ui);
-                } else if command(
-                    ui,
-                    Icon::Zoom,
-                    &t.text("zoom-title"),
-                    self.can_zoom_cell(),
-                    CommandSize::Large,
-                )
-                .on_hover_text(t.text("zoom-read-only"))
-                .clicked()
-                {
-                    self.open_zoom_cell();
-                }
-            });
+            ribbon::home(ui, &t);
+            group(ui, &t.text("ribbon-zoom"), |ui| self.zoom_menu(ui));
         });
     }
 
@@ -133,19 +112,7 @@ impl State {
                         self.open_replace();
                     }
                     self.record_menu(ui, actions);
-                    if self.mock_preview {
-                        self.mock_select_menu(ui);
-                    } else if command(
-                        ui,
-                        Icon::Cursor,
-                        &t.text("ribbon-select-record"),
-                        self.can_select_record(),
-                        CommandSize::Small,
-                    )
-                    .clicked()
-                    {
-                        self.select_current_record(ui.ctx());
-                    }
+                    self.select_menu(ui);
                 });
             });
         });
@@ -185,68 +152,55 @@ impl State {
                         && self.contents_request_id().is_none()
                         && !self.saved_query_prompt_open()
                 });
-                if self.mock_preview {
-                    let refresh = page.map(|data| Action::Page {
-                        table: data.table.clone(),
-                        offset: data.offset,
-                    });
-                    self.mock_refresh_menu(ui, refresh, actions);
-                } else if command(
-                    ui,
-                    Icon::Refresh,
-                    &t.text("ribbon-refresh-table"),
-                    page.is_some(),
-                    CommandSize::Large,
-                )
-                .on_hover_text(t.text("ribbon-refresh-table-help"))
-                .clicked()
-                    && let Some(data) = page
-                {
-                    actions.push(Action::Page {
-                        table: data.table.clone(),
-                        offset: data.offset,
-                    });
-                }
+                let refresh = page.map(|data| Action::Page {
+                    table: data.table.clone(),
+                    offset: data.offset,
+                });
+                self.refresh_menu(ui, refresh, actions);
                 ui.vertical(|ui| {
                     let target = self.current_insert_target();
                     if command(
                         ui,
                         Icon::Add,
-                        &t.text("insertion-title"),
+                        &t.text("ribbon-new"),
                         target.is_some(),
                         CommandSize::Small,
                     )
+                    .on_hover_text(t.text("insertion-intent-help"))
                     .clicked()
                         && let Some(target) = target
                     {
                         actions.push(Action::BeginInsert { target });
                     }
+                    ribbon::unavailable_command(
+                        ui,
+                        &t,
+                        Icon::Save,
+                        "ribbon-save",
+                        CommandSize::Small,
+                    );
                     let target = self.current_delete_target();
                     if command(
                         ui,
                         Icon::Delete,
-                        &t.text("deletion-title"),
+                        &t.text("ribbon-delete"),
                         target.is_some(),
                         CommandSize::Small,
                     )
+                    .on_hover_text(t.text("deletion-checking"))
                     .clicked()
                         && let Some(target) = target
                     {
                         actions.push(Action::ReviewDelete { target });
                     }
-                    if self.mock_preview {
-                        ribbon::mock_command(ui, &t, Icon::Save, "ribbon-save", CommandSize::Small);
-                    }
                 });
                 ui.vertical(|ui| {
                     self.totals_command(ui, actions);
-                    if self.mock_preview {
-                        for (icon, key) in [
-                            (Icon::Spelling, "ribbon-spelling"),
-                            (Icon::MoreRecords, "ribbon-more"),
-                        ] {
-                            ribbon::mock_command(ui, &t, icon, key, CommandSize::Small);
-                        }
+                    for (icon, key) in [
+                        (Icon::Spelling, "ribbon-spelling"),
+                        (Icon::MoreRecords, "ribbon-more"),
+                    ] {
+                        ribbon::unavailable_command(ui, &t, icon, key, CommandSize::Small);
                     }
                 });
             });

@@ -506,12 +506,12 @@ fn disabled_mock_commands_offer_no_assistive_actions_and_reject_forced_activatio
     state.set_table_data(table());
     render(&mut state, &context, vec![]);
     let (_, output) = render(&mut state, &context, vec![]);
-    let paste = command_id(&output, "Paste text");
+    let paste = command_id(&output, "Paste");
     let tree = output.platform_output.accesskit_update.as_ref().unwrap();
     let (_, paste_node) = tree
         .nodes
         .iter()
-        .find(|(_, node)| node.role() == Role::Button && node.label() == Some("Paste text"))
+        .find(|(_, node)| node.role() == Role::Button && node.label() == Some("Paste"))
         .unwrap();
     assert!(paste_node.is_disabled());
     assert!(!paste_node.supports_action(egui::accesskit::Action::Click));
@@ -667,6 +667,10 @@ fn native_read_commands_emit_source_bound_full_table_sort_and_current_page_refre
     );
     harness.state_mut().1.clear();
     harness
+        .get_by_role_and_label(Role::Button, "Refresh All")
+        .click_accesskit();
+    harness.run();
+    harness
         .get_by_role_and_label(Role::Button, "Refresh")
         .click_accesskit();
     harness.run();
@@ -727,7 +731,7 @@ fn home_paste_requests_clipboard_then_emits_literal_review_intent() {
     state.dismiss_backstage();
     state.database = Some(native_database());
     state.set_table_data(table());
-    let (actions, output) = click(&mut state, &context, "Paste text");
+    let (actions, output) = click(&mut state, &context, "Paste");
     assert!(actions.is_empty());
     let requested = output.viewport_output.values().any(|viewport| {
         viewport
@@ -880,5 +884,139 @@ fn mock_ribbon_tabs_reveal_disabled_command_panels_without_changing_the_open_obj
             .get_by_role_and_label(Role::Button, "Copy")
             .accesskit_node()
             .is_disabled()
+    );
+}
+
+#[test]
+fn normal_home_keeps_all_native_groups_and_unavailable_controls_without_granting_actions() {
+    let mut preview = Preview::new(Scene::Datasheet);
+    let mut state = std::mem::take(preview.state_mut());
+    state.mock_preview = false;
+    state.replace_available = false;
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1600.0, 900.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    for key in [
+        "ribbon-views",
+        "ribbon-clipboard",
+        "ribbon-sort-filter",
+        "ribbon-records",
+        "ribbon-find-group",
+        "ribbon-text-formatting",
+        "ribbon-zoom",
+    ] {
+        let label = harness.state().0.localizer.text(key);
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Label, &label)
+                .is_some(),
+            "missing normal Home group: {label}"
+        );
+    }
+    for key in ["ribbon-paste", "ribbon-new", "ribbon-delete"] {
+        let label = harness.state().0.localizer.text(key);
+        harness.get_by_role_and_label(Role::Button, &label);
+    }
+    for key in [
+        "ribbon-cut",
+        "ribbon-format-painter",
+        "ribbon-save",
+        "ribbon-spelling",
+        "ribbon-more",
+        "ribbon-bold",
+        "ribbon-italic",
+        "ribbon-underline",
+        "ribbon-font-color",
+        "ribbon-text-highlight",
+        "ribbon-fill-color",
+        "ribbon-align-left",
+        "ribbon-align-center",
+        "ribbon-align-right",
+        "ribbon-borders",
+        "ribbon-alternate-rows",
+        "ribbon-bullets",
+        "ribbon-numbering",
+        "ribbon-decrease-indent",
+        "ribbon-increase-indent",
+        "ribbon-text-direction",
+    ] {
+        let label = harness.state().0.localizer.text(key);
+        // Quick Access also has Save; the Home command follows it in the tree.
+        let node = harness
+            .get_all_by_role_and_label(Role::Button, &label)
+            .last()
+            .expect("visible Home command");
+        assert!(
+            node.accesskit_node().is_disabled(),
+            "unsupported command enabled: {label}"
+        );
+        assert!(
+            !node
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Click)
+        );
+        assert!(
+            !node
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Focus)
+        );
+        node.focus();
+        node.click_accesskit();
+    }
+    for key in ["ribbon-font", "ribbon-font-size"] {
+        let label = harness.state().0.localizer.text(key);
+        let node = harness.get_by_role_and_label(Role::ComboBox, &label);
+        assert!(node.accesskit_node().is_disabled());
+        assert!(
+            !node
+                .accesskit_node()
+                .data()
+                .supports_action(egui::accesskit::Action::Click)
+        );
+        node.focus();
+        node.click_accesskit();
+    }
+    for group in ["ribbon-clipboard", "ribbon-text-formatting"] {
+        let label = format!(
+            "{}: {}",
+            harness.state().0.localizer.text(group),
+            harness.state().0.localizer.text("ribbon-group-options")
+        );
+        let node = harness.get_by_role_and_label(Role::Button, &label);
+        assert!(node.accesskit_node().is_disabled());
+        node.focus();
+        node.click_accesskit();
+    }
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Replace")
+            .accesskit_node()
+            .is_disabled()
+    );
+    let original = harness.state().0.selected_cell_text().map(str::to_owned);
+    harness.run();
+    assert!(harness.state().1.is_empty());
+    assert_eq!(
+        harness.state().0.selected_cell_text().map(str::to_owned),
+        original
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Copy")
+        .click_accesskit();
+    harness.run_steps(1);
+    assert!(harness.state().1.is_empty());
+    assert!(
+        harness
+            .output()
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText(original.unwrap()))
     );
 }

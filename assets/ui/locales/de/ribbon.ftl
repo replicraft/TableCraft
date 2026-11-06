@@ -47,7 +47,7 @@ ribbon-underline = Unterstrichen
 ribbon-font-color = Schriftfarbe
 ribbon-fill-color = Füllfarbe
 ribbon-zoom = Zoom
-ribbon-preview-only = Nur Vorschau — dieser Befehl ist noch nicht implementiert
+ribbon-unavailable = Noch nicht verfügbar
 ribbon-primary-key = Primärschlüssel
 ribbon-tools = Tools
 ribbon-test-validation-rules = Gültigkeitsregeln testen
@@ -174,3 +174,5 @@ ribbon-insert-columns = Spalten einfügen
 ribbon-delete-columns = Spalten löschen
 
 ribbon-select-all = Alles auswählen
+
+ribbon-font-size = Schriftgrad

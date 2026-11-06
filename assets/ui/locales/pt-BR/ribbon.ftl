@@ -47,7 +47,7 @@ ribbon-underline = Sublinhado
 ribbon-font-color = Cor da Fonte
 ribbon-fill-color = Cor de Preenchimento
 ribbon-zoom = Zoom
-ribbon-preview-only = Somente prévia — este comando ainda não foi implementado
+ribbon-unavailable = Ainda não disponível
 ribbon-primary-key = Chave Primária
 ribbon-tools = Ferramentas
 ribbon-test-validation-rules = Testar Regras de Validação
@@ -174,3 +174,5 @@ ribbon-insert-columns = Inserir Colunas
 ribbon-delete-columns = Excluir Colunas
 
 ribbon-select-all = Selecionar Tudo
+
+ribbon-font-size = Tamanho da Fonte

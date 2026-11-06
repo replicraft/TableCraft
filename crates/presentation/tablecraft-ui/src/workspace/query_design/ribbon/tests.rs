@@ -5,7 +5,7 @@ use egui::{
 };
 
 #[test]
-fn query_design_preview_commands_are_disabled_and_cannot_dispatch() {
+fn query_design_unavailable_commands_are_visible_in_both_hosts_and_cannot_dispatch() {
     let mut preview = Preview::new(Scene::QueryDesign);
     let mut state = std::mem::take(preview.state_mut());
     let original = state.query_design_draft().unwrap().clone();
@@ -57,11 +57,46 @@ fn query_design_preview_commands_are_disabled_and_cannot_dispatch() {
     });
     output.textures_delta.clear();
     let tree = output.platform_output.accesskit_update.unwrap();
-    assert!(!tree.nodes.iter().any(|(_, node)| {
-        node.role() == Role::Button
-            && matches!(
-                node.label(),
-                Some("Builder" | "Totals" | "Parameters" | "Property Sheet")
-            )
-    }));
+    let mut forced = Vec::new();
+    for label in [
+        "Builder",
+        "Totals",
+        "Parameters",
+        "Property Sheet",
+        "Select",
+        "Make Table",
+        "Append",
+        "Update",
+        "Crosstab",
+        "Delete",
+        "Union",
+        "Pass-Through",
+        "Data Definition",
+    ] {
+        let (id, node) = tree
+            .nodes
+            .iter()
+            .find(|(_, node)| node.role() == Role::Button && node.label() == Some(label))
+            .expect("visible unavailable normal-host command");
+        assert!(node.is_disabled());
+        assert!(!node.supports_action(Action::Click));
+        assert!(!node.supports_action(Action::Focus));
+        forced.push(Event::AccessKitActionRequest(ActionRequest {
+            action: Action::Click,
+            target_tree: TreeId::ROOT,
+            target_node: *id,
+            data: None,
+        }));
+    }
+    let mut output = context.run_ui(
+        egui::RawInput {
+            events: forced,
+            ..Default::default()
+        },
+        |ui| {
+            assert!(state.show(ui).is_empty());
+        },
+    );
+    output.textures_delta.clear();
+    assert_eq!(state.query_design_draft(), Some(&original));
 }
