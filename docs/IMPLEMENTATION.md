@@ -1,5 +1,19 @@
 # Implementation status
 
+## Caption alignment and desktop font discovery — 5 November 2026
+
+View/Paste/Zoom chevrons follow their captions, the font selectors share aligned
+bounds and the second formatting row has more space. Refresh All and Format
+Painter use new original artwork. The Font selector browses bundled and installed
+families discovered through desktop-only Fontique; applying formatting is still
+unavailable and Selawik remains selected. Paste retains the existing guarded
+literal-text review workflow through its dropdown.
+
+All 248 UI cases passed across the batch/focused follow-ups, plus all 64 desktop
+tests and strict selected Clippy/formatting. Local headless Fontique discovery
+observed 451 system families; default-size offscreen light/dark frames were
+reviewed without opening native windows. See the [verification record](ui/PRESENTATION_PREVIEW.md#caption-chevrons-font-catalog-and-replacement-artwork--5-november-2026).
+
 ## Ribbon display states and named icon tooltips — 5 November 2026
 
 The shared workspace supports expanded, tabs-only and temporarily overlaid Ribbon
