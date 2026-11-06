@@ -331,19 +331,19 @@
       "variants": {
         "light": {
           "file": "paint_brush-light.svg",
-          "sha256": "6c1a967a59b4b18deab1e5504c32598ad652dc29d0e343716fc70b3a2bae9558"
+          "sha256": "37a17b12e3c62562d13f9fe47ab645df4c5b7c85a24fba6608a1a0d42842c16a"
         },
         "dark": {
           "file": "paint_brush-dark.svg",
-          "sha256": "013df8d4eab8d69eab934c82b664fc12d6d6bff29cab4424b418cb98c6f7ff4b"
+          "sha256": "fbaa66503ef7671961180bc61418776c606b3b4447a644fcf1fdfd0193fd305e"
         },
         "disabled-light": {
           "file": "paint_brush-disabled-light.svg",
-          "sha256": "4b5666b5fd97128f26c51d7ca2949430e6f28ac8450a5aeac104b47c04aca2ef"
+          "sha256": "9701051200b51a8e966485ed57c593dd23c31686dc94aff81566444aa137e176"
         },
         "disabled-dark": {
           "file": "paint_brush-disabled-dark.svg",
-          "sha256": "942ac578ad17d183ed99e11d20a8888c1f1308c749cddc94d0547d5ced0c2178"
+          "sha256": "4eff75bfc25345a7d49c6714ec42123e113cbbb1d8d39f5576b396fcd20157cf"
         }
       }
     },
@@ -499,19 +499,19 @@
       "variants": {
         "light": {
           "file": "refresh-light.svg",
-          "sha256": "9fafc7d4acdaeb2f3e9c7c91b6e3157e190e254d713031aaffcfdca07e15fa37"
+          "sha256": "660eed5df695c1b110fc2949cbc61f8c7fd5e0c4a1842a5a914fb8eeca3e48a5"
         },
         "dark": {
           "file": "refresh-dark.svg",
-          "sha256": "1236e9fca0b0fa8c69debb3a05f832c2d5dd5420cbf040b30b6469a8a4a005f9"
+          "sha256": "457a9df0ae756b7d0d31bbb3ae7bac5088cff21d499219ff35ceb4ed78ef3f6f"
         },
         "disabled-light": {
           "file": "refresh-disabled-light.svg",
-          "sha256": "00afa191c613d9c32d88f4fa6c0deb2044719f98bdc8131f42fb566d02a22125"
+          "sha256": "165a47d44ef68549535f8153c1243b1adc7a1d1f56780d03be2961895803efc7"
         },
         "disabled-dark": {
           "file": "refresh-disabled-dark.svg",
-          "sha256": "86d516b744c76cf6cca15fb86e9e51f69b978f2cbca5434a8cbab33c8ce7b8c7"
+          "sha256": "ad99979faac1edb905ed12080ea43977f9bcdd51786eda4c07bf69fabe7661ae"
         }
       }
     },

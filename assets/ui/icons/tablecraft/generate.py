@@ -57,7 +57,15 @@ icons = {
     'paste': '<rect x="6" y="5" width="21" height="24" rx="2" fill="{gold}"/><rect x="11" y="3" width="11" height="5" rx="2" fill="{paper}"/><path d="M11 13h11M11 18h11M11 23h7" fill="none"/>',
     'cut': '<circle cx="8" cy="25" r="5" fill="{pale}"/><circle cx="24" cy="25" r="5" fill="{pale}"/><path d="m11 21 13-18M21 21 8 3" fill="none" stroke="{blue}"/><circle cx="16" cy="15" r="2" fill="{gold}"/>',
     'copy': '<path d="M4 3h17v22H4z" fill="{pale}"/><path d="M11 9h17v21H11z" fill="{paper}"/><path d="M15 15h9M15 20h9M15 25h6" fill="none" stroke="{blue}"/>',
-    'paint_brush': '<path d="m7 21 7 7c-7 4-11 1-11-3z" fill="{blue}"/><path d="m7 21 12-14 6 6-11 15z" fill="{gold}"/><path d="m19 7 4-4 6 6-4 4" fill="{paper}"/><path d="m8 21 6 6"/>',
+    # A broad bristle head, metal ferrule and separate rounded handle distinguish
+    # Format Painter from a pencil even at the 16-point command size.
+    'paint_brush': (
+        '<path d="m3 9 6-6 11 11-7 7z" fill="{gold}"/>'
+        '<path d="m3 9 6-6 4 4-6 6z" fill="{blue}" stroke="none"/>'
+        '<path d="m12 20 7-7 4 4-7 7z" fill="{pale}"/>'
+        '<path d="m17 23 6-6 6 7c3 3-1 7-4 5z" fill="{blue}"/>'
+        '<path d="m8 12 5 5m-2-8 5 5" fill="none" stroke-width="1.5"/>'
+    ),
     'ascending': '<path d="M5 5v22m-3-4 3 4 3-4" fill="none" stroke="{blue}"/><path d="m13 12 3-8 3 8m-5-3h4M13 20h8l-8 8h8" fill="none"/><path d="M25 5h4M25 10h4M25 19h4M25 24h4" stroke="{green}"/>',
     'descending': '<path d="M5 5v22m-3-4 3 4 3-4" fill="none" stroke="{blue}"/><path d="M13 4h8l-8 8h8m-8 16 3-8 3 8m-5-3h4" fill="none"/><path d="M25 5h4M25 10h4M25 19h4M25 24h4" stroke="{green}"/>',
     'filter': funnel,
@@ -65,7 +73,19 @@ icons = {
     'advanced_filter': funnel + '<circle cx="24" cy="23" r="7" fill="{blue}"/><path d="M20 21h8M20 25h8M23 18v6M26 24v4" stroke="{paper}"/>',
     'toggle_filter': funnel + '<circle cx="25" cy="24" r="6" fill="{green}"/><path d="m21 24 3 3 5-6" fill="none" stroke="{paper}"/>',
     'remove_sort': '<path d="M4 5h19M4 11h14M4 17h9" stroke="{blue}"/><path d="m17 19 12 10m0-10L17 29" stroke="{red}" stroke-width="3"/>',
-    'refresh': paper + '<path d="M22 16a8 8 0 1 0 1 10" fill="none" stroke="{green}" stroke-width="3"/><path d="m17 16 7-1v7" fill="{green}" stroke="{green}"/>',
+    # Refresh All uses overlapping record pages plus a complete two-arrow cycle;
+    # it is distinct from a new document, save or single-page editing action.
+    'refresh': (
+        '<rect x="2" y="2" width="18" height="22" rx="1" fill="{pale}"/>'
+        '<path d="M6 7h10M6 11h10" fill="none" stroke="{blue}"/>'
+        '<rect x="7" y="6" width="18" height="22" rx="1" fill="{paper}"/>'
+        '<path d="M11 11h10M11 15h7" fill="none" stroke="{blue}"/>'
+        '<circle cx="23" cy="23" r="9" fill="{paper}" stroke="none"/>'
+        '<path d="M17 21a7 7 0 0 1 11-4M29 24a7 7 0 0 1-11 4" '
+        'fill="none" stroke="{green}" stroke-width="2.5"/>'
+        '<path d="m28 12 1 8-7-1zM18 31l-2-7 7 1z" '
+        'fill="{green}" stroke="none"/>'
+    ),
     'add': paper + '<path d="m25 14 2 5 5 1-4 4 1 5-4-3-5 3 1-5-4-4 6-1z" fill="{gold}"/>',
     'save': '<path d="M4 3h21l4 5v21H4z" fill="{blue}"/><path d="M9 3h13v9H9zM9 19h15v10H9z" fill="{paper}"/><path d="M18 4v6M13 23h7" stroke="{blue}"/>',
     'delete': grid + '<path d="m17 17 12 12m0-12L17 29" stroke="{red}" stroke-width="4"/>',
