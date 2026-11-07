@@ -16,7 +16,7 @@ use tablecraft_runtime::{
 };
 use tablecraft_ui::{
     EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
-    SaveCleanupNotice,
+    ObjectKind, SaveCleanupNotice,
 };
 
 pub(super) struct Editing {
@@ -344,6 +344,15 @@ impl Desktop {
         if let Some((expected, table, offset)) = self.editing.refresh.take()
             && generation == expected
         {
+            if let Some(target) = &mut self.close_after_first_record
+                && matches!(&target.kind, ObjectKind::Table { name } if *name == table)
+                && let Some(database) = &self.state.database
+            {
+                // This exact acknowledged save's fresh Open advances the
+                // document revision. Keep the original close bound to its
+                // actual saved table, rather than an obsolete tab revision.
+                target.document_revision = database.document_revision;
+            }
             if let Some(database) = &self.state.database {
                 self.state
                     .set_save_cleanup(database.document_revision, cleanup);
@@ -364,7 +373,7 @@ impl Desktop {
         if self.editing.has_save() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             self.cancel_current_save();
-        } else if self.state.insertion_dialog_open() {
+        } else if self.state.insertion_dialog_open() || self.state.initial_record_pending() {
             // An inline record is still user input, not a persisted native row.
             // Keep it until the user explicitly saves or abandons the record.
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);

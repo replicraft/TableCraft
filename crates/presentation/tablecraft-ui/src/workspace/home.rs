@@ -189,7 +189,7 @@ impl State {
                     .on_disabled_hover_text(t.text("table-draft-save-unavailable"))
                     .clicked()
                     {
-                        self.request_table_draft_save();
+                        self.queue_table_draft_save();
                     }
                     self.delete_menu(ui, actions);
                 });

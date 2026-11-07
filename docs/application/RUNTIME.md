@@ -57,6 +57,17 @@ unimplemented. See [database creation](../ui/DATABASE_CREATION.md).
 
 ## Reviewed first-table schema save
 
+The shared UI can retain one raw pending record alongside an unsaved schema.
+Its handoff is presentation-owned: original field identities, schema/record
+revisions, omitted/NULL/value intent and hidden raw text remain separate from
+native values and handles. Runtime continues to receive the existing schema
+review command, then a fresh BeginInsert/ReviewInsert after guarded reopening.
+These are two distinct saves; schema commitment never implies a stored record.
+The UI seeds only an exact current native insertion draft, and the existing
+consuming row review/save still determines native admission. Desktop routes
+those services and retains requested transitions across their acknowledgments;
+it parses no record input and constructs no generated defaults.
+
 Opening a document reports `first_table_creation_available` alongside its exact
 `document_revision`. With creation and offline editing enabled on a supported
 host, this checks the same immutable captured bytes against the engine’s complete
@@ -485,10 +496,11 @@ The initial-table route now authors checked constant defaults for its explicit
 numeric, Currency and Yes/No choices, retained through TCNT0002 recovery. Existing
 TCNT0001 schemas and sources with absent defaults remain distinct. Omitted
 companions use only the insertion service’s qualified stored policies; the UI
-never supplies a guessed value. No AllowZeroLength policy is added. Empty Short Text remains subject to the native explicit-AllowZeroLength
-coverage gate, and this runtime metadata addition does not weaken it. Direct
-editing of the unsaved draft's first record, inference from entered data and
-inline Access autosave remain separate work.
+never supplies a guessed value. No AllowZeroLength policy is added. Empty Short
+Text remains subject to the native explicit-AllowZeroLength coverage gate, and
+this runtime metadata addition does not weaken it. The unsaved schema now retains
+a raw first-record buffer, followed by explicit row review after schema saving. Inference from entered data and implicit Access
+autosave remain separate work.
 
 
 ## Reviewed offline row deletion

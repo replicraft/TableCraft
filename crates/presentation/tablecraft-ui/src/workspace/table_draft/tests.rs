@@ -129,7 +129,7 @@ fn named_field_input_rejects_oversized_replacement_without_renaming_a_prefix() {
     harness.run();
 
     let editor = harness.state().0.table_draft.as_ref().unwrap();
-    assert_eq!(editor.rename.as_ref().unwrap().1, "Field1");
+    assert_eq!(editor.rename.as_ref().unwrap().name, "Field1");
     assert_eq!(editor.draft.fields()[1].name(), "Field1");
     assert_eq!(editor.draft.revision(), 1);
     assert!(editor.error);
@@ -175,10 +175,108 @@ fn stale_discard_approval_cannot_close_a_newer_draft_revision() {
     assert!(state.open_initial_table_draft());
     assert!(state.add_table_draft_field(DraftFieldType::ShortText));
     let tab = state.active_object().unwrap();
-    state.table_draft_discard_approved = Some((tab.clone(), 1));
+    state.table_draft_discard_approved = Some((
+        tab.clone(),
+        1,
+        state.table_draft_record_revision_for(&tab).unwrap(),
+    ));
     assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
     assert!(!state.close_object(&tab));
     assert_eq!(state.table_draft_revision(), Some(2));
     assert!(state.table_draft_discard_approved.is_none());
     assert!(state.has_modified_table_drafts());
+}
+
+#[test]
+fn initial_record_is_raw_widget_input_and_name_dialog_cancel_preserves_it() {
+    let mut harness = harness();
+    harness.state_mut().0.table_save_available = true;
+    assert!(
+        harness
+            .state_mut()
+            .0
+            .add_table_draft_field(DraftFieldType::ShortText)
+    );
+    harness.run_steps(2);
+    harness
+        .input_mut()
+        .events
+        .push(egui::Event::Text("Customer".into()));
+    harness.run_steps(1);
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(3);
+    let mut args = fluent_bundle::FluentArgs::new();
+    args.set("field", "Customer");
+    let input_label = harness
+        .state()
+        .0
+        .localizer
+        .format("table-draft-record-field", &args);
+    harness
+        .get_by_role_and_label(Role::TextInput, &input_label)
+        .focus();
+    harness.run_steps(1);
+    harness
+        .input_mut()
+        .events
+        .push(egui::Event::Text("  Ada  ".into()));
+    harness.run_steps(2);
+    let original = vec![
+        crate::InsertInput::Omitted,
+        crate::InsertInput::Value(crate::EditInput {
+            text: "  Ada  ".into(),
+            is_null: false,
+        }),
+    ];
+    {
+        let editor = harness.state().0.table_draft.as_ref().unwrap();
+        assert_eq!(
+            editor
+                .record
+                .inputs(&editor.draft.snapshot("Table1").unwrap())
+                .unwrap(),
+            original
+        );
+        assert!(editor.record.is_modified());
+    }
+    assert!(harness.state_mut().0.request_table_draft_save());
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+    let editor = harness.state().0.table_draft.as_ref().unwrap();
+    assert_eq!(
+        editor
+            .record
+            .inputs(&editor.draft.snapshot("Table1").unwrap())
+            .unwrap(),
+        original
+    );
+    assert!(harness.state().0.has_modified_table_drafts());
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn stale_discard_approval_cannot_close_new_record_input_with_unchanged_schema() {
+    let mut state = state();
+    assert!(state.open_initial_table_draft());
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let tab = state.active_object().unwrap();
+    let schema_revision = state.table_draft_revision_for(&tab).unwrap();
+    let record_revision = state.table_draft_record_revision_for(&tab).unwrap();
+    state.table_draft_discard_approved = Some((tab.clone(), schema_revision, record_revision));
+    let editor = state.table_draft.as_mut().unwrap();
+    let field = editor.draft.fields()[1].id();
+    assert!(editor.record.set_input(
+        field,
+        crate::InsertInput::Value(crate::EditInput {
+            text: "Do not discard".into(),
+            is_null: false,
+        })
+    ));
+    assert_eq!(state.table_draft_revision_for(&tab), Some(schema_revision));
+    assert!(!state.close_object(&tab));
+    assert!(state.table_draft_discard_approved.is_none());
+    assert!(state.has_unsaved_table_drafts());
 }

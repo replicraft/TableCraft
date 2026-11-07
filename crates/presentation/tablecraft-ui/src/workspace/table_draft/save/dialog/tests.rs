@@ -367,6 +367,7 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     let request = issue(&mut state, "Contacts");
     let substituted = TableSaveRequest {
         id: request.id,
+        record_revision: request.record_revision,
         tab: request.tab.clone(),
         snapshot: TableDraft::initial().snapshot("Contacts").unwrap(),
     };
@@ -377,12 +378,14 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     other.add_field(DraftFieldType::LongInteger).unwrap();
     let wrong_type = TableSaveRequest {
         id: request.id,
+        record_revision: request.record_revision,
         tab: request.tab.clone(),
         snapshot: other.snapshot("Contacts").unwrap(),
     };
     assert!(!state.begin_table_draft_save(&wrong_type));
     let mut wrong_target = TableSaveRequest {
         id: request.id,
+        record_revision: request.record_revision,
         tab: request.tab.clone(),
         snapshot: state
             .table_draft
@@ -455,4 +458,78 @@ fn focused_name_enter_issues_the_exact_request_once_before_focus_can_be_lost() {
             .count(),
         1
     );
+}
+
+#[test]
+fn row_revision_is_bound_to_issued_save_and_terminal_cancellation_retains_exact_input() {
+    let mut state = state();
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let editor = state.table_draft.as_mut().unwrap();
+    let field = editor.draft.fields()[1].id();
+    let original = crate::InsertInput::Value(crate::EditInput {
+        text: "  exact draft text  ".into(),
+        is_null: false,
+    });
+    assert!(editor.record.set_input(field, original.clone()));
+    let request = issue(&mut state, "Contacts");
+    let mut substituted = TableSaveRequest {
+        id: request.id,
+        tab: request.tab.clone(),
+        snapshot: state
+            .table_draft
+            .as_ref()
+            .unwrap()
+            .draft
+            .snapshot("Contacts")
+            .unwrap(),
+        record_revision: request.record_revision + 1,
+    };
+    assert!(!state.begin_table_draft_save(&substituted));
+    assert!(!state.busy);
+    substituted.record_revision = request.record_revision;
+    assert!(state.begin_table_draft_save(&substituted));
+    assert!(state.cancel_table_draft_save(request.id));
+    let editor = state.table_draft.as_ref().unwrap();
+    let snapshot = editor.draft.snapshot("Contacts").unwrap();
+    assert_eq!(
+        editor.record.inputs(&snapshot).unwrap(),
+        vec![crate::InsertInput::Omitted, original]
+    );
+    assert!(state.has_modified_table_drafts());
+}
+
+#[test]
+fn successful_schema_completion_retains_one_original_record_before_discarding_editor() {
+    let mut state = state();
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let editor = state.table_draft.as_mut().unwrap();
+    let field = editor.draft.fields()[1].id();
+    assert!(editor.record.set_input(
+        field,
+        crate::InsertInput::Value(crate::EditInput {
+            text: "Ada".into(),
+            is_null: false,
+        })
+    ));
+    let request = issue(&mut state, "Contacts");
+    assert!(state.begin_table_draft_save(&request));
+    let completion = state
+        .complete_table_draft_save(request.id, database(72, Some("Contacts")))
+        .unwrap();
+    assert!(completion.record_pending);
+    assert!(state.initial_record.is_some());
+    assert!(!state.has_unsaved_table_drafts());
+    assert!(state.data.is_none());
+}
+
+#[test]
+fn untouched_new_record_placeholder_never_creates_an_empty_record_continuation() {
+    let mut state = state();
+    let request = issue(&mut state, "Contacts");
+    assert!(state.begin_table_draft_save(&request));
+    let completion = state
+        .complete_table_draft_save(request.id, database(72, Some("Contacts")))
+        .unwrap();
+    assert!(!completion.record_pending);
+    assert!(state.initial_record.is_none());
 }

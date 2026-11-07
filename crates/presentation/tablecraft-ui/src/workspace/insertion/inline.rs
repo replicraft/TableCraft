@@ -22,6 +22,13 @@ pub(in crate::workspace) struct Editor {
 }
 
 impl Editor {
+    pub(super) fn can_seed_initial(&self) -> bool {
+        self.checkpoint.is_none()
+            && self.focus.is_none()
+            && !self.entered
+            && self.last_focus.is_none()
+    }
+
     pub(super) fn refocus(&mut self, position: usize) {
         self.focus = Some(position);
         self.entered = false;
@@ -334,6 +341,9 @@ impl State {
         else {
             return;
         };
+        if self.initial_record_notice.is_some() {
+            ui.label(tr(ui, "table-draft-record-schema-saved"));
+        }
         ui.label(tr(ui, "insertion-inline-help"));
         if !current {
             ui.label(tr(ui, "insertion-stale-draft"));

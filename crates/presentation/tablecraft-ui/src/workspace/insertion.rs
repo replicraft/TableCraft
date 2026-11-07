@@ -1,5 +1,6 @@
 //! Runtime-owned row insertion decisions, independent of cell-edit row handles.
 mod dialog;
+mod initial;
 pub(crate) mod inline;
 
 use super::{DocumentView, EditInput, EditSaveOutcome, InputHint, State};
@@ -86,6 +87,7 @@ pub(super) enum Dialog {
         review: Option<Box<InsertReview>>,
         error: Option<String>,
         inline: inline::Editor,
+        initial_seeded: bool,
     },
     Saving {
         save_id: u64,
@@ -231,14 +233,20 @@ impl State {
                 request_id,
                 error: None,
             });
+            self.initial_record_insert_started(request_id);
         }
     }
 
     pub fn set_insert_draft(&mut self, request_id: u64, draft: InsertDraft) {
+        let current_request = matches!(&self.insertion,
+            Some(Dialog::Checking { request_id: expected, .. }) if *expected == request_id);
         let accepts = matches!(&self.insertion,
             Some(Dialog::Checking { target, request_id: expected, .. })
                 if *expected == request_id && target == &draft.target);
         if !accepts || !self.insert_source_current(&draft.target) {
+            if current_request {
+                self.reject_initial_record_draft(request_id);
+            }
             return;
         }
         if draft.fields.len() > MAX_INSERT_FIELDS {
@@ -246,15 +254,18 @@ impl State {
             return;
         }
         let entries = draft.fields.iter().map(|_| FieldInput::default()).collect();
+        let draft_id = draft.id;
         self.insertion = Some(Dialog::Draft {
             draft: Box::new(draft),
             entries,
             request_id,
             inline: inline::Editor::default(),
+            initial_seeded: false,
             pending: None,
             review: None,
             error: None,
         });
+        self.adopt_initial_record(request_id, draft_id);
     }
 
     pub fn can_review_insert(&self, draft_id: u64, proposed: &[InsertInput]) -> bool {
@@ -453,6 +464,7 @@ impl State {
             return false;
         }
         self.insertion = None;
+        self.initial_record_insert_closed();
         true
     }
 
@@ -475,4 +487,4 @@ impl State {
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;

@@ -3,19 +3,23 @@ mod close;
 mod creating;
 mod gallery;
 mod grid;
+mod record;
+mod rename;
 pub(super) mod save;
-pub use save::{TableDraftSaveCompletion, TableSaveRequest};
+pub use save::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
 
 use super::objects::{ObjectKind, ObjectTab};
 use super::{Action, State};
 use crate::localization::tr;
 use egui::Ui;
-use tablecraft_builders::table::{DraftFieldId, DraftFieldType, TableDraft};
+use tablecraft_builders::table::{DraftFieldType, TableDraft};
 
 pub(super) struct Editor {
     pub(super) draft: TableDraft,
-    rename: Option<(DraftFieldId, String)>,
+    record: record::RowDraft,
+    rename: Option<rename::Rename>,
     focus_add: bool,
+    save_requested: bool,
     error: bool,
     save_name: String,
     save_blocked: bool,
@@ -32,8 +36,10 @@ impl Editor {
     pub(super) fn initial() -> Self {
         Self {
             draft: TableDraft::initial(),
+            record: record::RowDraft::new(),
             rename: None,
             focus_add: true,
+            save_requested: false,
             error: false,
             save_name: "Table1".into(),
             save_blocked: false,
@@ -41,10 +47,46 @@ impl Editor {
         }
     }
 
+    pub(super) fn commit_rename(&mut self) -> bool {
+        let Some(rename) = &mut self.rename else {
+            return true;
+        };
+        if rename.rejected || self.draft.rename_field(rename.field, &rename.name).is_err() {
+            self.error = true;
+            rename.refocus();
+            return false;
+        }
+        self.rename = None;
+        self.error = false;
+        self.focus_add = true;
+        true
+    }
+
+    pub(super) fn record_revision(&self) -> u64 {
+        self.record.revision()
+    }
+
+    pub(super) fn is_modified(&self) -> bool {
+        self.draft.is_modified()
+            || self.record.is_modified()
+            || self.rename.as_ref().is_some_and(|rename| {
+                rename.rejected
+                    || self
+                        .draft
+                        .fields()
+                        .iter()
+                        .any(|field| field.id() == rename.field && field.name() != rename.name)
+            })
+    }
+
     pub(super) fn retained_bytes(&self) -> usize {
         size_of::<Self>()
             + self.draft.retained_bytes()
-            + self.rename.as_ref().map_or(0, |(_, text)| text.capacity())
+            + self.record.retained_bytes()
+            + self
+                .rename
+                .as_ref()
+                .map_or(0, |rename| rename.name.capacity())
             + self.save_name.capacity()
             + self.save_message.as_ref().map_or(0, String::capacity)
     }
@@ -92,7 +134,7 @@ impl State {
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
-        if editor.save_blocked {
+        if editor.save_blocked || !editor.commit_rename() {
             return false;
         }
         let Ok(id) = editor.draft.add_field(kind) else {
@@ -105,7 +147,12 @@ impl State {
             .find(|field| field.id() == id)
             .unwrap()
             .name();
-        editor.rename = Some((id, name.into()));
+        if !editor.record.synchronize(&editor.draft) {
+            editor.error = true;
+            return false;
+        }
+        editor.rename = Some(rename::Rename::new(id, name.into()));
+        editor.focus_add = false;
         true
     }
 

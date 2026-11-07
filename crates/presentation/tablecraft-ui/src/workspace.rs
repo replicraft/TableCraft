@@ -11,6 +11,7 @@ mod filtering;
 mod find;
 pub(crate) mod focus;
 mod home;
+mod initial_record;
 pub(crate) mod insertion;
 mod navigation;
 mod objects;
@@ -50,7 +51,7 @@ pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use save_display::SaveCleanupNotice;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
-pub use table_draft::{TableDraftSaveCompletion, TableSaveRequest};
+pub use table_draft::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
 pub use totals::{
     TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
 };
@@ -331,6 +332,8 @@ pub struct State {
     paste_request: Option<editing::paste::ClipboardRequest>,
     ribbon_paste: Option<home::menus::paste::PendingPaste>,
     insertion: Option<insertion::Dialog>,
+    initial_record: Option<initial_record::Continuation>,
+    initial_record_notice: Option<InsertTarget>,
     deletion: Option<deletion::Dialog>,
     /// Host capability; false until the complete native Find service is ready.
     pub find_available: bool,
@@ -359,7 +362,7 @@ pub struct State {
     table_draft_save: Option<table_draft::save::SaveDialog>,
     table_draft: Option<table_draft::Editor>,
     table_draft_close: Option<table_draft::CloseIntent>,
-    table_draft_discard_approved: Option<(ObjectTab, u64)>,
+    table_draft_discard_approved: Option<(ObjectTab, u64, u64)>,
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
     ribbon_display: chrome::ribbon_display::RibbonDisplay,
@@ -668,6 +671,7 @@ impl State {
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_table_draft_save_shortcut(ui.ctx());
         let modal_open = self.table_draft_save.is_some()
+            || self.initial_record_pending()
             || self.table_draft_close.is_some()
             || self.contents_request_id().is_some()
             || self.edit_dialog_open()
@@ -747,6 +751,7 @@ impl State {
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
         self.insertion_dialog(ui.ctx(), &mut actions);
+        self.initial_record_dialog(ui.ctx(), &mut actions);
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);

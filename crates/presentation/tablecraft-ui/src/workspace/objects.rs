@@ -301,12 +301,13 @@ impl State {
         if !self.can_close_object(tab) {
             return false;
         }
-        let approved =
-            self.table_draft_discard_approved
-                .as_ref()
-                .is_some_and(|(approved, revision)| {
-                    approved == tab && self.table_draft_revision_for(tab) == Some(*revision)
-                });
+        let approved = self.table_draft_discard_approved.as_ref().is_some_and(
+            |(approved, revision, record_revision)| {
+                approved == tab
+                    && self.table_draft_revision_for(tab) == Some(*revision)
+                    && self.table_draft_record_revision_for(tab) == Some(*record_revision)
+            },
+        );
         if self.modified_table_draft(tab) && !approved {
             self.table_draft_discard_approved = None;
             self.table_draft_close = Some(super::table_draft::CloseIntent::Tab(tab.clone()));
@@ -697,6 +698,11 @@ impl State {
             })
     }
 
+    pub(super) fn table_draft_record_revision_for(&self, tab: &ObjectTab) -> Option<u64> {
+        self.table_draft_editor(tab)
+            .map(|editor| editor.record_revision())
+    }
+
     pub(super) fn modified_table_draft(&self, tab: &ObjectTab) -> bool {
         if !matches!(tab.target.kind, ObjectKind::DraftTable { .. }) {
             return false;
@@ -705,10 +711,10 @@ impl State {
             return self
                 .table_draft
                 .as_ref()
-                .is_some_and(|editor| editor.draft.is_modified());
+                .is_some_and(|editor| editor.is_modified());
         }
         self.objects.entries.iter().find(|entry| entry.tab == *tab).is_some_and(|entry| {
-            matches!(&entry.session, Some(Session::DraftTable { editor: Some(editor) }) if editor.draft.is_modified())
+            matches!(&entry.session, Some(Session::DraftTable { editor: Some(editor) }) if editor.is_modified())
         })
     }
 

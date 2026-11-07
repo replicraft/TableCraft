@@ -69,7 +69,7 @@ impl State {
                             self.can_save_table_draft(),
                             actions,
                         ) {
-                            self.request_table_draft_save();
+                            self.queue_table_draft_save();
                         }
                         ui.add_space(12.0);
                     }

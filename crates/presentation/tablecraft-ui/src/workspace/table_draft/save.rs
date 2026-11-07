@@ -2,7 +2,7 @@
 mod dialog;
 
 use super::{CloseIntent, State};
-use crate::{Database, ObjectKind, ObjectTab, ObjectTarget};
+use crate::{Database, InsertInput, ObjectKind, ObjectTab, ObjectTarget};
 use std::sync::atomic::{AtomicU64, Ordering};
 use tablecraft_builders::table::TableDraftSnapshot;
 
@@ -14,12 +14,22 @@ pub struct TableSaveRequest {
     pub id: u64,
     pub tab: ObjectTab,
     pub snapshot: TableDraftSnapshot,
+    pub record_revision: u64,
+}
+
+/// Original unsaved record intent paired with its exact declared table schema.
+pub struct InitialRecord {
+    pub snapshot: TableDraftSnapshot,
+    pub inputs: Vec<InsertInput>,
+    /// Exact retained editor text, including text hidden by Omitted or NULL.
+    pub raw_text: Vec<String>,
 }
 
 pub struct TableDraftSaveCompletion {
     pub target: ObjectTarget,
     pub close_after_save: bool,
     pub resume_transition: bool,
+    pub record_pending: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -33,6 +43,7 @@ enum Phase {
 pub(in crate::workspace) struct SaveDialog {
     tab: ObjectTab,
     revision: u64,
+    record_revision: u64,
     name: String,
     id: Option<u64>,
     phase: Phase,
@@ -86,15 +97,20 @@ impl State {
         let Some(tab) = tab else {
             return false;
         };
-        let Some(editor) = self.table_draft_editor(&tab) else {
+        let Some(editor) = self.table_draft_editor_mut(&tab) else {
             return false;
         };
-        if editor.save_blocked {
+        if editor.save_blocked
+            || !editor.commit_rename()
+            || !editor.record.synchronize(&editor.draft)
+            || editor.record.has_rejected_input()
+        {
             return false;
         }
         self.table_draft_save = Some(SaveDialog {
             tab,
             revision: editor.draft.revision(),
+            record_revision: editor.record.revision(),
             name: editor.save_name.clone(),
             id: None,
             phase: Phase::Naming,
@@ -128,6 +144,7 @@ impl State {
         if save.id != Some(request.id)
             || save.phase != Phase::Issued
             || save.tab != request.tab
+            || save.record_revision != request.record_revision
             || !self.save_binding(save)
         {
             return false;
@@ -151,6 +168,11 @@ impl State {
             .as_ref()
             .is_some_and(|database| database.document_revision == save.tab.target.document_revision)
             && self.table_draft_revision_for(&save.tab) == Some(save.revision)
+            && self.table_draft_editor(&save.tab).is_some_and(|editor| {
+                editor.record.revision() == save.record_revision
+                    && !editor.record.has_rejected_input()
+                    && editor.rename.is_none()
+            })
     }
 
     /// A host-confirmed no-write failure. Unknown/retained outcomes use `retain`.
@@ -280,11 +302,36 @@ impl State {
         {
             return None;
         }
-        let save = self.table_draft_save.take().unwrap();
         let target = ObjectTarget {
             document_revision: database.document_revision,
-            kind: ObjectKind::Table { name: save.name },
+            kind: ObjectKind::Table {
+                name: save.name.clone(),
+            },
         };
+        let editor = self.table_draft_editor(&save.tab)?;
+        let continuation = if editor.record.is_modified() {
+            let snapshot = editor.draft.snapshot(&save.name).ok()?;
+            let inputs = editor.record.inputs(&snapshot)?;
+            let raw_text = editor.record.raw_texts(&snapshot)?;
+            Some(
+                self.prepare_initial_record(
+                    &target,
+                    InitialRecord {
+                        snapshot,
+                        inputs,
+                        raw_text,
+                    },
+                )
+                .ok()?,
+            )
+        } else {
+            None
+        };
+        let record_pending = continuation.is_some();
+        let save = self.table_draft_save.take().unwrap();
+        if let Some(continuation) = continuation {
+            self.initial_record = Some(continuation);
+        }
         let close_after_save = matches!(save.close, Some(CloseIntent::Tab(_)));
         let resume_transition = matches!(save.close, Some(CloseIntent::All));
         self.busy = false;
@@ -299,7 +346,21 @@ impl State {
             target,
             close_after_save,
             resume_transition,
+            record_pending,
         })
+    }
+
+    pub(in crate::workspace) fn queue_table_draft_save(&mut self) -> bool {
+        if !self.can_save_table_draft() {
+            return false;
+        }
+        let Some(editor) = &mut self.table_draft else {
+            return false;
+        };
+        // Header and record widgets must consume this frame's exact text before
+        // naming captures either revision. This does not issue a native action.
+        editor.save_requested = true;
+        true
     }
 
     pub(in crate::workspace) fn consume_table_draft_save_shortcut(
@@ -309,7 +370,7 @@ impl State {
         if self.can_save_table_draft()
             && context.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::S))
         {
-            self.request_table_draft_save();
+            self.queue_table_draft_save();
         }
     }
 }

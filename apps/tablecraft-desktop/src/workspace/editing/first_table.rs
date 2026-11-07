@@ -239,7 +239,13 @@ impl Desktop {
             self.retain_workspace_restore(restore);
             self.restore_workspace_after_save(&host.table);
         }
-        if completion.resume_transition {
+        if completion.record_pending {
+            self.resume_after_first_table = completion.resume_transition;
+            self.close_after_first_record = completion
+                .close_after_save
+                .then(|| completion.target.clone());
+            self.open_object(completion.target);
+        } else if completion.resume_transition {
             self.resume_after_first_table = true;
         } else if !completion.close_after_save {
             self.open_object(completion.target);
@@ -386,3 +392,6 @@ mod creating_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod field_types_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod first_record_tests;

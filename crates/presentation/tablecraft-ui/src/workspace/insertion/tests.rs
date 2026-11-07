@@ -15,7 +15,7 @@ fn state() -> (State, InsertTarget) {
     }])
 }
 
-fn state_with_fields(fields: Vec<InsertField>) -> (State, InsertTarget) {
+pub(in crate::workspace) fn state_with_fields(fields: Vec<InsertField>) -> (State, InsertTarget) {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
@@ -63,7 +63,18 @@ fn state_with_fields(fields: Vec<InsertField>) -> (State, InsertTarget) {
     (state, target)
 }
 
-fn choose_mode(harness: &mut Harness<'_, (State, Vec<Action>)>, field: &str, mode: &str) {
+pub(in crate::workspace) fn retained_entry(state: &State, position: usize) -> (InsertInput, &str) {
+    let Some(Dialog::Draft { entries, .. }) = &state.insertion else {
+        panic!("expected retained insertion input");
+    };
+    (entries[position].input(), &entries[position].text)
+}
+
+pub(super) fn choose_mode(
+    harness: &mut Harness<'_, (State, Vec<Action>)>,
+    field: &str,
+    mode: &str,
+) {
     let mut arguments = crate::FluentArgs::new();
     arguments.set("field", field.to_owned());
     let label = harness

@@ -130,13 +130,15 @@ fn header_focus_reveals_click_to_add_after_wide_schema_and_keyboard_adds() {
                 .add_table_draft_field(DraftFieldType::ShortText)
         );
     }
-    harness
-        .state_mut()
-        .0
-        .table_draft
-        .as_mut()
-        .unwrap()
-        .focus_add = true;
+    assert!(
+        harness
+            .state_mut()
+            .0
+            .table_draft
+            .as_mut()
+            .unwrap()
+            .commit_rename()
+    );
     harness.run_steps(4);
     let add = harness.get_by_role_and_label(Role::Button, "Click to Add");
     assert!(add.is_focused());

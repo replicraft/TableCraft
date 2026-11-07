@@ -47,8 +47,24 @@ The shared renderer-neutral table builder retains field identities and a revisio
 rejected names and exhausted limits do not partially change the design. Its
 current authoring ceiling is sixteen fields, and the initial generated ID is
 protected. This is a bounded authoring profile, not the full Access field
-designer. Record entry within the unsaved schema and automatic type inference
-are not implemented.
+designer. Automatic type inference remains unimplemented.
+
+Choosing a type selects its temporary field name in an inline header editor.
+Double-clicking an ordinary header reopens that editor. Enter, Tab or leaving
+the editor attempts to commit the exact name; Escape cancels that name edit.
+Rejected or duplicate names remain editable and block schema Save until
+corrected or cancelled. Save also processes the current pending name before
+capturing the declaration, including same-frame typing and the Save shortcut.
+The protected generated ID never becomes a name editor.
+
+The new-record row accepts raw input before schema Save. It keeps Omitted,
+explicit NULL and supplied text distinct, keyed by draft field identity across
+renaming and added fields. Choosing Omitted retains previously typed text as a
+presentation cache; it does not supply that text to the backend. The generated
+ID stays omitted and displays `(New)`. Input is bounded to eight MiB total raw
+text and the existing per-field editor limits. Oversized insertion is rejected
+whole, visibly blocks Save and requires an accepted edit or mode correction.
+No row is stored while editing this buffer.
 
 | Gallery choice | Native declaration | Authored constant default |
 | --- | --- | --- |
@@ -64,8 +80,8 @@ they are not placeholder row values or display formatting. Choosing a field
 never inserts a record. After saving, generated-ID insertion can resolve
 omitted companions with these checked constant defaults while preserving original
 field presence for fresh proof and recovery. Supplied values take precedence;
-a missing or unsupported default does not silently select another route. The initial ID keeps Increment generation and its primary
-key; it has no explicit constant default. Other Number sizes, Decimal,
+a missing or unsupported default does not silently select another route. The
+initial ID keeps Increment generation and its primary key; it has no explicit constant default. Other Number sizes, Decimal,
 Replication ID/GUID and Date/Time Extended are not silently substituted.
 Long Text, Lookup & Relationship, Rich Text, Attachment, Hyperlink, Calculated
 Field and More Fields remain visible disabled entries with unavailable tooltips.
@@ -84,9 +100,9 @@ Microsoft's [Create a new database](https://support.microsoft.com/en-us/access/c
 describes the intended complete continuation: Create opens an initial `Table1`
 in Datasheet view, with focus in Click to Add; entering data defines fields,
 and closing a changed table offers save, discard or cancel. The implementation
-now connects the bounded initial schema to a real same-file save. Record entry,
-automatic field inference, general schema changes and complete Design view
-remain unfinished.
+now connects the bounded initial schema to a real same-file save and retains
+one pending record through the explicit continuation below. Automatic field
+inference, general schema changes and complete Design view remain unfinished.
 
 ## Creating the first table after Open
 
@@ -153,6 +169,29 @@ use the documented workflows rather than a claimed captured-menu match.
 Long Text, Rich Text, Attachment, lookup and calculated-field workflows require
 additional semantics; listing their documented names does not enable them.
 
+## Schema naming and record saving are distinct
+
+Microsoft documents renaming a field by editing its column heading, and naming a
+new table through Save As on its first Save. Closing a changed initial `Table1`
+offers save, discard or cancellation; closing it without ever saving can discard
+the table together with entered data. These are initial-table lifecycle rules,
+not a general promise that closing any persisted table reverses its records.
+See [Create a new database](https://support.microsoft.com/en-us/access/create-a-new-database)
+and the [keyboard table-creation workflow](https://support.microsoft.com/en-us/accessibility/access/use-a-screen-reader-to-create-tables-in-access-desktop-databases).
+
+For persisted tables, Microsoft describes record saving when viewing another
+record or closing the table, with Shift+Enter as an explicit record-save action.
+TableCraft currently retains its explicit whole-row Review and Apply flow.
+Header naming, schema Save and reviewed insertion must not be described as
+Access record autosave. See
+[Ways to add, edit, and delete records](https://support.microsoft.com/en-us/access/ways-to-add-edit-and-delete-records).
+
+The retained Windows Datasheet image shows stored records, the new-record
+placeholder and field headings. It does not show an active header-name editor,
+first-record entry in an unsaved table, or the Save/Discard interactions. Those
+interaction details use documented contracts and headless checks; exact native
+interaction parity remains unverified.
+
 ## Saving the initial table
 
 The shared Save prompt accepts an exact table name and submits
@@ -202,6 +241,35 @@ pass, including keyboard confirmation and retained-resource controls. These are
 historical local results. Windows fresh creation and same-file Save are now
 implemented, but actual Windows execution and native Access save/reopen remain
 unqualified.
+
+## Continuing to the first record
+
+Schema Save and row Save are separate operations. After the schema receives its
+acknowledged completion and guarded reopen succeeds, an actually modified record
+buffer is transferred to a fresh runtime-issued insertion draft for that real
+table and document revision. The transfer retains the original draft identities
+and checks the real field names, order and declared carriers. An untouched placeholder never inserts an empty
+record. Original Omitted/NULL/supplied intent and hidden raw text are retained;
+display formatting never becomes edit input.
+
+The reopened Datasheet shows the retained record for the existing explicit
+Review and Apply flow. Preparing this editor does not review or apply the row
+automatically. Invalid values can therefore leave a successfully saved table
+alongside an unsaved record; the UI retains the input for correction and keeps
+the schema completion distinct from any insertion outcome.
+
+If the fresh target or schema does not match, a pending-record dialog retains
+the input and offers the admitted Retry or Discard action. Discard abandons only
+the unsaved record. It never deletes the committed table or rewrites the schema
+receipt as a rollback. Cancelling the table-name prompt keeps both the pending
+name and record. Close/open transitions wait for this continuation and any
+insertion worker/resource owner; a retained journal still requires its explicit
+recovery or release path.
+
+This is a TableCraft continuation through two reviewed operations, not Access
+record autosave or an atomic schema-and-record transaction. Connected headless
+desktop checks cover the real schema save/reopen followed by retained row input;
+native Windows execution and Access interaction comparison remain unqualified.
 
 ## Evidence and remaining qualification
 

@@ -1,5 +1,5 @@
 //! Field gallery declarations survive actual review, save and fresh inspection.
-use super::test_support::start_save;
+use super::test_support::{add_named_field, start_save};
 use crate::workspace::test_support::{finish_reads, opened};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
@@ -28,28 +28,7 @@ fn gallery_fields_save_with_exact_native_types_and_constant_defaults() {
         ("table-draft-date-time", "OccurredAt", 8, None),
     ];
     for (key, name, _, _) in fields {
-        let label = harness.state().state.localizer.text(key);
-        harness
-            .get_by_role_and_label(Role::Button, "Click to Add")
-            .click_accesskit();
-        harness.run_steps(2);
-        harness
-            .get_by_role_and_label(Role::Button, &label)
-            .click_accesskit();
-        harness.run_steps(2);
-        harness
-            .get_by_role_and_label(Role::TextInput, "Field name")
-            .focus();
-        harness.run_steps(1);
-        harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
-        harness
-            .get_by_role_and_label(Role::TextInput, "Field name")
-            .type_text(name);
-        harness.run_steps(1);
-        harness
-            .get_by_role_and_label(Role::Button, "Rename field")
-            .click_accesskit();
-        harness.run_steps(2);
+        add_named_field(&mut harness, key, name);
     }
     assert_eq!(std::fs::read(&path).unwrap(), original);
 

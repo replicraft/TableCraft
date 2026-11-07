@@ -12,12 +12,22 @@ impl State {
             return;
         }
         let can_save = self.can_save_table_draft_close();
+        let invalid_name = self.object_tabs().iter().any(|tab| {
+            self.table_draft_editor(tab)
+                .is_some_and(|editor| editor.rename.is_some() && editor.error)
+        });
         let mut save = false;
         let mut discard = false;
         let mut cancel = false;
         let response = Modal::new(egui::Id::new("table_draft_close")).show(context, |ui| {
             ui.heading(tr(ui, "table-draft-close-title"));
             ui.label(tr(ui, "table-draft-close-question"));
+            if invalid_name {
+                ui.colored_label(
+                    ui.visuals().error_fg_color,
+                    tr(ui, "table-draft-invalid-name"),
+                );
+            }
             if !can_save {
                 ui.label(tr(ui, "table-draft-save-unavailable"));
             }
@@ -48,8 +58,12 @@ impl State {
         } else {
             match intent {
                 CloseIntent::Tab(tab) => {
-                    if let Some(revision) = self.table_draft_revision_for(&tab) {
-                        self.table_draft_discard_approved = Some((tab.clone(), revision));
+                    if let (Some(revision), Some(record_revision)) = (
+                        self.table_draft_revision_for(&tab),
+                        self.table_draft_record_revision_for(&tab),
+                    ) {
+                        self.table_draft_discard_approved =
+                            Some((tab.clone(), revision, record_revision));
                         actions.push(Action::CloseObject { tab });
                     }
                 }

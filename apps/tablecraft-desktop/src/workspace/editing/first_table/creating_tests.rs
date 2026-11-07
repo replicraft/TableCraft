@@ -1,6 +1,6 @@
 //! Explicit Create → Table uses the real open/review/save host without windows.
 use super::Desktop;
-use super::test_support::start_save;
+use super::test_support::{add_named_field, start_save};
 use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui::accesskit::Role;
 use egui_kittest::{
@@ -52,27 +52,7 @@ fn opening_blank_is_inert_and_explicit_ribbon_table_saves_to_the_same_path() {
     assert_eq!(std::fs::read(&path).unwrap(), original);
 
     create_table(&mut harness);
-    harness
-        .get_by_role_and_label(Role::Button, "Click to Add")
-        .click_accesskit();
-    harness.run_steps(2);
-    harness
-        .get_by_role_and_label(Role::Button, "Short Text (255)")
-        .click_accesskit();
-    harness.run_steps(2);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Field name")
-        .focus();
-    harness.run_steps(1);
-    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Field name")
-        .type_text("Name");
-    harness.run_steps(1);
-    harness
-        .get_by_role_and_label(Role::Button, "Rename field")
-        .click_accesskit();
-    harness.run_steps(2);
+    add_named_field(&mut harness, "table-draft-short-text", "Name");
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
     assert!(harness.state().first_table.is_none());

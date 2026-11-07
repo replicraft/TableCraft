@@ -148,6 +148,7 @@ pub(super) struct Desktop {
     deferred_draft_action: Option<DeferredDraftAction>,
     first_table: Option<FirstTableHost>,
     resume_after_first_table: bool,
+    close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
     recovery_reopen: Option<editing::recovery::RecoveryReopen>,
@@ -180,6 +181,7 @@ impl Desktop {
             deferred_draft_action: None,
             first_table: None,
             resume_after_first_table: false,
+            close_after_first_record: None,
             editing,
             recovery: None,
             recovery_reopen: None,
@@ -295,6 +297,8 @@ impl Desktop {
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
+            || self.state.insertion_dialog_open()
+            || self.state.initial_record_pending()
         {
             return;
         }
@@ -332,6 +336,7 @@ impl Desktop {
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.insertion_dialog_open()
+            || self.state.initial_record_pending()
         {
             return;
         }
@@ -664,8 +669,23 @@ impl eframe::App for Desktop {
         self.poll();
         self.poll_saves();
         self.poll_recovery();
-        if std::mem::take(&mut self.resume_after_first_table) {
-            self.resume_table_draft_action(ctx);
+        if !self.state.initial_record_pending()
+            && !self.state.insertion_dialog_open()
+            && !self.editing.has_save()
+            && !self.state.busy
+        {
+            if let Some(target) = self.close_after_first_record.take()
+                && let Some(tab) = self
+                    .state
+                    .object_tabs()
+                    .into_iter()
+                    .find(|tab| tab.target == target)
+            {
+                self.close_object(tab);
+            }
+            if std::mem::take(&mut self.resume_after_first_table) {
+                self.resume_table_draft_action(ctx);
+            }
         }
         self.guard_save_close(ctx);
         self.guard_creation_close(ctx);
@@ -953,7 +973,8 @@ impl eframe::App for Desktop {
         if ui.input(|input| input.viewport().close_requested())
             && (self.editing.has_save()
                 || self.creating.is_busy()
-                || self.state.insertion_dialog_open())
+                || self.state.insertion_dialog_open()
+                || self.state.initial_record_pending())
         {
             ui.ctx()
                 .send_viewport_cmd(egui::ViewportCommand::CancelClose);

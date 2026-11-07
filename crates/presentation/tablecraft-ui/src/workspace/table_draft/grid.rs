@@ -10,11 +10,8 @@ const HEADER_HEIGHT: f32 = 22.0;
 const ROW_HEIGHT: f32 = 22.0;
 const FIELD_WIDTH: f32 = 150.0;
 const SELECTOR_WIDTH: f32 = 22.0;
-const RENAME_WIDTH: f32 = 220.0;
 const PRIMARY_ICON_SIZE: f32 = 12.0;
 const PRIMARY_ICON_GAP: f32 = 4.0;
-const NAME_INPUT_CHARACTERS: usize = 64;
-const NAME_INPUT_BYTES: usize = 256;
 const FOOTER_PADDING: f32 = 12.0;
 const ADD_CHEVRON_INSET: f32 = 8.0;
 const ADD_LABEL_PADDING: f32 = 4.0;
@@ -23,6 +20,10 @@ const ADD_CHEVRON_HALF_WIDTH: f32 = 3.0;
 const ADD_CHEVRON_HALF_HEIGHT: f32 = 1.5;
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
+    if !editor.record.synchronize(&editor.draft) {
+        ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
+        return false;
+    }
     let colors = palette(ui.ctx());
     let footer_height = footer_height(ui, editor);
     let grid_height = (ui.available_height() - footer_height).max(0.0);
@@ -30,6 +31,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
     let body_height = (grid_height - HEADER_HEIGHT - scrollbar_height).max(0.0);
     let mut addition = None;
     let mut rename = None;
+    let mut rename_outcome = None;
     ui.scope(|ui| {
         ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
@@ -67,6 +69,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                             header.col(|ui| {
                                 columns.push(ui.max_rect());
                                 grid_cell(ui, true);
+                                if let Some(active) = &mut editor.rename
+                                    && active.field == field.id()
+                                {
+                                    rename_outcome = active.show(ui);
+                                    editor.error |= active.rejected;
+                                    return;
+                                }
                                 let rect = ui.max_rect();
                                 let inset = if field.is_primary() {
                                     let icon_rect = egui::Rect::from_min_size(
@@ -90,7 +99,10 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                                             .sense(egui::Sense::click()),
                                     )
                                     .on_hover_text(field.name());
-                                if !field.is_primary() && response.double_clicked() {
+                                if !field.is_primary()
+                                    && editor.rename.is_none()
+                                    && response.double_clicked()
+                                {
                                     rename = Some((field.id(), field.name().into()));
                                 }
                             });
@@ -98,7 +110,8 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                         header.col(|ui| {
                             columns.push(ui.max_rect());
                             grid_cell(ui, true);
-                            let enabled = editor.draft.fields().len() < MAX_DRAFT_FIELDS;
+                            let enabled = editor.draft.fields().len() < MAX_DRAFT_FIELDS
+                                && editor.rename.is_none();
                             ui.add_enabled_ui(enabled, |ui| {
                                 let label = tr(ui, "datasheet-click-to-add");
                                 let button = egui::Button::new("")
@@ -183,12 +196,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                             for field in editor.draft.fields() {
                                 row.col(|ui| {
                                     grid_cell(ui, false);
-                                    if field.is_primary() {
-                                        ui.label(
-                                            RichText::new(tr(ui, "table-draft-new-record"))
-                                                .color(colors.muted),
-                                        );
-                                    }
+                                    editor.record.show_cell(ui, field);
                                 });
                             }
                             row.col(|ui| {
@@ -217,48 +225,34 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                     .find(|field| field.id() == id)
                     .unwrap()
                     .name();
-                editor.rename = Some((id, name.into()));
+                if !editor.record.synchronize(&editor.draft) {
+                    editor.error = true;
+                }
+                editor.rename = Some(super::rename::Rename::new(id, name.into()));
+                editor.focus_add = false;
                 editor.error = false;
             }
             Err(_) => editor.error = true,
         }
     }
     if let Some(rename) = rename {
-        editor.rename = Some(rename);
+        editor.rename = Some(super::rename::Rename::new(rename.0, rename.1));
+        editor.focus_add = false;
+    }
+    match rename_outcome {
+        Some(super::rename::Outcome::Commit) => {
+            editor.commit_rename();
+        }
+        Some(super::rename::Outcome::Cancel) => {
+            editor.rename = None;
+            editor.error = false;
+            editor.focus_add = true;
+        }
+        None => {}
     }
     ui.add_space(8.0);
-    if let Some((id, name)) = &mut editor.rename {
-        ui.horizontal(|ui| {
-            let label = ui.label(tr(ui, "table-draft-field-name"));
-            let input_id = ui.make_persistent_id("draft_field_name");
-            let original = name.clone();
-            let rejected = crate::text_input::reject_events_with_limits(
-                ui,
-                input_id,
-                &original,
-                NAME_INPUT_BYTES,
-                NAME_INPUT_CHARACTERS,
-            );
-            ui.add(
-                egui::TextEdit::singleline(name)
-                    .id(input_id)
-                    .desired_width(RENAME_WIDTH),
-            )
-            .labelled_by(label.id);
-            if rejected
-                || name.len() > NAME_INPUT_BYTES
-                || name.chars().count() > NAME_INPUT_CHARACTERS
-            {
-                *name = original;
-                editor.error = true;
-            }
-            if ui.button(tr(ui, "table-draft-apply-name")).clicked() {
-                editor.error = editor.draft.rename_field(*id, name).is_err();
-                if !editor.error {
-                    editor.focus_add = true;
-                }
-            }
-        });
+    if editor.record.has_rejected_input() {
+        ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
     }
     if editor.error {
         ui.colored_label(
@@ -276,9 +270,12 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
         }
     }
     ui.label(tr(ui, "table-draft-empty-note"));
-    ui.add_enabled(can_save, egui::Button::new(tr(ui, "table-draft-save")))
+    let clicked = ui
+        .add_enabled(can_save, egui::Button::new(tr(ui, "table-draft-save")))
         .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"))
-        .clicked()
+        .clicked();
+    let requested = std::mem::take(&mut editor.save_requested);
+    clicked || (requested && can_save)
 }
 
 fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
@@ -299,8 +296,8 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
         + text_height("table-draft-empty-note")
         + ui.spacing().interact_size.y.max(line_height)
         + ui.spacing().item_spacing.y * 2.0;
-    if editor.rename.is_some() {
-        height += ui.spacing().interact_size.y.max(line_height) + ui.spacing().item_spacing.y;
+    if editor.record.has_rejected_input() {
+        height += text_height("insertion-input-limit") + ui.spacing().item_spacing.y;
     }
     if editor.error {
         height += text_height("table-draft-invalid-name") + ui.spacing().item_spacing.y;

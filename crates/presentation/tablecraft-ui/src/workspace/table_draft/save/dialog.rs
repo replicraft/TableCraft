@@ -211,6 +211,7 @@ impl State {
                 id,
                 tab: save.tab.clone(),
                 snapshot,
+                record_revision: save.record_revision,
             },
         });
     }
