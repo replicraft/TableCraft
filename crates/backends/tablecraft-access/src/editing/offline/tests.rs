@@ -139,6 +139,8 @@ fn confirmed_images_keep_observation_only_diagnostics_after_cleanup_failure() {
             .finish(
                 Receipt {
                     kind: CompletionKind::Confirmed,
+                    retirement: None,
+                    cleanup: None,
                     known: KnownOutcome::Verified(image),
                     matched: None,
                     changed: None,
@@ -180,4 +182,20 @@ fn confirmed_images_keep_observation_only_diagnostics_after_cleanup_failure() {
         ));
         failure.into_session().release().unwrap();
     }
+}
+
+#[test]
+fn provisional_native_receipt_does_not_claim_namespace_completion() {
+    let receipt = Receipt {
+        kind: CompletionKind::Applied,
+        known: KnownOutcome::Native(RecoveryOutcome::Committed),
+        matched: Some(1),
+        changed: Some(1),
+        schema: None,
+        retirement: None,
+        cleanup: None,
+    };
+    assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
+    assert_eq!(receipt.retirement(), None);
+    assert_eq!(receipt.cleanup(), None);
 }

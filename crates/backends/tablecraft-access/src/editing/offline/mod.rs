@@ -29,15 +29,16 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{
     RecoveryOutcome,
     filesystem::{OfflineJournalPair, OfflineTarget, PairError, PairSetupFailure, PairState},
+    filesystem_contracts::{CleanupDisposition, RetiredCleanupPolicy, RetirementGuarantee},
 };
 use tablecraft_model::CatalogScope;
 
 /// Kind of acknowledged completion, separate from cleanup and release.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CompletionKind {
-    /// A newly planned normal edit was committed and its bundle retired/cleaned.
+    /// A newly planned normal edit was committed and its namespace finalized.
     Applied,
-    /// An active qualified journal was explicitly recovered and retired/cleaned.
+    /// An active qualified journal was recovered and its namespace finalized.
     Recovered,
     /// An intact retired journal verified the current complete image without replay.
     Confirmed,
@@ -79,6 +80,8 @@ pub struct Receipt {
     matched: Option<usize>,
     changed: Option<usize>,
     schema: Option<SchemaChange>,
+    retirement: Option<RetirementGuarantee>,
+    cleanup: Option<CleanupDisposition>,
 }
 
 impl Receipt {
@@ -107,6 +110,17 @@ impl Receipt {
     /// confirmation return None; a recovered/confirmed replacement can retain it.
     pub const fn schema_change(self) -> Option<SchemaChange> {
         self.schema
+    }
+
+    /// Acknowledged namespace retirement mechanism, independent of native outcome.
+    /// Provisional native completion alone does not establish this fact.
+    pub const fn retirement(self) -> Option<RetirementGuarantee> {
+        self.retirement
+    }
+
+    /// Actual acknowledged artifact disposition, never inferred from platform.
+    pub const fn cleanup(self) -> Option<CleanupDisposition> {
+        self.cleanup
     }
 
     /// Original matched rows for apply; recovery/confirmation do not invent counts.
@@ -324,7 +338,7 @@ impl OfflineWriteSession {
 
     fn finish(
         mut self,
-        receipt: Receipt,
+        mut receipt: Receipt,
         outcome: RecoveryOutcome,
         confirmation: bool,
     ) -> Result<(Self, Receipt), Failure> {
@@ -338,9 +352,18 @@ impl OfflineWriteSession {
             } else {
                 pair.retire(outcome).map_err(Cause::Finalization)?;
             }
-            pair.cleanup_retired().map_err(Cause::Finalization)?;
+            receipt.retirement = pair.retirement_guarantee();
+            let policy = pair.cleanup_policy();
+            if policy == RetiredCleanupPolicy::RemoveWithBarrier {
+                pair.cleanup_retired().map_err(Cause::Finalization)?;
+                receipt.cleanup = Some(CleanupDisposition::Removed);
+            }
             let pair = slot.pair.take().ok_or(Cause::InvalidState)?;
-            match pair.into_target_after_clean() {
+            let transfer = match policy {
+                RetiredCleanupPolicy::RemoveWithBarrier => pair.into_target_after_clean(),
+                RetiredCleanupPolicy::RetainIntact => pair.into_target_after_retirement(),
+            };
+            match transfer {
                 Ok(target) => slot.target = Some(target),
                 Err(failure) => {
                     let (cause, pair) = failure.into_parts();
@@ -350,6 +373,9 @@ impl OfflineWriteSession {
                     slot.pair = Some(pair);
                     return Err(Cause::Transfer(cause));
                 }
+            }
+            if policy == RetiredCleanupPolicy::RetainIntact {
+                receipt.cleanup = Some(CleanupDisposition::RetainedArtifact);
             }
             slot.last = Some(receipt);
             slot.current = None;

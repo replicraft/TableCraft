@@ -7,8 +7,6 @@ use tablecraft_access::editing::offline::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
-const NAMESPACE_REPORT: &str = "Journal namespace\tRetired and synchronized\n";
-
 /// A verified current complete image, not a claim about historical operations.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum VerifiedImage {
@@ -43,11 +41,9 @@ impl Reports {
     fn prepare(budget: &mut ResourceBudget) -> Result<Self, Error> {
         let mut original = report::buffer(budget).map_err(Error::ConfirmationResources)?;
         original.push_str("Verified image\tOriginal\n");
-        original.push_str(NAMESPACE_REPORT);
 
         let mut replacement = report::buffer(budget).map_err(Error::ConfirmationResources)?;
         replacement.push_str("Verified image\tReplacement\n");
-        replacement.push_str(NAMESPACE_REPORT);
 
         Ok(Self {
             original,
@@ -55,13 +51,19 @@ impl Reports {
         })
     }
 
-    fn publish(self, image: VerifiedImage, writer: &mut dyn Write) -> Result<(), Error> {
+    fn publish(
+        self,
+        image: VerifiedImage,
+        namespace: report::NamespaceFacts,
+        writer: &mut dyn Write,
+    ) -> Result<(), Error> {
         let text = match image {
             VerifiedImage::Original => self.original,
             VerifiedImage::Replacement => self.replacement,
         };
         writer
             .write_all(text.as_bytes())
+            .and_then(|()| namespace.publish(writer))
             .and_then(|()| writer.flush())
             .map_err(|error| Error::VerifiedOutput { image, error })
     }
@@ -90,8 +92,8 @@ pub(super) fn run(args: FinalizeArguments, writer: &mut dyn Write) -> Result<(),
     // The shared receipt certifies the current image, without asserting that a
     // historical commit or rollback occurred. Report only after explicit release.
     session.release().map_err(Error::Offline)?;
-    reports.publish(image, writer)
+    reports.publish(image, report::NamespaceFacts::from_receipt(receipt), writer)
 }
 
-#[cfg(test)]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
 mod tests;

@@ -85,12 +85,12 @@ fn deletion_report_uses_removed_root_counts_and_known_output_failure() {
         let mut output = Vec::new();
         Reports::delete(count, count, &mut budget())
             .unwrap()
-            .publish(RecoveryOutcome::Committed, &mut output)
+            .publish(RecoveryOutcome::Committed, super::namespace(), &mut output)
             .unwrap();
         assert_eq!(
             String::from_utf8(output).unwrap(),
             format!(
-                "Transaction\tCommitted\nMatched rows\t{count}\nDeleted rows\t{count}\nJournal namespace\tRetired and synchronized\n"
+                "Transaction\tCommitted\nMatched rows\t{count}\nDeleted rows\t{count}\nJournal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tRemoved\n"
             )
         );
     }
@@ -100,9 +100,11 @@ fn deletion_report_uses_removed_root_counts_and_known_output_failure() {
         bytes: Vec::new(),
     };
     assert!(matches!(
-        Reports::delete(1, 1, &mut budget())
-            .unwrap()
-            .publish(RecoveryOutcome::Committed, &mut writer),
+        Reports::delete(1, 1, &mut budget()).unwrap().publish(
+            RecoveryOutcome::Committed,
+            super::namespace(),
+            &mut writer
+        ),
         Err(Error::Output {
             outcome: RecoveryOutcome::Committed,
             ..

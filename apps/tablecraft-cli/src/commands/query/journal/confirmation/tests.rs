@@ -1,7 +1,16 @@
+use super::super::report::NamespaceFacts;
 use super::{Error, Reports, VerifiedImage};
 use std::io::{self, Write};
 use tablecraft_access::editing::offline::VerifiedImage as NativeVerifiedImage;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::journal::filesystem_contracts::{CleanupDisposition, RetirementGuarantee};
+
+fn namespace() -> NamespaceFacts {
+    NamespaceFacts {
+        retirement: Some(RetirementGuarantee::CapturedParentBarrier),
+        cleanup: Some(CleanupDisposition::Removed),
+    }
+}
 
 struct FailedOutput {
     fail_write: bool,
@@ -29,19 +38,19 @@ fn verified_reports_identify_current_images_without_claiming_historical_events()
         (
             NativeVerifiedImage::Replacement,
             VerifiedImage::Replacement,
-            b"Verified image\tReplacement\nJournal namespace\tRetired and synchronized\n"
+            b"Verified image\tReplacement\nJournal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tRemoved\n"
                 .as_slice(),
         ),
         (
             NativeVerifiedImage::Original,
             VerifiedImage::Original,
-            b"Verified image\tOriginal\nJournal namespace\tRetired and synchronized\n".as_slice(),
+            b"Verified image\tOriginal\nJournal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tRemoved\n".as_slice(),
         ),
     ] {
         assert_eq!(VerifiedImage::from_confirmation(outcome), image);
         let reports = Reports::prepare(&mut ResourceBudget::new(4096, 0, 4096)).unwrap();
         let mut bytes = Vec::new();
-        reports.publish(image, &mut bytes).unwrap();
+        reports.publish(image, namespace(), &mut bytes).unwrap();
         assert_eq!(bytes, expected);
     }
 }
@@ -55,7 +64,9 @@ fn confirmation_output_failure_preserves_verified_image_without_recovery_labels(
                 fail_write,
                 bytes: Vec::new(),
             };
-            let failure = reports.publish(image, &mut writer).unwrap_err();
+            let failure = reports
+                .publish(image, namespace(), &mut writer)
+                .unwrap_err();
             assert!(
                 matches!(&failure, Error::VerifiedOutput { image: actual, error }
                 if *actual == image && error.kind() == io::ErrorKind::BrokenPipe)

@@ -1,7 +1,7 @@
 use super::super::collation::UpdateCollation;
 use clap::Args;
 use std::path::PathBuf;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_core::limits::ResourceBudget;
 
 const WORK_BYTES: u64 = 256 * 1024 * 1024;
@@ -13,14 +13,14 @@ const WORK_STEPS: u64 = 100_000_000;
     after_help = concat!(
         "Offline UPDATE for qualified Jet4 and ACE16 profiles. Jet4 supports one Int32 SET target. ",
         "Keep other applications and ordinary readers closed until this command or explicit recovery finishes. ",
-        "The journal directory must be fresh. Planning precedes journal creation; commit failures require explicit recovery rather than automatic SQL retry. ",
+        "The journal path must be fresh. Planning precedes journal creation; commit failures require explicit recovery rather than automatic SQL retry. ",
         "ACE requires an unencoded ACE2016/2019 subversion-zero file without relationships. Supported fixed targets are Boolean, Int32, Int64, Currency and legacy DATE; numeric NULL transitions preserve inactive bytes and Boolean is nonnullable. ",
         "Qualified ordinary tables also support unindexed Short Text/Binary batches and optional fixed siblings within existing record capacity. Raw noops and empty selections remain distinct from NULL and present-empty values. ",
         "Qualified ordinary records can grow within owned DATA capacity or one represented EOF extension. Planning selects the qualified mode before staging. ",
         "The ordinary fixed route supports qualified retained Int32 indexes, including fitting NULL-key transitions and atomic unique-key swaps. Exact Int64/Currency index updates also support root leaves and retained NODE partitions without splitting. AutoNumber fields remain read-only. ",
         "Qualified inline Memo/OLE updates and external single/chained payload reuse retain existing storage. Terminal growth uses checked free space in the last original LVAL slot; external clearing and allocation refuse. ",
         "All SET expressions read one original snapshot. Required programs need supported native coverage; macro assignments retain the Int32/NULL language. Unsupported targets, properties, required programs and unsupported allocation changes refuse, including empty operations. ",
-        "This command does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
+        "This command does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS/Linux directory bundles and Windows local-NTFS flat sidecars. Windows retains a private retired recovery artifact; actual Windows execution remains unrun.",
     )
 )]
 pub(crate) struct UpdateArguments {
@@ -30,8 +30,8 @@ pub(crate) struct UpdateArguments {
     /// Existing offline file in an admitted native profile, retained under one exclusive lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
-    /// Fresh journal bundle directory; existing entries are never reused or replaced.
-    #[arg(long, value_name = "DIRECTORY")]
+    /// Fresh journal path (Unix directory or Windows sidecar); existing entries are never reused or replaced.
+    #[arg(long, value_name = "PATH")]
     pub(super) journal: PathBuf,
     /// Explicit ordinal comparison for Text predicates; no ambient locale.
     #[arg(long, value_enum)]
@@ -45,12 +45,12 @@ pub(crate) struct UpdateArguments {
     after_help = concat!(
         "Offline normal DELETE for the qualified native ACE2016/2019 target-local profile. ",
         "Keep other applications and ordinary readers closed until completion or explicit recovery. ",
-        "The journal directory must be fresh. All original WHERE predicates finish before planning, and reports are allocated before journal creation. ",
+        "The journal path must be fresh. All original WHERE predicates finish before planning, and reports are allocated before journal creation. ",
         "The target must have complete native program-absence and physical preservation coverage. Qualified single-column Int32 root leaves and retained trees are supported, along with manual Int64/Currency secondary root leaves; page retirement, other indexes, required programs and relationships refuse, including empty operations. ",
         "Deletion marks original row roots and decrements the stored live-row count. Record payloads, readonly OLE, properties, maps and file length remain preserved; no reclamation, cascade or compaction is performed. ",
         "No passwords, parameters, external sources, joins or hidden provider opens are supported. ",
         "Interrupted journals use the existing recover-update and finalize-update commands, which verify the original DELETE intent rather than replay SQL. ",
-        "This does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
+        "This does not enable general ACE saves or establish native Access conformance. Supported filesystem lifecycle: macOS/Linux directory bundles and Windows local-NTFS flat sidecars. Windows retains a private retired recovery artifact; actual Windows execution remains unrun.",
     )
 )]
 pub(crate) struct DeleteArguments {
@@ -60,8 +60,8 @@ pub(crate) struct DeleteArguments {
     /// Existing offline target retained under one exclusive lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
-    /// Fresh journal bundle directory; existing entries are never replaced.
-    #[arg(long, value_name = "DIRECTORY")]
+    /// Fresh journal path (Unix directory or Windows sidecar); existing entries are never replaced.
+    #[arg(long, value_name = "PATH")]
     pub(super) journal: PathBuf,
     /// Explicit ordinal Text comparison policy; no ambient locale.
     #[arg(long, value_enum)]
@@ -84,9 +84,9 @@ pub(crate) struct DeleteArguments {
         "Qualified Short Binary secondary root leaves support nullable and descending keys; SQL Binary insertion currently supports NULL. ",
         "Other split/allocation profiles, broader indexes and relationships refuse. ",
         "Qualified Memo/OLE values fit at most 64 encoded payload bytes inline; external payload allocation refuses. Existing readonly content remains preserved. ",
-        "Keep other applications closed until completion or explicit recovery. The journal directory must be fresh. ",
+        "Keep other applications closed until completion or explicit recovery. The journal path must be fresh. ",
         "Interrupted journals use recover-update or finalize-update, which validate original typed INSERT intent without replaying SQL. ",
-        "This does not establish general ACE saves or native Access conformance. Supported filesystem lifecycle: macOS and Linux.",
+        "This does not establish general ACE saves or native Access conformance. Supported filesystem lifecycle: macOS/Linux directory bundles and Windows local-NTFS flat sidecars. Windows retains a private retired recovery artifact; actual Windows execution remains unrun.",
     )
 )]
 pub(crate) struct InsertArguments {
@@ -96,8 +96,8 @@ pub(crate) struct InsertArguments {
     /// Existing offline target retained under one exclusive lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
-    /// Fresh journal bundle directory; existing entries are never replaced.
-    #[arg(long, value_name = "DIRECTORY")]
+    /// Fresh journal path (Unix directory or Windows sidecar); existing entries are never replaced.
+    #[arg(long, value_name = "PATH")]
     pub(super) journal: PathBuf,
     /// Fixed local civil clock for needed Date()/Now() defaults; otherwise use
     /// the existing local system clock capability. Replay never resamples it.
@@ -109,14 +109,14 @@ pub(crate) struct InsertArguments {
 
 #[derive(Args)]
 #[command(
-    after_help = "Explicit offline recovery of a paired Jet4 or admitted ACE journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write; ACE recovery rederives its bounded pure required programs or closed data-only admission from BEFORE. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS and Linux."
+    after_help = "Explicit offline recovery of a paired Jet4 or admitted ACE journal bundle. No SQL is accepted or replayed. The persisted original typed request must reproduce both complete normal native images before any recovery write; ACE recovery rederives its bounded pure required programs or closed data-only admission from BEFORE. Do not move or replace the target or journal bundle. Keep ordinary readers closed until recovery and namespace retirement finish. Supported filesystem lifecycle: macOS/Linux directory bundles and Windows local-NTFS flat sidecars. Windows retains a private retired recovery artifact; actual Windows execution remains unrun."
 )]
 pub(crate) struct RecoveryArguments {
     /// Original target object, retained under one exclusive file lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
     /// Existing paired journal bundle retained after interruption or failure.
-    #[arg(long, value_name = "DIRECTORY")]
+    #[arg(long, value_name = "PATH")]
     pub(super) journal: PathBuf,
     #[command(flatten)]
     pub(super) work: Work,
@@ -124,14 +124,14 @@ pub(crate) struct RecoveryArguments {
 
 #[derive(Args)]
 #[command(
-    after_help = "Confirm the current original/replacement image of an intact retired native journal bundle, then acknowledge its captured-parent barrier and clean up. No SQL, rollback or recovery replay is performed. Missing records, partial garbage, active bundles and mismatched current images refuse without fallback. The image report does not establish historical commit/rollback events. Keep other applications and ordinary readers closed until completion. Supported filesystem lifecycle: macOS and Linux."
+    after_help = "Confirm the current original/replacement image of an intact retired native journal bundle, then acknowledge its platform-specific retirement. Unix cleans up the retired bundle; Windows retains the intact private sidecar. No SQL, rollback or recovery replay is performed. Missing records, partial garbage, active bundles and mismatched current images refuse without fallback. The image report does not establish historical commit/rollback events. Keep other applications and ordinary readers closed until completion. Supported filesystem lifecycle: macOS/Linux directory bundles and Windows local-NTFS flat sidecars. Windows retains a private retired recovery artifact; actual Windows execution remains unrun."
 )]
 pub(crate) struct FinalizeArguments {
     /// Original target object, retained under one exclusive file lock.
     #[arg(long, value_name = "PATH")]
     pub(super) database: PathBuf,
     /// Intact nonce-named retired bundle, selected explicitly after interruption.
-    #[arg(long, value_name = "RETIRED_DIRECTORY")]
+    #[arg(long, value_name = "RETIRED_PATH")]
     pub(super) journal: PathBuf,
     #[command(flatten)]
     pub(super) work: Work,
@@ -150,7 +150,7 @@ pub(super) struct Work {
     steps: u64,
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 impl Work {
     pub(super) fn budget(&self) -> ResourceBudget {
         ResourceBudget::new(self.bytes, self.rows, self.steps)

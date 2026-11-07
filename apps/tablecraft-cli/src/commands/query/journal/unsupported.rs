@@ -16,7 +16,7 @@ impl fmt::Display for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter.write_str(match self {
             Self::UnsupportedPlatform => {
-                "offline journal editing requires macOS or Linux; no file was opened"
+                "offline journal editing requires macOS, Linux or Windows; no file was opened"
             }
             Self::Credentials => {
                 "journal editing requires an unencoded admitted native profile; --password is unsupported"

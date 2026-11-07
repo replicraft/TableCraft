@@ -33,9 +33,12 @@ capability; the prior Int32 service keeps its own qualified preservation scope.
 
 The host must provide an explicitly offline target, exclude noncooperating
 writers and resolve any other journals before editing. This is not native
-Access multiuser coordination. Filesystem pairing currently operates on Linux
-and macOS; other Unix targets refuse before target acquisition. The module is
-Unix-only. See [filesystem journals](../../foundation/FILESYSTEM_JOURNALS.md) for the underlying
+Access multiuser coordination. The adapter selects the platform filesystem owner:
+Linux/macOS acknowledge captured-parent retirement and garbage-removal barriers;
+Windows uses the qualified local-NTFS write-through rename route and retains the
+intact retired artifact. Other Unix targets refuse before target acquisition.
+Windows behavior still requires native platform qualification; cross-compilation
+alone does not establish durability or Access parity. See [filesystem journals](../../foundation/FILESYSTEM_JOURNALS.md) for the underlying
 namespace and lock assumptions.
 
 ## Plan before effects
@@ -72,6 +75,16 @@ descriptor; it does not reuse a previous snapshot.
 their preformatted success report only after the required completion and release
 steps, and must retain the receipt when reporting output errors. Session methods
 do not publish output themselves.
+
+The receipt separates native completion from namespace facts. `retirement()` is
+`Some(CapturedParentBarrier)` only after the Unix owner acknowledges retirement,
+or `Some(NtfsWriteThroughRename)` after the Windows owner acknowledges its
+qualified rename. `cleanup()` reports `Removed` after verified removal and its
+barrier, or `RetainedArtifact` after successful intact-retirement target transfer.
+Provisional receipts have neither fact. The adapter follows the actual owner's
+`cleanup_policy()`; it never retries a failed removal as intact retention or
+claims artifact removal on Windows. The same exclusive target is returned only
+after the selected strict transfer acknowledges journal-handle release.
 
 ## Failures retain resources and facts
 

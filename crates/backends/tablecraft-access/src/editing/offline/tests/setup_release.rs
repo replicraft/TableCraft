@@ -44,6 +44,14 @@ fn release_after_setup_collision_preserves_last_receipt_namespace_and_current_im
         .apply(&root.path().join("completed"), &mut budget(), &|| false)
         .unwrap();
     let current = fs::read(&path).unwrap();
+    assert_eq!(
+        receipt.retirement(),
+        Some(tablecraft_io::journal::filesystem_contracts::RetirementGuarantee::CapturedParentBarrier)
+    );
+    assert_eq!(
+        receipt.cleanup(),
+        Some(tablecraft_io::journal::filesystem_contracts::CleanupDisposition::Removed)
+    );
     assert_eq!(session.last_completed(), Some(receipt));
 
     let bundle = root.path().join("occupied");

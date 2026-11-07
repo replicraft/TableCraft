@@ -63,6 +63,8 @@ pub(super) fn apply(
     session.finish(
         Receipt {
             kind: CompletionKind::Applied,
+            retirement: None,
+            cleanup: None,
             known: KnownOutcome::Native(RecoveryOutcome::Committed),
             matched,
             changed,

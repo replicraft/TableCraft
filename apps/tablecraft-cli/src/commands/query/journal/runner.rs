@@ -1,5 +1,8 @@
 use super::{
-    Error, RecoveryArguments, UpdateArguments, error::UnexpectedReceipt, preflight, report::Reports,
+    Error, RecoveryArguments, UpdateArguments,
+    error::UnexpectedReceipt,
+    preflight,
+    report::{NamespaceFacts, Reports},
 };
 use crate::native;
 use std::io::Write;
@@ -37,7 +40,11 @@ pub(super) fn update(args: UpdateArguments, writer: &mut dyn Write) -> Result<()
         .map_err(Error::Offline)?;
     debug_assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
     session.release().map_err(Error::Offline)?;
-    reports.publish(RecoveryOutcome::Committed, writer)
+    reports.publish(
+        RecoveryOutcome::Committed,
+        NamespaceFacts::from_receipt(receipt),
+        writer,
+    )
 }
 
 pub(super) fn recover(args: RecoveryArguments, writer: &mut dyn Write) -> Result<(), Error> {
@@ -59,5 +66,5 @@ pub(super) fn recover(args: RecoveryArguments, writer: &mut dyn Write) -> Result
         }));
     };
     session.release().map_err(Error::Offline)?;
-    reports.publish(outcome, writer)
+    reports.publish(outcome, NamespaceFacts::from_receipt(receipt), writer)
 }

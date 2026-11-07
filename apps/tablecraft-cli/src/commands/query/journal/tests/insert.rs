@@ -87,12 +87,12 @@ fn insertion_report_uses_inserted_counts_and_known_output_failure() {
         let mut output = Vec::new();
         Reports::insert(count, &mut budget())
             .unwrap()
-            .publish(RecoveryOutcome::Committed, &mut output)
+            .publish(RecoveryOutcome::Committed, super::namespace(), &mut output)
             .unwrap();
         assert_eq!(
             String::from_utf8(output).unwrap(),
             format!(
-                "Transaction\tCommitted\nInserted rows\t{count}\nJournal namespace\tRetired and synchronized\n"
+                "Transaction\tCommitted\nInserted rows\t{count}\nJournal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tRemoved\n"
             )
         );
     }
@@ -102,9 +102,11 @@ fn insertion_report_uses_inserted_counts_and_known_output_failure() {
         bytes: Vec::new(),
     };
     assert!(matches!(
-        Reports::insert(1, &mut budget())
-            .unwrap()
-            .publish(RecoveryOutcome::Committed, &mut writer),
+        Reports::insert(1, &mut budget()).unwrap().publish(
+            RecoveryOutcome::Committed,
+            super::namespace(),
+            &mut writer
+        ),
         Err(Error::Output {
             outcome: RecoveryOutcome::Committed,
             ..

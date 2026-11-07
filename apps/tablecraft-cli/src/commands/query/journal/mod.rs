@@ -1,21 +1,21 @@
 //! Explicit offline qualified native editing with retained journal pairing.
 mod args;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod confirmation;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod delete;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod error;
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 #[path = "unsupported.rs"]
 mod error;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod insert;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod preflight;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod report;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod runner;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
 mod tests;
@@ -33,11 +33,11 @@ pub(in crate::commands) fn update(
 ) -> Result<(), Error> {
     reject_password(password)?;
 
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         runner::update(args, writer)
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = (args, writer);
         Err(Error::UnsupportedPlatform)
@@ -51,11 +51,11 @@ pub(in crate::commands) fn recover(
 ) -> Result<(), Error> {
     reject_password(password)?;
 
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         runner::recover(args, writer)
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = (args, writer);
         Err(Error::UnsupportedPlatform)
@@ -77,11 +77,11 @@ pub(in crate::commands) fn finalize(
 ) -> Result<(), Error> {
     reject_password(password)?;
 
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         confirmation::run(args, writer)
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = (args, writer);
         Err(Error::UnsupportedPlatform)
@@ -95,11 +95,11 @@ pub(in crate::commands) fn delete(
 ) -> Result<(), Error> {
     reject_password(password)?;
 
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         delete::run(args, writer)
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = (args, writer);
         Err(Error::UnsupportedPlatform)
@@ -113,11 +113,11 @@ pub(in crate::commands) fn insert(
 ) -> Result<(), Error> {
     reject_password(password)?;
 
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     {
         insert::run(args, writer)
     }
-    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
     {
         let _ = (args, writer);
         Err(Error::UnsupportedPlatform)

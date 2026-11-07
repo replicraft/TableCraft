@@ -4,7 +4,8 @@
 itself, including admitted atomic fixed-scalar SET groups on ACE 16.
 `query recover-update` explicitly resolves its paired
 journal without replaying SQL. `query finalize-update` confirms an intact retired
-bundle before completing namespace cleanup. These are separate from the unchanged
+bundle or sidecar before acknowledging its platform-specific retirement. These
+are separate from the unchanged
 [fresh-copy UPDATE](../access/writes/QUERY_EDITING.md) command.
 
 Qualified ordinary updates also maintain [retained Int64/Currency index trees](../access/writes/NORMAL_WIDE_NODE_UPDATE.md)
@@ -209,8 +210,19 @@ Work allowances accumulate throughout each invocation:
 
 Native image/request/journal ceilings remain separate. Larger images may need
 explicitly larger byte and step allowances. No budget resets between phases.
-The filesystem implementation targets macOS and Linux; the local execution
-record covers macOS. Other platforms retain help and refuse before opening files.
+The CLI dispatch enables macOS/Linux directory bundles and Windows local-NTFS
+flat sidecars through the shared normal native services. Other platforms retain
+help and refuse before opening files. Windows setup binds actual held-file and
+parent identities, keeps journal transfers outside an immutable private prefix,
+and retains the intact retired sidecar after acknowledged write-through rename.
+It does not claim a Unix parent-directory barrier or durable deletion. Actual
+Windows filesystem execution and native Access comparisons remain unrun; the
+local execution record covers macOS. The current native journal regression
+selection passes 21 tests locally. The Windows CLI cross-check is blocked in the
+existing bundled `libsqlite3-sys` C build by absent Windows C SDK headers
+(`stdlib.h`); it is not a Windows runtime result or a reason to expand the paused
+SQLite scope. Windows x64/ARM64 service and desktop compilation checks are
+separate passing evidence.
 Filesystem/device compliance and physical power-loss behavior are not qualified
 by completed API barriers.
 
@@ -239,14 +251,19 @@ Successful apply reports:
 Transaction	Committed
 Matched rows	1
 Changed rows	1
-Journal namespace	Retired and synchronized
+Journal namespace	Retired
+Retirement guarantee	Captured-parent barrier
+Journal cleanup	Removed
 ```
 
 Recovery reports `Recovery` with `Committed` or `RolledBack`, followed by the
-same namespace line. Reports are paid and formatted before target writes. Success
-is printed only after acknowledged retirement, owned garbage cleanup and fallible
-lock release. The active bundle is retired intact before cleanup; no foreign
-entry or target is removed.
+same namespace, retirement-guarantee and cleanup fields. Windows reports
+`NTFS write-through rename` and `Private recovery artifact retained`; unknown
+receipt facts remain `Not established`. Outcome text is paid and formatted before
+target writes; terminal namespace facts use static strings without allocating.
+Success is printed only after acknowledged retirement, the actual platform
+cleanup disposition and fallible release. A native committed outcome alone does
+not imply removal of recovery data. No foreign entry or target is removed.
 
 Every commit error requires explicit recovery. Do not retry the UPDATE blindly
 or delete its journal. Setup/preparation failure can leave an incomplete bundle
@@ -268,7 +285,8 @@ retain their separate guarantees and limits.
 
 ## Confirm an intact retired bundle
 
-For `finalize-update`, select the actual surviving nonce-named retired directory;
+For `finalize-update`, select the actual surviving nonce-named retired Unix directory
+or Windows sidecar;
 `ACTUAL_RETIRED_DIRECTORY` in the example is a placeholder. The command does not
 accept an active bundle, SQL or copy-output options. It associates the retained
 objects, requalifies the original native intent and both complete recorded images,
@@ -284,15 +302,19 @@ Success reports the verified current side:
 
 ```text
 Verified image	Replacement
-Journal namespace	Retired and synchronized
+Journal namespace	Retired
+Retirement guarantee	Captured-parent barrier
+Journal cleanup	Removed
 ```
 
 `Original` is the other possible image label. These labels describe current
 verified bytes/barriers, not historical commit, rollback, callback execution or
 external effects. No-op before/after images can be identical. The command writes
 no target or journal payload bytes. After verification it acknowledges only the
-held-parent barrier, cleans the owned retired namespace and releases locks; it
-does not perform another rename.
+platform-specific retirement barrier and releases resources; it does not perform
+another rename. Unix removes the verified retired bundle with its required
+barriers. Windows retains the complete private sidecar, reporting that fact
+separately from the verified current image.
 
 An acknowledgement, cleanup, unlock or output failure retains the verified image
 fact and returns failure, including BrokenPipe. Missing records or partly deleted

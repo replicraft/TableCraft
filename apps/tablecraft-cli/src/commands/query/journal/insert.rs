@@ -1,5 +1,9 @@
 //! Normal INSERT is an outcome-aware shared-session consumer, not native editing.
-use super::{Error, InsertArguments, error::UnexpectedReceipt, report::Reports};
+use super::{
+    Error, InsertArguments,
+    error::UnexpectedReceipt,
+    report::{NamespaceFacts, Reports},
+};
 use crate::{commands::clock::HostClock, native};
 use std::io::Write;
 use tablecraft_access::editing::{offline::OfflineWriteSession, sql};
@@ -51,5 +55,9 @@ pub(super) fn run(args: InsertArguments, writer: &mut dyn Write) -> Result<(), E
         }));
     }
     session.release().map_err(Error::Offline)?;
-    reports.publish(RecoveryOutcome::Committed, writer)
+    reports.publish(
+        RecoveryOutcome::Committed,
+        NamespaceFacts::from_receipt(receipt),
+        writer,
+    )
 }

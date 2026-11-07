@@ -177,6 +177,8 @@ impl OfflineWriteSession {
             Ok(outcome) => self.finish(
                 Receipt {
                     kind: CompletionKind::Recovered,
+                    retirement: None,
+                    cleanup: None,
                     known: KnownOutcome::Native(outcome),
                     matched: None,
                     changed: None,
@@ -327,6 +329,8 @@ impl OfflineWriteSession {
                 self.finish(
                     Receipt {
                         kind: CompletionKind::Confirmed,
+                        retirement: None,
+                        cleanup: None,
                         known: KnownOutcome::Verified(image),
                         matched: None,
                         changed: None,

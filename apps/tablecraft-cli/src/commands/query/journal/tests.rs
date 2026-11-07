@@ -1,6 +1,18 @@
-use super::{Error, report::Reports};
+use super::{
+    Error,
+    report::{NamespaceFacts, Reports},
+};
 use std::io::{self, Write};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::journal::filesystem_contracts::{CleanupDisposition, RetirementGuarantee};
+
+fn namespace() -> NamespaceFacts {
+    NamespaceFacts {
+        retirement: Some(RetirementGuarantee::CapturedParentBarrier),
+        cleanup: Some(CleanupDisposition::Removed),
+    }
+}
+
 use tablecraft_io::journal::RecoveryOutcome;
 
 struct FailingWriter {
@@ -36,7 +48,9 @@ fn completion_output_failure_preserves_each_known_outcome() {
                     kind,
                     bytes: Vec::new(),
                 };
-                let error = reports.publish(outcome, &mut writer).unwrap_err();
+                let error = reports
+                    .publish(outcome, namespace(), &mut writer)
+                    .unwrap_err();
                 assert!(matches!(
                     &error,
                     Error::Output { outcome: actual, error }
@@ -56,11 +70,11 @@ fn complete_report_has_exact_retirement_and_row_fields() {
     let reports = Reports::update(3, 2, &mut budget).unwrap();
     let mut output = Vec::new();
     reports
-        .publish(RecoveryOutcome::Committed, &mut output)
+        .publish(RecoveryOutcome::Committed, namespace(), &mut output)
         .unwrap();
     assert_eq!(
         output,
-        b"Transaction\tCommitted\nMatched rows\t3\nChanged rows\t2\nJournal namespace\tRetired and synchronized\n"
+        b"Transaction\tCommitted\nMatched rows\t3\nChanged rows\t2\nJournal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tRemoved\n"
     );
 }
 
@@ -166,3 +180,33 @@ mod password_priority;
 mod delete;
 
 mod insert;
+
+#[test]
+fn namespace_reports_use_actual_guarantee_and_artifact_disposition_independently() {
+    for (retirement, cleanup, expected) in [
+        (
+            Some(RetirementGuarantee::NtfsWriteThroughRename),
+            Some(CleanupDisposition::RetainedArtifact),
+            "Journal namespace\tRetired\nRetirement guarantee\tNTFS write-through rename\nJournal cleanup\tPrivate recovery artifact retained\n",
+        ),
+        (
+            Some(RetirementGuarantee::CapturedParentBarrier),
+            Some(CleanupDisposition::RetainedArtifact),
+            "Journal namespace\tRetired\nRetirement guarantee\tCaptured-parent barrier\nJournal cleanup\tPrivate recovery artifact retained\n",
+        ),
+        (
+            None,
+            None,
+            "Journal namespace\tNot established\nRetirement guarantee\tNot established\nJournal cleanup\tNot established\n",
+        ),
+    ] {
+        let mut output = Vec::new();
+        NamespaceFacts {
+            retirement,
+            cleanup,
+        }
+        .publish(&mut output)
+        .unwrap();
+        assert_eq!(output, expected.as_bytes());
+    }
+}

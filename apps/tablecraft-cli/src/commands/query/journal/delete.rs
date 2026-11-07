@@ -1,5 +1,9 @@
 //! Normal DELETE is an outcome-aware shared-session consumer, not native editing.
-use super::{DeleteArguments, Error, error::UnexpectedReceipt, report::Reports};
+use super::{
+    DeleteArguments, Error,
+    error::UnexpectedReceipt,
+    report::{NamespaceFacts, Reports},
+};
 use crate::{
     commands::query::collation::{SelectedCollation, TextCollation},
     native,
@@ -61,5 +65,9 @@ pub(super) fn run(args: DeleteArguments, writer: &mut dyn Write) -> Result<(), E
         }));
     }
     session.release().map_err(Error::Offline)?;
-    reports.publish(RecoveryOutcome::Committed, writer)
+    reports.publish(
+        RecoveryOutcome::Committed,
+        NamespaceFacts::from_receipt(receipt),
+        writer,
+    )
 }
