@@ -162,3 +162,6 @@ fn first_table_recovery_refuses_changed_requests_and_unqualified_after_images_wi
         assert_eq!(journal.writes, writes);
     }
 }
+
+#[path = "first_table/policies.rs"]
+mod policies;

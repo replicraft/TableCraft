@@ -11,6 +11,14 @@ use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const MAGIC: &[u8; 8] = b"TCNT0001";
 const DEFAULT_MAGIC: &[u8; 8] = b"TCNT0002";
+const POLICY_MAGIC: &[u8; 8] = b"TCNT0003";
+const DEFAULT_PRESENT: u8 = 0x01;
+const REQUIRED_PRESENT: u8 = 0x02;
+const REQUIRED_VALUE: u8 = 0x04;
+const ALLOW_EMPTY_PRESENT: u8 = 0x08;
+const ALLOW_EMPTY_VALUE: u8 = 0x10;
+const POLICY_FLAGS: u8 =
+    DEFAULT_PRESENT | REQUIRED_PRESENT | REQUIRED_VALUE | ALLOW_EMPTY_PRESENT | ALLOW_EMPTY_VALUE;
 // Pinned profile-2 ceiling: the existing constant literal expression allows
 // at most 255 UTF16 units, so no original text can exceed this UTF8 bound.
 const MAX_DEFAULT_EXPRESSION_UNITS: usize = 255;
@@ -22,6 +30,7 @@ const PREFIX: &[u8; 4] = b"TCNT";
 // profile while retaining this reconstruction for existing pending journals.
 const CONSTRUCTION_PROFILE: u16 = 1;
 const DEFAULT_CONSTRUCTION_PROFILE: u16 = 2;
+const POLICY_CONSTRUCTION_PROFILE: u16 = 3;
 const CANONICAL_BEFORE_PAGES: u64 = 7;
 const CANONICAL_BEFORE_BYTES: u64 = CANONICAL_BEFORE_PAGES * PAGE_BYTES as u64;
 const TOTAL_AT: usize = MAGIC.len();
@@ -45,6 +54,7 @@ const HEADER_BYTES: usize = RESERVED_AT + size_of::<u16>();
 const MAX_COLUMNS: usize = 16;
 const MAX_NAME_BYTES: usize = 64 * 4;
 const FIELD_HEADER_BYTES: usize = 8;
+const TEXT_FIELD_TAG: u8 = 11;
 const V1_MAX_RECORD_BYTES: usize =
     HEADER_BYTES + 2 * MAX_NAME_BYTES + MAX_COLUMNS * (FIELD_HEADER_BYTES + MAX_NAME_BYTES);
 pub(super) const MAX_RECORD_BYTES: usize =
@@ -74,7 +84,7 @@ fn field(column: CreateColumn<'_>) -> Result<(u8, u16, u8, u8), FirstTableIntent
             let units = column
                 .max_text_utf16_units()
                 .ok_or(FirstTableIntentError::InvalidRecord)?;
-            return Ok((11, units as u16, 0, 0));
+            return Ok((TEXT_FIELD_TAG, units as u16, 0, 0));
         }
         ScalarType::Binary => {
             let bytes = column
@@ -106,6 +116,9 @@ pub(super) fn encode(
     let has_defaults = columns
         .iter()
         .any(|column| column.default_literal().is_some());
+    let has_policies = columns
+        .iter()
+        .any(|column| column.required().is_some() || column.allow_zero_length().is_some());
     let mut default_bytes = 0;
     for column in &columns {
         if let Some(value) = column.default_literal() {
@@ -144,8 +157,16 @@ pub(super) fn encode(
     raw.try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
     raw.resize(HEADER_BYTES, 0);
-    let magic = if has_defaults { DEFAULT_MAGIC } else { MAGIC };
-    let profile = if has_defaults {
+    let magic = if has_policies {
+        POLICY_MAGIC
+    } else if has_defaults {
+        DEFAULT_MAGIC
+    } else {
+        MAGIC
+    };
+    let profile = if has_policies {
+        POLICY_CONSTRUCTION_PROFILE
+    } else if has_defaults {
         DEFAULT_CONSTRUCTION_PROFILE
     } else {
         CONSTRUCTION_PROFILE
@@ -166,7 +187,14 @@ pub(super) fn encode(
         check(budget, cancelled)?;
         let (tag, capacity, precision, scale) = field(column)?;
         raw.extend((column.name().len() as u16).to_le_bytes());
-        raw.extend([tag, u8::from(column.default_literal().is_some())]);
+        let mut flags = u8::from(column.default_literal().is_some());
+        if let Some(required) = column.required() {
+            flags |= REQUIRED_PRESENT | if required { REQUIRED_VALUE } else { 0 };
+        }
+        if let Some(allow) = column.allow_zero_length() {
+            flags |= ALLOW_EMPTY_PRESENT | if allow { ALLOW_EMPTY_VALUE } else { 0 };
+        }
+        raw.extend([tag, flags]);
         raw.extend(capacity.to_le_bytes());
         raw.extend([precision, scale]);
         raw.extend(column.name().as_bytes());
@@ -213,7 +241,9 @@ fn column<'a>(name: &'a str, header: &[u8]) -> Result<CreateColumn<'a>, FirstTab
     let capacity = usize::from(word(header, 4));
     let precision = header[6];
     let scale = header[7];
-    if tag != 11 && tag != 12 && capacity != 0 || tag != 13 && (precision != 0 || scale != 0) {
+    if tag != TEXT_FIELD_TAG && tag != 12 && capacity != 0
+        || tag != 13 && (precision != 0 || scale != 0)
+    {
         return Err(FirstTableIntentError::InvalidRecord);
     }
     let scalar = match tag {
@@ -227,7 +257,7 @@ fn column<'a>(name: &'a str, header: &[u8]) -> Result<CreateColumn<'a>, FirstTab
         8 => ScalarType::Double,
         9 => ScalarType::DateTime,
         10 => ScalarType::Guid,
-        11 => return Ok(CreateColumn::short_text(name, capacity)?),
+        TEXT_FIELD_TAG => return Ok(CreateColumn::short_text(name, capacity)?),
         12 => return Ok(CreateColumn::short_binary(name, capacity)?),
         13 => {
             let constraints = DecimalConstraints::new(precision, scale)
@@ -251,12 +281,15 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, raw.len() as u64)
         .map_err(InspectError::from)?;
-    let defaults_version = match &raw[..MAGIC.len()] {
-        version if version == MAGIC => false,
-        version if version == DEFAULT_MAGIC => true,
+    let (defaults_version, policies_version) = match &raw[..MAGIC.len()] {
+        version if version == MAGIC => (false, false),
+        version if version == DEFAULT_MAGIC => (true, false),
+        version if version == POLICY_MAGIC => (true, true),
         _ => return Err(FirstTableIntentError::UnsupportedVersion),
     };
-    let expected_profile = if defaults_version {
+    let expected_profile = if policies_version {
+        POLICY_CONSTRUCTION_PROFILE
+    } else if defaults_version {
         DEFAULT_CONSTRUCTION_PROFILE
     } else {
         CONSTRUCTION_PROFILE
@@ -293,6 +326,7 @@ pub(super) fn decode(
     let primary = cursor.name(usize::from(word(raw, PRIMARY_LENGTH_AT)))?;
     let mut columns = [CreateColumn::new("", ScalarType::Int32); MAX_COLUMNS];
     let mut defaults: [Option<carrier::Borrowed<'_>>; MAX_COLUMNS] = std::array::from_fn(|_| None);
+    let mut found_policy = false;
     for (position, destination) in columns[..count].iter_mut().enumerate() {
         check(budget, cancelled)?;
         let header = cursor.take(FIELD_HEADER_BYTES)?;
@@ -300,10 +334,22 @@ pub(super) fn decode(
         if (header[2] == 0) != (position == 0) {
             return Err(FirstTableIntentError::InvalidRecord);
         }
-        if header[3] > u8::from(defaults_version) || position == 0 && header[3] != 0 {
+        let flags = header[3];
+        let allowed = if policies_version {
+            POLICY_FLAGS
+        } else {
+            u8::from(defaults_version)
+        };
+        if flags & !allowed != 0
+            || position == 0 && flags != 0
+            || flags & REQUIRED_VALUE != 0 && flags & REQUIRED_PRESENT == 0
+            || flags & ALLOW_EMPTY_VALUE != 0 && flags & ALLOW_EMPTY_PRESENT == 0
+            || flags & ALLOW_EMPTY_PRESENT != 0 && header[2] != TEXT_FIELD_TAG
+        {
             return Err(FirstTableIntentError::InvalidRecord);
         }
-        if header[3] != 0 {
+        found_policy |= flags & (REQUIRED_PRESENT | ALLOW_EMPTY_PRESENT) != 0;
+        if flags & DEFAULT_PRESENT != 0 {
             let default_header = cursor.take(DEFAULT_HEADER_BYTES)?;
             if default_header[1..4] != [0, 0, 0] {
                 return Err(FirstTableIntentError::InvalidRecord);
@@ -323,7 +369,13 @@ pub(super) fn decode(
                 cancelled,
             )?);
         }
-        let declaration = column(name, header)?;
+        let mut declaration = column(name, header)?;
+        if flags & REQUIRED_PRESENT != 0 {
+            declaration = declaration.with_required(flags & REQUIRED_VALUE != 0);
+        }
+        if flags & ALLOW_EMPTY_PRESENT != 0 {
+            declaration = declaration.with_allow_zero_length(flags & ALLOW_EMPTY_VALUE != 0)?;
+        }
         *destination = if position == 0 {
             declaration
                 .with_primary_key(primary)?
@@ -335,7 +387,9 @@ pub(super) fn decode(
     if cursor.at != raw.len() {
         return Err(FirstTableIntentError::InvalidRecord);
     }
-    if defaults_version && defaults.iter().all(Option::is_none) {
+    if policies_version && !found_policy
+        || defaults_version && !policies_version && defaults.iter().all(Option::is_none)
+    {
         return Err(FirstTableIntentError::InvalidRecord);
     }
     let mut owned_defaults: [Option<Value>; MAX_COLUMNS] = std::array::from_fn(|_| None);

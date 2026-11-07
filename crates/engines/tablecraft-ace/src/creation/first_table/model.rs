@@ -14,6 +14,8 @@ struct Column {
     name: String,
     declaration: Declaration,
     default: Option<Value>,
+    required: Option<bool>,
+    allow_zero_length: Option<bool>,
 }
 
 /// Owned original declarations for the first table in the canonical blank file.
@@ -42,9 +44,9 @@ fn copy_name(name: &str, budget: &mut ResourceBudget) -> Result<String, InspectE
 impl FirstTableDefinition {
     /// Validate and retain exact names and empty Increment declarations.
     /// The first field must be an Int32 Increment primary. No initial rows,
-    /// policies, generated-field defaults, physical offsets or native flags
-    /// are accepted.
-    /// Ordinary companion fields may retain checked constant defaults.
+    /// generated-field policies/defaults, physical offsets or native flags are
+    /// accepted. Ordinary companion fields retain checked constant defaults and
+    /// exact optional Required/AllowZeroLength declarations.
     pub fn capture(
         table: &str,
         columns: &[CreateColumn<'_>],
@@ -70,6 +72,8 @@ impl FirstTableDefinition {
             retained.push(Column {
                 name: copy_name(column.name(), budget)?,
                 declaration: column.declaration(),
+                required: column.required(),
+                allow_zero_length: column.allow_zero_length(),
                 default: column
                     .default_literal()
                     .map(|value| copy_default(value, budget))
@@ -156,6 +160,14 @@ impl FirstTableDefinition {
                     .with_incrementing_autonumber()?
             } else {
                 borrowed
+            };
+            let borrowed = match column.required {
+                Some(required) => borrowed.with_required(required),
+                None => borrowed,
+            };
+            let borrowed = match column.allow_zero_length {
+                Some(allow) => borrowed.with_allow_zero_length(allow)?,
+                None => borrowed,
             };
             let borrowed = match &column.default {
                 Some(value) => borrowed.with_default_literal(value)?,

@@ -220,16 +220,7 @@ pub fn source(case: Case) -> Source {
     };
     let property_bytes = properties(&policies);
     if let Some(property_bytes) = &property_bytes {
-        let before = bytes[4 * 4096..5 * 4096].to_vec();
-        let mut catalog = records(&before);
-        assert_eq!(&catalog[7][2..6], &7_u32.to_le_bytes());
-        catalog[7] = attach(&catalog[7], property_bytes);
-        let used = 30 + catalog.iter().map(Vec::len).sum::<usize>();
-        assert!(used < 4096);
-        let rows = catalog.into_iter().map(|row| (0, row)).collect::<Vec<_>>();
-        let mut page = data_page(2, &rows);
-        put16(&mut page, 2, (4096 - used) as u16);
-        bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
+        attach_properties(&mut bytes, property_bytes);
     }
     let violation = match case {
         Case::RequiredNullRefusal => Some(Violation::Required),
@@ -244,4 +235,27 @@ pub fn source(case: Case) -> Source {
         property_bytes,
         violation,
     }
+}
+
+/// Attach only independently encoded field-policy bytes to the canonical
+/// seventeen-field catalog envelope whose ordinary user object is ID 7.
+/// The input may contain initial-table record/index changes; those stay exact.
+pub fn with_policies(mut bytes: Vec<u8>, policies: &[Policy]) -> Vec<u8> {
+    if let Some(property_bytes) = properties(policies) {
+        attach_properties(&mut bytes, &property_bytes);
+    }
+    bytes
+}
+
+fn attach_properties(bytes: &mut [u8], property_bytes: &[u8]) {
+    let before = bytes[4 * 4096..5 * 4096].to_vec();
+    let mut catalog = records(&before);
+    assert_eq!(&catalog[7][2..6], &7_u32.to_le_bytes());
+    catalog[7] = attach(&catalog[7], property_bytes);
+    let used = 30 + catalog.iter().map(Vec::len).sum::<usize>();
+    assert!(used < 4096);
+    let rows = catalog.into_iter().map(|row| (0, row)).collect::<Vec<_>>();
+    let mut page = data_page(2, &rows);
+    put16(&mut page, 2, (4096 - used) as u16);
+    bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
 }

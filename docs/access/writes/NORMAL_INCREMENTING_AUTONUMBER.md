@@ -15,9 +15,12 @@ must agree on each physical owner, with exactly one actual primary declaration.
 
 Complete Source, property, constraint and record checks precede planning. Native
 AutoIncrement flags and complete inspected generated-field property absence
-select Increment in this qualified profile. Checked constant DefaultValue-only
-groups on ordinary companions no longer obscure that mode; unknown properties
-and policies still refuse. The stored `GenUniqueID()` declaration selects Random
+select Increment in this qualified profile. Closed ordinary-companion groups
+can contain a checked constant DefaultValue, explicit Boolean Required and, for
+Short Text, explicit Boolean AllowZeroLength. Every admitted property retains its
+qualified native carrier and DDL flag. Duplicate groups or properties, unsupported
+scopes, generated-field policies and unknown declarations refuse. The stored
+`GenUniqueID()` declaration selects Random
 and refuses; unknown or malformed declarations do not fall back to Increment.
 LAST alone, a column name, omission or a primary index never establishes mode.
 
@@ -25,12 +28,23 @@ Original requests must omit the actual generated field. Ordinary companions may
 be supplied with exact runtime carriers or omitted when the captured field has
 a checked constant literal default. Explicit companion NULL remains NULL and
 does not activate a default. Missing defaults, executable expressions and clock
-functions remain refused for omitted companions. Supplied generated values and
-explicit generated NULL remain supplied and refuse. Boolean NULL refuses, and existing empty-Text declaration checks
-remain mandatory. LAST is incremented with checked signed arithmetic; it is
+functions remain refused for omitted companions. This route still refuses an
+omitted companion with no default even when its Required policy is absent or
+explicitly false; it does not invent a nullable fallback. Supplied generated
+values and explicit generated NULL remain supplied and refuse. Boolean NULL
+refuses independently of Required. Empty-Text declaration checks remain mandatory. LAST is incremented with checked signed arithmetic; it is
 never repaired from the maximum live key. Generated collisions report
 DuplicateKey. Exhaustion, unsupported declarations and resource/cancellation
 failures publish no candidate. Empty requests repeat declaration checks.
+
+Required and AllowZeroLength are independent native field checks. Required=true
+rejects supplied NULL or a NULL derived from a literal default. AllowZeroLength=false
+rejects supplied or default-derived empty Text. Required=true together with
+AllowZeroLength=true permits empty Text. Explicit false remains a declaration,
+not missing metadata. Neither policy supplies an omitted value or changes an
+explicitly supplied carrier. Source admission retains the existing required-program
+certificate; this policy composition does not skip data macros, validation or
+unknown active content.
 
 The counter implementation is shared with the preview consumer. Normal staging
 writes the fitted DATA rows, actual primary owner, counters and LAST. Separate
@@ -43,6 +57,17 @@ reread from the original image by the producer and independently derived during
 proof; TCNA2 retains the user’s original omission rather than storing a fabricated
 supplied value. Recovery reconstructs the same operation against its full bound
 source.
+
+The first-table policy follow-up compares complete generated-INSERT images
+against independent Short Text, NULL and empty-Text oracles across all four
+Required/AllowZeroLength combinations. It checks exact original-presence TCNA2
+bytes, committed-image confirmation, missing-default and generated-NULL refusal,
+and constraints on omitted literal defaults. Producer expansion and independent
+proof reread actual source declarations; final Source constraint checks run before
+a qualified plan can be returned. These local headless cases do not establish
+native Access or another platform's filesystem behavior. First-table schema
+policies use [TCNT0003](FIRST_TABLE_PERSISTENCE.md); row INSERT continues to use
+the unchanged TCNA2 protocol.
 
 The initial two-Int32 route retains its
 [execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).
@@ -72,6 +97,6 @@ eight filesystem cold restart contexts pass. See the
 [batch execution record](../../testing/results/ace16-multi-index-increment-writes-2026-11-02.json).
 
 Nullable/descending secondary keys, retained NODEs, allocation/splits,
-broader default/policy composition, Random generation, reseeding and broader field
-properties remain active work. Independent reader agreement does not establish
+default/validation composition beyond these checked constants and Boolean
+policies, Random generation, reseeding and broader field properties remain active work. Independent reader agreement does not establish
 native Microsoft Access save/reopen compatibility.

@@ -356,3 +356,5 @@ fn default_schema_v2_matches_independent_typed_wire_and_retains_exact_original_v
     }
     assert_intent_resources(plan, raw);
 }
+
+mod policies;

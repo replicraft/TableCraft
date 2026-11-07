@@ -34,8 +34,9 @@ pub(super) fn qualify(
     }
     for position in 0..columns.count() {
         check(budget, cancelled)?;
-        if columns.policies(position) != (None, None)
-            || position == selected && columns.default_literal(position).is_some()
+        if position == selected
+            && (columns.policies(position) != (None, None)
+                || columns.default_literal(position).is_some())
             || position != selected && columns.primary_key_name(position).is_some()
         {
             return Err(CreateDatabaseError::Declaration);

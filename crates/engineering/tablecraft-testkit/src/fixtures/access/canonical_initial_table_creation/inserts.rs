@@ -9,6 +9,8 @@ pub enum InsertCase {
     LongInteger,
     ShortText,
     ShortTextNull,
+    /// Empty supplied Text requires a separately attached AllowZeroLength policy.
+    ShortTextEmpty,
 }
 
 pub const CASES: [InsertCase; 4] = [
@@ -46,6 +48,11 @@ pub fn first_insert(case: InsertCase) -> FirstInsert {
             Case::ShortText,
             Some(Value::Null),
             vec![2, 0, 1, 0, 0, 0, 6, 0, 6, 0, 1, 0, 1],
+        ),
+        InsertCase::ShortTextEmpty => (
+            Case::ShortText,
+            Some(Value::Text(String::new())),
+            vec![2, 0, 1, 0, 0, 0, 6, 0, 6, 0, 1, 0, 3],
         ),
     };
     let before = source(declaration).bytes;

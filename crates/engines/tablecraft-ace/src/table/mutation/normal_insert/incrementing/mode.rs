@@ -92,7 +92,7 @@ pub(super) fn inspect(
         return Ok(Mode::Increment);
     }
     crate::properties::framing::validate(&properties, budget, cancelled)?;
-    if companion_defaults(schema, generated, &properties, budget, cancelled)? {
+    if companion_declarations(schema, generated, &properties, budget, cancelled)? {
         return Ok(Mode::Increment);
     }
     let [group] = properties.groups() else {
@@ -219,10 +219,10 @@ pub(super) fn capture(
     Ok(counter)
 }
 
-// Only checked constant declarations on ordinary companions preserve Increment
-// mode. The binding and independent proof separately project actual omissions
-// from the original declarations; supplied values retain their exact carriers.
-fn companion_defaults(
+// Only checked constants and Boolean field policies on ordinary companions
+// preserve Increment mode. The independent final source audit enforces these
+// policies on complete stored rows, including independently expanded omissions.
+fn companion_declarations(
     schema: &TableSchema,
     generated: usize,
     properties: &crate::TableProperties,
@@ -232,10 +232,22 @@ fn companion_defaults(
     if properties.groups().is_empty() {
         return Ok(false);
     }
-    for group in properties.groups() {
+    for (group_position, group) in properties.groups().iter().enumerate() {
         check(budget, cancelled)?;
-        if group.kind() != PropertyGroupKind::Column {
+        if group.kind() != PropertyGroupKind::Column || group.properties().is_empty() {
             return Ok(false);
+        }
+        for prior in &properties.groups()[..group_position] {
+            check(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    (prior.name().len() + group.name().len()) as u64,
+                )
+                .map_err(InspectError::from)?;
+            if prior.name().eq_ignore_ascii_case(group.name()) {
+                return Ok(false);
+            }
         }
         let mut selected = None;
         for (position, column) in schema.columns().iter().enumerate() {
@@ -256,24 +268,44 @@ fn companion_defaults(
         let Some(column) = selected else {
             return Ok(false);
         };
-        let [property] = group.properties() else {
-            return Ok(false);
-        };
-        budget
-            .charge(Resource::Steps, property.name().len() as u64)
-            .map_err(InspectError::from)?;
-        if !property.name().eq_ignore_ascii_case("DefaultValue")
-            || property.native_type() != MEMO_PROPERTY
-            || property.flags() != DDL_PROPERTY
-        {
-            return Ok(false);
+        let mut names = [false; 3];
+        for property in group.properties() {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, property.name().len() as u64)
+                .map_err(InspectError::from)?;
+            if property.flags() != DDL_PROPERTY {
+                return Ok(false);
+            }
+            let selected = if property.name().eq_ignore_ascii_case("DefaultValue") {
+                if property.native_type() != MEMO_PROPERTY
+                    || declaration::capture(column, properties, budget, cancelled)?.is_none()
+                {
+                    return Ok(false);
+                }
+                literal::resolve(column, property.text()?, budget, cancelled)?;
+                0
+            } else if property.name().eq_ignore_ascii_case("Required") {
+                if property.native_type() != BOOLEAN || property.boolean().is_err() {
+                    return Ok(false);
+                }
+                1
+            } else if property.name().eq_ignore_ascii_case("AllowZeroLength") {
+                if column.native_type() != SHORT_TEXT
+                    || property.native_type() != BOOLEAN
+                    || property.boolean().is_err()
+                {
+                    return Ok(false);
+                }
+                2
+            } else {
+                return Ok(false);
+            };
+            if names[selected] {
+                return Ok(false);
+            }
+            names[selected] = true;
         }
-        // Capture rejects duplicate declarations across groups and generated
-        // defaults; the existing bounded parser checks target carrier semantics.
-        if declaration::capture(column, properties, budget, cancelled)?.is_none() {
-            return Ok(false);
-        }
-        literal::resolve(column, property.text()?, budget, cancelled)?;
     }
     check(budget, cancelled)?;
     Ok(true)

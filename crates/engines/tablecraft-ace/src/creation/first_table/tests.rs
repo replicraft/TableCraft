@@ -271,3 +271,5 @@ fn first_table_source_availability_pays_exact_pools_and_checks_completion_cancel
         assert_eq!(seen.get(), stop);
     }
 }
+
+mod policies;
