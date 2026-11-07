@@ -4,6 +4,7 @@ use super::{
 };
 use std::io::{self, Write};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::journal::RecoveryOutcome;
 use tablecraft_io::journal::filesystem_contracts::{CleanupDisposition, RetirementGuarantee};
 
 fn namespace() -> NamespaceFacts {
@@ -12,8 +13,6 @@ fn namespace() -> NamespaceFacts {
         cleanup: Some(CleanupDisposition::Removed),
     }
 }
-
-use tablecraft_io::journal::RecoveryOutcome;
 
 struct FailingWriter {
     fail_write: bool,

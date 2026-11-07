@@ -95,5 +95,5 @@ pub(super) fn run(args: FinalizeArguments, writer: &mut dyn Write) -> Result<(),
     reports.publish(image, report::NamespaceFacts::from_receipt(receipt), writer)
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;

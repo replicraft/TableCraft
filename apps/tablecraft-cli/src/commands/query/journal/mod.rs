@@ -17,7 +17,7 @@ mod preflight;
 mod report;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod runner;
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
 pub(crate) use args::{
