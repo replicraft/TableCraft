@@ -1,5 +1,37 @@
 # Presentation preview
 
+## Inline new-record presentation — 7 November 2026
+
+The shared insertion draft now renders in the appended datasheet row instead of
+the earlier all-fields draft dialog. Its existing generated-ID, omitted-field,
+review and save fixtures remain synthetic presentation data, not native mutation
+permissions. The field input-mode menu retains explicit Omitted/NULL/Value intent;
+review and terminal save states retain their existing modal presentation.
+Field labels, stale-draft status and keyboard help use the owning `insertion.ftl`
+catalog in all eight locales.
+
+The actual retained 1920×1141 Windows/VirtualBox datasheet image was reopened;
+scale is unrecorded. Its appended asterisk row and aligned `(New)` AutoNumber
+placeholder guide layout. No active input-mode menu or Review/Apply strip is
+captured. These are interim TableCraft adaptations: Shift+Enter requests review,
+and neither moving focus nor the preview host writes a file. Documented Access
+keyboard behavior is linked in [the Ribbon contract](RIBBON.md#new-record-shortcut).
+Field-local validation, native autosave and generated/default-value timing are
+not established by this slice. The consolidated batch passes 340 shared UI tests
+(including the 1,440 scene/language/theme combinations) and all 82 desktop tests.
+The final eleven-case insertion follow-up also passes, including incompatible
+same-revision columns, exact retained input and disabled review/apply.
+
+Four normal-host generated-record frames were rendered and inspected offscreen
+on macOS with Windows chrome emulation: English light/dark at 1280×820, 1×,
+German dark and Japanese light at 900×580, 1.25×. The appended row is revealed,
+its generated value and literal inputs align with their columns, and the active
+header follows the pending field. Painted input-mode chevrons remain visible in
+both themes. The translated help/actions remain in the viewport; compact Ribbons
+retain horizontal scrolling. Frames are under
+`.cache/ui-previews/inline-insert-20261107/`. No native window was opened and no
+native Access interaction is qualified by these observations.
+
 ## Retained private recovery journal — 7 November 2026
 
 The resource-free `edit-saved-retained-journal` scene extends the existing saved
@@ -29,6 +61,9 @@ The local frames are under
 `.cache/ui-previews/windows-retained-journal-20261107/`.
 
 ## New-record keyboard intent — 7 November 2026
+
+This earlier shortcut gate predates the inline-draft slice above; its passing
+counts and connected observations retain that earlier scope.
 
 Ctrl+Plus, or Command+Plus on macOS, opens the existing reviewed insertion
 workflow from a currently rendered native cell, record selector or appended

@@ -17,3 +17,9 @@ insertion-mock-help = 仅为合成输入。不会打开或更改数据库文件�
 insertion-generated-value = (新建)
 insertion-auto-number-help = 自动编号：保存新行时自动分配。
 insertion-shortcut-help = 添加新记录（{ $shortcut }）。
+
+insertion-inline-help = 编辑下方的新记录。Tab 切换字段，Shift+Enter 进行审核。Esc 恢复当前字段，再按一次取消记录。
+
+insertion-stale-draft = 源已更改。输入内容已保留；请先取消此记录，再重新打开或切换视图。
+
+insertion-field-input = { $field } 输入模式

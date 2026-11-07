@@ -184,23 +184,24 @@ fn insert_generated_row(harness: &mut Harness<'_, Desktop>, companion: Option<&s
     finish_reads(harness);
 
     // The actual native generation declaration must reach the host. The user
-    // cannot enter an ID or turn it into an explicit NULL/value in this dialog.
+    // cannot enter an ID or turn it into an explicit NULL/value in the draft row.
     assert!(
         harness
             .query_by_role_and_label(Role::MultilineTextInput, "ID")
             .is_none()
     );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::TextInput, "ID")
+            .is_none()
+    );
     if let Some(value) = companion {
         harness
-            .get_by_role_and_label(Role::RadioButton, "Value")
-            .click_accesskit();
-        harness.run_steps(2);
-        harness
-            .get_by_role_and_label(Role::MultilineTextInput, "Field1")
+            .get_by_role_and_label(Role::TextInput, "Field1")
             .focus();
         harness.run_steps(1);
         harness
-            .get_by_role_and_label(Role::MultilineTextInput, "Field1")
+            .get_by_role_and_label(Role::TextInput, "Field1")
             .type_text(value);
         harness.run_steps(2);
     }

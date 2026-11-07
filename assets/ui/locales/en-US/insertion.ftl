@@ -17,3 +17,9 @@ insertion-mock-help = Synthetic input only. No database file is opened or change
 insertion-generated-value = (New)
 insertion-auto-number-help = AutoNumber: assigned automatically when the new row is saved.
 insertion-shortcut-help = Add a new record ({ $shortcut }).
+
+insertion-inline-help = Edit the new record below. Tab moves between fields; Shift+Enter reviews it. Escape restores the current field, then cancels the record.
+
+insertion-stale-draft = The source changed. Your input is retained; cancel this record before reopening or changing views.
+
+insertion-field-input = { $field } input mode

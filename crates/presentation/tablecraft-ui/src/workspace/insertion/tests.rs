@@ -63,6 +63,24 @@ fn state_with_fields(fields: Vec<InsertField>) -> (State, InsertTarget) {
     (state, target)
 }
 
+fn choose_mode(harness: &mut Harness<'_, (State, Vec<Action>)>, field: &str, mode: &str) {
+    let mut arguments = crate::FluentArgs::new();
+    arguments.set("field", field.to_owned());
+    let label = harness
+        .state()
+        .0
+        .localizer
+        .format("insertion-field-input", &arguments);
+    harness
+        .get_by_role_and_label(Role::Button, &label)
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::RadioButton, mode)
+        .click_accesskit();
+    harness.run_steps(2);
+}
+
 #[test]
 fn explicit_omitted_null_and_value_choices_preserve_text_and_exact_review_intent() {
     let (state, _) = state();
@@ -74,34 +92,15 @@ fn explicit_omitted_null_and_value_choices_preserve_text_and_exact_review_intent
         );
     crate::configure(&harness.ctx);
     harness.run();
+    choose_mode(&mut harness, "Name", "Value");
+    let value = harness.get_by_role_and_label(Role::TextInput, "Name");
+    assert!(value.is_focused());
+    assert!(value.rect().width() > 40.0);
     harness
-        .get_by_role_and_label(Role::RadioButton, "Value")
-        .click_accesskit();
-    harness.run();
-    let value = harness.get_by_role(Role::MultilineTextInput);
-    assert!(
-        value.is_focused(),
-        "choosing Value puts the caret in that field"
-    );
-    assert!(
-        value.rect().width() > 500.0,
-        "the input uses the bounded dialog width"
-    );
-    let cancel = harness.get_by_role_and_label(Role::Button, "Cancel");
-    let review = harness.get_by_role_and_label(Role::Button, "Review new row");
-    assert!(review.rect().left() < cancel.rect().left());
-    assert!(
-        (cancel.rect().right() - value.rect().right()).abs() <= 1.0,
-        "the unchanged action order is aligned to the dialog's right edge"
-    );
-    harness
-        .get_by_role(Role::MultilineTextInput)
+        .get_by_role_and_label(Role::TextInput, "Name")
         .type_text("Ada");
     harness.run();
-    harness
-        .get_by_role_and_label(Role::RadioButton, "Omitted")
-        .click_accesskit();
-    harness.run();
+    choose_mode(&mut harness, "Name", "Omitted");
     harness
         .get_by_role_and_label(Role::Button, "Review new row")
         .click_accesskit();
@@ -110,22 +109,16 @@ fn explicit_omitted_null_and_value_choices_preserve_text_and_exact_review_intent
         matches!(harness.state().1.as_slice(), [Action::ReviewInsert { draft_id: 20, inputs }] if inputs == &[InsertInput::Omitted])
     );
     harness.state_mut().1.clear();
-    harness
-        .get_by_role_and_label(Role::RadioButton, "Value")
-        .click_accesskit();
-    harness.run();
+    choose_mode(&mut harness, "Name", "Value");
     assert_eq!(
         harness
-            .get_by_role(Role::MultilineTextInput)
+            .get_by_role_and_label(Role::TextInput, "Name")
             .accesskit_node()
             .value()
             .as_deref(),
         Some("Ada")
     );
-    harness
-        .get_by_role_and_label(Role::RadioButton, "NULL")
-        .click_accesskit();
-    harness.run();
+    choose_mode(&mut harness, "Name", "NULL");
     harness
         .get_by_role_and_label(Role::Button, "Review new row")
         .click_accesskit();
@@ -236,21 +229,22 @@ fn actual_auto_number_metadata_is_read_only_while_an_ordinary_id_stays_editable(
             .data()
             .supports_action(egui::accesskit::Action::Focus)
     );
-    assert_eq!(harness.get_all_by_role(Role::MultilineTextInput).count(), 1);
-    for choice in ["Omitted", "NULL", "Value"] {
-        assert_eq!(
-            harness
-                .get_all_by_role_and_label(Role::RadioButton, choice)
-                .count(),
-            1
-        );
-    }
+    assert!(
+        harness
+            .query_by_role_and_label(Role::TextInput, "Sequence")
+            .is_none()
+    );
+    assert_eq!(
+        harness
+            .get_all_by_role_and_label(Role::TextInput, "ID")
+            .count(),
+        1
+    );
+    choose_mode(&mut harness, "ID", "Value");
     harness
-        .get_by_role_and_label(Role::RadioButton, "Value")
-        .click_accesskit();
-    harness.run();
-    harness.get_by_role(Role::MultilineTextInput).type_text("9");
-    harness.run();
+        .get_by_role_and_label(Role::TextInput, "ID")
+        .type_text("9");
+    harness.run_steps(2);
     harness
         .get_by_role_and_label(Role::Button, "Review new row")
         .click_accesskit();
@@ -303,4 +297,344 @@ fn generated_value_or_null_cannot_be_admitted_even_if_private_entry_state_is_cha
         entries[0].text = "123".into();
     }
     assert!(!state.can_apply_insert(30));
+}
+
+#[test]
+fn inline_escape_restores_field_checkpoint_before_requesting_record_cancel() {
+    let (state, _) = state();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Name")
+        .type_text("Keep exact input");
+    harness.run_steps(2);
+    harness.key_press(egui::Key::Escape);
+    harness.run_steps(2);
+    assert!(harness.state().1.is_empty());
+    assert!(
+        matches!(&harness.state().0.insertion, Some(Dialog::Draft { entries, .. }) if entries[0].choice == Choice::Omitted && entries[0].text.is_empty())
+    );
+    harness.key_press(egui::Key::Escape);
+    harness.run_steps(2);
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::CloseInsert {
+            draft_id: Some(20),
+            ..
+        }]
+    ));
+    assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn inline_review_failure_retains_text_and_refocuses_the_field_without_stored_row() {
+    let (state, _) = state();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Name")
+        .type_text("  exact  ");
+    harness.run_steps(2);
+    harness.key_press_modifiers(egui::Modifiers::SHIFT, egui::Key::Enter);
+    harness.run_steps(2);
+    let proposed = vec![InsertInput::Value(EditInput {
+        text: "  exact  ".into(),
+        is_null: false,
+    })];
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::ReviewInsert { draft_id: 20, inputs }] if inputs == &proposed)
+    );
+    harness.state_mut().0.begin_insert_review(20, proposed, 2);
+    harness
+        .state_mut()
+        .0
+        .fail_insert(2, "Native validation rejected this row".into());
+    harness.run_steps(2);
+    let input = harness.get_by_role_and_label(Role::TextInput, "Name");
+    assert!(input.is_focused());
+    assert_eq!(input.accesskit_node().value().as_deref(), Some("  exact  "));
+    assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn retained_omitted_text_consumes_the_row_budget_and_stale_input_survives_navigation_refusal() {
+    let (mut state, _) = state();
+    if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+        entries[0].text = "x".repeat(MAX_INSERT_TEXT_BYTES);
+        assert!(entries_within_limits(entries));
+        entries.push(FieldInput {
+            choice: Choice::Omitted,
+            text: "y".into(),
+            ..FieldInput::default()
+        });
+        assert!(!entries_within_limits(entries));
+        assert_eq!(remaining_input_bytes(entries, 1), 0);
+        entries.pop();
+        entries[0].text = "retained".into();
+    }
+    state.select_view(super::super::DocumentView::Query);
+    assert!(state.view == super::super::DocumentView::Table);
+    state.show_open();
+    assert!(!state.backstage_visible());
+    state.clear_schema();
+    assert!(state.data.is_some());
+    state.database.as_mut().unwrap().document_revision += 1;
+    state.invalidate_insert();
+    assert!(
+        matches!(&state.insertion, Some(Dialog::Draft { entries, error: Some(_), .. }) if entries[0].text == "retained")
+    );
+    assert!(!state.can_review_insert(20, &[InsertInput::Omitted]));
+}
+
+fn two_field_state() -> (State, InsertTarget) {
+    state_with_fields(
+        ["First", "Second"]
+            .into_iter()
+            .map(|name| InsertField {
+                name: name.into(),
+                input_hint: crate::InputHint::Text,
+                nullable: true,
+                auto_number: false,
+            })
+            .collect(),
+    )
+}
+
+#[test]
+fn inline_tab_moves_between_fields_without_publishing_or_reinterpreting_input() {
+    let (state, _) = two_field_state();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "First")
+        .type_text("  001  ");
+    harness.run_steps(2);
+    harness.key_press(egui::Key::Tab);
+    harness.run_steps(2);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Second")
+            .is_focused()
+    );
+    harness
+        .get_by_role_and_label(Role::TextInput, "Second")
+        .type_text("second value");
+    harness.run_steps(2);
+    harness.key_press_modifiers(egui::Modifiers::SHIFT, egui::Key::Tab);
+    harness.run_steps(2);
+    let first = harness.get_by_role_and_label(Role::TextInput, "First");
+    assert!(first.is_focused());
+    assert_eq!(first.accesskit_node().value().as_deref(), Some("  001  "));
+    assert!(harness.state().1.is_empty());
+    assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn inline_paste_counts_hidden_retained_text_and_requires_a_real_correction() {
+    let (mut state, _) = two_field_state();
+    if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+        entries[0].text = "x".repeat(MAX_INSERT_TEXT_BYTES);
+    }
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Second")
+        .focus();
+    harness.run_steps(2);
+    harness.event(egui::Event::Paste("excess".into()));
+    harness.run_steps(2);
+    assert!(matches!(
+        &harness.state().0.insertion,
+        Some(Dialog::Draft { entries, .. })
+            if entries[0].text.len() == MAX_INSERT_TEXT_BYTES
+                && entries[1].text.is_empty()
+                && entries[1].input_rejected
+    ));
+    assert!(
+        !harness
+            .state()
+            .0
+            .can_review_insert(20, &[InsertInput::Omitted, InsertInput::Omitted])
+    );
+    assert!(harness.state().1.is_empty());
+
+    // Typing into an omitted field replaces its hidden cache, freeing space.
+    harness
+        .get_by_role_and_label(Role::TextInput, "First")
+        .focus();
+    harness.run_steps(1);
+    harness
+        .get_by_role_and_label(Role::TextInput, "First")
+        .type_text("replacement");
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Second")
+        .focus();
+    harness.run_steps(1);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Second")
+        .type_text("accepted");
+    harness.run_steps(2);
+    assert!(matches!(
+        &harness.state().0.insertion,
+        Some(Dialog::Draft { entries, .. })
+            if entries[0].text == "replacement"
+                && entries[1].text == "accepted"
+                && !entries[1].input_rejected
+    ));
+    assert!(harness.state().1.is_empty());
+    assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn same_frame_paste_and_review_uses_exact_accepted_text_and_rejects_oversized_input() {
+    for oversized in [false, true] {
+        let (state, _) = state();
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(900.0, 580.0))
+            .build_ui_state(
+                |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                (state, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(2);
+        harness
+            .get_by_role_and_label(Role::TextInput, "Name")
+            .focus();
+        harness.run_steps(1);
+        let pasted = if oversized {
+            "x".repeat(MAX_INSERT_TEXT_BYTES + 1)
+        } else {
+            "  exact pasted value  ".into()
+        };
+        harness.event(egui::Event::Paste(pasted.clone()));
+        harness.event(egui::Event::ModifiersChanged(egui::Modifiers::SHIFT));
+        harness.event(egui::Event::Key {
+            key: egui::Key::Enter,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::SHIFT,
+        });
+        harness.run_steps(2);
+        if oversized {
+            assert!(harness.state().1.is_empty());
+            assert!(
+                matches!(&harness.state().0.insertion, Some(Dialog::Draft { entries, .. }) if entries[0].text.is_empty() && entries[0].input_rejected)
+            );
+            assert!(
+                !harness
+                    .state()
+                    .0
+                    .can_review_insert(20, &[InsertInput::Omitted])
+            );
+        } else {
+            let expected = vec![InsertInput::Value(EditInput {
+                text: pasted,
+                is_null: false,
+            })];
+            assert!(
+                matches!(harness.state().1.as_slice(), [Action::ReviewInsert { inputs, .. }] if inputs == &expected)
+            );
+        }
+        assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+    }
+}
+
+#[test]
+fn incompatible_same_revision_columns_preserve_visible_input_and_refuse_review_and_apply() {
+    for duplicate in [false, true] {
+        let (mut state, target) = state();
+        if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+            entries[0].choice = Choice::Value;
+            entries[0].text = "retained exact value".into();
+        }
+        let proposed = vec![InsertInput::Value(EditInput {
+            text: "retained exact value".into(),
+            is_null: false,
+        })];
+        state.begin_insert_review(20, proposed.clone(), 2);
+        assert!(state.set_insert_review(
+            2,
+            InsertReview {
+                id: 30,
+                draft_id: 20,
+                target,
+                inputs: proposed.clone(),
+                inserted_rows: 1,
+            }
+        ));
+        assert!(state.can_apply_insert(30));
+        let data = state.data.as_mut().unwrap();
+        if duplicate {
+            data.columns.push("Name".into());
+        } else {
+            data.columns[0] = "Different".into();
+        }
+        assert!(!state.can_apply_insert(30));
+        if let Some(Dialog::Draft { review, .. }) = &mut state.insertion {
+            *review = None;
+        }
+        assert!(!state.can_review_insert(20, &proposed));
+        state.begin_insert_review(20, proposed, 3);
+        assert!(matches!(
+            state.insertion,
+            Some(Dialog::Draft { pending: None, .. })
+        ));
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(900.0, 580.0))
+            .build_ui_state(
+                |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                (state, Vec::new()),
+            );
+        crate::configure(&harness.ctx);
+        harness.run_steps(2);
+        assert!(
+            harness
+                .get_all_by_value("retained exact value")
+                .any(|node| node.accesskit_node().role() == Role::TextInput)
+        );
+        assert!(
+            harness
+                .get_by_role_and_label(Role::Button, "Review new row")
+                .accesskit_node()
+                .is_disabled()
+        );
+        harness
+            .get_by_role_and_label(Role::Button, "Cancel")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(matches!(
+            harness.state().1.as_slice(),
+            [Action::CloseInsert {
+                draft_id: Some(20),
+                ..
+            }]
+        ));
+        assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+    }
 }

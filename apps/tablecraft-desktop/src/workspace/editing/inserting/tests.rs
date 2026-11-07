@@ -22,37 +22,44 @@ fn opened() -> (
 }
 
 fn enter_id(harness: &mut Harness<'_, Desktop>, text: &str) {
-    harness
-        .get_by_role_and_label(Role::MultilineTextInput, "Id")
-        .focus();
+    let role = input_role(harness);
+    harness.get_by_role_and_label(role, "Id").focus();
     harness.run_steps(1);
-    harness
-        .get_by_role_and_label(Role::MultilineTextInput, "Id")
-        .type_text(text);
+    let role = input_role(harness);
+    harness.get_by_role_and_label(role, "Id").type_text(text);
     harness.run_steps(2);
+    let role = input_role(harness);
     assert_eq!(
-        harness
-            .get_by_role_and_label(Role::MultilineTextInput, "Id")
-            .value()
-            .as_deref(),
+        harness.get_by_role_and_label(role, "Id").value().as_deref(),
         Some(text),
     );
 }
 
+fn input_role(harness: &Harness<'_, Desktop>) -> Role {
+    if harness
+        .query_by_role_and_label(Role::TextInput, "Id")
+        .is_some()
+    {
+        Role::TextInput
+    } else {
+        Role::MultilineTextInput
+    }
+}
+
 fn begin(harness: &mut Harness<'_, Desktop>, id: &str) {
-    // The native Ribbon caption opens the same reviewed workflow as the
-    // separate New row affordance in the datasheet footer.
+    // The native Ribbon caption starts the same source-bound appended row as
+    // the datasheet and record navigator affordances.
     harness
         .get_by_role_and_label(Role::Button, "New")
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);
-    harness
-        .get_all_by_role_and_label(Role::RadioButton, "Value")
-        .next()
-        .unwrap()
-        .click_accesskit();
-    harness.run_steps(2);
+    assert!(
+        harness
+            .query_by_role_and_label(Role::TextInput, "Id")
+            .is_some()
+    );
+    assert!(harness.query_by_role(Role::MultilineTextInput).is_none());
     enter_id(harness, id);
 }
 
@@ -130,9 +137,8 @@ fn invalid_input_and_changed_or_cancelled_drafts_never_apply_an_old_review() {
     assert!(harness.state().editing.insert_review.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
 
-    harness
-        .get_by_role_and_label(Role::MultilineTextInput, "Id")
-        .focus();
+    let role = input_role(&harness);
+    harness.get_by_role_and_label(role, "Id").focus();
     harness.run_steps(1);
     harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
     enter_id(&mut harness, "4");

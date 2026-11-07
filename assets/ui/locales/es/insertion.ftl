@@ -17,3 +17,9 @@ insertion-mock-help = Solo entrada sintética. No se abre ni modifica ningún ar
 insertion-generated-value = (Nuevo)
 insertion-auto-number-help = Autonumeración: se asigna automáticamente al guardar la nueva fila.
 insertion-shortcut-help = Agregar un nuevo registro ({ $shortcut }).
+
+insertion-inline-help = Edite el nuevo registro de abajo. Tab avanza entre campos; Mayús+Intro lo revisa. Esc restaura el campo actual y, al pulsarlo de nuevo, cancela el registro.
+
+insertion-stale-draft = El origen ha cambiado. Se conserva su entrada; cancele este registro antes de volver a abrirlo o cambiar de vista.
+
+insertion-field-input = Modo de entrada de { $field }

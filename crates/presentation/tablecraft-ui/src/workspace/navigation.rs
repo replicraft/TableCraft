@@ -28,6 +28,9 @@ impl State {
             .default_size(210.0)
             .resizable(true)
             .show(ui, |ui| {
+                if self.inline_insert_active() {
+                    ui.disable();
+                }
                 ui.add_space(5.0);
                 let heading = tr(ui, "navigation-all-objects");
                 ui.add(egui::Label::new(RichText::new(&heading).strong().size(15.0)).truncate())

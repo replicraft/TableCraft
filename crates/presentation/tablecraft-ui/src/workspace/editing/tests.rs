@@ -346,7 +346,7 @@ fn compact_edit_dialog_keeps_actions_visible_beside_long_literal_content() {
 }
 
 #[test]
-fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing_inputs() {
+fn german_and_japanese_input_hints_render_in_cell_and_reviewed_row_forms_without_changing_inputs() {
     for (locale, hint, expected) in [
         (
             crate::Locale::De,
@@ -387,6 +387,7 @@ fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing
                         }],
                     },
                 );
+                state.begin_insert_review(20, vec![crate::InsertInput::Omitted], 2);
             } else {
                 state.begin_edit(target.clone(), 1);
                 let mut draft = draft(target);

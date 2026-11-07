@@ -47,6 +47,9 @@ impl State {
                 bottom: if window::enabled() { 0 } else { 4 },
             }))
             .show(ui, |ui| {
+                if self.inline_insert_active() {
+                    ui.disable();
+                }
                 ui.horizontal(|ui| {
                     ui.add(
                         Icon::Application
@@ -156,6 +159,9 @@ impl State {
                     bottom: 0,
                 }))
                 .show(ui, |ui| {
+                    if self.inline_insert_active() {
+                        ui.disable();
+                    }
                     egui::ScrollArea::horizontal()
                         .id_salt("ribbon_tabs")
                         .auto_shrink([false, true])

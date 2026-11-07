@@ -51,6 +51,9 @@ impl RecordNavigation {
 
 impl State {
     fn record_source_matches(&self, target: &RecordTarget) -> bool {
+        if self.insertion_dialog_open() {
+            return false;
+        }
         self.view == DocumentView::Table
             && !self.backstage_visible()
             && !self.zoom_dialog_open()

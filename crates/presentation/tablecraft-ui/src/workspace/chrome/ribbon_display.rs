@@ -295,6 +295,9 @@ impl State {
     }
 
     fn command_frame(&mut self, ui: &mut Ui, temporary: bool, actions: &mut Vec<Action>) {
+        if self.inline_insert_active() {
+            ui.disable();
+        }
         let colors = palette(ui.ctx());
         let frame = egui::Frame::new()
             .fill(colors.surface)

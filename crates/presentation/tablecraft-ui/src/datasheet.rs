@@ -53,6 +53,7 @@ pub(crate) struct Output {
 pub(crate) struct Features<'a> {
     pub sort_header: Option<SortHeader>,
     pub insert_target: Option<InsertTarget>,
+    pub inline_insert: Option<crate::workspace::insertion::inline::Row<'a>>,
     pub totals: Option<crate::workspace::totals::Row<'a>>,
     pub occurrence: Option<occurrence::Occurrence>,
 }
@@ -62,6 +63,7 @@ struct RowView<'a> {
     pane: Pane,
     sort_header: Option<SortHeader>,
     insert_target: Option<InsertTarget>,
+    inline_insert: Option<crate::workspace::insertion::inline::Row<'a>>,
     totals: Option<crate::workspace::totals::Row<'a>>,
     occurrence: Option<occurrence::Occurrence>,
 }
@@ -87,6 +89,7 @@ pub(super) fn show(
             pane,
             sort_header: features.sort_header,
             insert_target: features.insert_target,
+            inline_insert: features.inline_insert,
             totals: features.totals,
             occurrence: features.occurrence,
         },
@@ -111,6 +114,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
             pane: Pane::Document,
             sort_header: None,
             insert_target: None,
+            inline_insert: None,
             totals: None,
             occurrence: None,
         },
@@ -138,6 +142,7 @@ fn show_rows(
             pane,
             sort_header: None,
             insert_target: None,
+            inline_insert: None,
             totals: None,
             occurrence: None,
         },
@@ -152,7 +157,7 @@ fn render_rows(
     data: &Data,
     mut row_drawn: impl FnMut(usize),
     selection: &mut Selection,
-    view: RowView<'_>,
+    mut view: RowView<'_>,
     output: &mut Output,
 ) -> egui::scroll_area::ScrollAreaOutput<()> {
     let Output {
@@ -201,10 +206,9 @@ fn render_rows(
                         && data.source_revision == Some(target.document_revision)
                         && data.table == target.table
                 });
-                let visible_rows = data
-                    .rows
-                    .len()
-                    .saturating_add(usize::from(insert.is_some()));
+                let visible_rows = data.rows.len().saturating_add(usize::from(
+                    insert.is_some() || view.inline_insert.is_some(),
+                ));
                 let totals_height = if view.totals.is_some() {
                     DATA_ROW_HEIGHT * scale
                 } else {
@@ -226,7 +230,13 @@ fn render_rows(
                 {
                     table.reset();
                 }
-                if let Some(row) = scroll_to {
+                let inline_reveal = view
+                    .inline_insert
+                    .as_ref()
+                    .is_some_and(|row| row.needs_reveal());
+                if inline_reveal {
+                    table = table.scroll_to_row(data.rows.len(), Some(egui::Align::Center));
+                } else if let Some(row) = scroll_to {
                     table = table.scroll_to_row(row, Some(egui::Align::Center));
                 }
                 table = table
@@ -260,7 +270,11 @@ fn render_rows(
                             header.col(|ui| {
                                 column_rects.push(ui.max_rect());
                                 grid_cell(ui, true);
-                                if ui.is_enabled() && selection.column() == Some(index) {
+                                let active_header = view.inline_insert.as_ref().map_or_else(
+                                    || selection.column() == Some(index),
+                                    |row| row.header_active(&column.name),
+                                );
+                                if ui.is_enabled() && active_header {
                                     ui.painter().rect_filled(
                                         ui.max_rect(),
                                         0.0,
@@ -311,6 +325,24 @@ fn render_rows(
                         body.rows(DATA_ROW_HEIGHT * scale, visible_rows, |mut row| {
                             let index = row.index();
                             if index == data.rows.len() {
+                                if let Some(inline) = &mut view.inline_insert {
+                                    row.col(|ui| {
+                                        grid_cell(ui, true);
+                                        ui.centered_and_justified(|ui| ui.label("*"));
+                                    });
+                                    for position in 0..data.columns.len() {
+                                        row.col(|ui| {
+                                            grid_cell(ui, false);
+                                            inline.cell(ui, &data.columns[position].name, actions);
+                                        });
+                                    }
+                                    if add_column {
+                                        row.col(|ui| {
+                                            grid_cell(ui, false);
+                                        });
+                                    }
+                                    return;
+                                }
                                 if let Some(target) = insert {
                                     row.col(|ui| {
                                         grid_cell(ui, true);
@@ -352,6 +384,9 @@ fn render_rows(
                                 .display_ordinal(index)
                                 .map_or(0, |ordinal| u64::from(ordinal) + 1);
                             row.col(|ui| {
+                                if view.inline_insert.is_some() {
+                                    ui.disable();
+                                }
                                 grid_cell(ui, true);
                                 if ui.is_enabled() && selection.row() == Some(index) {
                                     ui.painter().rect_filled(
@@ -390,6 +425,9 @@ fn render_rows(
                                 data.columns.iter().zip(&data.rows[index]).enumerate()
                             {
                                 row.col(|ui| {
+                                    if view.inline_insert.is_some() {
+                                        ui.disable();
+                                    }
                                     grid_cell(ui, false);
                                     let active = selection.selected(index, position);
                                     if ui.is_enabled() && selection.row() == Some(index) {

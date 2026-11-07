@@ -128,7 +128,7 @@ impl State {
     }
 
     pub(super) fn open_creation(&mut self) {
-        if self.creation_available && !self.busy {
+        if self.creation_available && !self.busy && !self.insertion_dialog_open() {
             self.creation.open = true;
             self.creation.outcome = None;
             self.error = None;

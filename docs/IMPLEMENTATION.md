@@ -1,5 +1,32 @@
 # Implementation status
 
+## Inline new-record drafting — 7 November 2026
+
+The initial insertion draft now appears in the appended datasheet row. It keeps
+runtime-issued field identity and literal Omitted/NULL/Value intent separate
+from stored rows; AutoNumber stays read-only `(New)`. Tab/Shift+Tab navigate its
+fields, Escape restores a field checkpoint then cancels the record, and
+Shift+Enter reviews the exact accepted input, including same-frame paste.
+Rejected oversized events remain explicit diagnostics until corrected. Source
+or column mismatch retains inspectable input while refusing review/apply.
+Desktop Open, Create and window close cannot silently discard the pending row.
+
+This reuses the existing consuming runtime review and save worker. Explicit
+Review/Apply and terminal acknowledgement remain; field-local validation,
+automatic record saves and Access defaults are not supplied by this slice.
+The shared UI owns buffering/presentation and the desktop owns host lifecycle
+guards. No native write eligibility, query semantics or dependency changed.
+
+The consolidated local batch passes all 340 UI and 82 desktop tests, including
+the 1,440-combination presentation matrix and actual first-table Save plus
+generated record insertion. The final eleven-case insertion follow-up passes.
+Strict UI/desktop all-target lint, formatting and documentation links pass;
+Windows x64/ARM64 desktop cross-checks pass. Four normal-host frames were
+inspected offscreen in light/dark and compact translated layouts. See the
+[workflow](ui/DESKTOP.md#inline-new-record-draft--7-november-2026) and
+[visual evidence](ui/PRESENTATION_PREVIEW.md#inline-new-record-presentation--7-november-2026).
+Actual Windows filesystem execution and native Access comparisons remain unrun.
+
 ## Windows same-file Save integration — 7 November 2026
 
 Windows now has a local-NTFS flat journal owner, with a protected current-user

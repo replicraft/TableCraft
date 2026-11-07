@@ -17,3 +17,9 @@ insertion-mock-help = 합성 입력 전용입니다. 데이터베이스 파일�
 insertion-generated-value = (새 항목)
 insertion-auto-number-help = 자동 번호: 새 행을 저장할 때 자동으로 할당됩니다.
 insertion-shortcut-help = 새 레코드 추가 ({ $shortcut }).
+
+insertion-inline-help = 아래에서 새 레코드를 편집하세요. Tab으로 필드를 이동하고 Shift+Enter로 검토합니다. Esc를 누르면 현재 필드를 복원하고, 다시 누르면 레코드를 취소합니다.
+
+insertion-stale-draft = 원본이 변경되었습니다. 입력 내용은 유지됩니다. 다시 열거나 보기를 변경하기 전에 이 레코드를 취소하세요.
+
+insertion-field-input = { $field } 입력 모드

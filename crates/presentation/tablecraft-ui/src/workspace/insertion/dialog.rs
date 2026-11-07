@@ -14,6 +14,9 @@ impl State {
         context: &egui::Context,
         actions: &mut Vec<Action>,
     ) {
+        if self.inline_insert_active() {
+            return;
+        }
         let busy = self.busy;
         let synthetic = self.mock_preview;
         let Some(dialog) = &mut self.insertion else {
@@ -60,6 +63,7 @@ impl State {
                             pending,
                             review,
                             error,
+                            inline,
                             ..
                         } => {
                             ui.label(message(
@@ -69,9 +73,10 @@ impl State {
                             ));
                             ui.label(tr(ui, "insertion-intent-help"));
                             let mut changed = false;
-                            for (position, (field, entry)) in
-                                draft.fields.iter().zip(entries.iter_mut()).enumerate()
-                            {
+                            for position in 0..draft.fields.len() {
+                                let field = &draft.fields[position];
+                                let remaining = super::remaining_input_bytes(entries, position);
+                                let entry = &mut entries[position];
                                 ui.push_id((draft.id, position), |ui| {
                                     ui.separator();
                                     let label = ui.label(&field.name);
@@ -80,7 +85,16 @@ impl State {
                                         ui.small(tr(ui, "insertion-auto-number-help"));
                                     } else {
                                         ui.small(field.input_hint.label(&for_context(ui.ctx())));
-                                        changed |= field_input(ui, entry, field.nullable, label.id);
+                                        if field_input(
+                                            ui,
+                                            entry,
+                                            field.nullable,
+                                            label.id,
+                                            remaining,
+                                        ) {
+                                            inline.refocus(position);
+                                            changed = true;
+                                        }
                                     }
                                 });
                             }
@@ -138,7 +152,12 @@ impl State {
                         } => {
                             if let Some(review) = review {
                                 let id = Id::new(("insert_apply", review.id));
-                                if button(ui, id, "insertion-apply", !busy) {
+                                if button(
+                                    ui,
+                                    id,
+                                    "insertion-apply",
+                                    !busy && entries_within_limits(entries),
+                                ) {
                                     actions.push(Action::ApplyInsert {
                                         review_id: review.id,
                                     });
@@ -257,7 +276,13 @@ impl State {
     }
 }
 
-fn field_input(ui: &mut Ui, entry: &mut FieldInput, nullable: bool, label: Id) -> bool {
+fn field_input(
+    ui: &mut Ui,
+    entry: &mut FieldInput,
+    nullable: bool,
+    label: Id,
+    remaining: usize,
+) -> bool {
     let mut changed = false;
     let previous = entry.choice;
     ui.horizontal_wrapped(|ui| {
@@ -278,10 +303,14 @@ fn field_input(ui: &mut Ui, entry: &mut FieldInput, nullable: bool, label: Id) -
             .radio_value(&mut entry.choice, Choice::Value, tr(ui, "insertion-value"))
             .changed();
     });
+    let input_id = label.with("insert_value");
+    let rejected = crate::text_input::reject_oversized_events(ui, input_id, &entry.text, remaining);
+    entry.input_rejected |= rejected;
     let value = ui
         .add_enabled(
             entry.choice == Choice::Value,
             egui::TextEdit::multiline(&mut entry.text)
+                .id(input_id)
                 .desired_rows(2)
                 .desired_width(ui.available_width()),
         )
@@ -294,7 +323,11 @@ fn field_input(ui: &mut Ui, entry: &mut FieldInput, nullable: bool, label: Id) -
     if value.gained_focus() || chose_value {
         value.scroll_to_me(None);
     }
-    changed | value.changed()
+    let corrected = changed || value.changed();
+    if corrected && !rejected {
+        entry.input_rejected = false;
+    }
+    corrected
 }
 
 fn footer_width(ui: &Ui, dialog: &Dialog) -> f32 {

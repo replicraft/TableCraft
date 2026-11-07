@@ -48,6 +48,7 @@ impl State {
         if self.show_table_draft(ui) {
             return;
         }
+        self.inline_insert_toolbar(ui, actions);
         if self.view == DocumentView::Table {
             self.filter_report(ui);
             self.totals_report(ui);
@@ -80,7 +81,12 @@ impl State {
                                     return;
                                 }
                                 if let Some(data) = &self.data {
-                                    page_navigator(ui, data, self.busy, actions);
+                                    page_navigator(
+                                        ui,
+                                        data,
+                                        self.busy || self.insertion_dialog_open(),
+                                        actions,
+                                    );
                                 }
                                 if actions.len() != before {
                                     ui.close();
@@ -104,7 +110,11 @@ impl State {
             DocumentView::Design => None,
         };
         if let Some(data) = data {
-            let sort_header = self.native_sort_header();
+            let sort_header = if self.inline_insert_active() {
+                None
+            } else {
+                self.native_sort_header()
+            };
             let totals_context = self.totals_render_context();
             let totals = totals_context
                 .as_ref()
@@ -132,6 +142,16 @@ impl State {
                 datasheet::Features {
                     sort_header,
                     insert_target,
+                    inline_insert: if self
+                        .database
+                        .as_ref()
+                        .map(|database| database.document_revision)
+                        == data.source_revision
+                    {
+                        super::insertion::inline::row(&mut self.insertion, data)
+                    } else {
+                        None
+                    },
                     totals,
                     occurrence,
                 },

@@ -17,3 +17,9 @@ insertion-mock-help = 合成入力のみです。データベースファイル�
 insertion-generated-value = (新規)
 insertion-auto-number-help = オートナンバー型: 新しい行の保存時に自動的に割り当てられます。
 insertion-shortcut-help = 新しいレコードを追加 ({ $shortcut })。
+
+insertion-inline-help = 下の新しいレコードを編集します。Tabでフィールドを移動し、Shift+Enterで確認します。Escで現在のフィールドを元に戻し、もう一度押すとレコードを取り消します。
+
+insertion-stale-draft = ソースが変更されました。入力内容は保持されています。再度開いたり表示を切り替えたりする前に、このレコードを取り消してください。
+
+insertion-field-input = { $field } の入力モード

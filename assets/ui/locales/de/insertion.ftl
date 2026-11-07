@@ -17,3 +17,9 @@ insertion-mock-help = Nur synthetische Eingabe. Keine Datenbankdatei wird geöff
 insertion-generated-value = (Neu)
 insertion-auto-number-help = AutoWert: wird beim Speichern der neuen Zeile automatisch vergeben.
 insertion-shortcut-help = Neuen Datensatz hinzufügen ({ $shortcut }).
+
+insertion-inline-help = Bearbeiten Sie den neuen Datensatz unten. Tab wechselt zwischen Feldern; Umschalt+Eingabe prüft ihn. Esc stellt das aktuelle Feld wieder her; erneutes Drücken verwirft den Datensatz.
+
+insertion-stale-draft = Die Quelle wurde geändert. Ihre Eingaben bleiben erhalten; verwerfen Sie diesen Datensatz, bevor Sie die Datei erneut öffnen oder die Ansicht wechseln.
+
+insertion-field-input = Eingabemodus für { $field }

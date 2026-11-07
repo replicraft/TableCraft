@@ -1,5 +1,6 @@
 //! Runtime-owned row insertion decisions, independent of cell-edit row handles.
 mod dialog;
+pub(crate) mod inline;
 
 use super::{DocumentView, EditInput, EditSaveOutcome, InputHint, State};
 
@@ -48,10 +49,11 @@ enum Choice {
     Value,
 }
 
-#[derive(Default)]
+#[derive(Clone, Default, PartialEq, Eq)]
 pub(super) struct FieldInput {
     choice: Choice,
     text: String,
+    input_rejected: bool,
 }
 
 impl FieldInput {
@@ -83,6 +85,7 @@ pub(super) enum Dialog {
         pending: Option<Vec<InsertInput>>,
         review: Option<Box<InsertReview>>,
         error: Option<String>,
+        inline: inline::Editor,
     },
     Saving {
         save_id: u64,
@@ -109,11 +112,19 @@ fn within_input_limits(proposed: &[InsertInput]) -> bool {
 
 fn entries_within_limits(entries: &[FieldInput]) -> bool {
     entries.len() <= MAX_INSERT_FIELDS
-        && text_bytes_fit(
-            entries.iter().filter_map(|entry| {
-                (entry.choice != Choice::Omitted).then_some(entry.text.as_str())
-            }),
-        )
+        && entries.iter().all(|entry| !entry.input_rejected)
+        && text_bytes_fit(entries.iter().map(|entry| entry.text.as_str()))
+}
+
+fn remaining_input_bytes(entries: &[FieldInput], position: usize) -> usize {
+    entries
+        .iter()
+        .enumerate()
+        .filter(|(index, _)| *index != position)
+        .try_fold(MAX_INSERT_TEXT_BYTES, |remaining, (_, entry)| {
+            remaining.checked_sub(entry.text.len())
+        })
+        .unwrap_or(0)
 }
 
 fn text_bytes_fit<'a>(mut texts: impl Iterator<Item = &'a str>) -> bool {
@@ -134,7 +145,8 @@ fn generated_entries_omitted(fields: &[InsertField], entries: &[FieldInput]) -> 
 }
 
 fn inputs_match(fields: &[InsertField], entries: &[FieldInput], proposed: &[InsertInput]) -> bool {
-    generated_entries_omitted(fields, entries)
+    entries_within_limits(entries)
+        && generated_entries_omitted(fields, entries)
         && entries.len() == proposed.len()
         && entries
             .iter()
@@ -151,7 +163,29 @@ fn inputs_match(fields: &[InsertField], entries: &[FieldInput], proposed: &[Inse
             })
 }
 
+fn draft_columns_match(draft: &InsertDraft, data: &crate::Data) -> bool {
+    draft.fields.iter().enumerate().all(|(index, field)| {
+        !draft.fields[..index]
+            .iter()
+            .any(|prior| prior.name == field.name)
+            && data
+                .columns
+                .iter()
+                .filter(|column| column.name == field.name)
+                .count()
+                == 1
+    })
+}
+
 impl State {
+    fn insert_draft_current(&self, draft: &InsertDraft) -> bool {
+        self.insert_source_current(&draft.target)
+            && self
+                .data
+                .as_ref()
+                .is_some_and(|data| draft_columns_match(draft, data))
+    }
+
     fn insert_source_current(&self, target: &InsertTarget) -> bool {
         self.view == DocumentView::Table
             && !self.backstage_visible()
@@ -216,6 +250,7 @@ impl State {
             draft: Box::new(draft),
             entries,
             request_id,
+            inline: inline::Editor::default(),
             pending: None,
             review: None,
             error: None,
@@ -235,7 +270,7 @@ impl State {
         !self.busy
             && draft.id == draft_id
             && within_input_limits(proposed)
-            && self.insert_source_current(&draft.target)
+            && self.insert_draft_current(draft)
             && inputs_match(&draft.fields, entries, proposed)
     }
 
@@ -245,6 +280,9 @@ impl State {
         proposed: Vec<InsertInput>,
         request_id: u64,
     ) {
+        if !self.can_review_insert(draft_id, &proposed) {
+            return;
+        }
         if let Some(Dialog::Draft {
             draft,
             entries,
@@ -252,6 +290,7 @@ impl State {
             pending,
             review,
             error,
+            ..
         }) = &mut self.insertion
             && draft.id == draft_id
             && inputs_match(&draft.fields, entries, &proposed)
@@ -274,6 +313,7 @@ impl State {
             pending,
             review,
             error,
+            ..
         }) = &mut self.insertion
             && *expected == request_id
             && draft.id == reviewed.draft_id
@@ -301,7 +341,7 @@ impl State {
             return false;
         };
         !self.busy
-            && self.insert_source_current(&draft.target)
+            && self.insert_draft_current(draft)
             && review.id == review_id
             && review.draft_id == draft.id
             && review.target == draft.target
@@ -354,8 +394,10 @@ impl State {
                 pending,
                 review,
                 error,
+                inline,
                 ..
             }) if *expected == request_id && pending.is_some() => {
+                inline.restore_focus();
                 *pending = None;
                 *review = None;
                 *error = Some(message);
@@ -374,6 +416,21 @@ impl State {
         {
             *error = Some(message);
         }
+    }
+
+    pub fn inline_insert_active(&self) -> bool {
+        matches!(
+            &self.insertion,
+            Some(Dialog::Draft {
+                pending: None,
+                review: None,
+                ..
+            })
+        )
+    }
+
+    pub(super) fn insertion_modal_open(&self) -> bool {
+        self.insertion.is_some() && !self.inline_insert_active()
     }
 
     pub fn insertion_dialog_open(&self) -> bool {
@@ -400,10 +457,18 @@ impl State {
     }
 
     pub(super) fn invalidate_insert(&mut self) {
-        if matches!(
-            &self.insertion,
-            Some(Dialog::Checking { .. } | Dialog::Draft { .. })
-        ) {
+        // A different publication invalidates permission, not the user's input.
+        if let Some(Dialog::Draft {
+            pending,
+            review,
+            error,
+            ..
+        }) = &mut self.insertion
+        {
+            *pending = None;
+            *review = None;
+            *error = Some(self.localizer.text("insertion-stale-draft"));
+        } else if matches!(&self.insertion, Some(Dialog::Checking { .. })) {
             self.insertion = None;
         }
     }

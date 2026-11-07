@@ -11,7 +11,7 @@ mod filtering;
 mod find;
 pub(crate) mod focus;
 mod home;
-mod insertion;
+pub(crate) mod insertion;
 mod navigation;
 mod objects;
 pub mod preview;
@@ -546,7 +546,7 @@ impl State {
     }
 
     fn select_view(&mut self, view: DocumentView) {
-        if self.edit_save_pending() {
+        if self.edit_save_pending() || self.insertion_dialog_open() {
             return;
         }
         self.invalidate_edit();
@@ -563,6 +563,9 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
+        if self.insertion_dialog_open() {
+            return;
+        }
         self.clear_object_sessions();
         self.bump_focus_publication();
         self.reset_saved_query();
@@ -582,7 +585,7 @@ impl State {
 
     /// Enter File/Open without changing the current session or running task.
     pub fn show_open(&mut self) {
-        if self.edit_save_pending() {
+        if self.edit_save_pending() || self.insertion_dialog_open() {
             return;
         }
         self.invalidate_edit();
@@ -659,7 +662,7 @@ impl State {
         {
             self.return_from_backstage();
         }
-        let shortcuts = if modal_open {
+        let shortcuts = if modal_open || self.inline_insert_active() {
             keyboard::Shortcuts::default()
         } else {
             keyboard::consume(

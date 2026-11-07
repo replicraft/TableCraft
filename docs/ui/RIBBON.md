@@ -151,7 +151,7 @@ state. Verification results belong in the [presentation record](PRESENTATION_PRE
 
 ## New-record shortcut
 
-Ctrl+Plus opens the existing reviewed New Record dialog when a current local
+Ctrl+Plus opens the inline new-record draft when a current local
 native table cell, row selector or appended New-row control owns focus. On
 macOS TableCraft uses Command+Plus, matching its other platform-command
 shortcuts; this is an adaptation, not native Mac Access parity. Logical Plus
@@ -161,16 +161,27 @@ does not change application or datasheet zoom.
 
 Text editors, Find, modal reviews, Ribbon/object tabs, query results and unsaved
 table designs retain their own input ownership. Admission still checks the
-actual table/document target. The command opens the existing omission-aware
-review workflow; it does not provide inline new-row editing or change record
-commit and Escape behavior. New-row controls expose the localized shortcut in
-their tooltip.
+actual table/document target. The draft preserves Omitted, NULL and supplied
+values separately; generated fields remain omitted and read-only. New-row
+controls expose the localized shortcut in their tooltip.
+
+Within the inline draft, Tab/Shift+Tab move among editable fields. Escape restores
+a changed current field to its entry checkpoint; another Escape cancels the
+draft. Shift+Enter requests the existing whole-row review, followed by explicit
+Apply in the modal review. It does not directly save, auto-commit on navigation,
+or introduce field-local validation. Review, saving and recovery retain their
+existing modal input ownership.
 
 [Microsoft's Access keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
-documents Ctrl+Plus for adding a record. The retained Windows datasheet capture
+documents Ctrl+Plus for adding a record, Tab/Shift+Tab field navigation,
+Shift+Enter saving, and field-then-record Escape cancellation. TableCraft's
+Shift+Enter-to-review is an explicit interim offline adaptation; Access's
+record-leaving autosave behavior remains distinct. The retained Windows datasheet capture
 (`Bildschirmfoto_2026-10-28_12-07-35.png`, 1920 × 1141; scale unrecorded)
 shows the appended new row; keyboard behavior is grounded in that Microsoft
-contract and headless interaction checks, rather than a native Access run.
+contract rather than a native Access run. New headless checks for inline input
+and its keyboard ownership are pending; earlier shortcut checks retain their
+historical scope.
 
 ## Remaining qualification
 

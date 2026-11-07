@@ -168,6 +168,9 @@ impl State {
     }
 
     fn filter_controls_ready(&self) -> bool {
+        if self.insertion_dialog_open() {
+            return false;
+        }
         self.view == DocumentView::Table
             && !self.busy
             && !self.backstage_visible()

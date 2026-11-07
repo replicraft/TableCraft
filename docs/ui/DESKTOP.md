@@ -1,5 +1,37 @@
 # Native desktop preview
 
+## Inline new-record draft — 7 November 2026
+
+New row and the admitted new-record shortcut now enter a source-bound draft in
+the appended datasheet row. Editable fields use literal single-line inputs and
+compact Omitted/NULL/Value menus. Generated AutoNumber fields remain read-only
+`(New)` placeholders with omitted inputs; no stored value or native row identity
+is invented. Tab/Shift+Tab move among editable fields. Escape first restores a
+changed current field to its entry checkpoint; another Escape cancels the draft.
+
+Shift+Enter and Review new row request the existing whole-row runtime review.
+Successful review, explicit Apply, saving and retained-resource outcomes still
+use the established modal workflow and nonreplaceable save owner. Field
+navigation does not write the database. There is no new field-local validation,
+default generation or Required/AllowZeroLength inference; the native planner
+continues to decide actual eligibility. Source invalidation retains user input,
+revokes the review and reports the stale draft rather than silently saving it.
+
+Microsoft documents direct record entry, explicit Shift+Enter saving and
+automatic saving when leaving a record or closing its table. This interim
+TableCraft flow deliberately retains explicit offline Review/Apply; it does not
+establish Access autosave parity.
+[Microsoft record-entry contract](https://support.microsoft.com/en-us/access/ways-to-add-edit-and-delete-records)
+
+The retained private Table1 datasheet capture was reopened: 1920×1141 Windows
+Access inside VirtualBox, display scale unknown. It shows the asterisk row,
+aligned field cells and AutoNumber `(New)` below existing data. It does not show
+active text entry, mode menus, a review strip or this modal save workflow. Those
+controls remain TableCraft adaptations. The shared UI/desktop batch and focused
+insertion follow-up pass; four normal-host light/dark and compact translated
+frames were inspected offscreen. See the [presentation evidence](PRESENTATION_PREVIEW.md#inline-new-record-presentation--7-november-2026).
+No native window was opened; Access autosave and interaction remain unqualified.
+
 Datasheet column widths and horizontal position follow the current object,
 source revision and ordered column names across native page changes. Record
 selection and widget identities remain page-local. A different object, source
