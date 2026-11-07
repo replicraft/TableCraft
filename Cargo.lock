@@ -4673,6 +4673,7 @@ dependencies = [
  "egui_kittest",
  "fluent-bundle",
  "fluent-syntax",
+ "harfrust",
  "icu_locale_core",
  "image",
  "jiff",

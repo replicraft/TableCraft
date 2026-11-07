@@ -19,6 +19,7 @@ unic-langid.workspace = true
 thiserror.workspace = true
 egui = { workspace = true, features = ["default_fonts"] }
 egui_extras = { workspace = true, features = ["svg"] }
+harfrust.workspace = true
 
 jiff.workspace = true
 

@@ -1,5 +1,47 @@
 # Presentation preview
 
+## Exact Find occurrence paint — 6 November 2026
+
+Current native Find receipts now supply a paint-only occurrence to the selected
+datasheet cell. The overlay uses the existing galley and leaves its text, widget,
+focus, accessibility value and full-value Copy unchanged. Source/publication,
+filter, selection and option guards remain authoritative. UTF-16 conversion stays
+inside the bounded original prefix; synthetic ellipses/badges and unrelated
+carriers receive no highlight. See the [paint contract](FIND_REPLACE.md#display-the-occurrence).
+
+The renderer omits an overlay when a boundary cuts a shaped glyph group, when
+direction/control text lacks a proven logical mapping, or when the occurrence is
+outside the displayed prefix. It retains ordinary cell selection in those cases.
+The real-font regression requires an actual ligature/emoji continuation group;
+partial and mixed-boundary spans paint nothing, while complete groups remain
+eligible. HarfRust is consumed directly for the same direction inference used by
+epaint, without loading fonts or reshaping text.
+
+The final gate passed 11 focused occurrence checks, 37 datasheet cases, nine Find
+cases and all 66 desktop cases; these selections overlap and are not summed.
+The extended filtered Find journey follows `04` from 104 to 204, verifies exact
+span/source membership and narrow paint, then checks selection/page invalidation
+and unchanged original bytes. Strict all-target UI/desktop lint, dependency
+boundaries and 27 boundary tests passed, along with formatting and documentation
+links. An earlier batch sweep passed 85 scenes across eight locales and both
+themes (1,360 combinations); the final bounded geometry corrections received
+focused reruns rather than repeating that complete sweep. Earlier failed test
+oracles and AX caption/paint geometry findings remain in local verification logs.
+
+The retained Find dialog and Home/datasheet images were reopened. Neither shows
+substring selection styling, so the overlay remains a visual adaptation. Final
+light/dark offscreen frames cover English at 1280×820, 1× and German at 900×580,
+1.25×, including a hidden match beyond the preview. Rendering uses the local
+macOS GPU with Windows keyboard conventions. No native windows are opened or
+controlled; no new search, replacement or database capability is introduced.
+
+The preview exposed missing emoji fallback: the crab fixture currently renders
+as a missing-glyph box. Its UTF-16 ownership and paint geometry pass headless
+checks, but readable emoji rendering remains unfinished. Compact frames review
+dialog/layout fit; the centered Find window covers the selected cell there, so
+they do not establish compact overlay visibility. These visual gaps are retained
+rather than treating the new preview scenes as full font/interaction qualification.
+
 ## Scratch SQL result ownership — 6 November 2026
 
 The shared SQL object now retains the submitted SQL with its completed result,
@@ -318,7 +360,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 81 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 85 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not

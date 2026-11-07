@@ -4,7 +4,10 @@ use super::*;
 use crate::workspace::test_support::finish_save;
 use crate::workspace::test_support::{finish_reads, focus_cell, opened, request_find};
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
@@ -34,6 +37,29 @@ fn select_even_rows(harness: &mut Harness<'_, Desktop>) {
     finish_reads(harness);
     assert!(harness.state().state.table_filter_enabled());
     assert_eq!(harness.state().filter.as_ref().unwrap().matched_rows(), 102);
+}
+
+fn occurrence_rectangles(
+    harness: &Harness<'_, Desktop>,
+    cell: egui::Rect,
+    fill: egui::Color32,
+) -> Vec<egui::Rect> {
+    harness
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| {
+            let egui::Shape::Rect(rectangle) = &shape.shape else {
+                return None;
+            };
+            (rectangle.fill == fill
+                && cell.contains_rect(rectangle.rect)
+                && shape.clip_rect.contains_rect(rectangle.rect)
+                && rectangle.rect.width() < cell.width() / 2.0
+                && rectangle.rect.height() < cell.height())
+            .then_some(rectangle.rect)
+        })
+        .collect()
 }
 
 #[test]
@@ -198,15 +224,135 @@ fn find_searches_filtered_members_and_keeps_the_filter_when_loading_a_later_hit(
     );
     assert_eq!(harness.state().state.data.as_ref().unwrap().offset, 0);
 
-    request_find(&mut harness, "204");
+    harness
+        .get_by_role_and_label(Role::ComboBox, "Match:")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness.get_by_label("Any Part of Field").click_accesskit();
+    harness.run_steps(2);
+    request_find(&mut harness, "04");
     finish_reads(&mut harness);
+    assert_eq!(
+        harness.state().state.data.as_ref().unwrap().rows[0][0].text,
+        "104"
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Find Next")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.offset, 101);
     assert_eq!(data.parent_ordinal(0), Some(203));
     assert_eq!(data.rows[0][0].text, "204");
-    assert_eq!(harness.state().state.active_filter_target(), Some(target));
+    assert_eq!(
+        harness.state().state.active_filter_target(),
+        Some(target.clone())
+    );
     assert!(harness.state().state.table_filter_enabled());
     assert!(harness.state().state.find_window_open());
+    let PendingOperation::FindPage {
+        position,
+        filter: Some(filter),
+        ..
+    } = &harness.state().pending
+    else {
+        panic!("the accepted native hit retains its exact filtered page receipt");
+    };
+    assert_eq!(position.parent_ordinal, 203);
+    assert_eq!(position.column, "Id");
+    let span = position.span.as_ref().unwrap();
+    assert_eq!((span.start_utf16, span.end_utf16), (1, 3));
+    assert_eq!(filter.target, target);
+
+    let header = harness
+        .get_all_by_role(Role::ColumnHeader)
+        .find(|node| node.accesskit_node().data().column_index() == Some(1))
+        .unwrap()
+        .rect();
+    // The selected native column header supplies the real theme color. This
+    // keeps the host proof independent of private palette/test-only APIs.
+    // Its AX caption excludes the sort menu; the full painted header contains
+    // that narrower field rectangle on the same row and left edge.
+    let fill = harness
+        .output()
+        .shapes
+        .iter()
+        .rev()
+        .find_map(|shape| {
+            let egui::Shape::Rect(rectangle) = &shape.shape else {
+                return None;
+            };
+            (rectangle.rect.contains_rect(header)
+                && (rectangle.rect.left() - header.left()).abs() <= 1.0
+                && (rectangle.rect.top() - header.top()).abs() <= 1.0
+                && (rectangle.rect.bottom() - header.bottom()).abs() <= 1.0
+                && rectangle.fill != egui::Color32::TRANSPARENT)
+                .then_some(rectangle.fill)
+        })
+        .expect("actual selected column header fill");
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("column", "Id");
+    arguments.set("row", "102");
+    arguments.set("text", "204");
+    let label = harness
+        .state()
+        .state
+        .localizer
+        .format("datasheet-cell-context", &arguments);
+    let cell = harness.get_by_value(&label).rect();
+    let rectangles = occurrence_rectangles(&harness, cell, fill);
+    assert_eq!(
+        rectangles.len(),
+        2,
+        "only the two matched digits are painted"
+    );
+    let text = harness
+        .output()
+        .shapes
+        .iter()
+        .find_map(|shape| {
+            let egui::Shape::Text(text) = &shape.shape else {
+                return None;
+            };
+            let bounds = text.galley.rect.translate(text.pos.to_vec2());
+            (text.galley.job.text == "204" && cell.contains_rect(bounds)).then_some(bounds)
+        })
+        .expect("unchanged complete native cell text");
+    assert!(
+        rectangles
+            .iter()
+            .all(|rectangle| rectangle.left() > text.left() + 1.0)
+    );
+
+    // A real user selection and another filtered page cannot inherit the span.
+    focus_cell(&mut harness, "Score", "102", "0");
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .current_filter_selection()
+            .unwrap()
+            .column,
+        "Score"
+    );
+    // Selection observation follows cell painting in the focus-event frame.
+    // Inspect the settled renderer output, rather than that previous frame.
+    harness.run_steps(2);
+    assert!(occurrence_rectangles(&harness, cell, fill).is_empty());
+    harness
+        .get_by_role_and_label(Role::Button, "Page tools")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "‹ Previous page")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert_ne!(harness.state().state.data.as_ref().unwrap().offset, 101);
+    assert!(occurrence_rectangles(&harness, cell, fill).is_empty());
+    assert_eq!(harness.state().state.active_filter_target(), Some(target));
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 

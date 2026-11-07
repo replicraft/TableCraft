@@ -1,5 +1,21 @@
 # Implementation status
 
+## Bounded Find occurrence paint — 6 November 2026
+
+Datasheets now highlight exactly mapped visible Find occurrences while retaining
+the existing text, selection, accessible value and complete clipboard output.
+Hidden/unmappable spans, RTL/control text and partial shaped glyph groups keep
+cell selection without an overlay. The source-bound search service is unchanged.
+
+Focused occurrence, datasheet and Find checks passed, along with all 66 desktop
+tests, strict UI/desktop lint and dependency checks. The filtered host journey
+verifies partial-cell paint and invalidation across pages. Final light/dark frames
+were reviewed offscreen; native checks remain suspended. See the
+[contract](ui/FIND_REPLACE.md#display-the-occurrence) and
+[scoped evidence](ui/PRESENTATION_PREVIEW.md#exact-find-occurrence-paint--6-november-2026).
+That review exposed missing emoji fallback; readable emoji rendering is still
+unfinished despite correct stored text and match ownership.
+
 ## Scratch SQL result ownership — 6 November 2026
 
 Results now retain the submitted SQL independently of the editable draft, with

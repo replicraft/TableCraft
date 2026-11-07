@@ -4,6 +4,7 @@ mod clipboard;
 mod collection_columns;
 mod empty_grid;
 mod layout;
+pub(crate) mod occurrence;
 mod preview;
 mod selection;
 mod totals;
@@ -16,6 +17,7 @@ use crate::workspace::ribbon::Icon;
 use egui::{Response, ScrollArea, Sense, Ui, WidgetInfo, WidgetType, accesskit::Role};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
+use std::ops::Range;
 
 const RECORD_SELECTOR_WIDTH: f32 = 18.0;
 const CELL_TEXT_PADDING: f32 = 3.0;
@@ -47,12 +49,21 @@ pub(crate) struct Output {
     pub totals_choices: Vec<crate::workspace::totals::Choice>,
 }
 
+#[derive(Default)]
+pub(crate) struct Features<'a> {
+    pub sort_header: Option<SortHeader>,
+    pub insert_target: Option<InsertTarget>,
+    pub totals: Option<crate::workspace::totals::Row<'a>>,
+    pub occurrence: Option<occurrence::Occurrence>,
+}
+
 struct RowView<'a> {
     collection: bool,
     pane: Pane,
     sort_header: Option<SortHeader>,
     insert_target: Option<InsertTarget>,
     totals: Option<crate::workspace::totals::Row<'a>>,
+    occurrence: Option<occurrence::Occurrence>,
 }
 
 pub(super) fn show(
@@ -60,9 +71,7 @@ pub(super) fn show(
     data: &Data,
     selection: &mut Selection,
     pane: Pane,
-    sort_header: Option<SortHeader>,
-    insert_target: Option<InsertTarget>,
-    totals: Option<crate::workspace::totals::Row<'_>>,
+    features: Features<'_>,
 ) -> Output {
     let mut output = Output::default();
     if let Some(error) = selection.copy_error(ui.ctx()) {
@@ -76,9 +85,10 @@ pub(super) fn show(
         RowView {
             collection: false,
             pane,
-            sort_header,
-            insert_target,
-            totals,
+            sort_header: features.sort_header,
+            insert_target: features.insert_target,
+            totals: features.totals,
+            occurrence: features.occurrence,
         },
         &mut output,
     );
@@ -102,6 +112,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
             sort_header: None,
             insert_target: None,
             totals: None,
+            occurrence: None,
         },
         &mut Output::default(),
     );
@@ -128,6 +139,7 @@ fn show_rows(
             sort_header: None,
             insert_target: None,
             totals: None,
+            occurrence: None,
         },
         &mut output,
     );
@@ -391,8 +403,20 @@ fn render_rows(
                                         position + 1,
                                         Role::GridCell,
                                         |ui| {
-                                            let response =
-                                                cell(ui, text, &column.name, number, active);
+                                            let occurrence =
+                                                view.occurrence.as_ref().filter(|found| {
+                                                    active
+                                                        && found.row == index
+                                                        && found.column == position
+                                                });
+                                            let response = cell_with_occurrence(
+                                                ui,
+                                                text,
+                                                &column.name,
+                                                number,
+                                                active,
+                                                occurrence,
+                                            );
                                             if ui.is_enabled()
                                                 && (response.has_focus()
                                                     || response.clicked()
@@ -780,6 +804,17 @@ pub(crate) fn cell(
     row: u64,
     allow_copy: bool,
 ) -> Response {
+    cell_with_occurrence(ui, value, column, row, allow_copy, None)
+}
+
+fn cell_with_occurrence(
+    ui: &mut Ui,
+    value: &Cell,
+    column: &str,
+    row: u64,
+    allow_copy: bool,
+    occurrence: Option<&occurrence::Occurrence>,
+) -> Response {
     let original_text = value.text.as_str();
     let preview = preview::text(original_text);
     let text = preview.text.as_ref();
@@ -834,7 +869,14 @@ pub(crate) fn cell(
             crate::theme::palette(ui.ctx()).muted,
         );
     } else {
-        paint_cell_text(ui, response.rect, display.as_ref(), value.alignment);
+        let range = occurrence.and_then(|found| found.visible_range(value, &preview));
+        paint_cell_text_with_occurrence(
+            ui,
+            response.rect,
+            display.as_ref(),
+            value.alignment,
+            range,
+        );
     }
     if response.clicked() {
         response.request_focus();
@@ -922,6 +964,16 @@ pub(crate) fn cell(
 }
 
 fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalAlignment) {
+    paint_cell_text_with_occurrence(ui, rect, text, alignment, None);
+}
+
+fn paint_cell_text_with_occurrence(
+    ui: &Ui,
+    rect: egui::Rect,
+    text: &str,
+    alignment: HorizontalAlignment,
+    occurrence: Option<Range<usize>>,
+) {
     let padding = CELL_TEXT_PADDING * ui.spacing().icon_width / BOOLEAN_BOX_SIZE;
     let width = (rect.width() - 2.0 * padding).max(0.0);
     let galley = egui::WidgetText::from(text).into_galley(
@@ -937,6 +989,9 @@ fn paint_cell_text(ui: &Ui, rect: egui::Rect, text: &str, alignment: HorizontalA
         },
         rect.center().y - galley.size().y * 0.5,
     );
+    if let Some(range) = occurrence {
+        occurrence::paint(ui, rect, position, &galley, range);
+    }
     ui.painter()
         .galley(position, galley, ui.visuals().text_color());
 }

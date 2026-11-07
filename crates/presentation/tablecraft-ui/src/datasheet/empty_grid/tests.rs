@@ -47,21 +47,23 @@ fn filler_rules_follow_scaled_rows_without_creating_selectable_records() {
                         &data,
                         &mut selection,
                         Pane::Document,
-                        None,
-                        offer_insert.then_some(InsertTarget {
-                            document_revision: 7,
-                            table: "Items".into(),
-                        }),
-                        totals.then_some(Row {
-                            target: &target,
-                            fields: None,
-                            specs: &[],
-                            result: None,
-                            enabled: false,
-                            pending: false,
-                            error: false,
-                            selected_column: None,
-                        }),
+                        crate::datasheet::Features {
+                            insert_target: offer_insert.then_some(InsertTarget {
+                                document_revision: 7,
+                                table: "Items".into(),
+                            }),
+                            totals: totals.then_some(Row {
+                                target: &target,
+                                fields: None,
+                                specs: &[],
+                                result: None,
+                                enabled: false,
+                                pending: false,
+                                error: false,
+                                selected_column: None,
+                            }),
+                            ..crate::datasheet::Features::default()
+                        },
                     );
                     assert!(output.actions.is_empty());
                     assert!(output.totals_choices.is_empty());

@@ -109,9 +109,7 @@ fn actual_headers_show_captions_and_accessible_context_keeps_original_names() {
                     &data,
                     &mut selection,
                     crate::workspace::focus::Pane::Document,
-                    None,
-                    None,
-                    None,
+                    datasheet::Features::default(),
                 )
                 .actions
                 .is_empty()

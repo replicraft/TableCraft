@@ -180,7 +180,11 @@ publication, options, formatting policy and a UTF-16 occurrence span. Newer
 selection/options, cancellation or source replacement prevents a stale response
 from moving the datasheet. A failed or not-found search retains the previous page.
 Only a matching checked native page can select the reported record and field.
-The current renderer selects the cell; substring highlighting is not implemented.
+The renderer retains the cell selection and adds a bounded substring overlay
+only for a current, exactly mapped visible occurrence. Unmappable glyph groups,
+RTL/control text and hidden matches retain cell selection. The
+[occurrence paint contract](FIND_REPLACE.md#display-the-occurrence) separates
+these renderer limits from search and reviewed replacement.
 
 Formatted search has a separate host capability and does not silently substitute
 raw values. The search pattern has a 64 KiB UTF-8 ceiling. These controls follow

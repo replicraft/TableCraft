@@ -1,5 +1,23 @@
 # Adopted dependency and licensing baseline
 
+## Find occurrence shaping guard — 6 November 2026
+
+Shared UI directly consumes the already locked HarfRust 0.12.0 (MIT), with default
+features disabled and `std` enabled. This is the same shaper used by epaint 0.36.2.
+One reusable `UnicodeBuffer` checks direction inference over the bounded visible
+cell prefix without loading fonts or reshaping text. RTL-script characters omit
+the substring overlay because the public galley does not retain logical cluster
+indices; equal glyph text alone cannot distinguish repeated/reversed occurrences.
+Existing cell selection and Find results remain available.
+
+The guard also excludes the twelve explicit `Bidi_Control` formatting characters
+from [Unicode 17 PropList](https://www.unicode.org/Public/17.0.0/ucd/PropList.txt).
+This is a named control set, not a replacement Unicode script/range table.
+Highlight geometry comes from the existing rendered galley and never changes its
+text, glyphs, accessibility value or clipboard content. No HarfRust dependency is
+added to runtime, query, native engine or CLI packages. Cargo adds only the UI's
+direct dependency edge; the locked package version is unchanged.
+
 ## Desktop font-family discovery — 5 November 2026
 
 The desktop host consumes [Fontique 0.12.0](https://docs.rs/fontique/0.12.0/fontique/)

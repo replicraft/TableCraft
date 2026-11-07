@@ -70,21 +70,23 @@ fn derived_row_is_reachable_and_column_aligned_without_becoming_a_record() {
                         &state.0,
                         &mut state.1,
                         Pane::Document,
-                        None,
-                        offer_insert.then_some(InsertTarget {
-                            document_revision: 7,
-                            table: "Items".into(),
-                        }),
-                        Some(Row {
-                            target: &target,
-                            fields: Some(&fields),
-                            specs: &specs,
-                            result: eligible.then_some(&result),
-                            enabled: true,
-                            pending: false,
-                            error: !eligible,
-                            selected_column: None,
-                        }),
+                        crate::datasheet::Features {
+                            insert_target: offer_insert.then_some(InsertTarget {
+                                document_revision: 7,
+                                table: "Items".into(),
+                            }),
+                            totals: Some(Row {
+                                target: &target,
+                                fields: Some(&fields),
+                                specs: &specs,
+                                result: eligible.then_some(&result),
+                                enabled: true,
+                                pending: false,
+                                error: !eligible,
+                                selected_column: None,
+                            }),
+                            ..crate::datasheet::Features::default()
+                        },
                     );
                     assert!(output.actions.is_empty());
                     state.2.extend(output.totals_choices);

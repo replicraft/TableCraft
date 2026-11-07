@@ -93,6 +93,7 @@ impl State {
             });
         }
         let insert_target = self.current_insert_target();
+        let occurrence = self.current_find_occurrence();
         let data = match self.view {
             DocumentView::Table => self.data.as_ref(),
             DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
@@ -125,9 +126,12 @@ impl State {
                 data,
                 selection,
                 pane,
-                sort_header,
-                insert_target,
-                totals,
+                datasheet::Features {
+                    sort_header,
+                    insert_target,
+                    totals,
+                    occurrence,
+                },
             );
             actions.extend(output.actions);
             self.apply_totals_selection(output.selection);

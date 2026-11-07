@@ -322,6 +322,11 @@ fn filtered_find_republishes_exact_view_and_selects_physical_member_without_losi
     assert!(state.table_filter_enabled());
     assert_eq!(state.table_selection.position(), Some((1, 1)));
     assert_eq!(state.data.as_ref().unwrap().parent_ordinal(1), Some(250));
+    let occurrence = state
+        .current_find_occurrence()
+        .expect("current sparse Find");
+    assert_eq!((occurrence.row, occurrence.column), (1, 1));
+    assert_eq!((occurrence.start_utf16, occurrence.end_utf16), (0, 3));
 
     let request = state.current_find_request().unwrap();
     state.begin_find(32, request.clone());

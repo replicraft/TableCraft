@@ -1,5 +1,6 @@
 //! Modeless native-table Find. Search and matching belong to the shared runtime.
 mod dialog;
+mod occurrence;
 mod replace;
 pub use replace::ReplaceFindRequest;
 

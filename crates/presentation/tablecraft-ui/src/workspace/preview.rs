@@ -71,6 +71,8 @@ pub enum Scene {
     DeleteReview,
     Find,
     FindSearching,
+    FindOccurrence,
+    FindLongOccurrence,
     Replace,
     ReplaceError,
     Filtered,
@@ -113,7 +115,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 83] = [
+    pub const ALL: [Self; 85] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -158,6 +160,8 @@ impl Scene {
         Self::DeleteReview,
         Self::Find,
         Self::FindSearching,
+        Self::FindOccurrence,
+        Self::FindLongOccurrence,
         Self::Replace,
         Self::ReplaceError,
         Self::Filtered,
@@ -211,6 +215,8 @@ impl Scene {
                 | Self::CollectionLoading
                 | Self::Find
                 | Self::FindSearching
+                | Self::FindOccurrence
+                | Self::FindLongOccurrence
                 | Self::Replace
                 | Self::ReplaceError
                 | Self::DeleteChecking
@@ -268,6 +274,8 @@ impl Scene {
             Self::DeleteReview => "delete-review",
             Self::Find => "find",
             Self::FindSearching => "find-searching",
+            Self::FindOccurrence => "find-occurrence",
+            Self::FindLongOccurrence => "find-long-occurrence",
             Self::Replace => "replace",
             Self::ReplaceError => "replace-error",
             Self::Filtered => "filtered",
@@ -449,6 +457,8 @@ impl Preview {
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),
             Scene::FindSearching => self.prepare_find_scene(true),
+            Scene::FindOccurrence => self.prepare_find_occurrence(false),
+            Scene::FindLongOccurrence => self.prepare_find_occurrence(true),
             Scene::RibbonCollapsed => self.state.set_ribbon_collapsed(true),
             Scene::RibbonTemporary => {
                 self.state.set_ribbon_collapsed(true);

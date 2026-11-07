@@ -1060,7 +1060,9 @@ separate native allowance and publishes only an exact revision/table/record/fiel
 match. Cancel, failed retrieval and Not found preserve the previous page.
 Field/table scope, directions, wrapping, wildcard mode and explicit case/display
 policies follow the [current runtime contract](../application/RUNTIME.md#native-table-find).
-Query-result Find, Replace and substring highlighting are not implemented.
+At this gate, query-result Find, Replace and substring highlighting were not
+implemented. Later work supplies [reviewed replacement and bounded occurrence
+paint](FIND_REPLACE.md); query-result Find remains unavailable.
 Unformatted regional date and fractional-number searching still refuse explicitly;
 formatted qualified dates and Currency share the datasheet formatter.
 

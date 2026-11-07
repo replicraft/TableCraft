@@ -24,6 +24,35 @@ layout ceiling. An oversized insertion is rejected whole before layout, leaving
 the prior input visible with a diagnosis. Replacement text is literal: an empty
 replacement removes the matched text, and the text `NULL` is not SQL NULL.
 
+## Display the occurrence
+
+A current Find receipt projects its native record identity onto the loaded page
+and field. The datasheet paints a clipped background beneath the matching part
+of the existing galley; it retains the same value widget, text shaping, focus,
+selection, accessible value and complete clipboard text. Changing the source,
+publication, filter, selected cell or search/format settings invalidates the
+overlay. This presentation does not grant replacement or edit authority.
+
+UTF-16 endpoints must map to exact nonempty scalar boundaries within the bounded
+original preview prefix. Synthetic shortening/layout ellipses, stored-value
+badges, NULL labels and checkbox drawings are not searched text. A hidden or
+cross-prefix occurrence keeps the selected cell without a substring overlay.
+Raw spans are not applied to typed date/currency presentation; formatted spans
+require the captured display options to remain current.
+
+The public galley lacks complete logical cluster metadata. An occurrence cutting
+through a shaped ligature/emoji group therefore omits the whole overlay rather
+than coloring unmatched characters. Zero-advance groups have no invented width.
+RTL-script text and directional formatting controls also retain cell selection
+without a substring overlay. The [shaper guard](../development/DEPENDENCIES.md#find-occurrence-shaping-guard--6-november-2026)
+uses the renderer's existing HarfRust version; character equality alone cannot
+prove order for repeated or palindromic text. These are paint limitations,
+independent of the native search service's qualified matching profile.
+
+The retained Find image shows dialog controls, not substring selection styling.
+The overlay's theme colors and placement are a TableCraft adaptation; see the
+[scoped headless record](PRESENTATION_PREVIEW.md#exact-find-occurrence-paint--6-november-2026).
+
 ## Review before saving
 
 Runtime reacquires the raw native value and verifies the search occurrence and

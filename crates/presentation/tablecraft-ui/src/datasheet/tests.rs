@@ -1010,9 +1010,15 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         )]),
         |ui| {
             assert!(
-                show(ui, &data, &mut selection, Pane::Document, None, None, None)
-                    .actions
-                    .is_empty()
+                show(
+                    ui,
+                    &data,
+                    &mut selection,
+                    Pane::Document,
+                    Features::default()
+                )
+                .actions
+                .is_empty()
             );
         },
     );
@@ -1055,7 +1061,13 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
     let mut output = context.run_ui(input(vec![]), |ui| {
         ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")))
             .request_focus();
-        let _ = show(ui, &data, &mut selection, Pane::Document, None, None, None);
+        let _ = show(
+            ui,
+            &data,
+            &mut selection,
+            Pane::Document,
+            Features::default(),
+        );
     });
     output.textures_delta.clear();
     let mut output = context.run_ui(
@@ -1065,7 +1077,13 @@ fn shift_space_selects_complete_record_copy_and_returns_to_first_field_without_o
         ]),
         |ui| {
             ui.add(egui::TextEdit::singleline(&mut editor).id(egui::Id::new("space_editor")));
-            let _ = show(ui, &data, &mut selection, Pane::Document, None, None, None);
+            let _ = show(
+                ui,
+                &data,
+                &mut selection,
+                Pane::Document,
+                Features::default(),
+            );
         },
     );
     output.textures_delta.clear();
@@ -1150,9 +1168,15 @@ fn typed_null_is_visible_but_empty_text_stays_empty_and_headers_are_centered() {
     let mut selection = Selection::default();
     let mut output = context.run_ui(input(vec![]), |ui| {
         assert!(
-            show(ui, &data, &mut selection, Pane::Document, None, None, None)
-                .actions
-                .is_empty()
+            show(
+                ui,
+                &data,
+                &mut selection,
+                Pane::Document,
+                Features::default()
+            )
+            .actions
+            .is_empty()
         );
         assert!(selection.copy(&data, ui.ctx()));
     });
@@ -1323,12 +1347,13 @@ fn final_native_page_add_action_uses_existing_insert_target_without_a_record_ide
                             &state.0,
                             &mut state.1,
                             Pane::Document,
-                            None,
-                            Some(InsertTarget {
-                                document_revision: 7,
-                                table: "Items".into(),
-                            }),
-                            None,
+                            Features {
+                                insert_target: Some(InsertTarget {
+                                    document_revision: 7,
+                                    table: "Items".into(),
+                                }),
+                                ..Features::default()
+                            },
                         )
                         .actions,
                     );
@@ -1383,7 +1408,14 @@ fn add_column_header_is_disabled_and_never_becomes_a_stored_cell() {
         .build_ui_state(
             |ui, state: &mut (Data, Selection, Vec<Action>)| {
                 state.2.extend(
-                    show(ui, &state.0, &mut state.1, Pane::Document, None, None, None).actions,
+                    show(
+                        ui,
+                        &state.0,
+                        &mut state.1,
+                        Pane::Document,
+                        Features::default(),
+                    )
+                    .actions,
                 );
             },
             (data, selection, Vec::new()),

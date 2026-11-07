@@ -39,6 +39,7 @@ rfd = { version = "0.17.2", default-features = false }
 egui = { version = "0.36.2", default-features = false }
 egui_extras = { version = "0.36.2", default-features = false }
 fontique = { version = "0.12.0", default-features = false }
+harfrust = { version = "0.12.0", default-features = false, features = ["std"] }
 tablecraft-runtime = { path = "crates/application/tablecraft-runtime", default-features = false }
 tablecraft-ui = { path = "crates/presentation/tablecraft-ui", default-features = false }
 tablecraft-display = { path = "crates/presentation/tablecraft-display", default-features = false }
