@@ -91,3 +91,28 @@ pub(super) fn focus_cell(harness: &mut Harness<'_, Desktop>, column: &str, row: 
     harness.get_by_value(&cell).focus();
     harness.run_steps(1);
 }
+
+pub(super) fn show_totals(harness: &mut Harness<'_, Desktop>) {
+    harness
+        .get_by_role_and_label(Role::Button, "Totals")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+}
+
+pub(super) fn choose_total(harness: &mut Harness<'_, Desktop>, column: &str, aggregate: &str) {
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("column", column);
+    let label = harness
+        .state()
+        .state
+        .localizer
+        .format("totals-column", &arguments);
+    harness
+        .get_by_role_and_label(Role::ComboBox, &label)
+        .click_accesskit();
+    harness.run_steps(2);
+    harness.get_by_label(aggregate).click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+}

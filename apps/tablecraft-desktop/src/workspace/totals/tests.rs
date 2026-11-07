@@ -1,6 +1,6 @@
 //! Desktop Totals use complete native views, not the currently displayed page.
 use crate::workspace::Desktop;
-use crate::workspace::test_support::{finish_reads, focus_cell, opened};
+use crate::workspace::test_support::{choose_total, finish_reads, focus_cell, opened, show_totals};
 use egui::accesskit::Role;
 use egui_kittest::{
     Harness,
@@ -23,31 +23,6 @@ fn target(harness: &Harness<'_, Desktop>) -> TotalsTarget {
         filter_id: state.active_filter_target().map(|filter| filter.filter_id),
         enabled: state.table_filter_enabled(),
     }
-}
-
-fn show_totals(harness: &mut Harness<'_, Desktop>) {
-    harness
-        .get_by_role_and_label(Role::Button, "Totals")
-        .click_accesskit();
-    harness.run_steps(1);
-    finish_reads(harness);
-}
-
-fn choose_total(harness: &mut Harness<'_, Desktop>, column: &str, aggregate: &str) {
-    let mut arguments = tablecraft_ui::FluentArgs::new();
-    arguments.set("column", column);
-    let label = harness
-        .state()
-        .state
-        .localizer
-        .format("totals-column", &arguments);
-    harness
-        .get_by_role_and_label(Role::ComboBox, &label)
-        .click_accesskit();
-    harness.run_steps(2);
-    harness.get_by_label(aggregate).click_accesskit();
-    harness.run_steps(1);
-    finish_reads(harness);
 }
 
 #[test]

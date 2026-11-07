@@ -31,10 +31,11 @@ interaction and database behavior.
 Current UI work prioritizes screenshot-guided polish, light/dark themes and
 sectioned Fluent catalogs with synthetic data; do not expand database functionality
 as part of that work. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md).
-The user resumed native graphical review on 6 November 2026. Native app-window
-inspection and interaction are allowed alongside headless tests and offscreen
-rendering. Keep reviews scoped to TableCraft and distinguish observed host-platform
-behavior from Windows/Access parity; do not change unrelated apps or system settings.
+The user returned verification to headless mode on 6 November 2026, after a brief
+native graphical review. Use headless interaction tests and offscreen rendering;
+do not launch, activate, manipulate or close native app windows until the user
+explicitly resumes graphical checks. Preserve earlier native observations as
+historical evidence, distinct from Windows/Access parity.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 

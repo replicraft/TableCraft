@@ -1,5 +1,36 @@
 # Presentation preview
 
+## Multi-row browser checks and headless verification — 6 November 2026
+
+The user returned verification to headless mode after this review. Native window
+interaction is suspended again; earlier observations below remain historical.
+
+The normal macOS desktop opened the registered `Text-V2016-1.accdb` original
+from the TextIndexFixture corpus, automatically displayed `TextIndexed`, and
+read its second 100-row page. Selecting ID and applying Descending produced
+999 first and a complete count of 1,000. Equals selected value then retained
+only ID 999 and disabled Next. The Font popup also visibly focused its first
+search field and filtered to Selawik after pasted input. These observations used
+the existing 1280×820 logical window at 2× in dark mode; no database edits were
+invoked. This is host interaction evidence, not a native Access comparison.
+
+A separate public-runtime probe read both registered TextIndexFixture originals:
+Jet 4 `Text-V2000-0.mdb` and ACE 16 `Text-V2016-1.accdb`. Each returned 1,000
+ordered rows, ten rows for ID >= 990, and an empty page at offset 1,000. Their
+registered source hashes remained unchanged. A full page at offset 900 still
+reports possible continuation until EOF is observed; that boundary remains under
+review. See the [fixture provenance](../testing/FIXTURES.md#null-only-index-predicate-inputs).
+
+One headless desktop journey now composes the existing independent 205-row Jet 4
+fixture with actual widgets: Selection filter, descending sort, the later
+two-row page, complete-view Sum 10,506, independent SQL Count 205, table/schema
+visits and return to the cached query result. It checks physical row ordinals,
+filter ownership, retained totals and unchanged original bytes. It passed along
+with all four existing Totals cases. The two Totals widget drivers have one
+application-private test-support owner; no backend capability was added.
+Strict all-target desktop Clippy, workspace formatting and local documentation
+links also passed; the complete workspace test suite was not repeated.
+
 ## First real-file browser journey — 6 November 2026
 
 A fresh normal desktop build, without `--mock`, opened a supplied private ACCDB

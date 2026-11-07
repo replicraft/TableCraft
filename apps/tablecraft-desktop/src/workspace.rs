@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod browser_acceptance;
 mod editing;
 mod filtering;
 mod find;

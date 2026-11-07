@@ -1,5 +1,18 @@
 # Implementation status
 
+## Multi-row desktop browser verification — 6 November 2026
+
+Verification is headless again at the user's request. Before that change, the
+normal macOS desktop opened the registered 1,000-row ACE 16 fixture, paged,
+sorted across the complete table and applied a selection filter. Separate
+runtime checks passed on the corresponding Jet 4 original; source hashes stayed
+unchanged. These observations do not establish native Access equivalence.
+
+A headless 205-row desktop journey now verifies later-page filter/sort identity,
+complete-view totals and preservation across SQL and schema visits. It and four
+existing Totals cases passed. Exact-full-page Next behavior remains under review.
+See the [scoped record](ui/PRESENTATION_PREVIEW.md#multi-row-browser-checks-and-headless-verification--6-november-2026).
+
 ## First real-file desktop journey — 6 November 2026
 
 The normal macOS desktop opened a supplied ACCDB, automatically displayed its
