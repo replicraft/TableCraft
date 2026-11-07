@@ -5,6 +5,7 @@ use sha2::{Digest, Sha256};
 use std::{env, fs, io::Cursor, io::Write, path::Path};
 use tablecraft_core::values::Value;
 use tablecraft_testkit::fixtures::access::canonical_ordinary_inline::{self as model, Source};
+use tablecraft_testkit::support::ace::artifacts::finish_export_directory;
 
 fn source(header: u8, case: model::Case) -> Source {
     let mut source = model::source(case);
@@ -128,5 +129,5 @@ fn export_larger_ordinary_sources_and_literal_expectations() {
         }
     }
     create(&directory.join("inventory.tsv"), inventory.as_bytes());
-    fs::File::open(directory).unwrap().sync_all().unwrap();
+    let _namespace = finish_export_directory(directory).unwrap();
 }

@@ -3,6 +3,7 @@ use super::{model, source};
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
 use tablecraft_core::values::Value;
+use tablecraft_testkit::support::ace::artifacts::finish_export_directory;
 
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
@@ -182,5 +183,5 @@ fn export_ordinary_content_sources_and_literal_expectations() {
     }
 
     create(&directory.join("inventory.tsv"), inventory.as_bytes());
-    fs::File::open(directory).unwrap().sync_all().unwrap();
+    let _namespace = finish_export_directory(directory).unwrap();
 }

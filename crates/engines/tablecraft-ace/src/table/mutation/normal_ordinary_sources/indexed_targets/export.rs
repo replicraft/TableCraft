@@ -4,6 +4,7 @@ use super::model::{self, Case, Recipe, Refusal};
 use sha2::{Digest, Sha256};
 use std::{env, fs, io::Write, path::Path};
 use tablecraft_testkit::fixtures::access::canonical_ordinary_indexed::{self as originals, Source};
+use tablecraft_testkit::support::ace::artifacts::finish_export_directory;
 
 const PAGE: usize = 4096;
 
@@ -149,5 +150,5 @@ fn export_ordinary_indexed_target_originals_and_literal_after_views() {
     assert_eq!((before_count, after_count), (32, 24));
     create(&directory.join("inventory.tsv"), inventory.as_bytes());
     create(&directory.join("requests.tsv"), requests.as_bytes());
-    fs::File::open(directory).unwrap().sync_all().unwrap();
+    let _namespace = finish_export_directory(directory).unwrap();
 }

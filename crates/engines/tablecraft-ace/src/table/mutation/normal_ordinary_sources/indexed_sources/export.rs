@@ -7,6 +7,7 @@ use tablecraft_core::values::Value;
 use tablecraft_testkit::fixtures::access::canonical_ordinary_content::{
     Source as BaseSource, Table,
 };
+use tablecraft_testkit::support::ace::artifacts::finish_export_directory;
 
 const PAGE: usize = 4096;
 
@@ -198,5 +199,5 @@ fn export_ordinary_counter_index_sources_and_literal_expectations() {
     }
     assert_eq!((inputs, reports), (48, 18));
     create(&directory.join("inventory.tsv"), inventory.as_bytes());
-    fs::File::open(directory).unwrap().sync_all().unwrap();
+    let _namespace = finish_export_directory(directory).unwrap();
 }

@@ -258,3 +258,16 @@ recipe expectations; `support::ace::collection_scale` owns shared real-reader
 limits/observations. Engine and browser scale targets import these owners directly.
 The [scale acceptance record](results/lazy-collection-scale-2026-11-02.json) separates
 recipe checks, full-reader parity and cumulative resource controls.
+
+## Explicit fixture artifact exports
+
+`support::ace::artifacts::finish_export_directory` finishes the manually invoked
+ACE oracle exporters after they flush and close each created file. On Unix it
+also synchronizes the directory and returns `ExportNamespace::Synchronized`.
+Windows and other platforms validate that the supplied path is a directory and
+return `NotSynchronized`: the artifact files have their caller-issued content
+flushes, but no directory namespace barrier is claimed. A missing directory or
+ordinary file refuses on every platform. This helper deliberately does not use
+the production database publisher, replace an existing artifact, qualify a native
+save or promise recovery/power-loss behavior. Explicit exporters remain portable;
+their filesystem durability evidence remains platform-specific.

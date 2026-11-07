@@ -261,7 +261,9 @@ validation, data macros, locking or native-save restrictions.
 The connected editing slice belongs in the runtime, using the existing
 [offline write session](../access/writes/OFFLINE_WRITE_SESSIONS.md); desktop must
 not launch CLI commands or reproduce native planning. The current filesystem
-session is macOS/Linux-only and does not supply Access multiuser coordination.
+session supports macOS/Linux and a separate Windows local-NTFS route; it does
+not supply Access multiuser coordination. Windows filesystem behavior still
+requires native execution; cross-compilation does not qualify that guarantee.
 Collect an edit before acquiring its exclusive lease. Under that lease, compare
 the current complete image with the viewed source before resolving a fresh
 snapshot-local row handle; a displayed ordinal alone is not write authority.
