@@ -1,6 +1,6 @@
 use super::*;
 use crate::{SaveOperation, SaveReport};
-use std::{fs, path::Path};
+use std::{fs, io::ErrorKind, path::Path};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{
     CommitError,
@@ -44,6 +44,34 @@ fn inspections() -> [InspectionSample; 5] {
         ),
         ("malformed", || InspectError::Malformed, None),
     ]
+}
+
+#[test]
+fn restart_open_preserves_transparent_cancellation_and_resource_failures() {
+    for (sample, make_error, expected) in inspections() {
+        let SaveOutcome::Failed(failure) = failed_open(&OpenError::Native(make_error())) else {
+            panic!("an open failure cannot publish a successful outcome");
+        };
+        assert_eq!(
+            failure.kind,
+            expected.unwrap_or(SaveFailureKind::Open),
+            "{sample}"
+        );
+    }
+
+    for (error, expected) in [
+        (IoError::Cancelled, SaveFailureKind::Cancelled),
+        (IoError::Limit(limit()), SaveFailureKind::Resource),
+        (
+            IoError::Io(ErrorKind::PermissionDenied),
+            SaveFailureKind::Open,
+        ),
+    ] {
+        let SaveOutcome::Failed(failure) = failed_open(&OpenError::Io(error)) else {
+            panic!("an open failure cannot publish a successful outcome");
+        };
+        assert_eq!(failure.kind, expected);
+    }
 }
 
 #[test]

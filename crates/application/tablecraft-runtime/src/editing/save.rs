@@ -253,6 +253,13 @@ impl SaveWorker {
     pub fn acknowledge(&self, _id: u64) -> bool {
         false
     }
+    pub fn start_reserved_recovery(&self, source: PathBuf) -> Result<u64, SaveStartError<PathBuf>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(source),
+        })
+    }
+
     pub fn recover(&self, _id: u64) -> Result<u64, SaveStartError> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,

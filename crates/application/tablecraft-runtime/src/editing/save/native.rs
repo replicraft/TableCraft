@@ -5,6 +5,7 @@ mod apply_delete;
 mod apply_first_table;
 mod apply_insert;
 mod outcomes;
+mod restart;
 
 #[cfg(feature = "ace16-create")]
 use self::apply_first_table::apply_first_table;
@@ -13,6 +14,7 @@ use self::{
     apply_delete::apply_delete,
     apply_insert::apply_insert,
     outcomes::{finish, known, no_session, receipt, retain},
+    restart::restart,
 };
 use super::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
@@ -38,6 +40,7 @@ enum Task {
     Apply(ReviewedEdit, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
+    Restart(PathBuf, PathBuf),
     Recover,
     Release,
 }
@@ -118,7 +121,7 @@ impl SaveWorker {
                     Task::Apply(..) | Task::ApplyInsert(..) | Task::ApplyDelete(..) => {
                         SaveOperation::Apply
                     }
-                    Task::Recover => SaveOperation::Recover,
+                    Task::Restart(..) | Task::Recover => SaveOperation::Recover,
                     Task::Release => SaveOperation::Release,
                 };
                 let operation_name = match operation {
@@ -143,6 +146,9 @@ impl SaveWorker {
                     }
                     Task::ApplyDelete(reviewed, bundle) => {
                         apply_delete(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::Restart(source, bundle) => {
+                        restart(source, bundle, &mut retained, &cancelled)
                     }
                     Task::Recover => match retained.take().map(RetainedOwner::into_session) {
                         Some(session) => finish(
@@ -216,6 +222,14 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedFirstTable>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyFirstTable)
+    }
+
+    /// Explicitly attempt checked recovery of this source's reserved sibling.
+    /// No target is opened before acceptance. Rejection returns the source path;
+    /// decoding, native qualification and all writes stay with the shared backend.
+    pub fn start_reserved_recovery(&self, source: PathBuf) -> Result<u64, SaveStartError<PathBuf>> {
+        let bundle = crate::editing::journal_path(&source);
+        self.start_reviewed(source, bundle, true, Task::Restart)
     }
 
     fn start_reviewed<T>(

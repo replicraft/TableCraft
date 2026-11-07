@@ -7,7 +7,7 @@ use crate::editing::save::{
 };
 use std::error::Error as StdError;
 use tablecraft_access::editing::offline::{
-    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt,
+    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, OpenError, Phase, Receipt,
     SchemaChange, SessionState, VerifiedImage,
 };
 #[cfg(feature = "ace16-create")]
@@ -54,6 +54,14 @@ pub(super) fn finish(
         },
         Err(failure) => retain(failure, retained),
     }
+}
+
+pub(super) fn failed_open(error: &OpenError) -> SaveOutcome {
+    let kind = match error {
+        OpenError::Native(error) => resource_failure(error),
+        OpenError::Io(error) => resource_failure(error),
+    };
+    SaveOutcome::Failed(no_session(kind.unwrap_or(SaveFailureKind::Open)))
 }
 
 pub(super) fn no_session(kind: SaveFailureKind) -> SaveFailure {

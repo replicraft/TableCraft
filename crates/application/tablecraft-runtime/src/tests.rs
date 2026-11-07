@@ -25,6 +25,11 @@ mod query_design;
     any(target_os = "macos", target_os = "linux")
 ))]
 mod replacing;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod restart;
 mod saved;
 mod schema;
 mod stored;
@@ -60,11 +65,7 @@ fn row_texts(rows: &[Vec<crate::Cell>]) -> Vec<Vec<&str>> {
 
 #[cfg(all(
     feature = "offline-edit",
-    any(
-        target_os = "macos",
-        target_os = "linux",
-        all(windows, feature = "ace16-create")
-    )
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 pub(crate) fn terminal(worker: &crate::SaveWorker) -> crate::SaveReport {
     let deadline = Instant::now() + Duration::from_secs(30);

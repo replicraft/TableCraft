@@ -20,6 +20,7 @@ query-support = [
 ]
 access-support = [
     "dep:tablecraft-access",
+    "dep:tablecraft-ace",
     "dep:tablecraft-db",
     "dep:tablecraft-io",
     "dep:tablecraft-model",
@@ -27,6 +28,7 @@ access-support = [
     "dep:sha2",
     "dep:tempfile",
 ]
+ace16-create-support = ["access-support", "tablecraft-ace/ace16-create", "dep:tablecraft-schema"]
 cli-support = ["dep:sha2", "dep:tempfile"]
 
 [dependencies]

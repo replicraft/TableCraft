@@ -122,10 +122,16 @@ produce their expected bytes. Tests opt into the support they actually use:
 | `ace-support` | `support::ace` | Native engine inspection |
 | `query-support` | `support::query` | Backend-neutral query Source and execution contracts |
 | `access-support` | `support::access` | Real Access adapter, offline session and filesystem contracts |
+| `ace16-create-support` | `support::access::restart::stage_first_table` | Real V2 first-table journals with independent complete-image fixtures |
 | `cli-support` | `support::cli` | Executable process, filesystem and output observations |
 
-The Access support module is available on macOS and Linux, matching its retained
-offline-session test boundary. Optional support dependencies belong to the
+Access restart support is available on macOS, Linux and Windows; its existing
+owned-growth observation remains Unix-specific. `restart::stage` leaves actual
+pending/committed Jet 4 journals using an independent literal update oracle. The
+additional `ace16-create-support` feature supplies the corresponding real ACE 16
+first-table V2 setup with independent complete-image fixtures. Both release all
+resources before the consumer starts its restart scenario. These are API/process
+observations, not raw format encoders or physical power-loss evidence. Optional support dependencies belong to the
 engineering testkit and are enabled explicitly by test consumers. The Access
 adapter selects `access-support` in its dev-dependency declaration, rather than
 forwarding its production `offline-write-session` feature into the testkit.
