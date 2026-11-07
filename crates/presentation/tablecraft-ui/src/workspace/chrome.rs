@@ -61,7 +61,15 @@ impl State {
                         let open_available = !self.busy
                             && !self.edit_dialog_open()
                             && !self.saved_query_prompt_open();
-                        quick_access::show(ui, &t, open_available, actions);
+                        if quick_access::show(
+                            ui,
+                            &t,
+                            open_available,
+                            self.can_save_table_draft(),
+                            actions,
+                        ) {
+                            self.request_table_draft_save();
+                        }
                         ui.add_space(12.0);
                     }
                     let title = self

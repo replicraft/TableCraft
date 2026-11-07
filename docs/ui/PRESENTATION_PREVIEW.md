@@ -1,5 +1,50 @@
 # Presentation preview
 
+## Initial table Save As — 7 November 2026
+
+The `initial-table-save-name` scene opens the shared naming workflow without a
+file or runtime. It supplies an explicit synthetic save capability; confirmation
+still dispatches only to the resource-free preview host. A normal host enables
+Save only when its actual first-table persistence service is ready. The scene
+inventory now contains 88 entries; earlier matrix counts retain their original
+scope.
+
+The name dialog uses a default `Table1`, a labelled Table name input and OK/Cancel.
+Input is bounded to 64 UTF-16 units and oversized insertions are rejected whole.
+An issued request owns its exact declaration snapshot, document/tab binding and
+draft revision. Pending saves retain their name, original close intent and draft;
+cancellation is a request until the host reports its actual outcome. Unknown
+outcomes retain the pending owner and cannot silently enable a retry. Recover,
+Release and Close controls follow the actual host-owned resource capabilities;
+a released but unresolved acknowledgement leaves the draft blocked from saving.
+That acknowledgement does not automatically approve a deferred close or replace
+operation. Long progress details scroll separately from these controls. The UI
+adopts a persisted table only after the host supplies actual guarded-reopen
+metadata for the requested table.
+
+Microsoft's [screen-reader table workflow](https://support.microsoft.com/en-gb/accessibility/access/use-a-screen-reader-to-create-tables-in-access-desktop-databases)
+establishes Ctrl+S and first-save Save As with its default name; the
+[table-creation guide](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
+specifies the Table Name and OK step. The retained captures contain no save-name
+dialog, and an official-domain image search found no dialog capture. This compact
+presentation is therefore a documented-workflow adaptation, not a verified native
+dialog reproduction.
+
+Eleven focused Save-dialog checks pass, including actual name input, Enter and
+button confirmation, cancellation, retained recovery controls and exact request
+binding. The wider UI batch passed 321 cases and the complete 1,408-combination
+preview matrix; its one busy-dialog idle-wait failure passed after switching that
+test to bounded frame rendering. The added Enter regression passed separately.
+All 79 desktop checks pass, including same-file save/query, source drift,
+cancellation, admission refusal and the original deferred file-open transition.
+
+Normal-host offscreen frames were reviewed on macOS with Windows chrome emulation:
+English light/dark at 1280×820 and 1×, German dark/Japanese light at 900×580 and
+1.25×. The dialog stays within the compact viewport, its labels and actions remain
+visible, and the surrounding draft remains inert. Artifacts are retained locally
+under `.cache/ui-previews/initial-table-save-20261107/`. No native app windows were
+opened; these frames do not establish native Access interaction or save parity.
+
 ## Initial unsaved table — 7 November 2026
 
 The `initial-table-draft` scene renders a source-free `Table1` after blank
@@ -470,7 +515,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 87 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 88 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not

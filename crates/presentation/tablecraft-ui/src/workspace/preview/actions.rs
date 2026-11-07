@@ -42,6 +42,21 @@ impl Preview {
             return;
         }
         match action {
+            Action::SaveTableDraft { request } => {
+                if self.state.begin_table_draft_save(&request) {
+                    self.state.fail_table_draft_save(
+                        request.id,
+                        self.state.localizer.text("table-draft-save-unavailable"),
+                    );
+                }
+            }
+            Action::CancelTableDraftSave { id } => {
+                self.state.cancel_table_draft_save(id);
+            }
+            Action::RecoverTableDraftSave { .. } | Action::ReleaseTableDraftSave { .. } => {}
+            Action::AcknowledgeTableDraftSave { id } => {
+                self.state.acknowledge_table_draft_save(id);
+            }
             Action::TableDraftsDiscarded | Action::TableDraftDiscardCancelled => {}
             Action::DescribeQueryDesign { request, table } => {
                 self.mock_describe_query_design(request, table)

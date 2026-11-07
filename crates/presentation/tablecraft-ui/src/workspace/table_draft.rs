@@ -1,6 +1,8 @@
 //! Unsaved table presentation, separate from native catalog and row authority.
 mod close;
 mod grid;
+pub(super) mod save;
+pub use save::{TableDraftSaveCompletion, TableSaveRequest};
 
 use super::objects::{ObjectKind, ObjectTab};
 use super::{Action, State};
@@ -13,8 +15,12 @@ pub(super) struct Editor {
     rename: Option<(DraftFieldId, String)>,
     focus_add: bool,
     error: bool,
+    save_name: String,
+    save_blocked: bool,
+    save_message: Option<String>,
 }
 
+#[derive(Clone)]
 pub(super) enum CloseIntent {
     Tab(ObjectTab),
     All,
@@ -27,6 +33,9 @@ impl Editor {
             rename: None,
             focus_add: true,
             error: false,
+            save_name: "Table1".into(),
+            save_blocked: false,
+            save_message: None,
         }
     }
 
@@ -34,6 +43,8 @@ impl Editor {
         size_of::<Self>()
             + self.draft.retained_bytes()
             + self.rename.as_ref().map_or(0, |(_, text)| text.capacity())
+            + self.save_name.capacity()
+            + self.save_message.as_ref().map_or(0, String::capacity)
     }
 }
 
@@ -45,25 +56,43 @@ impl State {
         {
             return false;
         }
-        let enabled = !self.busy && !self.creation_is_pending() && self.table_draft_close.is_none();
+        let enabled = !self.busy
+            && !self.creation_is_pending()
+            && self.table_draft_close.is_none()
+            && self.table_draft_save.is_none()
+            && self
+                .table_draft
+                .as_ref()
+                .is_none_or(|editor| !editor.save_blocked);
+        let can_save = self.can_save_table_draft();
         let Some(editor) = &mut self.table_draft else {
             ui.label(tr(ui, "table-draft-unavailable"));
             return true;
         };
-        ui.add_enabled_ui(enabled, |ui| {
-            grid::show(ui, editor);
-        });
+        let save = ui
+            .add_enabled_ui(enabled, |ui| grid::show(ui, editor, can_save))
+            .inner;
+        if save {
+            self.request_table_draft_save();
+        }
         true
     }
 
     /// Explicit field declaration; this does not infer a type from entered data.
     pub fn add_table_draft_field(&mut self, kind: DraftFieldType) -> bool {
-        if self.busy || self.creation_is_pending() || self.table_draft_close.is_some() {
+        if self.busy
+            || self.creation_is_pending()
+            || self.table_draft_close.is_some()
+            || self.table_draft_save.is_some()
+        {
             return false;
         }
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
+        if editor.save_blocked {
+            return false;
+        }
         let Ok(id) = editor.draft.add_field(kind) else {
             return false;
         };

@@ -19,6 +19,10 @@ impl Desktop {
             drop(action);
             return None;
         }
+        if self.state.table_draft_save_open() {
+            drop(action);
+            return None;
+        }
         if !self.state.has_modified_table_drafts() {
             return Some(action);
         }
@@ -62,7 +66,7 @@ impl Desktop {
         if !context.input(|input| input.viewport().close_requested()) {
             return;
         }
-        if self.deferred_draft_action.is_some() {
+        if self.deferred_draft_action.is_some() || self.state.table_draft_save_open() {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             return;
         }

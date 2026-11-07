@@ -17,7 +17,7 @@ const NAME_INPUT_CHARACTERS: usize = 64;
 const NAME_INPUT_BYTES: usize = 256;
 const FOOTER_PADDING: f32 = 12.0;
 
-pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
+pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
     let colors = palette(ui.ctx());
     let footer_height = footer_height(ui, editor);
     let grid_height = (ui.available_height() - footer_height).max(0.0);
@@ -215,9 +215,19 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
             tr(ui, "table-draft-invalid-name"),
         );
     }
+    if editor.save_blocked {
+        let response = ui.colored_label(
+            ui.visuals().warn_fg_color,
+            tr(ui, "table-draft-save-blocked"),
+        );
+        if let Some(message) = &editor.save_message {
+            response.on_hover_text(message);
+        }
+    }
     ui.label(tr(ui, "table-draft-empty-note"));
-    ui.add_enabled(false, egui::Button::new(tr(ui, "table-draft-save")))
-        .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"));
+    ui.add_enabled(can_save, egui::Button::new(tr(ui, "table-draft-save")))
+        .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"))
+        .clicked()
 }
 
 fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
@@ -243,6 +253,9 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
     }
     if editor.error {
         height += text_height("table-draft-invalid-name") + ui.spacing().item_spacing.y;
+    }
+    if editor.save_blocked {
+        height += text_height("table-draft-save-blocked") + ui.spacing().item_spacing.y;
     }
     height
 }

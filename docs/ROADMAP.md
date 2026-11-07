@@ -2119,17 +2119,25 @@ This direction does not imply those application features are implemented.
 
 ## Initial table authoring — 7 November 2026
 
-Blank ACE 16 publication now composes with a separate unsaved `Table1` draft.
-The current UI supports explicit bounded field declarations and protected
-AutoNumber-primary metadata, without native row identities or invented catalog
-membership. Save remains unavailable. See [the workflow and current limits](ui/DATABASE_CREATION.md).
+Blank ACE 16 publication composes with a separately identified unsaved `Table1`
+draft. Explicit Short Text/Long Integer declarations retain protected AutoNumber
+primary-ID metadata, bounded field identities and revisions without manufacturing
+native rows or catalog membership. The initial Save implementation now connects
+the table-name prompt to the exact canonical-blank schema operation on
+macOS/Linux. See [the workflow and current limits](ui/DATABASE_CREATION.md).
 
-The next persistence step is a distinct source-bound schema operation from the
-exact canonical blank image, not an arbitrary replacement through a row-edit
-plan. It must preserve original declarations in a separately framed recovery
-intent, reconstruct both journal images, retain the exclusive target/session and
-report schema completion without fabricated row counts. Same-file Windows
-journal ownership remains separate from the implemented fresh-output publisher.
-Table naming, failure/cancellation retention and guarded native reopen precede
-promotion of the draft to a persisted table. Broader imported-file DDL and field
-inference remain later work; no SQLite/native-project scope is resumed.
+Original declarations are retained in a distinct TCNT intent; native V2
+qualification reconstructs both complete journal images. The existing exclusive
+target/session owns same-file resizing, recovery and finalization. Typed schema
+completion omits row counts, and a matching acknowledgement plus guarded native
+reopen precedes draft promotion. Pending transitions remain bound through
+cancellation and failure rather than silently replacing the requested action.
+The five focused adapter checks pass; connected runtime/UI/desktop validation is
+pending before this Save workflow is promoted as qualified.
+
+Next: finish that connected validation and offscreen review, implement Windows
+same-file journal ownership, then expand the genuine initial-table workflow with
+record entry, data-type inference and broader schema authoring. General
+imported-file DDL, complete Design view, shared-file writes and native Access
+save/reopen comparison remain separate work. Windows fresh-file publication does
+not supply same-file journal durability. No SQLite/native-project scope resumes.

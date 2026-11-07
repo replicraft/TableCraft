@@ -1,5 +1,6 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
+pub(super) mod first_table;
 mod inserting;
 #[cfg(test)]
 mod pasting;
@@ -37,6 +38,7 @@ enum SaveOwner {
     Cell,
     Insert,
     Delete,
+    FirstTable,
 }
 
 struct ActiveSave {
@@ -222,11 +224,16 @@ impl Desktop {
             return;
         }
         save.report = Some(report);
+        if matches!(save.owner, SaveOwner::FirstTable) {
+            self.first_table_save_report(report);
+            return;
+        }
         let outcome = save_outcome(&self.state.localizer, report.outcome);
         match save.owner {
             SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
             SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
             SaveOwner::Delete => self.state.set_delete_save_outcome(report.id, outcome),
+            SaveOwner::FirstTable => {}
         }
     }
 
@@ -262,6 +269,7 @@ impl Desktop {
                     SaveOwner::Cell => self.state.begin_edit_resolution(id, next),
                     SaveOwner::Insert => self.state.begin_insert_resolution(id, next),
                     SaveOwner::Delete => self.state.begin_delete_resolution(id, next),
+                    SaveOwner::FirstTable => {}
                 }
             }
             Err(error) => self.state.error = Some(error.to_string()),
@@ -297,6 +305,7 @@ impl Desktop {
             SaveOwner::Delete => {
                 self.state.close_delete();
             }
+            SaveOwner::FirstTable => {}
         }
         if matches!(
             save.report.map(|report| report.outcome),

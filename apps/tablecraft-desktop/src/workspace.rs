@@ -18,11 +18,12 @@ mod totals;
 use crate::file_dialog::{FileDialog, SelectedFile};
 use creating::Creating;
 use editing::Editing;
+use editing::first_table::FirstTableHost;
 use std::path::PathBuf;
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle, Response,
-    Worker,
+    SaveWorker, Worker,
 };
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
@@ -34,6 +35,12 @@ use zeroize::Zeroize;
 enum PendingOperation {
     Read,
     CreatedOpen,
+    FirstTableReview {
+        request_id: u64,
+    },
+    FirstTableReopen {
+        request_id: u64,
+    },
     Query {
         request_id: u64,
     },
@@ -135,6 +142,8 @@ pub(super) struct Desktop {
     selected_file: Option<SelectedFile>,
     creating: Creating,
     deferred_draft_action: Option<DeferredDraftAction>,
+    first_table: Option<FirstTableHost>,
+    resume_after_first_table: bool,
     editing: Editing,
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
@@ -163,6 +172,8 @@ impl Desktop {
             selected_file: None,
             creating,
             deferred_draft_action: None,
+            first_table: None,
+            resume_after_first_table: false,
             editing,
             filter: None,
             objects: objects::Sessions::default(),
@@ -170,6 +181,7 @@ impl Desktop {
         };
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
+        app.state.table_save_available = SaveWorker::supports_first_table();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
@@ -184,6 +196,14 @@ impl Desktop {
 
     fn submit(&mut self, command: Command) {
         if self.editing.has_save() || self.creating.is_busy() {
+            return;
+        }
+        if self.state.table_draft_save_open()
+            && !matches!(
+                &command,
+                Command::ReviewFirstTable { .. } | Command::OpenFirstTableSaved { .. }
+            )
+        {
             return;
         }
         let contents = match &command {
@@ -254,7 +274,8 @@ impl Desktop {
     }
 
     fn file_selected(&mut self, selection: Option<PathBuf>) {
-        if self.editing.has_save() || self.creating.is_busy() {
+        if self.editing.has_save() || self.creating.is_busy() || self.state.table_draft_save_open()
+        {
             return;
         }
         if let Some(path) = selection {
@@ -264,7 +285,8 @@ impl Desktop {
     }
 
     fn open(&mut self) {
-        if self.editing.has_save() || self.creating.is_busy() {
+        if self.editing.has_save() || self.creating.is_busy() || self.state.table_draft_save_open()
+        {
             return;
         }
         let path = match self
@@ -311,6 +333,9 @@ impl Desktop {
             }
             self.state.busy = false;
             match result {
+                Ok(Response::FirstTableReviewed { capability }) => {
+                    self.start_reviewed_first_table(generation, capability);
+                }
                 Ok(Response::QueryDesignTable { target, metadata }) => {
                     self.publish_query_design_table(generation, target, metadata);
                 }
@@ -371,7 +396,7 @@ impl Desktop {
                         .iter()
                         .find(|table| !table.system && table.local)
                         .map(|table| table.name.clone());
-                    self.state.database = Some(Database {
+                    let database = Database {
                         document_revision,
                         title: opening::document_title(&source_path, &title, &format),
                         title_path: Some(source_path.to_string_lossy().into_owned()),
@@ -393,7 +418,12 @@ impl Desktop {
                                 storage: table.storage,
                             })
                             .collect(),
-                    });
+                    };
+                    if let PendingOperation::FirstTableReopen { request_id } = self.pending {
+                        self.finish_first_table_reopen(request_id, database);
+                        continue;
+                    }
+                    self.state.database = Some(database);
                     self.state.dismiss_backstage();
                     if matches!(self.pending, PendingOperation::CreatedOpen) {
                         self.state.open_initial_table_draft();
@@ -498,6 +528,14 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::FirstTableReview { request_id } => {
+                        let request_id = *request_id;
+                        self.first_table_review_failed(request_id, error.to_string());
+                    }
+                    PendingOperation::FirstTableReopen { request_id } => {
+                        let request_id = *request_id;
+                        self.first_table_reopen_failed(request_id, error.to_string());
+                    }
                     PendingOperation::Query { .. } => {
                         self.state.clear_query_run();
                         self.state.error = Some(error.to_string());
@@ -586,6 +624,9 @@ impl eframe::App for Desktop {
         self.poll_creation();
         self.poll();
         self.poll_saves();
+        if std::mem::take(&mut self.resume_after_first_table) {
+            self.resume_table_draft_action(ctx);
+        }
         self.guard_save_close(ctx);
         self.guard_creation_close(ctx);
         self.guard_table_draft_window_close(ctx);
@@ -605,6 +646,11 @@ impl eframe::App for Desktop {
         self.invalidate_creation_selection();
         for action in actions {
             match action {
+                Action::SaveTableDraft { request } => self.save_first_table(request),
+                Action::CancelTableDraftSave { id } => self.cancel_first_table_save(id),
+                Action::RecoverTableDraftSave { id } => self.resolve_first_table_save(id, true),
+                Action::ReleaseTableDraftSave { id } => self.resolve_first_table_save(id, false),
+                Action::AcknowledgeTableDraftSave { id } => self.acknowledge_first_table_save(id),
                 Action::TableDraftsDiscarded => self.resume_table_draft_action(ui.ctx()),
                 Action::TableDraftDiscardCancelled => self.cancel_table_draft_action(),
                 Action::DescribeQueryDesign { request, table } => {
@@ -740,6 +786,10 @@ impl eframe::App for Desktop {
                 Action::ReleaseEditSave { save_id } => self.resolve_save(save_id, false),
                 Action::AcknowledgeEditSave { save_id } => self.acknowledge_save(save_id),
                 Action::Cancel => {
+                    if self.first_table.is_some() {
+                        self.cancel_active_first_table_save();
+                        continue;
+                    }
                     if self.creating.is_busy() {
                         self.cancel_creation();
                         continue;

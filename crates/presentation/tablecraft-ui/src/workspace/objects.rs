@@ -349,6 +349,7 @@ impl State {
     pub(super) fn object_switch_ready(&self) -> bool {
         !self.busy
             && self.table_draft_close.is_none()
+            && self.table_draft_save.is_none()
             && !self.backstage_visible()
             && !self.edit_dialog_open()
             && !self.insertion_dialog_open()
@@ -560,7 +561,7 @@ impl State {
         }
     }
 
-    fn clear_object_slots(&mut self) {
+    pub(super) fn clear_object_slots(&mut self) {
         self.table_draft = None;
         self.data = None;
         self.schema = None;
@@ -719,6 +720,50 @@ impl State {
             .collect();
         for tab in tabs {
             self.close_object_confirmed(&tab);
+        }
+    }
+}
+
+impl State {
+    pub(super) fn table_draft_editor(
+        &self,
+        tab: &ObjectTab,
+    ) -> Option<&super::table_draft::Editor> {
+        let entry = self
+            .objects
+            .entries
+            .iter()
+            .find(|entry| entry.tab == *tab)?;
+        if !matches!(entry.tab.target.kind, ObjectKind::DraftTable { .. }) {
+            return None;
+        }
+        if self.objects.active == Some(tab.id) {
+            return self.table_draft.as_ref();
+        }
+        match &entry.session {
+            Some(Session::DraftTable { editor }) => editor.as_ref(),
+            _ => None,
+        }
+    }
+
+    pub(super) fn table_draft_editor_mut(
+        &mut self,
+        tab: &ObjectTab,
+    ) -> Option<&mut super::table_draft::Editor> {
+        let entry = self
+            .objects
+            .entries
+            .iter_mut()
+            .find(|entry| entry.tab == *tab)?;
+        if !matches!(entry.tab.target.kind, ObjectKind::DraftTable { .. }) {
+            return None;
+        }
+        if self.objects.active == Some(tab.id) {
+            return self.table_draft.as_mut();
+        }
+        match &mut entry.session {
+            Some(Session::DraftTable { editor }) => editor.as_mut(),
+            _ => None,
         }
     }
 }

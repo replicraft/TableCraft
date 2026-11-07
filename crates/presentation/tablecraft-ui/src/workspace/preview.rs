@@ -88,6 +88,7 @@ pub enum Scene {
     Templates,
     DatabaseCreation,
     InitialTableDraft,
+    InitialTableSaveName,
     Backstage,
     Options,
     About,
@@ -117,7 +118,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 87] = [
+    pub const ALL: [Self; 88] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -179,6 +180,7 @@ impl Scene {
         Self::Templates,
         Self::DatabaseCreation,
         Self::InitialTableDraft,
+        Self::InitialTableSaveName,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -295,6 +297,7 @@ impl Scene {
             Self::Templates => "templates",
             Self::DatabaseCreation => "database-creation",
             Self::InitialTableDraft => "initial-table-draft",
+            Self::InitialTableSaveName => "initial-table-save-name",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -559,7 +562,7 @@ impl Preview {
                 }
             }
             Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
-            Scene::InitialTableDraft => {
+            Scene::InitialTableDraft | Scene::InitialTableSaveName => {
                 for tab in self.state.object_tabs() {
                     self.state.close_object(&tab);
                 }
@@ -567,12 +570,21 @@ impl Preview {
                     database.tables.clear();
                     database.queries.clear();
                     database.title = "Database1 : Database | Database1.accdb (Access 2016)".into();
+                    database.title_path = Some("Synthetic workspace/Database1.accdb".into());
                 }
                 self.state.dismiss_backstage();
                 assert!(
                     self.state.open_initial_table_draft(),
                     "synthetic initial draft opens"
                 );
+                self.state.path = "Database1.accdb".into();
+                if scene == Scene::InitialTableSaveName {
+                    self.state.table_save_available = true;
+                    assert!(
+                        self.state.request_table_draft_save(),
+                        "synthetic save name opens"
+                    );
+                }
             }
             Scene::DatabaseCreation => {
                 self.state.creation_available = true;

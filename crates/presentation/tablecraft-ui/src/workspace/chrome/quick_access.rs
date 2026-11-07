@@ -31,8 +31,10 @@ pub(super) fn show(
     ui: &mut Ui,
     localizer: &Localizer,
     open_available: bool,
+    save_available: bool,
     actions: &mut Vec<Action>,
-) {
+) -> bool {
+    let mut save_clicked = false;
     let id = Id::new("quick_access_visibility");
     let mut visibility = ui
         .data(|data| data.get_temp::<Visibility>(id))
@@ -53,8 +55,8 @@ pub(super) fn show(
                 actions.push(Action::ChooseFile);
             }
         }
-        // Native persistence is owned by the consuming Review/Apply workflow.
-        // TextEdit retains its own local undo/redo; this toolbar has no document history.
+        // Only the shared first-table save intent is enabled here. Existing native
+        // edits still use their consuming review; there is no document undo history.
         for (visible, key, help, icon) in [
             (
                 visibility.save,
@@ -79,20 +81,26 @@ pub(super) fn show(
                 continue;
             }
             let label = localizer.text(key);
+            let enabled = key == "ribbon-save" && save_available;
             let response = ui
                 .push_id(("quick_access", key), |ui| {
-                    ui.add_enabled_ui(false, |ui| {
+                    ui.add_enabled_ui(enabled, |ui| {
                         ui.add(egui::Button::image(icon.image(ui, ICON_SIZE)).frame(false))
                     })
                     .inner
                 })
                 .inner;
-            response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, &label));
-            ui.ctx().accesskit_node_builder(response.id, |node| {
-                node.remove_action(egui::accesskit::Action::Click);
-                node.remove_action(egui::accesskit::Action::Focus);
-            });
-            response.on_disabled_hover_text(localizer.text(help));
+            response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, enabled, &label));
+            if !enabled {
+                ui.ctx().accesskit_node_builder(response.id, |node| {
+                    node.remove_action(egui::accesskit::Action::Click);
+                    node.remove_action(egui::accesskit::Action::Focus);
+                });
+            }
+            save_clicked |= enabled && response.clicked();
+            response
+                .on_hover_text(label)
+                .on_disabled_hover_text(localizer.text(help));
         }
         let menu = ui.menu_button(Icon::QuickAccess.image(ui, 12.0), |ui| {
             ui.label(localizer.text("shell-quick-access"));
@@ -117,4 +125,5 @@ pub(super) fn show(
             .on_hover_text(localizer.text("shell-quick-access"));
     });
     ui.data_mut(|data| data.insert_temp(id, visibility));
+    save_clicked
 }

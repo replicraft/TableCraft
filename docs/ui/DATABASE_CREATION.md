@@ -54,16 +54,58 @@ Switching tabs parks the actual draft. Closing a pristine draft discards it
 without writing. A changed draft requires explicit discard or cancellation.
 Database replacement, a new creation request and window close retain their
 original requested action while the same confirmation is pending; another
-request cannot replace it. Cancellation keeps the draft. Save is visibly
-unavailable: no confirmation claims to persist a table that was not saved.
+request cannot replace it. Cancellation keeps the draft. On macOS/Linux, the
+Save action now requests a table name and runs the source-bound persistence
+operation described below. Windows keeps Save unavailable because same-file
+filesystem-journal ownership is not implemented there; its fresh-file creation
+publisher does not supply that capability.
 
 Microsoft's [Create a new database](https://support.microsoft.com/en-us/access/create-a-new-database)
 describes the intended complete continuation: Create opens an initial `Table1`
 in Datasheet view, with focus in Click to Add; entering data defines fields,
-and closing a changed table offers save, discard or cancel. Genuine same-file
-schema persistence, the table-name prompt, record entry and complete Design view
-remain unfinished. Fresh-file constructors for ID-only and ordinary-companion
-AutoNumber tables do not supply mutation of an existing blank database.
+and closing a changed table offers save, discard or cancel. The implementation
+now connects the bounded initial schema to a real same-file save. Record entry,
+automatic field inference, general schema changes and complete Design view
+remain unfinished.
+
+## Saving the initial table
+
+On macOS/Linux, the shared Save prompt accepts an exact table name and submits
+the current immutable draft snapshot. Its supported schema is the initial ID
+AutoNumber primary key plus explicitly added Short Text or Long Integer fields,
+within the sixteen-field ceiling. No records are authored by this operation.
+The UI keeps the draft distinct from the persisted database while review and
+saving run; neither accepting the name nor closing the prompt proves a save.
+
+Runtime first qualifies the exact original canonical blank and declarations,
+then issues a consuming review. Its existing nonreplaceable SaveWorker acquires
+the target, compares all original bytes and rederives the native operation under
+that same retained descriptor. A distinct TCNT schema intent and checked V2
+journal resize the original file; the operation does not replace the path with a
+freshly created image. See [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
+
+Only an acknowledged committed/verified-replacement receipt with the matching
+schema count starts guarded reopening. Reopening compares the complete captured
+file against the expected content retained during review before native reading.
+The host also matches the original document, draft revision and table identity.
+An expected-content witness is not itself a save receipt or physical file identity.
+Only a successful reopen promotes the matching draft into the real catalog/table.
+A failed reopen preserves the known save fact and displays a separate failure.
+
+Cancellation before durable effects keeps the draft. Once a journal is retained,
+the UI retains its outcome and offers only the recovery/release actions supported
+by the actual owner. A cancelled or failed commit is not reported as rollback or
+permission to retry. If saving was requested by a pending close/open/create
+transition, successful completion resumes that original action; cancellation or
+failure does not silently replace it.
+
+All 79 desktop checks pass, including the connected create/save/query flow,
+same-file identity, cancellation before review dispatch, source drift, host
+admission refusal and deferred file opening after successful Save. The shared
+batch passes all 123 runtime and ten builder tests; eleven focused Save UI cases
+pass, including keyboard confirmation and retained-resource controls. Windows
+fresh creation remains implemented, while Windows same-file Save and native
+Access save/reopen remain unqualified.
 
 ## Evidence and remaining qualification
 
@@ -84,6 +126,8 @@ transition checks additionally cover source separation, parked drafts, discarded
 requests, stale approvals and whole oversized name rejection. Final light/dark
 and compact translated frames were reviewed offscreen; see the
 [presentation record](PRESENTATION_PREVIEW.md#initial-unsaved-table--7-november-2026).
+The new naming surface has its own English light/dark and compact German/Japanese
+offscreen review recorded in the [Save presentation evidence](PRESENTATION_PREVIEW.md#initial-table-save-as--7-november-2026).
 Native Access comparison remains pending.
 
 The New form is a headless presentation adaptation of the retained Backstage

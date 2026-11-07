@@ -400,7 +400,7 @@ fn status_zoom_scales_the_datasheet_and_view_buttons_use_existing_actions() {
 fn quick_access_spacing_and_visibility_do_not_create_document_actions() {
     let mut harness = Harness::builder().build_ui_state(
         |ui, state: &mut (Localizer, Vec<Action>)| {
-            ui.horizontal(|ui| quick_access::show(ui, &state.0, true, &mut state.1));
+            ui.horizontal(|ui| quick_access::show(ui, &state.0, true, false, &mut state.1));
         },
         (Localizer::default(), Vec::new()),
     );

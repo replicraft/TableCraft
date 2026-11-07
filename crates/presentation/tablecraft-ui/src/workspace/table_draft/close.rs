@@ -11,27 +11,37 @@ impl State {
         if self.table_draft_close.is_none() {
             return;
         }
+        let can_save = self.can_save_table_draft_close();
+        let mut save = false;
         let mut discard = false;
         let mut cancel = false;
         let response = Modal::new(egui::Id::new("table_draft_close")).show(context, |ui| {
             ui.heading(tr(ui, "table-draft-close-title"));
             ui.label(tr(ui, "table-draft-close-question"));
-            ui.label(tr(ui, "table-draft-save-unavailable"));
+            if !can_save {
+                ui.label(tr(ui, "table-draft-save-unavailable"));
+            }
             ui.horizontal(|ui| {
-                ui.add_enabled(false, egui::Button::new(tr(ui, "table-draft-save")))
-                    .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"));
+                save = ui
+                    .add_enabled(can_save, egui::Button::new(tr(ui, "table-draft-save")))
+                    .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"))
+                    .clicked();
                 discard = ui.button(tr(ui, "table-draft-discard")).clicked();
                 cancel = ui.button(tr(ui, "table-draft-cancel")).clicked();
             });
         });
         cancel |= response.should_close();
-        if !discard && !cancel {
+        if !save && !discard && !cancel {
             return;
         }
         let Some(intent) = self.table_draft_close.take() else {
             return;
         };
-        if cancel {
+        if save {
+            if !self.start_table_draft_save(Some(intent.clone())) {
+                self.table_draft_close = Some(intent);
+            }
+        } else if cancel {
             if matches!(intent, CloseIntent::All) {
                 actions.push(Action::TableDraftDiscardCancelled);
             }

@@ -1,13 +1,39 @@
 # Implementation status
 
+## First-table Save integration — 7 November 2026
+
+The initial draft now connects to a bounded real same-file schema save on
+macOS/Linux. The table-name prompt submits a revision-bound immutable schema;
+runtime issues a consuming source-bound review and rederives that operation
+under the existing retained SaveWorker target/journal owner. A matching typed
+schema receipt and exact-content reopen precede promotion to the persisted
+catalog. The supported initial schema is generated primary ID plus explicit
+Short Text/Long Integer fields, with no entered records. See
+[the current workflow](ui/DATABASE_CREATION.md#saving-the-initial-table) and
+[adapter persistence/recovery](access/writes/FIRST_TABLE_PERSISTENCE.md).
+
+Five focused Access adapter tests and sixteen existing offline-session regression
+cases pass locally on macOS. The shared batch passes all 123 runtime and ten
+builder tests. All 79 desktop tests pass; the UI batch passed 321 cases and its
+1,408-combination preview matrix, with the corrected busy-dialog test and added
+Enter-confirmation regression passing in the eleven-case Save follow-up. Strict
+selected-package lint and Windows x64 runtime/IO/testkit lint pass. Creation-only
+and editing-only runtime feature builds also pass. Four light/dark and compact
+translated naming frames were reviewed offscreen; see the
+[presentation record](ui/PRESENTATION_PREVIEW.md#initial-table-save-as--7-november-2026).
+Native Access save/reopen and Windows same-file filesystem-journal execution
+remain unrun. Windows local-NTFS fresh creation remains a separate implemented
+capability.
+
 ## Initial unsaved table — 7 November 2026
 
 Successful blank creation now opens a separately identified unsaved `Table1`,
 with semantic AutoNumber primary ID and explicit draft-only Short Text/Long
 Integer fields. Drafts have no persisted catalog membership or native row
 handles. They survive tab switches; discard/cancel guards retain exact pending
-open/create/window-close actions. Save and record entry remain unavailable.
-See [the workflow contract](ui/DATABASE_CREATION.md#initial-unsaved-table).
+open/create/window-close actions. This original draft-only stage did not include
+Save or record entry; the Save extension is described above. Record entry
+remains unfinished. See [the workflow contract](ui/DATABASE_CREATION.md#initial-unsaved-table).
 
 Eight builder tests, seven final draft UI checks and all 73 desktop tests pass. The wider
 UI run passed its 305 existing checks and full 1,392-combination preview matrix;
@@ -23,8 +49,8 @@ The native constructor now serializes a genuine system-only ACE 16 database,
 without a copied template. CLI `create --blank` and desktop File > New use the
 shared creation service. The runtime retains terminal publication facts and
 guards reopening against the complete expected blank image. The current flow
-creates no persisted user table; the subsequent draft does not yet support
-native table persistence.
+creates no persisted user table; the subsequent draft uses the separate
+source-bound first-table persistence operation described above.
 See [the workflow boundary](ui/DATABASE_CREATION.md).
 
 The native creation suite passes 45 cases; the independent raw blank fixture

@@ -198,7 +198,7 @@ impl Desktop {
             .retain(|definition| definition.table() != table);
     }
 
-    fn load_object(&mut self, open: ObjectOpen) {
+    pub(super) fn load_object(&mut self, open: ObjectOpen) {
         if !open.needs_load {
             return;
         }

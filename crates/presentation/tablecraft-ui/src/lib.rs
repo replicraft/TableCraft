@@ -29,8 +29,8 @@ pub use workspace::{
     InsertReview, InsertTarget, ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput,
     ParameterSpec, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
     ReplaceFindRequest, RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget, Schema,
-    SortSpec, SortTarget, State, Table, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
-    TotalsField, TotalsTarget, WorkspaceLayout,
+    SortSpec, SortTarget, State, Table, TableDraftSaveCompletion, TableSaveRequest, TotalAggregate,
+    TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

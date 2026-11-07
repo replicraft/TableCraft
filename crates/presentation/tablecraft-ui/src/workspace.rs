@@ -47,6 +47,7 @@ pub use records::RecordTarget;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
+pub use table_draft::{TableDraftSaveCompletion, TableSaveRequest};
 pub use totals::{
     TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
 };
@@ -90,6 +91,21 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    SaveTableDraft {
+        request: TableSaveRequest,
+    },
+    CancelTableDraftSave {
+        id: u64,
+    },
+    RecoverTableDraftSave {
+        id: u64,
+    },
+    ReleaseTableDraftSave {
+        id: u64,
+    },
+    AcknowledgeTableDraftSave {
+        id: u64,
+    },
     TableDraftsDiscarded,
     TableDraftDiscardCancelled,
     ChooseFile,
@@ -317,6 +333,8 @@ pub struct State {
     pub sql: String,
     query_design: query_design::QueryDesign,
     filter: String,
+    pub table_save_available: bool,
+    table_draft_save: Option<table_draft::save::SaveDialog>,
     table_draft: Option<table_draft::Editor>,
     table_draft_close: Option<table_draft::CloseIntent>,
     table_draft_discard_approved: Option<(ObjectTab, u64)>,
@@ -623,7 +641,9 @@ impl State {
         let mut actions = Vec::new();
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
-        let modal_open = self.table_draft_close.is_some()
+        self.consume_table_draft_save_shortcut(ui.ctx());
+        let modal_open = self.table_draft_save.is_some()
+            || self.table_draft_close.is_some()
             || self.contents_request_id().is_some()
             || self.edit_dialog_open()
             || self.saved_query_prompt_open()
@@ -707,7 +727,13 @@ impl State {
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
-        if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
+        self.table_draft_save_dialog(ui.ctx(), &mut actions);
+        if !self.saved_query_prompt_open()
+            && !self.zoom_dialog_open()
+            && !self.find_window_open()
+            && self.table_draft_save.is_none()
+            && self.table_draft_close.is_none()
+        {
             self.finish_ribbon_keyboard(ui, !actions.is_empty());
             self.finish_pane_focus(ui);
             self.finish_ribbon_display(ui);

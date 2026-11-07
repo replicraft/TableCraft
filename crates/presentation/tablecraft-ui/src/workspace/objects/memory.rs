@@ -182,6 +182,9 @@ impl State {
         if let Some(editor) = &self.table_draft {
             count.add(editor.retained_bytes());
         }
+        if let Some(save) = &self.table_draft_save {
+            count.add(save.retained_bytes());
+        }
         count.string(&self.sql);
         count.add(self.query_result.retained_bytes());
         if let Some(pending) = &self.query_pending {

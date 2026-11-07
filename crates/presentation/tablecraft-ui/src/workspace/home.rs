@@ -161,13 +161,18 @@ impl State {
                     {
                         actions.push(Action::BeginInsert { target });
                     }
-                    ribbon::unavailable_command(
+                    if command(
                         ui,
-                        &t,
                         Icon::Save,
-                        "ribbon-save",
+                        &t.text("ribbon-save"),
+                        self.can_save_table_draft(),
                         CommandSize::Small,
-                    );
+                    )
+                    .on_disabled_hover_text(t.text("table-draft-save-unavailable"))
+                    .clicked()
+                    {
+                        self.request_table_draft_save();
+                    }
                     self.delete_menu(ui, actions);
                 });
                 ui.vertical(|ui| {
