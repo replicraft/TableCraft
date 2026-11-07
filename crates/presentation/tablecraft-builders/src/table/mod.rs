@@ -1,17 +1,20 @@
 //! Source-free table authoring. Draft identifiers never identify native records.
 mod model;
+mod snapshot;
 
 pub use model::{DraftField, DraftFieldId, DraftFieldType, TableDraft};
+pub use snapshot::{SnapshotField, TableDraftSnapshot};
 
 use thiserror::Error;
 
 pub const MAX_DRAFT_FIELDS: usize = 16;
 pub const MAX_DRAFT_NAME_UNITS: usize = 64;
+pub const MAX_DRAFT_NAME_BYTES: usize = MAX_DRAFT_NAME_UNITS * 4;
 pub const SHORT_TEXT_UNITS: u16 = 255;
 
 #[derive(Clone, Copy, Debug, Error, PartialEq, Eq)]
 pub enum TableDraftError {
-    #[error("the draft field name is invalid or duplicated")]
+    #[error("the draft name is invalid or duplicated")]
     InvalidName,
     #[error("the draft field no longer exists")]
     MissingField,
@@ -25,3 +28,13 @@ pub enum TableDraftError {
 
 #[cfg(test)]
 mod tests;
+
+fn valid_name(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= MAX_DRAFT_NAME_BYTES
+        && name.encode_utf16().take(MAX_DRAFT_NAME_UNITS + 1).count() <= MAX_DRAFT_NAME_UNITS
+        && !name
+            .chars()
+            .any(|character| character.is_control() || ".!`[]".contains(character))
+        && name.trim() == name
+}

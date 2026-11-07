@@ -1,4 +1,4 @@
-use super::{MAX_DRAFT_FIELDS, MAX_DRAFT_NAME_UNITS, TableDraftError};
+use super::{MAX_DRAFT_FIELDS, TableDraftError, valid_name};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct DraftFieldId(u64);
@@ -128,12 +128,7 @@ impl TableDraft {
         if self.fields[position].primary {
             return Err(TableDraftError::ProtectedField);
         }
-        if name.is_empty()
-            || name.encode_utf16().count() > MAX_DRAFT_NAME_UNITS
-            || name
-                .chars()
-                .any(|character| character.is_control() || ".!`[]".contains(character))
-            || name.trim() != name
+        if !valid_name(name)
             || self
                 .fields
                 .iter()
