@@ -13,6 +13,10 @@ The version is **0.1.0**. Local verification does not push, tag, dispatch a work
 or publish a release. Manual workflow runs are build-only; publication requires a
 separate maintainer-authorized version-tag push.
 
+Desktop artifact preparation has a separate
+[0.1.0 checklist](../releases/DESKTOP_0_1_0_CHECKLIST.md). The workflow and archive
+contract described here remain CLI-only.
+
 ## Downloads
 
 Names begin `tablecraft-cli-<version>-`, for example
