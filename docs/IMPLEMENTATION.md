@@ -1,5 +1,38 @@
 # Implementation status
 
+## Cross-platform audit — 7 November 2026
+
+The audit covers all 20 workspace packages and keeps native OS execution,
+cross-target builds and Access compatibility evidence separate. Windows Replace
+and portable creation acceptance paths now use their implemented services;
+shared save-test support no longer depends on a Unix-only editing suite. Unix
+lock inputs are checked without blocking on FIFOs. Access test support is selected
+by its development dependency rather than production feature forwarding.
+Pending records retain custom Windows/Linux window controls while Open remains
+guarded. A real insertion-review ordering bug found by the desktop batch now
+registers the exact pending review before setting busy. No editing eligibility
+or native database semantics were expanded.
+
+CI now configures six native CPU/OS hosts, bounded whole-workspace formatting,
+explicit host checks and isolated feature checks. Archive metadata is deterministic
+across hosts. Debug symbols are omitted for CI's development/test profiles;
+assertions and incremental compilation remain enabled, with narrow cleanup only
+after completed phases. The corrected workflow has not been pushed or run remotely.
+
+Complete workspace cross-checks pass for Linux x86-64/ARM64 and Intel macOS.
+Windows x64 IO/runtime/desktop strict lint passes; Windows ARM64 checks all
+targets/features for the 18 packages other than CLI/SQLite. The local Windows
+CLI/SQLite check still lacks MSVC C SDK headers for bundled SQLite.
+All 139 IO, 125 runtime, 342 UI, 82 desktop, 108 CLI unit and 10 builder unit tests
+pass, as do 19 Rust doctests and 16 isolated feature combinations. Earlier broad
+runs include the corrected stale version assertion, the initial three desktop
+failures and explicitly interrupted targets; they are not a full-suite pass.
+See the [audit record](testing/CROSS_PLATFORM_AUDIT.md) for exact coverage and
+remaining qualification. Actual Windows/Linux filesystem execution, native
+GUI/platform integration, power-loss behavior and
+Microsoft Access comparisons remain separate, unrun qualification work. No native
+app windows were opened.
+
 ## Inline new-record drafting — 7 November 2026
 
 The initial insertion draft now appears in the appended datasheet row. It keeps
@@ -85,7 +118,9 @@ and saves each schema, inserts two records and verifies IDs 1/2, companion value
 same-file identity and refreshed rows; both earlier desktop insertion regressions
 also pass. Five initial-creation checks and three native insertion/recovery checks
 pass against independent raw fixtures, including Short Text NULL. Windows x64
-runtime/IO/testkit strict lint passes; Windows same-file saving remains unavailable.
+runtime/IO/testkit strict lint passed. At that earlier checkpoint, Windows
+same-file saving remained unavailable; the later integration above supersedes
+that platform limitation.
 Five focused UI checks pass, including the generated scene across all eight
 languages and both themes. Four normal-host frames were inspected offscreen.
 Native Access comparisons remain unrun. See the

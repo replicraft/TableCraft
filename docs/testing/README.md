@@ -1,5 +1,6 @@
 # Testing and evidence
 
+- [Cross-platform audit and native CI scope](CROSS_PLATFORM_AUDIT.md)
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
