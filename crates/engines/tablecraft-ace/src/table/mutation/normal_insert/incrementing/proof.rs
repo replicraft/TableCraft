@@ -75,20 +75,26 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                 let supplied = match original {
                     InsertFieldValue::Supplied(value) => value,
                     InsertFieldValue::Omitted => {
-                        let property = declaration::capture(field, &defaults, budget, cancelled)?
-                            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-                        let mut used_clock = false;
-                        derived = proof_literal::derive(
-                            field,
-                            property.text()?,
-                            None,
-                            &mut used_clock,
-                            budget,
-                            cancelled,
-                        )?;
-                        if used_clock {
-                            return Err(EditError::Preservation);
-                        }
+                        derived = match declaration::capture(field, &defaults, budget, cancelled)? {
+                            Some(property) => {
+                                let mut used_clock = false;
+                                let value = proof_literal::derive(
+                                    field,
+                                    property.text()?,
+                                    None,
+                                    &mut used_clock,
+                                    budget,
+                                    cancelled,
+                                )?;
+                                if used_clock {
+                                    return Err(EditError::Preservation);
+                                }
+                                value
+                            }
+                            // Derive absence from fresh original metadata here;
+                            // no expanded producer row supplies this NULL.
+                            None => Value::Null,
+                        };
                         &derived
                     }
                 };

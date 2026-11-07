@@ -25,14 +25,16 @@ and refuses; unknown or malformed declarations do not fall back to Increment.
 LAST alone, a column name, omission or a primary index never establishes mode.
 
 Original requests must omit the actual generated field. Ordinary companions may
-be supplied with exact runtime carriers or omitted when the captured field has
-a checked constant literal default. Explicit companion NULL remains NULL and
-does not activate a default. Missing defaults, executable expressions and clock
-functions remain refused for omitted companions. This route still refuses an
-omitted companion with no default even when its Required policy is absent or
-explicitly false; it does not invent a nullable fallback. Supplied generated
-values and explicit generated NULL remain supplied and refuse. Boolean NULL
-refuses independently of Required. Empty-Text declaration checks remain mandatory. LAST is incremented with checked signed arithmetic; it is
+be supplied with exact runtime carriers or omitted. A present checked constant
+literal default takes precedence. When complete inspection establishes that no
+DefaultValue declaration exists, an omitted companion resolves to NULL only where
+its exact carrier and native constraints permit it. A malformed, unsupported or
+executable present default refuses; it is never retried as absence. Clock defaults
+remain outside this generated route. Explicit companion NULL remains supplied NULL
+and does not activate a default. Supplied generated values and explicit generated
+NULL remain supplied and refuse. Boolean NULL refuses independently of Required;
+missing Boolean defaults do not invent false. Empty-Text declaration checks remain
+mandatory. LAST is incremented with checked signed arithmetic; it is
 never repaired from the maximum live key. Generated collisions report
 DuplicateKey. Exhaustion, unsupported declarations and resource/cancellation
 failures publish no candidate. Empty requests repeat declaration checks.
@@ -41,8 +43,9 @@ Required and AllowZeroLength are independent native field checks. Required=true
 rejects supplied NULL or a NULL derived from a literal default. AllowZeroLength=false
 rejects supplied or default-derived empty Text. Required=true together with
 AllowZeroLength=true permits empty Text. Explicit false remains a declaration,
-not missing metadata. Neither policy supplies an omitted value or changes an
-explicitly supplied carrier. Source admission retains the existing required-program
+not missing metadata. Nullable fallback comes only from inspected default
+absence, not a Required=false declaration; the resolved NULL still fails Required=true.
+Neither policy supplies a different value or changes an explicitly supplied carrier. Source admission retains the existing required-program
 certificate; this policy composition does not skip data macros, validation or
 unknown active content.
 
@@ -68,6 +71,23 @@ a qualified plan can be returned. These local headless cases do not establish
 native Access or another platform's filesystem behavior. First-table schema
 policies use [TCNT0003](FIRST_TABLE_PERSISTENCE.md); row INSERT continues to use
 the unchanged TCNA2 protocol.
+
+The nullable-absence follow-up aligns generated companions with the existing
+ordinary omission resolver. It compares absent-default INSERTs against complete
+supplied-NULL rows and independently authored Short Text/Int32 NULL images, with
+Required absent and explicitly false. All qualified nullable companion carriers
+retain their exact stored NULL; Required and Boolean refusals remain explicit.
+Tests preserve literal/NULL/empty-default precedence, original TCNA2 omission,
+committed and interrupted recovery, and exact resource/cancellation admission.
+The producer and independent proof each inspect original default presence; neither
+uses the other's expanded fallback value. No source, physical index, required-program
+or empty-Text eligibility is added by this resolution change.
+
+TCNA2 wire and V1 recovery framing remain unchanged. It already records original
+supplied/omitted presence rather than resolved row values. Previously accepted
+supplied/default-bearing generated requests keep the same resulting bytes; newly
+admitted nullable omissions reconstruct their NULL from the same full bound source.
+See Microsoft's [INSERT INTO omitted-field contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql).
 
 The initial two-Int32 route retains its
 [execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).

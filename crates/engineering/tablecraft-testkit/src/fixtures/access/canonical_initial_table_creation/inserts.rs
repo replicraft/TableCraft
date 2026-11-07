@@ -7,6 +7,7 @@ use tablecraft_core::values::Value;
 pub enum InsertCase {
     IdOnly,
     LongInteger,
+    LongIntegerNull,
     ShortText,
     ShortTextNull,
     /// Empty supplied Text requires a separately attached AllowZeroLength policy.
@@ -36,6 +37,11 @@ pub fn first_insert(case: InsertCase) -> FirstInsert {
             Case::LongInteger,
             Some(Value::Int32(17)),
             vec![2, 0, 1, 0, 0, 0, 17, 0, 0, 0, 3],
+        ),
+        InsertCase::LongIntegerNull => (
+            Case::LongInteger,
+            Some(Value::Null),
+            vec![2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
         ),
         InsertCase::ShortText => (
             Case::ShortText,

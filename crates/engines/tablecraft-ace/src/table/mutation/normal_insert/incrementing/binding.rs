@@ -155,7 +155,10 @@ fn resolve_default(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Value, EditError> {
-    let property = declaration::capture(column, properties, budget, cancelled)?
-        .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-    literal::resolve(column, property.text()?, budget, cancelled)
+    match declaration::capture(column, properties, budget, cancelled)? {
+        Some(property) => literal::resolve(column, property.text()?, budget, cancelled),
+        // Complete inspected absence supplies NULL, never a fabricated default.
+        // Carrier, index and actual Required checks still qualify the result.
+        None => Ok(Value::Null),
+    }
 }

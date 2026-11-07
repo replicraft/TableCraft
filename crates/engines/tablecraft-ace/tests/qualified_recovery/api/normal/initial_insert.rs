@@ -57,16 +57,15 @@ fn requests(case: &fixtures::FirstInsert) -> Vec<OmittedRowInsert> {
 }
 
 fn wire(case: &fixtures::FirstInsert) -> Vec<u8> {
+    wire_rows(&case.before, vec![presence(case)])
+}
+
+fn wire_rows(before: &[u8], rows: Vec<Vec<Option<Value>>>) -> Vec<u8> {
     let mut binding = Sha256::new();
     binding.update(b"TCNI0001:BEFORE\0");
-    binding.update((case.before.len() as u64).to_le_bytes());
-    binding.update(&case.before);
-    tcna2::original_presence_wire(
-        "Items",
-        case.before.len(),
-        binding.finalize().into(),
-        vec![presence(case)],
-    )
+    binding.update((before.len() as u64).to_le_bytes());
+    binding.update(before);
+    tcna2::original_presence_wire("Items", before.len(), binding.finalize().into(), rows)
 }
 
 #[test]
@@ -203,11 +202,6 @@ fn fresh_initial_schema_never_invents_generation_defaults_or_allow_zero_length()
         for generated in [Value::Int32(1), Value::Null] {
             let mut values = presence(&case);
             values[0] = Some(generated);
-            denied.push(values);
-        }
-        if case.companion.is_some() {
-            let mut values = presence(&case);
-            values[1] = None;
             denied.push(values);
         }
         if matches!(case.declaration, declarations::Case::ShortText) {
@@ -425,16 +419,26 @@ fn initial_constant_companion_defaults_preserve_original_presence_through_insert
             .map(|_| InsertFieldValue::Omitted)
             .collect(),
     );
-    assert!(
-        image(&before)
-            .plan_recoverable_ordinary_omitted_row_inserts(
-                "Items",
-                vec![omitted],
-                &mut budget(),
-                &|| false
-            )
-            .is_err()
-    );
+    let omitted_plan = image(&before)
+        .plan_recoverable_ordinary_omitted_row_inserts(
+            "Items",
+            vec![omitted],
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    let omitted_rows = read_table(
+        &mut image(omitted_plan.after_bytes()).reader(),
+        scope(),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut expected = vec![Value::Int32(1)];
+    expected.extend(defaults.iter().cloned());
+    expected.push(Value::Null);
+    assert_eq!(omitted_rows.rows(), &[expected]);
     let mut unknown = before.clone();
     let old = "DefaultValue"
         .encode_utf16()
@@ -464,3 +468,6 @@ fn initial_constant_companion_defaults_preserve_original_presence_through_insert
 
 #[path = "initial_insert/policies.rs"]
 mod policies;
+
+#[path = "initial_insert/omission.rs"]
+mod omission;
