@@ -1,5 +1,29 @@
 # Implementation status
 
+## Omitted nullable first-record fields — 7 November 2026
+
+Generated-ID inserts now resolve a genuinely absent companion default to native
+NULL within the existing nullable carrier profile. Stored literal defaults still
+take precedence. Explicit NULL and empty Text keep their original meaning;
+Required and Boolean carrier checks remain mandatory. A present unsupported or
+malformed default never falls back to NULL. The independent proof reconstructs
+absence from the bound original metadata, preserving original TCNA2 omission
+and existing recovery framing without new source/index/program eligibility.
+
+Actual desktop workflows save a nullable omitted field as NULL, preserve hidden
+raw input through a Required refusal, then commit the corrected value without
+recreating the table or consuming an ID early. The CLI uses the same service and
+checks native NULL through an `IS NULL` query, including a Unicode filename.
+All 141 runtime and 107 desktop tests pass; two CLI process tests and 13 focused
+native integration tests pass. The normal-INSERT unit filter passes three tests
+with 46 explicitly ignored source cases; no full native-suite pass is claimed.
+Strict affected-package all-target/all-feature lint passes, and Windows x64/ARM64
+compile the native recovery target and runtime/desktop targets. All 882 formatter
+roots pass. Earlier fixture/diagnostic test failures remain retained separately.
+Native Windows/Linux execution and Access comparison remain unrun. See
+[the native contract](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md) and
+[initial-record workflow](ui/DATABASE_CREATION.md#continuing-to-the-first-record).
+
 ## Initial field-property authoring — 7 November 2026
 
 Design now edits Short Text capacity, Required, Allow Zero Length and typed
@@ -13,8 +37,9 @@ memory accounting includes owned defaults through parked first-record states.
 Runtime lowers explicit types and policies into a consuming native schema review.
 Policy-bearing schemas use TCNT0003; policy-free TCNT0001/TCNT0002 records retain
 their existing reconstruction. Normal generated-ID insertion admits only the
-closed policy/default groups and still enforces native constraints. A field with
-no default still cannot be omitted in this bounded insertion route. Descriptions,
+closed policy/default groups and still enforces native constraints. At this
+checkpoint omitted companions still needed a default; the nullable-absence
+follow-up above extends that route. Descriptions,
 captions, validation expressions, Lookup authoring and stored ALTER remain
 unavailable. Text that resembles a function is literal text, never evaluated code.
 

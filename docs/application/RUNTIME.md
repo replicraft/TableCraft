@@ -500,6 +500,27 @@ constraint and index admission. This application-input policy does not change or
 ban the separate explicit SQL/engine append contracts, which retain their own
 native qualification.
 
+Within the existing qualified Increment source profile, ordinary omitted
+companions first resolve a supported stored default. Only complete inspected
+absence of a DefaultValue declaration allows NULL for an admitted nullable
+carrier. Required=true then rejects that resolved NULL through the normal native
+field check; AllowZeroLength does not turn omission into empty Text. Explicit
+supplied NULL is never replaced by a default, and supplied values keep their exact
+carriers. A present empty, malformed, unknown or executable default remains an
+error rather than falling through to NULL. Boolean NULL remains unsupported, so
+an omitted Boolean companion without a default still refuses.
+
+This resolution happens in the engine, independently in producer binding and
+proof over original metadata. Runtime and UI retain the original Omitted intent
+and hidden raw text; they do not manufacture a supplied NULL or amend a default
+property. TCNA2 retains the same original presence and complete BEFORE binding.
+Source admission, supported carrier families, ownership/index profiles, Required,
+validation/data-macro eligibility, resource limits and fresh save reconstruction
+remain unchanged. Present-Int32-only multi-index companion restrictions remain
+in force. The non-generated resolver's existing NULL-absence behavior is separate
+and unchanged. See [normal Increment insertion](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+and Microsoft's [omitted-column contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql).
+
 Review rechecks the actual native AutoNumber markers, requires their omission,
 then parses ordinary supplied text against actual declared types and runs the
 normal presence-bearing native INSERT planner over the captured image. It returns exact
@@ -541,8 +562,9 @@ Windows filesystem-journal observation or native Access comparison.
 The initial-table route authors checked constant defaults and explicit field
 policies through the property-lowering contract above. Existing policy-free
 TCNT0001/TCNT0002 schemas and absent defaults remain distinct from new TCNT0003
-policy-bearing declarations. Omitted companions use only the insertion service's
-qualified stored policies; the UI never supplies a guessed record value. New
+policy-bearing declarations. Omitted companions use the insertion service's
+qualified stored policies and inspected absent-default NULL resolution described
+above; the UI never supplies a guessed record value. New
 Short Text authoring records an explicit AllowZeroLength=true UI default, with
 No remaining a deliberate UI alternative. The lower-level native API also retains
 absent declarations. Empty Text still requires the native insertion route's actual

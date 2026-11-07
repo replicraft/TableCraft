@@ -79,11 +79,14 @@ These are the initial Type default choices before any Design property edits.
 The default selected for Save is persisted metadata retained in the reviewed
 declaration; it is not a placeholder row value or display formatting. Choosing a
 field never inserts a record. After saving, generated-ID insertion can resolve
-omitted companions with these checked constant defaults while preserving original
-field presence for fresh proof and recovery. Supplied values take precedence;
-a missing or unsupported default does not silently select another route. The
-initial ID keeps Increment generation and its primary key; it has no explicit constant default. Other Number sizes, Decimal,
-Replication ID/GUID and Date/Time Extended are not silently substituted.
+omitted companions using checked stored defaults, or NULL for a genuinely absent
+default in an eligible nullable companion. Original field presence remains exact
+for fresh proof and recovery. Supplied values take precedence, including explicit
+NULL; an unsupported or malformed stored default never falls back to NULL. All
+existing source, carrier, Required and index checks still apply. The initial ID
+keeps Increment generation and its primary key; it has no explicit constant
+default. Other Number sizes, Decimal, Replication ID/GUID and Date/Time Extended
+are not silently substituted.
 Long Text, Lookup & Relationship, Rich Text, Attachment, Hyperlink, Calculated
 Field and More Fields remain visible disabled entries with unavailable tooltips.
 
@@ -309,6 +312,25 @@ or Currency with invariant numeric syntax, lowercase `true`/`false`, or a legacy
 Date/Time such as `2026-11-07T12:30:00`. Text `Now()` is stored as text; a Date/Time
 literal `Now()` is refused. No SQL, VBA, formula, clock or name lookup is executed.
 NULL remains subject to the native carrier rules; Yes/No does not admit it.
+
+For a qualified ordinary nullable companion of the generated ID, leaving record
+input Omitted with No default now resolves to NULL during native review. Required
+Yes rejects that resolved NULL; Allow Zero Length Yes does not replace it with an
+empty string. Supplied empty text and explicit NULL remain distinct inputs, and
+neither activates a stored default. A present but empty, malformed or unsupported
+DefaultValue expression is not proof that the declaration is absent. An omitted
+Yes/No field with no default remains refused in this bounded route; no False
+value is invented. The untouched `(New)` placeholder still does not request a row.
+
+Microsoft's [INSERT INTO contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql)
+describes omitted-column default/NULL behavior. Its
+[Required property contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/required-property-access)
+keeps NULL restrictions separate from empty strings, and the
+[Access glossary](https://support.microsoft.com/en-us/access/access-glossary)
+explicitly excludes NULL from native Yes/No values. This implementation retains
+the existing [normal Increment source profile](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md),
+including its source, index, validation/data-macro and resource gates. It does not
+qualify arbitrary imported fields or Boolean omission without a default.
 
 The raw literal editor retains up to 4,096 UTF-8 bytes. This is an input-retention
 limit, separate from the native constant-expression ceiling of 255 UTF-16 code

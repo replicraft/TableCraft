@@ -71,19 +71,23 @@ fn select_properties(harness: &mut Harness<'_, Desktop>, field: &str) {
     );
 }
 
-#[test]
-fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the_stored_default() {
-    let (_directory, path, mut harness) =
-        pending_record("table-draft-short-text", "Name", "hidden draft");
-    let mode = field_label(&harness, "insertion-field-input", "Name");
+fn choose_input(harness: &mut Harness<'_, Desktop>, field: &str, choice: &str) {
+    let mode = field_label(harness, "insertion-field-input", field);
     harness
         .get_by_role_and_label(Role::Button, &mode)
         .click_accesskit();
     harness.run_steps(2);
     harness
-        .get_by_role_and_label(Role::RadioButton, "Omitted")
+        .get_by_role_and_label(Role::RadioButton, choice)
         .click_accesskit();
     harness.run_steps(2);
+}
+
+#[test]
+fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the_stored_default() {
+    let (_directory, path, mut harness) =
+        pending_record("table-draft-short-text", "Name", "hidden draft");
+    choose_input(&mut harness, "Name", "Omitted");
     let generation = harness.state().generation;
     select_properties(&mut harness, "Name");
     replace(&mut harness, Role::TextInput, "Field Size", "12");
@@ -141,6 +145,78 @@ fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the
     assert!(
         matches!(property(&fields[1], "DefaultValue"), FieldPropertyValue::Text(text) if text == "\"Guest\"")
     );
+}
+
+#[test]
+fn no_default_nullable_omission_commits_native_null_instead_of_hidden_text_or_empty_text() {
+    let (_directory, path, mut harness) =
+        pending_record("table-draft-short-text", "Name", "hidden draft");
+    choose_input(&mut harness, "Name", "Omitted");
+    select_properties(&mut harness, "Name");
+    choose(
+        &mut harness,
+        "design-default-value",
+        "table-draft-property-absent",
+    );
+    save_schema_and_bind_record(&mut harness);
+    let schema_bytes = std::fs::read(&path).unwrap();
+    review(&mut harness);
+    assert!(harness.state().editing.insert_review.is_some());
+    assert_eq!(std::fs::read(&path).unwrap(), schema_bytes);
+    assert!(!journal_path(&path).exists());
+    apply_and_acknowledge(&mut harness);
+
+    let rows = &harness.state().state.data.as_ref().unwrap().rows;
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0][0].text, "1");
+    assert!(matches!(
+        rows[0][1].kind,
+        CellKind::Scalar { is_null: true, .. }
+    ));
+    assert!(!journal_path(&path).exists());
+}
+
+#[test]
+fn required_no_default_omission_refuses_without_writes_and_keeps_hidden_input_for_correction() {
+    let (_directory, path, mut harness) =
+        pending_record("table-draft-short-text", "Name", "kept verbatim");
+    choose_input(&mut harness, "Name", "Omitted");
+    select_properties(&mut harness, "Name");
+    choose(&mut harness, "design-required", "table-draft-property-yes");
+    choose(
+        &mut harness,
+        "design-default-value",
+        "table-draft-property-absent",
+    );
+    save_schema_and_bind_record(&mut harness);
+    let schema_bytes = std::fs::read(&path).unwrap();
+    review(&mut harness);
+    assert!(harness.state().editing.insert_review.is_none());
+    assert!(!harness.state().editing.has_save());
+    assert_eq!(std::fs::read(&path).unwrap(), schema_bytes);
+    assert!(!journal_path(&path).exists());
+
+    choose_input(&mut harness, "Name", "Value");
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Name")
+            .value()
+            .as_deref(),
+        Some("kept verbatim")
+    );
+    replace(&mut harness, Role::TextInput, "Name", "Ada");
+    review(&mut harness);
+    assert!(harness.state().editing.insert_review.is_some());
+    apply_and_acknowledge(&mut harness);
+    let rows = &harness.state().state.data.as_ref().unwrap().rows;
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0][0].text, "1");
+    assert_eq!(rows[0][1].text, "Ada");
+    assert!(matches!(
+        rows[0][1].kind,
+        CellKind::Scalar { is_null: false, .. }
+    ));
+    assert!(!journal_path(&path).exists());
 }
 
 #[test]

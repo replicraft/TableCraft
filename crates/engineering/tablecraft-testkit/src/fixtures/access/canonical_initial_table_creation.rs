@@ -55,6 +55,11 @@ const fn variable(name: &'static str, native_type: u8, width: u16, index: u16) -
 const ID_ONLY: [Column; 1] = [fixed("Id", 4, 0, 4)];
 const LONG_INTEGER: [Column; 2] = [fixed("Id", 4, 0, 4), fixed("Score", 4, 4, 4)];
 const SHORT_TEXT: [Column; 2] = [fixed("Id", 4, 0, 4), variable("Name", 10, 510, 0)];
+const NULLABLE_COMPANIONS: [Column; 3] = [
+    fixed("Id", 4, 0, 4),
+    fixed("Score", 4, 4, 4),
+    variable("Name", 10, 40, 0),
+];
 const MIXED: [Column; 14] = [
     fixed("Id", 4, 0, 4),
     fixed("Flag", 1, 0, 0),
@@ -95,6 +100,15 @@ pub fn source(case: Case) -> Source {
         Case::ShortText => &SHORT_TEXT,
         Case::Mixed => &MIXED,
     };
+    encode_columns(columns)
+}
+
+/// A supplied LONG can accompany an omitted nullable Text field without defaults.
+pub fn nullable_companions() -> Source {
+    encode_columns(&NULLABLE_COMPANIONS)
+}
+
+fn encode_columns(columns: &'static [Column]) -> Source {
     let mut bytes =
         canonical_creation_primary::source(canonical_creation_primary::Case::Empty).bytes;
     let original = &bytes[7 * 4096..8 * 4096];
