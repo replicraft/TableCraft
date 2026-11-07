@@ -5,6 +5,8 @@ use super::{
     display::Presentation,
     source::Source,
 };
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use crate::FirstTableReopen;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux")
@@ -52,6 +54,25 @@ pub(super) struct Document {
 }
 
 impl Document {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    pub(super) fn open_first_table_saved(
+        witness: &FirstTableReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            Error::CreatedSourceChanged => Error::SavedTableSourceChanged,
+            error => error,
+        })
+    }
+
     pub(super) fn open(
         path: &Path,
         password: &mut String,

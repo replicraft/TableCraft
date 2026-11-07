@@ -37,8 +37,10 @@ pub use editing::{
     InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReplaceError,
     ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind,
     SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport,
-    SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+pub use editing::{FirstTableReopen, ReviewedFirstTable};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
@@ -65,14 +67,24 @@ pub use worker::Worker;
 use std::path::PathBuf;
 #[cfg(feature = "ace16-create")]
 use std::sync::Arc;
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use tablecraft_ace::FirstTableError;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
 };
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use tablecraft_builders::table::TableDraftSnapshot;
 use zeroize::Zeroize;
 
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FirstTable(#[from] FirstTableError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved table contents changed before reopening")]
+    SavedTableSourceChanged,
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     Creation(#[from] tablecraft_ace::CreateDatabaseError),
@@ -157,6 +169,15 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewFirstTable {
+        document_revision: u64,
+        snapshot: TableDraftSnapshot,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenFirstTableSaved {
+        witness: Arc<FirstTableReopen>,
+    },
     /// Reopen only an acknowledged creation whose fresh snapshot still matches
     /// the canonical blank image. This does not attest physical file identity.
     #[cfg(feature = "ace16-create")]
@@ -297,6 +318,10 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FirstTableReviewed {
+        capability: ReviewedFirstTable,
+    },
     QueryDesignTable {
         target: QueryDesignTarget,
         metadata: DesignTableMetadata,

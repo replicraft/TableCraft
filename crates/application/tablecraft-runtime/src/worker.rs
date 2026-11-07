@@ -27,9 +27,28 @@ pub struct Worker {
 
 impl Worker {
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
-        let mut document = None;
+        let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewFirstTable {
+                document_revision,
+                snapshot,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_first_table(*document_revision, snapshot, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenFirstTableSaved { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_first_table_saved(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
             #[cfg(feature = "ace16-create")]
             Command::OpenCreated { report } => {
                 document = None;
@@ -257,6 +276,10 @@ impl Worker {
                         || thread_shared.generation.load(Ordering::Acquire) != request.id
                 };
                 let operation = match &request.command {
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewFirstTable { .. } => "review_first_table",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::OpenFirstTableSaved { .. } => "open_first_table_saved",
                     Command::Open { .. } => "open",
                     #[cfg(feature = "ace16-create")]
                     Command::OpenCreated { .. } => "open_created",

@@ -1,5 +1,9 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 mod deleting;
+#[cfg(feature = "ace16-create")]
+mod first_table;
+#[cfg(feature = "ace16-create")]
+pub use first_table::{FirstTableReopen, ReviewedFirstTable};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 mod draft;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -19,8 +23,8 @@ pub use inserting::{
 };
 pub use save::{
     SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome,
-    SavePhase, SaveReceipt, SaveReport, SaveSessionState, SaveStartError, SaveStartFailure,
-    SaveWorker,
+    SavePhase, SaveReceipt, SaveReport, SaveSchemaChange, SaveSessionState, SaveStartError,
+    SaveStartFailure, SaveWorker,
 };
 
 use crate::{Cell, scalar_input::InputHint};

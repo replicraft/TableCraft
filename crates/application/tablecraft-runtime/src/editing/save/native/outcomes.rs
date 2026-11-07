@@ -2,19 +2,25 @@
 use super::RetainedOwner;
 use crate::editing::save::{
     SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOutcome, SavePhase,
-    SaveReceipt, SaveSessionState,
+    SaveReceipt, SaveSchemaChange, SaveSessionState,
 };
 use std::error::Error as StdError;
 use tablecraft_access::editing::offline::{
     Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt,
-    SessionState, VerifiedImage,
+    SchemaChange, SessionState, VerifiedImage,
 };
-use tablecraft_ace::InspectError;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{CreateDatabaseError, FirstTableError, FirstTableIntentError};
+use tablecraft_ace::{
+    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
+};
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
     IoError,
-    journal::{RecoveryOutcome, filesystem::PairState},
+    journal::{JournalError, RecoveryOutcome, filesystem::PairState},
 };
+
+const MAX_ERROR_SOURCE_DEPTH: usize = 32;
 
 pub(super) fn retain_local(
     session: OfflineWriteSession,
@@ -85,6 +91,11 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
             }),
         matched_rows: value.matched_rows(),
         changed_rows: value.changed_rows(),
+        schema_change: value.schema_change().map(|change| match change {
+            SchemaChange::FirstTableCreated { column_count } => {
+                SaveSchemaChange::FirstTableCreated { column_count }
+            }
+        }),
     }
 }
 
@@ -155,28 +166,132 @@ pub(super) fn retain(failure: Failure, retained: &mut Option<RetainedOwner>) -> 
 // The full original Failure remains owned; this only derives display-safe facts.
 fn resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailureKind> {
     let mut current = Some(error);
-    for _ in 0..32 {
+    for _ in 0..MAX_ERROR_SOURCE_DEPTH {
         let error = current?;
-        if error.downcast_ref::<LimitError>().is_some() {
-            return Some(SaveFailureKind::Resource);
-        }
-        if let Some(error) = error.downcast_ref::<InspectError>() {
-            match error {
-                InspectError::Cancelled => return Some(SaveFailureKind::Cancelled),
-                InspectError::Limit(_)
-                | InspectError::Allocation
-                | InspectError::StructureLimit => return Some(SaveFailureKind::Resource),
-                _ => {}
-            }
-        }
-        if let Some(error) = error.downcast_ref::<IoError>() {
-            match error {
-                IoError::Cancelled => return Some(SaveFailureKind::Cancelled),
-                IoError::Limit(_) => return Some(SaveFailureKind::Resource),
-                _ => {}
-            }
+        if let Some(kind) = typed_resource_failure(error) {
+            return Some(kind);
         }
         current = error.source();
     }
     None
 }
+
+// Transparent thiserror layers can forward past the wrapped error itself.
+// Inspect the public typed variants before following the ordinary source chain.
+fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailureKind> {
+    if let Some(cause) = error.downcast_ref::<Cause>() {
+        return match cause {
+            Cause::Native(error) => inspection_failure(error),
+            Cause::Intent(error) => intent_failure(error),
+            Cause::Qualification(error) => qualification_failure(error),
+            Cause::Prepare(error) | Cause::Recovery(error) => journal_failure(error),
+            Cause::Io(error) => io_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::FirstTablePlanning(error) => first_table_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::FirstTableIntent(error) => first_table_intent_failure(error),
+            _ => None,
+        };
+    }
+    if let Some(error) = error.downcast_ref::<NativeRecoveryQualificationError>() {
+        return qualification_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<NativeIntentError>() {
+        return intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FirstTableError>() {
+        return first_table_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FirstTableIntentError>() {
+        return first_table_intent_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<JournalError>() {
+        return journal_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<InspectError>() {
+        return inspection_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<IoError>() {
+        return io_failure(error);
+    }
+    error
+        .downcast_ref::<LimitError>()
+        .map(|_| SaveFailureKind::Resource)
+}
+
+fn intent_failure(error: &NativeIntentError) -> Option<SaveFailureKind> {
+    match error {
+        NativeIntentError::Inspect(error)
+        | NativeIntentError::Request(EditError::Inspect(error)) => inspection_failure(error),
+        _ => None,
+    }
+}
+
+fn qualification_failure(error: &NativeRecoveryQualificationError) -> Option<SaveFailureKind> {
+    match error {
+        NativeRecoveryQualificationError::Inspect(error)
+        | NativeRecoveryQualificationError::Edit(EditError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        NativeRecoveryQualificationError::Intent(error) => intent_failure(error),
+        #[cfg(feature = "ace16-create")]
+        NativeRecoveryQualificationError::FirstTable(error) => first_table_failure(error),
+        #[cfg(feature = "ace16-create")]
+        NativeRecoveryQualificationError::FirstTableIntent(error) => {
+            first_table_intent_failure(error)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn first_table_failure(error: &FirstTableError) -> Option<SaveFailureKind> {
+    match error {
+        FirstTableError::Inspect(error)
+        | FirstTableError::Create(CreateDatabaseError::Inspect(error)) => inspection_failure(error),
+        _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn first_table_intent_failure(error: &FirstTableIntentError) -> Option<SaveFailureKind> {
+    match error {
+        FirstTableIntentError::Inspect(error)
+        | FirstTableIntentError::Create(CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        FirstTableIntentError::Binding(error) => intent_failure(error),
+        _ => None,
+    }
+}
+
+fn journal_failure(error: &JournalError) -> Option<SaveFailureKind> {
+    match error {
+        JournalError::Io(error) => io_failure(error),
+        JournalError::Allocation | JournalError::Limit(_) => Some(SaveFailureKind::Resource),
+        _ => None,
+    }
+}
+
+fn io_failure(error: &IoError) -> Option<SaveFailureKind> {
+    match error {
+        IoError::Cancelled => Some(SaveFailureKind::Cancelled),
+        IoError::Limit(_) => Some(SaveFailureKind::Resource),
+        _ => None,
+    }
+}
+
+fn inspection_failure(error: &InspectError) -> Option<SaveFailureKind> {
+    match error {
+        InspectError::Cancelled => Some(SaveFailureKind::Cancelled),
+        InspectError::Limit(_) | InspectError::Allocation | InspectError::StructureLimit => {
+            Some(SaveFailureKind::Resource)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests;

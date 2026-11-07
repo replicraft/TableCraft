@@ -10,7 +10,7 @@ mod deleting;
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux")
 ))]
-mod editing;
+pub(crate) mod editing;
 mod filtering;
 mod find;
 mod formatting;

@@ -1,9 +1,13 @@
 //! The actual offline owner lives on this worker until released or diagnosed.
 mod apply;
 mod apply_delete;
+#[cfg(feature = "ace16-create")]
+mod apply_first_table;
 mod apply_insert;
 mod outcomes;
 
+#[cfg(feature = "ace16-create")]
+use self::apply_first_table::apply_first_table;
 use self::{
     apply::apply,
     apply_delete::apply_delete,
@@ -13,6 +17,8 @@ use self::{
 use super::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
 };
+#[cfg(feature = "ace16-create")]
+use crate::editing::ReviewedFirstTable;
 use crate::{
     controls::budget,
     editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert},
@@ -27,6 +33,8 @@ use std::{
 use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
+    #[cfg(feature = "ace16-create")]
+    ApplyFirstTable(ReviewedFirstTable, PathBuf),
     Apply(ReviewedEdit, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
@@ -68,6 +76,11 @@ pub struct SaveWorker {
 }
 
 impl SaveWorker {
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_first_table() -> bool {
+        true
+    }
+
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
         let shared = Arc::new(Shared {
             mailbox: Mutex::new(Mailbox {
@@ -100,6 +113,8 @@ impl SaveWorker {
                 drop(mailbox);
                 let cancelled = || owner.cancelled.load(Ordering::Acquire);
                 let operation = match &task {
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyFirstTable(..) => SaveOperation::Apply,
                     Task::Apply(..) | Task::ApplyInsert(..) | Task::ApplyDelete(..) => {
                         SaveOperation::Apply
                     }
@@ -116,6 +131,10 @@ impl SaveWorker {
                 let _entered = span.enter();
                 let mut work = budget();
                 let outcome = match task {
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyFirstTable(reviewed, bundle) => {
+                        apply_first_table(reviewed, bundle, &mut retained, &cancelled)
+                    }
                     Task::Apply(reviewed, bundle) => {
                         apply(reviewed, bundle, &mut retained, &cancelled)
                     }
@@ -187,6 +206,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedDelete>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyDelete)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub fn start_first_table(
+        &self,
+        reviewed: ReviewedFirstTable,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedFirstTable>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyFirstTable)
     }
 
     fn start_reviewed<T>(

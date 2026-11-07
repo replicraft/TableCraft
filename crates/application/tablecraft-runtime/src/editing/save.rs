@@ -75,12 +75,19 @@ pub enum SaveCompletion {
     Confirmed,
 }
 
+/// Acknowledged schema facts are separate from affected-record counts.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SaveSchemaChange {
+    FirstTableCreated { column_count: usize },
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct SaveReceipt {
     pub completion: SaveCompletion,
     pub known: SaveKnownOutcome,
     pub matched_rows: Option<usize>,
     pub changed_rows: Option<usize>,
+    pub schema_change: Option<SaveSchemaChange>,
 }
 
 /// These are observed resource facts, not an inferred rollback or a retry grant.
@@ -112,6 +119,25 @@ pub struct SaveReport {
     pub id: u64,
     pub operation: SaveOperation,
     pub outcome: SaveOutcome,
+}
+
+impl SaveReport {
+    /// The original apply stopped before journal setup and target writes.
+    /// This says nothing about unrelated writers or a later recovery operation.
+    pub fn stopped_before_target_writes(self) -> bool {
+        if self.operation != SaveOperation::Apply {
+            return false;
+        }
+        let SaveOutcome::Failed(failure) = self.outcome else {
+            return false;
+        };
+        failure.state.is_none()
+            || (matches!(failure.phase, Some(SavePhase::Planning | SavePhase::Intent))
+                && matches!(
+                    failure.state,
+                    Some(SaveSessionState::Ready | SaveSessionState::RefreshRequired)
+                ))
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -157,6 +183,11 @@ pub struct SaveWorker;
 
 #[cfg(not(any(target_os = "macos", target_os = "linux")))]
 impl SaveWorker {
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_first_table() -> bool {
+        false
+    }
+
     pub fn new(_repaint: impl Fn() + Send + Sync + 'static) -> Self {
         Self
     }
@@ -181,6 +212,17 @@ impl SaveWorker {
         reviewed: ReviewedDelete,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedDelete>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+    #[cfg(feature = "ace16-create")]
+    pub fn start_first_table(
+        &self,
+        reviewed: super::ReviewedFirstTable,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<super::ReviewedFirstTable>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

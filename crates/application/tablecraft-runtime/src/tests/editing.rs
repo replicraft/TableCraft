@@ -43,7 +43,7 @@ fn review(worker: &crate::Worker, revision: u64, text: &str) -> ReviewedEdit {
     capability
 }
 
-pub(super) fn terminal(worker: &SaveWorker) -> crate::SaveReport {
+pub(crate) fn terminal(worker: &SaveWorker) -> crate::SaveReport {
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {
         if let Some(report) = worker.poll() {

@@ -51,9 +51,59 @@ ownership, publication and guarded reopen behavior. The corresponding shared UI
 and desktop checks remain headless. Independent Jackcess reading qualifies only
 the observed generated structure; native Access open/save remains unqualified.
 The desktop starts a shared source-free `Table1` draft only after this successful
-guarded open. That draft has no runtime native table/row authority; schema
-persistence and record entry remain separate unimplemented operations. See
-[database creation](../ui/DATABASE_CREATION.md).
+guarded open. That draft has no runtime native table/row authority; its schema
+requires the separate reviewed persistence operation below. Record entry remains
+unimplemented. See [database creation](../ui/DATABASE_CREATION.md).
+
+## Reviewed first-table schema save
+
+With both `offline-edit` and `ace16-create`, the macOS/Linux host can submit
+`Command::ReviewFirstTable` with a document revision and immutable
+`TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
+Short Text (255 UTF-16 units)/Long Integer declarations into the native definition.
+It captures the standard original image and qualifies the complete canonical
+blank-to-first-table plan. This admits neither arbitrary imported-file DDL nor
+record creation, field alteration or silent type inference.
+
+The consuming `ReviewedFirstTable` retains the original content, exact owned
+native definition and the document's invalidation token. It also exposes an
+immutable `FirstTableReopen` witness containing the proposed complete AFTER bytes,
+table identity and original document/draft revisions. Those bytes are read-only
+reopening evidence; the save path never accepts them as a replacement payload.
+The witness is issued during review and is not an acknowledged save receipt.
+
+`SaveWorker::start_first_table` uses the same nonreplaceable retained-resource
+owner as row saves. It checks the invalidation token, opens one exclusive target,
+requires all reviewed original bytes and reconstructs the native schema operation
+against that descriptor. The adapter's distinct TCNT original-schema intent and
+V2 journal perform checked same-file resizing, recovery, retirement and cleanup.
+Cancellation/invalidation participates in bounded native work; neither grants an
+implicit rollback, journal deletion or retry. Windows fresh-output publication
+and its receipt do not enable this macOS/Linux filesystem-journal path.
+
+Successful receipts carry `SaveSchemaChange::FirstTableCreated { column_count }`
+and `None` for both row counts. Recovery of a committed replacement retains the
+schema fact; an original-image rollback does not. Terminal phase, known outcome,
+resource state and available recovery/release actions remain independent of
+whether the display classification is cancellation, resource exhaustion or a
+native refusal. Typed classification preserves those facts through transparent
+native/intent/journal error layers.
+
+After an acknowledged matching schema receipt, the desktop explicitly submits
+`Command::OpenFirstTableSaved`. Normal bounded capture must equal the complete
+witness content before native qualification; mismatch refuses without an ordinary
+open fallback. This establishes fresh content, not inode identity or continued
+parent-namespace identity. The host checks the request's document/draft identities
+and replaces the draft only after successful reopening; a reopen failure does not
+erase the acknowledged save. Pending user transitions remain bound to their
+original request while save/recovery/reopen completes.
+
+The Access adapter's five focused first-table tests pass locally on macOS. The
+new runtime/UI/desktop integration and typed-classifier tests are implemented;
+final connected validation is pending. Existing row-save gates and historical
+creation results do not qualify this new flow. Native Access comparison, Windows
+same-file filesystem-journal behavior and power-loss qualification remain unrun.
+See [the adapter contract](../access/writes/FIRST_TABLE_PERSISTENCE.md).
 
 ## Session and task ownership
 
@@ -74,6 +124,8 @@ file-open/read call must return before a cooperative cancellation check can run.
 
 | Command | Owned response and scope |
 | --- | --- |
+| ReviewFirstTable | Source-bound consuming initial-schema review; no lease is held while presenting it |
+| OpenFirstTableSaved | Explicit expected-content capture after an acknowledged schema save; no mutation authority from the witness |
 | Open | Inert catalog, local-storage facts, format and captured absolute source path; a failed replacement clears the old session |
 | Page | One buffered table page with typed scalar/stored-field cells |
 | Describe | Field declarations, reader facts and inert field-property observations, without user-record scans |

@@ -220,6 +220,7 @@ fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_o
             known: SaveKnownOutcome::Committed,
             matched_rows: Some(3),
             changed_rows: Some(2),
+            schema_change: None,
         }),
         can_recover: false,
         can_release: false,
@@ -275,6 +276,7 @@ fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
                     known,
                     matched_rows: None,
                     changed_rows: None,
+                    schema_change: None,
                 }),
             },
         );
