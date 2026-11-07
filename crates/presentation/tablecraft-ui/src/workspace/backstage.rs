@@ -278,6 +278,19 @@ impl State {
             });
         });
         ui.add_space(12.0);
+        ui.label(tr(ui, "backstage-emoji-credit"));
+        ui.hyperlink_to(
+            tr(ui, "backstage-emoji-source"),
+            "https://github.com/google/fonts/tree/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notoemoji",
+        );
+        egui::CollapsingHeader::new(tr(ui, "backstage-emoji-license")).show(ui, |ui| {
+            ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
+                ui.label(include_str!(
+                    "../../../../../assets/ui/fonts/OFL-NotoEmoji.txt"
+                ));
+            });
+        });
+        ui.add_space(12.0);
         ui.label(tr(ui, "backstage-icons-credit"));
         ui.hyperlink_to(
             tr(ui, "backstage-icons-source"),

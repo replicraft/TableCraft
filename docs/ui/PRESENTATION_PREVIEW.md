@@ -1,5 +1,32 @@
 # Presentation preview
 
+## Emoji outline fallback — 7 November 2026
+
+The missing crab glyph found in the occurrence preview now renders through an
+unmodified Noto Emoji 3.002 outline fallback. It precedes egui's older emoji faces
+in both proportional and monospace families, while Selawik, the existing Latin
+defaults and locale CJK order remain intact. Root assets retain the exact OFL,
+immutable source revision, sizes and hashes; About exposes source/credit/license
+in all eight locales. This is monochrome glyph support, not color emoji or full
+native font/sequence parity.
+
+Seven font/inventory checks pass, including raw font nonzero glyph IDs, actual
+label/code-editor geometry, nonempty atlas ink and replacement-glyph controls.
+One About check covers all eight locales; four catalog checks, eleven occurrence
+checks and all 66 desktop tests pass. Strict UI/desktop all-target lint, formatting,
+normal desktop and preview builds also pass. The complete 85-scene × eight-locale
+× two-theme sweep passes all 1,360 combinations after the final font registration.
+The font and notice bytes were independently rechecked against their recorded
+SHA-256 values. No registry dependency or CLI notice change was needed.
+
+Final offscreen review opened English light/dark occurrence frames and light
+About at 1280×820, 1×, plus German dark Find at 900×580, 1.25×. The cell/input crab
+is readable in the default frames; the compact dialog still covers the selected
+cell, so its input/layout is the visible qualification there. Local macOS GPU
+rendering uses Windows keyboard conventions and opens no native windows. No
+retained Access capture establishes this emoji outline's appearance; it remains
+an adaptation. Earlier missing-glyph frames remain retained as dated evidence.
+
 ## Exact Find occurrence paint — 6 November 2026
 
 Current native Find receipts now supply a paint-only occurrence to the selected
@@ -41,6 +68,8 @@ checks, but readable emoji rendering remains unfinished. Compact frames review
 dialog/layout fit; the centered Find window covers the selected cell there, so
 they do not establish compact overlay visibility. These visual gaps are retained
 rather than treating the new preview scenes as full font/interaction qualification.
+The subsequent [emoji fallback gate](#emoji-outline-fallback--7-november-2026)
+resolves the crab missing-glyph case for the qualified monochrome profile.
 
 ## Scratch SQL result ownership — 6 November 2026
 

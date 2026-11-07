@@ -1,5 +1,16 @@
 # Implementation status
 
+## Emoji outline fallback — 7 November 2026
+
+The crab missing-glyph case is fixed with a reviewed Noto Emoji outline fallback,
+preserving Selawik, monospace defaults and regional CJK order. Source hashes/OFL
+remain with the root assets, and all eight About catalogs expose attribution.
+Real glyph/raster checks, all 66 desktop tests, strict lint and the complete
+1,360-combination preview sweep passed. Normal desktop and preview builds passed;
+final light/dark frames were reviewed offscreen. This adds monochrome coverage,
+with native font/sequence qualification still open. See the
+[scoped record](ui/PRESENTATION_PREVIEW.md#emoji-outline-fallback--7-november-2026).
+
 ## Bounded Find occurrence paint — 6 November 2026
 
 Datasheets now highlight exactly mapped visible Find occurrences while retaining
@@ -15,6 +26,7 @@ were reviewed offscreen; native checks remain suspended. See the
 [scoped evidence](ui/PRESENTATION_PREVIEW.md#exact-find-occurrence-paint--6-november-2026).
 That review exposed missing emoji fallback; readable emoji rendering is still
 unfinished despite correct stored text and match ownership.
+The subsequent monochrome fallback gate above resolves that specific glyph case.
 
 ## Scratch SQL result ownership — 6 November 2026
 

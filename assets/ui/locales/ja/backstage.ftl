@@ -42,3 +42,7 @@ backstage-blank-database = 空のデータベース
 backstage-open-other = 他のファイルを開く
 backstage-template-search = テンプレートの検索（利用不可）
 backstage-templates = テンプレート
+
+backstage-emoji-credit = Noto Emoji モノクロ · © 2013 Google LLC
+backstage-emoji-source = フォントの提供元: Noto Emoji 3.002
+backstage-emoji-license = Noto Emoji ライセンス

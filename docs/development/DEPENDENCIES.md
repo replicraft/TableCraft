@@ -1,5 +1,21 @@
 # Adopted dependency and licensing baseline
 
+## Emoji outline fallback — 7 November 2026
+
+The shared UI bundles the unmodified Noto Emoji 3.002 variable TrueType font from
+Google's official font repository, under SIL OFL 1.1 (Copyright 2013 Google LLC).
+Its original notice, immutable source URLs and byte hashes live with the root
+[font assets](../../assets/ui/fonts/README.md#noto-emoji-fallback). This font has
+`glyf`/`loca` outlines; the existing epaint rasterizer does not gain a new color
+or bitmap rendering backend.
+
+The face precedes egui's older emoji fallbacks in both families without replacing
+Selawik, monospace Latin defaults or regional CJK faces. Source/credit/license
+text is available in About. No registry dependency or package version changes
+are introduced. The CLI release excludes GUI fonts; its consolidated notices
+are unchanged. Eventual desktop artifacts must retain the embedded font notices
+and complete their separate distribution audit.
+
 ## Find occurrence shaping guard — 6 November 2026
 
 Shared UI directly consumes the already locked HarfRust 0.12.0 (MIT), with default

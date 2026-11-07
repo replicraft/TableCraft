@@ -23,3 +23,19 @@ prefer their respective CJK face; other locales prefer Simplified Chinese before
 the other CJK fallbacks. The SQL editor retains its monospace Latin face, with
 the same CJK fallback coverage. No system font discovery, glyph modification,
 conversion or database-locale inference is performed.
+
+## Noto Emoji fallback
+
+Unmodified Noto Emoji variable TrueType font, version 3.002, from Google's
+official [font repository](https://github.com/google/fonts/tree/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notoemoji).
+The original `NotoEmoji[wght].ttf` bytes are stored locally as
+`NotoEmoji-Variable.ttf`; the font metadata and glyphs are unchanged. Copyright
+2013 Google LLC, distributed under the [SIL OFL 1.1](OFL-NotoEmoji.txt).
+The [provenance record](noto-emoji-provenance.json) pins the source revision,
+exact asset URLs, sizes and SHA-256 hashes for the font and notice.
+
+This is a monochrome outline fallback compatible with the shared renderer;
+it does not provide color emoji. It precedes egui's older emoji faces in both
+proportional and monospace families, while retaining Selawik and existing Latin
+defaults and the locale-specific CJK order. About exposes the source, credit and
+complete license. No system font installation or font conversion is performed.

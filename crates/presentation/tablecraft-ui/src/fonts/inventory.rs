@@ -5,8 +5,9 @@ use thiserror::Error;
 const MAX_FAMILIES: usize = 16_384;
 const MAX_NAME_BYTES: usize = 4096;
 const MAX_TOTAL_BYTES: usize = 4 * 1024 * 1024;
-const BUNDLED_FAMILIES: [&str; 4] = [
+const BUNDLED_FAMILIES: [&str; 5] = [
     super::SELAWIK,
+    super::NOTO_EMOJI,
     super::NOTO_JAPANESE,
     super::NOTO_KOREAN,
     super::NOTO_SIMPLIFIED_CHINESE,

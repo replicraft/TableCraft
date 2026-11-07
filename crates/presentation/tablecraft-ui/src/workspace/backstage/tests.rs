@@ -714,3 +714,32 @@ fn localized_options_dropdowns_expose_their_setting_labels_without_changing_valu
         );
     }
 }
+
+#[test]
+fn about_exposes_the_exact_bundled_emoji_license_in_every_locale_without_actions() {
+    for locale in Locale::ALL {
+        let context = egui::Context::default();
+        crate::configure(&context);
+        let mut state = State {
+            backstage: Backstage::About,
+            localizer: Localizer::new(locale).unwrap(),
+            ..State::default()
+        };
+        let source = state.localizer.text("backstage-emoji-source");
+        let license = state.localizer.text("backstage-emoji-license");
+        let size = egui::vec2(1280.0, 820.0);
+        let (actions, _) = render(&mut state, size, Vec::new(), &context);
+        assert!(actions.is_empty());
+        let (actions, text) = render(&mut state, size, Vec::new(), &context);
+        assert!(actions.is_empty());
+        assert!(text.iter().any(|(text, _)| text == &source));
+        assert!(click(&mut state, &license, &context).is_empty());
+        let (actions, text) = render(&mut state, size, Vec::new(), &context);
+        assert!(actions.is_empty());
+        assert!(
+            text.iter()
+                .any(|(text, _)| text.contains("Copyright 2013 Google LLC")
+                    && text.contains("SIL OPEN FONT LICENSE"))
+        );
+    }
+}

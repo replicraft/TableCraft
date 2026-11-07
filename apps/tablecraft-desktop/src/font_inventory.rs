@@ -29,7 +29,13 @@ mod tests {
         let first = families();
         let second = families();
         assert_eq!(first.families().as_ptr(), second.families().as_ptr());
-        for family in ["Selawik", "Noto Sans JP", "Noto Sans KR", "Noto Sans SC"] {
+        for family in [
+            "Selawik",
+            "Noto Emoji",
+            "Noto Sans JP",
+            "Noto Sans KR",
+            "Noto Sans SC",
+        ] {
             assert!(first.families().iter().any(|name| name == family));
         }
 

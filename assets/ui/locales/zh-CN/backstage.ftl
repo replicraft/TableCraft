@@ -42,3 +42,7 @@ backstage-blank-database = 空白数据库
 backstage-open-other = 打开其他文件
 backstage-template-search = 搜索模板（不可用）
 backstage-templates = 模板
+
+backstage-emoji-credit = Noto Emoji 单色 · © 2013 Google LLC
+backstage-emoji-source = 字体来源：Noto Emoji 3.002
+backstage-emoji-license = Noto Emoji 许可证

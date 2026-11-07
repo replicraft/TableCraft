@@ -42,3 +42,7 @@ backstage-blank-database = Banco de dados em branco
 backstage-open-other = Abrir Outros Arquivos
 backstage-template-search = Pesquisar modelos (indisponível)
 backstage-templates = Modelos
+
+backstage-emoji-credit = Noto Emoji monocromático · © 2013 Google LLC
+backstage-emoji-source = Fonte: Noto Emoji 3.002
+backstage-emoji-license = Licença do Noto Emoji

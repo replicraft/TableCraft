@@ -42,3 +42,7 @@ backstage-blank-database = Leere Datenbank
 backstage-open-other = Weitere Dateien öffnen
 backstage-template-search = Vorlagen suchen (nicht verfügbar)
 backstage-templates = Vorlagen
+
+backstage-emoji-credit = Noto Emoji einfarbig · © 2013 Google LLC
+backstage-emoji-source = Schriftquelle: Noto Emoji 3.002
+backstage-emoji-license = Noto Emoji-Lizenz

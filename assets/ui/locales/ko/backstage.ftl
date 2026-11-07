@@ -42,3 +42,7 @@ backstage-blank-database = 빈 데이터베이스
 backstage-open-other = 다른 파일 열기
 backstage-template-search = 서식 파일 검색 (사용 불가)
 backstage-templates = 서식 파일
+
+backstage-emoji-credit = Noto Emoji 단색 · © 2013 Google LLC
+backstage-emoji-source = 글꼴 출처: Noto Emoji 3.002
+backstage-emoji-license = Noto Emoji 라이선스
