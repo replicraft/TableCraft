@@ -1,5 +1,18 @@
 # Implementation status
 
+## First real-file desktop journey — 6 November 2026
+
+The normal macOS desktop opened a supplied ACCDB, automatically displayed its
+first table, ran an explicit SELECT, inspected the schema, returned to the page
+and closed/reopened the table. The file hash was unchanged. This qualifies only
+that single-row journey; native refresh uncertainty and the broader read-only
+browser gate remain open.
+
+The UI pass also fixes accidental opening from adjacent-row clicks and gives
+join controls source-qualified, translated accessible labels. Three navigation,
+23 Query Design and four catalog checks passed, plus strict UI/desktop lint.
+See the [scoped evidence](ui/PRESENTATION_PREVIEW.md#first-real-file-browser-journey--6-november-2026).
+
 ## Native graphical review resumed — 6 November 2026
 
 Native macOS review is enabled again. The fresh synthetic desktop was inspected

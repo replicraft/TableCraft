@@ -254,6 +254,14 @@ reader comparisons.
 
 ## Current acceptance boundaries
 
+The normal-host read-only journey now has a first native macOS observation for
+one supplied single-row ACCDB: File/Open, automatic first table, explicit SELECT,
+schema inspection, datasheet return and object close/reopen. This is a narrow
+passing journey, not the complete browser acceptance gate below. Larger MDB/ACCDB
+fixtures, paging/NULL/error/cancellation cases, filter/sort/totals and the observed
+native repaint/observation uncertainty remain separate qualification work. See
+the [native journey record](PRESENTATION_PREVIEW.md#first-real-file-browser-journey--6-november-2026).
+
 The current request prioritizes polished mocks of existing functionality. The
 broader Access-compatible GUI goal is not complete merely because this slice
 builds or its mock scenarios pass.

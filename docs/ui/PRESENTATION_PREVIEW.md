@@ -1,5 +1,46 @@
 # Presentation preview
 
+## First real-file browser journey — 6 November 2026
+
+A fresh normal desktop build, without `--mock`, opened a supplied private ACCDB
+through startup → Open Other Files → pasted path → Open database. The catalog
+and first local table were published automatically. The stored one-row page was
+visible, an explicit two-column SELECT returned the expected stored row, and the
+table could switch to read-only schema inspection and back. Closing the table
+retained the independent query/result tab; a deliberate Navigation Pane
+double-click reopened the table. No write command was invoked, and the source
+SHA-256 remained unchanged. The private fixture and native captures are not
+published or redistributed by this record.
+
+This was macOS at 2×, 1280×820 logical content plus native title bar. The reader
+reported the Ace2019 file profile; the title's Access 2016 compatibility-family
+label does not identify its producing application. Initial observations stayed
+at Working until a later pointer event, after which the completed view appeared.
+A separate public-runtime Worker Open/Page probe against the same fixture
+completed in milliseconds and delivered its callbacks. The delay remains a
+native repaint/frame-delivery or stale-observation question; it is not evidence
+of an engine hang or successful cancellation. No polling workaround was added.
+
+The broader browser gate is still incomplete: larger MDB/ACCDB fixtures, paging,
+NULL/error/resource/cancellation races, filter/sort/totals, full keyboard and
+assistive-tool traversal and other platforms require their own observations.
+This single-row journey does not establish native Access equivalence or writes.
+
+The parallel UI pass fixed an accidental-open defect: adjacent-row edge clicks
+could form a global double-click even with one click per object. The regression
+failed before the fix and all three focused navigation checks passed afterward.
+Same-object pointer pairing now has one shared workspace owner used directly by
+navigation and designer controls. Join labels now qualify both endpoints and
+provide localized accessible kind/removal names in all eight catalogs.
+
+All 23 focused Query Design checks and four catalog checks passed, alongside
+strict all-target UI/desktop Clippy, formatting, dependency boundaries and local
+documentation links. The full UI suite was not repeated. Four offscreen wide
+designer frames were reviewed: English light/dark at 1280×820, 1×, and compact
+German light/dark at 900×580, 1.25×. Compact source controls retain their existing
+scrollports. Explicit join controls remain a visual/workflow adaptation of the
+reopened published join-line reference.
+
 ## Native graphical review resumed — 6 November 2026
 
 The user resumed native app-window checks. A fresh macOS desktop build was opened
