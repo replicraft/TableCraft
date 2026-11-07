@@ -1,5 +1,16 @@
 # Implementation status
 
+## Native graphical review resumed — 6 November 2026
+
+Native macOS review is enabled again. The fresh synthetic desktop was inspected
+in light/dark themes, including the Home Ribbon, Query Design, Options and pasted
+Font search. Direct keyboard delivery and full accessibility traversal remain
+unverified; this is not a Windows/Access comparison.
+
+Source-field Shift+F10 now reaches the existing join workflow through shared
+popup handling. All 22 focused Query Design checks and strict UI/desktop lint
+passed. See the [review record](ui/PRESENTATION_PREVIEW.md#native-graphical-review-resumed--6-november-2026).
+
 ## Query Design keyboard flow — 5 November 2026
 
 F6 now reaches source lists and the query grid. Source arrows and output keys

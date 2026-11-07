@@ -21,6 +21,15 @@ the tool's user-state-change guard, so no further native interaction was forced.
 Windows/Linux behavior, monitor transitions and native Access comparison remain
 unqualified. Earlier dated suspension records below retain their historical scope.
 
+The source-field Join to menu now shares the existing guarded keyboard context
+menu implementation with Field editors. Keyboard submenu activation transfers
+focus to its first live item; the pointer workflow is unchanged. The focused
+Query Design gate passed all 22 cases, including explicit keyboard join creation,
+Escape owner return and existing Field-menu checks. Strict all-target UI/desktop
+Clippy, formatting, dependency boundaries and documentation links passed. These
+headless results do not establish the native keystrokes that the review tool
+could not verify. The full UI suite was not repeated for this local menu change.
+
 ## Query Design keyboard panes and menus — 5 November 2026
 
 The shared designer exposes separate source-list and grid focus panes. F6 and
