@@ -54,7 +54,7 @@ pub(super) fn finish_reads(harness: &mut Harness<'_, Desktop>) {
     assert!(harness.state().state.error.is_none());
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(super) fn finish_save(harness: &mut Harness<'_, Desktop>) -> tablecraft_runtime::SaveReport {
     let deadline = Instant::now() + Duration::from_secs(10);
     while harness.state().editing.save_report().is_none() {

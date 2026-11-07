@@ -1,5 +1,5 @@
 //! Replace uses actual Find matches and the existing consuming offline save flow.
-#![cfg(any(target_os = "macos", target_os = "linux"))]
+#![cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::workspace::Desktop;
 use crate::workspace::test_support::{finish_reads, finish_save, focus_cell, opened, request_find};
 use egui::accesskit::Role;
@@ -33,7 +33,7 @@ fn replacement(harness: &mut Harness<'_, Desktop>, text: &str) {
     );
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn replace_current_integer_requires_review_and_apply_before_the_real_file_changes() {
     let (_directory, path, original, mut harness) = opened(

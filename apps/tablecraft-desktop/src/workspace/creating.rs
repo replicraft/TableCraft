@@ -9,7 +9,7 @@ use tablecraft_runtime::{
 use tablecraft_ui::{CreationOutcome, CreationRequest};
 use zeroize::Zeroize;
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
 pub(super) struct Creating {

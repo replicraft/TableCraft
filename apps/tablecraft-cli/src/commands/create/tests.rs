@@ -2,14 +2,24 @@ use super::*;
 use crate::{Cli, commands::Command};
 use clap::Parser;
 use std::{fs, io, path::Path};
-use tablecraft_access::creation::CreationError;
+use tablecraft_access::creation::{CreationError, CreationReceipt};
 use tablecraft_ace::CreateDatabaseError;
-use tablecraft_io::publication::PublicationError;
+use tablecraft_io::publication::{PublicationError, PublicationGuarantee};
 use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 use tablecraft_testkit::fixtures::access::{
     canonical_catalog_names,
     canonical_creation::{self, Case},
 };
+
+fn assert_publication_guarantee(receipt: &CreationReceipt) {
+    let expected = if cfg!(windows) {
+        PublicationGuarantee::NtfsWriteThroughRename
+    } else {
+        PublicationGuarantee::CapturedParentBarrier
+    };
+    assert_eq!(receipt.guarantee(), expected);
+    assert_eq!(receipt.namespace_synced(), !cfg!(windows));
+}
 
 fn arguments(path: &Path, table: &str, columns: &[String], data: Option<&Path>) -> Arguments {
     let mut words = vec![
@@ -154,6 +164,7 @@ fn quoted_tsv_and_header_only_empty_input_are_explicitly_supported() {
     assert_eq!(fs::read(output).unwrap(), source.bytes);
 }
 
+#[cfg(unix)]
 #[test]
 fn existing_files_directories_and_symlinks_are_never_overwritten() {
     use std::os::unix::fs::symlink;
@@ -229,7 +240,7 @@ fn stdout_write_and_flush_failures_retain_acknowledged_publication() {
         assert!(!error.invalid_input());
         match error {
             Error::Output { receipt, cause } => {
-                assert!(receipt.namespace_synced());
+                assert_publication_guarantee(&receipt);
                 assert_eq!((receipt.row_count(), receipt.column_count()), (0, 2));
                 assert_eq!(cause.kind(), io::ErrorKind::BrokenPipe);
             }

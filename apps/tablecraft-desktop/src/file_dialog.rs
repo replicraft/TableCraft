@@ -197,4 +197,21 @@ mod tests {
         assert_ne!(PathBuf::from(selection.display()), path);
         assert_eq!(selection.path_for("edited.accdb"), None);
     }
+
+    #[cfg(windows)]
+    #[test]
+    fn selected_unpaired_utf16_path_retains_native_units_instead_of_display_text() {
+        use std::{ffi::OsString, os::windows::ffi::OsStringExt};
+        let mut units: Vec<u16> = "native-".encode_utf16().collect();
+        units.push(0xd800);
+        units.extend(".accdb".encode_utf16());
+        let path = PathBuf::from(OsString::from_wide(&units));
+        let selection = SelectedFile::new(path.clone());
+        assert_eq!(
+            selection.path_for(selection.display()),
+            Some(path.as_path())
+        );
+        assert_ne!(PathBuf::from(selection.display()), path);
+        assert_eq!(selection.path_for("edited.accdb"), None);
+    }
 }

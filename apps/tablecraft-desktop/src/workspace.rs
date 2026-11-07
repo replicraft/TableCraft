@@ -185,7 +185,7 @@ impl Desktop {
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
-        app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux"));
+        app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux", windows));
         app.state.formatting.system_locale = sys_locale::get_locale();
         if let Some(path) = path {
             app.select_file(path);

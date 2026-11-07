@@ -28,7 +28,7 @@ pub(super) struct Editing {
     refresh_cleanup: Option<SaveCleanupNotice>,
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 impl Editing {
     pub(super) fn save_report(&self) -> Option<SaveReport> {
         self.save.as_ref().and_then(|save| save.report)

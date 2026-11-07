@@ -1,4 +1,4 @@
-use super::FailedOutput;
+use super::{FailedOutput, assert_publication_guarantee};
 use crate::{
     Cli,
     commands::{
@@ -326,7 +326,7 @@ fn typed_empty_creation_keeps_publication_facts_through_stdout_failures() {
         assert!(!error.invalid_input());
         match error {
             Error::Output { receipt, cause } => {
-                assert!(receipt.namespace_synced());
+                assert_publication_guarantee(&receipt);
                 assert_eq!((receipt.row_count(), receipt.column_count()), (0, 5));
                 assert_eq!(cause.kind(), std::io::ErrorKind::BrokenPipe);
             }

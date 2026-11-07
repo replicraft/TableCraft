@@ -7,7 +7,7 @@ mod primary;
 mod report;
 mod schema;
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
 pub(crate) use args::Arguments;
