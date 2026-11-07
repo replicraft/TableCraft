@@ -3,6 +3,7 @@ use std::{fmt::Write as _, io::Write};
 use tablecraft_access::creation::{CreationReceipt, PreparedCreation};
 use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_io::publication::PublicationGuarantee;
 
 const REPORT_BYTES: usize = 256;
 
@@ -23,7 +24,6 @@ impl Report {
         writeln!(report, "Columns\t{}", creation.column_count())
             .map_err(|_| InspectError::Allocation)?;
         writeln!(report, "Rows\t{}", creation.row_count()).map_err(|_| InspectError::Allocation)?;
-        report.push_str("Durable output\tFile and captured-directory barriers completed\n");
         Ok(Self(report))
     }
 
@@ -32,8 +32,18 @@ impl Report {
         receipt: CreationReceipt,
         writer: &mut dyn Write,
     ) -> Result<(), Error> {
+        let durability = match receipt.guarantee() {
+            PublicationGuarantee::CapturedParentBarrier => {
+                "Durable output\tFile and captured-directory barriers completed\n"
+            }
+            PublicationGuarantee::NtfsWriteThroughRename => {
+                "Durable output\tNTFS write-through rename and retained-file flush completed\n"
+            }
+        };
+
         writer
             .write_all(self.0.as_bytes())
+            .and_then(|()| writer.write_all(durability.as_bytes()))
             .and_then(|()| writer.flush())
             .map_err(|cause| Error::Output { receipt, cause })
     }

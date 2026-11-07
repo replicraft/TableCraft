@@ -62,3 +62,5 @@ mod typed;
 mod variable;
 
 mod multiple;
+
+mod blank;

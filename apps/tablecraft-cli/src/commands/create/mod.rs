@@ -14,7 +14,7 @@ pub(crate) use args::Arguments;
 pub(crate) use error::Error;
 
 use std::io::Write;
-use tablecraft_access::creation::CreationDestination;
+use tablecraft_access::creation::{CreationDestination, PreparedCreation};
 use tablecraft_ace::{CreateColumn, InspectError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
@@ -35,6 +35,16 @@ pub(crate) fn execute(
     }
     let mut budget = arguments.budget();
     let cancelled = || false;
+    if arguments.blank {
+        let prepared = CreationDestination::capture(&arguments.path, &mut budget, &cancelled)
+            .map_err(Error::Creation)?
+            .prepare_blank(&mut budget, &cancelled)
+            .map_err(Error::Creation)?;
+        return finish(prepared, &mut budget, &cancelled, writer);
+    }
+    let table = arguments.table.as_deref().ok_or(Error::Input(
+        "--table is required unless --blank is selected",
+    ))?;
     let typed = if arguments.fields.is_empty() {
         None
     } else {
@@ -90,13 +100,7 @@ pub(crate) fn execute(
         input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
         borrowed_rows.extend(rows.iter().map(Vec::as_slice));
         destination
-            .prepare_typed(
-                &arguments.table,
-                &columns,
-                &borrowed_rows,
-                &mut budget,
-                &cancelled,
-            )
+            .prepare_typed(table, &columns, &borrowed_rows, &mut budget, &cancelled)
             .map_err(Error::Creation)?
     } else {
         let rows = if let Some(path) = &arguments.data {
@@ -113,13 +117,7 @@ pub(crate) fn execute(
             input::reserve(&mut borrowed_rows, values.len(), &mut budget)?;
             borrowed_rows.extend(values.iter().map(Vec::as_slice));
             destination
-                .prepare_typed(
-                    &arguments.table,
-                    &columns,
-                    &borrowed_rows,
-                    &mut budget,
-                    &cancelled,
-                )
+                .prepare_typed(table, &columns, &borrowed_rows, &mut budget, &cancelled)
                 .map_err(Error::Creation)?
         } else {
             let mut columns = Vec::new();
@@ -129,19 +127,22 @@ pub(crate) fn execute(
             input::reserve(&mut borrowed_rows, rows.len(), &mut budget)?;
             borrowed_rows.extend(rows.iter().map(Vec::as_slice));
             destination
-                .prepare(
-                    &arguments.table,
-                    &columns,
-                    &borrowed_rows,
-                    &mut budget,
-                    &cancelled,
-                )
+                .prepare(table, &columns, &borrowed_rows, &mut budget, &cancelled)
                 .map_err(Error::Creation)?
         }
     };
-    let report = report::Report::prepare(&prepared, &mut budget)?;
+    finish(prepared, &mut budget, &cancelled, writer)
+}
+
+fn finish(
+    prepared: PreparedCreation,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    writer: &mut dyn Write,
+) -> Result<(), Error> {
+    let report = report::Report::prepare(&prepared, budget)?;
     let receipt = prepared
-        .publish(&mut budget, &cancelled)
+        .publish(budget, cancelled)
         .map_err(Error::Creation)?;
     report.publish(receipt, writer)
 }

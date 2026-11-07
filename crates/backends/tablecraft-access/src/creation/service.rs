@@ -2,10 +2,12 @@ use super::CreationError;
 use std::{fmt, path::Path};
 use tablecraft_ace::{
     CreateColumn, CreateTable, CreatedDatabase, create_ace16_database,
-    create_ace16_database_tables, create_ace16_int32_database,
+    create_ace16_database_tables, create_ace16_int32_database, create_blank_ace16_database,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_io::publication::{ParentIdentity, PublicationReceipt, RequiredOutput};
+use tablecraft_io::publication::{
+    ParentIdentity, PublicationGuarantee, PublicationReceipt, RequiredOutput,
+};
 
 /// Captured destination for one no-clobber, namespace-durable creation.
 /// Capture creates no entry. Unsupported backends refuse without downgrading.
@@ -20,7 +22,7 @@ pub struct PreparedCreation {
     database: CreatedDatabase,
 }
 
-/// Acknowledged fresh publication and captured-directory barrier.
+/// Acknowledged fresh publication under its explicit platform guarantee.
 /// This is not a normal ACE edit, journal plan or native Access save receipt.
 pub struct CreationReceipt {
     publication: PublicationReceipt,
@@ -40,6 +42,22 @@ impl CreationDestination {
         let _span = tracing::debug_span!("access.creation.capture_destination").entered();
         Ok(Self {
             output: RequiredOutput::capture(path, budget, cancelled)?,
+        })
+    }
+
+    /// Prepare a fresh system-only ACE 16 database without a user table or
+    /// imported template. Publication retains the same required no-clobber,
+    /// captured-directory protocol and typed terminal publication facts.
+    pub fn prepare_blank(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedCreation, CreationError> {
+        let _span = tracing::debug_span!("access.creation.prepare_blank").entered();
+        let database = create_blank_ace16_database(budget, cancelled)?;
+        Ok(PreparedCreation {
+            output: self.output,
+            database,
         })
     }
 
@@ -158,7 +176,12 @@ impl CreationReceipt {
         self.tables
     }
 
-    /// The captured directory acknowledged its terminal namespace barrier.
+    /// The durability operation acknowledged by the publisher.
+    pub const fn guarantee(&self) -> PublicationGuarantee {
+        self.publication.guarantee()
+    }
+
+    /// Whether the captured directory acknowledged a separate namespace barrier.
     pub const fn namespace_synced(&self) -> bool {
         self.publication.namespace_synced()
     }
@@ -175,6 +198,7 @@ impl fmt::Debug for CreationReceipt {
             .debug_struct("CreationReceipt")
             .field("rows", &self.rows)
             .field("columns", &self.columns)
+            .field("guarantee", &self.guarantee())
             .field("namespace_synced", &self.namespace_synced())
             .finish_non_exhaustive()
     }

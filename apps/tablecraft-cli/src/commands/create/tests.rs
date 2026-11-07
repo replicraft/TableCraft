@@ -310,3 +310,5 @@ mod typed;
 
 #[path = "tests/primary.rs"]
 mod primary;
+
+mod blank;

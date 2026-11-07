@@ -289,3 +289,23 @@ Supplied NULL/false/Text stay supplied; invalid rows and oversized escaped
 metadata publish nothing. [Exact Date defaults](DATE_CREATION_DEFAULTS.md) now
 have separate creator and omitted-INSERT qualification. Clocks and generated
 expressions remain outside the constructive declaration API.
+
+## Explicit system-only blank creation
+
+`tablecraft-ace::create_blank_ace16_database` directly constructs a fresh,
+unencrypted ACE 16 image with no user tables, fields or records. It writes the
+same seventeen-field system catalog and required definitions through the shared
+serializer. The seven-page layout retains all twenty-two allocation-map records,
+including distinct Memo/OLE pairs and vacant user-map slots; it does not retain a
+hidden example table or copy/truncate a source database.
+
+`CreationDestination::prepare_blank` adapts this artifact to the existing required
+fresh-publication protocol. Its prepared and terminal counts are zero; publication
+still refuses replacement and retains exact uncertainty/cleanup failures. The
+existing nonempty table-list creator continues to require one through sixteen
+tables. Blank creation does not add table/catalog mutation to an existing file.
+
+The serializer and publication remain independent of native Access execution.
+Native Access opening/saving of this explicit blank profile remains unqualified;
+The Windows publisher implements a separate local-NTFS write-through rename
+guarantee; actual Windows filesystem execution remains unverified. No creator artifact confers existing-file write or journal authority.

@@ -17,9 +17,24 @@ metadata, property/default/AutoNumber authoring and native Access save/reopen
 remain separate compatibility work. See the
 [creation/session contract](../access/writes/FRESH_DATABASE_CREATION.md#current-catalog-and-normal-session-consumption).
 
-`tablecraft create` constructs a fresh unencrypted ACE 2016 database containing
-one table of explicitly declared scalar columns. Existing files, directories
-and symlinks are never overwritten.
+`tablecraft create` constructs a fresh unencrypted ACE 2016 database. Explicit
+`--blank` creates system metadata with no user tables, fields or records:
+
+```sh
+tablecraft create new.accdb --blank
+```
+
+This directly serializes the blank native image; no sample or template is copied.
+`--blank` conflicts with `--table`, `--column`, `--field`, `--data`, `--primary-key`
+and `--incrementing`. Otherwise `--table` and exactly one column/field schema mode
+remain required, producing one explicitly declared user table. Existing files,
+directories and symlinks are never overwritten. `--password` remains unsupported
+in both modes; creation produces an unencrypted file.
+
+Both modes use the same required-publication service. Unix acknowledges file
+and captured-directory barriers; Windows uses a local-NTFS write-through rename
+and retained-file flush. Unsupported locations refuse before staging. Actual
+Windows execution and native Access open/save qualification remain pending.
 
 Use `--column` for the original present-Int32 input, or the separate `--field`
 schema below for typed values. The modes are mutually exclusive; both use the
@@ -139,14 +154,14 @@ There is no omission/default marker or expression evaluation. The typed schema
 uses the existing exact write value spellings; it does not enable engineering
 editing or expand existing-file write admission.
 
-Creation rejects `--password`; it does not generate an encrypted file. Required
-captured-directory durability must be supported by the platform and filesystem.
+Creation rejects `--password`; it does not generate an encrypted file. The required
+publication guarantee must be supported by the platform and filesystem.
 Unsupported backends refuse before creating a file, with no durability downgrade.
 See [durable publication](DURABLE_OUTPUT.md).
 
 Input parsing and native construction complete before any file is staged. The
 completion report is allocated before publication and emitted only after the
-file and captured-directory barriers acknowledge. Errors distinguish no known
+platform durability operation acknowledges. The report names that operation. Errors distinguish no known
 publication, uncertain visibility and a published file with incomplete terminal
 work. A completion-output error retains the fact that the file was published.
 Do not automatically repeat creation or remove a final file to resolve those
