@@ -1,9 +1,6 @@
 //! Consume a clean pair without releasing or reopening its original target.
-use super::{OfflineJournalPair, PairError, PairState};
-use crate::{
-    ExclusiveFile, IoError,
-    journal::filesystem::{OfflineTarget, TargetLockState},
-};
+use super::{OfflineJournalPair, OfflineTarget, PairError, PairState, TargetLockState};
+use crate::{ExclusiveFile, IoError};
 use std::{error::Error, fmt};
 
 /// A refused transfer retaining the exact pair and its separately known outcome.
@@ -69,12 +66,39 @@ impl OfflineJournalPair {
         self.transfer_with(ExclusiveFile::try_release)
     }
 
-    #[allow(clippy::result_large_err)] // Same nonallocating ownership contract as the public entry.
-    fn transfer_with(
-        mut self,
+    /// Return the same held target after acknowledged intact retirement without
+    /// deleting the retired artifact. A partially cleaned or already clean pair
+    /// is refused; callers must retain the artifact for explicit later disposal.
+    /// Journal unlock failure retains both owners with uncertain release state.
+    #[allow(clippy::result_large_err)] // Retain the pair without terminal allocation.
+    pub fn into_target_after_retirement(self) -> Result<OfflineTarget, TargetTransferFailure> {
+        let _span = tracing::debug_span!("io.journal.transfer_retired_target").entered();
+        self.transfer_retired_with(ExclusiveFile::try_release)
+    }
+
+    #[allow(clippy::result_large_err)]
+    fn transfer_retired_with(
+        self,
         release_journal: impl FnOnce(&mut ExclusiveFile) -> Result<(), IoError>,
     ) -> Result<OfflineTarget, TargetTransferFailure> {
-        if self.state != PairState::RetiredClean
+        self.transfer_in_state(PairState::Retired, release_journal)
+    }
+
+    #[allow(clippy::result_large_err)] // Same nonallocating ownership contract as the public entry.
+    fn transfer_with(
+        self,
+        release_journal: impl FnOnce(&mut ExclusiveFile) -> Result<(), IoError>,
+    ) -> Result<OfflineTarget, TargetTransferFailure> {
+        self.transfer_in_state(PairState::RetiredClean, release_journal)
+    }
+
+    #[allow(clippy::result_large_err)]
+    fn transfer_in_state(
+        mut self,
+        required: PairState,
+        release_journal: impl FnOnce(&mut ExclusiveFile) -> Result<(), IoError>,
+    ) -> Result<OfflineTarget, TargetTransferFailure> {
+        if self.state != required
             || self.known.is_none()
             || self.target.lock_state() != TargetLockState::Held
         {

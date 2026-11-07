@@ -1,7 +1,7 @@
+use super::BindingError;
 use crate::{IoError, journal::storage::BLOCK_BYTES, namespace::ObjectIdentity, progress::check};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use thiserror::Error;
 
 pub(super) const RECORD_BYTES: usize = 184;
 const MAGIC: &[u8; 8] = b"TCJPAIR1";
@@ -18,30 +18,6 @@ pub(super) const DIGEST_BYTES: usize = 32;
 const CHECKSUM_OFFSET: usize = INTENT_DIGEST_OFFSET + DIGEST_BYTES;
 const FIXED_V1_PROTOCOL: u32 = 1;
 const UNIX_OBJECT_SCHEME: u32 = 1;
-
-#[derive(Debug, Error, PartialEq, Eq)]
-pub enum BindingError {
-    #[error(transparent)]
-    Io(#[from] IoError),
-    #[error("invalid pair binding record length")]
-    InvalidLength,
-    #[error("invalid pair binding record signature")]
-    InvalidMagic,
-    #[error("unsupported paired journal protocol")]
-    UnsupportedProtocol,
-    #[error("unsupported pair object identity scheme")]
-    UnsupportedIdentityScheme,
-    #[error("pair binding checksum mismatch")]
-    ChecksumMismatch,
-    #[error("pair storage roles alias the same object")]
-    AliasedRoles,
-    #[error("pair binding does not match actual retained objects")]
-    ObjectMismatch,
-    #[error("paired intent length mismatch")]
-    IntentLengthMismatch,
-    #[error("paired intent digest mismatch")]
-    IntentDigestMismatch,
-}
 
 #[derive(Clone, Copy)]
 pub(super) struct PairObjects {

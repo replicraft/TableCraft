@@ -27,9 +27,22 @@ pub use transaction::{PreparedImage, prepare, prepare_expected};
 #[cfg(test)]
 mod tests;
 
+#[cfg(feature = "filesystem-journal")]
+pub mod filesystem_contracts;
+
 /// Explicit retained Unix filesystem pairing; native permission stays with its consumer.
 #[cfg(all(unix, feature = "filesystem-journal"))]
 pub mod filesystem;
+
+#[cfg(all(windows, feature = "filesystem-journal"))]
+#[path = "filesystem_windows/mod.rs"]
+pub mod filesystem;
+
+#[cfg(all(feature = "filesystem-journal", any(windows, test)))]
+mod flat_binding;
+
+#[cfg(all(feature = "filesystem-journal", any(windows, test)))]
+mod flat_retirement;
 
 mod checked_image;
 pub use checked_image::{CheckedImage, inspect_image};

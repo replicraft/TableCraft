@@ -354,8 +354,6 @@ fn required_output_unsupported_platform_fails_before_effects() {
 #[path = "tests/windows_protocol.rs"]
 mod windows_protocol;
 
-use super::windows_names;
-
 #[path = "tests/windows_names.rs"]
 mod windows_name_tests;
 

@@ -1,4 +1,5 @@
 //! Retain one locked original file and its captured namespace without reopening.
+use super::TargetLockState;
 use crate::{
     ExclusiveFile, IoError,
     namespace::{HeldDirectory, Location, ObjectIdentity, RelativeName},
@@ -11,17 +12,6 @@ use std::{
     path::Path,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
-
-/// Acknowledged lock state of this retained target, not native write permission.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TargetLockState {
-    /// The retained descriptor acknowledged the exclusive lock acquisition.
-    Held,
-    /// Unlock returned an error; the descriptor survives, but exclusivity is unknown.
-    ReleaseUncertain,
-    /// Unlock acknowledged completion; no further read/storage access is offered.
-    Released,
-}
 
 /// An existing regular target held exclusively under one captured directory.
 /// Read and seek use the same descriptor that will enter the journal pair. No

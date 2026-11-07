@@ -22,18 +22,22 @@ fn memory(bytes: &[u8]) -> MemoryStorage {
 
 #[test]
 fn region_runs_actual_v1_commit_and_pending_recovery_without_touching_prefix() {
-    for committed in [false, true] {
+    for (deferred, committed) in [(false, false), (false, true), (true, false), (true, true)] {
         let mut backing = memory(PREFIX);
         let mut target = memory(b"original");
         {
-            let mut region = BoundedJournalRegion::new(
-                &mut backing,
-                PREFIX.len() as u64,
-                1024,
-                &mut budget(),
-                &|| false,
-            )
-            .unwrap();
+            let mut region = if deferred {
+                BoundedJournalRegion::deferred(&mut backing, PREFIX.len() as u64, 1024).unwrap()
+            } else {
+                BoundedJournalRegion::new(
+                    &mut backing,
+                    PREFIX.len() as u64,
+                    1024,
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap()
+            };
             let prepared = prepare(
                 &mut target,
                 &mut region,

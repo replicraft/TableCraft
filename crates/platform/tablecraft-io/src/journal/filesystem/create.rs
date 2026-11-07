@@ -1,7 +1,7 @@
 //! Establish fresh paired objects and barriers without touching target bytes.
 use super::{
-    BINDING_ENTRY, INTENT_ENTRY, JOURNAL_ENTRY, OfflineTarget, PairError,
-    binding::{self, BindingData, BindingError, DIGEST_BYTES, PairObjects},
+    BINDING_ENTRY, BindingError, INTENT_ENTRY, JOURNAL_ENTRY, OfflineTarget, PairError,
+    binding::{self, BindingData, DIGEST_BYTES, PairObjects},
     pair::{NONCE_BYTES, retirement_name},
     reopen::ExistingBundle,
 };

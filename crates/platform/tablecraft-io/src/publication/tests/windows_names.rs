@@ -1,4 +1,4 @@
-use super::windows_names::valid_component;
+use crate::windows_names::valid_component;
 
 #[test]
 fn windows_names_reject_streams_devices_separators_and_ambiguous_endings() {

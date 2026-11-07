@@ -1,6 +1,6 @@
 use super::{
-    BINDING_ENTRY, INTENT_ENTRY, JOURNAL_ENTRY, PairError, PairState, pair::retirement_name,
-    reopen::ExistingBundle,
+    BINDING_ENTRY, FinalizationError, FinalizationPhase, INTENT_ENTRY, JOURNAL_ENTRY, PairError,
+    PairState, pair::retirement_name, reopen::ExistingBundle,
 };
 use crate::{IoError, journal::RecoveryOutcome, progress::check};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -8,7 +8,6 @@ use rustix::fs::RenameFlags;
 use rustix::fs::{self, AtFlags};
 use std::{ffi::CStr, io::ErrorKind};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use thiserror::Error;
 
 // Fixed callbacks plus conservative byte work for formatting/copying the fixed
 // retired name twice and validating its CStr four times. Variable active-name
@@ -21,32 +20,6 @@ const NAME_VALIDATIONS: u64 = 4;
 const TERMINAL_STEPS: u64 = CONTROL_CALLBACK_STEPS
     + RETIRED_COMPONENT_BYTES * (NAME_CONSTRUCTIONS * FORMATTING_PASSES + NAME_VALIDATIONS);
 const ACTIVE_NAME_USES: u64 = 3;
-
-/// Namespace stage that failed after a separately known native outcome.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum FinalizationPhase {
-    /// The active bundle was not safely retired or its outcome is unknown.
-    Retirement,
-    /// Rename succeeded, but its parent barrier was not acknowledged.
-    RetirementBarrier,
-    /// Durable retirement succeeded; only retired garbage may remain.
-    GarbageCleanup,
-    /// Caller attempted an operation outside its retained phase/permit.
-    State,
-}
-
-/// Completion facts survive namespace errors; no variant authorizes replay.
-#[derive(Debug, Error)]
-#[error("journal finalization failed ({phase:?}); known outcome {outcome:?}: {cause}")]
-pub struct FinalizationError {
-    /// Failed lifecycle stage, without paths or native values.
-    pub phase: FinalizationPhase,
-    /// Acknowledged native result, independent of cleanup/barrier failure.
-    pub outcome: Option<RecoveryOutcome>,
-    /// Sanitized failure; retain the owned pair for explicit diagnosis.
-    #[source]
-    pub cause: PairError,
-}
 
 pub(super) struct TerminalPermit {
     retire: bool,

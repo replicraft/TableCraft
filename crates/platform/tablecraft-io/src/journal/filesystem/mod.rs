@@ -13,11 +13,13 @@ mod retirement;
 mod storage;
 mod target;
 
-pub use binding::BindingError;
-pub use pair::{OfflineJournalPair, PairError, PairSetupFailure, PairState, TargetTransferFailure};
-pub use retirement::{FinalizationError, FinalizationPhase};
+pub use super::filesystem_contracts::{
+    BindingError, CleanupDisposition, FinalizationError, FinalizationPhase, PairError, PairState,
+    RetiredCleanupPolicy, RetirementGuarantee, TargetLockState,
+};
+pub use pair::{OfflineJournalPair, PairSetupFailure, TargetTransferFailure};
 pub use storage::{PairedStorage, ResizablePairedTarget};
-pub use target::{OfflineTarget, TargetLockState};
+pub use target::OfflineTarget;
 
 use crate::IoError;
 use std::ffi::CStr;

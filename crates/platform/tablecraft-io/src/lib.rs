@@ -35,3 +35,6 @@ mod namespace;
 #[cfg(all(windows, feature = "fresh-publication"))]
 #[allow(unsafe_code)]
 mod windows_fs;
+
+#[cfg(all(feature = "fresh-publication", any(windows, test)))]
+mod windows_names;

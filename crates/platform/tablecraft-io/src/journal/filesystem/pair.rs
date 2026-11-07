@@ -4,17 +4,17 @@ pub use transfer::TargetTransferFailure;
 
 use super::storage::{PairedStorage, ResizablePairedTarget};
 use super::{
-    BindingError, OfflineTarget, TargetLockState,
+    BindingError, FinalizationError, FinalizationPhase, OfflineTarget, PairError, PairState,
+    RetiredCleanupPolicy, RetirementGuarantee, TargetLockState,
     reopen::{self, ExistingBundle, ReopenError},
 };
 use super::{
     create,
-    retirement::{self, FinalizationError, FinalizationPhase, TerminalPermit},
+    retirement::{self, TerminalPermit},
 };
 use crate::{ExclusiveFile, IoError, journal::RecoveryOutcome};
 use std::{error::Error, fmt, path::Path};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use thiserror::Error;
 
 const RETIRED_PREFIX: &[u8] = b".tablecraft-retired-";
 pub(super) const NONCE_BYTES: usize = 16;
@@ -23,61 +23,6 @@ const HEX_SHIFT: u8 = 4;
 const HEX_MASK: u8 = 0x0f;
 const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
 pub(super) const RETIRED_NAME_BYTES: usize = RETIRED_PREFIX.len() + NONCE_BYTES * HEX_PER_BYTE;
-
-/// Sanitized filesystem pairing errors, never a claim that an edit rolled back.
-#[derive(Debug, Error)]
-pub enum PairError {
-    /// Storage, cancellation, allocation or resource failure.
-    #[error(transparent)]
-    Io(#[from] IoError),
-    /// Persisted data framing or object association failed.
-    #[error(transparent)]
-    Binding(#[from] BindingError),
-    /// Selected actual resources differ from the binding or alias roles.
-    #[error("journal bundle object identity mismatch")]
-    IdentityMismatch,
-    /// Opaque intent bytes differ from their binding.
-    #[error("journal bundle intent mismatch")]
-    IntentMismatch,
-    /// The caller's explicit intent-read ceiling was exceeded before allocation.
-    #[error("journal bundle intent byte ceiling exceeded")]
-    IntentLimit,
-    /// A live operation requires an acknowledged exclusive lease/valid phase.
-    #[error("journal pair is not in the required lifecycle state")]
-    InvalidState,
-    /// An active name already equals its reserved retirement name.
-    #[error("journal bundle uses its reserved retirement name; diagnosis required")]
-    ReservedName,
-}
-
-/// A phase and known outcome are separate: release errors cannot erase completion.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum PairState {
-    /// An intact reserved retired bundle requires write-free native confirmation.
-    RetiredVerificationRequired,
-    /// New durable bundle is initialized; no native storage borrow occurred.
-    Ready,
-    /// An active entry check/known collision prevented retirement.
-    RetirementBlocked,
-    /// Rename callback outcome is unknown; diagnosis must not replay it.
-    RetirementUncertain,
-    /// Rename succeeded; only the held-parent barrier may be explicitly retried.
-    RetirementUnconfirmed,
-    /// Intact bundle retirement is durably acknowledged.
-    Retired,
-    /// Retirement is durable, but garbage cleanup may have partly taken effect.
-    RetiredGarbageUncertain,
-    /// Retired garbage cleanup acknowledged completion.
-    RetiredClean,
-    /// Normal access is excluded until explicit recovery/resolution.
-    RecoveryRequired,
-    /// Caller acknowledged native/generic completion; durable retirement is pending.
-    OutcomeRecorded,
-    /// An unlock may have taken effect; no storage access remains available.
-    ReleaseUncertain,
-    /// Handles acknowledged release; any retained bundle still needs lifecycle work.
-    Released,
-}
 
 /// Opening an existing bundle writes no namespace/target; failure retains its
 /// original target lease for explicit release/diagnosis, not path reopening.
@@ -467,6 +412,25 @@ impl OfflineJournalPair {
     /// Namespace phase survives an uncertain or successful lock release.
     pub fn namespace_state(&self) -> PairState {
         self.before_release.unwrap_or(self.state)
+    }
+
+    /// This Unix owner supports verified removal with a captured-parent barrier.
+    pub const fn cleanup_policy(&self) -> RetiredCleanupPolicy {
+        RetiredCleanupPolicy::RemoveWithBarrier
+    }
+
+    /// Report only an acknowledged retirement, including after resource release.
+    pub fn retirement_guarantee(&self) -> Option<RetirementGuarantee> {
+        if self.known.is_some()
+            && matches!(
+                self.namespace_state(),
+                PairState::Retired | PairState::RetiredGarbageUncertain | PairState::RetiredClean
+            )
+        {
+            Some(RetirementGuarantee::CapturedParentBarrier)
+        } else {
+            None
+        }
     }
 
     /// Current host pairing phase, separate from actual native qualification.

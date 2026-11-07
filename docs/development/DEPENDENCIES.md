@@ -1530,7 +1530,7 @@ no custom entropy generator or new runtime is introduced. Existing tempfile
 The same optional feature now directly consumes the already locked
 `windows-sys` 0.61.2 on Windows (MIT OR Apache-2.0, Rust 1.71), with defaults
 disabled. Its target-local WDK Foundation/Storage FileSystem and Win32
-Foundation/Security/Storage FileSystem/System IO
+Foundation/Security/Storage FileSystem/System IO/System Threading
 features expose the working handle-relative local-NTFS publisher: exclusive
 `NtCreateFile` staging, file/device identity and filesystem qualification,
 no-replacement `FILE_RENAME_INFO`, owned temporary disposition and retained-handle
@@ -1561,6 +1561,37 @@ library check, corrected ten focused publication functions, full IO49-function
 suite and minimal build passed. Final IO/Access/CLI all-target/all-feature strict
 checks passed after a test-only function-pointer type alias correction. No Windows
 runtime or hardware power-loss qualification is claimed.
+
+## Windows same-file journal consumers (7 November 2026)
+
+The existing optional `tablecraft-io/filesystem-journal` feature now has a real
+Windows local-NTFS flat-sidecar owner. It reuses the same locked `windows-sys`
+0.61.2, `windows-link`, getrandom and SHA-256 dependencies; no registry version,
+new package or GUI/network dependency is added. The target-specific
+`Win32_System_Threading` feature is now enabled for current thread/process token
+handles. Existing `Win32_Security` APIs capture the effective user SID, construct
+an explicit protected one-user DACL before sidecar data is written, and verify
+the actual owner and DACL when retaining an existing sidecar. These calls live
+inside the same private `windows_fs` unsafe boundary, including its `security`
+child module. They do not add unsafe permission to the codec or journal owner.
+
+Actual consumers retain full volume/file identities, use the closed portable
+`TCJWIN01` binding codec and expose only a checked journal region after its
+immutable header/intent prefix. Namespace retirement and artifact disposition
+are separate typed facts: the Windows path uses acknowledged write-through
+rename and retains the private intact artifact; Unix removal retains its own
+captured-parent barriers. Explicit release closes the Windows sharing-restrictive
+handles rather than treating an unlock as handle closure.
+
+Current macOS IO checks pass 137 unit tests. Windows x64 and ARM64 IO/Access/runtime
+service and desktop cross-checks pass; they establish compilation, not Windows
+filesystem execution, crash behavior or native Access parity. The CLI's Windows
+cross-check is separately blocked in the existing bundled `libsqlite3-sys` C
+build because this host lacks Windows C SDK headers (`stdlib.h` was not found).
+That toolchain gap does not reopen paused SQLite work or qualify a Windows CLI
+executable. The current CLI native journal regression selection passes 21 tests
+on macOS; runtime and desktop pass 125 and 81 tests respectively. Full current
+aggregate lint results remain separately recorded by the owning validation run.
 
 ## Recorded native Int32 intent binding (30 October 2026)
 

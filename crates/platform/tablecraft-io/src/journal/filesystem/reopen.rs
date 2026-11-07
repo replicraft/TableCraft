@@ -1,7 +1,7 @@
 //! Reopen an explicitly selected existing bundle using retained relative handles.
 use super::{
-    BINDING_ENTRY, INTENT_ENTRY, JOURNAL_ENTRY,
-    binding::{self, BindingData, BindingError, PairObjects, RECORD_BYTES},
+    BINDING_ENTRY, BindingError, INTENT_ENTRY, JOURNAL_ENTRY,
+    binding::{self, BindingData, PairObjects, RECORD_BYTES},
     target::OfflineTarget,
 };
 use crate::{

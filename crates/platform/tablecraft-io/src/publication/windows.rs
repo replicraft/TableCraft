@@ -2,20 +2,17 @@
 //! No pathname-based replacement or cleanup is performed after capture.
 
 use super::protocol::{Backend, CreateFailure, PublishFailure};
-use super::{ParentIdentity, PublicationError, PublicationGuarantee, windows_names as names};
+use super::{ParentIdentity, PublicationError, PublicationGuarantee};
 use crate::{IoError, progress::check, windows_fs as filesystem, write_exact_at};
 use std::cell::Cell;
 use std::fs::File;
 use std::io::ErrorKind;
 use std::mem::size_of;
-use std::os::windows::ffi::OsStrExt;
-use std::path::{Component, Path, Prefix};
+use std::path::Path;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
 
 const MAX_COMPONENT_UNITS: usize = filesystem::MAX_COMPONENT_UNITS;
-const MAX_PATH_UNITS: usize = 32_767;
-const PATH_SCAN_PASSES: u64 = 12;
 const RANDOM_BYTES: usize = 16;
 const STAGE_PREFIX: &str = ".tablecraft-stage-";
 const HEX_DIGITS_PER_BYTE: usize = 2;
@@ -39,30 +36,6 @@ pub(super) struct Stage {
     renamed: Cell<bool>,
 }
 
-fn invalid() -> IoError {
-    IoError::Io(ErrorKind::InvalidInput)
-}
-
-fn bounded_wide(
-    value: &std::ffi::OsStr,
-    maximum: usize,
-    terminated: bool,
-) -> Result<Vec<u16>, IoError> {
-    let length = value.encode_wide().take(maximum + 1).count();
-    if length > maximum {
-        return Err(invalid());
-    }
-    let mut result = Vec::new();
-    result
-        .try_reserve_exact(length + usize::from(terminated))
-        .map_err(|_| IoError::Io(ErrorKind::OutOfMemory))?;
-    result.extend(value.encode_wide());
-    if terminated {
-        result.push(0);
-    }
-    Ok(result)
-}
-
 fn parent_identity(file: &File) -> Result<ParentIdentity, IoError> {
     let identity = filesystem::identity(file)?;
     Ok(ParentIdentity {
@@ -78,109 +51,14 @@ impl Windows {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, PublicationError> {
         let prepare = || -> Result<Self, IoError> {
-            check(budget, cancelled)?;
-            let input_length = output
-                .as_os_str()
-                .encode_wide()
-                .take(MAX_PATH_UNITS + 1)
-                .count();
-            budget.charge(Resource::Steps, input_length as u64)?;
-            if input_length > MAX_PATH_UNITS {
-                return Err(invalid());
-            }
-            if matches!(output.as_os_str().encode_wide().last(), Some(47 | 92)) {
-                return Err(invalid());
-            }
-            // Fully relative names resolve once. Drive-relative and root-relative
-            // spellings depend on hidden per-drive state and remain refused.
-            if !output.is_absolute()
-                && output
-                    .components()
-                    .any(|component| matches!(component, Component::Prefix(_) | Component::RootDir))
-            {
-                return Err(invalid());
-            }
-            // Validate the raw leaf before Win32 absolute-path normalization can
-            // alter trailing dots/spaces or interpret a DOS device spelling.
-            let mut raw_leaf = [0; MAX_COMPONENT_UNITS];
-            let mut raw_leaf_length = 0;
-            for unit in output.as_os_str().encode_wide() {
-                if unit == b'\\' as u16 || unit == b'/' as u16 {
-                    raw_leaf_length = 0;
-                    continue;
-                }
-                if raw_leaf_length == raw_leaf.len() {
-                    return Err(invalid());
-                }
-                raw_leaf[raw_leaf_length] = unit;
-                raw_leaf_length += 1;
-            }
-            if !names::valid_component(&raw_leaf[..raw_leaf_length]) {
-                return Err(invalid());
-            }
-            // Windows resolution can include the process current directory.
-            // Admit its platform maximum before invoking the allocating OS helper.
-            budget.charge(
-                Resource::Bytes,
-                ((MAX_PATH_UNITS + 1) * size_of::<u16>()) as u64,
-            )?;
-            budget.charge(Resource::Steps, MAX_PATH_UNITS as u64)?;
-            let resolved = std::path::absolute(output)?;
-            let output = resolved.as_path();
-            let length = output
-                .as_os_str()
-                .encode_wide()
-                .take(MAX_PATH_UNITS + 1)
-                .count();
-            budget.charge(Resource::Steps, length as u64 * PATH_SCAN_PASSES)?;
-            budget.charge(
-                Resource::Bytes,
-                (length * size_of::<u16>() * 2 + size_of::<u16>()) as u64,
-            )?;
-            if length > MAX_PATH_UNITS || !output.is_absolute() {
-                return Err(invalid());
-            }
-            match output.components().next() {
-                Some(Component::Prefix(prefix)) if matches!(prefix.kind(), Prefix::Disk(_)) => {}
-                _ => return Err(invalid()),
-            }
-            for component in output.components() {
-                match component {
-                    Component::Normal(name) => {
-                        let mut component = [0; MAX_COMPONENT_UNITS];
-                        let mut count = 0;
-                        for unit in name.encode_wide() {
-                            if count == component.len() {
-                                return Err(invalid());
-                            }
-                            component[count] = unit;
-                            count += 1;
-                        }
-                        if !names::valid_component(&component[..count]) {
-                            return Err(invalid());
-                        }
-                    }
-                    Component::Prefix(_) | Component::RootDir => {}
-                    _ => return Err(invalid()),
-                }
-            }
-            let final_name = bounded_wide(
-                output.file_name().ok_or_else(invalid)?,
-                MAX_COMPONENT_UNITS,
-                false,
-            )?;
-            if !names::valid_component(&final_name) {
-                return Err(invalid());
-            }
-            let parent_path = output.parent().ok_or_else(invalid)?;
-            let path = bounded_wide(parent_path.as_os_str(), MAX_PATH_UNITS, true)?;
-            let parent = filesystem::open_parent(&path)?;
-            filesystem::qualify_local_ntfs(&parent)?;
-            let identity = parent_identity(&parent)?;
+            let location = filesystem::Location::capture(output, budget, cancelled)?;
             Ok(Self {
-                parent,
-                identity,
-                final_name,
+                parent: location.parent,
+                identity: ParentIdentity {
+                    volume: location.identity.volume,
+                    file_id: location.identity.file_id,
+                },
+                final_name: location.name,
             })
         };
         let mut prepare = prepare;

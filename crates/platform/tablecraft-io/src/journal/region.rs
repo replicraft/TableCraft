@@ -20,6 +20,27 @@ pub struct BoundedJournalRegion<'a, S: DurableStorage + ?Sized> {
 }
 
 impl<'a, S: DurableStorage + ?Sized> BoundedJournalRegion<'a, S> {
+    /// A paired owner already holds the prefix contract. Issuing this view does
+    /// no I/O: the image protocol must inspect actual length and seek explicitly
+    /// under its own budget before any transfer can proceed.
+    #[cfg(any(windows, test))]
+    pub(in crate::journal) fn deferred(
+        storage: &'a mut S,
+        prefix: u64,
+        maximum: u64,
+    ) -> Result<Self, IoError> {
+        prefix
+            .checked_add(maximum)
+            .ok_or(IoError::Io(ErrorKind::InvalidInput))?;
+        Ok(Self {
+            storage,
+            prefix,
+            maximum,
+            position: None,
+            length: None,
+        })
+    }
+
     /// Validate existing physical length and establish logical cursor zero.
     /// No prefix bytes are read or written. Each setup callback remains under
     /// caller work and cancellation controls; callbacks own their own timeouts.

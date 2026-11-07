@@ -1,7 +1,7 @@
 use super::{ReopenError, reopen, reopen_location};
 use crate::{
     IoError, SharedFile,
-    journal::filesystem::target::{OfflineTarget, TargetLockState},
+    journal::filesystem::{OfflineTarget, TargetLockState},
     namespace::Location,
 };
 use sha2::{Digest, Sha256};

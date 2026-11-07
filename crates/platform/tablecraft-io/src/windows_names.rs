@@ -14,7 +14,7 @@ fn uppercase(unit: u16) -> u16 {
 }
 
 /// Qualified ordinary Win32 component: valid UTF-16, no streams or device names.
-pub(super) fn valid_component(name: &[u16]) -> bool {
+pub(crate) fn valid_component(name: &[u16]) -> bool {
     if name.is_empty() || name.len() > MAX_COMPONENT_UNITS {
         return false;
     }
