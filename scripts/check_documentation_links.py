@@ -47,7 +47,7 @@ def main():
             "git", "-C", str(args.root), "ls-files", "-z", "--cached",
             "--others", "--exclude-standard", "--", "*.md",
         ],
-        text=True,
+        text=True, encoding="utf-8",
     ).split("\0")
     checked, missing = check_documents(args.root, {name for name in names if name})
     for source, line, target in missing:

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from compat_artifacts import ArtifactStore
 
@@ -46,6 +47,23 @@ class ArtifactStoreTests(unittest.TestCase):
                 with self.subTest(read=read.__name__):
                     with self.assertRaises(ValueError):
                         read('escape/outside.json')
+
+    def test_json_uses_utf8_instead_of_the_host_legacy_codepage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / 'facts.json'
+            target.write_bytes('{"text":"日本語 · café"}'.encode('utf-8'))
+            original_read = Path.read_text
+
+            def legacy_read(path, *args, **options):
+                options.setdefault('encoding', 'cp1252')
+                return original_read(path, *args, **options)
+
+            with patch.object(Path, 'read_text', legacy_read):
+                self.assertEqual(
+                    ArtifactStore(root).load('facts.json'),
+                    {'text': '日本語 · café'},
+                )
 
     def test_literal_hashes_changed_files_and_json_errors_are_observed_fresh(self):
         with tempfile.TemporaryDirectory() as directory:

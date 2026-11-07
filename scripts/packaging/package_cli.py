@@ -174,7 +174,7 @@ def verify_archive(archive, version, target, run_smoke=False):
                         extract(entry.name, source, entry.size, entry.mode)
         if seen != expected:
             raise ValueError("Archive is missing required binary/license/manifest resources")
-        metadata = json.loads((destination / MANIFEST).read_text())
+        metadata = json.loads((destination / MANIFEST).read_text(encoding="utf-8"))
         expected_hashes = {name: contract.digest(path) for name, path in legal.items()}
         for name, value in expected_hashes.items():
             if hashes[name] != value:

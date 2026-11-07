@@ -1,8 +1,14 @@
 """Regression cases for architectural violations and manifest bypasses."""
 from copy import deepcopy
 import itertools
+import json
+from pathlib import Path
+import subprocess
+import tempfile
 import unittest
+from unittest.mock import patch
 
+import check_dependency_boundaries as guard
 from check_dependency_boundaries import violations
 
 
@@ -35,6 +41,26 @@ class BoundaryTests(unittest.TestCase):
             package("tablecraft-query", "crates/query/query", ["tablecraft-db"]),
             package("tablecraft-cli", "apps/cli", ["tablecraft-access", "tablecraft-query"], False),
         )
+
+    def test_metadata_process_uses_utf8_for_unicode_checkout_paths(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "日本語"
+            metadata = workspace(package("tablecraft-core", "crates/foundation/core"))
+            metadata["workspace_root"] = str(root)
+            metadata["packages"][0]["manifest_path"] = str(
+                root / "crates/foundation/core/Cargo.toml"
+            )
+            encoded = json.dumps(metadata, ensure_ascii=False).encode("utf-8")
+
+            def metadata_process(command, **options):
+                self.assertEqual(options["encoding"], "utf-8")
+                return subprocess.CompletedProcess(
+                    command, 0, stdout=encoded.decode(options["encoding"]), stderr="",
+                )
+
+            with patch.object(guard.subprocess, "run", side_effect=metadata_process):
+                with patch.object(guard, "print", create=True):
+                    self.assertEqual(guard.main(), 0)
 
     def test_adapter_composition_and_generic_query_contracts_pass(self):
         self.assertEqual(violations(self.base), [])

@@ -63,7 +63,7 @@ def digest(path):
 
 
 def workspace_version():
-    return tomllib.loads((ROOT / "Cargo.toml").read_text())["workspace"]["package"]["version"]
+    return tomllib.loads((ROOT / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["version"]
 
 
 def validate_version(version, tag=None):

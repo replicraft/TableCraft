@@ -20,7 +20,7 @@ def main():
     args = parser.parse_args()
     if not __debug__ or args.output.exists() or args.output.is_symlink():
         raise ValueError('Enabled source assertions and fresh output required')
-    requests = json.loads((HERE / 'requests.json').read_text())
+    requests = json.loads((HERE / 'requests.json').read_text(encoding='utf-8'))
     pending = []
     for profile in requests['profiles']:
         header = profile['header']

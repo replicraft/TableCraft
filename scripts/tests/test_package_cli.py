@@ -83,6 +83,21 @@ class PackagingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             contract.architecture(io.BytesIO(macho), len(macho), "aarch64-apple-darwin")
 
+    def test_workspace_manifest_uses_utf8_independent_of_host_codepage(self):
+        manifest = self.root / "Cargo.toml"
+        manifest.write_bytes(
+            ('# 日本語 workspace\n[workspace.package]\nversion = "' + VERSION + '"\n')
+            .encode("utf-8")
+        )
+        original_read = Path.read_text
+
+        def legacy_read(path, *args, **options):
+            options.setdefault("encoding", "cp1252")
+            return original_read(path, *args, **options)
+
+        with patch.object(Path, "read_text", legacy_read):
+            self.assertEqual(contract.workspace_version(), VERSION)
+
     def test_workspace_tag_and_release_notes_are_mandatory(self):
         contract.validate_version(VERSION, "v" + VERSION)
         for version, tag in [("9.0.0", None), (VERSION, VERSION), ("../bad", None)]:

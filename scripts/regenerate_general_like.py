@@ -21,7 +21,7 @@ def main():
     completed = subprocess.run(["cargo", "test", "-p", "tablecraft-ace", "--lib",
                                "emit_general_like_dictionaries", "--offline", "--locked",
                                "--", "--ignored", "--nocapture", "--test-threads=1"],
-                              cwd=root, capture_output=True, text=True, check=True)
+                              cwd=root, capture_output=True, text=True, encoding="utf-8", check=True)
     rows = re.findall(r"GENERAL_LIKE_FST (Legacy|General2010) ([0-9a-f]+)", completed.stdout)
     if [family for family, _ in rows] != list(FAMILIES):
         raise ValueError("incomplete or duplicate generator output")

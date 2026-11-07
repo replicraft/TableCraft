@@ -104,7 +104,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     result = subprocess.run(
         ["cargo", "metadata", "--no-deps", "--format-version", "1", "--offline", "--locked"],
-        cwd=root, capture_output=True, text=True, check=False,
+        cwd=root, capture_output=True, text=True, encoding="utf-8", check=False,
     )
     if result.returncode:
         print(result.stderr, file=sys.stderr, end="")

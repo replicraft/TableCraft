@@ -26,11 +26,11 @@ def main():
             ["cargo", "test", "-p", "tablecraft-ace", "--lib",
              "emit_french_like_dictionary", "--offline", "--locked",
              "--", "--ignored", "--nocapture", "--test-threads=1"],
-            cwd=root, capture_output=True, text=True, check=True,
+            cwd=root, capture_output=True, text=True, encoding="utf-8", check=True,
         )
         output = completed.stdout
     else:
-        output = args.captured_output.read_text()
+        output = args.captured_output.read_text(encoding="utf-8")
     rows = re.findall(r"FRENCH_LIKE_FST ([0-9a-f]+)", output)
     if len(rows) != 1:
         raise ValueError("missing or duplicate French generator output")

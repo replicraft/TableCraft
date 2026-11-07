@@ -21,7 +21,7 @@ def generate(table, runtime, topics):
     rows = {
         int(match[1]): match[3]
         for match in re.finditer(
-            r"^\|(\d+)\|\[([^\]]+)\]\(([^)]+)\)\|", table.read_text(), re.M
+            r"^\|(\d+)\|\[([^\]]+)\]\(([^)]+)\)\|", table.read_text(encoding="utf-8"), re.M
         )
     }
     keys = {
@@ -36,7 +36,7 @@ def generate(table, runtime, topics):
         if not re.fullmatch(r"[a-z0-9-]+\.md", name):
             raise ValueError("invalid topic path")
         source = topics / name
-        raw = re.search(r"^title: (.+)$", source.read_text(), re.M)[1].strip()
+        raw = re.search(r"^title: (.+)$", source.read_text(encoding="utf-8"), re.M)[1].strip()
         if raw.startswith('"') and raw.endswith('"'):
             raw = json.loads(raw)
         elif raw.startswith("'") and raw.endswith("'"):
@@ -72,8 +72,10 @@ def main():
     args = parser.parse_args()
     text, manifest = generate(args.table, args.runtime, args.topics)
     args.output.mkdir(parents=True, exist_ok=True)
-    (args.output / "en-US.ftl").write_text(text)
-    (args.output / "provenance.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (args.output / "en-US.ftl").write_text(text, encoding="utf-8", newline="\n")
+    (args.output / "provenance.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n",
+    )
     print(f"Generated {len(manifest['topics'])} candidate diagnostic messages.")
 
 

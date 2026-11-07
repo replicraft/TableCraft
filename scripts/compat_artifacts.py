@@ -34,4 +34,4 @@ class ArtifactStore:
 
     def load(self, value):
         """Read and decode JSON with the existing standard-library semantics."""
-        return json.loads(self.path(value).read_text())
+        return json.loads(self.path(value).read_text(encoding="utf-8"))
