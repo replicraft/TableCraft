@@ -1,7 +1,7 @@
-use super::{FirstTableDefinition, FirstTableError};
-use crate::{CreateColumn, NativeImage};
-use std::io::Cursor;
-use tablecraft_core::limits::ResourceBudget;
+use super::{FirstTableDefinition, FirstTableError, FirstTablePlan};
+use crate::{CreateColumn, CreateDatabaseError, InspectError, NativeImage};
+use std::{cell::Cell, io::Cursor};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 use tablecraft_testkit::fixtures::access::{
@@ -110,4 +110,78 @@ fn original_definition_capture_requires_a_generated_primary_and_is_cancellable()
     assert!(FirstTableDefinition::capture("Items", &generated, &mut budget(), &|| false).is_err());
     let generated = [generated[0].with_primary_key("PrimaryKey").unwrap()];
     assert!(FirstTableDefinition::capture("Items", &generated, &mut budget(), &|| true).is_err());
+}
+
+#[test]
+fn definition_and_first_table_plan_pay_exact_pools_and_poll_cancellation() {
+    let before = canonical_blank_creation::source();
+    let expected = fixtures::source(fixtures::Case::Mixed);
+    let columns = columns(expected.columns);
+    let assert_images = |plan: &FirstTablePlan| {
+        assert_eq!(plan.before_bytes(), before);
+        assert_eq!(plan.after_bytes(), expected.bytes);
+    };
+
+    let invoke = |work: &mut ResourceBudget,
+                  cancelled: &dyn Fn() -> bool|
+     -> Result<FirstTablePlan, InspectError> {
+        // The immutable source is caller-owned input. Measure only the new
+        // owned request and public schema-planning boundary, not fixture setup.
+        let original = image(&before);
+        FirstTableDefinition::capture("Items", &columns, work, cancelled)
+            .map_err(FirstTableError::from)
+            .and_then(|definition| original.plan_first_table(definition, work, cancelled))
+            .map_err(|error| match error {
+                FirstTableError::Inspect(error)
+                | FirstTableError::Create(CreateDatabaseError::Inspect(error)) => error,
+                other => panic!("qualified source failed for a non-resource reason: {other}"),
+            })
+    };
+
+    // Unit-crate InspectError differs from the separately linked ACE type used
+    // by testkit API observers. Keep this narrow type-specific budget glue local.
+    let pools = [Resource::Bytes, Resource::Rows, Resource::Steps];
+    let mut measured = budget();
+    let initial = pools.map(|pool| measured.remaining(pool));
+    let polls = Cell::new(0_usize);
+    let plan = invoke(&mut measured, &|| {
+        polls.set(polls.get() + 1);
+        false
+    })
+    .unwrap();
+    assert_images(&plan);
+    drop(plan);
+    let used = [
+        initial[0] - measured.remaining(pools[0]),
+        initial[1] - measured.remaining(pools[1]),
+        initial[2] - measured.remaining(pools[2]),
+    ];
+    assert!(used.iter().all(|cost| *cost > 0));
+    let mut exact = ResourceBudget::new(used[0], used[1], used[2]);
+    assert_images(&invoke(&mut exact, &|| false).unwrap());
+    assert_eq!(pools.map(|pool| exact.remaining(pool)), [0, 0, 0]);
+    for index in 0..pools.len() {
+        let mut short = used;
+        short[index] -= 1;
+        let result = invoke(
+            &mut ResourceBudget::new(short[0], short[1], short[2]),
+            &|| false,
+        );
+        assert!(
+            matches!(result, Err(InspectError::Limit(error)) if error.resource == pools[index])
+        );
+    }
+    let terminal = polls.get();
+    assert!(terminal > 2);
+    for stop in [1, terminal.div_ceil(2), terminal] {
+        let seen = Cell::new(0_usize);
+        assert!(matches!(
+            invoke(&mut budget(), &|| {
+                seen.set(seen.get() + 1);
+                seen.get() >= stop
+            }),
+            Err(InspectError::Cancelled)
+        ));
+        assert_eq!(seen.get(), stop);
+    }
 }
