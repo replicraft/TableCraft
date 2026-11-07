@@ -45,3 +45,7 @@ qbe-show-hide-group = Show/Hide
 qbe-totals = Totals
 qbe-parameters = Parameters
 qbe-property-sheet = Property Sheet
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = Join type: { $left } ↔ { $right }
+qbe-remove-join-accessible = Remove join: { $left } ↔ { $right }

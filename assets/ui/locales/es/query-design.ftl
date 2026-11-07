@@ -45,3 +45,7 @@ qbe-show-hide-group = Mostrar u ocultar
 qbe-totals = Totales
 qbe-parameters = Parámetros
 qbe-property-sheet = Hoja de propiedades
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = Tipo de combinación: { $left } ↔ { $right }
+qbe-remove-join-accessible = Quitar combinación: { $left } ↔ { $right }

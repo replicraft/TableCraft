@@ -115,6 +115,10 @@ Correcting such text does not guess a source for an ambiguous unqualified name.
 This is a bounded editor, not general native Access field-editor parity.
 The current join workflow uses field context menus and explicit join-kind
 controls; native drag-and-drop and the Join Properties dialog are not qualified.
+Join controls show source-qualified field endpoints and expose distinct localized
+names for their kind and removal controls. Identical field names in different
+sources therefore remain distinguishable; these labels are presentation text,
+never SQL input. Missing source metadata remains visible rather than renamed.
 The Add Tables surface exposes the implemented native-table source profile;
 Queries/Both tabs remain visible but disabled. Field aliases use a context editor.
 These distinctions remain visual and interaction approximations, not verified

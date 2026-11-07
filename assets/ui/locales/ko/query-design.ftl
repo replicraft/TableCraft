@@ -45,3 +45,7 @@ qbe-show-hide-group = 표시/숨기기
 qbe-totals = 요약
 qbe-parameters = 매개 변수
 qbe-property-sheet = 속성 시트
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = 조인 종류: { $left } ↔ { $right }
+qbe-remove-join-accessible = 조인 제거: { $left } ↔ { $right }

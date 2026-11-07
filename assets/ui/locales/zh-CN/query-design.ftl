@@ -45,3 +45,7 @@ qbe-show-hide-group = 显示/隐藏
 qbe-totals = 汇总
 qbe-parameters = 参数
 qbe-property-sheet = 属性表
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = 联接类型：{ $left } ↔ { $right }
+qbe-remove-join-accessible = 删除联接：{ $left } ↔ { $right }

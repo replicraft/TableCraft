@@ -45,3 +45,7 @@ qbe-show-hide-group = Показать или скрыть
 qbe-totals = Итоги
 qbe-parameters = Параметры
 qbe-property-sheet = Лист свойств
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = Тип соединения: { $left } ↔ { $right }
+qbe-remove-join-accessible = Удалить соединение: { $left } ↔ { $right }

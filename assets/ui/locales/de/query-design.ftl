@@ -45,3 +45,7 @@ qbe-show-hide-group = Einblenden/Ausblenden
 qbe-totals = Summen
 qbe-parameters = Parameter
 qbe-property-sheet = Eigenschaftenblatt
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = Verknüpfungstyp: { $left } ↔ { $right }
+qbe-remove-join-accessible = Verknüpfung entfernen: { $left } ↔ { $right }

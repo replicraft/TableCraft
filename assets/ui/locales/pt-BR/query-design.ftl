@@ -45,3 +45,7 @@ qbe-show-hide-group = Mostrar/Ocultar
 qbe-totals = Totais
 qbe-parameters = Parâmetros
 qbe-property-sheet = Folha de Propriedades
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = Tipo de junção: { $left } ↔ { $right }
+qbe-remove-join-accessible = Remover junção: { $left } ↔ { $right }

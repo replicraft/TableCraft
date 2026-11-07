@@ -45,3 +45,7 @@ qbe-show-hide-group = 表示/非表示
 qbe-totals = 集計
 qbe-parameters = パラメーター
 qbe-property-sheet = プロパティシート
+
+qbe-join-endpoints = { $left } ↔ { $right }
+qbe-join-kind = 結合の種類: { $left } ↔ { $right }
+qbe-remove-join-accessible = 結合を削除: { $left } ↔ { $right }
