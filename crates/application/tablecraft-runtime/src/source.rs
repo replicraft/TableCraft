@@ -56,7 +56,7 @@ impl NativeReadSource for Source {
 impl Source {
     #[cfg(all(
         feature = "offline-edit",
-        any(target_os = "macos", target_os = "linux")
+        any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub(super) fn editable_native(&self) -> bool {
         matches!(self, Self::Plain(input) if !input.is_deployment())

@@ -51,6 +51,14 @@ fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, S
     };
     assert_eq!(report.id, operation);
     assert_eq!(receipt.known, SaveKnownOutcome::Committed);
+    assert_eq!(
+        receipt.retirement,
+        Some(crate::SaveRetirementGuarantee::CapturedParentBarrier)
+    );
+    assert_eq!(
+        receipt.cleanup,
+        Some(crate::SaveCleanupDisposition::Removed)
+    );
     assert_eq!(receipt.changed_rows, None);
     assert_eq!(
         receipt.schema_change,
@@ -132,6 +140,14 @@ fn first_row_uses_native_generated_id_in_all_three_saved_initial_schemas() {
         };
         assert_eq!(report.id, operation);
         assert_eq!(receipt.known, SaveKnownOutcome::Committed);
+        assert_eq!(
+            receipt.retirement,
+            Some(crate::SaveRetirementGuarantee::CapturedParentBarrier)
+        );
+        assert_eq!(
+            receipt.cleanup,
+            Some(crate::SaveCleanupDisposition::Removed)
+        );
         assert_eq!(receipt.matched_rows, None);
         assert_eq!(receipt.changed_rows, Some(1));
         assert_eq!(receipt.schema_change, None);

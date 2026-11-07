@@ -35,9 +35,10 @@ pub use creation::{
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
     InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReplaceError,
-    ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCompletion, SaveFailure, SaveFailureKind,
-    SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport,
-    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+    ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCleanupDisposition, SaveCompletion,
+    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase,
+    SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
+    SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{FirstTableReopen, ReviewedFirstTable};

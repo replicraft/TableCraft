@@ -1,35 +1,35 @@
 //! One reviewed row of original presence-bearing native INSERT intent.
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use super::EditError;
 use super::EditInput;
 use crate::scalar_input::InputHint;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
     display::Presentation,
     document::Document,
 };
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use bytes::Bytes;
 use std::path::{Path, PathBuf};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
 };
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_access::editing::journal::{NativeJournalInsertPlan, NativeJournalInserter};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_ace::{InspectError, NativeImage, TableFeatures, inspect_table_features};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_schema::Column;
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 const MAX_INSERT_FIELDS: usize = 256;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 const MAX_INSERT_INPUT_BYTES: usize = 8 * 1024 * 1024;
 
 #[derive(Clone, PartialEq, Eq)]
@@ -76,13 +76,13 @@ pub struct ReviewedInsert {
 pub(super) struct ReviewedInsertState {
     pub(super) path: PathBuf,
     pub(super) target: InsertTarget,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) values: Vec<InsertValue>,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) plan: NativeJournalInsertPlan,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) valid: Arc<AtomicBool>,
 }
 
@@ -96,7 +96,7 @@ impl ReviewedInsert {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 impl Document {
     pub(crate) fn begin_insert(
         &mut self,
@@ -200,7 +200,7 @@ impl Document {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn copy_target(
     target: &InsertTarget,
     output: &mut Presentation<'_>,
@@ -211,7 +211,7 @@ fn copy_target(
     })
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn check_input_limits(inputs: &[InsertInput], cancelled: &dyn Fn() -> bool) -> Result<(), Error> {
     if inputs.is_empty() || inputs.len() > MAX_INSERT_FIELDS {
         return Err(EditError::InputLimit.into());
@@ -234,7 +234,7 @@ fn check_input_limits(inputs: &[InsertInput], cancelled: &dyn Fn() -> bool) -> R
     Ok(())
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn validate_feature_columns(
     features: &TableFeatures,
     columns: &[Column],
@@ -252,7 +252,7 @@ fn validate_feature_columns(
     Ok(())
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn require_omitted_auto_numbers(
     features: &TableFeatures,
     inputs: &[InsertInput],
@@ -270,7 +270,7 @@ fn require_omitted_auto_numbers(
     Ok(())
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn parse_inputs(
     columns: &[Column],
     inputs: &[InsertInput],
@@ -297,7 +297,7 @@ fn parse_inputs(
     Ok(values)
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn copy_inputs(
     inputs: &[InsertInput],
     output: &mut Presentation<'_>,

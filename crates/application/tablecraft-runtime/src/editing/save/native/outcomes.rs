@@ -1,8 +1,9 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
 use super::RetainedOwner;
 use crate::editing::save::{
-    SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOutcome, SavePhase,
-    SaveReceipt, SaveSchemaChange, SaveSessionState,
+    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
+    SaveOutcome, SavePhase, SaveReceipt, SaveRetirementGuarantee, SaveSchemaChange,
+    SaveSessionState,
 };
 use std::error::Error as StdError;
 use tablecraft_access::editing::offline::{
@@ -17,7 +18,11 @@ use tablecraft_ace::{
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
     IoError,
-    journal::{JournalError, RecoveryOutcome, filesystem::PairState},
+    journal::{
+        JournalError, RecoveryOutcome,
+        filesystem::PairState,
+        filesystem_contracts::{CleanupDisposition, RetirementGuarantee},
+    },
 };
 
 const MAX_ERROR_SOURCE_DEPTH: usize = 32;
@@ -95,6 +100,18 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
             }
+        }),
+        retirement: value.retirement().map(|retirement| match retirement {
+            RetirementGuarantee::CapturedParentBarrier => {
+                SaveRetirementGuarantee::CapturedParentBarrier
+            }
+            RetirementGuarantee::NtfsWriteThroughRename => {
+                SaveRetirementGuarantee::NtfsWriteThroughRename
+            }
+        }),
+        cleanup: value.cleanup().map(|cleanup| match cleanup {
+            CleanupDisposition::Removed => SaveCleanupDisposition::Removed,
+            CleanupDisposition::RetainedArtifact => SaveCleanupDisposition::RetainedArtifact,
         }),
     }
 }

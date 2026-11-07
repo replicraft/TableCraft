@@ -1,5 +1,5 @@
 //! A checked occurrence becomes an ordinary edit draft, never an implicit save.
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use crate::{
     Error as RuntimeError, FilterHandle, FindPosition, FindRequest, Response, document::Document,
 };
@@ -17,10 +17,10 @@ pub enum ReplaceError {
     NullMatch,
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod native;
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 impl Document {
     pub(crate) fn replace_find_match(
         &mut self,

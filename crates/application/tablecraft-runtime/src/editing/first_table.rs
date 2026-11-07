@@ -1,16 +1,16 @@
 //! Source-bound initial-table review; no file lease is held for presentation.
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod native;
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use crate::{Error, Response, document::Document};
 use bytes::Bytes;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use std::sync::atomic::AtomicBool;
 use std::{path::Path, path::PathBuf, sync::Arc};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_ace::FirstTableDefinition;
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use tablecraft_builders::table::TableDraftSnapshot;
 
 /// Complete expected content for a fresh snapshot after an acknowledged save.
@@ -59,11 +59,11 @@ pub struct ReviewedFirstTable {
 pub(super) struct ReviewedFirstTableState {
     pub(super) id: u64,
     pub(super) reopen: Arc<FirstTableReopen>,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) definition: FirstTableDefinition,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) valid: Arc<AtomicBool>,
 }
 
@@ -81,7 +81,7 @@ impl ReviewedFirstTable {
     }
 }
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 impl Document {
     pub(crate) fn review_first_table(
         &mut self,

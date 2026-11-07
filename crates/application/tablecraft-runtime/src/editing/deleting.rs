@@ -1,7 +1,7 @@
 //! Source-bound single-row deletion review without an offline lease.
 use crate::{Cell, Column};
 use std::path::{Path, PathBuf};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use {
     super::EditError,
     crate::{
@@ -43,11 +43,11 @@ pub(super) struct ReviewedDeleteState {
     pub(super) path: PathBuf,
     pub(super) target: DeleteTarget,
     refresh_ordinal: u32,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) plan: RecoverableNativeDeletePlan,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) valid: Arc<AtomicBool>,
 }
 
@@ -66,7 +66,7 @@ impl ReviewedDelete {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 fn copy_target(
     target: &DeleteTarget,
     output: &mut Presentation<'_>,
@@ -78,7 +78,7 @@ fn copy_target(
     })
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 impl Document {
     pub(crate) fn review_delete(
         &mut self,

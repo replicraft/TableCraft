@@ -4,33 +4,33 @@ mod deleting;
 mod first_table;
 #[cfg(feature = "ace16-create")]
 pub use first_table::{FirstTableReopen, ReviewedFirstTable};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod draft;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod ids;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod input;
 mod inserting;
 mod replacing;
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 pub use replacing::ReplaceError;
 mod save;
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 mod unsupported;
 
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedInsert,
 };
 pub use save::{
-    SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome,
-    SavePhase, SaveReceipt, SaveReport, SaveSchemaChange, SaveSessionState, SaveStartError,
-    SaveStartFailure, SaveWorker,
+    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
+    SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveRetirementGuarantee,
+    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
 };
 
 use crate::{Cell, scalar_input::InputHint};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use bytes::Bytes;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use std::sync::{
     Arc,
     atomic::{AtomicBool, Ordering},
@@ -39,9 +39,9 @@ use std::{
     ffi::OsString,
     path::{Path, PathBuf},
 };
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_ace::RecoverableNativeEditPlan;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_core::values::Value;
 
 #[derive(Clone, PartialEq, Eq)]
@@ -86,17 +86,17 @@ pub struct ReviewedEdit {
 struct ReviewedState {
     path: PathBuf,
     target: EditTarget,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     replacement: Value,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     plan: RecoverableNativeEditPlan,
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     valid: Arc<AtomicBool>,
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(crate) struct DocumentEdits {
     path: PathBuf,
     original: Bytes,
@@ -105,7 +105,7 @@ pub(crate) struct DocumentEdits {
     insert_draft: Option<(u64, InsertTarget)>,
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 impl DocumentEdits {
     pub(crate) fn new(path: PathBuf, original: Bytes) -> Self {
         Self {
@@ -118,7 +118,7 @@ impl DocumentEdits {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 impl Drop for DocumentEdits {
     fn drop(&mut self) {
         self.valid.store(false, Ordering::Release);

@@ -57,7 +57,7 @@ unimplemented. See [database creation](../ui/DATABASE_CREATION.md).
 
 ## Reviewed first-table schema save
 
-With both `offline-edit` and `ace16-create`, the macOS/Linux host can submit
+With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
 `Command::ReviewFirstTable` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
 Short Text (255 UTF-16 units)/Long Integer declarations into the native definition.
@@ -78,11 +78,22 @@ requires all reviewed original bytes and reconstructs the native schema operatio
 against that descriptor. The adapter's distinct TCNT original-schema intent and
 V2 journal perform checked same-file resizing, recovery, retirement and cleanup.
 Cancellation/invalidation participates in bounded native work; neither grants an
-implicit rollback, journal deletion or retry. Windows fresh-output publication
-and its receipt do not enable this macOS/Linux filesystem-journal path.
+implicit rollback, journal deletion or retry. Windows uses the separate
+local-NTFS flat-sidecar owner rather than the Unix directory-bundle cleanup
+contract; actual Windows execution remains unrun.
 
 Successful receipts carry `SaveSchemaChange::FirstTableCreated { column_count }`
-and `None` for both row counts. Recovery of a committed replacement retains the
+and `None` for both row counts. Receipts separately carry optional
+`SaveRetirementGuarantee` and `SaveCleanupDisposition` facts mapped from the actual
+adapter receipt. Unix removal and Windows retained artifacts remain distinct;
+neither is inferred from a native committed outcome. Desktop reports a retained
+private recovery journal in each locale and keeps that fact in revision-bound
+status after normal refresh or the first-table automatic acknowledgment/reopen.
+A different document cannot inherit it. The macOS runtime suite passes 125 tests and the desktop suite passes 81 tests
+in the current batch, including receipt/status handling. The new retained-journal
+preview passes its focused eight-locale/two-theme test. Windows x64 and ARM64
+desktop/service cross-checks pass; actual filesystem execution remains unrun.
+Recovery of a committed replacement retains the
 schema fact; an original-image rollback does not. Terminal phase, known outcome,
 resource state and available recovery/release actions remain independent of
 whether the display classification is cancellation, resource exhaustion or a
@@ -98,10 +109,9 @@ and replaces the draft only after successful reopening; a reopen failure does no
 erase the acknowledged save. Pending user transitions remain bound to their
 original request while save/recovery/reopen completes.
 
-The Access adapter's five focused first-table tests pass locally on macOS. The
-new runtime/UI/desktop integration and typed-classifier tests are implemented;
-final connected validation is pending. Existing row-save gates and historical
-creation results do not qualify this new flow. Native Access comparison, Windows
+The Access adapter's five focused first-table tests pass locally on macOS.
+The current runtime and desktop suites above exercise connected integration and
+typed-classifier behavior; historical creation results remain separate evidence. Native Access comparison, Windows
 same-file filesystem-journal behavior and power-loss qualification remain unrun.
 See [the adapter contract](../access/writes/FIRST_TABLE_PERSISTENCE.md).
 
@@ -373,8 +383,11 @@ bundles and path aliases are not a general journal-discovery mechanism. Keep the
 explicit offline and outstanding-journal preconditions; this is not Access
 multiuser locking or complete crash-restart recovery.
 
-Normal filesystem editing currently works only on macOS/Linux. Other platforms
-return an explicit unsupported result. This reviewed-cell workflow is a bounded
+Normal filesystem editing has macOS/Linux and Windows host paths; other platforms
+return an explicit unsupported result. Windows activation uses local NTFS,
+write-through retirement and intentionally retained private recovery artifacts.
+It does not claim Unix parent-directory barriers or durable artifact deletion;
+actual Windows filesystem execution remains unrun. This reviewed-cell workflow is a bounded
 offline workflow, not Access autosave, record navigation or query-result
 updateability parity.
 
@@ -436,8 +449,7 @@ of total input text. The normal planner decides actual format/schema/index and
 required-program eligibility. Qualified constant defaults, NULL fallback and
 Increment AutoNumber use ordinary admission. This service supplies no clock or
 random provider, so defaults needing those capabilities remain refused. Encrypted
-and packaged sources are read-only here; native saves are currently macOS/Linux
-only. This adds no general create-table, multirow, external-source or inline
+and packaged sources are read-only here. This adds no general create-table, multirow, external-source or inline
 Access autosave guarantee. See [normal INSERT](../access/writes/NORMAL_ACE_INSERT.md).
 
 New connected runtime scenarios save the initial schema into the actual canonical
@@ -484,7 +496,7 @@ row count or a browser page prefix, and it is not a native mutation handle.
 Query output, system tables and absent records cannot issue the UI intent.
 Native filtered/sorted views retain checked original ordinals instead of treating
 a displayed position as a source ordinal.
-The existing plain-source, offline and macOS/Linux save limits apply. This route
+The existing plain-source and offline save limits apply. This route
 adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
 validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
 

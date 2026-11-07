@@ -9,7 +9,7 @@ use super::{
 use crate::FirstTableReopen;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 use crate::editing::DocumentEdits;
 #[cfg(feature = "offline-edit")]
@@ -19,7 +19,7 @@ use crate::{CreationOutcome, CreationReport};
 use bytes::Bytes;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 use std::sync::atomic::AtomicBool;
 #[cfg(feature = "offline-edit")]
@@ -48,7 +48,7 @@ pub(super) struct Document {
     pub(super) revision: u64,
     #[cfg(all(
         feature = "offline-edit",
-        any(target_os = "macos", target_os = "linux")
+        any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub(crate) edits: DocumentEdits,
 }
@@ -147,7 +147,7 @@ impl Document {
         let bytes = Bytes::from(bytes);
         #[cfg(all(
             feature = "offline-edit",
-            any(target_os = "macos", target_os = "linux")
+            any(target_os = "macos", target_os = "linux", windows)
         ))]
         let edits = {
             work.charge_allocation(source_path.as_os_str().len() as u64, 1)?;
@@ -161,7 +161,7 @@ impl Document {
             revision,
             #[cfg(all(
                 feature = "offline-edit",
-                any(target_os = "macos", target_os = "linux")
+                any(target_os = "macos", target_os = "linux", windows)
             ))]
             edits,
         };

@@ -55,7 +55,7 @@ impl Metadata {
 
     #[cfg(all(
         feature = "offline-edit",
-        any(target_os = "macos", target_os = "linux")
+        any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub(crate) fn require_replace_control(
         &self,
@@ -201,7 +201,7 @@ impl Metadata {
 
     #[cfg(all(
         feature = "offline-edit",
-        any(target_os = "macos", target_os = "linux")
+        any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub fn enrich(
         &self,

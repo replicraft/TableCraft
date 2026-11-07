@@ -1,14 +1,14 @@
 //! Nonreplaceable save outcomes. Presentation generations cannot suppress them.
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod native;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub use native::SaveWorker;
 
 use super::ReviewedEdit;
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use super::{ReviewedDelete, ReviewedInsert};
 use std::fmt;
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use std::path::PathBuf;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -81,6 +81,20 @@ pub enum SaveSchemaChange {
     FirstTableCreated { column_count: usize },
 }
 
+/// Acknowledged namespace retirement, separate from the native data result.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SaveRetirementGuarantee {
+    CapturedParentBarrier,
+    NtfsWriteThroughRename,
+}
+
+/// What actually happened to the retired recovery artifact.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SaveCleanupDisposition {
+    Removed,
+    RetainedArtifact,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct SaveReceipt {
     pub completion: SaveCompletion,
@@ -88,6 +102,8 @@ pub struct SaveReceipt {
     pub matched_rows: Option<usize>,
     pub changed_rows: Option<usize>,
     pub schema_change: Option<SaveSchemaChange>,
+    pub retirement: Option<SaveRetirementGuarantee>,
+    pub cleanup: Option<SaveCleanupDisposition>,
 }
 
 /// These are observed resource facts, not an inferred rollback or a retry grant.
@@ -178,10 +194,10 @@ impl<T> fmt::Display for SaveStartError<T> {
 
 impl<T> std::error::Error for SaveStartError<T> {}
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 pub struct SaveWorker;
 
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 impl SaveWorker {
     #[cfg(feature = "ace16-create")]
     pub const fn supports_first_table() -> bool {
