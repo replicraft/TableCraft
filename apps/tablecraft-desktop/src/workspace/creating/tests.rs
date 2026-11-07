@@ -3,6 +3,7 @@ use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_testkit::fixtures::access::{canonical_blank_creation, mutation_fixture};
+use tablecraft_ui::ObjectKind;
 
 fn show_new(harness: &mut Harness<'_, Desktop>) {
     if harness.state().state.database.is_some() {
@@ -43,6 +44,12 @@ fn file_new_creates_and_opens_the_real_blank_database_then_runs_a_query() {
     assert_eq!(database.format, "Ace2016");
     assert!(database.tables.iter().all(|table| table.system));
     assert!(harness.state().state.data.is_none());
+    assert!(harness.state().state.has_unsaved_table_drafts());
+    assert!(!harness.state().state.has_modified_table_drafts());
+    assert!(matches!(
+        harness.state().state.active_object().unwrap().target.kind,
+        ObjectKind::DraftTable { .. }
+    ));
     let terminal = harness.state().creating.terminal.as_ref().unwrap();
     assert!(matches!(terminal.outcome(), RuntimeOutcome::Created(_)));
     assert!(!harness.state().creating.is_busy());

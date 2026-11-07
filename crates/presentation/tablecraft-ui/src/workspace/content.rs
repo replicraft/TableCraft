@@ -45,6 +45,9 @@ impl State {
                 });
             ui.add_space(10.0);
         }
+        if self.show_table_draft(ui) {
+            return;
+        }
         if self.view == DocumentView::Table {
             self.filter_report(ui);
             self.totals_report(ui);

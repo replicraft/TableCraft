@@ -87,6 +87,7 @@ pub enum Scene {
     StartupOpen,
     Templates,
     DatabaseCreation,
+    InitialTableDraft,
     Backstage,
     Options,
     About,
@@ -116,7 +117,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 86] = [
+    pub const ALL: [Self; 87] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -177,6 +178,7 @@ impl Scene {
         Self::StartupOpen,
         Self::Templates,
         Self::DatabaseCreation,
+        Self::InitialTableDraft,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -292,6 +294,7 @@ impl Scene {
             Self::StartupOpen => "startup-open",
             Self::Templates => "templates",
             Self::DatabaseCreation => "database-creation",
+            Self::InitialTableDraft => "initial-table-draft",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -556,6 +559,21 @@ impl Preview {
                 }
             }
             Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
+            Scene::InitialTableDraft => {
+                for tab in self.state.object_tabs() {
+                    self.state.close_object(&tab);
+                }
+                if let Some(database) = &mut self.state.database {
+                    database.tables.clear();
+                    database.queries.clear();
+                    database.title = "Database1 : Database | Database1.accdb (Access 2016)".into();
+                }
+                self.state.dismiss_backstage();
+                assert!(
+                    self.state.open_initial_table_draft(),
+                    "synthetic initial draft opens"
+                );
+            }
             Scene::DatabaseCreation => {
                 self.state.creation_available = true;
                 self.state.open_creation();

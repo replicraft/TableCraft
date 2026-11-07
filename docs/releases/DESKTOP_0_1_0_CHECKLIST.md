@@ -20,6 +20,14 @@ Access editing.
   after output-only temporary commands remain open. Keep unimplemented KeyTips
   explicit; the retained Home capture supplies no command-letter assignments.
   See [Ribbon coverage](../ui/RIBBON.md).
+- [ ] **Complete the new ACCDB workflow.** Blank ACE 16 publication and the
+  separately identified initial `Table1` draft are implemented. Finish the
+  table-name/Save workflow through a genuine same-file schema operation and
+  recovery, then replace the draft with a freshly read persisted table. Failed
+  or cancelled saves must retain the draft; discard/cancel and host transitions
+  must not lose it silently. Keep platform/filesystem guarantees explicit and
+  qualify actual Windows execution separately. See
+  [database creation](../ui/DATABASE_CREATION.md).
 - [ ] **Record the release's supported browser profile.** Match the
   [desktop guide](../ui/DESKTOP.md), [compatibility matrix](../COMPATIBILITY.md)
   and release notes to the actual build. Retain snapshot/work limits, inert
@@ -38,7 +46,8 @@ Access editing.
   Preserve explicit review/apply, consuming source-bound receipts, journal and
   recovery ownership, cancellation outcomes and unsupported-operation refusal.
   Query results must not acquire native edit identity. Keep engineering previews
-  outside normal saves; do not advertise arbitrary edits or database creation.
+  outside normal saves; do not advertise arbitrary edits or unrestricted database
+  creation.
   See [runtime editing contracts](../application/RUNTIME.md) and
   [native write limits](../access/writes/NATIVE_WRITES.md).
 - [x] **Implement desktop archive and complete-set verification.** Portable

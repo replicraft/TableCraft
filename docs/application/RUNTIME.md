@@ -50,8 +50,10 @@ Five feature-local runtime creation checks cover retained operation/report
 ownership, publication and guarded reopen behavior. The corresponding shared UI
 and desktop checks remain headless. Independent Jackcess reading qualifies only
 the observed generated structure; native Access open/save remains unqualified.
-The desktop workflow and unimplemented initial `Table1`/table-authoring steps are
-recorded in [database creation](../ui/DATABASE_CREATION.md).
+The desktop starts a shared source-free `Table1` draft only after this successful
+guarded open. That draft has no runtime native table/row authority; schema
+persistence and record entry remain separate unimplemented operations. See
+[database creation](../ui/DATABASE_CREATION.md).
 
 ## Session and task ownership
 

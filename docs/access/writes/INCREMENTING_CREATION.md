@@ -42,9 +42,18 @@ Text/Binary/Decimal declarations; initial rows remain empty.
 This is fresh serialization support, not persistence of an unsaved GUI table or
 catalog mutation in an existing database. It does not expand the separate native
 Increment INSERT admission profile. Source14 observations above apply to the
-original two-LONG layout; these additional schemas still require independent
-reader and native Access qualification. Their focused byte/resource/cancellation
-checks are tracked with the owning implementation work.
+original two-LONG layout; a separate read-only Jackcess 5.0.4 observation now recognizes the ID-only and
+ID-plus-Text CLI outputs as V2016, zero rows and index entries, LAST=0 and a
+unique ascending primary ID. The Text companion is 255 UTF-16 units. Each
+40,960-byte file retained its original hash afterward. This is a local debug-
+binary observation with frozen producer/reader/input hashes, not an exported-
+source build or native Access qualification. The mixed schema has independent
+complete-image coverage without a separate reader observation.
+
+Five focused constructor tests pass, including exact/one-below resources and
+cancellation. Three existing source-gated comparisons remain ignored; the new
+synthetic fixtures do not replace their prerequisites. Strict engine/testkit
+lint passes. Native Access save/reopen remains unqualified.
 
 Random generation, arbitrary generated positions, initial generated rows,
 reseeding and native Access save/reopen remain work.

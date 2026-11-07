@@ -92,6 +92,11 @@ impl Session {
     pub(super) fn retained_bytes(&self) -> Option<usize> {
         let mut count = Counter::new(size_of::<Self>());
         match self {
+            Self::DraftTable { editor } => {
+                if let Some(editor) = editor {
+                    count.add(editor.retained_bytes());
+                }
+            }
             Self::Table {
                 data: page,
                 schema: fields,
@@ -144,7 +149,7 @@ impl super::Objects {
                 super::ObjectKind::Table { name } | super::ObjectKind::SavedQuery { name, .. } => {
                     count.string(name)
                 }
-                super::ObjectKind::Sql => {}
+                super::ObjectKind::DraftTable { .. } | super::ObjectKind::Sql => {}
             }
         }
         for entry in &self.entries {
@@ -152,7 +157,7 @@ impl super::Objects {
                 super::ObjectKind::Table { name } | super::ObjectKind::SavedQuery { name, .. } => {
                     count.string(name)
                 }
-                super::ObjectKind::Sql => {}
+                super::ObjectKind::DraftTable { .. } | super::ObjectKind::Sql => {}
             }
             if entry.session.is_some() {
                 count.add(entry.retained_bytes?);
@@ -173,6 +178,9 @@ impl State {
         }
         if let Some(page) = &self.query_data {
             count.add(data(page)?);
+        }
+        if let Some(editor) = &self.table_draft {
+            count.add(editor.retained_bytes());
         }
         count.string(&self.sql);
         count.add(self.query_result.retained_bytes());

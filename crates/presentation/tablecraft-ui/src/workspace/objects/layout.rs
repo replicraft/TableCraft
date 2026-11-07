@@ -30,6 +30,7 @@ impl State {
             .objects
             .entries
             .iter()
+            .filter(|entry| !matches!(entry.tab.target.kind, ObjectKind::DraftTable { .. }))
             .map(|entry| {
                 let active = self.objects.active == Some(entry.tab.id);
                 let (design, offset, parameters) = if active {
@@ -50,7 +51,7 @@ impl State {
                             None,
                         ),
                         Some(Session::Saved { state, .. }) => (false, 0, state.input_preferences()),
-                        Some(Session::Sql { .. }) => (false, 0, None),
+                        Some(Session::DraftTable { .. } | Session::Sql { .. }) => (false, 0, None),
                         None => (false, entry.offset, None),
                     }
                 };
@@ -82,7 +83,10 @@ impl State {
             .collect();
         WorkspaceLayout {
             entries,
-            active: self.active_object().map(|tab| tab.target.kind),
+            active: self.active_object().and_then(|tab| {
+                (!matches!(tab.target.kind, ObjectKind::DraftTable { .. }))
+                    .then_some(tab.target.kind)
+            }),
             scratch_sql: self.sql.clone(),
         }
     }
@@ -100,6 +104,7 @@ impl State {
             return false;
         };
         if !self.object_switch_ready()
+            || self.has_unsaved_table_drafts()
             || layout.entries.len() > MAX_OBJECTS
             || layout.entries.iter().any(|entry| {
                 !self.object_binding(&ObjectTarget {
@@ -137,6 +142,7 @@ impl State {
             };
             let mut session = Session::empty(&target.kind);
             match &mut session {
+                Session::DraftTable { .. } => return false,
                 Session::Table { design, totals, .. } => {
                     *design = preference.design;
                     *totals = Totals::restore(preference.totals);

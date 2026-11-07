@@ -2,7 +2,7 @@ mod accessibility;
 mod add_column;
 mod clipboard;
 mod collection_columns;
-mod empty_grid;
+pub(crate) mod empty_grid;
 mod layout;
 pub(crate) mod occurrence;
 mod preview;
@@ -784,7 +784,7 @@ fn collect_contents_action(
     }
 }
 
-fn grid_cell(ui: &Ui, header: bool) {
+pub(crate) fn grid_cell(ui: &Ui, header: bool) {
     let rect = ui.max_rect();
     if header {
         ui.painter()

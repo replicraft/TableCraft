@@ -72,6 +72,7 @@ impl State {
                                     ObjectKind::SavedQuery { name, .. } => {
                                         (name.clone(), Icon::Search)
                                     }
+                                    ObjectKind::DraftTable { .. } => ("Table1".into(), Icon::Table),
                                     ObjectKind::Sql => (tr(ui, "shell-query"), Icon::Search),
                                 };
                                 let id = ui.make_persistent_id((

@@ -18,6 +18,7 @@ static NEXT_OBJECT_ID: AtomicU64 = AtomicU64::new(0);
 pub enum ObjectKind {
     Table { name: String },
     SavedQuery { object_id: u128, name: String },
+    DraftTable { draft_id: u64 },
     Sql,
 }
 
@@ -104,7 +105,7 @@ impl State {
                     additional.string(name);
                     additional.string(name);
                 }
-                ObjectKind::Sql => {}
+                ObjectKind::DraftTable { .. } | ObjectKind::Sql => {}
             }
         }
         self.object_switch_ready()
@@ -224,7 +225,7 @@ impl State {
                 )
             }
             ObjectKind::SavedQuery { .. } => (self.saved_query.needs_inspection(), false, 0),
-            ObjectKind::Sql => (false, false, 0),
+            ObjectKind::DraftTable { .. } | ObjectKind::Sql => (false, false, 0),
         };
         Some(ObjectOpen {
             tab,
@@ -300,6 +301,22 @@ impl State {
         if !self.can_close_object(tab) {
             return false;
         }
+        let approved =
+            self.table_draft_discard_approved
+                .as_ref()
+                .is_some_and(|(approved, revision)| {
+                    approved == tab && self.table_draft_revision_for(tab) == Some(*revision)
+                });
+        if self.modified_table_draft(tab) && !approved {
+            self.table_draft_discard_approved = None;
+            self.table_draft_close = Some(super::table_draft::CloseIntent::Tab(tab.clone()));
+            return false;
+        }
+        self.table_draft_discard_approved = None;
+        self.close_object_confirmed(tab)
+    }
+
+    pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
         let Some(index) = self
             .objects
             .entries
@@ -331,6 +348,7 @@ impl State {
 
     pub(super) fn object_switch_ready(&self) -> bool {
         !self.busy
+            && self.table_draft_close.is_none()
             && !self.backstage_visible()
             && !self.edit_dialog_open()
             && !self.insertion_dialog_open()
@@ -354,6 +372,9 @@ impl State {
                         .queries
                         .iter()
                         .any(|query| query.object_id == *object_id && query.name == *name),
+                    ObjectKind::DraftTable { draft_id } => self.objects.entries.iter().any(|entry| {
+                        matches!(entry.tab.target.kind, ObjectKind::DraftTable { draft_id: current } if current == *draft_id)
+                    }),
                     ObjectKind::Sql => true,
                 }
         })
@@ -540,6 +561,7 @@ impl State {
     }
 
     fn clear_object_slots(&mut self) {
+        self.table_draft = None;
         self.data = None;
         self.schema = None;
         self.query_data = None;
@@ -589,3 +611,114 @@ impl State {
 
 #[cfg(test)]
 mod tests;
+
+impl State {
+    /// Explicitly invoked by a host after guarded creation, never on ordinary open.
+    pub fn open_initial_table_draft(&mut self) -> bool {
+        self.synchronize_objects();
+        if !self.object_switch_ready() || self.database.is_none() || self.has_unsaved_table_drafts()
+        {
+            return false;
+        }
+        let editor = super::table_draft::Editor::initial();
+        let additional = editor.retained_bytes() + size_of::<Entry>() + size_of::<Session>();
+        if self
+            .object_bytes()
+            .and_then(|bytes| bytes.checked_add(additional))
+            .is_none_or(|bytes| bytes > MAX_RETAINED_BYTES)
+            || self.objects.entries.len() == MAX_OBJECTS
+            || self.objects.entries.try_reserve_exact(1).is_err()
+        {
+            return false;
+        }
+        let Ok(previous) =
+            NEXT_OBJECT_ID.try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
+        else {
+            return false;
+        };
+        let id = previous + 1;
+        let document_revision = self.database.as_ref().unwrap().document_revision;
+        let tab = ObjectTab {
+            id,
+            target: ObjectTarget {
+                document_revision,
+                kind: ObjectKind::DraftTable { draft_id: id },
+            },
+        };
+        self.park_object();
+        self.clear_object_slots();
+        self.table_draft = Some(editor);
+        self.objects.entries.push(Entry {
+            tab,
+            session: None,
+            offset: 0,
+            retained_bytes: Some(0),
+        });
+        self.objects.active = Some(id);
+        self.objects.navigation = None;
+        self.finish_object_activation();
+        true
+    }
+
+    pub fn has_unsaved_table_drafts(&self) -> bool {
+        self.objects
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.tab.target.kind, ObjectKind::DraftTable { .. }))
+    }
+
+    pub fn has_modified_table_drafts(&self) -> bool {
+        self.objects
+            .entries
+            .iter()
+            .any(|entry| self.modified_table_draft(&entry.tab))
+    }
+
+    pub(super) fn table_draft_revision_for(&self, tab: &ObjectTab) -> Option<u64> {
+        if !matches!(tab.target.kind, ObjectKind::DraftTable { .. }) {
+            return None;
+        }
+        if self.objects.active == Some(tab.id) {
+            return self
+                .table_draft
+                .as_ref()
+                .map(|editor| editor.draft.revision());
+        }
+        self.objects
+            .entries
+            .iter()
+            .find(|entry| entry.tab == *tab)
+            .and_then(|entry| match &entry.session {
+                Some(Session::DraftTable {
+                    editor: Some(editor),
+                }) => Some(editor.draft.revision()),
+                _ => None,
+            })
+    }
+
+    pub(super) fn modified_table_draft(&self, tab: &ObjectTab) -> bool {
+        if !matches!(tab.target.kind, ObjectKind::DraftTable { .. }) {
+            return false;
+        }
+        if self.objects.active == Some(tab.id) {
+            return self
+                .table_draft
+                .as_ref()
+                .is_some_and(|editor| editor.draft.is_modified());
+        }
+        self.objects.entries.iter().find(|entry| entry.tab == *tab).is_some_and(|entry| {
+            matches!(&entry.session, Some(Session::DraftTable { editor: Some(editor) }) if editor.draft.is_modified())
+        })
+    }
+
+    pub(super) fn discard_all_table_drafts(&mut self) {
+        let tabs: Vec<_> = self
+            .object_tabs()
+            .into_iter()
+            .filter(|tab| matches!(tab.target.kind, ObjectKind::DraftTable { .. }))
+            .collect();
+        for tab in tabs {
+            self.close_object_confirmed(&tab);
+        }
+    }
+}

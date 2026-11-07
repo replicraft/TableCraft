@@ -42,6 +42,7 @@ impl Preview {
             return;
         }
         match action {
+            Action::TableDraftsDiscarded | Action::TableDraftDiscardCancelled => {}
             Action::DescribeQueryDesign { request, table } => {
                 self.mock_describe_query_design(request, table)
             }
@@ -424,7 +425,7 @@ impl Preview {
                     name,
                 });
             }
-            ObjectKind::Sql => {}
+            ObjectKind::DraftTable { .. } | ObjectKind::Sql => {}
         }
     }
 

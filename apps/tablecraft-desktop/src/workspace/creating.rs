@@ -1,5 +1,5 @@
 //! Desktop composition of the retained shared creation operation and File/New UI.
-use super::Desktop;
+use super::{Desktop, table_drafts::DeferredDraftAction};
 use crate::file_dialog::SelectedFile;
 use std::{path::PathBuf, sync::Arc};
 use tablecraft_runtime::{
@@ -68,6 +68,14 @@ impl Desktop {
     }
 
     pub(super) fn create_database(&mut self, request: CreationRequest) {
+        if self.editing.has_save() || self.creating.is_busy() || self.file_dialog.is_open() {
+            return;
+        }
+        let Some(DeferredDraftAction::Create(request)) =
+            self.guard_table_draft_action(DeferredDraftAction::Create(request))
+        else {
+            return;
+        };
         if self.editing.has_save()
             || self.creating.is_busy()
             || self.file_dialog.is_open()

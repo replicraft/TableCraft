@@ -23,6 +23,7 @@ mod row_identity;
 mod save_display;
 mod saved_query;
 mod schema;
+mod table_draft;
 pub(crate) mod totals;
 pub(crate) mod zoom;
 
@@ -89,6 +90,8 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    TableDraftsDiscarded,
+    TableDraftDiscardCancelled,
     ChooseFile,
     ChooseCreationLocation,
     CreateDatabase {
@@ -314,6 +317,9 @@ pub struct State {
     pub sql: String,
     query_design: query_design::QueryDesign,
     filter: String,
+    table_draft: Option<table_draft::Editor>,
+    table_draft_close: Option<table_draft::CloseIntent>,
+    table_draft_discard_approved: Option<(ObjectTab, u64)>,
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
     ribbon_display: chrome::ribbon_display::RibbonDisplay,
@@ -617,7 +623,8 @@ impl State {
         let mut actions = Vec::new();
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
-        let modal_open = self.contents_request_id().is_some()
+        let modal_open = self.table_draft_close.is_some()
+            || self.contents_request_id().is_some()
             || self.edit_dialog_open()
             || self.saved_query_prompt_open()
             || self.zoom_dialog_open();
@@ -699,6 +706,7 @@ impl State {
         self.zoom_dialog(ui.ctx(), &mut actions);
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
+        self.table_draft_close_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
             self.finish_ribbon_keyboard(ui, !actions.is_empty());
             self.finish_pane_focus(ui);

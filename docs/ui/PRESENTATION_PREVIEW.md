@@ -1,5 +1,44 @@
 # Presentation preview
 
+## Initial unsaved table — 7 November 2026
+
+The `initial-table-draft` scene renders a source-free `Table1` after blank
+creation. The shared authoring model has an initial Increment AutoNumber primary
+ID, stable draft-only field identities and explicit Short Text (255) / Long
+Integer additions. The first Click to Add cell owns initial focus; decorative
+empty grid rows have no record identity. Double-clicking an added field heading
+opens its bounded name editor. Oversized insertions are rejected whole.
+
+Draft objects have separate tabs and parked sessions. They are absent from native
+catalogs, row pages and captured workspace layouts. Dirty drafts survive object
+switches and require an explicit discard or cancel before closing or replacing
+the database. Save remains visible but disabled with its current limitation;
+record entry and native table persistence are not supplied by this preview.
+
+The retained Table1 datasheet image was reopened: 1920×1141 Windows Access inside
+VirtualBox, with the source scale unknown. Its table tab, headers, record selector
+and trailing Click to Add informed this surface. It is an existing populated
+table, not a captured initial unsaved table; initial-state focus and close rules
+follow [Microsoft's documented workflow](https://support.microsoft.com/en-us/access/create-a-new-database).
+The scene inventory now has 87 scenes. The full 1,392-combination preview matrix
+and all 305 existing UI checks passed in the broader run. Six new draft cases
+initially refused because their test helper retained startup Backstage; correcting
+that setup to an opened-document state made all six pass separately. Production
+admission was not weakened. Eight builder tests also pass, including three new
+table-draft cases. This is headless evidence, not native Access interaction
+qualification.
+
+Offscreen review exposed separated decorative cell boxes and a clipped footer.
+The final draft uses the existing datasheet background-rule painter, centered
+headers and an explicitly reserved footer. Seven final draft checks pass,
+including an accessible field-name input rejecting oversized replacement as a
+whole. Strict selected lint and the renderer build pass. Final English light/dark
+frames at 1280×820, 1× and German dark/Japanese light at 900×580, 1.25× were
+opened and reviewed. The grid is continuous and the disabled Save footer remains
+visible. Rendering used the local macOS GPU with Windows keyboard conventions;
+no native application windows were opened. These frames do not qualify native
+Access interactions, Windows launch or complete table-designer behavior.
+
 ## Ribbon keyboard focus — 7 November 2026
 
 F10 enters the selected Ribbon tab. Tab arrows, Down, Ctrl+Left/Right,
@@ -431,7 +470,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 85 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 87 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not

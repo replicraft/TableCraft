@@ -1,12 +1,30 @@
 # Implementation status
 
+## Initial unsaved table — 7 November 2026
+
+Successful blank creation now opens a separately identified unsaved `Table1`,
+with semantic AutoNumber primary ID and explicit draft-only Short Text/Long
+Integer fields. Drafts have no persisted catalog membership or native row
+handles. They survive tab switches; discard/cancel guards retain exact pending
+open/create/window-close actions. Save and record entry remain unavailable.
+See [the workflow contract](ui/DATABASE_CREATION.md#initial-unsaved-table).
+
+Eight builder tests, seven final draft UI checks and all 73 desktop tests pass. The wider
+UI run passed its 305 existing checks and full 1,392-combination preview matrix;
+the six new cases passed separately after correcting a startup-Backstage test
+fixture. Initial-table constructors pass five cases, with three earlier source-
+gated comparisons still ignored. Separate read-only Jackcess observations pass
+for ID-only and ID-plus-Text files. Native Access interaction/save qualification
+remains unrun. Offscreen review is recorded with the presentation evidence.
+
 ## Blank ACE 16 creation — 7 November 2026
 
 The native constructor now serializes a genuine system-only ACE 16 database,
 without a copied template. CLI `create --blank` and desktop File > New use the
 shared creation service. The runtime retains terminal publication facts and
 guards reopening against the complete expected blank image. The current flow
-creates no user table; unsaved Table1 and table authoring remain unfinished.
+creates no persisted user table; the subsequent draft does not yet support
+native table persistence.
 See [the workflow boundary](ui/DATABASE_CREATION.md).
 
 The native creation suite passes 45 cases; the independent raw blank fixture

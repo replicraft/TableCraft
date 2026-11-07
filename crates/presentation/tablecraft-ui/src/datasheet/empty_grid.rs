@@ -3,7 +3,7 @@ use egui::{Color32, Rect, Shape, Stroke, pos2};
 
 const EMPTY_RULE_OPACITY: f32 = 0.4;
 
-pub(super) fn shape(
+pub(crate) fn shape(
     columns: &[Rect],
     viewport: Rect,
     content_bottom: f32,

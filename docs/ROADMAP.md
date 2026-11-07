@@ -2115,3 +2115,21 @@ text policies and native Windows/Access comparison remain separate gaps.
 Forms/report designers, visual query construction, imported application behavior,
 printing and polished accessible platform packaging follow the connected browser.
 This direction does not imply those application features are implemented.
+
+
+## Initial table authoring — 7 November 2026
+
+Blank ACE 16 publication now composes with a separate unsaved `Table1` draft.
+The current UI supports explicit bounded field declarations and protected
+AutoNumber-primary metadata, without native row identities or invented catalog
+membership. Save remains unavailable. See [the workflow and current limits](ui/DATABASE_CREATION.md).
+
+The next persistence step is a distinct source-bound schema operation from the
+exact canonical blank image, not an arbitrary replacement through a row-edit
+plan. It must preserve original declarations in a separately framed recovery
+intent, reconstruct both journal images, retain the exclusive target/session and
+report schema completion without fabricated row counts. Same-file Windows
+journal ownership remains separate from the implemented fresh-output publisher.
+Table naming, failure/cancellation retention and guarded native reopen precede
+promotion of the draft to a persisted table. Broader imported-file DDL and field
+inference remain later work; no SQLite/native-project scope is resumed.

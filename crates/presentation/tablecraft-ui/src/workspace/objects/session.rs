@@ -2,6 +2,7 @@
 use super::{ObjectKind, ObjectTab};
 use crate::datasheet::Selection;
 use crate::workspace::query::provenance::ResultOrigin;
+use crate::workspace::table_draft::Editor;
 use crate::workspace::{
     Data, DocumentView, Schema, State, filtering::TableFilter, query_design::QueryDesign,
     records::RecordNavigation, saved_query::SavedQueryState, totals::Totals,
@@ -22,6 +23,9 @@ impl Entry {
 }
 
 pub(super) enum Session {
+    DraftTable {
+        editor: Option<Editor>,
+    },
     Table {
         data: Option<Data>,
         selection: Selection,
@@ -49,6 +53,7 @@ pub(super) enum Session {
 impl Session {
     pub(super) fn empty(kind: &ObjectKind) -> Self {
         match kind {
+            ObjectKind::DraftTable { .. } => Self::DraftTable { editor: None },
             ObjectKind::Table { .. } => Self::Table {
                 data: None,
                 selection: Selection::default(),
@@ -76,6 +81,9 @@ impl Session {
 
     pub(super) fn take(state: &mut State, kind: &ObjectKind) -> Self {
         match kind {
+            ObjectKind::DraftTable { .. } => Self::DraftTable {
+                editor: state.table_draft.take(),
+            },
             ObjectKind::Table { .. } => Self::Table {
                 data: state.data.take(),
                 selection: mem::take(&mut state.table_selection),
@@ -104,6 +112,10 @@ impl Session {
     pub(super) fn install(self, state: &mut State) {
         state.clear_object_slots();
         match self {
+            Self::DraftTable { editor } => {
+                state.table_draft = editor;
+                state.view = DocumentView::Table;
+            }
             Self::Table {
                 data,
                 selection,

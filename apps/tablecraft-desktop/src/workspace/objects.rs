@@ -231,7 +231,7 @@ impl Desktop {
                     name,
                 });
             }
-            ObjectKind::Sql => {}
+            ObjectKind::Sql | ObjectKind::DraftTable { .. } => {}
         }
     }
 

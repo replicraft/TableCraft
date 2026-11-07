@@ -34,18 +34,36 @@ before native reader qualification. This binds the captured content, not physica
 file identity or continued identity of the publication's captured parent.
 Reopen failure preserves the successful publication fact.
 
-## Current workflow boundary
+## Initial unsaved table
 
-The new file opens with no user objects. Table design, an unsaved `Table1`,
-Click to Add field creation and saving a newly designed table are not implemented.
-Existing qualified row edits do not supply those schema-authoring operations.
+After successful guarded reopening, the desktop opens an unsaved `Table1` draft.
+Ordinarily opening a zero-table database does not invent one. The draft has a
+separate object/session identity, an ID AutoNumber primary declaration and one
+new-record placeholder; it is absent from the persisted navigation catalog.
+There are no native row handles, stored records or manufactured query results.
+
+Click to Add offers explicit Short Text (255 UTF-16 units) and Long Integer
+fields, followed by field naming. The shared renderer-neutral table builder
+retains field identities and a revision; rejected names and exhausted limits do
+not partially change the design. Its current authoring ceiling is sixteen
+fields, and the initial generated ID is protected. This is a bounded authoring
+profile, not the full Access field designer. Record entry and automatic type
+inference are not implemented.
+
+Switching tabs parks the actual draft. Closing a pristine draft discards it
+without writing. A changed draft requires explicit discard or cancellation.
+Database replacement, a new creation request and window close retain their
+original requested action while the same confirmation is pending; another
+request cannot replace it. Cancellation keeps the draft. Save is visibly
+unavailable: no confirmation claims to persist a table that was not saved.
 
 Microsoft's [Create a new database](https://support.microsoft.com/en-us/access/create-a-new-database)
-describes the intended continuation: Create opens an initial `Table1` in
-Datasheet view, with focus in Click to Add; entering data defines fields, and
-closing a changed table offers save, discard or cancel. TableCraft has not yet
-implemented that continuation. Its current system-only file must not be presented
-as complete Access New-database workflow parity.
+describes the intended complete continuation: Create opens an initial `Table1`
+in Datasheet view, with focus in Click to Add; entering data defines fields,
+and closing a changed table offers save, discard or cancel. Genuine same-file
+schema persistence, the table-name prompt, record entry and complete Design view
+remain unfinished. Fresh-file constructors for ID-only and ordinary-companion
+AutoNumber tables do not supply mutation of an existing blank database.
 
 ## Evidence and remaining qualification
 
@@ -61,7 +79,12 @@ A separate read-only Jackcess 5.0.4 observation of a CLI-created image recognize
 V2016, zero user tables, the three expected system tables and seven catalog
 objects. Expression evaluation and external resolution were disabled; file
 bytes were unchanged afterward. This is independent-reader evidence, not native
-Access open/save qualification. Native Access comparison remains pending.
+Access open/save qualification. Seven draft-specific UI checks and three desktop
+transition checks additionally cover source separation, parked drafts, discarded
+requests, stale approvals and whole oversized name rejection. Final light/dark
+and compact translated frames were reviewed offscreen; see the
+[presentation record](PRESENTATION_PREVIEW.md#initial-unsaved-table--7-november-2026).
+Native Access comparison remains pending.
 
 The New form is a headless presentation adaptation of the retained Backstage
 layout and documented Microsoft workflow. No native Access New-form capture or

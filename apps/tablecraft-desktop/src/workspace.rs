@@ -10,6 +10,7 @@ mod opening;
 mod query_design;
 mod replacing;
 mod saved;
+mod table_drafts;
 #[cfg(test)]
 mod test_support;
 mod totals;
@@ -18,6 +19,7 @@ use crate::file_dialog::{FileDialog, SelectedFile};
 use creating::Creating;
 use editing::Editing;
 use std::path::PathBuf;
+use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle, Response,
     Worker,
@@ -31,6 +33,7 @@ use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
+    CreatedOpen,
     Query {
         request_id: u64,
     },
@@ -131,6 +134,7 @@ pub(super) struct Desktop {
     file_dialog_purpose: FileDialogPurpose,
     selected_file: Option<SelectedFile>,
     creating: Creating,
+    deferred_draft_action: Option<DeferredDraftAction>,
     editing: Editing,
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
@@ -158,6 +162,7 @@ impl Desktop {
             file_dialog_purpose: FileDialogPurpose::default(),
             selected_file: None,
             creating,
+            deferred_draft_action: None,
             editing,
             filter: None,
             objects: objects::Sessions::default(),
@@ -206,6 +211,7 @@ impl Desktop {
         } else {
             None
         };
+        let created_open = matches!(&command, Command::OpenCreated { .. });
         self.generation = self.worker.request(command);
         self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
@@ -223,6 +229,8 @@ impl Desktop {
             PendingOperation::Query {
                 request_id: self.generation,
             }
+        } else if created_open {
+            PendingOperation::CreatedOpen
         } else {
             PendingOperation::Read
         };
@@ -278,6 +286,11 @@ impl Desktop {
         if self.editing.has_save() || self.creating.is_busy() {
             return;
         }
+        let Some(DeferredDraftAction::Open(command)) =
+            self.guard_table_draft_action(DeferredDraftAction::Open(Box::new(command)))
+        else {
+            return;
+        };
         self.editing.clear_review();
         self.editing.clear_refresh();
         self.state.show_open();
@@ -288,7 +301,7 @@ impl Desktop {
         self.state.query_data = None;
         self.state.clear_schema();
         self.state.close_contents();
-        self.submit(command);
+        self.submit(*command);
     }
 
     fn poll(&mut self) {
@@ -382,7 +395,9 @@ impl Desktop {
                             .collect(),
                     });
                     self.state.dismiss_backstage();
-                    if !self.refresh_after_save(generation)
+                    if matches!(self.pending, PendingOperation::CreatedOpen) {
+                        self.state.open_initial_table_draft();
+                    } else if !self.refresh_after_save(generation)
                         && let Some(table) = first_table
                     {
                         self.open_object(ObjectTarget {
@@ -573,6 +588,7 @@ impl eframe::App for Desktop {
         self.poll_saves();
         self.guard_save_close(ctx);
         self.guard_creation_close(ctx);
+        self.guard_table_draft_window_close(ctx);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -589,6 +605,8 @@ impl eframe::App for Desktop {
         self.invalidate_creation_selection();
         for action in actions {
             match action {
+                Action::TableDraftsDiscarded => self.resume_table_draft_action(ui.ctx()),
+                Action::TableDraftDiscardCancelled => self.cancel_table_draft_action(),
                 Action::DescribeQueryDesign { request, table } => {
                     self.describe_query_design(request, table);
                 }
