@@ -10,7 +10,9 @@ unchanged. These observations do not establish native Access equivalence.
 
 A headless 205-row desktop journey now verifies later-page filter/sort identity,
 complete-view totals and preservation across SQL and schema visits. It and four
-existing Totals cases passed. Exact-full-page Next behavior remains under review.
+existing Totals cases passed. Runtime now uses bounded one-row lookahead to avoid
+an empty Next page after an exact full final page; 13 focused paging/stored-content
+checks passed on independent scalar and stored-calculation fixtures.
 See the [scoped record](ui/PRESENTATION_PREVIEW.md#multi-row-browser-checks-and-headless-verification--6-november-2026).
 
 ## First real-file desktop journey — 6 November 2026

@@ -4,6 +4,8 @@ mod controls;
 mod formatting;
 pub(crate) mod page;
 pub(crate) mod presentation;
+#[cfg(test)]
+mod tests;
 
 use super::{
     Error, Response,
@@ -12,7 +14,7 @@ use super::{
     document::Document,
 };
 use page::PagePresentation;
-use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
+use tablecraft_access::{BrowsePage, CollectionPageRequest, NativeBrowser, TablePageRequest};
 use tablecraft_ace::TableSnapshotLimits;
 
 const PAGE_ROWS: u32 = 100;
@@ -29,25 +31,34 @@ impl Document {
             crate::native_properties::inspect(&mut self.source, table, &mut work, cancelled)?;
         let mut browser = NativeBrowser::new(&mut self.source, SCOPE, work, cancelled);
         let request = CollectionPageRequest::new(
-            TablePageRequest::new(offset, PAGE_ROWS)?,
+            TablePageRequest::new(offset, PAGE_ROWS + 1)?,
             TableSnapshotLimits::default(),
         );
         // Metadata selects exactly one existing reader. Failures are never
         // retried as another profile or converted to a partial/empty collection.
         let page = browser.browse_page(table, request)?;
+        let count = match &page {
+            BrowsePage::Scalar(page) => page.rows().len(),
+            BrowsePage::Collections(page) => page.row_count(),
+        };
+        // Validate one additional native row under the same work budget, without
+        // publishing it. A final full display page therefore reaches checked EOF
+        // instead of advertising an empty next page. Declared counts are not used.
+        let selected: [usize; PAGE_ROWS as usize] = std::array::from_fn(|index| index);
+        let selected = &selected[..count.min(selected.len())];
         let mut output = Presentation::new(cancelled);
         let PagePresentation {
             columns,
             rows,
             reached_end,
-        } = page::present(&page, properties.as_ref(), None, &mut output)?;
+        } = page::present(&page, properties.as_ref(), Some(selected), &mut output)?;
         Ok(Response::Data {
             source_revision: Some(self.revision),
             table: output.text(table)?,
             offset,
             columns,
             rows,
-            has_more: !reached_end,
+            has_more: count > selected.len() || !reached_end,
         })
     }
 }

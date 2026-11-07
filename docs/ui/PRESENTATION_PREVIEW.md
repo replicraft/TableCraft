@@ -17,9 +17,15 @@ invoked. This is host interaction evidence, not a native Access comparison.
 A separate public-runtime probe read both registered TextIndexFixture originals:
 Jet 4 `Text-V2000-0.mdb` and ACE 16 `Text-V2016-1.accdb`. Each returned 1,000
 ordered rows, ten rows for ID >= 990, and an empty page at offset 1,000. Their
-registered source hashes remained unchanged. A full page at offset 900 still
-reports possible continuation until EOF is observed; that boundary remains under
-review. See the [fixture provenance](../testing/FIXTURES.md#null-only-index-predicate-inputs).
+registered source hashes remained unchanged. The review exposed an empty Next
+page after an exact full final page. Runtime now requests one extra bounded row
+and publishes at most 100, retaining checked EOF and refusing the entire buffer
+if the extra row fails. Scalar Jet 4 and stored-calculation ACE 16 cases cover
+100, 101 and 200 records, provenance, NULLs and unchanged bytes. The new cases
+and existing stored/contents checks passed 13 tests. Cancellation guards remain;
+cancellation specifically during the extra row was not independently exercised.
+Strict all-target/all-feature runtime Clippy and focused formatting also passed.
+See the [fixture provenance](../testing/FIXTURES.md#null-only-index-predicate-inputs).
 
 One headless desktop journey now composes the existing independent 205-row Jet 4
 fixture with actual widgets: Selection filter, descending sort, the later

@@ -84,8 +84,14 @@ Page uses `NativeBrowser::browse_page` once. Metadata selects ordinary scalar
 paging or the existing qualified stored-field profile. Failed reads are not
 retried as another profile. Unknown, corrupt or unqualified columns refuse the
 operation rather than disappearing from the page or becoming empty collections.
-Checked page EOF controls the Next action; page size and declared row count do
-not substitute for it.
+Each 100-row display page requests at most 101 native rows under the same work
+budget and cancellation checks. A validated extra row enables Next without being
+published; otherwise checked EOF disables Next, including when the final display
+page has exactly 100 rows. Failure while reading the lookahead refuses the whole
+buffered page. The extra parent and its selected stored fields/collection work
+consume the existing native allowances; no limits are raised. If a reader has
+not reached checked EOF, Next remains available. Declared row counts do not
+substitute for checked traversal.
 
 Each cell owns its display text and explicit reader facts. Shared regional
 options, validated `ScalarPresentation` facts and the renderer-neutral formatter
