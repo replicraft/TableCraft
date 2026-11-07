@@ -1,7 +1,10 @@
 //! Nonblocking OS file locks; not a database's shared-file locking protocol.
-use crate::IoError;
+use crate::{
+    IoError,
+    open::{open_regular_readonly, open_regular_readwrite},
+};
 use std::{
-    fs::{File, OpenOptions, TryLockError},
+    fs::{File, TryLockError},
     io::{self, Read, Seek, SeekFrom, Write},
     path::Path,
 };
@@ -16,9 +19,9 @@ pub struct SharedFile(File);
 impl SharedFile {
     /// Open an existing regular file read-only and immediately try a shared lock.
     /// Contention returns LockBusy; there is no waiting, retry or lock-file creation.
+    /// Unix checks file kind after a nonblocking open, before attempting the lock.
     pub fn open(path: &Path) -> Result<Self, IoError> {
-        let file = File::open(path)?;
-        regular(&file)?;
+        let file = open_regular_readonly(path)?;
         file.try_lock_shared().map_err(lock_error)?;
         Ok(Self(file))
     }
@@ -59,8 +62,7 @@ impl ExclusiveFile {
     /// Open an existing regular file without truncation and try an exclusive lock.
     /// The caller owns file creation, durable namespace setup and path identity.
     pub fn open(path: &Path) -> Result<Self, IoError> {
-        let file = OpenOptions::new().read(true).write(true).open(path)?;
-        regular(&file)?;
+        let file = open_regular_readwrite(path)?;
         file.try_lock().map_err(lock_error)?;
         Ok(Self(file))
     }
@@ -123,6 +125,7 @@ impl Seek for ExclusiveFile {
         self.0.seek(position)
     }
 }
+#[cfg(all(unix, feature = "filesystem-journal"))]
 fn regular(file: &File) -> Result<(), IoError> {
     if !file.metadata()?.is_file() {
         return Err(IoError::Io(io::ErrorKind::InvalidInput));

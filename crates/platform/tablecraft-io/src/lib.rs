@@ -8,9 +8,7 @@ mod error;
 mod lock;
 pub use error::IoError;
 pub use lock::{ExclusiveFile, SharedFile};
-#[cfg(feature = "fresh-publication")]
 mod open;
-#[cfg(feature = "fresh-publication")]
 pub use open::open_regular_readonly;
 mod progress;
 mod seek;

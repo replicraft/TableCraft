@@ -25,11 +25,11 @@ sha2 = { workspace = true, optional = true }
 [features]
 default = []
 journal = ["dep:sha2"]
-fresh-publication = ["dep:rustix", "dep:getrandom", "dep:windows-sys"]
+fresh-publication = ["dep:getrandom", "dep:windows-sys"]
 filesystem-journal = ["journal", "fresh-publication"]
 
 [target.'cfg(unix)'.dependencies]
-rustix = { workspace = true, optional = true, features = ["std", "fs", "process"] }
+rustix = { workspace = true, features = ["std", "fs", "process"] }
 getrandom = { workspace = true, optional = true }
 
 [target.'cfg(windows)'.dependencies]

@@ -1518,11 +1518,12 @@ consumers. It retains independent raw bytes and no engine dependency.
 
 ## Explicit required fresh-copy namespace durability
 
-The optional `tablecraft-io/fresh-publication` feature directly consumes the
-already locked/reviewed rustix 1.1.5 on Unix (`std`, `fs`, `process`, defaults
-disabled). Its working consumer uses descriptor-relative directory/file creation,
-hard-link publication, identity checks and owned cleanup; `process` supplies the
-actual effective-user ownership check. Workspace registry ownership remains at
+Baseline Unix `tablecraft-io` regular-file opening and lock guards directly
+consume the already locked/reviewed rustix 1.1.5 (`std`, `fs`, `process`, defaults
+disabled), opening nonblocking before checking file kind and taking a lock.
+The optional `fresh-publication` and filesystem journal consumers reuse its
+handle-relative directory/file operations, publication, identity checks and owned
+cleanup; `process` supplies the actual effective-user ownership check. Workspace registry ownership remains at
 the root. Existing getrandom 0.4.3 supplies bounded random staging components;
 no custom entropy generator or new runtime is introduced. Existing tempfile
 3.27.0 is also an IO development dependency for isolated filesystem tests.

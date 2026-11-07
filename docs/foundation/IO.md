@@ -8,7 +8,7 @@ Default features are empty; optional journal enables the working
 
 ## Implemented operations
 
-- `open_regular_readonly` (optional `fresh-publication` feature): opens an
+- `open_regular_readonly` (available with default features): opens an
   existing input read-only and checks the actual descriptor is a regular file.
   Unix uses nonblocking open so a FIFO without a peer refuses immediately.
   Regular symlinks retain ordinary open behavior. The helper provides no lock
@@ -31,7 +31,11 @@ Default features are empty; optional journal enables the working
   resource exhaustion. Host error messages, paths and payloads are not retained.
 - SharedFile / ExclusiveFile: owned, nonblocking shared/exclusive OS file locks,
   sanitized LockBusy and explicit close reporting. They open existing regular
-  files without creation/truncation and expose no raw/cloned handle. See
+  files without creation/truncation and expose no raw/cloned handle. Unix uses
+  the same nonblocking regular-file opening service before taking either lock,
+  so a FIFO without a peer cannot strand a database open. Final symlinks retain
+  ordinary open behavior. Unix rustix is a baseline dependency for these working
+  consumers; publication and filesystem journal features remain optional. See
   [offline transaction scope](../access/writes/NATIVE_TRANSACTIONS.md#os-file-locks).
 
 These reuse std Read/Seek. Callers charge requested bytes once before I/O; the
