@@ -1,6 +1,8 @@
 use super::{KnownOutcome, OfflineWriteSession, Receipt, SessionState};
 use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{FirstTableError, FirstTableIntentError};
 use tablecraft_ace::{InspectError, NativeIntentError, NativeRecoveryQualificationError};
 use tablecraft_io::{
     IoError,
@@ -74,6 +76,14 @@ pub enum Cause {
     /// Closed local INSERT binding or normal native planning refused.
     #[error(transparent)]
     InsertPlanning(sql::RecoverableInsertError),
+    /// Source-bound first-table construction refused before journal preparation.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FirstTablePlanning(FirstTableError),
+    /// First-table intent framing or encoding failed without another decoder retry.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FirstTableIntent(FirstTableIntentError),
     /// Original typed intent framing/binding or encoding failed.
     #[error(transparent)]
     Intent(NativeIntentError),

@@ -1,54 +1,74 @@
-//! Private normal mutation composition; UPDATE, DELETE and INSERT keep distinct intents.
+//! Private action composition; row and schema operations retain distinct intents.
+use super::{Cause, SchemaChange};
 use crate::editing::journal::NativeJournalInsertPlan;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{FirstTablePlan, NativeFirstTableIntent};
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeIntentError, NativeOmittedInsertIntent, NativeUpdateIntent,
-    PreparedNativeUpdate, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
+    RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
+use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 pub(super) enum MutationPlan {
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
     Insert(NativeJournalInsertPlan),
+    #[cfg(feature = "ace16-create")]
+    FirstTable(FirstTablePlan),
 }
 
 impl MutationPlan {
-    pub(super) fn changed_rows(&self) -> usize {
-        match self {
-            Self::Update(plan) => plan.changed_rows(),
-            Self::Delete(plan) => plan.deleted_rows(),
-            Self::Insert(plan) => plan.inserted_rows(),
-        }
-    }
-
     pub(super) fn encode_intent(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Vec<u8>, NativeIntentError> {
+    ) -> Result<Vec<u8>, Cause> {
         match self {
-            Self::Update(plan) => plan.intent().encode(budget, cancelled),
-            Self::Delete(plan) => plan.intent().encode(budget, cancelled),
-            Self::Insert(plan) => plan.encode_intent(budget, cancelled),
+            Self::Update(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::Intent),
+            Self::Delete(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::Intent),
+            Self::Insert(plan) => plan.encode_intent(budget, cancelled).map_err(Cause::Intent),
+            #[cfg(feature = "ace16-create")]
+            Self::FirstTable(plan) => plan
+                .encode_intent(budget, cancelled)
+                .map_err(Cause::FirstTableIntent),
         }
     }
 
-    pub(super) fn prepare<'a, D: ResizableDurableStorage, J: DurableStorage>(
+    pub(super) fn commit<D: ResizableDurableStorage, J: DurableStorage>(
         self,
-        target: &'a mut D,
-        journal: &'a mut J,
+        target: &mut D,
+        journal: &mut J,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
-        match self {
+    ) -> Result<(), Cause> {
+        let prepared = match self {
             Self::Update(plan) => plan.prepare_update(target, journal, budget, cancelled),
             Self::Delete(plan) => plan
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),
             Self::Insert(plan) => plan.prepare_insert(target, journal, budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::FirstTable(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
         }
+        .map_err(Cause::Prepare)?;
+
+        prepared
+            .commit(budget, cancelled)
+            .map(|_| ())
+            .map_err(Cause::Commit)
     }
 }
 
@@ -60,17 +80,36 @@ pub(super) enum MutationIntent {
     CompleteInsert(NativeCompleteInsertIntent),
     OmittedInsert(NativeOmittedInsertIntent),
     ClockInsert(NativeClockInsertIntent),
+    #[cfg(feature = "ace16-create")]
+    FirstTable(NativeFirstTableIntent),
 }
 
 impl MutationIntent {
+    pub(super) fn schema_change(&self) -> Option<SchemaChange> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::FirstTable(intent) => Some(SchemaChange::FirstTableCreated {
+                column_count: intent.column_count(),
+            }),
+            _ => None,
+        }
+    }
+
     pub(super) fn decode(
         raw: &[u8],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, NativeIntentError> {
+    ) -> Result<Self, Cause> {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
-        if raw.starts_with(b"TCND") {
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCNT") {
+            return NativeFirstTableIntent::decode(raw, budget, cancelled)
+                .map(Self::FirstTable)
+                .map_err(Cause::FirstTableIntent);
+        }
+
+        let decoded = if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
         } else if raw.starts_with(b"TCNA0005") {
             NativeClockInsertIntent::decode(raw, budget, cancelled).map(Self::ClockInsert)
@@ -84,6 +123,7 @@ impl MutationIntent {
             NativeInsertIntent::decode(raw, budget, cancelled).map(Self::Insert)
         } else {
             NativeUpdateIntent::decode(raw, budget, cancelled).map(Self::Update)
-        }
+        };
+        decoded.map_err(Cause::Intent)
     }
 }

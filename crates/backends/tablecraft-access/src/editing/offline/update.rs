@@ -105,7 +105,8 @@ impl StagedUpdate {
         plan: RecoverableNativeEditPlan,
         matched: usize,
     ) -> Self {
-        Self::from_mutation(session, MutationPlan::Update(plan), matched)
+        let changed = plan.changed_rows();
+        Self::from_mutation(session, MutationPlan::Update(plan), matched, changed)
     }
 
     pub(super) fn from_delete(
@@ -113,11 +114,16 @@ impl StagedUpdate {
         plan: RecoverableNativeDeletePlan,
         matched: usize,
     ) -> Self {
-        Self::from_mutation(session, MutationPlan::Delete(plan), matched)
+        let changed = plan.deleted_rows();
+        Self::from_mutation(session, MutationPlan::Delete(plan), matched, changed)
     }
 
-    fn from_mutation(session: OfflineWriteSession, plan: MutationPlan, matched: usize) -> Self {
-        let changed = plan.changed_rows();
+    fn from_mutation(
+        session: OfflineWriteSession,
+        plan: MutationPlan,
+        matched: usize,
+        changed: usize,
+    ) -> Self {
         Self {
             session,
             plan,
@@ -153,7 +159,8 @@ impl StagedUpdate {
         super::apply::apply(
             self.session,
             self.plan,
-            (Some(self.matched), self.changed),
+            (Some(self.matched), Some(self.changed)),
+            None,
             bundle,
             budget,
             cancelled,

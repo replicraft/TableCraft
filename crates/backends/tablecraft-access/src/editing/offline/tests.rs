@@ -142,6 +142,7 @@ fn confirmed_images_keep_observation_only_diagnostics_after_cleanup_failure() {
                     known: KnownOutcome::Verified(image),
                     matched: None,
                     changed: None,
+                    schema: None,
                 },
                 outcome,
                 true,

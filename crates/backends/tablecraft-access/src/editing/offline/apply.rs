@@ -1,7 +1,8 @@
 //! Shared retained lifecycle; action-specific plans supply honest optional counts.
 use super::plan::MutationPlan;
 use super::{
-    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt, SessionState,
+    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt,
+    SchemaChange, SessionState,
 };
 use std::path::Path;
 use tablecraft_core::limits::ResourceBudget;
@@ -10,7 +11,8 @@ use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 pub(super) fn apply(
     mut session: OfflineWriteSession,
     plan: MutationPlan,
-    counts: (Option<usize>, usize),
+    counts: (Option<usize>, Option<usize>),
+    schema: Option<SchemaChange>,
     bundle: &Path,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -19,7 +21,7 @@ pub(super) fn apply(
     let (matched, changed) = counts;
     let intent = match plan.encode_intent(budget, cancelled) {
         Ok(intent) => intent,
-        Err(error) => return Err(session.fail(Phase::Intent, Cause::Intent(error))),
+        Err(cause) => return Err(session.fail(Phase::Intent, cause)),
     };
     let setup = (|| {
         session.require_ready()?;
@@ -46,10 +48,7 @@ pub(super) fn apply(
         let slot = session.slot_mut()?;
         let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
         let (mut target, mut journal) = pair.resizable_storage().map_err(Cause::Pair)?;
-        let prepared = plan
-            .prepare(&mut target, &mut journal, budget, cancelled)
-            .map_err(Cause::Prepare)?;
-        prepared.commit(budget, cancelled).map_err(Cause::Commit)?;
+        plan.commit(&mut target, &mut journal, budget, cancelled)?;
         Ok(())
     })();
 
@@ -66,7 +65,8 @@ pub(super) fn apply(
             kind: CompletionKind::Applied,
             known: KnownOutcome::Native(RecoveryOutcome::Committed),
             matched,
-            changed: Some(changed),
+            changed,
+            schema,
         },
         RecoveryOutcome::Committed,
         false,

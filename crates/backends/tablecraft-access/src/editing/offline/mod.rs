@@ -4,6 +4,8 @@
 mod apply;
 mod delete;
 mod error;
+#[cfg(feature = "ace16-create")]
+mod first_table;
 mod insert;
 mod plan;
 mod recovery;
@@ -15,6 +17,8 @@ mod tests;
 
 pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
+#[cfg(feature = "ace16-create")]
+pub use first_table::StagedFirstTable;
 pub use insert::{OfflineTableInserter, StagedInsert};
 pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;
@@ -57,6 +61,16 @@ pub enum KnownOutcome {
     Verified(VerifiedImage),
 }
 
+/// Acknowledged schema change, separate from affected-record counts.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SchemaChange {
+    /// The first ordinary table was committed to the original canonical blank.
+    FirstTableCreated {
+        /// Number of explicitly authored scalar fields, including the ID key.
+        column_count: usize,
+    },
+}
+
 /// Allocation-free completion data. It is not stdout or a native-save grant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Receipt {
@@ -64,6 +78,7 @@ pub struct Receipt {
     known: KnownOutcome,
     matched: Option<usize>,
     changed: Option<usize>,
+    schema: Option<SchemaChange>,
 }
 
 impl Receipt {
@@ -86,6 +101,12 @@ impl Receipt {
             KnownOutcome::Verified(value) => Some(value),
             _ => None,
         }
+    }
+
+    /// A committed schema operation. Row edits, rollback and Original-image
+    /// confirmation return None; a recovered/confirmed replacement can retain it.
+    pub const fn schema_change(self) -> Option<SchemaChange> {
+        self.schema
     }
 
     /// Original matched rows for apply; recovery/confirmation do not invent counts.
