@@ -1,5 +1,6 @@
-use super::{ParentIdentity, PublicationError, PublicationReceipt};
+use super::{ParentIdentity, PublicationError, PublicationGuarantee, PublicationReceipt};
 use crate::{IoError, progress::check};
+use std::io::ErrorKind;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 // Paid before staging/visibility; these allowances cover bounded cleanup and
@@ -21,6 +22,10 @@ pub(super) trait Backend {
     type Stage;
 
     fn identity(&self) -> &ParentIdentity;
+
+    fn guarantee(&self) -> PublicationGuarantee {
+        PublicationGuarantee::CapturedParentBarrier
+    }
 
     fn terminal_work(&self) -> u64 {
         0
@@ -48,7 +53,18 @@ pub(super) trait Backend {
 
     fn cleanup(&self, stage: &Self::Stage) -> Result<(), IoError>;
 
-    fn sync_parent(&self) -> Result<(), IoError>;
+    /// A separately supported captured-parent directory barrier. Backends that
+    /// acknowledge a different operation must override `sync_namespace` instead.
+    fn sync_parent(&self) -> Result<(), IoError> {
+        Err(IoError::Io(ErrorKind::Unsupported))
+    }
+
+    /// Complete the platform durability operation after known publication.
+    /// Unix flushes the captured parent. Windows flushes the retained renamed
+    /// write-through file; `guarantee` distinguishes the acknowledged fact.
+    fn sync_namespace(&self, _stage: &Self::Stage) -> Result<(), IoError> {
+        self.sync_parent()
+    }
 }
 
 fn abort<B: Backend>(backend: &B, stage: &B::Stage, cause: IoError) -> PublicationError {
@@ -114,11 +130,12 @@ pub(super) fn publish<B: Backend>(
     }
 
     let cleanup = backend.cleanup(&stage).err();
-    let barrier = backend.sync_parent().err();
+    let barrier = backend.sync_namespace(&stage).err();
     if let Some(cause) = cleanup {
         return Err(PublicationError::PublishedCleanupFailure {
             cause,
-            namespace_synced: barrier.is_none(),
+            namespace_synced: barrier.is_none()
+                && backend.guarantee() == PublicationGuarantee::CapturedParentBarrier,
             barrier,
         });
     }
@@ -128,5 +145,6 @@ pub(super) fn publish<B: Backend>(
 
     Ok(PublicationReceipt {
         parent: backend.identity().clone(),
+        guarantee: backend.guarantee(),
     })
 }

@@ -89,7 +89,7 @@ fn required_wrapper_uses_the_held_parent_after_textual_path_retargeting() {
     assert_eq!(fs::read_dir(&held).unwrap().count(), 1);
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 #[test]
 fn unsupported_required_backend_refuses_without_staging() {
     let directory = tempfile::tempdir().unwrap();

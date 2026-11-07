@@ -146,8 +146,8 @@ identity checks followed by cleanup do not provide atomic protection against tha
 excluded race. Concurrent creation of the final name remains safely refused.
 
 Payload bytes are charged once by IO. Cleanup work is reserved before staging;
-terminal publication/barrier work is reserved before visibility. Known successful
-publication always attempts the parent barrier even after cleanup failure, with
+terminal publication/durability work is reserved before visibility. Known successful
+publication always attempts its terminal durability callback even after cleanup failure, with
 no later cancellation or shared-budget rejection. An unknown publication-call
 outcome instead stops, retains possible staging entries and reports
 `VisibilityUncertain` without another namespace callback. No failure authorizes
@@ -156,14 +156,54 @@ automatic retry or deletion of the final entry. `NotPublished`,
 visibility/barrier outcomes; failed cleanup means a temporary *may* remain.
 Blocking filesystem callbacks retain their own timeout responsibilities.
 
-Required Windows durability currently returns `UnsupportedDurability` before
-staging. Directory handles and file-content synchronization alone are not claimed
-to establish a Windows namespace barrier. The documented
-[MoveFileExW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw)
-WRITE_THROUGH behavior is not substituted for this descriptor-relative Unix
-protocol. Existing cross-platform content-sync publication remains available.
-On Unix, the separate file/directory barrier distinction follows
-[fsync](https://man7.org/linux/man-pages/man2/fsync.2.html).
+Windows has a separate local-NTFS publisher. Capture holds the actual parent
+handle without delete sharing, rejects a reparse-point parent, and queries that
+handle's filesystem and device information. The admitted destination is an
+absolute drive path with ordinary validated UTF-16 components. An ordinary
+relative path resolves once during capture; drive-relative and root-relative
+forms refuse. UNC/device paths,
+alternate streams, reserved DOS names, trailing dots/spaces and unsupported
+filesystems refuse before staging. Ancestor pathname resolution is not an
+attestation that every ancestor is free of reparse points; publication uses the
+parent actually captured, not a later interpretation of its path.
+
+A random staging file is created exclusively relative to that parent through
+`NtCreateFile`, with synchronous write-through I/O and no sharing. The retained
+file is written and flushed, then renamed through the same handle using
+`SetFileInformationByHandle(FileRenameInfo)`, a parent-relative final name and
+replacement disabled. A known successful rename consumes the temporary name;
+cleanup never deletes that final file. The terminal operation flushes the retained
+renamed file. A collision refuses without replacing the existing output; other
+unresolved rename failures retain the visibility-uncertain outcome.
+[FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info)
+documents parent-relative names and no-replacement behavior.
+
+The receipt exposes `PublicationGuarantee`: Unix returns
+`CapturedParentBarrier`; the Windows route returns `NtfsWriteThroughRename`.
+`namespace_synced()` is true only for the separately acknowledged captured-parent
+barrier. The NTFS route does not fabricate a Unix-style directory flush. Its
+contract relies on Microsoft's documented write-through metadata behavior,
+including renames, plus the retained file's terminal flush.
+[CreateFileW caching behavior](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew#caching-behavior)
+and [FlushFileBuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers)
+describe those operations. On Unix, the separate file/directory barrier distinction
+follows [fsync](https://man7.org/linux/man-pages/man2/fsync.2.html).
+
+This Windows implementation and its API contract are separate from verification:
+Windows filesystem execution, native Access open/save and hardware power-loss
+qualification have not been performed locally. The historical macOS results below
+do not establish those Windows outcomes. Unsupported routes do not downgrade to
+another publication method.
+
+The Windows publisher is IO's sole local unsafe-code exception. IO declares
+`unsafe_code = "deny"` instead of inheriting the workspace's non-overridable
+`forbid`, and allows unsafe only on the Windows-gated `publication::windows`
+module. Workspace `forbid` and the existing Clippy `all = "warn"` policy remain
+unchanged elsewhere. The exception covers the documented Windows ABI calls,
+bounded aligned information buffers and adoption of newly owned OS handles;
+each unsafe block records its specific lifetime, layout or ownership conditions.
+It is a scoped reviewed implementation boundary, not independent unsafe-code or
+Windows runtime qualification.
 
 
 The focused publication tests exercise sanitized pre-publication faults,

@@ -6,8 +6,12 @@ use tablecraft_io::publication::{PublicationError, RequiredOutput};
 use tempfile::NamedTempFile;
 
 const COPY_CHUNK_BYTES: usize = 64 * 1024;
+#[cfg(not(windows))]
 pub(crate) const REQUIRED_REPORT: &str =
     "Durable output\tFile and captured-directory barriers completed\n";
+#[cfg(windows)]
+pub(crate) const REQUIRED_REPORT: &str =
+    "Durable output\tNTFS write-through rename and retained-file flush completed\n";
 
 #[derive(Debug)]
 pub(crate) enum Error {

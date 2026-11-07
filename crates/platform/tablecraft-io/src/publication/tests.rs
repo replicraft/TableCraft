@@ -1,5 +1,5 @@
 use super::protocol::{self, Backend, CreateFailure, PublishFailure};
-use super::{ParentIdentity, PublicationError};
+use super::{ParentIdentity, PublicationError, PublicationGuarantee};
 use crate::IoError;
 use std::cell::{Cell, RefCell};
 use std::io::ErrorKind;
@@ -27,6 +27,7 @@ struct Model<'a> {
     events: &'a RefCell<Vec<&'static str>>,
     cancelled: &'a Cell<bool>,
     identity: ParentIdentity,
+    guarantee: PublicationGuarantee,
 }
 
 fn failure() -> IoError {
@@ -34,13 +35,17 @@ fn failure() -> IoError {
 }
 
 impl Backend for Model<'_> {
-    type Stage = ();
+    type Stage = u64;
 
     fn identity(&self) -> &ParentIdentity {
         &self.identity
     }
 
-    fn create(&self, _: &mut ResourceBudget, _: &dyn Fn() -> bool) -> Result<(), CreateFailure> {
+    fn guarantee(&self) -> PublicationGuarantee {
+        self.guarantee
+    }
+
+    fn create(&self, _: &mut ResourceBudget, _: &dyn Fn() -> bool) -> Result<u64, CreateFailure> {
         self.events.borrow_mut().push("create");
         if matches!(self.fault, Fault::Create | Fault::CreateUnbound) {
             return Err(CreateFailure {
@@ -48,12 +53,12 @@ impl Backend for Model<'_> {
                 temporary_may_remain: self.fault == Fault::CreateUnbound,
             });
         }
-        Ok(())
+        Ok(71)
     }
 
     fn write(
         &self,
-        _: &mut (),
+        _: &mut u64,
         _: &[u8],
         _: &mut ResourceBudget,
         _: &dyn Fn() -> bool,
@@ -65,7 +70,7 @@ impl Backend for Model<'_> {
         Ok(())
     }
 
-    fn sync_payload(&self, _: &()) -> Result<(), IoError> {
+    fn sync_payload(&self, _: &u64) -> Result<(), IoError> {
         self.events.borrow_mut().push("payload_sync");
         if self.fault == Fault::PayloadSync {
             return Err(failure());
@@ -73,7 +78,7 @@ impl Backend for Model<'_> {
         Ok(())
     }
 
-    fn verify(&self, _: &()) -> Result<(), IoError> {
+    fn verify(&self, _: &u64) -> Result<(), IoError> {
         self.events.borrow_mut().push("verify");
         if self.fault == Fault::Verify {
             return Err(failure());
@@ -81,7 +86,7 @@ impl Backend for Model<'_> {
         Ok(())
     }
 
-    fn publish(&self, _: &()) -> Result<(), PublishFailure> {
+    fn publish(&self, _: &u64) -> Result<(), PublishFailure> {
         self.events.borrow_mut().push("publish");
         match self.fault {
             Fault::Collision => Err(PublishFailure::Collision(IoError::Io(
@@ -96,12 +101,26 @@ impl Backend for Model<'_> {
         }
     }
 
-    fn cleanup(&self, _: &()) -> Result<(), IoError> {
+    fn cleanup(&self, _: &u64) -> Result<(), IoError> {
         self.events.borrow_mut().push("cleanup");
         if matches!(
             self.fault,
             Fault::Cleanup | Fault::CleanupAndBarrier | Fault::WriteAndCleanup
         ) {
+            return Err(failure());
+        }
+        Ok(())
+    }
+
+    fn sync_namespace(&self, stage: &u64) -> Result<(), IoError> {
+        assert_eq!(*stage, 71);
+
+        if self.guarantee == PublicationGuarantee::CapturedParentBarrier {
+            return self.sync_parent();
+        }
+
+        self.events.borrow_mut().push("renamed_file_sync");
+        if matches!(self.fault, Fault::ParentSync | Fault::CleanupAndBarrier) {
             return Err(failure());
         }
         Ok(())
@@ -126,9 +145,16 @@ fn model<'a>(
         events,
         cancelled,
         identity: ParentIdentity {
+            #[cfg(not(windows))]
             device: 1,
+            #[cfg(not(windows))]
             inode: 2,
+            #[cfg(windows)]
+            volume: 1,
+            #[cfg(windows)]
+            file_id: [2; 16],
         },
+        guarantee: PublicationGuarantee::CapturedParentBarrier,
     }
 }
 
@@ -309,7 +335,7 @@ fn publication_final_cancellation_cleans_without_publishing() {
 #[path = "tests/filesystem.rs"]
 mod filesystem;
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 #[test]
 fn required_output_unsupported_platform_fails_before_effects() {
     use super::RequiredOutput;
@@ -324,3 +350,15 @@ fn required_output_unsupported_platform_fails_before_effects() {
         Err(PublicationError::UnsupportedDurability)
     ));
 }
+
+#[path = "tests/windows_protocol.rs"]
+mod windows_protocol;
+
+use super::windows_names;
+
+#[path = "tests/windows_names.rs"]
+mod windows_name_tests;
+
+#[cfg(windows)]
+#[path = "tests/windows_filesystem.rs"]
+mod windows_filesystem;

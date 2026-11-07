@@ -8,8 +8,13 @@ repository.workspace = true
 publish = false
 description = "Bounded synchronous I/O primitives independent of database formats"
 
-[lints]
-workspace = true
+# Keep unsafe denied except for the explicitly reviewed Windows publication FFI
+# module. Workspace `forbid` cannot admit a scoped module exception.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = "warn"
 
 [dependencies]
 tracing.workspace = true
@@ -20,12 +25,23 @@ sha2 = { workspace = true, optional = true }
 [features]
 default = []
 journal = ["dep:sha2"]
-fresh-publication = ["dep:rustix", "dep:getrandom"]
+fresh-publication = ["dep:rustix", "dep:getrandom", "dep:windows-sys"]
 filesystem-journal = ["journal", "fresh-publication"]
 
 [target.'cfg(unix)'.dependencies]
 rustix = { workspace = true, optional = true, features = ["std", "fs", "process"] }
 getrandom = { workspace = true, optional = true }
+
+[target.'cfg(windows)'.dependencies]
+getrandom = { workspace = true, optional = true }
+windows-sys = { workspace = true, optional = true, features = [
+    "Wdk_Foundation",
+    "Wdk_Storage_FileSystem",
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_IO",
+] }
 
 [dev-dependencies]
 tempfile.workspace = true

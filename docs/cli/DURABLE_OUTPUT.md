@@ -8,7 +8,7 @@ claim. The verification history below records the original two consumers; the
 BeforeChange guide records its separate qualification.
 
 The [fresh native create command](NATIVE_CREATION.md) always requires this
-captured-parent protocol through the shared Access creation service. It has no
+required publication protocol through the shared Access creation service. It has no
 `--durable-output` toggle or content-only fallback. Its publication/output
 acceptance is recorded separately from the historical copy-command results below.
 
@@ -23,8 +23,10 @@ tablecraft query preview-create-index 'CREATE INDEX ScoreLookup ON Items (Score)
 The host validates closed statement/profile syntax before opening the source or
 capturing the output. Required selection captures and holds the actual parent
 directory early; it never retries a failed required operation under the default
-publisher. Windows currently refuses Required at capture before staging; ordinary
-Windows copies retain their existing behavior.
+publisher. Unix uses a captured-parent directory barrier. Windows uses a separate
+qualified local-NTFS write-through rename and retained-file flush; unsupported
+filesystems and destination forms refuse before staging. Ordinary Windows copies
+retain their existing content-sync publisher.
 
 For the source-copy commands, planning still consumes one immutable source image.
 Complete report construction
@@ -38,15 +40,34 @@ The [common host publisher](../../apps/tablecraft-cli/src/native/publication.rs)
 delegates Required to the [optional IO publication owner](../foundation/IO.md#explicit-required-fresh-copy-publication).
 IO alone charges the requested payload bytes and owns
 relative staging, file synchronization, no-clobber publication, reserved terminal
-cleanup and the captured-parent barrier. The CLI consumes the success receipt
-before returning its already formatted report:
+cleanup and the selected platform durability operation. This applies to every
+Required caller above, including fresh creation; it does not expand the ordinary
+content-sync route. The CLI consumes the success receipt before returning its
+already formatted report. Unix success reports:
 
     Durable output  File and captured-directory barriers completed
 
-This acknowledges the captured directory, not continued resolution of the
-original textual path. Filesystem/device compliance and physical power-loss
-behavior remain separate from completed API barriers. A stdout failure can occur
-after successful publication.
+Windows success reports:
+
+    Durable output  NTFS write-through rename and retained-file flush completed
+
+The IO receipt identifies `CapturedParentBarrier` or `NtfsWriteThroughRename`.
+Its `namespace_synced()` is true only for the separate captured-parent barrier;
+Windows does not claim that a parent directory was separately flushed. The NTFS
+route creates a private write-through stage through the held directory, flushes
+its payload, renames the retained file handle without replacement and flushes
+that same file afterward. Microsoft's
+[write-through metadata contract](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew#caching-behavior)
+includes NTFS rename metadata. See the
+[IO contract](../foundation/IO.md#explicit-required-fresh-copy-publication)
+for exact handle, path and filesystem restrictions.
+
+These facts concern the captured parent and retained file, not continued
+resolution of the original textual path. Filesystem/device compliance and physical
+power-loss behavior remain separate from completed API operations. Windows
+filesystem execution and native Access open/save have not been run locally; the
+historical macOS tests below do not qualify Windows behavior. A stdout failure can
+occur after successful publication.
 
 Errors preserve operation state. `NotPublished` means this attempt did not publish,
 not that no pre-existing destination exists; a failed cleanup may leave an owned

@@ -1527,9 +1527,32 @@ the root. Existing getrandom 0.4.3 supplies bounded random staging components;
 no custom entropy generator or new runtime is introduced. Existing tempfile
 3.27.0 is also an IO development dependency for isolated filesystem tests.
 
-Required durability is explicit and Unix-only in this implementation. Windows
-refuses it before output effects; existing default publication is unaffected.
-These dependencies add no native database admission or macro/save authority.
+The same optional feature now directly consumes the already locked
+`windows-sys` 0.61.2 on Windows (MIT OR Apache-2.0, Rust 1.71), with defaults
+disabled. Its target-local WDK Foundation/Storage FileSystem and Win32
+Foundation/Security/Storage FileSystem/System IO
+features expose the working handle-relative local-NTFS publisher: exclusive
+`NtCreateFile` staging, file/device identity and filesystem qualification,
+no-replacement `FILE_RENAME_INFO`, owned temporary disposition and retained-handle
+flushes. The existing `windows-link` dependency supplies import linkage. Neither
+a new registry version nor a GUI/network runtime is introduced into IO or the CLI.
+Existing getrandom supplies the Windows staging name as well.
+
+Direct Windows FFI requires one scoped lint exception: `tablecraft-io` declares
+`unsafe_code = "deny"` and retains workspace-equivalent Clippy `all = "warn"`,
+with `allow(unsafe_code)` only on its Windows-gated `publication::windows`
+module. Root/workspace `unsafe_code = "forbid"` is unchanged. Each block documents
+the OS ABI, buffer or handle-ownership conditions it relies on; no unsafe
+permission is granted to engines, shared application services or other IO modules.
+This source review is not a Windows execution or independent unsafe audit.
+
+Required publication now reports distinct Unix parent-barrier and Windows NTFS
+write-through-rename guarantees. It does not treat a file flush as a separate
+Windows directory barrier; unsupported Windows filesystems refuse rather than
+silently downgrade. Existing default publication is unaffected. See the
+[IO publication contract](../foundation/IO.md#explicit-required-fresh-copy-publication)
+for the platform assumptions and primary API references. These dependencies add
+no native database admission or macro/save authority.
 The CLI enables this feature for its explicit `--durable-output` consumers;
 default publication retains its existing path. The first macOS all-feature IO
 library check, corrected ten focused publication functions, full IO49-function
