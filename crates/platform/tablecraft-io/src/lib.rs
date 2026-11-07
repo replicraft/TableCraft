@@ -29,3 +29,9 @@ pub mod publication;
 
 #[cfg(all(unix, feature = "fresh-publication"))]
 mod namespace;
+
+// Checked Windows ABI calls and owned-handle adoption are confined to this
+// platform boundary. Each unsafe block documents its handle and buffer proof.
+#[cfg(all(windows, feature = "fresh-publication"))]
+#[allow(unsafe_code)]
+mod windows_fs;

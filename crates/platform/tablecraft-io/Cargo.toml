@@ -8,7 +8,7 @@ repository.workspace = true
 publish = false
 description = "Bounded synchronous I/O primitives independent of database formats"
 
-# Keep unsafe denied except for the explicitly reviewed Windows publication FFI
+# Keep unsafe denied except for the explicitly reviewed Windows filesystem FFI
 # module. Workspace `forbid` cannot admit a scoped module exception.
 [lints.rust]
 unsafe_code = "deny"

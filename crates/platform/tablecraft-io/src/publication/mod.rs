@@ -19,10 +19,7 @@ mod protocol;
 mod unix;
 #[cfg(any(windows, test))]
 mod windows_names;
-// The only IO exception to denied unsafe code: checked Windows ABI calls and
-// owned-handle adoption for this publisher. Each unsafe block states its proof.
 #[cfg(windows)]
-#[allow(unsafe_code)]
 mod windows;
 
 pub use error::{ParentIdentity, PublicationError, PublicationGuarantee, PublicationReceipt};

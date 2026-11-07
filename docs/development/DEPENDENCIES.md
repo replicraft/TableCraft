@@ -1540,8 +1540,10 @@ Existing getrandom supplies the Windows staging name as well.
 
 Direct Windows FFI requires one scoped lint exception: `tablecraft-io` declares
 `unsafe_code = "deny"` and retains workspace-equivalent Clippy `all = "warn"`,
-with `allow(unsafe_code)` only on its Windows-gated `publication::windows`
-module. Root/workspace `unsafe_code = "forbid"` is unchanged. Each block documents
+with `allow(unsafe_code)` only on its Windows-gated private `windows_fs`
+module. The required publisher consumes those shared checked filesystem calls;
+its policy and work accounting remain separate. Root/workspace
+`unsafe_code = "forbid"` is unchanged. Each block documents
 the OS ABI, buffer or handle-ownership conditions it relies on; no unsafe
 permission is granted to engines, shared application services or other IO modules.
 This source review is not a Windows execution or independent unsafe audit.
