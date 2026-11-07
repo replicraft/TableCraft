@@ -67,7 +67,7 @@ window checks remain suspended at the user's request.
 
 ## Remaining integration
 
-No desktop CI matrix, complete asset-set publication gate, installers, signing,
+No desktop CI matrix, publication integration, installers, signing,
 notarization or working file associations are supplied by these utilities. The
 archive target names reuse the CLI's six architecture identifiers without
 claiming those desktop builds have been qualified. macOS deployment minimums and
@@ -75,9 +75,36 @@ Linux runtime-library requirements still need build evidence. Bundle metadata
 deliberately declares no document handler; see the
 [file-association boundary](../architecture/FILE_ASSOCIATIONS.md).
 
+## Complete desktop asset set
+
+[`desktop_release.py`](../../scripts/packaging/desktop_release.py) checks the
+six archives and six sidecars together before creating assembly outputs:
+
+```sh
+python3 scripts/packaging/desktop_release.py finalize --version 0.1.0 \
+  --output .cache/desktop-dist \
+  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
+  --icon .cache/desktop-icons/application.icns
+python3 scripts/packaging/desktop_release.py verify --version 0.1.0 \
+  --output .cache/desktop-dist \
+  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
+  --icon .cache/desktop-icons/application.icns
+```
+
+Finalization requires exactly twelve input files. It revalidates every archive
+against the reviewed notice/icon inputs and checks every sidecar, then creates
+`DesktopThirdPartyLicenses.txt` and `SHA256SUMS-desktop.txt`. Verification requires
+exactly those fourteen assets and compares all thirteen payload checksums. The
+standalone names differ from the CLI bundle so a future combined release can
+retain both notice scopes. An absent platform, changed notice, invalid checksum
+or extra file refuses assembly. Failed output writes remove only files created
+by that invocation; existing archives remain intact. These commands do not
+publish artifacts or establish native platform compatibility.
+
 ## Local verification — 7 November 2026
 
-The nine desktop packaging tests and thirteen existing CLI packaging tests pass.
+The thirteen desktop packaging/assembly tests and thirteen existing CLI
+packaging tests pass.
 They exercise synthetic native headers; this is not six-platform build evidence.
 Four icon tests decode each PNG payload and check native container offsets and
 dimensions against independent expectations. The exporter builds and runs;

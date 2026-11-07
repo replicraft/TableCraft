@@ -41,7 +41,12 @@ Access editing.
   outside normal saves; do not advertise arbitrary edits or database creation.
   See [runtime editing contracts](../application/RUNTIME.md) and
   [native write limits](../access/writes/NATIVE_WRITES.md).
-- [ ] **Add a separate desktop artifact/CI contract.** Choose and document the
+- [x] **Implement desktop archive and complete-set verification.** Portable
+  packaging, vector-derived native icons and exact six-archive assembly are
+  implemented with focused tests and a local test-only macOS archive smoke check.
+  This does not qualify release builds on six platforms. See the
+  [preparation guide](../development/DESKTOP_PACKAGING.md).
+- [ ] **Integrate desktop release builds with CI.** Choose and document the
   actual supported OS/architecture set and artifact names; do not inherit the
   CLI's six-platform qualification. Build/package the real GUI with its runtime
   dependencies, icon and platform metadata. Verify extraction, architecture,

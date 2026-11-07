@@ -17,6 +17,7 @@ import zlib
 PACKAGING = Path(__file__).resolve().parents[1] / "packaging"
 sys.path.insert(0, str(PACKAGING))
 import package_desktop as desktop
+import desktop_release as release
 import release_contract as contract
 from test_package_cli import VERSION, native_binary
 
@@ -235,6 +236,84 @@ class DesktopPackagingTests(unittest.TestCase):
             self.assertEqual(Path(call.args[0][0]).name, "tablecraft-desktop.exe")
             self.assertTrue(Path(call.args[0][0]).is_absolute())
             self.assertNotIn("shell", call.kwargs)
+
+    def test_complete_desktop_set_has_independent_notices_and_checksums(self):
+        for target in contract.TARGETS:
+            self.package(target)
+        output = self.root / "dist"
+        release.finalize(VERSION, output, self.notices, self.icon)
+        release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
+
+        names = {path.name for path in output.iterdir()}
+        self.assertEqual(len(names), 14)
+        self.assertIn("DesktopThirdPartyLicenses.txt", names)
+        self.assertIn("SHA256SUMS-desktop.txt", names)
+        self.assertNotIn("ThirdPartyLicenses.txt", names)
+        self.assertNotIn("SHA256SUMS.txt", names)
+        self.assertEqual((output / release.NOTICES).read_bytes(), self.notices.read_bytes())
+        manifest = (output / release.CHECKSUMS).read_text().splitlines()
+        self.assertEqual(len(manifest), 13)
+        for entry in manifest:
+            digest, name = entry.split("  ")
+            self.assertEqual(digest, hashlib.sha256((output / name).read_bytes()).hexdigest())
+
+    def test_missing_platform_or_bad_sidecar_cannot_create_assembly_outputs(self):
+        targets = list(contract.TARGETS)
+        for target in targets[:-1]:
+            self.package(target)
+        output = self.root / "dist"
+        with self.assertRaisesRegex(ValueError, "release set differs"):
+            release.finalize(VERSION, output, self.notices, self.icon)
+        self.assertFalse((output / release.NOTICES).exists())
+        self.assertFalse((output / release.CHECKSUMS).exists())
+
+        self.package(targets[-1])
+        archive = output / desktop.archive_name(VERSION, targets[-1])
+        archive.with_name(archive.name + ".sha256").write_text("wrong checksum\n")
+        with self.assertRaisesRegex(ValueError, "sidecar differs"):
+            release.finalize(VERSION, output, self.notices, self.icon)
+        self.assertFalse((output / release.NOTICES).exists())
+        self.assertFalse((output / release.CHECKSUMS).exists())
+
+    def test_assembled_set_rejects_changed_notices_manifest_and_extra_assets(self):
+        for target in contract.TARGETS:
+            self.package(target)
+        output = self.root / "dist"
+        release.finalize(VERSION, output, self.notices, self.icon)
+        notice_path = output / release.NOTICES
+        original_notices = notice_path.read_bytes()
+        notice_path.write_text("substituted notices\n")
+        with self.assertRaisesRegex(ValueError, "Standalone desktop notices differ"):
+            release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
+        notice_path.write_bytes(original_notices)
+
+        sums_path = output / release.CHECKSUMS
+        original_sums = sums_path.read_bytes()
+        sums_path.write_bytes(original_sums[:-1])
+        with self.assertRaisesRegex(ValueError, "complete checksum manifest differs"):
+            release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
+        sums_path.write_bytes(original_sums)
+
+        (output / "unreviewed-installer.exe").write_bytes(b"unexpected asset")
+        with self.assertRaisesRegex(ValueError, "release set differs"):
+            release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
+
+    def test_failed_assembly_write_removes_only_its_new_outputs(self):
+        for target in contract.TARGETS:
+            self.package(target)
+        output = self.root / "dist"
+        before = {path.name: path.read_bytes() for path in output.iterdir()}
+        original_open = Path.open
+
+        def fail_manifest(path, mode="r", *args, **kwargs):
+            if path == output / release.CHECKSUMS and mode == "xb":
+                raise OSError("injected assembly write failure")
+            return original_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", fail_manifest):
+            with self.assertRaisesRegex(OSError, "injected assembly write failure"):
+                release.finalize(VERSION, output, self.notices, self.icon)
+        self.assertEqual({path.name: path.read_bytes() for path in output.iterdir()}, before)
 
 
 if __name__ == "__main__":
