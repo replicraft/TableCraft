@@ -1,5 +1,28 @@
 # Implementation status
 
+## Explicit Create → Table after Open — 7 November 2026
+
+An ordinary or recovered canonical blank ACE 16 database now exposes explicit
+Create → Table without inventing a draft during Open. Runtime reports a
+revision-bound fact from the exact immutable captured bytes, using the engine’s
+same complete-byte predicate as planning. Readable noncanonical blanks and
+existing user tables remain readable but do not gain schema-write eligibility.
+The shared UI opens the existing Datasheet draft, preserves parked SQL text and
+focuses Click to Add. Review and same-file Save retain fresh source checks.
+Table Design and general table addition remain unfinished. Source-free Backstage
+pages also hide Back while retaining Home/Escape navigation.
+
+The complete local headless batches pass 130 runtime, 351 UI and 93 desktop tests.
+Six focused engine cases cover the shared predicate, exact limits and cancellation.
+Strict selected-package lint, all 881 formatter target roots, the 20-package
+dependency guard and 7,896 documentation targets pass. The UI batch includes all
+93 scenes across eight languages and two themes. Windows x64 and ARM64 cross-checks
+include all targets/features of runtime, UI and desktop. These are macOS test
+execution and Windows compilation evidence; native Windows/Linux execution and
+Access comparison remain unrun. No native app windows were opened.
+See [the creation workflow](ui/DATABASE_CREATION.md#creating-the-first-table-after-open)
+and [the platform audit](testing/CROSS_PLATFORM_AUDIT.md).
+
 ## Explicit Open-time journal recovery — 7 November 2026
 
 A reserved active journal now produces a source-free recovery prompt instead of

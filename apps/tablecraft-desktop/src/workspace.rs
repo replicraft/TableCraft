@@ -420,6 +420,7 @@ impl Desktop {
                 Ok(Response::Opened {
                     document_revision,
                     source_path,
+                    first_table_creation_available,
                     title,
                     format,
                     tables,
@@ -457,6 +458,10 @@ impl Desktop {
                         continue;
                     }
                     self.state.database = Some(database);
+                    self.state.set_first_table_creation_available(
+                        document_revision,
+                        first_table_creation_available,
+                    );
                     self.recovery_opened(generation, document_revision);
                     self.state.dismiss_backstage();
                     if matches!(self.pending, PendingOperation::CreatedOpen) {

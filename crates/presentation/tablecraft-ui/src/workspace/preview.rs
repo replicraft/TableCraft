@@ -91,6 +91,7 @@ pub enum Scene {
     DatabaseCreation,
     InitialTableDraft,
     InitialTableSaveName,
+    FirstTableReady,
     Backstage,
     Options,
     About,
@@ -123,7 +124,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 92] = [
+    pub const ALL: [Self; 93] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -187,6 +188,7 @@ impl Scene {
         Self::DatabaseCreation,
         Self::InitialTableDraft,
         Self::InitialTableSaveName,
+        Self::FirstTableReady,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -308,6 +310,7 @@ impl Scene {
             Self::DatabaseCreation => "database-creation",
             Self::InitialTableDraft => "initial-table-draft",
             Self::InitialTableSaveName => "initial-table-save-name",
+            Self::FirstTableReady => "first-table-ready",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -589,7 +592,7 @@ impl Preview {
                 }
             }
             Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
-            Scene::InitialTableDraft | Scene::InitialTableSaveName => {
+            Scene::InitialTableDraft | Scene::InitialTableSaveName | Scene::FirstTableReady => {
                 for tab in self.state.object_tabs() {
                     self.state.close_object(&tab);
                 }
@@ -600,10 +603,20 @@ impl Preview {
                     database.title_path = Some("Synthetic workspace/Database1.accdb".into());
                 }
                 self.state.dismiss_backstage();
-                assert!(
-                    self.state.open_initial_table_draft(),
-                    "synthetic initial draft opens"
-                );
+                if scene == Scene::FirstTableReady {
+                    // Synthetic availability illustrates the actual command. It
+                    // is not runtime qualification or native write permission.
+                    let revision = self.state.database.as_ref().unwrap().document_revision;
+                    self.state.table_save_available = true;
+                    self.state
+                        .set_first_table_creation_available(revision, true);
+                    self.state.ribbon_tab = Tab::Create;
+                } else {
+                    assert!(
+                        self.state.open_initial_table_draft(),
+                        "synthetic initial draft opens"
+                    );
+                }
                 self.state.path = "Database1.accdb".into();
                 if scene == Scene::InitialTableSaveName {
                     self.state.table_save_available = true;

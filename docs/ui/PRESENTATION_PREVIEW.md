@@ -1,5 +1,17 @@
 # Presentation preview
 
+## Explicit first-table command — 7 November 2026
+
+The `first-table-ready` scene shows a synthetic canonical-blank qualification
+with no draft, user tables or rows. Create → Table uses the actual shared command
+to open the existing `initial-table-draft` surface and focus Click to Add. The
+scene supplies UI facts only; it cannot issue a runtime write grant. The inventory
+now contains 93 scenes. Focused headless interaction checks cover command
+availability, draft creation and parked SQL text. No new native window or
+offscreen visual comparison was performed for this command-state addition.
+Source-free Backstage pages hide Back while retaining Home and Escape navigation;
+this is the requested adaptation, not a verified Access startup capture.
+
 ## Open-time recovery — 7 November 2026
 
 The resource-free `restart-prompt` and `restart-result` scenes use the real File/

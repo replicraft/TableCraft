@@ -57,6 +57,15 @@ unimplemented. See [database creation](../ui/DATABASE_CREATION.md).
 
 ## Reviewed first-table schema save
 
+Opening a document reports `first_table_creation_available` alongside its exact
+`document_revision`. With creation and offline editing enabled on a supported
+host, this checks the same immutable captured bytes against the engine’s complete
+canonical-blank predicate. It does not make a second full source copy, scan user
+records, open a draft or write the file. Unsupported/read-only sources report
+false; cancellation and resource failures remain errors. The revision-bound fact
+only enables explicit Create → Table. Fresh review and save still recheck the
+complete source. Ordinary and recovered Open remain inert until that command.
+
 With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
 `Command::ReviewFirstTable` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit

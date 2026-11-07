@@ -12,12 +12,29 @@ interaction compatibility are separate claims.
 | Home | Views, Clipboard, Sort & Filter, Records, Find, Text Formatting, Zoom | Retained Home capture guides layout and command order. Working commands use current services; unavailable formatting and group launchers are disabled previews. |
 | Table Design | Views, Tools, Show/Hide, Field/Record/Table Events, Relationships | Retained Table Design capture guides the visible strip. Schema mutation and macro commands remain disabled. |
 | Query Design | Views, Results, Query Type, Query Setup, Show/Hide | Published command procedures and the actual Query Setup crop guide the groups. No complete modern Ribbon capture is retained. Query types and setup options beyond the existing editor are disabled previews. |
-| Create | Templates, Tables, Queries, Forms, Reports, Macros & Code | The published Access 2010 Create crop supplies selected visual evidence. Modern commands are documented previews; exact release-specific layout remains unqualified. |
+| Create | Templates, Tables, Queries, Forms, Reports, Macros & Code | Table opens the bounded initial Datasheet draft for a host-qualified canonical ACE 16 blank. Table Design and other unavailable commands remain disabled. The published Access 2010 Create crop supplies selected visual evidence; exact release-specific layout remains unqualified. |
 | External Data | Import & Link, Export | Disabled provider, saved-task and export previews. No new provider or export operation is implemented by this strip. |
 | Database Tools | Tools, Relationships, Analyze, Move Data, Add-ins | Disabled previews; exact release-specific density remains provisional. |
 | Help | Help and feedback commands | Disabled previews; no account or online service is implied. |
 | Table Fields | Views, Add & Delete, Properties, Validation | Disabled field-management previews. Full galleries and their native interaction remain unfinished. |
 | Table | Properties, Before Events, After Events, Macros & Code | Disabled table/data-macro previews. No VBA or data-macro execution is supplied by these controls. |
+
+## Create > Table
+
+The Table command is enabled only for the current opened document's
+revision-bound canonical-blank availability fact, together with the existing
+Save and UI admission checks. Ordinary Open and recovery reopening never create
+a draft implicitly. Explicit Table activation opens the existing local unsaved
+Datasheet draft without a backend action or file change; naming, consuming review
+and Save use the [initial-table workflow](DATABASE_CREATION.md#creating-the-first-table-after-open).
+The advisory Open fact does not bypass fresh source validation during Save.
+Readable noncanonical blanks and existing user tables keep Table disabled.
+
+Table Design remains an unavailable command. Microsoft documents different
+initial views for [Table and Table Design](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields):
+Datasheet and Design respectively. Retained captures guide both surfaces, but no
+retained screenshot captures this Create activation. This implementation does
+not enable arbitrary table addition or the full field designer.
 
 ## Font catalog and caption alignment — 5 November 2026
 

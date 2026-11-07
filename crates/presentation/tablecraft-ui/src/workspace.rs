@@ -355,6 +355,7 @@ pub struct State {
     query_design: query_design::QueryDesign,
     filter: String,
     pub table_save_available: bool,
+    first_table_creation: Option<u64>,
     table_draft_save: Option<table_draft::save::SaveDialog>,
     table_draft: Option<table_draft::Editor>,
     table_draft_close: Option<table_draft::CloseIntent>,

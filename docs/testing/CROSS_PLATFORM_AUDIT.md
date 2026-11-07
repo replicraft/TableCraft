@@ -86,6 +86,18 @@ for OS imports, native-endian wire conversions, hardcoded OS paths and platform
 feature gates found the concrete issues above. Such searches do not prove that
 every behavior is correct.
 
+## Creation and recovery follow-up
+
+Later connected checks pass all 130 runtime, 351 shared UI and 93 desktop tests
+on macOS ARM64. The latter includes ordinary canonical-blank Open → explicit
+Create → Table → reviewed same-file Save → fresh reopen, refusal for readable
+noncanonical/populated sources, and pending first-table recovery followed by
+explicit authoring. These scenarios compile for Windows x64 and ARM64 with all package
+targets/features. They do not constitute native Windows filesystem execution.
+The complete-byte engine availability predicate has six passing focused cases;
+it never substitutes for fresh write admission. Current evidence lives in
+ignored `.cache/gui-create-table-*20261107.log` files.
+
 ## Native CI and release boundaries
 
 The CI matrix now names these native runner/host pairs:

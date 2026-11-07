@@ -383,6 +383,9 @@ pub enum Response {
         document_revision: u64,
         /// Absolute path captured by the successful open operation.
         source_path: PathBuf,
+        /// Exact captured native source admission, tied to document_revision.
+        /// This is not a draft or permission to bypass fresh review/save checks.
+        first_table_creation_available: bool,
         title: String,
         format: String,
         tables: Vec<Table>,

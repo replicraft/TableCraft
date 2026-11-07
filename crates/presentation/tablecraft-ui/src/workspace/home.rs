@@ -12,7 +12,17 @@ impl State {
             return;
         }
         let t = self.localizer.clone();
-        if ribbon::tab(ui, &t, self.ribbon_tab) {
+        let mut create_table = false;
+        if ribbon::tab(
+            ui,
+            &t,
+            self.ribbon_tab,
+            self.can_create_first_table(),
+            &mut create_table,
+        ) {
+            if create_table && self.can_create_first_table() && !self.open_initial_table_draft() {
+                self.error = Some(t.text("objects-open-refused"));
+            }
             return;
         }
         ribbon::strip(ui, |ui| {

@@ -1,5 +1,5 @@
-//! Visible unavailable command groups preserve layout without dispatching actions.
-use super::{CommandSize, Icon, command, command_menu, group};
+//! Complete command inventories retain explicit working and unavailable states.
+use super::{CommandSize, Icon, Tab, command, command_menu, group};
 use crate::Localizer;
 use egui::Ui;
 
@@ -213,11 +213,16 @@ pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
     });
 }
 
-/// Additional tabs expose their unavailable command groups without services.
+/// Additional tabs retain their complete command groups. Only qualified
+/// first-table authoring currently has a working Create command here.
 /// No retained Access capture currently qualifies these tab compositions.
-pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> bool {
-    use super::Tab;
-
+pub(in crate::workspace) fn tab(
+    ui: &mut Ui,
+    t: &Localizer,
+    tab: Tab,
+    first_table_available: bool,
+    first_table_clicked: &mut bool,
+) -> bool {
     let groups: &[(&str, &[(Icon, &str)])] = match tab {
         Tab::Create => &[
             (
@@ -411,7 +416,19 @@ pub(in crate::workspace) fn tab(ui: &mut Ui, t: &Localizer, tab: super::Tab) -> 
                         1
                     };
                     for (icon, key) in &commands[..large_count] {
-                        unavailable(ui, t, *icon, key, CommandSize::Large);
+                        if tab == Tab::Create && *key == "ribbon-table" {
+                            let response = command(
+                                ui,
+                                *icon,
+                                &t.text(key),
+                                first_table_available,
+                                CommandSize::Large,
+                            )
+                            .on_disabled_hover_text(t.text("ribbon-unavailable"));
+                            *first_table_clicked |= response.clicked();
+                        } else {
+                            unavailable(ui, t, *icon, key, CommandSize::Large);
+                        }
                     }
                     for column in commands[large_count..].chunks(3) {
                         ui.vertical(|ui| {

@@ -68,6 +68,38 @@ now connects the bounded initial schema to a real same-file save. Record entry,
 automatic field inference, general schema changes and complete Design view
 remain unfinished.
 
+## Creating the first table after Open
+
+Ordinary Open and acknowledged recovery followed by Open leave a zero-table
+database without a draft. Create > Table now explicitly opens the same unsaved
+Datasheet draft when the opened source is the exact canonical ACE 16 blank.
+A rolled-back first-table operation can therefore return to that workflow after
+recovery acknowledgement; recovery itself never starts table authoring.
+
+The runtime compares the complete immutable captured source against the canonical
+blank under the read operation's budget and cancellation checks. It publishes an
+advisory availability fact bound to the opened document revision. The shared UI
+accepts that fact only for the matching revision and also requires the existing
+Save capability, no user tables and no conflicting draft, modal or operation.
+Selecting the command changes only local draft state. It neither acquires a
+writable target nor creates a journal. Review still qualifies the original source
+and declarations; Save freshly rechecks the retained target before mutation.
+
+A readable noncanonical blank or a database with existing user tables keeps this
+command disabled. This does not restrict opening or reading those sources, and
+it does not authorize general table addition or schema changes. Table Design
+remains disabled. Microsoft's
+[Create a table and add fields](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
+distinguishes Create > Table, which opens Datasheet view, from Create > Table
+Design, which opens Design view. The retained Datasheet and Design captures guide
+those separate surfaces; they do not capture activation of the Create command.
+
+This route uses the existing macOS/Linux and Windows Save implementations and
+retains their platform limits described above. Windows cross-compilation and
+headless checks do not establish actual Windows execution or native Access
+behavior. The new explicit-open acceptance checks are separate from the
+historical test counts below; native Access comparison remains pending.
+
 ## Saving the initial table
 
 The shared Save prompt accepts an exact table name and submits
