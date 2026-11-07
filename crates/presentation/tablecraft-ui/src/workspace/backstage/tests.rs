@@ -509,7 +509,7 @@ fn compact_open_failure_can_copy_literal_details_without_losing_credentials_or_a
     assert_eq!(harness.state().0.password, password);
     harness.state_mut().1.clear();
     harness
-        .get_by_role_and_label(Role::Button, "Back")
+        .get_by_role_and_label(Role::Tab, "Home")
         .click_accesskit();
     harness.step();
     assert_eq!(harness.state().0.backstage, Backstage::Home);
@@ -569,7 +569,7 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
     assert!(
         harness
             .query_by_role_and_label(Role::Button, "Back")
-            .is_some()
+            .is_none()
     );
     for label in ["Info", "Save", "Save As", "Print", "Close", "Account"] {
         let command = harness.get_by_role_and_label(Role::Button, label);
@@ -592,7 +592,7 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
             .accesskit_node()
             .is_disabled()
     );
-    harness.get_by_role_and_label(Role::Button, "Back").click();
+    harness.get_by_role_and_label(Role::Tab, "Home").click();
     harness.run_steps(2);
     assert_eq!(harness.state().0.backstage, Backstage::Home);
 
@@ -608,7 +608,7 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
     harness.get_by_role_and_label(Role::Button, "About").click();
     harness.run_steps(2);
     assert_eq!(harness.state().0.backstage, Backstage::About);
-    harness.get_by_role_and_label(Role::Button, "Back").click();
+    harness.get_by_role_and_label(Role::Tab, "Home").click();
     harness.run_steps(2);
     assert_eq!(harness.state().0.backstage, Backstage::Home);
     assert!(harness.state().0.database.is_none());

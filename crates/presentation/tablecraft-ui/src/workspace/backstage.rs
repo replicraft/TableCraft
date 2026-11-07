@@ -36,7 +36,9 @@ impl State {
                     .inner_margin(Margin::symmetric(rail::OUTER_PADDING, 10)),
             )
             .show(ui, |ui| {
-                if self.backstage_return_available() {
+                // Back returns to an actual workspace. Source-free pages keep
+                // Home navigation and Escape-to-Home without an empty Back slot.
+                if self.database.is_some() {
                     if rail::entry(ui, Icon::ArrowLeft, &tr(ui, "backstage-back"), None).clicked() {
                         self.return_from_backstage();
                     }
