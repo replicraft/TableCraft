@@ -1,12 +1,10 @@
-use super::FirstTableDefinition;
+use super::{FirstTableDefinition, source::require_canonical_blank};
 use crate::{
     CreateDatabaseError, CreatedDatabase, InspectError, NativeImage, create_ace16_database,
-    create_blank_ace16_database, header::check,
+    header::check,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
-
-const COMPARE_BLOCK_BYTES: usize = 16 * 1024;
 
 /// Failure before a canonical blank receives its first explicit table schema.
 #[derive(Debug, Error)]
@@ -44,24 +42,7 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.first_table.plan").entered();
         check(budget, cancelled)?;
         self.require_standard_capture()?;
-        let canonical = create_blank_ace16_database(budget, cancelled)?;
-        if canonical.as_bytes().len() != self.as_bytes().len() {
-            return Err(FirstTableError::NotCanonicalBlank);
-        }
-        for (actual, expected) in self
-            .as_bytes()
-            .chunks(COMPARE_BLOCK_BYTES)
-            .zip(canonical.as_bytes().chunks(COMPARE_BLOCK_BYTES))
-        {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, actual.len() as u64)
-                .map_err(InspectError::from)?;
-            if actual != expected {
-                return Err(FirstTableError::NotCanonicalBlank);
-            }
-        }
-        drop(canonical);
+        require_canonical_blank(self.as_bytes(), budget, cancelled)?;
         let columns = definition.borrowed_columns(budget, cancelled)?;
         let after = create_ace16_database(definition.table(), &columns, &[], budget, cancelled)?;
         drop(columns);

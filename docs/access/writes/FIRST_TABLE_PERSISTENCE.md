@@ -14,6 +14,12 @@ value handling and other schema operations require their own qualified routes.
 
 ## Planning and same-file persistence
 
+`first_table_source_available` checks an already captured immutable image using
+the same complete-byte canonical predicate as planning. Only a source mismatch
+returns false. Construction, cancellation and resource failures propagate. This
+read-only availability fact neither grants write authority nor replaces the
+standard original capture and exclusive-target checks below.
+
 Planning captures the complete source from the session's retained exclusive target.
 The `_if_original` form compares that capture against the complete host-reviewed
 bytes before native schema admission. A failed capture retains the owner in

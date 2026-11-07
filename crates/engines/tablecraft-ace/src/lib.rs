@@ -26,7 +26,7 @@ mod creation;
 pub use creation::{
     CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, FirstTableDefinition,
     FirstTableError, FirstTablePlan, create_ace16_database, create_ace16_database_tables,
-    create_ace16_int32_database, create_blank_ace16_database,
+    create_ace16_int32_database, create_blank_ace16_database, first_table_source_available,
 };
 mod encryption;
 mod error;

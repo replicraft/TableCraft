@@ -185,3 +185,89 @@ fn definition_and_first_table_plan_pay_exact_pools_and_poll_cancellation() {
         assert_eq!(seen.get(), stop);
     }
 }
+
+#[test]
+fn first_table_source_availability_matches_the_complete_independent_blank_only() {
+    let blank = canonical_blank_creation::source();
+    let mut changed = blank.clone();
+    *changed.last_mut().unwrap() ^= 1;
+    let populated = fixtures::source(fixtures::Case::IdOnly);
+    assert!(super::first_table_source_available(&blank, &mut budget(), &|| false).unwrap());
+    for source in [
+        changed.as_slice(),
+        populated.bytes.as_slice(),
+        &[],
+        &blank[..blank.len() - 1],
+    ] {
+        assert!(!super::first_table_source_available(source, &mut budget(), &|| false).unwrap());
+    }
+    assert_eq!(blank, canonical_blank_creation::source());
+    // A mismatch does not hide a failed canonical construction or cancellation.
+    assert!(
+        super::first_table_source_available(
+            &[],
+            &mut ResourceBudget::new(0, 0, 1_000_000),
+            &|| false
+        )
+        .is_err()
+    );
+    assert!(matches!(
+        super::first_table_source_available(&blank, &mut budget(), &|| true),
+        Err(FirstTableError::Inspect(InspectError::Cancelled))
+    ));
+}
+
+#[test]
+fn first_table_source_availability_pays_exact_pools_and_checks_completion_cancellation() {
+    let blank = canonical_blank_creation::source();
+    let mut measured = budget();
+    let pools = [Resource::Bytes, Resource::Rows, Resource::Steps];
+    let initial = pools.map(|pool| measured.remaining(pool));
+    let polls = Cell::new(0_usize);
+    assert!(
+        super::first_table_source_available(&blank, &mut measured, &|| {
+            polls.set(polls.get() + 1);
+            false
+        })
+        .unwrap()
+    );
+    let costs =
+        std::array::from_fn::<_, 3, _>(|index| initial[index] - measured.remaining(pools[index]));
+    assert!(costs[0] > 0 && costs[2] > 0);
+    let mut exact = ResourceBudget::new(costs[0], costs[1], costs[2]);
+    assert!(super::first_table_source_available(&blank, &mut exact, &|| false).unwrap());
+    assert_eq!(pools.map(|pool| exact.remaining(pool)), [0, 0, 0]);
+    for index in 0..pools.len() {
+        if costs[index] == 0 {
+            continue;
+        }
+        let mut short = costs;
+        short[index] -= 1;
+        let error = super::first_table_source_available(
+            &blank,
+            &mut ResourceBudget::new(short[0], short[1], short[2]),
+            &|| false,
+        )
+        .unwrap_err();
+        let inspection = match error {
+            FirstTableError::Inspect(error)
+            | FirstTableError::Create(CreateDatabaseError::Inspect(error)) => error,
+            other => panic!("unexpected non-resource failure: {other}"),
+        };
+        assert!(matches!(inspection, InspectError::Limit(error) if error.resource == pools[index]));
+    }
+    for stop in [1, polls.get().div_ceil(2), polls.get()] {
+        let seen = Cell::new(0_usize);
+        let error = super::first_table_source_available(&blank, &mut budget(), &|| {
+            seen.set(seen.get() + 1);
+            seen.get() >= stop
+        })
+        .unwrap_err();
+        assert!(matches!(
+            error,
+            FirstTableError::Inspect(InspectError::Cancelled)
+                | FirstTableError::Create(CreateDatabaseError::Inspect(InspectError::Cancelled))
+        ));
+        assert_eq!(seen.get(), stop);
+    }
+}
