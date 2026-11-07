@@ -2,9 +2,11 @@
 #[cfg(test)]
 mod tests;
 
-use super::{Action, State, focus, palette};
+use super::{Action, DocumentView, State, focus, palette};
 use crate::workspace::ribbon;
-use egui::{Id, Key, Modifiers, Popup, Rect, Response, Ui, WidgetInfo, WidgetType};
+use egui::{
+    Context, Id, Key, Modifiers, OutputCommand, Popup, Rect, Response, Ui, WidgetInfo, WidgetType,
+};
 
 const TOGGLE_SIZE: f32 = 18.0;
 pub(super) const TOGGLE_GUTTER: i8 = 24;
@@ -29,6 +31,8 @@ struct TabPair {
 
 struct DisplayFrame {
     number: u64,
+    pass: u64,
+    copied: bool,
     tabs: Rect,
     layer: egui::LayerId,
     // Comparison only: a newer user focus choice may dismiss the temporary UI.
@@ -225,6 +229,8 @@ impl State {
                 });
             self.ribbon_display.frame = Some(DisplayFrame {
                 number: ui.ctx().cumulative_frame_nr(),
+                pass: ui.ctx().cumulative_pass_nr(),
+                copied: false,
                 tabs,
                 layer: response.response.layer_id,
                 focus_before,
@@ -238,6 +244,29 @@ impl State {
                     },
                 )
             });
+            let copied = ui.ctx().output(|output| {
+                let added = &output.commands[before_output..];
+                !added.is_empty()
+                    && added
+                        .iter()
+                        .all(|command| matches!(command, OutputCommand::CopyText(_)))
+            });
+            let return_after_copy = copied
+                && self.view == DocumentView::Table
+                && !previous_menu
+                && actions.is_empty()
+                && !Popup::is_any_open(ui.ctx())
+                && !self.edit_dialog_open()
+                && !self.find_window_open()
+                && !self.zoom_dialog_open()
+                && self.contents_request_id().is_none()
+                && !self.saved_query_prompt_open()
+                && !self.backstage_visible()
+                && self.paste_request.is_none()
+                && self.ribbon_paste.is_none();
+            if let Some(frame) = &mut self.ribbon_display.frame {
+                frame.copied = return_after_copy;
+            }
             let accepted = actions.len() != before_actions
                 || actions
                     .iter()
@@ -296,6 +325,15 @@ impl State {
         {
             self.set_ribbon_collapsed(false);
         }
+    }
+
+    pub(in crate::workspace) fn ribbon_copy_needs_document_focus(&self, context: &Context) -> bool {
+        !self.ribbon_display.temporary
+            && self.ribbon_display.frame.as_ref().is_some_and(|frame| {
+                frame.copied
+                    && frame.number == context.cumulative_frame_nr()
+                    && frame.pass == context.cumulative_pass_nr()
+            })
     }
 
     pub(in crate::workspace) fn finish_ribbon_display(&mut self, ui: &Ui) {

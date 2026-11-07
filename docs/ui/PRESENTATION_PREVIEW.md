@@ -31,8 +31,13 @@ command focus at 1280×820, 1×, plus German dark command focus and Japanese lig
 tab focus at 900×580, 1.25×. Local macOS GPU rendering uses Windows keyboard
 conventions and opens no native windows. Focus outlines are visible; narrow
 translated strips retain horizontal overflow. Standalone Alt, letter KeyTips,
-native keyboard/accessibility qualification and focus after an output-only
-command closes a temporary strip remain open.
+native keyboard/accessibility qualification remain open.
+
+A subsequent headless regression fixes Table-view Copy from a temporary strip:
+the complete clipboard value is retained and focus returns to the selected
+rendered cell. Eight keyboard tests and seven Ribbon-display tests pass. Popup,
+dialog, paste and backend-action ownership remain separate; query Copy and other
+output-only commands are not qualified by this focused case.
 
 The renderer accepts `TABLECRAFT_PREVIEW_RIBBON_FOCUS=tab` or `commands` for
 these headless frames, separately from the F6 and Font-search workflows.

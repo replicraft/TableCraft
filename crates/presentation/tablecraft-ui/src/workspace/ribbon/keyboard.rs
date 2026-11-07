@@ -351,6 +351,22 @@ impl State {
             }
             self.navigate_ribbon(ui, &frame, intent);
         }
+        let focused = ui.ctx().memory(|memory| memory.focused());
+        let current_command = frame.groups.iter().any(|group| {
+            group
+                .commands
+                .iter()
+                .any(|command| Some(command.id) == focused)
+        });
+        if frame.pass == ui.ctx().cumulative_pass_nr()
+            && frame.scope == self.ribbon_keyboard_scope()
+            && self.ribbon_keyboard_available(ui)
+            && !actions
+            && current_command
+            && self.ribbon_copy_needs_document_focus(ui.ctx())
+        {
+            self.return_to_document_from_ribbon(ui);
+        }
         frame.scope = self.ribbon_keyboard_scope();
         let focused = ui.ctx().memory(|memory| memory.focused());
         if focused != frame.origin

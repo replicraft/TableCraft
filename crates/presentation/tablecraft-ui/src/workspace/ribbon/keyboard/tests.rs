@@ -411,3 +411,74 @@ fn f10_revalidates_after_a_real_sql_object_open_removes_the_contextual_table_tab
     assert_eq!(harness.state().0.table_selection.position(), selection);
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn keyboard_copy_closes_the_temporary_ribbon_and_returns_to_the_exact_document_cell() {
+    let mut harness = workspace(Scene::Datasheet, Locale::EnUs, 1600.0);
+    let rows = harness.state().0.data.as_ref().unwrap().rows.as_ptr();
+    let selection = harness.state().0.table_selection.position();
+    let expected = harness.state().0.selected_cell_text().unwrap().to_owned();
+    let mut arguments = crate::FluentArgs::new();
+    arguments.set("column", "CustomerID");
+    arguments.set("row", "1");
+    arguments.set("text", expected.clone());
+    let cell_value = harness
+        .state()
+        .0
+        .localizer
+        .format("datasheet-cell-context", &arguments);
+    harness.state_mut().0.set_ribbon_collapsed(true);
+    harness.run_steps(3);
+    let cell = harness.get_by_value(&cell_value);
+    assert_eq!(cell.accesskit_node().role(), Role::Label);
+    let cell_id = cell.accesskit_node().id();
+    press(&mut harness, Key::F10);
+    press(&mut harness, Key::ArrowDown);
+    harness.key_press_modifiers(Modifiers::CTRL, Key::ArrowRight);
+    harness.run_steps(3);
+    press(&mut harness, Key::Tab);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Copy")
+            .accesskit_node()
+            .is_focused()
+    );
+    assert!(harness.state().0.ribbon_temporarily_open());
+
+    harness.event(Event::Key {
+        key: Key::Space,
+        physical_key: Some(Key::Space),
+        pressed: true,
+        repeat: false,
+        modifiers: Modifiers::NONE,
+    });
+    harness.run_steps(1);
+    assert!(
+        harness
+            .output()
+            .platform_output
+            .commands
+            .contains(&egui::OutputCommand::CopyText(expected.clone()))
+    );
+    harness.event(Event::Key {
+        key: Key::Space,
+        physical_key: Some(Key::Space),
+        pressed: false,
+        repeat: false,
+        modifiers: Modifiers::NONE,
+    });
+    harness.run_steps(3);
+    assert!(!harness.state().0.ribbon_temporarily_open());
+    assert!(harness.state().0.ribbon_collapsed());
+    let cell = harness.get_by_value(&cell_value);
+    assert_eq!(cell.accesskit_node().role(), Role::Label);
+    assert_eq!(cell.accesskit_node().id(), cell_id);
+    assert!(cell.accesskit_node().is_focused());
+    assert_eq!(harness.state().0.data.as_ref().unwrap().rows.as_ptr(), rows);
+    assert_eq!(harness.state().0.table_selection.position(), selection);
+    assert_eq!(
+        harness.state().0.selected_cell_text(),
+        Some(expected.as_str())
+    );
+    assert!(harness.state().1.is_empty());
+}

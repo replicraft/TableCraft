@@ -42,6 +42,11 @@ focus to the actual rendered native cell before requesting clipboard text. A
 bounded focus wait never requests an old widget ID. Delayed replies retain the
 existing source/focus validation and still require the normal edit review.
 
+Table-view Copy from a temporary Ribbon strip returns focus to the selected
+rendered cell after publishing the complete clipboard value. This requires a
+current-pass command witness and no popup, dialog, paste or backend-action owner.
+It does not extend query Copy or other output-only command behavior.
+
 ## Menus and unavailable controls
 
 Icon-only formatting commands identify themselves by translated name on hover.
