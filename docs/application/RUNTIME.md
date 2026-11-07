@@ -156,6 +156,12 @@ result clearing share the mailbox lock; backend work runs outside it. Dropping a
 worker requests cancellation without joining on the GUI thread. A blocking OS
 file-open/read call must return before a cooperative cancellation check can run.
 
+Read and save completion notifications run after publishing the owned result and
+outside mailbox locks. A panicking host repaint callback is contained at that
+notification boundary: the worker remains available, and a save retains its real
+recovery resources until explicit release and acknowledgement. Notification
+failure never retries a read or mutation or changes its recorded outcome.
+
 | Command | Owned response and scope |
 | --- | --- |
 | ReviewFirstTable | Source-bound consuming initial-schema review; no lease is held while presenting it |

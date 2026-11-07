@@ -21,6 +21,7 @@ mod formatting;
 ))]
 mod inserting;
 mod query_design;
+mod repaint;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)

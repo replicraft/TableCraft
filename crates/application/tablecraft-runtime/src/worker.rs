@@ -1,4 +1,5 @@
 use super::{Command, Error, Response, document::Document};
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{
     Arc, Condvar, Mutex,
     atomic::{AtomicBool, AtomicU64, Ordering},
@@ -340,7 +341,9 @@ impl Worker {
                 );
                 if !superseded {
                     *thread_shared.response.lock().unwrap() = Some((request.id, result));
-                    repaint();
+                    if catch_unwind(AssertUnwindSafe(&repaint)).is_err() {
+                        tracing::error!("read completion callback panicked");
+                    }
                 }
             }
         });

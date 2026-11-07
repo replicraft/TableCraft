@@ -26,6 +26,7 @@ use crate::{
     editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert},
 };
 use std::{
+    panic::{AssertUnwindSafe, catch_unwind},
     path::PathBuf,
     sync::{
         Arc, Condvar, Mutex,
@@ -185,7 +186,9 @@ impl SaveWorker {
                     outcome,
                 });
                 drop(mailbox);
-                repaint();
+                if catch_unwind(AssertUnwindSafe(&repaint)).is_err() {
+                    tracing::error!("save completion callback panicked");
+                }
             }
         });
         Self { shared }
