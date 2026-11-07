@@ -1,5 +1,42 @@
 # Presentation preview
 
+## Ribbon keyboard focus — 7 November 2026
+
+F10 enters the selected Ribbon tab. Tab arrows, Down, Ctrl+Left/Right,
+Tab/Shift+Tab and Escape resolve only enabled current-pass responses. Temporary
+strips and contextual tabs retain source/scope checks; child popups, Find and
+IME input keep ownership. A one-shot comparison witness reveals a freshly
+rendered focused control inside its actual scroll area, without requesting a
+remembered widget ID. See the [keyboard contract](RIBBON.md#keyboard-navigation).
+
+Six focused widget journeys passed, followed by all 298 UI tests and all 66
+desktop tests. The UI gate includes the complete 85-scene × eight-locale ×
+two-theme preview matrix. One later test-only journey passed separately: opening
+a SQL object through real controls removes Table Fields, F10 selects the current
+Home tab, and returning restores the original table buffer and selection. Strict
+all-target UI/desktop lint passed again after this addition. Formatting and
+documentation links pass. No database capability or registry dependency changed.
+
+Earlier failures are retained in local logs: nested egui context reads caused
+lock failures and were moved outside registry locks; compact control focus
+needed scrolling during its own rendered pass. A Find test initially expected
+Find What focus after also sending Tab. Diagnostics showed correct traversal to
+Look In; the corrected test requires that exact owner and verifies F10 leaves it
+there. Find initialization was not changed.
+
+The actual retained Home capture was reopened. It contains no active keyboard
+focus or KeyTips, so focus styling and traversal boundary choices remain
+adaptations. Final offscreen review covered English light tab focus and dark
+command focus at 1280×820, 1×, plus German dark command focus and Japanese light
+tab focus at 900×580, 1.25×. Local macOS GPU rendering uses Windows keyboard
+conventions and opens no native windows. Focus outlines are visible; narrow
+translated strips retain horizontal overflow. Standalone Alt, letter KeyTips,
+native keyboard/accessibility qualification and focus after an output-only
+command closes a temporary strip remain open.
+
+The renderer accepts `TABLECRAFT_PREVIEW_RIBBON_FOCUS=tab` or `commands` for
+these headless frames, separately from the F6 and Font-search workflows.
+
 ## Emoji outline fallback — 7 November 2026
 
 The missing crab glyph found in the occurrence preview now renders through an

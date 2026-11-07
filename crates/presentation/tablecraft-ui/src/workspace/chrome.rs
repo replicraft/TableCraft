@@ -163,6 +163,7 @@ impl State {
                                         .min_size(file_size),
                                 );
                                 focus::register(ui, Pane::Ribbon, &file, false);
+                                ribbon::keyboard::tab(ui, &file, None);
                                 if file.clicked() {
                                     self.show_open();
                                 }
@@ -174,7 +175,7 @@ impl State {
                                     true,
                                     false,
                                 );
-                                self.ribbon_tab_response(&response, ribbon::Tab::Home);
+                                self.ribbon_tab_response(ui, &response, ribbon::Tab::Home);
                                 for key in [
                                     "ribbon-create",
                                     "ribbon-external-data",
@@ -191,7 +192,7 @@ impl State {
                                         true,
                                         false,
                                     );
-                                    self.ribbon_tab_response(&response, candidate);
+                                    self.ribbon_tab_response(ui, &response, candidate);
                                 }
                                 if self.query_design_context() {
                                     let response = tab(
@@ -202,7 +203,11 @@ impl State {
                                         true,
                                         true,
                                     );
-                                    self.ribbon_tab_response(&response, ribbon::Tab::QueryDesign);
+                                    self.ribbon_tab_response(
+                                        ui,
+                                        &response,
+                                        ribbon::Tab::QueryDesign,
+                                    );
                                 } else if self.ribbon_tab_available(ribbon::Tab::TableDesign) {
                                     let response = tab(
                                         ui,
@@ -212,7 +217,11 @@ impl State {
                                         true,
                                         true,
                                     );
-                                    self.ribbon_tab_response(&response, ribbon::Tab::TableDesign);
+                                    self.ribbon_tab_response(
+                                        ui,
+                                        &response,
+                                        ribbon::Tab::TableDesign,
+                                    );
                                 } else if self.ribbon_tab_available(ribbon::Tab::TableFields) {
                                     for key in ["ribbon-table-fields", "ribbon-table"] {
                                         let candidate = ribbon::Tab::from_key(key)
@@ -225,7 +234,7 @@ impl State {
                                             true,
                                             true,
                                         );
-                                        self.ribbon_tab_response(&response, candidate);
+                                        self.ribbon_tab_response(ui, &response, candidate);
                                     }
                                 }
                             });

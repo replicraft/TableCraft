@@ -63,6 +63,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     if focus_steps > MAX_F6_STEPS {
         return Err(io::Error::other("preview F6 steps must be between 0 and 5").into());
     }
+    let ribbon_focus = setting("TABLECRAFT_PREVIEW_RIBBON_FOCUS", "none")?;
+    let ribbon_suffix = match ribbon_focus.as_str() {
+        "none" => "",
+        "tab" => "-ribbon-tab",
+        "commands" => "-ribbon-commands",
+        _ => {
+            return Err(
+                io::Error::other("preview Ribbon focus must be none, tab or commands").into(),
+            );
+        }
+    };
+    if !ribbon_suffix.is_empty() && (focus_steps != 0 || font_search.is_some()) {
+        return Err(io::Error::other("choose one preview keyboard focus workflow").into());
+    }
     let focus_suffix = if focus_steps == 0 {
         String::new()
     } else {
@@ -129,6 +143,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 harness.run();
             }
         }
+        if !ribbon_suffix.is_empty() {
+            harness.key_press(egui::Key::F10);
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+            if ribbon_focus == "commands" {
+                harness.key_press(egui::Key::ArrowDown);
+                harness.run_steps(LAYOUT_SETTLE_STEPS);
+            }
+        }
         if let Some(query) = &font_search {
             let label = harness.state().state().localizer.text("ribbon-font");
             harness
@@ -140,7 +162,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

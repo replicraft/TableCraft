@@ -118,7 +118,31 @@ and outside record clicks or object switches dismiss stale presentation.
 
 The synthetic scenes `ribbon-collapsed` and `ribbon-temporary` share the ordinary
 workspace presentation and retain the same resource-free host. Native graphical
-review resumed on 6 November 2026, alongside offscreen rendering and headless tests.
+review briefly resumed on 6 November 2026 and is suspended again at the user's
+request. Current verification uses offscreen rendering and headless tests.
+
+## Keyboard navigation
+
+F10 enters the selected Ribbon tab. Left/Right moves across available tabs;
+Down enters the selected tab's enabled commands, opening a temporary strip when
+collapsed. Ctrl+Left/Right moves between groups with enabled commands, while
+Tab/Shift+Tab traverses enabled commands. Navigation changes focus and Ribbon
+presentation without dispatching a database action. Enter/Space retains each
+control's existing activation and capability checks.
+
+Child popups and their text fields own their input. Escape closes a child popup
+before dismissing a temporary strip; from expanded commands it returns to the
+selected tab, then to the document. Find, modal reviews and active input-method
+composition keep their existing ownership. F6 remains pane navigation, and
+Shift+F10 remains a context-menu shortcut. Focus targets come from enabled
+controls rendered in the current pass, rather than remembered widget IDs.
+
+The [Access keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents F10, tab arrows, Down, group navigation and command traversal. This is
+partial keyboard support: standalone Alt and letter KeyTips are not implemented.
+Traversal across group boundaries and focus styling remain TableCraft
+adaptations; the retained screenshots show no active keyboard-focus or KeyTip
+state. Verification results belong in the [presentation record](PRESENTATION_PREVIEW.md).
 
 ## Remaining qualification
 

@@ -124,7 +124,13 @@ impl State {
         }
     }
 
-    pub(super) fn ribbon_tab_response(&mut self, response: &Response, candidate: ribbon::Tab) {
+    pub(super) fn ribbon_tab_response(
+        &mut self,
+        ui: &Ui,
+        response: &Response,
+        candidate: ribbon::Tab,
+    ) {
+        ribbon::keyboard::tab(ui, response, Some(candidate));
         if !response.enabled() {
             return;
         }

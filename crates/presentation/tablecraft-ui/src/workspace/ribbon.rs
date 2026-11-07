@@ -2,6 +2,7 @@
 mod font_picker;
 mod groups;
 mod icons;
+pub(super) mod keyboard;
 
 pub(super) use super::focus::{self, Pane};
 pub(super) use groups::{design, home, tab, unavailable as unavailable_command};
@@ -29,7 +30,7 @@ const LARGE_TEXT_TOP: f32 = 31.0;
 const MENU_ARROW_CAPTION_GAP: f32 = 3.5;
 const MENU_ARROW_HALF_HEIGHT: f32 = 1.5;
 
-#[derive(Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub(super) enum Tab {
     #[default]
     Home,
@@ -98,6 +99,7 @@ pub(super) fn group_with_launcher(
         colors.muted,
     );
     ui.vertical(|ui| {
+        let previous_group = keyboard::begin_group(ui);
         // Reserve the translated caption before laying out narrow command groups.
         // Measuring it afterwards lets Extend paint into the adjacent group.
         let launcher_width = if unavailable_launcher {
@@ -157,6 +159,7 @@ pub(super) fn group_with_launcher(
                 response.on_disabled_hover_text(help);
             });
         }
+        keyboard::end_group(ui, previous_group);
     });
     ui.separator();
 }
@@ -287,6 +290,7 @@ fn command_inner(
         }
         let (rect, response) = ui.allocate_exact_size(desired, Sense::click());
         focus::register(ui, Pane::Ribbon, &response, false);
+        keyboard::command(ui, &response);
         if response.enabled() && response.gained_focus() {
             response.scroll_to_me(None);
         }

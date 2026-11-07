@@ -308,6 +308,7 @@ pub struct State {
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
     ribbon_display: chrome::ribbon_display::RibbonDisplay,
+    ribbon_keyboard: ribbon::keyboard::Keyboard,
     show_system: bool,
     objects: objects::Objects,
     navigation_hidden: bool,
@@ -612,6 +613,7 @@ impl State {
             || self.saved_query_prompt_open()
             || self.zoom_dialog_open();
         self.prepare_ribbon_display(ui, modal_open);
+        self.begin_ribbon_keyboard(ui, modal_open);
         if !modal_open
             && self.backstage_visible()
             && self.backstage_return_available()
@@ -689,9 +691,11 @@ impl State {
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open() && !self.zoom_dialog_open() && !self.find_window_open() {
+            self.finish_ribbon_keyboard(ui, !actions.is_empty());
             self.finish_pane_focus(ui);
             self.finish_ribbon_display(ui);
         }
+        self.capture_ribbon_focus(ui);
         self.finish_object_shortcut(ui, object_shortcut, &mut actions);
         if actions.is_empty()
             && let Some(action) = self.take_totals_request()

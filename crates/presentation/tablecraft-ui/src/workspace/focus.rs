@@ -109,7 +109,7 @@ pub(crate) fn register(ui: &Ui, pane: Pane, response: &Response, preferred: bool
 }
 
 impl State {
-    fn pane_scope(&self) -> Id {
+    pub(super) fn pane_scope(&self) -> Id {
         let document = self
             .database
             .as_ref()
@@ -231,6 +231,47 @@ impl State {
                 pane,
                 focus_witness: ui.ctx().memory(|memory| memory.focused()),
             });
+        }
+    }
+
+    pub(super) fn return_to_document_from_ribbon(&mut self, ui: &Ui) {
+        let pane = if self.query_design_visible() {
+            Pane::QueryGrid
+        } else if self.query_design_results_visible() {
+            Pane::Results
+        } else {
+            Pane::Document
+        };
+        let frame = ui
+            .ctx()
+            .data(|data| data.get_temp::<Option<Frame>>(registry_id()))
+            .flatten();
+        let Some(frame) = frame else {
+            return;
+        };
+        if frame.number != ui.ctx().cumulative_frame_nr() || frame.scope != self.pane_scope() {
+            return;
+        }
+        let anchor = frame
+            .anchors
+            .iter()
+            .rev()
+            .find(|anchor| anchor.pane == pane && anchor.preferred)
+            .or_else(|| frame.anchors.iter().find(|anchor| anchor.pane == pane));
+        if let Some(anchor) = anchor {
+            ui.ctx()
+                .memory_mut(|memory| memory.request_focus(anchor.id));
+        } else if let Some(focused) = ui.ctx().memory(|memory| memory.focused()) {
+            ui.ctx()
+                .memory_mut(|memory| memory.surrender_focus(focused));
+        }
+        if frame.panes.contains(&pane) {
+            self.pane_focus_entry = Some(Entry {
+                scope: frame.scope,
+                pane,
+                focus_witness: ui.ctx().memory(|memory| memory.focused()),
+            });
+            ui.ctx().request_repaint();
         }
     }
 

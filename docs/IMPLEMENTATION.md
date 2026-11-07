@@ -1,5 +1,28 @@
 # Implementation status
 
+## Ribbon keyboard focus — 7 November 2026
+
+F10 enters the selected Ribbon tab; arrows, Down, group/command traversal and
+layered Escape use enabled controls from the current rendered pass. Popup,
+Find, text/IME and F6 ownership remain separate. Compact translated controls
+are revealed in their own scroll area. Standalone Alt and letter KeyTips remain
+unfinished; this is partial keyboard support, not native interaction parity.
+
+All 298 UI tests and 66 desktop tests passed, including the complete preview
+matrix; one subsequent test-only contextual-tab removal case passed separately.
+Strict UI/desktop lint passed after that addition. Four focus frames were
+reviewed offscreen; native checks remain suspended. See the
+[scoped record](ui/PRESENTATION_PREVIEW.md#ribbon-keyboard-focus--7-november-2026).
+
+## Desktop archive preparation — 7 November 2026
+
+Portable desktop archive tooling and a vector-based native icon exporter are
+implemented separately from CLI release CI. Twenty-two packaging tests and four
+icon tests pass. Apple icon extraction and a local test-only archive's headless
+smoke checks passed. Desktop notices, CI integration and native platform
+qualification remain open; no release artifact was published. See the
+[preparation guide](development/DESKTOP_PACKAGING.md).
+
 ## Emoji outline fallback — 7 November 2026
 
 The crab missing-glyph case is fixed with a reviewed Noto Emoji outline fallback,

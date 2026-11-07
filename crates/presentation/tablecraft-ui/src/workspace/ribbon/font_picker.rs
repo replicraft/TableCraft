@@ -75,6 +75,10 @@ pub(super) fn show(ui: &mut Ui, t: &Localizer, families: &[String], label_size: 
         search = Search::default();
     }
     ui.data_mut(|data| data.insert_temp(search_id, search));
+    super::keyboard::command(ui, &result.response);
+    if result.response.gained_focus() {
+        result.response.scroll_to_me(None);
+    }
     result.response
 }
 

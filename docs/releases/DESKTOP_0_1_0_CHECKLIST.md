@@ -12,11 +12,12 @@ Access editing.
 
 ## Remaining gates
 
-- [ ] **Finish Ribbon keyboard navigation.** Verify F10 entry, tab arrows,
+- [x] **Implement and headlessly verify Ribbon focus navigation.** Verify F10 entry, tab arrows,
   Down, Ctrl+Left/Right, Tab/Shift+Tab and layered Escape using the actual
   workspace. Include German/Japanese overflow, contextual-tab removal, temporary
   strips and child popups; navigation must preserve document state and not
-  dispatch commands. This work is not yet complete. Keep unimplemented KeyTips
+  dispatch commands. These focus journeys pass; native qualification and focus
+  after output-only temporary commands remain open. Keep unimplemented KeyTips
   explicit; the retained Home capture supplies no command-letter assignments.
   See [Ribbon coverage](../ui/RIBBON.md).
 - [ ] **Record the release's supported browser profile.** Match the
