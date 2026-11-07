@@ -56,14 +56,17 @@ fn owned_growth_wire_retains_original_groups_but_never_changes_tcni5() {
 
 #[test]
 fn owned_growth_version_profile_padding_and_body_refuse_before_decoded_allocation() {
-    for mutation in 0..5 {
+    for mutation in 0..6 {
         let mut bytes = owned_wire();
         match mutation {
-            0 => bytes[7] = b'8',
+            // TCNI0008 is now the supported IEEE fixed route. Retain a truly
+            // unknown version independently of recognized-version mismatches.
+            0 => bytes[..8].copy_from_slice(b"TCNI9999"),
             1 => bytes[12] = 5,
             2 => bytes[14] = 1,
             3 => bytes.push(0),
             4 => bytes[7] = b'7',
+            5 => bytes[7] = b'8',
             _ => unreachable!(),
         }
         let mut zero_bytes = ResourceBudget::new(0, 0, 1_000_000_000);
@@ -72,7 +75,7 @@ fn owned_growth_version_profile_padding_and_body_refuse_before_decoded_allocatio
             .unwrap();
         let expected = match mutation {
             0 => NativeIntentError::UnsupportedVersion,
-            1 | 4 => NativeIntentError::UnsupportedProfile,
+            1 | 4 | 5 => NativeIntentError::UnsupportedProfile,
             _ => NativeIntentError::InvalidRecord,
         };
         assert_eq!(error, expected);
