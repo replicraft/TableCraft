@@ -67,7 +67,7 @@ for checks that must cover more than the default desktop package.
 Run from the repository root:
 
 ```sh
-cargo fmt --all -- --check
+python3 scripts/check_rust_format.py
 python3 scripts/check_documentation_links.py
 python3 scripts/check_dependency_boundaries.py
 python3 -m unittest discover -s scripts -p 'test_*.py'
@@ -101,6 +101,113 @@ RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --lock
 cargo run --locked -p tablecraft-cli -- --version
 ```
 
+`check_rust_format.py` uses locked Cargo metadata to retain every workspace
+target root, including examples and build scripts. It preserves target editions,
+nearest repository rustfmt configuration and recursive child-module checking,
+but splits arguments into conservative 16,000-UTF-16-unit batches. This addresses
+the actual Windows `os error 206` in
+[CI run 42383594693](https://github.com/replicraft/TableCraft/actions/runs/42383594693),
+where `cargo fmt --all` failed before producing a formatting diff. Windows
+process creation has a 32,767-character command limit; upstream rustfmt also
+records this workspace-size failure mode.
+[Microsoft process limit](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw),
+[rustfmt issue](https://github.com/rust-lang/rustfmt/issues/6934)
+
+`cargo fmt` and `rustfmt` remain editing tools. The bounded checker is the
+cross-platform acceptance command; a Windows whole-workspace `cargo fmt` failure
+is not evidence that an individual Rust file needs reformatting.
+
+## Configured native CI coverage — 7 November 2026
+
+The headless CI matrix now requests native x64 and ARM64 runners on each supported
+OS. Before activating the repository-pinned toolchain, each ephemeral job sets
+rustup's default host to its matrix target and selects that same
+`CARGO_BUILD_TARGET`. It then verifies the actual Rust compiler host triple;
+cross-compiling or running an emulated compiler must not silently substitute
+for a native job. These settings do not change local developer configuration.
+The labels are listed in the current official
+[GitHub runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
+The current official Windows image installer selects an ARM64 rustup bootstrap
+on ARM64 hosts. CI nevertheless sets and verifies its intended compiler host
+instead of treating the image's tool inventory or a cached default as proof.
+[Windows image Rust installer](https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/Install-Rust.ps1),
+[rustup host selection](https://rust-lang.github.io/rustup/concepts/toolchains.html),
+[Cargo target environment](https://doc.rust-lang.org/cargo/reference/environment-variables.html)
+
+| Platform | x64 runner | ARM64 runner |
+| --- | --- | --- |
+| Windows | `windows-2022` | `windows-11-arm` |
+| macOS | `macos-15-intel` | `macos-15` |
+| Linux | `ubuntu-22.04` | `ubuntu-22.04-arm` |
+
+The existing minimal workspace lint/test gate remains. Separate runtime library
+checks cover no optional features, creation alone, editing alone and both;
+workspace consumer feature unification cannot replace those checks. Explicit
+all-feature Access/runtime lint/tests exercise shared write integration alongside
+the existing IO/native engine gates. Tracked portable archive and association
+tests run explicitly because top-level Python discovery does not recurse into
+the non-package `scripts/tests` directory. Python setup selects the native host
+architecture and uses 3.13, matching release preparation.
+[setup-python architecture contract](https://github.com/actions/setup-python#supported-architectures)
+
+Standard hosted runners advertise 14 GB of storage. Local audit builds generated
+roughly 25 GiB with ordinary debug information and hundreds of example roots.
+A subsequent local macOS Intel all-target check actually failed with `os error 28`
+while writing `dep-graph.part.bin`; that is not a remote native-CI failure. CI sets
+only `CARGO_PROFILE_DEV_DEBUG=0` and `CARGO_PROFILE_TEST_DEBUG=0` to omit debugger
+metadata. Optimization remains at the development/test default, with debug
+assertions and overflow checks unchanged. Incremental compilation is not disabled.
+[GitHub storage specifications](https://docs.github.com/en/actions/reference/runners/github-hosted-runners),
+[Cargo profile settings](https://doc.rust-lang.org/cargo/reference/profiles.html)
+
+Each test gate explicitly runs `--lib --bins --tests`, then its separate `--doc`
+gate with the same package/feature selection. All actual unit/integration and
+documentation tests remain selected, including any explicitly test-enabled
+targets. Example programs are still checked by `clippy --all-targets` in their
+corresponding feature profile; the test phase no longer redundantly links every
+non-test example. The bounded formatter still covers every target root. This
+does not establish that the full future CI run fits the runner's disk budget.
+[Cargo test target selection](https://doc.rust-lang.org/cargo/commands/cargo-test.html#target-selection)
+
+Six explicit phase boundaries run `scripts/prune_ci_incremental.py` only after
+the preceding Cargo command has completed successfully. It removes only
+`target/$CARGO_BUILD_TARGET/debug/incremental`, preserving binaries, rlibs,
+examples, documentation, fixtures, host-tool caches and other target triples.
+The utility requires one normal target triple, refuses symlink/reparse-point
+parents and custom cache-root environment variables, and does not follow links
+inside the removed tree. A missing cache is a no-op. No compiler or other process
+may concurrently mutate the selected cache or its namespace; the utility is not
+a live-build cleaner. Incremental compilation remains enabled within each phase;
+later phases may recompute discarded cache entries. Failed phases retain their
+cache for diagnosis instead of automatically deleting it.
+[Cargo cache layout](https://doc.rust-lang.org/cargo/reference/build-cache.html),
+[Python directory removal](https://docs.python.org/3.13/library/shutil.html#shutil.rmtree)
+
+CI now uses the same current official `actions/checkout@v7` and
+`actions/setup-python@v7` tags as release preparation. No registry dependency,
+Rust toolchain version or Cargo lockfile change is introduced by these workflow
+updates. Release artifact actions remain at their existing version tags.
+[checkout releases](https://github.com/actions/checkout/releases),
+[setup-python releases](https://github.com/actions/setup-python/releases)
+
+Linux jobs explicitly install the build/runtime libraries for the enabled
+X11/Wayland/font features. The desktop uses the XDG portal file-dialog backend,
+not GTK. These provisions support headless builds and tests; they do not launch
+or qualify a display server, portal session or native desktop interaction.
+[eframe Linux prerequisites](https://github.com/emilk/egui/blob/main/crates/eframe/README.md),
+[rfd Linux backends](https://docs.rs/rfd/latest/rfd/#linux--bsd-backends)
+
+This is configured coverage, not a green remote-CI result. The cited earlier run
+also failed on Unix because optional testkit support dependencies were not
+enabled. Current fixes and local/cross checks do not erase that failed record.
+Actual Windows/Linux filesystem execution, native GUI/DPI/accessibility,
+power-loss recovery and Microsoft Access comparisons retain separate evidence
+requirements. CLI release jobs build/package/smoke six native CLI binaries;
+desktop release integration and installed handlers remain unqualified.
+
+## Dependency inheritance
+
 Declare dependencies in root `[workspace.dependencies]`: registry versions, local
 crate paths and shared feature/default selections have one owner. Member manifests
 use `dependency.workspace = true`, or `{ workspace = true, ... }` for local optional
@@ -127,22 +234,18 @@ Commit `Cargo.lock`. CI runs the Rust commands on Linux, macOS and Windows.
 Configuring those jobs does not establish that they passed. Local execution evidence is recorded in IMPLEMENTATION.md.
 CI has read-only repository permissions and does not retain checkout credentials.
 
-For a selected-package aggregate lint that activates both Access and query
-support cycles in testkit, include the testkit package root and its explicit
-`access-support` feature:
+Access selects testkit's `access-support` explicitly in its development dependency,
+alongside its fixture/native support features. Production `ace16-create` and
+`offline-write-session` features do not forward testkit features. Keep shared test
+support development-only and opt into its owning feature at each real consumer;
+do not require testkit as an extra package root to make aggregate lint work.
 
-```sh
-cargo clippy -p tablecraft-runtime -p tablecraft-ui -p tablecraft-desktop \
-  -p tablecraft-access -p tablecraft-query -p tablecraft-testkit \
-  --features tablecraft-runtime/offline-edit,tablecraft-testkit/access-support \
-  --all-targets --locked --offline -- -D warnings
-```
-
-The aggregate without that root was observed to pass `access-support` cfg to
-testkit while omitting its optional Access/I/O/hash/tempfile externs. The command
-above validates the intended full helper closure without changing normal
-features or adding unconditional dependencies. This is a recorded toolchain/unit-
-graph observation, not a reason to remove feature gates or weaken checks.
+Plain minimal and all-feature workspace Clippy checks now pass. The earlier
+aggregate required an explicit testkit-root workaround because production
+feature forwarding activated support without its complete development dependency
+closure. Commit `c9735d11` corrected that manifest boundary; the historical
+failure remains evidence, not a current required command. See
+[testkit feature ownership](../testing/TESTKIT.md).
 
 ## Committed producer builds
 

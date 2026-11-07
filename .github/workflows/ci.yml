@@ -9,30 +9,68 @@ permissions:
 
 jobs:
   headless:
-    name: Headless (${{ matrix.os }})
+    name: Headless (${{ matrix.target }})
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+          - os: macos-15
+            target: aarch64-apple-darwin
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
+    env:
+      CARGO_BUILD_TARGET: ${{ matrix.target }}
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Install pinned Rust toolchain
         shell: bash
-        run: rustup show active-toolchain
-      - name: Check formatting
-        run: cargo fmt --all -- --check
-      - uses: actions/setup-python@v5
+        env:
+          EXPECTED_HOST: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          rustup set default-host "$EXPECTED_HOST"
+          rustup show active-toolchain
+      - name: Require the native Rust host
+        shell: bash
+        env:
+          EXPECTED_HOST: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          rustc -vV | grep -Fx "host: $EXPECTED_HOST"
+      - name: Install Linux desktop build libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libwayland-dev libssl-dev libfontconfig1
+      - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: '3.13'
+      - name: Check every Cargo target with bounded formatter arguments
+        run: python scripts/check_rust_format.py
       - name: Check dependency boundaries
         run: python scripts/check_dependency_boundaries.py
       - name: Check local documentation links
         run: python scripts/check_documentation_links.py
       - name: Test repository guards
         run: python -m unittest discover -s scripts -p "test_*.py"
+      - name: Test portable archives
+        run: python -m unittest discover -s scripts/tests -p "test_package_*.py"
+      - name: Test file association metadata
+        run: python -m unittest discover -s scripts/tests -p "test_file_associations.py"
       - name: Check standalone core
         run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Check standalone SQL parser
@@ -49,6 +87,14 @@ jobs:
         run: cargo check -p tablecraft-access --no-default-features --locked
       - name: Check standalone database contracts
         run: cargo check -p tablecraft-db --no-default-features --locked
+      - name: Check standalone runtime without optional editing or creation
+        run: cargo check -p tablecraft-runtime --lib --no-default-features --locked
+      - name: Check standalone creation runtime
+        run: cargo check -p tablecraft-runtime --lib --no-default-features --features ace16-create --locked
+      - name: Check standalone editing runtime
+        run: cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --locked
+      - name: Check standalone editing and creation runtime
+        run: cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit,ace16-create --locked
       - name: Check standalone SQLite source adapter
         run: cargo check -p tablecraft-sqlite --no-default-features --locked
       - name: Check standalone retrieval
@@ -56,31 +102,69 @@ jobs:
       - name: Lint standalone expression semantics
         run: cargo clippy -p tablecraft-expressions --all-targets --no-default-features --locked -- -D warnings
       - name: Test standalone expression semantics
-        run: cargo test -p tablecraft-expressions --no-default-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-expressions --no-default-features --locked
+      - name: Test standalone expression semantics documentation
+        run: cargo test --doc -p tablecraft-expressions --no-default-features --locked
       - name: Lint minimal headless workspace
         run: cargo clippy --workspace --all-targets --no-default-features --locked -- -D warnings
+      - name: Prune completed workspace lint incremental cache
+        run: python scripts/prune_ci_incremental.py
       - name: Test minimal headless workspace
-        run: cargo test --workspace --no-default-features --locked
+        run: cargo test --lib --bins --tests --workspace --no-default-features --locked
+      - name: Test minimal headless workspace documentation
+        run: cargo test --doc --workspace --no-default-features --locked
+      - name: Prune completed workspace test incremental cache
+        run: python scripts/prune_ci_incremental.py
       - name: Lint optional image journal
         run: cargo clippy -p tablecraft-io --all-targets --all-features --locked -- -D warnings
       - name: Test optional image journal
-        run: cargo test -p tablecraft-io --all-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-io --all-features --locked
+      - name: Test optional image journal documentation
+        run: cargo test --doc -p tablecraft-io --all-features --locked
       - name: Lint optional native journal integration
         run: cargo clippy -p tablecraft-ace --all-targets --all-features --locked -- -D warnings
       - name: Test optional native journal integration
-        run: cargo test -p tablecraft-ace --all-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-ace --all-features --locked
+      - name: Test optional native journal integration documentation
+        run: cargo test --doc -p tablecraft-ace --all-features --locked
+      - name: Prune completed native engine incremental cache
+        run: python scripts/prune_ci_incremental.py
+      - name: Lint optional Access write sessions
+        run: cargo clippy -p tablecraft-access --all-targets --all-features --locked -- -D warnings
+      - name: Test optional Access write sessions
+        run: cargo test --lib --bins --tests -p tablecraft-access --all-features --locked
+      - name: Test optional Access write sessions documentation
+        run: cargo test --doc -p tablecraft-access --all-features --locked
+      - name: Prune completed Access session incremental cache
+        run: python scripts/prune_ci_incremental.py
+      - name: Lint shared editing and creation runtime
+        run: cargo clippy -p tablecraft-runtime --all-targets --all-features --locked -- -D warnings
+      - name: Test shared editing and creation runtime
+        run: cargo test --lib --bins --tests -p tablecraft-runtime --all-features --locked
+      - name: Test shared editing and creation runtime documentation
+        run: cargo test --doc -p tablecraft-runtime --all-features --locked
+      - name: Prune completed runtime incremental cache
+        run: python scripts/prune_ci_incremental.py
       - name: Lint optional async SQLite reader
         run: cargo clippy -p tablecraft-sqlite --all-targets --all-features --locked -- -D warnings
       - name: Test optional async SQLite reader
-        run: cargo test -p tablecraft-sqlite --all-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-sqlite --all-features --locked
+      - name: Test optional async SQLite reader documentation
+        run: cargo test --doc -p tablecraft-sqlite --all-features --locked
       - name: Lint SQL-enabled expression evaluator
         run: cargo clippy -p tablecraft-expressions --all-targets --all-features --locked -- -D warnings
       - name: Test SQL-enabled expression evaluator
-        run: cargo test -p tablecraft-expressions --all-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-expressions --all-features --locked
+      - name: Test SQL-enabled expression evaluator documentation
+        run: cargo test --doc -p tablecraft-expressions --all-features --locked
       - name: Lint serde-enabled core
         run: cargo clippy -p tablecraft-core --all-targets --all-features --locked -- -D warnings
       - name: Test serde-enabled core
-        run: cargo test -p tablecraft-core --all-features --locked
+        run: cargo test --lib --bins --tests -p tablecraft-core --all-features --locked
+      - name: Test serde-enabled core documentation
+        run: cargo test --doc -p tablecraft-core --all-features --locked
+      - name: Prune completed optional feature incremental cache
+        run: python scripts/prune_ci_incremental.py
       - name: Build release executable
         run: cargo build --workspace --release --no-default-features --locked
       - name: Build API documentation
