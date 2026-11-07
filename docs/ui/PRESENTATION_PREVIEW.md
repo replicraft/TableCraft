@@ -1,5 +1,29 @@
 # Presentation preview
 
+## Inline field names and unsaved first records — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=rename|record` drives actual widgets in
+`initial-table-draft`: opens Click to Add, chooses Short Text and types a field
+name. Record mode commits the header and types raw text into the new row. It
+uses no native row handles, database or save worker. This flag is exclusive with
+other preview interaction workflows; the scene inventory remains 93.
+
+Four normal-host frames were rendered and inspected offscreen on macOS with
+Windows input emulation. English light/dark header editing uses 1280×820 at 1×;
+German dark/Japanese light row input uses 900×580 at 1.25×. The active header
+editor stays in its column, raw row text remains visible, the ID displays (New),
+and translated footer notes wrap above Save. Frames are retained under ignored
+`.cache/ui-previews/initial-record-20261107/`.
+
+The actual 1920×1141 Windows/VirtualBox Datasheet reference was reopened (scale
+unrecorded). It establishes the dense grid, new-record placeholder and header
+locations, but contains no active header-name edit or unsaved first-record
+workflow. Those editing states remain documented adaptations, separate from
+native Windows interaction or Access save qualification. The real desktop
+headless acceptance separately saves and reopens a schema and first row, retains
+invalid row input for correction and completes an original Close only after the
+fresh row revision is loaded.
+
 ## Initial field gallery — 7 November 2026
 
 `TABLECRAFT_PREVIEW_FIELD_GALLERY=true` opens the actual Click to Add header

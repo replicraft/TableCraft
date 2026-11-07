@@ -1,5 +1,35 @@
 # Implementation status
 
+## Header naming and unsaved first-record continuity — 7 November 2026
+
+Field names now edit in their headers with selected initial text, Enter/Tab
+validation and Escape cancellation. Pending invalid names remain exact and
+block Save. Title/Ribbon/keyboard Save captures input only after current widget
+events are processed. Dirty/discard witnesses include both schema and record
+revisions.
+
+An unsaved table can retain one raw record keyed by draft field identity. It
+preserves omission, explicit NULL, supplied text and hidden text when input mode
+changes. No native row, generated value or inferred type is fabricated. Schema
+Save keeps that buffer through cancellation/failure, then atomically transfers
+it to a shared UI continuation after a real guarded reopen. The actual native
+insertion draft must match exact names, order, types, generated flags and fresh
+revision before seeding. Mismatch retains input for explicit retry/discard.
+The existing row review/Apply follows separately; binding or review failure
+does not delete or recreate the saved schema. An original table Close waits for
+both save owners and the fresh row revision. Desktop adds routing and transition
+guards; data interpretation and persistence stay in runtime.
+
+Complete local headless batches pass 380 UI and 97 desktop tests, with strict
+all-target/all-feature lint. Both Windows architectures compile affected targets
+and test consumers. All 881 formatter roots pass. Four offscreen frames were
+rendered and inspected in English light/dark and compact German/Japanese. Original
+failed focus/order and fixture privacy checks remain in ignored logs alongside
+corrected passes. Native Windows/Linux execution and Access comparison remain
+unrun. This does not implement arbitrary new fields, multiple pending records,
+type inference or implicit Access record autosave.
+See [creation](ui/DATABASE_CREATION.md) and [visual evidence](ui/PRESENTATION_PREVIEW.md).
+
 ## Initial field gallery and stored defaults — 7 November 2026
 
 The initial Datasheet draft now exposes six explicit field choices: Short Text,
