@@ -89,3 +89,5 @@ editing-paste-help = Pegue texto literal en una celda nativa seleccionada y rev�
 editing-paste-too-large = El texto del portapapeles supera el límite de 1 MiB. No se pegó nada.
 editing-paste-stale = La solicitud del portapapeles ya no corresponde a la celda seleccionada. Se descartó el texto.
 editing-paste-multiple = El portapapeles devolvió varios textos. No se pegó nada.
+
+editing-save-retained-private-journal = Después de guardar, se conserva en disco un diario de recuperación privado.

@@ -89,3 +89,5 @@ editing-paste-help = Paste literal text into one selected native cell, then revi
 editing-paste-too-large = Clipboard text exceeds the 1 MiB limit. Nothing was pasted.
 editing-paste-stale = The clipboard request no longer matches the selected cell. The text was discarded.
 editing-paste-multiple = The clipboard returned multiple text payloads. Nothing was pasted.
+
+editing-save-retained-private-journal = A private recovery journal remains on disk after this save.

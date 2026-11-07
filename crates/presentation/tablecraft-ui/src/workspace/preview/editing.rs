@@ -1,7 +1,7 @@
 //! Synthetic snapshots of the existing reviewed-edit lifecycle, without save resources.
 use super::{Preview, Scene};
 use crate::workspace::editing::EditDialog;
-use crate::{EditInput, EditSaveOutcome};
+use crate::{EditInput, EditSaveOutcome, SaveCleanupNotice};
 
 impl Preview {
     pub(super) fn show_editing_scene(&mut self, scene: Scene) {
@@ -29,6 +29,7 @@ impl Preview {
             | Scene::SaveCancelling
             | Scene::SaveResolving
             | Scene::SaveSaved
+            | Scene::SaveSavedRetainedJournal
             | Scene::SaveCancelled
             | Scene::SaveFailed
             | Scene::RecoveryDiagnosis => {
@@ -61,6 +62,28 @@ impl Preview {
                         save,
                         EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-saved")),
                     ),
+                    Scene::SaveSavedRetainedJournal => {
+                        let mut report = self.state.localizer.text("editing-save-completed");
+                        report.push(' ');
+                        report.push_str(
+                            &self
+                                .state
+                                .localizer
+                                .text("editing-save-retained-private-journal"),
+                        );
+                        self.state
+                            .set_edit_save_outcome(save, EditSaveOutcome::Saved(report));
+                        let revision = self
+                            .state
+                            .database
+                            .as_ref()
+                            .expect("synthetic database")
+                            .document_revision;
+                        self.state.set_save_cleanup(
+                            revision,
+                            Some(SaveCleanupNotice::RetainedPrivateJournal),
+                        );
+                    }
                     Scene::SaveCancelled => self.state.set_edit_save_outcome(
                         save,
                         EditSaveOutcome::Cancelled(

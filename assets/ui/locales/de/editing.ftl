@@ -89,3 +89,5 @@ editing-paste-help = Fügen Sie wörtlichen Text in eine ausgewählte native Zel
 editing-paste-too-large = Der Zwischenablagetext überschreitet die Grenze von 1 MiB. Es wurde nichts eingefügt.
 editing-paste-stale = Die Zwischenablageanforderung gehört nicht mehr zur ausgewählten Zelle. Der Text wurde verworfen.
 editing-paste-multiple = Die Zwischenablage hat mehrere Texte geliefert. Es wurde nichts eingefügt.
+
+editing-save-retained-private-journal = Nach dem Speichern bleibt ein privates Wiederherstellungsjournal auf dem Datenträger erhalten.

@@ -45,6 +45,7 @@ pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayo
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
+pub use save_display::SaveCleanupNotice;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 pub use table_draft::{TableDraftSaveCompletion, TableSaveRequest};
@@ -330,6 +331,7 @@ pub struct State {
     schema_activation_pending: bool,
     pub busy: bool,
     pub error: Option<String>,
+    save_cleanup_notice: Option<(u64, SaveCleanupNotice)>,
     pub sql: String,
     query_design: query_design::QueryDesign,
     filter: String,

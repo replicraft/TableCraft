@@ -89,3 +89,5 @@ editing-paste-help = Cole texto literal em uma célula nativa selecionada e revi
 editing-paste-too-large = O texto da área de transferência excede o limite de 1 MiB. Nada foi colado.
 editing-paste-stale = A solicitação da área de transferência não corresponde mais à célula selecionada. O texto foi descartado.
 editing-paste-multiple = A área de transferência retornou vários textos. Nada foi colado.
+
+editing-save-retained-private-journal = Um diário de recuperação privado permanece no disco após salvar.

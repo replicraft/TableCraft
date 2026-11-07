@@ -9,12 +9,13 @@ use crate::view_models::cell;
 use std::path::PathBuf;
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
-    EditTarget as RuntimeTarget, ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCompletion,
-    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport,
-    SaveWorker, journal_path,
+    EditTarget as RuntimeTarget, ReviewedDelete, ReviewedEdit, ReviewedInsert,
+    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
+    SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
 use tablecraft_ui::{
     EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
+    SaveCleanupNotice,
 };
 
 pub(super) struct Editing {
@@ -24,6 +25,7 @@ pub(super) struct Editing {
     delete_review: Option<(u64, ReviewedDelete)>,
     save: Option<ActiveSave>,
     refresh: Option<(u64, String, u32)>,
+    refresh_cleanup: Option<SaveCleanupNotice>,
 }
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
@@ -59,6 +61,7 @@ impl Editing {
             delete_review: None,
             save: None,
             refresh: None,
+            refresh_cleanup: None,
         }
     }
 
@@ -68,6 +71,7 @@ impl Editing {
 
     pub(super) fn clear_refresh(&mut self) {
         self.refresh = None;
+        self.refresh_cleanup = None;
     }
 
     pub(super) fn clear_review(&mut self) {
@@ -317,6 +321,10 @@ impl Desktop {
                 self.retain_workspace_restore(restore);
             }
             self.editing.refresh = Some((self.generation, save.table, save.offset));
+            self.editing.refresh_cleanup = match save.report.map(|report| report.outcome) {
+                Some(SaveOutcome::Saved { receipt }) => cleanup_notice(receipt),
+                _ => None,
+            };
         } else {
             self.filter = None;
             self.objects = Sessions::default();
@@ -329,9 +337,14 @@ impl Desktop {
     }
 
     pub(super) fn refresh_after_save(&mut self, generation: u64) -> bool {
+        let cleanup = self.editing.refresh_cleanup.take();
         if let Some((expected, table, offset)) = self.editing.refresh.take()
             && generation == expected
         {
+            if let Some(database) = &self.state.database {
+                self.state
+                    .set_save_cleanup(database.document_revision, cleanup);
+            }
             if !self.restore_workspace_after_save(&table) {
                 return true;
             }
@@ -403,6 +416,7 @@ fn save_outcome(localizer: &Localizer, outcome: SaveOutcome) -> EditSaveOutcome 
                     &[("count", changed.to_string())],
                 ));
             }
+            append_cleanup(localizer, receipt, &mut report);
             EditSaveOutcome::Saved(report)
         }
         SaveOutcome::Released {
@@ -465,7 +479,24 @@ fn outcome_details(
             &[("count", changed.to_string())],
         ));
     }
+    append_cleanup(localizer, receipt, &mut report);
     report
+}
+
+fn cleanup_notice(receipt: SaveReceipt) -> Option<SaveCleanupNotice> {
+    match receipt.cleanup {
+        Some(SaveCleanupDisposition::RetainedArtifact) => {
+            Some(SaveCleanupNotice::RetainedPrivateJournal)
+        }
+        Some(SaveCleanupDisposition::Removed) | None => None,
+    }
+}
+
+fn append_cleanup(localizer: &Localizer, receipt: SaveReceipt, report: &mut String) {
+    if cleanup_notice(receipt).is_some() {
+        report.push(' ');
+        report.push_str(&localizer.text("editing-save-retained-private-journal"));
+    }
 }
 
 fn failure_reason(localizer: &Localizer, kind: SaveFailureKind) -> String {

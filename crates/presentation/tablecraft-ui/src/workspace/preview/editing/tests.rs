@@ -330,3 +330,69 @@ fn stale_edit_close_cannot_dismiss_a_newer_draft() {
     });
     assert!(!preview.state.edit_dialog_open());
 }
+
+#[test]
+fn retained_journal_preview_renders_all_locales_and_themes_without_changing_ordinary_saved_scene() {
+    for locale in crate::Locale::ALL {
+        for theme in [crate::Theme::Light, crate::Theme::Dark] {
+            let mut preview = Preview::new(Scene::SaveSaved);
+            preview.state.localizer = crate::Localizer::new(locale).unwrap();
+            preview.state.theme = theme;
+            preview.set_scene(Scene::SaveSaved);
+            let ordinary = preview.state.localizer.text("settings-mock-saved");
+            assert!(matches!(&preview.state.edit,
+                Some(EditDialog::Finished { outcome: EditSaveOutcome::Saved(message), .. }) if *message == ordinary));
+            assert_eq!(preview.state.save_cleanup_status(), None);
+
+            preview.set_scene(Scene::SaveSavedRetainedJournal);
+            assert!(preview.state.mock_preview);
+            assert!(!preview.state.edit_save_pending());
+            let notice = preview
+                .state
+                .localizer
+                .text("editing-save-retained-private-journal");
+            let expected = format!(
+                "{} {}",
+                preview.state.localizer.text("editing-save-completed"),
+                notice
+            );
+            assert!(matches!(&preview.state.edit,
+                Some(EditDialog::Finished { outcome: EditSaveOutcome::Saved(message), .. }) if *message == expected));
+            let context = egui::Context::default();
+            crate::configure(&context);
+            let mut settled = None;
+            for _ in 0..3 {
+                settled = Some(render(&mut preview, &context));
+            }
+            let output = settled.unwrap();
+            let painted = output
+                .shapes
+                .iter()
+                .filter_map(|shape| match &shape.shape {
+                    egui::epaint::Shape::Text(text) => Some(text.galley.job.text.as_str()),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            assert!(
+                painted.contains(&notice.as_str()),
+                "status must retain the cleanup fact: {locale:?} {theme:?}"
+            );
+            assert!(
+                painted.contains(&expected.as_str()),
+                "terminal dialog must retain the same fact: {locale:?} {theme:?}"
+            );
+            assert_eq!(preview.state.localizer.diagnostics(), Default::default());
+
+            // A later document cannot inherit this status. Its historical
+            // terminal report remains unchanged until explicitly dismissed.
+            preview.state.database.as_mut().unwrap().document_revision += 1;
+            assert_eq!(preview.state.save_cleanup_status(), None);
+            assert!(matches!(&preview.state.edit,
+                Some(EditDialog::Finished { outcome: EditSaveOutcome::Saved(message), .. }) if *message == expected));
+            preview.set_scene(Scene::SaveSaved);
+            assert_eq!(preview.state.save_cleanup_status(), None);
+            assert!(matches!(&preview.state.edit,
+                Some(EditDialog::Finished { outcome: EditSaveOutcome::Saved(message), .. }) if *message == ordinary));
+        }
+    }
+}

@@ -28,9 +28,10 @@ pub use workspace::{
     FindScope, FindSpan, FindTarget, InputHint, InsertDraft, InsertField, InsertInput,
     InsertReview, InsertTarget, ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput,
     ParameterSpec, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
-    ReplaceFindRequest, RowOrdinalError, RowOrdinals, SavedQuery, SavedQueryTarget, Schema,
-    SortSpec, SortTarget, State, Table, TableDraftSaveCompletion, TableSaveRequest, TotalAggregate,
-    TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
+    ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice, SavedQuery,
+    SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table, TableDraftSaveCompletion,
+    TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
+    TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

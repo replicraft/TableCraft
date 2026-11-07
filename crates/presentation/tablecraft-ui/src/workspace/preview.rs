@@ -113,13 +113,14 @@ pub enum Scene {
     SaveCancelling,
     SaveResolving,
     SaveSaved,
+    SaveSavedRetainedJournal,
     SaveCancelled,
     SaveFailed,
     RecoveryDiagnosis,
 }
 
 impl Scene {
-    pub const ALL: [Self; 89] = [
+    pub const ALL: [Self; 90] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -206,6 +207,7 @@ impl Scene {
         Self::SaveCancelling,
         Self::SaveResolving,
         Self::SaveSaved,
+        Self::SaveSavedRetainedJournal,
         Self::SaveCancelled,
         Self::SaveFailed,
         Self::RecoveryDiagnosis,
@@ -324,6 +326,7 @@ impl Scene {
             Self::SaveCancelling => "save-cancelling",
             Self::SaveResolving => "save-resolving",
             Self::SaveSaved => "save-saved",
+            Self::SaveSavedRetainedJournal => "edit-saved-retained-journal",
             Self::SaveCancelled => "save-cancelled",
             Self::SaveFailed => "save-failed",
             Self::RecoveryDiagnosis => "recovery-diagnosis",
@@ -545,7 +548,7 @@ impl Preview {
             Scene::SaveApplying => self.show_editing_scene(scene),
             Scene::SaveCancelling => self.show_editing_scene(scene),
             Scene::SaveResolving => self.show_editing_scene(scene),
-            Scene::SaveSaved => self.show_editing_scene(scene),
+            Scene::SaveSaved | Scene::SaveSavedRetainedJournal => self.show_editing_scene(scene),
             Scene::SaveCancelled => self.show_editing_scene(scene),
             Scene::SaveFailed => self.show_editing_scene(scene),
             Scene::RecoveryDiagnosis => self.show_editing_scene(scene),

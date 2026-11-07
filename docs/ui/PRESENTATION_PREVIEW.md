@@ -1,5 +1,33 @@
 # Presentation preview
 
+## Retained private recovery journal — 7 November 2026
+
+The resource-free `edit-saved-retained-journal` scene extends the existing saved
+cell-edit fixture. Its terminal message uses the same localized completion and
+retained-private-journal strings as the desktop's typed receipt presentation;
+its status notice is bound to the synthetic database's actual document revision.
+It creates no file, journal, runtime receipt or backend capability. The ordinary
+`save-saved` scene retains its earlier message and has no cleanup notice.
+
+The actual private `Bildschirmfoto_2026-10-28_12-07-35.png` datasheet reference
+was reopened headlessly: 1920×1141 Windows Access inside VirtualBox, display scale
+unknown. Its bottom status bar has Datasheet View at the left and view/zoom
+controls at the right. It has no retained-recovery-artifact message or offline
+save dialog. The new notice and terminal message are explicitly TableCraft
+adaptations; neither visual appearance nor the synthetic saved state establishes
+Windows filesystem or native Access behavior.
+
+A focused test passes for all eight locales in light/dark themes at
+1280×820 logical pixels, checking the terminal/status text, missing-key
+diagnostics, revision isolation and unchanged ordinary saved fixtures. Four
+normal-host frames were rendered and inspected offscreen on macOS with Windows
+chrome emulation: English light/dark at 1280×820, 1×, German dark and Japanese
+light at 900×580, 1.25×. The terminal text wraps within the dialog, its Close
+button remains visible, and the status notice remains within the viewport.
+Compact Ribbons retain horizontal scrolling. No native window was opened.
+The local frames are under
+`.cache/ui-previews/windows-retained-journal-20261107/`.
+
 ## New-record keyboard intent — 7 November 2026
 
 Ctrl+Plus, or Command+Plus on macOS, opens the existing reviewed insertion

@@ -89,3 +89,5 @@ editing-paste-help = 選択したネイティブセル1個に文字列をその�
 editing-paste-too-large = クリップボードのテキストが1 MiBの上限を超えています。貼り付けは行われませんでした。
 editing-paste-stale = クリップボード要求が選択中のセルと一致しなくなりました。テキストを破棄しました。
 editing-paste-multiple = クリップボードから複数のテキストが返されました。貼り付けは行われませんでした。
+
+editing-save-retained-private-journal = 保存後も非公開の復旧ジャーナルがディスクに残ります。

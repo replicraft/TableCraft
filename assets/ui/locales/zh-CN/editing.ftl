@@ -89,3 +89,5 @@ editing-paste-help = 将原样文本粘贴到一个选中的原生单元格中�
 editing-paste-too-large = 剪贴板文本超过 1 MiB 限制。未粘贴任何内容。
 editing-paste-stale = 剪贴板请求已与选中的单元格不匹配。文本已丢弃。
 editing-paste-multiple = 剪贴板返回了多个文本内容。未粘贴任何内容。
+
+editing-save-retained-private-journal = 保存后，磁盘上仍保留私有恢复日志。

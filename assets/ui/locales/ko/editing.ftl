@@ -89,3 +89,5 @@ editing-paste-help = 선택한 네이티브 셀 하나에 텍스트를 그대로
 editing-paste-too-large = 클립보드 텍스트가 1 MiB 제한을 초과합니다. 아무것도 붙여넣지 않았습니다.
 editing-paste-stale = 클립보드 요청이 더 이상 선택한 셀과 일치하지 않습니다. 텍스트를 버렸습니다.
 editing-paste-multiple = 클립보드에서 여러 텍스트가 반환되었습니다. 아무것도 붙여넣지 않았습니다.
+
+editing-save-retained-private-journal = 저장 후에도 비공개 복구 저널이 디스크에 남습니다.

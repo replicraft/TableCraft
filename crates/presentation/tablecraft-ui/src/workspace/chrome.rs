@@ -277,6 +277,10 @@ impl State {
                 }
             };
             ui.small(t.text(key));
+            if let Some(key) = self.save_cleanup_status() {
+                ui.separator();
+                ui.small(t.text(key));
+            }
             if self.busy {
                 ui.spinner();
                 if ui.button(t.text("shell-cancel")).clicked() {

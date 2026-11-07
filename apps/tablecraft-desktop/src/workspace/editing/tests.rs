@@ -221,6 +221,8 @@ fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_o
             matched_rows: Some(3),
             changed_rows: Some(2),
             schema_change: None,
+            retirement: None,
+            cleanup: None,
         }),
         can_recover: false,
         can_release: false,
@@ -277,6 +279,8 @@ fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
                     matched_rows: None,
                     changed_rows: None,
                     schema_change: None,
+                    retirement: None,
+                    cleanup: None,
                 }),
             },
         );
@@ -311,4 +315,47 @@ fn absent_receipt_does_not_invent_completed_operations_or_counts() {
     assert!(!message.contains("Last completed operation:"));
     assert!(!message.contains("Matched rows:"));
     assert!(!message.contains("Changed rows:"));
+}
+
+#[test]
+fn retained_private_artifact_is_reported_from_typed_cleanup_independently_of_data_outcome() {
+    let mut receipt = SaveReceipt {
+        completion: SaveCompletion::Applied,
+        known: SaveKnownOutcome::Committed,
+        matched_rows: None,
+        changed_rows: None,
+        schema_change: None,
+        retirement: Some(tablecraft_runtime::SaveRetirementGuarantee::NtfsWriteThroughRename),
+        cleanup: Some(SaveCleanupDisposition::RetainedArtifact),
+    };
+    let localizer = Localizer::default();
+    let text = localizer.text("editing-save-retained-private-journal");
+    let EditSaveOutcome::Saved(message) = save_outcome(&localizer, SaveOutcome::Saved { receipt })
+    else {
+        panic!("acknowledged save must retain its success and cleanup facts");
+    };
+    assert!(message.contains(&text));
+    assert_eq!(
+        cleanup_notice(receipt),
+        Some(SaveCleanupNotice::RetainedPrivateJournal)
+    );
+
+    // A prior completed receipt keeps the artifact fact even when the current
+    // operation is known to have rolled back. Neither fact substitutes for the other.
+    let details = outcome_details(
+        &localizer,
+        Some(SaveKnownOutcome::RolledBack),
+        Some(receipt),
+    );
+    assert!(details.contains(&text));
+    assert!(details.contains("rolled back"));
+
+    receipt.cleanup = Some(SaveCleanupDisposition::Removed);
+    let EditSaveOutcome::Saved(message) = save_outcome(&localizer, SaveOutcome::Saved { receipt })
+    else {
+        panic!("removed artifact remains a successful save");
+    };
+    assert!(!message.contains(&text));
+    assert_eq!(cleanup_notice(receipt), None);
+    assert_eq!(localizer.diagnostics(), Default::default());
 }

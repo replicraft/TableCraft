@@ -1,5 +1,5 @@
 //! Host composition of shared draft requests and runtime-owned schema saves.
-use super::{ActiveSave, SaveOwner, save_outcome};
+use super::{ActiveSave, SaveOwner, cleanup_notice, save_outcome};
 use crate::workspace::{
     Desktop, PendingOperation,
     objects::{Sessions, WorkspaceRestore},
@@ -9,7 +9,7 @@ use tablecraft_runtime::{
     Command, FirstTableReopen, ReviewedFirstTable, SaveKnownOutcome, SaveOperation, SaveOutcome,
     SaveReport, SaveSchemaChange, journal_path,
 };
-use tablecraft_ui::{Database, EditSaveOutcome, ObjectTab, TableSaveRequest};
+use tablecraft_ui::{Database, EditSaveOutcome, ObjectTab, SaveCleanupNotice, TableSaveRequest};
 
 pub(in crate::workspace) struct FirstTableHost {
     request: u64,
@@ -20,6 +20,7 @@ pub(in crate::workspace) struct FirstTableHost {
     witness: Option<Arc<FirstTableReopen>>,
     restore: Option<WorkspaceRestore>,
     no_write: bool,
+    cleanup: Option<SaveCleanupNotice>,
 }
 
 impl Desktop {
@@ -59,6 +60,7 @@ impl Desktop {
             witness: None,
             restore: Some(restore),
             no_write: true,
+            cleanup: None,
         });
         self.submit(Command::ReviewFirstTable {
             document_revision: request.tab.target.document_revision,
@@ -148,6 +150,7 @@ impl Desktop {
                 if !self.editing.worker.acknowledge(report.id) {
                     return;
                 }
+                host.cleanup = cleanup_notice(receipt);
                 self.editing.save = None;
                 self.submit(Command::OpenFirstTableSaved { witness });
                 self.pending = PendingOperation::FirstTableReopen {
@@ -164,6 +167,10 @@ impl Desktop {
                     self.editing.save = None;
                     self.first_table = None;
                     self.state.cancel_table_draft_save(request);
+                    if let Some(database) = &self.state.database {
+                        self.state
+                            .set_save_cleanup(database.document_revision, cleanup_notice(receipt));
+                    }
                 }
             }
             SaveOutcome::Failed(failure) => {
@@ -222,6 +229,10 @@ impl Desktop {
             self.first_table_reopen_failed(id, self.state.localizer.text("objects-open-refused"));
             return;
         };
+        if let Some(database) = &self.state.database {
+            self.state
+                .set_save_cleanup(database.document_revision, host.cleanup);
+        }
         self.filter = None;
         self.objects = Sessions::default();
         if let Some(restore) = host.restore.take() {
@@ -246,6 +257,19 @@ impl Desktop {
             let mut report = self.state.localizer.text("table-draft-save-reopen-failed");
             report.push(' ');
             report.push_str(&message);
+            if self
+                .first_table
+                .as_ref()
+                .is_some_and(|host| host.cleanup.is_some())
+            {
+                report.push(' ');
+                report.push_str(
+                    &self
+                        .state
+                        .localizer
+                        .text("editing-save-retained-private-journal"),
+                );
+            }
             self.state
                 .retain_table_draft_save_status(id, report, false, false, true);
         }
