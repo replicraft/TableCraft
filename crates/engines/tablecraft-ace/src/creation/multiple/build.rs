@@ -189,6 +189,11 @@ fn member(
     ) {
         return Ok(Some(profile::CATALOG_DATA));
     }
+    // System-only creation retains the native map slots but grants no user
+    // membership or candidate page through either vacant user reservation.
+    if captured.tables.is_empty() {
+        return Ok(None);
+    }
     let (index, owned) = if slot == profile::USER_MAP_SLOT {
         (0, true)
     } else if slot == profile::USER_CANDIDATE_SLOT {

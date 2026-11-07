@@ -47,6 +47,21 @@ pub(in crate::creation) struct Captured<'a> {
     pub columns: usize,
 }
 
+/// Capture the explicit system-only profile without admitting an empty table
+/// list through the separate one-through-sixteen-table operation.
+pub(in crate::creation) fn capture_blank(
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Captured<'static>, CreateDatabaseError> {
+    check(budget, cancelled)?;
+    Ok(Captured {
+        layout: Layout::blank(),
+        tables: Vec::new(),
+        rows: 0,
+        columns: 0,
+    })
+}
+
 pub(in crate::creation) fn capture<'a>(
     tables: &[CreateTable<'a>],
     budget: &mut ResourceBudget,

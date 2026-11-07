@@ -36,10 +36,33 @@ impl CreatedDatabase {
         self.columns
     }
 
-    /// Number of user tables; existing single-table operations always return one.
+    /// Number of user tables; explicit blank creation returns zero.
     pub const fn table_count(&self) -> usize {
         self.tables
     }
+}
+
+/// Serialize a fresh, unencrypted ACE 16 image containing only the authored
+/// system catalog and definitions, with no user tables, fields or rows.
+///
+/// This is direct bounded construction, not a template copy or existing-file
+/// mutation. It preserves distinct catalog Memo/OLE allocation maps and conveys
+/// no native Access open/save qualification or future edit permission.
+pub fn create_blank_ace16_database(
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<CreatedDatabase, CreateDatabaseError> {
+    let _span = tracing::debug_span!("native.database.create_blank").entered();
+    let captured = multiple::capture_blank(budget, cancelled)?;
+    let bytes = multiple::build(&captured, budget, cancelled)?;
+    crate::header::check(budget, cancelled)?;
+
+    Ok(CreatedDatabase {
+        bytes,
+        rows: 0,
+        columns: 0,
+        tables: 0,
+    })
 }
 
 /// Serialize one fresh header-code-5 ACE database containing one Int32 table.

@@ -400,3 +400,6 @@ pub mod saved_queries;
 
 /// Independent database-property catalog roles and query-mode observations.
 pub mod database_properties;
+
+/// Independent complete ACE 16 envelope with no user tables.
+pub mod canonical_blank_creation;

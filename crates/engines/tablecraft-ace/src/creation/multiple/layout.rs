@@ -46,6 +46,18 @@ impl Role {
 }
 
 impl Layout {
+    /// System-only image with stable vacant user-map slots. The seven distinct
+    /// catalog Memo/OLE map pairs keep their existing native references.
+    pub fn blank() -> Self {
+        Self {
+            tables: 0,
+            image_bytes: profile::USER_DEFINITION * PAGE_BYTES,
+            map_rows: profile::MAP_ROWS,
+            catalog_rows: profile::SYSTEM_OBJECT_COUNT,
+            indexes: [None; MAX_TABLES],
+        }
+    }
+
     pub fn capture(tables: usize) -> Result<Self, CreateDatabaseError> {
         if !(1..=MAX_TABLES).contains(&tables) {
             return Err(CreateDatabaseError::TableLimit);
@@ -141,7 +153,11 @@ impl Layout {
     }
 
     pub fn index_maps_start(&self) -> usize {
-        profile::MAP_ROWS + (self.tables - 1) * APPENDED_MAPS
+        if self.tables == 0 {
+            profile::MAP_ROWS
+        } else {
+            profile::MAP_ROWS + (self.tables - 1) * APPENDED_MAPS
+        }
     }
 
     pub fn role(&self, index: usize) -> Result<Role, CreateDatabaseError> {

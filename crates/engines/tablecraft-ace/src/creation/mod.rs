@@ -18,7 +18,7 @@ mod variable;
 pub use column::CreateColumn;
 pub use database::{
     CreatedDatabase, create_ace16_database, create_ace16_database_tables,
-    create_ace16_int32_database,
+    create_ace16_int32_database, create_blank_ace16_database,
 };
 pub use multiple::CreateTable;
 pub use request::CreateDatabaseError;
@@ -46,3 +46,6 @@ mod default_tests;
 
 #[cfg(test)]
 mod primary_tests;
+
+#[cfg(test)]
+mod blank_tests;

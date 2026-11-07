@@ -61,7 +61,7 @@ pub struct Source {
 }
 
 #[derive(Clone, Copy)]
-struct Field<'a> {
+pub(super) struct Field<'a> {
     name: &'a str,
     kind: u8,
     width: u16,
@@ -109,7 +109,7 @@ const CATALOG: [Field<'static>; 15] = [
     Field::fixed("DateUpdate", 8, 8, 22, 5),
 ];
 
-const RELATIONSHIPS: [Field<'static>; 8] = [
+pub(super) const RELATIONSHIPS: [Field<'static>; 8] = [
     Field::variable("szRelationship", 10, 510, 0),
     Field::fixed("grbit", 4, 4, 0, 1),
     Field::fixed("ccolumn", 4, 4, 4, 1),
@@ -120,7 +120,7 @@ const RELATIONSHIPS: [Field<'static>; 8] = [
     Field::variable("szColumn", 10, 510, 4),
 ];
 
-const ACES: [Field<'static>; 4] = [
+pub(super) const ACES: [Field<'static>; 4] = [
     Field::fixed("ACM", 4, 4, 0, 0),
     Field::fixed("FInheritable", 1, 0, 0, 0),
     Field::fixed("ObjectId", 4, 4, 4, 0),
@@ -131,7 +131,7 @@ fn utf16(name: &str) -> Vec<u8> {
     name.encode_utf16().flat_map(u16::to_le_bytes).collect()
 }
 
-fn header() -> Vec<u8> {
+pub(super) fn header() -> Vec<u8> {
     let mut page = vec![0; PAGE];
     page[..4].copy_from_slice(&[0, 1, 0, 0]);
     page[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -162,7 +162,7 @@ fn header() -> Vec<u8> {
     page
 }
 
-fn definition(fields: &[Field<'_>], rows: usize, map_slot: u8) -> Vec<u8> {
+pub(super) fn definition(fields: &[Field<'_>], rows: usize, map_slot: u8) -> Vec<u8> {
     let mut page = vec![0; PAGE];
     page[..2].copy_from_slice(&[2, 1]);
     put32(&mut page, 12, 1625);
@@ -232,7 +232,7 @@ fn inline_map(member: Option<u8>) -> Vec<u8> {
     record
 }
 
-fn catalog_record(id: u32, parent: u32, name: &str, kind: u16, flags: u32) -> Vec<u8> {
+pub(super) fn catalog_record(id: u32, parent: u32, name: &str, kind: u16, flags: u32) -> Vec<u8> {
     let mut row = vec![0; 32];
     put16(&mut row, 0, 15);
     put32(&mut row, 2, id);

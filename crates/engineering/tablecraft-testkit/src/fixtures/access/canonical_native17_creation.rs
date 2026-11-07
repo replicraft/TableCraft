@@ -51,7 +51,7 @@ fn records(page: &[u8]) -> Vec<Vec<u8>> {
     rows
 }
 
-fn packed(owner: u32, rows: Vec<Vec<u8>>) -> Vec<u8> {
+pub(super) fn packed(owner: u32, rows: Vec<Vec<u8>>) -> Vec<u8> {
     let count = rows.len();
     let payload = rows.iter().map(Vec::len).sum::<usize>();
     assert!(14 + 2 * count + payload <= PAGE);
@@ -61,7 +61,7 @@ fn packed(owner: u32, rows: Vec<Vec<u8>>) -> Vec<u8> {
     page
 }
 
-fn declaration(rows: usize) -> Vec<u8> {
+pub(super) fn declaration(rows: usize) -> Vec<u8> {
     let mut page = vec![0; PAGE];
     page[..2].copy_from_slice(&[2, 1]);
     put32(&mut page, 12, 1625);
@@ -109,7 +109,7 @@ fn declaration(rows: usize) -> Vec<u8> {
     page
 }
 
-fn catalog_row(original: &[u8]) -> Vec<u8> {
+pub(super) fn catalog_row(original: &[u8]) -> Vec<u8> {
     assert_eq!(word(original, 0), 15);
     assert_eq!(&original[original.len() - 2..], &[0x1f, 0x60]);
     assert_eq!(word(original, original.len() - 4), 9);

@@ -5,7 +5,7 @@ mod request;
 
 pub(super) use build::build;
 pub use request::CreateTable;
-pub(super) use request::capture;
+pub(super) use request::{capture, capture_blank};
 
 #[cfg(test)]
 mod tests;
