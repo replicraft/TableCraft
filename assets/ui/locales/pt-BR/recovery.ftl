@@ -1,0 +1,14 @@
+recovery-title = Salvamento do TableCraft não concluído
+recovery-explanation = Este banco de dados pode ter um salvamento do TableCraft não concluído. A recuperação verifica o estado salvo e pode desfazer alterações não confirmadas. Nada é alterado automaticamente.
+recovery-exclusive = Feche o Access e outros programas que usam este banco de dados. A recuperação exige acesso exclusivo offline.
+recovery-cancel = Cancelar
+recovery-recover = Recuperar
+recovery-running = Resolvendo o salvamento pendente. Mantenha esta janela aberta até que o resultado seja conhecido.
+recovery-cancel-requested = Cancelamento solicitado. O resultado ainda não é conhecido.
+recovery-request-cancel = Solicitar cancelamento
+recovery-result = Resultado da recuperação
+recovery-close = Fechar
+recovery-retained = Os recursos de recuperação continuam sob controle da operação. Somente as ações disponíveis podem ser solicitadas.
+recovery-diagnosis = É necessário um diagnóstico adicional. Não haverá nova tentativa nem exclusão automática.
+recovery-release = Liberar recursos
+recovery-mock-help = Somente uma prévia de recuperação com dados sintéticos. Nenhum arquivo de banco de dados ou diário é aberto ou alterado.

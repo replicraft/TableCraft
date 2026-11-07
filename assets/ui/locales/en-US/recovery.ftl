@@ -1,0 +1,14 @@
+recovery-title = Unfinished TableCraft save
+recovery-explanation = This database may have an unfinished TableCraft save. Recovery verifies the saved state and may undo uncommitted changes. Nothing is changed automatically.
+recovery-exclusive = Close Access and other programs using this database before continuing. Recovery requires exclusive offline access.
+recovery-cancel = Cancel
+recovery-recover = Recover
+recovery-running = Resolving the unfinished save. Keep this window open until the outcome is known.
+recovery-cancel-requested = Cancellation requested. The outcome is not yet known.
+recovery-request-cancel = Request cancellation
+recovery-result = Recovery result
+recovery-close = Close
+recovery-retained = Recovery resources remain owned. Only the available actions can be requested.
+recovery-diagnosis = Further diagnosis is required. No automatic retry or deletion will occur.
+recovery-release = Release resources
+recovery-mock-help = Synthetic recovery preview only. No database file or journal is opened or changed.

@@ -14,6 +14,7 @@ mod insertion;
 mod object_status;
 mod queries;
 mod query_design;
+mod restart;
 mod schema;
 mod totals;
 
@@ -117,10 +118,12 @@ pub enum Scene {
     SaveCancelled,
     SaveFailed,
     RecoveryDiagnosis,
+    RestartPrompt,
+    RestartResult,
 }
 
 impl Scene {
-    pub const ALL: [Self; 90] = [
+    pub const ALL: [Self; 92] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -211,6 +214,8 @@ impl Scene {
         Self::SaveCancelled,
         Self::SaveFailed,
         Self::RecoveryDiagnosis,
+        Self::RestartPrompt,
+        Self::RestartResult,
     ];
 
     /// Pending spinners and focused input carets advance through bounded frames.
@@ -330,6 +335,8 @@ impl Scene {
             Self::SaveCancelled => "save-cancelled",
             Self::SaveFailed => "save-failed",
             Self::RecoveryDiagnosis => "recovery-diagnosis",
+            Self::RestartPrompt => "restart-prompt",
+            Self::RestartResult => "restart-result",
         }
     }
 }
@@ -359,7 +366,11 @@ pub struct Preview {
 impl Preview {
     pub fn new(scene: Scene) -> Self {
         let mut preview = Self {
-            state: fixtures::workspace(),
+            state: if matches!(scene, Scene::RestartPrompt | Scene::RestartResult) {
+                State::default()
+            } else {
+                fixtures::workspace()
+            },
             next_request: 1,
             scene: Scene::Datasheet,
         };
@@ -406,7 +417,14 @@ impl Preview {
     }
 
     pub fn set_scene(&mut self, scene: Scene) {
-        let mut state = fixtures::workspace();
+        let mut state = if matches!(scene, Scene::RestartPrompt | Scene::RestartResult) {
+            State {
+                mock_preview: true,
+                ..State::default()
+            }
+        } else {
+            fixtures::workspace()
+        };
         std::mem::swap(&mut state.localizer, &mut self.state.localizer);
         std::mem::swap(&mut state.theme, &mut self.state.theme);
         std::mem::swap(&mut state.formatting, &mut self.state.formatting);
@@ -417,6 +435,9 @@ impl Preview {
 
         match scene {
             Scene::Datasheet => {}
+            Scene::RestartPrompt | Scene::RestartResult => {
+                self.prepare_restart_scene(scene == Scene::RestartResult)
+            }
             Scene::Objects => self.prepare_objects_scene(),
             Scene::ObjectLoading => self.prepare_unloaded_object(true),
             Scene::ObjectError => self.prepare_unloaded_object(false),

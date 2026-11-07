@@ -1,0 +1,14 @@
+recovery-title = Guardado de TableCraft sin finalizar
+recovery-explanation = Esta base de datos puede tener un guardado de TableCraft sin finalizar. La recuperación verifica el estado guardado y puede deshacer cambios no confirmados. No se cambia nada automáticamente.
+recovery-exclusive = Cierre Access y otros programas que usen esta base de datos. La recuperación requiere acceso exclusivo sin conexión.
+recovery-cancel = Cancelar
+recovery-recover = Recuperar
+recovery-running = Resolviendo el guardado pendiente. Mantenga esta ventana abierta hasta conocer el resultado.
+recovery-cancel-requested = Cancelación solicitada. Todavía no se conoce el resultado.
+recovery-request-cancel = Solicitar cancelación
+recovery-result = Resultado de recuperación
+recovery-close = Cerrar
+recovery-retained = Los recursos de recuperación siguen retenidos. Solo se pueden solicitar las acciones disponibles.
+recovery-diagnosis = Se necesita un diagnóstico adicional. No habrá reintentos ni eliminaciones automáticos.
+recovery-release = Liberar recursos
+recovery-mock-help = Solo una vista previa de recuperación simulada. No se abre ni modifica ningún archivo de base de datos o diario.

@@ -86,7 +86,8 @@ inspection and a SQL editor over existing Access services. It opens a snapshot o
 64 MiB; close other writers first. Restricted reviewed offline cell edits are
 implemented on macOS/Linux and local-NTFS Windows; actual Windows execution
 remains unqualified. General editing, designers and desktop release
-packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
+packaging remain in development. Interrupted TableCraft saves have an explicit
+[Open-time recovery flow](docs/ui/RECOVERY.md). See the [desktop guide](docs/ui/DESKTOP.md).
 File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
 creation uses local NTFS and still requires runtime qualification.
 Existing destinations are never replaced. The new file opens with an unsaved

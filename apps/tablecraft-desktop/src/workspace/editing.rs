@@ -4,6 +4,7 @@ pub(super) mod first_table;
 mod inserting;
 #[cfg(test)]
 mod pasting;
+pub(super) mod recovery;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
 use std::path::PathBuf;
@@ -66,7 +67,7 @@ impl Editing {
     }
 
     pub(super) fn has_save(&self) -> bool {
-        self.save.is_some()
+        self.save.is_some() || self.worker.is_busy()
     }
 
     pub(super) fn clear_refresh(&mut self) {
@@ -244,6 +245,8 @@ impl Desktop {
     pub(super) fn cancel_current_save(&mut self) {
         if let Some(save) = &self.editing.save {
             self.editing.worker.cancel(save.id);
+        } else {
+            self.cancel_active_recovery();
         }
     }
 

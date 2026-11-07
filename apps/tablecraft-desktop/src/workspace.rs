@@ -34,6 +34,10 @@ use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
+    Open {
+        request_id: u64,
+        path: PathBuf,
+    },
     CreatedOpen,
     FirstTableReview {
         request_id: u64,
@@ -145,6 +149,8 @@ pub(super) struct Desktop {
     first_table: Option<FirstTableHost>,
     resume_after_first_table: bool,
     editing: Editing,
+    recovery: Option<editing::recovery::RecoveryHost>,
+    recovery_reopen: Option<editing::recovery::RecoveryReopen>,
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
     startup_visibility_pending: bool,
@@ -175,6 +181,8 @@ impl Desktop {
             first_table: None,
             resume_after_first_table: false,
             editing,
+            recovery: None,
+            recovery_reopen: None,
             filter: None,
             objects: objects::Sessions::default(),
             startup_visibility_pending: true,
@@ -195,7 +203,7 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
-        if self.editing.has_save() || self.creating.is_busy() {
+        if self.editing.has_save() || self.creating.is_busy() || self.recovery.is_some() {
             return;
         }
         if self.state.table_draft_save_open()
@@ -232,6 +240,10 @@ impl Desktop {
             None
         };
         let created_open = matches!(&command, Command::OpenCreated { .. });
+        let opening_path = match &command {
+            Command::Open { path, .. } => Some(path.clone()),
+            _ => None,
+        };
         self.generation = self.worker.request(command);
         self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
@@ -251,6 +263,11 @@ impl Desktop {
             }
         } else if created_open {
             PendingOperation::CreatedOpen
+        } else if let Some(path) = opening_path {
+            PendingOperation::Open {
+                request_id: self.generation,
+                path,
+            }
         } else {
             PendingOperation::Read
         };
@@ -274,7 +291,10 @@ impl Desktop {
     }
 
     fn file_selected(&mut self, selection: Option<PathBuf>) {
-        if self.editing.has_save() || self.creating.is_busy() || self.state.table_draft_save_open()
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.recovery.is_some()
+            || self.state.table_draft_save_open()
         {
             return;
         }
@@ -285,7 +305,10 @@ impl Desktop {
     }
 
     fn open(&mut self) {
-        if self.editing.has_save() || self.creating.is_busy() || self.state.table_draft_save_open()
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.recovery.is_some()
+            || self.state.table_draft_save_open()
         {
             return;
         }
@@ -305,7 +328,10 @@ impl Desktop {
     }
 
     fn open_request(&mut self, command: Command) {
-        if self.editing.has_save() || self.creating.is_busy() || self.state.insertion_dialog_open()
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.recovery.is_some()
+            || self.state.insertion_dialog_open()
         {
             return;
         }
@@ -324,6 +350,7 @@ impl Desktop {
         self.state.query_data = None;
         self.state.clear_schema();
         self.state.close_contents();
+        self.recovery_reopen = None;
         self.submit(*command);
     }
 
@@ -333,6 +360,11 @@ impl Desktop {
                 continue;
             }
             self.state.busy = false;
+            if let Err(error) = &result
+                && self.recovery_open_failed(generation, error)
+            {
+                continue;
+            }
             match result {
                 Ok(Response::FirstTableReviewed { capability }) => {
                     self.start_reviewed_first_table(generation, capability);
@@ -425,6 +457,7 @@ impl Desktop {
                         continue;
                     }
                     self.state.database = Some(database);
+                    self.recovery_opened(generation, document_revision);
                     self.state.dismiss_backstage();
                     if matches!(self.pending, PendingOperation::CreatedOpen) {
                         self.state.open_initial_table_draft();
@@ -625,6 +658,7 @@ impl eframe::App for Desktop {
         self.poll_creation();
         self.poll();
         self.poll_saves();
+        self.poll_recovery();
         if std::mem::take(&mut self.resume_after_first_table) {
             self.resume_table_draft_action(ctx);
         }
@@ -646,7 +680,22 @@ impl eframe::App for Desktop {
         }
         self.invalidate_creation_selection();
         for action in actions {
+            if self.recovery.is_some() && !editing::recovery::is_recovery_action(&action) {
+                continue;
+            }
             match action {
+                Action::BeginRecovery { attempt_id } => self.begin_reserved_recovery(attempt_id),
+                Action::CloseRecovery { attempt_id } => self.close_reserved_recovery(attempt_id),
+                Action::CancelRecovery { operation_id } => {
+                    self.cancel_reserved_recovery(operation_id)
+                }
+                Action::ResolveRecovery {
+                    operation_id,
+                    recover,
+                } => self.resolve_reserved_recovery(operation_id, recover),
+                Action::AcknowledgeRecovery { operation_id } => {
+                    self.acknowledge_reserved_recovery(operation_id)
+                }
                 Action::SaveTableDraft { request } => self.save_first_table(request),
                 Action::CancelTableDraftSave { id } => self.cancel_first_table_save(id),
                 Action::RecoverTableDraftSave { id } => self.resolve_first_table_save(id, true),
@@ -893,6 +942,18 @@ impl eframe::App for Desktop {
                 }
             }
         }
+        // UI actions can acquire a new owner after logic checked this frame's
+        // close event. Retain it without treating that earlier event as a new
+        // cancellation request for an operation the user just accepted.
+        if ui.input(|input| input.viewport().close_requested())
+            && (self.editing.has_save()
+                || self.creating.is_busy()
+                || self.state.insertion_dialog_open())
+        {
+            ui.ctx()
+                .send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        }
+        self.guard_table_draft_window_close(ui.ctx());
     }
 }
 

@@ -1,5 +1,9 @@
 # Native desktop preview
 
+The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
+reserved active journal through the shared runtime owner. Opening and rendering
+its prompt make no changes; recovery requires an explicit action.
+
 ## Inline new-record draft — 7 November 2026
 
 New row and the admitted new-record shortcut now enter a source-bound draft in

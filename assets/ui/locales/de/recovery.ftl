@@ -1,0 +1,14 @@
+recovery-title = Nicht abgeschlossener TableCraft-Speichervorgang
+recovery-explanation = Diese Datenbank enthält möglicherweise einen nicht abgeschlossenen TableCraft-Speichervorgang. Die Wiederherstellung prüft den gespeicherten Zustand und kann nicht bestätigte Änderungen rückgängig machen. Es wird nichts automatisch geändert.
+recovery-exclusive = Schließen Sie Access und andere Programme, die diese Datenbank verwenden. Die Wiederherstellung erfordert exklusiven Offlinezugriff.
+recovery-cancel = Abbrechen
+recovery-recover = Wiederherstellen
+recovery-running = Der offene Speichervorgang wird geklärt. Lassen Sie dieses Fenster geöffnet, bis das Ergebnis feststeht.
+recovery-cancel-requested = Abbruch angefordert. Das Ergebnis steht noch nicht fest.
+recovery-request-cancel = Abbruch anfordern
+recovery-result = Wiederherstellungsergebnis
+recovery-close = Schließen
+recovery-retained = Die Wiederherstellungsressourcen bleiben gebunden. Nur die verfügbaren Aktionen können angefordert werden.
+recovery-diagnosis = Eine weitere Diagnose ist erforderlich. Es erfolgen keine automatischen Wiederholungen oder Löschungen.
+recovery-release = Ressourcen freigeben
+recovery-mock-help = Nur eine synthetische Wiederherstellungsvorschau. Es werden keine Datenbankdateien oder Journale geöffnet oder geändert.

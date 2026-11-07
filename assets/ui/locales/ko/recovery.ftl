@@ -1,0 +1,14 @@
+recovery-title = 완료되지 않은 TableCraft 저장
+recovery-explanation = 이 데이터베이스에 완료되지 않은 TableCraft 저장이 있을 수 있습니다. 복구는 저장된 상태를 확인하며 커밋되지 않은 변경 사항을 취소할 수 있습니다. 자동으로 변경되는 내용은 없습니다.
+recovery-exclusive = 이 데이터베이스를 사용하는 Access 및 다른 프로그램을 닫으세요. 복구에는 독점 오프라인 액세스가 필요합니다.
+recovery-cancel = 취소
+recovery-recover = 복구
+recovery-running = 완료되지 않은 저장을 해결하는 중입니다. 결과가 확인될 때까지 이 창을 열어 두세요.
+recovery-cancel-requested = 취소를 요청했습니다. 결과는 아직 확인되지 않았습니다.
+recovery-request-cancel = 취소 요청
+recovery-result = 복구 결과
+recovery-close = 닫기
+recovery-retained = 복구 리소스가 계속 작업에 유지됩니다. 사용 가능한 작업만 요청할 수 있습니다.
+recovery-diagnosis = 추가 진단이 필요합니다. 자동 재시도나 삭제는 수행되지 않습니다.
+recovery-release = 리소스 해제
+recovery-mock-help = 합성 데이터로 만든 복구 미리 보기입니다. 데이터베이스 파일이나 저널을 열거나 변경하지 않습니다.

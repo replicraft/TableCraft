@@ -17,6 +17,7 @@ with an independent synthetic Jet 4 database.
 This does not change backend compatibility claims or resume SQLite, project
 infrastructure or VBA execution.
 
+- [Unfinished TableCraft saves](RECOVERY.md)
 - [Blank Access database creation](DATABASE_CREATION.md)
 - [Datasheet display preferences and window chrome](DISPLAY_PREFERENCES.md)
 - [Complete native-view datasheet totals](DATASHEET_TOTALS.md)

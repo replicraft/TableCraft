@@ -355,7 +355,8 @@ impl State {
             )
     }
     pub fn edit_dialog_open(&self) -> bool {
-        self.edit.is_some()
+        self.recovery_prompt_open()
+            || self.edit.is_some()
             || self.query_design_dialog_open()
             || self.insertion_modal_open()
             || self.deletion_dialog_open()

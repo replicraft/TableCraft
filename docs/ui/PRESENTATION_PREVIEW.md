@@ -1,5 +1,35 @@
 # Presentation preview
 
+## Open-time recovery — 7 November 2026
+
+The resource-free `restart-prompt` and `restart-result` scenes use the real File/
+Open backdrop, captured-path presentation and neutral recovery result layout.
+They construct no database, native row, edit draft or runtime owner. The result
+uses the same localized current/last-completed outcome vocabulary as the host,
+with representative recovered/rolled-back facts. The synthetic banner explicitly
+says no database or journal is opened or changed; normal-host rendering omits it.
+
+The actual retained Windows/VirtualBox datasheet reference was reopened at
+1920×1141; display scale is unrecorded. It contains no recovery prompt. This
+modal is a TableCraft adaptation, not a captured Access recovery layout. The
+[recovery contract](RECOVERY.md) separates it from Microsoft's Compact and Repair.
+
+Four normal-host frames were rendered and inspected offscreen on macOS, using
+Windows input emulation: English light prompt/dark result at 1280×820, 1×;
+German dark prompt/Japanese light result at 900×580, 1.25×. The prompt text wraps
+within its bounds, Cancel has visible initial focus and translated actions remain
+inside the viewport. Result details wrap within their bounded diagnostic region;
+Copy details and Close remain visible. The macOS content renderer does not
+qualify native Windows title controls or an actual OS window. Final frames are
+under ignored `.cache/ui-previews/restart-accepted-20261107/`.
+
+The initial sandbox renderer had no GPU adapter. Windowless rendering with local
+GPU access succeeded; no native app window was opened. The full 347-test UI batch
+passes, including all 92 scenes across eight languages and two themes. The first
+sweep exposed a missing synthetic-banner key; the owning recovery catalog now
+provides it in every locale. Actual native recovery behavior is covered separately
+by runtime and desktop tests, not by these synthetic frames.
+
 ## Inline new-record presentation — 7 November 2026
 
 The shared insertion draft now renders in the appended datasheet row instead of

@@ -42,6 +42,21 @@ impl Preview {
             return;
         }
         match action {
+            Action::BeginRecovery { attempt_id } => {
+                let operation = self.request();
+                if self.state.begin_recovery(attempt_id, operation) {
+                    let message = self.restart_result_message();
+                    self.state
+                        .set_recovery_outcome(operation, crate::RecoveryOutcome::Finished(message));
+                }
+            }
+            Action::CloseRecovery { attempt_id } => {
+                self.state.close_recovery(attempt_id);
+            }
+            Action::AcknowledgeRecovery { operation_id } => {
+                self.state.acknowledge_recovery(operation_id);
+            }
+            Action::CancelRecovery { .. } | Action::ResolveRecovery { .. } => {}
             Action::SaveTableDraft { request } => {
                 if self.state.begin_table_draft_save(&request) {
                     self.state.fail_table_draft_save(

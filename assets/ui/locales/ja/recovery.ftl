@@ -1,0 +1,14 @@
+recovery-title = 未完了の TableCraft 保存
+recovery-explanation = このデータベースには未完了の TableCraft 保存がある可能性があります。復旧では保存状態を検証し、未確定の変更を元に戻す場合があります。自動的に変更されることはありません。
+recovery-exclusive = このデータベースを使用している Access やその他のプログラムを閉じてください。復旧には排他的なオフラインアクセスが必要です。
+recovery-cancel = キャンセル
+recovery-recover = 復旧
+recovery-running = 未完了の保存を解決しています。結果が確定するまで、このウィンドウを開いたままにしてください。
+recovery-cancel-requested = キャンセルを要求しました。結果はまだ確定していません。
+recovery-request-cancel = キャンセルを要求
+recovery-result = 復旧結果
+recovery-close = 閉じる
+recovery-retained = 復旧リソースは引き続き操作が保持しています。利用可能な操作のみ要求できます。
+recovery-diagnosis = 追加の診断が必要です。自動的な再試行や削除は行われません。
+recovery-release = リソースを解放
+recovery-mock-help = 合成データによる復旧プレビューです。データベースファイルやジャーナルを開いたり変更したりすることはありません。

@@ -31,5 +31,5 @@ tracing-subscriber.workspace = true
 
 [dev-dependencies]
 egui_kittest.workspace = true
-tablecraft-testkit.workspace = true
+tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support"] }
 tempfile.workspace = true

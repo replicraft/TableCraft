@@ -1,0 +1,14 @@
+recovery-title = 未完成的 TableCraft 保存
+recovery-explanation = 此数据库可能存在未完成的 TableCraft 保存。恢复会验证保存状态，并可能撤销尚未提交的更改。不会自动进行任何更改。
+recovery-exclusive = 请关闭 Access 及其他正在使用此数据库的程序。恢复需要独占脱机访问权限。
+recovery-cancel = 取消
+recovery-recover = 恢复
+recovery-running = 正在处理未完成的保存。在结果确定前，请保持此窗口打开。
+recovery-cancel-requested = 已请求取消。结果尚未确定。
+recovery-request-cancel = 请求取消
+recovery-result = 恢复结果
+recovery-close = 关闭
+recovery-retained = 恢复资源仍由操作持有。只能请求可用的操作。
+recovery-diagnosis = 需要进一步诊断。不会自动重试或删除。
+recovery-release = 释放资源
+recovery-mock-help = 此处仅为模拟恢复预览，不会打开或更改任何数据库文件或日志。

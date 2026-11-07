@@ -369,8 +369,9 @@ remains unacknowledged. A successful acknowledged save reopens its source and
 refreshes only the table/page bound to that exact reopen generation. Failed or
 released uncertain outcomes cannot leave the old snapshot masquerading as current.
 Incomplete setup offers explicit resource release while preserving any existing
-or partial journal entries for diagnosis. Uncertain release still denies retry;
-the current UI has no general restart/recovery browser for that state. Reports
+or partial journal entries for diagnosis. Uncertain release still denies retry. The desktop now has an explicit
+[reserved active-journal recovery flow](../ui/RECOVERY.md), but no general
+restart/recovery browser for other or ambiguous artifacts. Reports
 show the current operation outcome separately from the last completed receipt,
 including its available row counts. A release failure cannot hide a completed
 commit, and a previous receipt cannot be promoted to the current attempt.
@@ -380,8 +381,12 @@ while present, including a symlink, without following or deleting it. This only
 detects that active reserved path. Journal retirement renames bundles, so a crash
 after rename can leave an undiscovered retired sibling. Other caller-selected
 bundles and path aliases are not a general journal-discovery mechanism. Keep the
-explicit offline and outstanding-journal preconditions; this is not Access
-multiuser locking or complete crash-restart recovery.
+explicit offline and outstanding-journal preconditions.
+`SaveWorker::start_reserved_recovery(source)` explicitly derives that reserved
+path, opens the existing offline owner and calls its checked recovery route; it
+never runs as a side effect of Open. It retains terminal reports and actual
+resources through the same Recover/Release/Acknowledge protocol as saves. This
+is not Access multiuser locking or complete crash-restart discovery.
 
 Normal filesystem editing has macOS/Linux and Windows host paths; other platforms
 return an explicit unsupported result. Windows activation uses local NTFS,

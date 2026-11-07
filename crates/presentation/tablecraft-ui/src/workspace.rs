@@ -18,6 +18,7 @@ pub mod preview;
 mod query;
 mod query_design;
 mod records;
+mod recovery;
 pub(crate) mod ribbon;
 mod row_identity;
 mod save_display;
@@ -44,6 +45,7 @@ pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertT
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
+pub use recovery::RecoveryOutcome;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use save_display::SaveCleanupNotice;
 pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
@@ -92,6 +94,22 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    BeginRecovery {
+        attempt_id: u64,
+    },
+    CloseRecovery {
+        attempt_id: u64,
+    },
+    CancelRecovery {
+        operation_id: u64,
+    },
+    ResolveRecovery {
+        operation_id: u64,
+        recover: bool,
+    },
+    AcknowledgeRecovery {
+        operation_id: u64,
+    },
     SaveTableDraft {
         request: TableSaveRequest,
     },
@@ -308,6 +326,7 @@ pub struct State {
     query_selection: Selection,
     pub schema: Option<Schema>,
     contents: Option<contents::ContentsDialog>,
+    recovery: Option<recovery::Recovery>,
     edit: Option<editing::EditDialog>,
     paste_request: Option<editing::paste::ClipboardRequest>,
     ribbon_paste: Option<home::menus::paste::PendingPaste>,
@@ -546,7 +565,7 @@ impl State {
     }
 
     fn select_view(&mut self, view: DocumentView) {
-        if self.edit_save_pending() || self.insertion_dialog_open() {
+        if self.edit_save_pending() || self.insertion_dialog_open() || self.recovery_prompt_open() {
             return;
         }
         self.invalidate_edit();
@@ -563,7 +582,7 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
-        if self.insertion_dialog_open() {
+        if self.insertion_dialog_open() || self.recovery_prompt_open() {
             return;
         }
         self.clear_object_sessions();
@@ -585,7 +604,7 @@ impl State {
 
     /// Enter File/Open without changing the current session or running task.
     pub fn show_open(&mut self) {
-        if self.edit_save_pending() || self.insertion_dialog_open() {
+        if self.edit_save_pending() || self.insertion_dialog_open() || self.recovery_prompt_open() {
             return;
         }
         self.invalidate_edit();
@@ -734,11 +753,13 @@ impl State {
         self.query_design_dialog(ui.ctx(), &mut actions);
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
+        self.recovery_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open()
             && !self.zoom_dialog_open()
             && !self.find_window_open()
             && self.table_draft_save.is_none()
             && self.table_draft_close.is_none()
+            && !self.recovery_prompt_open()
         {
             self.finish_ribbon_keyboard(ui, !actions.is_empty());
             self.finish_pane_focus(ui);
@@ -746,7 +767,8 @@ impl State {
         }
         self.capture_ribbon_focus(ui);
         self.finish_object_shortcut(ui, object_shortcut, &mut actions);
-        if actions.is_empty()
+        if !self.recovery_prompt_open()
+            && actions.is_empty()
             && let Some(action) = self.take_totals_request()
         {
             actions.push(action);

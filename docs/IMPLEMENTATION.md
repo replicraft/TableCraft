@@ -1,5 +1,37 @@
 # Implementation status
 
+## Explicit Open-time journal recovery — 7 November 2026
+
+A reserved active journal now produces a source-free recovery prompt instead of
+only a generic Open error. Nothing runs on Open. Cancel has initial focus;
+Recover explicitly submits the captured native path to the existing nonreplaceable
+runtime save worker. The backend reuses native journal binding and intent
+qualification. Malformed/foreign artifacts retain diagnostics and actual resource
+permissions; no automatic deletion, decoder fallback or SQL replay is added.
+
+Shared UI owns the modal and eight sectioned Fluent catalogs. Desktop owns only
+attempt/path and operation routing; it never reconstructs authority from edited
+path text. Recovery uses the same save owner as cell/row and first-table edits.
+A late close veto also protects operations accepted during UI dispatch after
+that frame's earlier close check. The new regression reproduced the missing
+veto before the fix and passes afterward.
+
+Terminal commit/rollback facts, last completed receipts and cleanup remain
+separate. Explicit acknowledgment precedes fresh Open. Failed reopening keeps
+its completed outcome alongside the error, and Windows retained-artifact notices
+bind to the fresh document revision. Retired siblings and aliases remain outside
+this reserved-active-path flow.
+
+The complete local batch passes 347 UI, 89 desktop and 128 runtime tests. The
+final eight-case desktop recovery follow-up includes the new close-frame case
+and actual ACE 16 first-table V2 recovery; all pass. Four focused runtime restart
+checks include transparent cancellation/resource classification. Both Windows
+architectures pass all-target/all-feature cross-checks for the affected runtime,
+UI, desktop and testkit packages; strict selected-package lint and minimal runtime/
+testkit checks pass. Native Windows/Linux execution and Access comparisons remain
+unrun. See [recovery scope](ui/RECOVERY.md) and
+[offscreen evidence](ui/PRESENTATION_PREVIEW.md#open-time-recovery--7-november-2026).
+
 ## Cross-platform audit — 7 November 2026
 
 The audit covers all 20 workspace packages and keeps native OS execution,
