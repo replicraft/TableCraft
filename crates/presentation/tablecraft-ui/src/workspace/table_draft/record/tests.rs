@@ -1,6 +1,9 @@
 use super::*;
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 fn value(text: &str) -> InsertInput {
     InsertInput::Value(EditInput {
@@ -180,4 +183,148 @@ fn actual_cell_typing_preserves_raw_value_and_generated_cell_has_no_editor() {
     harness.run_steps(2);
     assert!(!harness.state().1.has_rejected_input());
     assert_eq!(harness.state().1.entries[1].text, "Adax");
+}
+
+#[test]
+fn boolean_checkbox_keeps_omission_mixed_and_writes_only_explicit_canonical_values() {
+    for dark in [false, true] {
+        let mut table = TableDraft::initial();
+        table.add_field(DraftFieldType::YesNo).unwrap();
+        let mut row = RowDraft::new();
+        row.synchronize(&table);
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(220.0, 120.0))
+            .build_ui_state(
+                |ui, state: &mut (TableDraft, RowDraft)| {
+                    ui.allocate_ui(egui::vec2(180.0, 24.0), |ui| {
+                        state.1.show_cell(ui, &state.0.fields()[1]);
+                    });
+                },
+                (table, row),
+            );
+        crate::configure(&harness.ctx);
+        harness.ctx.set_visuals(if dark {
+            egui::Visuals::dark()
+        } else {
+            egui::Visuals::light()
+        });
+        harness.run_steps(2);
+        let localizer = crate::Localizer::default();
+        let mut args = crate::FluentArgs::new();
+        args.set("field", "Field1");
+        let label = localizer.format("table-draft-record-field", &args);
+        let mode_label = localizer.format("insertion-field-input", &args);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::CheckBox, &label)
+                .accesskit_node()
+                .toggled(),
+            Some(egui::accesskit::Toggled::Mixed)
+        );
+        assert!(!harness.state().1.is_modified());
+        harness
+            .get_by_role_and_label(Role::CheckBox, &label)
+            .click_accesskit();
+        harness.run_steps(2);
+        let snapshot = harness.state().0.snapshot("Items").unwrap();
+        assert_eq!(
+            harness.state().1.inputs(&snapshot).unwrap()[1],
+            value("True")
+        );
+        harness
+            .get_by_role_and_label(Role::CheckBox, &label)
+            .focus();
+        harness.run_steps(1);
+        harness.key_press(egui::Key::Space);
+        harness.run_steps(2);
+        assert_eq!(
+            harness.state().1.inputs(&snapshot).unwrap()[1],
+            value("False")
+        );
+        harness
+            .get_by_role_and_label(Role::Button, &mode_label)
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(
+            harness
+                .get_by_role_and_label(Role::RadioButton, "NULL")
+                .accesskit_node()
+                .is_disabled()
+        );
+        harness
+            .get_by_role_and_label(Role::RadioButton, "Omitted")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert_eq!(
+            harness.state().1.inputs(&snapshot).unwrap()[1],
+            InsertInput::Omitted
+        );
+        assert_eq!(harness.state().1.raw_texts(&snapshot).unwrap()[1], "False");
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::CheckBox, &label)
+                .accesskit_node()
+                .toggled(),
+            Some(egui::accesskit::Toggled::Mixed)
+        );
+        harness
+            .get_by_role_and_label(Role::Button, &mode_label)
+            .click_accesskit();
+        harness.run_steps(2);
+        harness
+            .get_by_role_and_label(Role::RadioButton, "Value")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert_eq!(
+            harness.state().1.inputs(&snapshot).unwrap()[1],
+            value("False")
+        );
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::CheckBox, &label)
+                .accesskit_node()
+                .toggled(),
+            Some(egui::accesskit::Toggled::False)
+        );
+    }
+}
+
+#[test]
+fn boolean_checkbox_is_centered_on_the_full_field_with_a_separate_mode_gutter() {
+    let mut table = TableDraft::initial();
+    table.add_field(DraftFieldType::YesNo).unwrap();
+    let mut row = RowDraft::new();
+    row.synchronize(&table);
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(240.0, 100.0))
+        .build_ui_state(
+            |ui, state: &mut (TableDraft, RowDraft, Option<egui::Rect>)| {
+                ui.spacing_mut().item_spacing.x = 0.0;
+                ui.allocate_ui_with_layout(
+                    egui::vec2(150.0, 24.0),
+                    egui::Layout::left_to_right(egui::Align::Center),
+                    |ui| {
+                        state.2 = Some(ui.max_rect());
+                        state.1.show_cell(ui, &state.0.fields()[1]);
+                    },
+                );
+            },
+            (table, row, None),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    let mut arguments = crate::FluentArgs::new();
+    arguments.set("field", "Field1");
+    let localizer = crate::Localizer::default();
+    let label = localizer.format("table-draft-record-field", &arguments);
+    let mode_label = localizer.format("insertion-field-input", &arguments);
+    let field = harness.state().2.unwrap();
+    let checkbox = harness.get_by_role_and_label(Role::CheckBox, &label).rect();
+    let mode = harness
+        .get_by_role_and_label(Role::Button, &mode_label)
+        .rect();
+    assert!((checkbox.center().x - field.center().x).abs() < 0.5);
+    assert!((checkbox.center().y - field.center().y).abs() < 0.5);
+    assert!(checkbox.right() < mode.left());
+    assert!(field.contains_rect(checkbox));
 }

@@ -208,6 +208,66 @@ impl RowDraft {
         )
     }
 
+    fn show_boolean(
+        &mut self,
+        ui: &mut Ui,
+        field: &DraftField,
+        position: usize,
+        width: f32,
+    ) -> egui::Response {
+        let entry = &self.entries[position];
+        let selected = if entry.choice == Choice::Value {
+            if entry.text.eq_ignore_ascii_case("True") {
+                Some(true)
+            } else if entry.text.eq_ignore_ascii_case("False") {
+                Some(false)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let mut checked = selected.unwrap_or(false);
+        let hint = tr(ui, entry.choice.key());
+        let label = message(
+            ui,
+            "table-draft-record-field",
+            &[("field", field.name().into())],
+        );
+        let (segment, _) = ui.allocate_exact_size(
+            egui::vec2(width, ui.available_height()),
+            egui::Sense::hover(),
+        );
+        // The mode selector owns the right gutter. Center the checkbox on the
+        // complete field, while retaining that separate selector's hit area.
+        let center = segment.center() + egui::vec2(INPUT_MODE_WIDTH / 2.0, 0.0);
+        let bounds = egui::Rect::from_center_size(
+            center,
+            egui::vec2(ui.spacing().icon_width, segment.height()),
+        );
+        let response = ui.place(
+            bounds,
+            egui::Checkbox::without_text(&mut checked).indeterminate(selected.is_none()),
+        );
+        response.widget_info(|| {
+            if let Some(selected) = selected {
+                WidgetInfo::selected(WidgetType::Checkbox, ui.is_enabled(), selected, &label)
+            } else {
+                WidgetInfo::labeled(WidgetType::Checkbox, ui.is_enabled(), &label)
+            }
+        });
+        if response.changed() {
+            self.set_input(
+                field.id(),
+                InsertInput::Value(EditInput {
+                    text: if checked { "True" } else { "False" }.into(),
+                    is_null: false,
+                }),
+            );
+        }
+        response.on_hover_text(hint)
+    }
+
     /// Render one cell; typing is explicit Value intent, not type inference.
     pub(super) fn show_cell(&mut self, ui: &mut Ui, field: &DraftField) -> bool {
         if field.kind() == DraftFieldType::AutoNumberIncrement {
@@ -234,34 +294,41 @@ impl RowDraft {
             .sum::<usize>();
         ui.push_id(("initial_record", field.id()), |ui| {
             ui.horizontal(|ui| {
-                let id = ui.make_persistent_id("value");
-                let remaining = MAX_RECORD_TEXT_BYTES.saturating_sub(other_bytes);
-                let rejected = crate::text_input::reject_oversized_events(ui, id, &text, remaining);
-                if rejected {
-                    self.reject(position);
-                }
-                let hint = tr(ui, choice.key());
                 let width = (ui.available_width() - INPUT_MODE_WIDTH).max(MIN_INPUT_WIDTH);
-                let response = ui.add_sized(
-                    [width, ui.available_height()],
-                    egui::TextEdit::singleline(&mut text).id(id).hint_text(hint),
-                );
-                let label = message(
-                    ui,
-                    "table-draft-record-field",
-                    &[("field", field.name().into())],
-                );
-                response.widget_info(|| WidgetInfo::labeled(WidgetType::TextEdit, true, &label));
-                if response.changed() && !rejected {
-                    choice = Choice::Value;
-                    self.set_input(
-                        field.id(),
-                        InsertInput::Value(EditInput {
-                            text: text.clone(),
-                            is_null: false,
-                        }),
+                let response = if field.kind() == DraftFieldType::YesNo {
+                    self.show_boolean(ui, field, position, width)
+                } else {
+                    let id = ui.make_persistent_id("value");
+                    let remaining = MAX_RECORD_TEXT_BYTES.saturating_sub(other_bytes);
+                    let rejected =
+                        crate::text_input::reject_oversized_events(ui, id, &text, remaining);
+                    if rejected {
+                        self.reject(position);
+                    }
+                    let hint = tr(ui, choice.key());
+                    let response = ui.add_sized(
+                        [width, ui.available_height()],
+                        egui::TextEdit::singleline(&mut text).id(id).hint_text(hint),
                     );
-                }
+                    let label = message(
+                        ui,
+                        "table-draft-record-field",
+                        &[("field", field.name().into())],
+                    );
+                    response
+                        .widget_info(|| WidgetInfo::labeled(WidgetType::TextEdit, true, &label));
+                    if response.changed() && !rejected {
+                        choice = Choice::Value;
+                        self.set_input(
+                            field.id(),
+                            InsertInput::Value(EditInput {
+                                text: text.clone(),
+                                is_null: false,
+                            }),
+                        );
+                    }
+                    response
+                };
                 let (menu, _) = egui::containers::menu::MenuButton::from_button(
                     egui::Button::new("")
                         .min_size(egui::vec2(INPUT_MODE_WIDTH, ui.available_height())),

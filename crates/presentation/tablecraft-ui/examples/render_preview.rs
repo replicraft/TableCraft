@@ -14,6 +14,7 @@ const MAX_SCALE: f32 = 2.0;
 const MAX_F6_STEPS: u8 = 5;
 const INITIAL_FIELD_NAME: &str = "Name";
 const INITIAL_RECORD_TEXT: &str = "Ada";
+const INITIAL_BOOLEAN_FIELD: &str = "Enabled";
 
 fn main() -> Result<(), Box<dyn Error>> {
     let directory = env::var_os("TABLECRAFT_PREVIEW_DIR")
@@ -66,7 +67,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         "none" => "",
         "rename" => "-initial-rename",
         "record" => "-initial-record",
-        _ => return Err(io::Error::other("initial edit must be none, rename or record").into()),
+        "boolean" => "-initial-boolean",
+        "boolean-omitted" => "-initial-boolean-omitted",
+        _ => {
+            return Err(io::Error::other(
+                "initial edit must be none, rename, record, boolean or boolean-omitted",
+            )
+            .into());
+        }
     };
     if !initial_suffix.is_empty() && scenes != [Scene::InitialTableDraft] {
         return Err(io::Error::other("initial editing requires initial-table-draft").into());
@@ -220,35 +228,54 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
     let localizer = harness.state().state().localizer.clone();
+    let boolean = matches!(mode, "boolean" | "boolean-omitted");
+    let field = if boolean {
+        INITIAL_BOOLEAN_FIELD
+    } else {
+        INITIAL_FIELD_NAME
+    };
     let add = localizer.text("datasheet-click-to-add");
     harness
         .get_by_role_and_label(egui::accesskit::Role::Button, &add)
         .click_accesskit();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
-    let short_text = localizer.text("table-draft-short-text");
+    let field_type = localizer.text(if boolean {
+        "table-draft-yes-no"
+    } else {
+        "table-draft-short-text"
+    });
     harness
-        .get_by_role_and_label(egui::accesskit::Role::Button, &short_text)
+        .get_by_role_and_label(egui::accesskit::Role::Button, &field_type)
         .click_accesskit();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     let field_name = localizer.text("table-draft-field-name");
     harness
         .get_by_role_and_label(egui::accesskit::Role::TextInput, &field_name)
-        .type_text(INITIAL_FIELD_NAME);
+        .type_text(field);
     harness.run_steps(LAYOUT_SETTLE_STEPS);
-    if mode == "record" {
+    if mode != "rename" {
         harness.key_press(egui::Key::Enter);
         harness.run_steps(LAYOUT_SETTLE_STEPS);
         let mut arguments = FluentArgs::new();
-        arguments.set("field", INITIAL_FIELD_NAME);
+        arguments.set("field", field);
         let row_name = localizer.format("table-draft-record-field", &arguments);
-        harness
-            .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
-            .focus();
-        harness.run_steps(LAYOUT_SETTLE_STEPS);
-        harness
-            .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
-            .type_text(INITIAL_RECORD_TEXT);
-        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        if boolean {
+            if mode == "boolean" {
+                harness
+                    .get_by_role_and_label(egui::accesskit::Role::CheckBox, &row_name)
+                    .click_accesskit();
+                harness.run_steps(LAYOUT_SETTLE_STEPS);
+            }
+        } else {
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
+                .focus();
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
+                .type_text(INITIAL_RECORD_TEXT);
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
     }
 }
 
