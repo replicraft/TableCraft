@@ -1,5 +1,28 @@
 # Implementation status
 
+## Blank ACE 16 creation — 7 November 2026
+
+The native constructor now serializes a genuine system-only ACE 16 database,
+without a copied template. CLI `create --blank` and desktop File > New use the
+shared creation service. The runtime retains terminal publication facts and
+guards reopening against the complete expected blank image. The current flow
+creates no user table; unsaved Table1 and table authoring remain unfinished.
+See [the workflow boundary](ui/DATABASE_CREATION.md).
+
+The native creation suite passes 45 cases; the independent raw blank fixture
+passes its structural check. Access creation passes 11 cases, runtime passes
+115 cases, UI passes 305 cases and desktop passes 69 cases, followed by the
+four-case desktop creation check after validation-display changes. These are
+local headless observations. A separate read-only Jackcess 5.0.4 observation
+recognized V2016 with zero user tables and unchanged bytes. Native Access
+opening/saving remains unqualified.
+
+Windows fresh publication now has a separate local-NTFS write-through rename
+implementation. Both MSVC architectures compile its IO layer; ARM64 strict IO
+lint and x64 strict runtime/IO/testkit lint pass. Fifteen publication checks pass on macOS, including portable
+Windows name and protocol cases. Actual Windows filesystem execution remains
+unrun; this does not change the separate existing-file editing limits.
+
 ## Ribbon keyboard focus — 7 November 2026
 
 F10 enters the selected Ribbon tab; arrows, Down, group/command traversal and

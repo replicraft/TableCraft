@@ -22,7 +22,13 @@ pub(super) fn opened(
     let path = directory.path().join("mutation.accdb");
     std::fs::write(&path, &original).unwrap();
     let desktop = Desktop::new(egui::Context::default(), Some(path.clone()));
-    let mut harness = Harness::builder()
+    let mut harness = app_harness(desktop);
+    finish_reads(&mut harness);
+    (directory, path, original, harness)
+}
+
+pub(super) fn app_harness(desktop: Desktop) -> Harness<'static, Desktop> {
+    let harness = Harness::builder()
         .with_size(egui::vec2(1000.0, 760.0))
         .with_max_steps(32)
         .build_ui_state(
@@ -34,8 +40,7 @@ pub(super) fn opened(
             desktop,
         );
     tablecraft_ui::configure(&harness.ctx);
-    finish_reads(&mut harness);
-    (directory, path, original, harness)
+    harness
 }
 
 pub(super) fn finish_reads(harness: &mut Harness<'_, Desktop>) {

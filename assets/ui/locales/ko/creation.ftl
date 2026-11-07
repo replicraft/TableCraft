@@ -1,0 +1,23 @@
+# TableCraft UI: blank native database creation.
+creation-title = 빈 데이터베이스
+creation-file-name = 파일 이름
+creation-location = 위치
+creation-browse = 저장 위치 찾아보기
+creation-create = 만들기
+creation-cancel = 취소
+creation-format = Access 2016 (.accdb)
+creation-empty-note = 빈 데이터베이스를 만듭니다. 테이블 만들기는 아직 사용할 수 없습니다.
+creation-choose-location = 새 데이터베이스를 저장할 위치를 선택하세요.
+creation-working = 데이터베이스 만드는 중…
+creation-cancelling = 취소하는 중…
+creation-created = 데이터베이스를 만들었습니다.
+creation-not-published = 데이터베이스가 만들어지지 않았습니다.
+creation-uncertain = 파일이 만들어졌을 수 있습니다. 다시 시도하기 전에 저장 위치를 확인하세요.
+creation-unconfirmed = 데이터베이스가 있지만 저장을 확인하지 못했습니다. 열기 전에 확인하세요.
+creation-cleanup = 데이터베이스를 만들었지만 임시 파일을 삭제하지 못했습니다.
+creation-unsupported = 이 플랫폼 또는 위치에서는 데이터베이스를 만들 수 없습니다.
+creation-invalid-name = .accdb로 끝나는 파일 이름을 지정하세요.
+creation-location-needed = 데이터베이스를 만들기 전에 저장 위치를 선택하세요.
+creation-path-too-long = 저장 경로가 너무 깁니다. 이전 파일 이름을 유지했습니다.
+creation-empty-database = 이 데이터베이스에는 사용자 테이블이 없습니다.
+creation-table-authoring-unavailable = 테이블 만들기는 아직 사용할 수 없습니다.

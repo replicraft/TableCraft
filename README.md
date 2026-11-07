@@ -49,6 +49,7 @@ tablecraft tables example.accdb --count
 tablecraft rows example.accdb Customers --limit 25
 tablecraft rows example.mdb --all --limit 5
 tablecraft query run --database example.accdb 'SELECT TOP 10 * FROM Customers'
+tablecraft create new.accdb --blank
 ```
 
 Omit the table name in `rows` when the database has exactly one user table.
@@ -85,6 +86,10 @@ inspection and a SQL editor over existing Access services. It opens a snapshot o
 64 MiB; close other writers first. Restricted reviewed offline cell edits are
 available on macOS/Linux. General editing, designers and desktop release
 packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
+File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
+creation uses local NTFS and still requires runtime qualification.
+Existing destinations are never replaced; the current flow creates no user
+tables. See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
 Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with
 light/dark themes and interface languages under File → Options.
 

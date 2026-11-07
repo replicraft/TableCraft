@@ -3,6 +3,7 @@ mod chrome;
 mod click;
 mod content;
 mod contents;
+mod creation;
 mod deletion;
 mod diagnostics;
 mod editing;
@@ -26,6 +27,7 @@ pub(crate) mod totals;
 pub(crate) mod zoom;
 
 pub use contents::{CollectionKind, ContentsTarget};
+pub use creation::{CreationOutcome, CreationRequest};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
 pub use filtering::{
@@ -88,6 +90,10 @@ pub struct Data {
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
     ChooseFile,
+    ChooseCreationLocation,
+    CreateDatabase {
+        request: CreationRequest,
+    },
     Open,
     Page {
         table: String,
@@ -269,6 +275,9 @@ pub struct State {
     pub password: String,
     /// The host has an actual file-selection implementation.
     pub file_picker_available: bool,
+    /// Host supports fresh native publication; synthetic/default hosts keep false.
+    pub creation_available: bool,
+    creation: creation::Creation,
     pub database: Option<Database>,
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,

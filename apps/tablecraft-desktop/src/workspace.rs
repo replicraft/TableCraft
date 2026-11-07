@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod browser_acceptance;
+mod creating;
 mod editing;
 mod filtering;
 mod find;
@@ -14,10 +15,12 @@ mod test_support;
 mod totals;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
+use creating::Creating;
 use editing::Editing;
 use std::path::PathBuf;
 use tablecraft_runtime::{
-    Command, ContentsTarget as RuntimeContentsTarget, FilterHandle, Response, Worker,
+    Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle, Response,
+    Worker,
 };
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
@@ -125,16 +128,26 @@ pub(super) struct Desktop {
     generation: u64,
     pending: PendingOperation,
     file_dialog: FileDialog,
+    file_dialog_purpose: FileDialogPurpose,
     selected_file: Option<SelectedFile>,
+    creating: Creating,
     editing: Editing,
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
     startup_visibility_pending: bool,
 }
 
+#[derive(Default)]
+enum FileDialogPurpose {
+    #[default]
+    Open,
+    Creation,
+}
+
 impl Desktop {
     pub(super) fn new(ctx: egui::Context, path: Option<PathBuf>) -> Self {
         let editing = Editing::new(ctx.clone());
+        let creating = Creating::new(ctx.clone());
         let worker = Worker::new(move || ctx.request_repaint());
         let mut app = Self {
             state: State::default(),
@@ -142,13 +155,16 @@ impl Desktop {
             generation: 0,
             pending: PendingOperation::Read,
             file_dialog: FileDialog::default(),
+            file_dialog_purpose: FileDialogPurpose::default(),
             selected_file: None,
+            creating,
             editing,
             filter: None,
             objects: objects::Sessions::default(),
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
+        app.state.creation_available = CreationWorker::is_supported();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
@@ -162,7 +178,7 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
-        if self.editing.has_save() {
+        if self.editing.has_save() || self.creating.is_busy() {
             return;
         }
         let contents = match &command {
@@ -222,12 +238,15 @@ impl Desktop {
 
     fn poll_file_dialog(&mut self) {
         if let Some(selection) = self.file_dialog.poll() {
-            self.file_selected(selection);
+            match std::mem::take(&mut self.file_dialog_purpose) {
+                FileDialogPurpose::Open => self.file_selected(selection),
+                FileDialogPurpose::Creation => self.creation_selected(selection),
+            }
         }
     }
 
     fn file_selected(&mut self, selection: Option<PathBuf>) {
-        if self.editing.has_save() {
+        if self.editing.has_save() || self.creating.is_busy() {
             return;
         }
         if let Some(path) = selection {
@@ -237,12 +256,9 @@ impl Desktop {
     }
 
     fn open(&mut self) {
-        if self.editing.has_save() {
+        if self.editing.has_save() || self.creating.is_busy() {
             return;
         }
-        self.editing.clear_review();
-        self.editing.clear_refresh();
-        self.state.show_open();
         let path = match self
             .selected_file
             .as_ref()
@@ -255,6 +271,16 @@ impl Desktop {
             }
         };
         let password = std::mem::take(&mut self.state.password);
+        self.open_request(Command::Open { path, password });
+    }
+
+    fn open_request(&mut self, command: Command) {
+        if self.editing.has_save() || self.creating.is_busy() {
+            return;
+        }
+        self.editing.clear_review();
+        self.editing.clear_refresh();
+        self.state.show_open();
         self.state.database = None;
         self.filter = None;
         self.objects = objects::Sessions::default();
@@ -262,7 +288,7 @@ impl Desktop {
         self.state.query_data = None;
         self.state.clear_schema();
         self.state.close_contents();
-        self.submit(Command::Open { path, password });
+        self.submit(command);
     }
 
     fn poll(&mut self) {
@@ -542,9 +568,11 @@ impl eframe::App for Desktop {
         // eframe also calls logic for repaint requests while the viewport is
         // hidden. Task completion must not depend on drawing a visible frame.
         self.poll_file_dialog();
+        self.poll_creation();
         self.poll();
         self.poll_saves();
         self.guard_save_close(ctx);
+        self.guard_creation_close(ctx);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
@@ -558,6 +586,7 @@ impl eframe::App for Desktop {
         {
             self.selected_file = None;
         }
+        self.invalidate_creation_selection();
         for action in actions {
             match action {
                 Action::DescribeQueryDesign { request, table } => {
@@ -576,9 +605,32 @@ impl eframe::App for Desktop {
                 Action::ComputeTotals { target, specs } => self.compute_totals(target, specs),
                 Action::CancelTotals { request_id } => self.cancel_totals(request_id),
                 Action::ChooseFile => {
-                    self.file_dialog
-                        .open(frame, ui.ctx(), &self.state.localizer);
+                    if !self.creating.is_busy()
+                        && !self.editing.has_save()
+                        && !self.file_dialog.is_open()
+                    {
+                        self.file_dialog_purpose = FileDialogPurpose::Open;
+                        self.file_dialog
+                            .open(frame, ui.ctx(), &self.state.localizer);
+                    }
                 }
+                Action::ChooseCreationLocation => {
+                    if self.state.creation_available
+                        && !self.state.busy
+                        && !self.creating.is_busy()
+                        && !self.editing.has_save()
+                        && !self.file_dialog.is_open()
+                    {
+                        self.file_dialog_purpose = FileDialogPurpose::Creation;
+                        self.file_dialog.save_database(
+                            frame,
+                            ui.ctx(),
+                            &self.state.localizer,
+                            self.state.creation_destination(),
+                        );
+                    }
+                }
+                Action::CreateDatabase { request } => self.create_database(request),
                 Action::Open => self.open(),
                 Action::Page { table, offset } => {
                     if let Some(target) = self
@@ -670,6 +722,10 @@ impl eframe::App for Desktop {
                 Action::ReleaseEditSave { save_id } => self.resolve_save(save_id, false),
                 Action::AcknowledgeEditSave { save_id } => self.acknowledge_save(save_id),
                 Action::Cancel => {
+                    if self.creating.is_busy() {
+                        self.cancel_creation();
+                        continue;
+                    }
                     if self.editing.has_save() {
                         self.cancel_current_save();
                         continue;

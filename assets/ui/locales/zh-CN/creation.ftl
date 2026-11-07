@@ -1,0 +1,23 @@
+# TableCraft UI: blank native database creation.
+creation-title = 空白数据库
+creation-file-name = 文件名
+creation-location = 位置
+creation-browse = 浏览保存位置
+creation-create = 创建
+creation-cancel = 取消
+creation-format = Access 2016 (.accdb)
+creation-empty-note = 创建一个空数据库。暂不支持创建表。
+creation-choose-location = 请选择新数据库的保存位置。
+creation-working = 正在创建数据库…
+creation-cancelling = 正在取消…
+creation-created = 数据库已创建。
+creation-not-published = 未创建数据库。
+creation-uncertain = 文件可能已创建。重试前请检查目标位置。
+creation-unconfirmed = 数据库已存在，但无法确认保存是否完成。打开前请先检查。
+creation-cleanup = 数据库已创建，但无法删除临时文件。
+creation-unsupported = 此平台或位置不支持创建数据库。
+creation-invalid-name = 请指定以 .accdb 结尾的文件名。
+creation-location-needed = 创建数据库前请选择保存位置。
+creation-path-too-long = 目标路径过长。已保留原文件名。
+creation-empty-database = 此数据库没有用户表。
+creation-table-authoring-unavailable = 暂不支持创建表。

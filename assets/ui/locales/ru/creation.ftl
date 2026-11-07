@@ -1,0 +1,23 @@
+# TableCraft UI: blank native database creation.
+creation-title = Пустая база данных
+creation-file-name = Имя файла
+creation-location = Расположение
+creation-browse = Выбрать расположение
+creation-create = Создать
+creation-cancel = Отмена
+creation-format = Access 2016 (.accdb)
+creation-empty-note = Создаёт пустую базу данных. Создание таблиц пока недоступно.
+creation-choose-location = Выберите расположение для новой базы данных.
+creation-working = Создание базы данных…
+creation-cancelling = Отмена…
+creation-created = База данных создана.
+creation-not-published = База данных не создана.
+creation-uncertain = Возможно, файл уже создан. Проверьте выбранное расположение перед повторной попыткой.
+creation-unconfirmed = База данных существует, но сохранение не удалось подтвердить. Проверьте её перед открытием.
+creation-cleanup = База данных создана, но не удалось удалить временный файл.
+creation-unsupported = Создание базы данных недоступно на этой платформе или в этом расположении.
+creation-invalid-name = Выберите имя файла с расширением .accdb.
+creation-location-needed = Выберите расположение перед созданием базы данных.
+creation-path-too-long = Путь слишком длинный. Прежнее имя файла сохранено.
+creation-empty-database = В этой базе данных нет пользовательских таблиц.
+creation-table-authoring-unavailable = Создание таблиц пока недоступно.

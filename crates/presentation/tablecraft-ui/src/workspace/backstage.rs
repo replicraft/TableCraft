@@ -81,7 +81,7 @@ impl State {
                             ui.add_space(22.0);
                             ui.vertical(|ui| match self.backstage {
                                 Backstage::Home => self.start_pane(ui, actions),
-                                Backstage::New => self.new_pane(ui),
+                                Backstage::New => self.new_pane(ui, actions),
                                 Backstage::Open => self.open_pane(ui, actions, path_id),
                                 Backstage::About => self.about_pane(ui),
                                 Backstage::Options => self.options_pane(ui),

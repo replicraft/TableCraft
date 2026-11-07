@@ -73,6 +73,35 @@ impl FileDialog {
         context.request_repaint();
     }
 
+    /// Select a new destination only. Publication belongs to the runtime, which
+    /// independently refuses replacement even if the native picker accepts it.
+    pub(super) fn save_database(
+        &mut self,
+        frame: &eframe::Frame,
+        context: &egui::Context,
+        localizer: &Localizer,
+        draft: &str,
+    ) {
+        if self.is_open() {
+            return;
+        }
+        let path = Path::new(draft);
+        let name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("Database1.accdb");
+        let dialog = rfd::AsyncFileDialog::new()
+            .set_parent(frame)
+            .set_title(localizer.text("creation-browse"))
+            .set_file_name(name)
+            .add_filter(localizer.text("creation-format"), &["accdb"]);
+        let selection = dialog.save_file();
+        let selection =
+            Box::pin(async move { selection.await.map(|file| file.path().to_path_buf()) });
+        self.pending = Some(Pending::new(selection, context));
+        context.request_repaint();
+    }
+
     /// The outer Option means completion; the inner None means no selection.
     /// A native cancellation does not dispatch any database command.
     pub(super) fn poll(&mut self) -> Option<Option<PathBuf>> {

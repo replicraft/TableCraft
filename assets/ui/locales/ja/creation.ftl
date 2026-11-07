@@ -1,0 +1,23 @@
+# TableCraft UI: blank native database creation.
+creation-title = 空のデータベース
+creation-file-name = ファイル名
+creation-location = 保存先
+creation-browse = 保存先を参照
+creation-create = 作成
+creation-cancel = キャンセル
+creation-format = Access 2016 (.accdb)
+creation-empty-note = 空のデータベースを作成します。テーブルの作成はまだ利用できません。
+creation-choose-location = 新しいデータベースの保存先を選択してください。
+creation-working = データベースを作成しています…
+creation-cancelling = キャンセルしています…
+creation-created = データベースを作成しました。
+creation-not-published = データベースは作成されませんでした。
+creation-uncertain = ファイルが作成された可能性があります。再試行する前に保存先を確認してください。
+creation-unconfirmed = データベースは存在しますが、保存を確認できませんでした。開く前に確認してください。
+creation-cleanup = データベースを作成しましたが、一時ファイルを削除できませんでした。
+creation-unsupported = このプラットフォームまたは保存先ではデータベースを作成できません。
+creation-invalid-name = .accdb で終わるファイル名を指定してください。
+creation-location-needed = データベースを作成する前に保存先を選択してください。
+creation-path-too-long = 保存先のパスが長すぎます。元のファイル名を保持しました。
+creation-empty-database = このデータベースにはユーザーテーブルがありません。
+creation-table-authoring-unavailable = テーブルの作成はまだ利用できません。

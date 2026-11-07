@@ -86,6 +86,7 @@ pub enum Scene {
     Startup,
     StartupOpen,
     Templates,
+    DatabaseCreation,
     Backstage,
     Options,
     About,
@@ -115,7 +116,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 85] = [
+    pub const ALL: [Self; 86] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -175,6 +176,7 @@ impl Scene {
         Self::Startup,
         Self::StartupOpen,
         Self::Templates,
+        Self::DatabaseCreation,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -289,6 +291,7 @@ impl Scene {
             Self::Startup => "startup",
             Self::StartupOpen => "startup-open",
             Self::Templates => "templates",
+            Self::DatabaseCreation => "database-creation",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -553,6 +556,12 @@ impl Preview {
                 }
             }
             Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
+            Scene::DatabaseCreation => {
+                self.state.creation_available = true;
+                self.state.open_creation();
+                self.state
+                    .set_creation_destination("/preview/Database1.accdb".into());
+            }
             Scene::Backstage => self.state.show_open(),
             Scene::Options => self.state.backstage = super::backstage::Backstage::Options,
             Scene::About => self.state.backstage = super::backstage::Backstage::About,

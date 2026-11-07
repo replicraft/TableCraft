@@ -134,6 +134,20 @@ impl Preview {
             Action::ReviewDelete { target } => self.mock_review_delete(target, true),
             Action::ApplyDelete { review_id } => self.mock_apply_delete(review_id),
             Action::CloseDelete { request_id } => self.mock_close_delete(request_id),
+            Action::ChooseCreationLocation => {
+                if self.state.creation_available {
+                    self.state
+                        .set_creation_destination("/preview/Database1.accdb".into());
+                }
+            }
+            Action::CreateDatabase { request } => {
+                if self.state.begin_database_creation(&request) {
+                    self.state.finish_database_creation(
+                        request.id,
+                        crate::workspace::CreationOutcome::NotPublished,
+                    );
+                }
+            }
             Action::ChooseFile | Action::Open => {
                 self.state.password.clear();
                 self.state.error = Some(self.state.localizer.text("settings-mock-open-disabled"));

@@ -145,6 +145,18 @@ impl State {
                     "query-empty"
                 },
             ));
+        } else if self
+            .database
+            .as_ref()
+            .is_some_and(|database| database.tables.iter().all(|table| table.system))
+        {
+            ui.add_space(80.0);
+            ui.vertical_centered(|ui| {
+                ui.heading(tr(ui, "creation-title"));
+                ui.add_space(12.0);
+                ui.label(tr(ui, "creation-empty-database"));
+                ui.label(tr(ui, "creation-table-authoring-unavailable"));
+            });
         } else {
             ui.add_space(80.0);
             ui.vertical_centered(|ui| {

@@ -107,14 +107,20 @@ impl State {
         self.blank_template(ui);
     }
 
-    pub(super) fn new_pane(&self, ui: &mut Ui) {
+    pub(super) fn new_pane(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        if self.creation_form_open() {
+            self.creation_pane(ui, actions);
+            return;
+        }
         ui.heading(tr(ui, "backstage-new"));
         ui.add_space(18.0);
-        ui.label(tr(ui, "backstage-creation-unavailable"));
+        if !self.creation_available {
+            ui.label(tr(ui, "backstage-creation-unavailable"));
+        }
         self.blank_template(ui);
     }
 
-    fn blank_template(&self, ui: &mut Ui) {
+    fn blank_template(&mut self, ui: &mut Ui) {
         let colors = palette(ui.ctx());
         ui.add_space(12.0);
         ui.allocate_ui_with_layout(
@@ -122,7 +128,7 @@ impl State {
             Layout::top_down(Align::Min),
             |ui| {
                 ui.set_max_width(TEMPLATE_WIDTH);
-                ui.add_enabled_ui(false, |ui| {
+                ui.add_enabled_ui(self.creation_available && !self.busy, |ui| {
                     // Neutral artwork already signals unavailability. Avoid an
                     // additional opacity fade that makes its caption unreadable.
                     ui.set_opacity(1.0);
@@ -138,12 +144,22 @@ impl State {
                             ));
                             ui.vertical_centered(|ui| {
                                 ui.add(Icon::DatabaseFile.image(ui, TEMPLATE_ICON_SIZE));
-                                ui.add_enabled(
-                                    false,
-                                    egui::Button::new(tr(ui, "backstage-blank-database")),
-                                )
-                                .on_disabled_hover_text(tr(ui, "backstage-creation-unavailable"));
-                                ui.small(tr(ui, "backstage-creation-unavailable"));
+                                if ui
+                                    .add_enabled(
+                                        self.creation_available && !self.busy,
+                                        egui::Button::new(tr(ui, "backstage-blank-database")),
+                                    )
+                                    .on_disabled_hover_text(tr(
+                                        ui,
+                                        "backstage-creation-unavailable",
+                                    ))
+                                    .clicked()
+                                {
+                                    self.open_creation();
+                                }
+                                if !self.creation_available {
+                                    ui.small(tr(ui, "backstage-creation-unavailable"));
+                                }
                             });
                         });
                 });
