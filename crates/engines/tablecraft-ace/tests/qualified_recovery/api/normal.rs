@@ -884,3 +884,7 @@ mod indexed_guid_update;
 #[cfg(feature = "ace16-create")]
 #[path = "normal/first_table.rs"]
 mod first_table;
+
+#[cfg(feature = "ace16-create")]
+#[path = "normal/initial_insert.rs"]
+mod initial_insert;

@@ -5,11 +5,17 @@ use super::{canonical_creation_primary, put16, put32};
 #[derive(Clone, Copy, Debug)]
 pub enum Case {
     IdOnly,
+    LongInteger,
     ShortText,
     Mixed,
 }
 
-pub const CASES: [Case; 3] = [Case::IdOnly, Case::ShortText, Case::Mixed];
+pub const CASES: [Case; 4] = [
+    Case::IdOnly,
+    Case::LongInteger,
+    Case::ShortText,
+    Case::Mixed,
+];
 
 /// Literal native metadata, independent of CreateColumn and ScalarType.
 pub struct Column {
@@ -47,6 +53,7 @@ const fn variable(name: &'static str, native_type: u8, width: u16, index: u16) -
 }
 
 const ID_ONLY: [Column; 1] = [fixed("Id", 4, 0, 4)];
+const LONG_INTEGER: [Column; 2] = [fixed("Id", 4, 0, 4), fixed("Score", 4, 4, 4)];
 const SHORT_TEXT: [Column; 2] = [fixed("Id", 4, 0, 4), variable("Name", 10, 510, 0)];
 const MIXED: [Column; 14] = [
     fixed("Id", 4, 0, 4),
@@ -84,6 +91,7 @@ pub struct Source {
 pub fn source(case: Case) -> Source {
     let columns: &[Column] = match case {
         Case::IdOnly => &ID_ONLY,
+        Case::LongInteger => &LONG_INTEGER,
         Case::ShortText => &SHORT_TEXT,
         Case::Mixed => &MIXED,
     };
@@ -144,3 +152,6 @@ pub fn source(case: Case) -> Source {
     bytes[7 * 4096..8 * 4096].copy_from_slice(&definition);
     Source { bytes, columns }
 }
+
+#[path = "canonical_initial_table_creation/inserts.rs"]
+pub mod inserts;
