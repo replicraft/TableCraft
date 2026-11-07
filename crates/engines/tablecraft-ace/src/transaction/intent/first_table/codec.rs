@@ -1,16 +1,27 @@
+use super::super::fitted::carrier;
 use super::{FirstTableIntentError, NativeFirstTableIntent, binding};
 use crate::{
     CreateColumn, FirstTableDefinition, InspectError, format::page::PAGE_BYTES, header::check,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const MAGIC: &[u8; 8] = b"TCNT0001";
+const DEFAULT_MAGIC: &[u8; 8] = b"TCNT0002";
+// Pinned profile-2 ceiling: the existing constant literal expression allows
+// at most 255 UTF16 units, so no original text can exceed this UTF8 bound.
+const MAX_DEFAULT_EXPRESSION_UNITS: usize = 255;
+const MAX_DEFAULT_BYTES: usize = MAX_DEFAULT_EXPRESSION_UNITS * char::MAX.len_utf8();
+const DEFAULT_HEADER_BYTES: usize = carrier::HEADER_BYTES;
 const PREFIX: &[u8; 4] = b"TCNT";
 // This construction profile pins the canonical seven-page blank and current
 // explicit empty Increment serializer. Altering those rules requires a new
 // profile while retaining this reconstruction for existing pending journals.
 const CONSTRUCTION_PROFILE: u16 = 1;
+const DEFAULT_CONSTRUCTION_PROFILE: u16 = 2;
 const CANONICAL_BEFORE_PAGES: u64 = 7;
 const CANONICAL_BEFORE_BYTES: u64 = CANONICAL_BEFORE_PAGES * PAGE_BYTES as u64;
 const TOTAL_AT: usize = MAGIC.len();
@@ -34,8 +45,10 @@ const HEADER_BYTES: usize = RESERVED_AT + size_of::<u16>();
 const MAX_COLUMNS: usize = 16;
 const MAX_NAME_BYTES: usize = 64 * 4;
 const FIELD_HEADER_BYTES: usize = 8;
-pub(super) const MAX_RECORD_BYTES: usize =
+const V1_MAX_RECORD_BYTES: usize =
     HEADER_BYTES + 2 * MAX_NAME_BYTES + MAX_COLUMNS * (FIELD_HEADER_BYTES + MAX_NAME_BYTES);
+pub(super) const MAX_RECORD_BYTES: usize =
+    V1_MAX_RECORD_BYTES + MAX_COLUMNS * (DEFAULT_HEADER_BYTES + MAX_DEFAULT_BYTES);
 
 fn word(raw: &[u8], at: usize) -> u16 {
     u16::from_le_bytes(raw[at..at + size_of::<u16>()].try_into().unwrap())
@@ -90,7 +103,21 @@ pub(super) fn encode(
         return Err(FirstTableIntentError::BeforeMismatch);
     }
     let columns = definition.borrowed_columns(budget, cancelled)?;
-    let total = HEADER_BYTES
+    let has_defaults = columns
+        .iter()
+        .any(|column| column.default_literal().is_some());
+    let mut default_bytes = 0;
+    for column in &columns {
+        if let Some(value) = column.default_literal() {
+            let encoded = carrier::row_view(value)?;
+            if encoded.bytes().len() > MAX_DEFAULT_BYTES {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            default_bytes += DEFAULT_HEADER_BYTES + encoded.bytes().len();
+        }
+    }
+    let total = default_bytes
+        + HEADER_BYTES
         + definition.table().len()
         + definition.primary_name().len()
         + columns
@@ -117,9 +144,15 @@ pub(super) fn encode(
     raw.try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
     raw.resize(HEADER_BYTES, 0);
-    raw[..MAGIC.len()].copy_from_slice(MAGIC);
+    let magic = if has_defaults { DEFAULT_MAGIC } else { MAGIC };
+    let profile = if has_defaults {
+        DEFAULT_CONSTRUCTION_PROFILE
+    } else {
+        CONSTRUCTION_PROFILE
+    };
+    raw[..MAGIC.len()].copy_from_slice(magic);
     raw[TOTAL_AT..PROFILE_AT].copy_from_slice(&(total as u32).to_le_bytes());
-    raw[PROFILE_AT..FLAGS_AT].copy_from_slice(&CONSTRUCTION_PROFILE.to_le_bytes());
+    raw[PROFILE_AT..FLAGS_AT].copy_from_slice(&profile.to_le_bytes());
     raw[BEFORE_AT..BINDING_AT].copy_from_slice(&(before.len() as u64).to_le_bytes());
     raw[BINDING_AT..TABLE_LENGTH_AT].copy_from_slice(&binding);
     raw[TABLE_LENGTH_AT..PRIMARY_LENGTH_AT]
@@ -133,10 +166,16 @@ pub(super) fn encode(
         check(budget, cancelled)?;
         let (tag, capacity, precision, scale) = field(column)?;
         raw.extend((column.name().len() as u16).to_le_bytes());
-        raw.extend([tag, 0]);
+        raw.extend([tag, u8::from(column.default_literal().is_some())]);
         raw.extend(capacity.to_le_bytes());
         raw.extend([precision, scale]);
         raw.extend(column.name().as_bytes());
+        if let Some(value) = column.default_literal() {
+            let encoded = carrier::row_view(value)?;
+            raw.extend([encoded.tag, 0, 0, 0]);
+            raw.extend((encoded.bytes().len() as u32).to_le_bytes());
+            raw.extend(encoded.bytes());
+        }
     }
     check(budget, cancelled)?;
     Ok(raw)
@@ -174,10 +213,7 @@ fn column<'a>(name: &'a str, header: &[u8]) -> Result<CreateColumn<'a>, FirstTab
     let capacity = usize::from(word(header, 4));
     let precision = header[6];
     let scale = header[7];
-    if header[3] != 0
-        || tag != 11 && tag != 12 && capacity != 0
-        || tag != 13 && (precision != 0 || scale != 0)
-    {
+    if tag != 11 && tag != 12 && capacity != 0 || tag != 13 && (precision != 0 || scale != 0) {
         return Err(FirstTableIntentError::InvalidRecord);
     }
     let scalar = match tag {
@@ -215,11 +251,21 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, raw.len() as u64)
         .map_err(InspectError::from)?;
-    if &raw[..MAGIC.len()] != MAGIC {
-        return Err(FirstTableIntentError::UnsupportedVersion);
-    }
-    if word(raw, PROFILE_AT) != CONSTRUCTION_PROFILE {
+    let defaults_version = match &raw[..MAGIC.len()] {
+        version if version == MAGIC => false,
+        version if version == DEFAULT_MAGIC => true,
+        _ => return Err(FirstTableIntentError::UnsupportedVersion),
+    };
+    let expected_profile = if defaults_version {
+        DEFAULT_CONSTRUCTION_PROFILE
+    } else {
+        CONSTRUCTION_PROFILE
+    };
+    if word(raw, PROFILE_AT) != expected_profile {
         return Err(FirstTableIntentError::UnsupportedProfile);
+    }
+    if !defaults_version && raw.len() > V1_MAX_RECORD_BYTES {
+        return Err(FirstTableIntentError::InvalidRecord);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_AT..BINDING_AT].try_into().unwrap());
     let total = u32::from_le_bytes(raw[TOTAL_AT..PROFILE_AT].try_into().unwrap()) as usize;
@@ -246,12 +292,36 @@ pub(super) fn decode(
     let table = cursor.name(usize::from(word(raw, TABLE_LENGTH_AT)))?;
     let primary = cursor.name(usize::from(word(raw, PRIMARY_LENGTH_AT)))?;
     let mut columns = [CreateColumn::new("", ScalarType::Int32); MAX_COLUMNS];
+    let mut defaults: [Option<carrier::Borrowed<'_>>; MAX_COLUMNS] = std::array::from_fn(|_| None);
     for (position, destination) in columns[..count].iter_mut().enumerate() {
         check(budget, cancelled)?;
         let header = cursor.take(FIELD_HEADER_BYTES)?;
         let name = cursor.name(usize::from(word(header, 0)))?;
         if (header[2] == 0) != (position == 0) {
             return Err(FirstTableIntentError::InvalidRecord);
+        }
+        if header[3] > u8::from(defaults_version) || position == 0 && header[3] != 0 {
+            return Err(FirstTableIntentError::InvalidRecord);
+        }
+        if header[3] != 0 {
+            let default_header = cursor.take(DEFAULT_HEADER_BYTES)?;
+            if default_header[1..4] != [0, 0, 0] {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            let length = u32::from_le_bytes(default_header[4..8].try_into().unwrap()) as usize;
+            if length > MAX_DEFAULT_BYTES {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            if default_header[0] == 7 {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            let payload = cursor.take(length)?;
+            defaults[position] = Some(carrier::row_parse(
+                default_header[0],
+                payload,
+                budget,
+                cancelled,
+            )?);
         }
         let declaration = column(name, header)?;
         *destination = if position == 0 {
@@ -265,8 +335,22 @@ pub(super) fn decode(
     if cursor.at != raw.len() {
         return Err(FirstTableIntentError::InvalidRecord);
     }
-    // Capture validates every borrowed declaration before any decoded name or
-    // vector allocation; no unchecked or already-validated shortcut is used.
+    if defaults_version && defaults.iter().all(Option::is_none) {
+        return Err(FirstTableIntentError::InvalidRecord);
+    }
+    let mut owned_defaults: [Option<Value>; MAX_COLUMNS] = std::array::from_fn(|_| None);
+    for (destination, original) in owned_defaults.iter_mut().zip(defaults) {
+        if let Some(original) = original {
+            *destination = Some(carrier::owned(original, budget, cancelled)?);
+        }
+    }
+    for (column, value) in columns[..count].iter_mut().zip(&owned_defaults) {
+        if let Some(value) = value {
+            *column = column.with_default_literal(value)?;
+        }
+    }
+    // Full framing is checked before bounded default ownership. Capture then
+    // validates all native declarations before retaining names and declarations.
     let definition = FirstTableDefinition::capture(table, &columns[..count], budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(NativeFirstTableIntent {

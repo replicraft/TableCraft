@@ -4,8 +4,10 @@
 field explicitly. Both single-table and multiple-table creation services use
 the same validation. An empty declaration may contain one through sixteen
 constructible scalar fields. The generated Int32 field must come first and be
-named explicitly as the primary key, with no initial rows and no field policies
-or defaults. Ordinary companions retain the existing fixed, sized Short Text,
+named explicitly as the primary key, with no initial rows or field policies.
+The generated field cannot have a default. Ordinary companions may retain
+checked constant literal defaults; no default is executed during construction.
+Other ordinary companions retain the existing fixed, sized Short Text,
 sized Short Binary and exact Decimal declaration rules. The creator writes the native flags,
 LAST zero and an empty primary leaf; it does not generate initial IDs or infer
 a seed from supplied rows.
@@ -39,9 +41,9 @@ envelope. They import no production creator, decoder, native mutation or SDK
 output. The mixed source includes all current fixed carrier families and sized
 Text/Binary/Decimal declarations; initial rows remain empty.
 
-This is fresh serialization support, not persistence of an unsaved GUI table or
-catalog mutation in an existing database. It does not expand the separate native
-Increment INSERT admission profile. Source14 observations above apply to the
+These constructor observations establish fresh serialization, separately from
+the implemented [first-table persistence](FIRST_TABLE_PERSISTENCE.md) route.
+They alone do not qualify broader catalog mutation or native Increment INSERT. Source14 observations above apply to the
 original two-LONG layout; a separate read-only Jackcess 5.0.4 observation now recognizes the ID-only and
 ID-plus-Text CLI outputs as V2016, zero rows and index entries, LAST=0 and a
 unique ascending primary ID. The Text companion is 255 UTF-16 units. Each

@@ -99,7 +99,8 @@ fn generalized_empty_increment_keeps_generation_primary_and_policy_restrictions(
     let policy = [fields[0], fields[1].with_required(false)];
     let default = Value::Text("name".into());
     let with_default = [fields[0], fields[1].with_default_literal(&default).unwrap()];
-    for columns in [&wrong_order, &duplicate, &policy, &with_default] {
+    assert!(create_ace16_database("Items", &with_default, &rows, &mut budget(), &|| false).is_ok());
+    for columns in [&wrong_order, &duplicate, &policy] {
         assert!(create_ace16_database("Items", columns, &rows, &mut budget(), &|| false).is_err());
     }
     let row = [Value::Null, Value::Text("name".into())];

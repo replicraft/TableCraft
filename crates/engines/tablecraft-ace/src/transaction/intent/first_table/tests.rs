@@ -125,8 +125,10 @@ fn closed_schema_framing_rejects_unknown_versions_flags_tags_parameters_and_tail
 
 #[test]
 fn schema_intent_encode_and_decode_pay_exact_pools_and_poll_cancellation() {
-    let plan = plan();
-    let literal = literal();
+    assert_intent_resources(plan(), literal());
+}
+
+fn assert_intent_resources(plan: FirstTablePlan, literal: Vec<u8>) {
     for decoding in [false, true] {
         let invoke = |work: &mut ResourceBudget, cancelled: &dyn Fn() -> bool| {
             if decoding {
@@ -234,4 +236,123 @@ fn schema_intent_retains_every_constructible_companion_tag_and_parameter() {
         .plan_first_table(decoded.definition, &mut budget(), &|| false)
         .unwrap();
     assert_eq!(rebuilt.after_bytes(), expected.bytes);
+}
+
+#[test]
+fn default_schema_v2_matches_independent_typed_wire_and_retains_exact_original_values() {
+    use tablecraft_core::values::{Currency, LegacyDateTime, Value};
+
+    let values = [
+        Value::Null,
+        Value::Boolean(false),
+        Value::Int32(-7),
+        Value::Int64(i64::MAX),
+        Value::Currency(Currency::from_scaled(12345)),
+        Value::DateTime(LegacyDateTime::from_bits(0_f64.to_bits()).unwrap()),
+        Value::Text("a\"b".into()),
+    ];
+    let primary = CreateColumn::new("Id", ScalarType::Int32)
+        .with_primary_key("PrimaryId")
+        .unwrap()
+        .with_incrementing_autonumber()
+        .unwrap();
+    let declarations = [
+        CreateColumn::new("Nullable", ScalarType::Int32),
+        CreateColumn::new("Flag", ScalarType::Boolean),
+        CreateColumn::new("Long", ScalarType::Int32),
+        CreateColumn::new("Large", ScalarType::Int64),
+        CreateColumn::new("Money", ScalarType::Currency),
+        CreateColumn::new("When", ScalarType::DateTime),
+        CreateColumn::short_text("Text", 20).unwrap(),
+    ];
+    let mut columns = vec![primary];
+    columns.extend(
+        declarations
+            .iter()
+            .zip(&values)
+            .map(|(column, value)| column.with_default_literal(value).unwrap()),
+    );
+    let definition =
+        FirstTableDefinition::capture("Items", &columns, &mut budget(), &|| false).unwrap();
+    let source = || {
+        NativeImage::capture(
+            &mut Cursor::new(canonical_blank_creation::source()),
+            CatalogScope::new(489),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+    };
+    let plan = source()
+        .plan_first_table(definition, &mut budget(), &|| false)
+        .unwrap();
+    let raw = plan.encode_intent(&mut budget(), &|| false).unwrap();
+    let mut expected = literal();
+    expected[..8].copy_from_slice(b"TCNT0002");
+    expected[12..14].copy_from_slice(&2_u16.to_le_bytes());
+    expected[60..62].copy_from_slice(&8_u16.to_le_bytes());
+    let payloads: [&[u8]; 7] = [
+        &[],
+        &[0],
+        &(-7_i32).to_le_bytes(),
+        &i64::MAX.to_le_bytes(),
+        &12345_i64.to_le_bytes(),
+        &0_u64.to_le_bytes(),
+        b"a\"b",
+    ];
+    for (position, ((name, scalar_tag), payload)) in [
+        ("Nullable", 4),
+        ("Flag", 1),
+        ("Long", 4),
+        ("Large", 5),
+        ("Money", 6),
+        ("When", 9),
+        ("Text", 11),
+    ]
+    .into_iter()
+    .zip(payloads)
+    .enumerate()
+    {
+        expected.extend((name.len() as u16).to_le_bytes());
+        expected.extend([scalar_tag, 1]);
+        expected.extend(if scalar_tag == 11 { 20_u16 } else { 0 }.to_le_bytes());
+        expected.extend([0, 0]);
+        expected.extend(name.as_bytes());
+        expected.extend([position as u8, 0, 0, 0]);
+        expected.extend((payload.len() as u32).to_le_bytes());
+        expected.extend(payload);
+    }
+    let total = expected.len() as u32;
+    expected[8..12].copy_from_slice(&total.to_le_bytes());
+    assert_eq!(raw, expected);
+    let decoded = NativeFirstTableIntent::decode(&expected, &mut budget(), &|| false).unwrap();
+    let retained = decoded
+        .definition
+        .borrowed_columns(&mut budget(), &|| false)
+        .unwrap();
+    assert!(retained[0].default_literal().is_none());
+    for (column, expected) in retained[1..].iter().zip(&values) {
+        assert_eq!(column.default_literal(), Some(expected));
+    }
+    drop(retained);
+    let rebuilt = source()
+        .plan_first_table(decoded.definition, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(rebuilt.after_bytes(), plan.after_bytes());
+    for at in [81, 106] {
+        let mut invalid = raw.clone();
+        invalid[at] = 2;
+        assert!(NativeFirstTableIntent::decode(&invalid, &mut budget(), &|| false).is_err());
+    }
+    let mut no_defaults = literal();
+    no_defaults[..8].copy_from_slice(b"TCNT0002");
+    no_defaults[12..14].copy_from_slice(&2_u16.to_le_bytes());
+    assert!(matches!(
+        NativeFirstTableIntent::decode(&no_defaults, &mut budget(), &|| false),
+        Err(FirstTableIntentError::InvalidRecord)
+    ));
+    for length in 0..raw.len() {
+        assert!(NativeFirstTableIntent::decode(&raw[..length], &mut budget(), &|| false).is_err());
+    }
+    assert_intent_resources(plan, raw);
 }

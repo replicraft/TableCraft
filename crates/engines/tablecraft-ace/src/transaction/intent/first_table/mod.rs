@@ -39,7 +39,7 @@ pub enum FirstTableIntentError {
     BeforeMismatch,
 }
 
-/// Original owned declarations and full-source binding for TCNT0001/profile 1.
+/// Original owned declarations and full-source binding for TCNT0001/profile 1 or default-bearing TCNT0002/profile 2.
 /// Decoding this record supplies no native write, recovery or absence authority.
 pub struct NativeFirstTableIntent {
     definition: FirstTableDefinition,

@@ -5,11 +5,15 @@ use super::super::{
     request,
 };
 use crate::{InspectError, header::check};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 struct Column {
     name: String,
     declaration: Declaration,
+    default: Option<Value>,
 }
 
 /// Owned original declarations for the first table in the canonical blank file.
@@ -38,7 +42,9 @@ fn copy_name(name: &str, budget: &mut ResourceBudget) -> Result<String, InspectE
 impl FirstTableDefinition {
     /// Validate and retain exact names and empty Increment declarations.
     /// The first field must be an Int32 Increment primary. No initial rows,
-    /// policies, defaults, physical offsets or native flags are accepted.
+    /// policies, generated-field defaults, physical offsets or native flags
+    /// are accepted.
+    /// Ordinary companion fields may retain checked constant defaults.
     pub fn capture(
         table: &str,
         columns: &[CreateColumn<'_>],
@@ -64,6 +70,10 @@ impl FirstTableDefinition {
             retained.push(Column {
                 name: copy_name(column.name(), budget)?,
                 declaration: column.declaration(),
+                default: column
+                    .default_literal()
+                    .map(|value| copy_default(value, budget))
+                    .transpose()?,
             });
         }
         check(budget, cancelled)?;
@@ -147,9 +157,26 @@ impl FirstTableDefinition {
             } else {
                 borrowed
             };
+            let borrowed = match &column.default {
+                Some(value) => borrowed.with_default_literal(value)?,
+                None => borrowed,
+            };
             columns.push(borrowed);
         }
         check(budget, cancelled)?;
         Ok(columns)
     }
+}
+
+fn copy_default(value: &Value, budget: &mut ResourceBudget) -> Result<Value, InspectError> {
+    Ok(match value {
+        Value::Text(text) => Value::Text(copy_name(text, budget)?),
+        Value::Null => Value::Null,
+        Value::Boolean(value) => Value::Boolean(*value),
+        Value::Int32(value) => Value::Int32(*value),
+        Value::Int64(value) => Value::Int64(*value),
+        Value::Currency(value) => Value::Currency(*value),
+        Value::DateTime(value) => Value::DateTime(*value),
+        _ => unreachable!("validated constant-default family"),
+    })
 }
