@@ -120,11 +120,12 @@ impl Document {
         let original = &snapshot.rows()[target.parent_ordinal as usize][index];
 
         let mut output = Presentation::new(cancelled);
-        let kind = snapshot.columns()[index].data_type();
-        let replacement = input::parse_original(kind, input, original, &mut output)?;
+        let declaration = snapshot.columns()[index].type_descriptor();
+        let replacement = input::parse_original(declaration, input, original, &mut output)?;
         let before = output.scalar(original, false)?;
         let after = output.scalar(&replacement, false)?;
-        let retained_replacement = input::parse_original(kind, input, original, &mut output)?;
+        let retained_replacement =
+            input::parse_original(declaration, input, original, &mut output)?;
 
         let plan = editor
             .plan_updates(

@@ -19,7 +19,7 @@ use tablecraft_core::{
 };
 use tablecraft_db::{EditableTable, UpdateProfile};
 use tablecraft_expressions::comparison::StringSearch;
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{ScalarType, TypeDescriptor};
 
 const MATCH_BYTES: u64 = 64 * 1024 * 1024;
 const MATCH_STEPS: u64 = 10_000_000;
@@ -196,7 +196,7 @@ impl Document {
             text: splice(text, range, replacement, &mut output)?,
             is_null: false,
         };
-        input::parse_original(kind, &input, original, &mut output)?;
+        input::parse_original(TypeDescriptor::new(kind), &input, original, &mut output)?;
         let target = EditTarget {
             document_revision: request.target.document_revision,
             table: output.text(&request.target.table)?,

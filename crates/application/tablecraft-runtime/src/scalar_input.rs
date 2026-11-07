@@ -1,6 +1,8 @@
 //! Shared exact typed text input; no SQL parsing or implicit carrier selection.
+mod declared;
 mod hint;
 use crate::{Error, display::Presentation};
+pub(crate) use declared::parse as parse_declared;
 pub use hint::InputHint;
 use tablecraft_core::values::{Double, ExtendedDateTime, Guid, LegacyDateTime, Single, Value};
 use tablecraft_expressions::{

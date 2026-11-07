@@ -301,12 +301,14 @@ fn parse_inputs(
         output.work(1)?;
         values.push(match input {
             InsertInput::Omitted => InsertValue::Omitted,
-            InsertInput::Value(input) => InsertValue::Supplied(crate::scalar_input::parse(
-                column.data_type(),
-                &input.text,
-                input.is_null,
-                output,
-            )?),
+            InsertInput::Value(input) => {
+                InsertValue::Supplied(crate::scalar_input::parse_declared(
+                    column.type_descriptor(),
+                    &input.text,
+                    input.is_null,
+                    output,
+                )?)
+            }
         });
     }
     Ok(values)

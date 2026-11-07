@@ -3,10 +3,18 @@ use super::{EditError, EditInput};
 use crate::scalar_input::MAX_INPUT_BYTES;
 use crate::{Error, display::Presentation};
 use tablecraft_core::values::Value;
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{ScalarType, TypeDescriptor};
 
 fn invalid() -> Error {
     EditError::InvalidInput.into()
+}
+
+fn input_error(error: Error) -> Error {
+    match error {
+        Error::InvalidScalarInput => invalid(),
+        Error::ScalarInputLimit => EditError::InputLimit.into(),
+        error => error,
+    }
 }
 
 fn parse(
@@ -14,13 +22,7 @@ fn parse(
     input: &EditInput,
     output: &mut Presentation<'_>,
 ) -> Result<Value, Error> {
-    crate::scalar_input::parse(kind, &input.text, input.is_null, output).map_err(
-        |error| match error {
-            Error::InvalidScalarInput => invalid(),
-            Error::ScalarInputLimit => EditError::InputLimit.into(),
-            error => error,
-        },
-    )
+    crate::scalar_input::parse(kind, &input.text, input.is_null, output).map_err(input_error)
 }
 
 pub(super) fn initial(value: &Value, output: &mut Presentation<'_>) -> Result<EditInput, Error> {
@@ -46,11 +48,20 @@ pub(super) fn initial(value: &Value, output: &mut Presentation<'_>) -> Result<Ed
 // Unchanged initial DATE/float text retains the exact original stored carrier.
 // Rounded calendar display must not silently become replacement DATE bits.
 pub(super) fn parse_original(
-    kind: ScalarType,
+    declaration: TypeDescriptor,
     input: &EditInput,
     original: &Value,
     output: &mut Presentation<'_>,
 ) -> Result<Value, Error> {
+    if declaration.decimal_constraints().is_some() {
+        return crate::scalar_input::parse_declared(
+            declaration,
+            &input.text,
+            input.is_null,
+            output,
+        )
+        .map_err(input_error);
+    }
     if input.text.len() > MAX_INPUT_BYTES {
         return Err(EditError::InputLimit.into());
     }
@@ -71,7 +82,7 @@ pub(super) fn parse_original(
             });
         }
     }
-    parse(kind, input, output)
+    parse(declaration.scalar_type(), input, output)
 }
 
 #[cfg(test)]
@@ -140,7 +151,7 @@ mod tests {
             let initial = initial(&value, &mut output).unwrap();
             assert!(!initial.text.starts_with("bits:"));
             assert_eq!(
-                parse_original(kind, &initial, &value, &mut output).unwrap(),
+                parse_original(TypeDescriptor::new(kind), &initial, &value, &mut output).unwrap(),
                 value
             );
         }
@@ -153,7 +164,7 @@ mod tests {
         };
         assert!(
             parse_original(
-                ScalarType::Double,
+                TypeDescriptor::new(ScalarType::Double),
                 &nan,
                 &Value::Double(Double::from_bits(0)),
                 &mut output,
@@ -182,7 +193,9 @@ mod tests {
                 text: literal.into(),
                 is_null: false,
             };
-            assert!(parse_original(kind, &input, &original, &mut output).is_err());
+            assert!(
+                parse_original(TypeDescriptor::new(kind), &input, &original, &mut output).is_err()
+            );
         }
 
         let oversized = "x".repeat(1024 * 1024 + 1);
@@ -192,7 +205,12 @@ mod tests {
             is_null: false,
         };
         assert!(matches!(
-            parse_original(ScalarType::Text, &input, &original, &mut output),
+            parse_original(
+                TypeDescriptor::new(ScalarType::Text),
+                &input,
+                &original,
+                &mut output
+            ),
             Err(Error::Edit(EditError::InputLimit)),
         ));
 
