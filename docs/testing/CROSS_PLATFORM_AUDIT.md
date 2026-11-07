@@ -242,3 +242,72 @@ the corrected passes.
 See [development commands](../development/DEVELOPMENT.md),
 [IO guarantees](../foundation/IO.md), [compatibility](../COMPATIBILITY.md) and
 [desktop scope](../ui/DESKTOP.md).
+
+## Explicit oracle exporter portability follow-up
+
+Seven ignored, explicitly invoked ACE fixture exporters previously attempted
+`File::open(directory).sync_all()` unconditionally after finishing their files.
+Windows ordinary directory opens do not supply the Unix directory-handle route,
+so export would fail after writing its artifacts. They now share testkit's
+`support::ace::artifacts::finish_export_directory`: Unix retains its directory
+sync, while Windows reports `NotSynchronized` after directory-kind validation.
+Every exporter retains its existing exclusive artifact creation and individual
+file flushes. This is content-only artifact completion on Windows, not a weaker
+fallback in database publication or journal recovery. Native execution and the
+focused helper test remain separate from this source correction.
+
+## Current-tree verification follow-up
+
+The renewed audit includes the current working tree and keeps the earlier
+completed batches above as historical evidence. CI and release configuration
+still name six Windows/macOS/Linux x86-64 and ARM64 targets. This source review
+found no additional release-script portability defect beyond the corrections
+already recorded. It confirms configured coverage, not successful native jobs.
+The exporter correction above applies only to explicitly invoked engineering
+artifacts; normal database publication and journal guarantees remain unchanged.
+The Windows rename review also checks the retained-parent use against Microsoft's
+[`FILE_RENAME_INFO` contract](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info):
+a relative target name may resolve against the supplied directory handle. This
+API-contract check is separate from native filesystem or power-loss execution.
+
+| Current check | Result / scope |
+| --- | --- |
+| Repository Python guards | 82 top-level tests pass locally on macOS ARM64 |
+| Local `scripts/tests` | 55 tests pass, including archive, association and locally present desktop-notice tooling |
+| Dependency boundaries | Pass for all 20 workspace packages |
+| Documentation links | 7,923 local targets pass |
+| Strict workspace lint | Complete 20-package workspace, all targets/features, passes on macOS ARM64 |
+| Intel macOS / Linux x64 / Linux ARM64 | Complete workspace, all targets/features, passes cross-checks |
+| Windows x64 / ARM64 | All targets/features pass for the 18 packages other than CLI/SQLite; their local MSVC C-SDK exclusion remains explicit |
+| IO / Access / runtime / builders | All selected library/binary tests pass: 139 / 95 / 142 / 27 respectively |
+| Shared UI / desktop | Final post-correction library/binary batch passes all 425 / 107 tests; the affected Design filter separately passes all 24 |
+| Fixture export helper | One focused test passes on macOS ARM64 |
+| Current Number native codecs/defaults/recovery | Nine focused tests pass; this does not qualify native Access behavior |
+| Formatting | All 882 Cargo target roots pass in four bounded batches |
+| Native Windows/Linux filesystem and GUI execution | Not performed by this local headless audit |
+
+The initial current-tree UI batch passed 424 tests and failed one compact-layout
+case. Its unchanged assertion detected the Korean Decimal literal input extending
+below the footer. The corrected property-height measurement includes actual
+input/combo-box padding; all 24 affected Design tests subsequently pass. The
+final complete shared-UI/desktop batch also passes. Both Windows architectures
+then pass a final all-target/all-feature UI/desktop compilation refresh.
+
+The selected final library/binary and focused native batches total 945 passing
+tests across eight packages; repeated focused reruns are not added to that total.
+This is not the entire workspace test suite.
+
+The initial workspace lint also caught a redundant test-only `Vec`; the corrected
+strict workspace run passes. Failed and corrected logs are retained separately
+under ignored `.cache/platform-review-*20261107.log` paths. These batches include
+pending Number work but do not turn this platform audit into a native Access
+compatibility claim or a completed full-workspace regression run.
+
+The local desktop-notice tooling includes retained user working files; its
+presence in a local test run does not add it to the tracked CI test globs or
+establish a desktop release. The release workflow still builds and publishes
+only the CLI when explicitly triggered under its existing release contract.
+This audit dispatches no workflow and publishes no artifacts. The local Windows
+CLI/SQLite C-SDK exclusion, desktop release preparation, minimum-OS/runtime-library
+qualification, installed file associations, window controls, dialogs, clipboard
+and screen-reader behavior retain their previously documented evidence limits.

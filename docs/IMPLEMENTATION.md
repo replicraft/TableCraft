@@ -1,5 +1,25 @@
 # Implementation status
 
+## Cross-platform audit follow-up — 7 November 2026
+
+Seven explicit engineering fixture exporters now share a testkit directory
+completion helper instead of attempting an ordinary Windows directory open.
+Unix retains its directory synchronization; Windows reports content-only
+completion without weakening database publication or recovery. The desktop
+contract now accurately includes its separate Windows local-NTFS editing route.
+
+The renewed checks pass complete-workspace strict lint on macOS ARM64, complete
+workspace cross-checks on Intel macOS and both Linux architectures, and 18-package
+Windows x64/ARM64 checks excluding the local CLI/SQLite MSVC C-SDK limitation.
+Final UI/desktop compilation refreshes pass on both Windows architectures.
+Selected headless/native batches pass 945 tests across eight packages, plus
+82 repository and 55 local packaging/tooling tests. All 882 formatter roots,
+dependency boundaries and 7,923 documentation targets pass. A compact translated
+property-pane regression found during the audit was corrected and rechecked.
+These are local builds/tests, not native Windows/Linux, installed-app,
+power-loss or Access qualification. See the
+[current audit evidence](testing/CROSS_PLATFORM_AUDIT.md#current-tree-verification-follow-up).
+
 ## Omitted nullable first-record fields — 7 November 2026
 
 Generated-ID inserts now resolve a genuinely absent companion default to native
