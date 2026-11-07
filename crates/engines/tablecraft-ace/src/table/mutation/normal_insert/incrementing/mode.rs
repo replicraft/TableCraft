@@ -3,7 +3,10 @@ mod indexes;
 use crate::{
     EditError, InspectError, NativeImage, PropertyGroupKind, TableSchema, WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
+        data_type::{
+            BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC,
+            SHORT_BINARY, SHORT_TEXT, SINGLE,
+        },
         layout::{AUTO_NUMBER_FLAG, AUTO_NUMBER_GUID_FLAG},
         page::PAGE_BYTES,
     },
@@ -153,7 +156,19 @@ pub(super) fn capture(
         if field.number() != position
             || !matches!(
                 field.native_type(),
-                BOOLEAN | INT32 | INT64 | CURRENCY | DATE_TIME | SHORT_TEXT | SHORT_BINARY
+                BOOLEAN
+                    | BYTE
+                    | INT16
+                    | INT32
+                    | INT64
+                    | CURRENCY
+                    | SINGLE
+                    | DOUBLE
+                    | DATE_TIME
+                    | GUID
+                    | NUMERIC
+                    | SHORT_TEXT
+                    | SHORT_BINARY
             )
         {
             return Err(EditError::Unsupported(WriteBlocker::Column));

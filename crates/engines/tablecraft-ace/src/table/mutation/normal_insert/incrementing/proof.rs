@@ -2,7 +2,10 @@
 use crate::{
     EditError, InsertFieldValue, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
     RowInsert, WriteBlocker,
-    format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
+    format::data_type::{
+        BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC,
+        SHORT_BINARY, SHORT_TEXT, SINGLE,
+    },
     header::check,
     table::mutation::{
         insert_defaults::{declaration, proof_literal, values::copy_value},
@@ -100,6 +103,12 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                 };
                 match (field.native_type(), supplied) {
                     (BOOLEAN, Value::Boolean(_))
+                    | (BYTE, Value::Byte(_) | Value::Null)
+                    | (INT16, Value::Int16(_) | Value::Null)
+                    | (SINGLE, Value::Single(_) | Value::Null)
+                    | (DOUBLE, Value::Double(_) | Value::Null)
+                    | (GUID, Value::Guid(_) | Value::Null)
+                    | (NUMERIC, Value::Decimal(_) | Value::Null)
                     | (INT32, Value::Int32(_) | Value::Null)
                     | (INT64, Value::Int64(_) | Value::Null)
                     | (CURRENCY, Value::Currency(_) | Value::Null)
@@ -107,6 +116,15 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                     | (SHORT_TEXT, Value::Text(_) | Value::Null)
                     | (SHORT_BINARY, Value::Binary(_) | Value::Null) => {}
                     _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+                }
+                match supplied {
+                    Value::Single(value) if !f32::from_bits(value.to_bits()).is_finite() => {
+                        return Err(EditError::Unsupported(WriteBlocker::Column));
+                    }
+                    Value::Double(value) if !f64::from_bits(value.to_bits()).is_finite() => {
+                        return Err(EditError::Unsupported(WriteBlocker::Column));
+                    }
+                    _ => {}
                 }
                 values.push(copy_value(supplied, budget, cancelled)?);
             }

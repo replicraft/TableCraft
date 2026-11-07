@@ -1,5 +1,5 @@
-//! TCNA4-only exact request carriers; legacy protocols retain their old grammar.
-use super::{NativeIntentError, Protocol};
+//! Exact row/default carriers selected by closed protocol grammars.
+use super::NativeIntentError;
 use crate::transaction::intent::fitted::carrier as legacy;
 use tablecraft_core::{
     limits::ResourceBudget,
@@ -7,6 +7,26 @@ use tablecraft_core::{
 };
 
 pub(super) use legacy::{Borrowed, COPY_BYTES, HEADER_BYTES, owned, pay_scan};
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Profile {
+    Legacy,
+    Wider,
+}
+
+impl Profile {
+    pub(super) const fn for_value(value: &Value) -> Self {
+        match value {
+            Value::Byte(_)
+            | Value::Int16(_)
+            | Value::Single(_)
+            | Value::Double(_)
+            | Value::Guid(_)
+            | Value::Decimal(_) => Self::Wider,
+            _ => Self::Legacy,
+        }
+    }
+}
 
 const BYTE: u8 = 8;
 const INT16: u8 = 9;
@@ -51,11 +71,8 @@ fn fixed(tag: u8, value: &[u8]) -> Encoded<'static> {
     }
 }
 
-pub(super) fn row_view(
-    value: &Value,
-    protocol: Protocol,
-) -> Result<Encoded<'_>, NativeIntentError> {
-    if !matches!(protocol, Protocol::Complete) {
+pub(super) fn row_view(value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
+    if !matches!(profile, Profile::Wider) {
         return legacy::row_view(value).map(Encoded::Legacy);
     }
     let result = match value {
@@ -82,11 +99,11 @@ pub(super) fn row_view(
 pub(super) fn row_parse<'a>(
     tag: u8,
     bytes: &'a [u8],
-    protocol: Protocol,
+    profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Borrowed<'a>, NativeIntentError> {
-    if tag < BYTE || !matches!(protocol, Protocol::Complete) {
+    if tag < BYTE || !matches!(profile, Profile::Wider) {
         return legacy::row_parse(tag, bytes, budget, cancelled);
     }
     pay_scan(bytes, budget, cancelled)?;

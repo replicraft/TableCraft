@@ -358,3 +358,5 @@ fn default_schema_v2_matches_independent_typed_wire_and_retains_exact_original_v
 }
 
 mod policies;
+
+mod numbers;

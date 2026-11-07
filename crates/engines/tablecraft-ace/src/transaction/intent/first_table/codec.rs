@@ -1,4 +1,4 @@
-use super::super::fitted::carrier;
+use super::super::row_carrier::{self as carrier, Profile};
 use super::{FirstTableIntentError, NativeFirstTableIntent, binding};
 use crate::{
     CreateColumn, FirstTableDefinition, InspectError, format::page::PAGE_BYTES, header::check,
@@ -12,6 +12,7 @@ use tablecraft_schema::{DecimalConstraints, ScalarType};
 const MAGIC: &[u8; 8] = b"TCNT0001";
 const DEFAULT_MAGIC: &[u8; 8] = b"TCNT0002";
 const POLICY_MAGIC: &[u8; 8] = b"TCNT0003";
+const WIDER_MAGIC: &[u8; 8] = b"TCNT0004";
 const DEFAULT_PRESENT: u8 = 0x01;
 const REQUIRED_PRESENT: u8 = 0x02;
 const REQUIRED_VALUE: u8 = 0x04;
@@ -31,6 +32,7 @@ const PREFIX: &[u8; 4] = b"TCNT";
 const CONSTRUCTION_PROFILE: u16 = 1;
 const DEFAULT_CONSTRUCTION_PROFILE: u16 = 2;
 const POLICY_CONSTRUCTION_PROFILE: u16 = 3;
+const WIDER_CONSTRUCTION_PROFILE: u16 = 4;
 const CANONICAL_BEFORE_PAGES: u64 = 7;
 const CANONICAL_BEFORE_BYTES: u64 = CANONICAL_BEFORE_PAGES * PAGE_BYTES as u64;
 const TOTAL_AT: usize = MAGIC.len();
@@ -59,6 +61,18 @@ const V1_MAX_RECORD_BYTES: usize =
     HEADER_BYTES + 2 * MAX_NAME_BYTES + MAX_COLUMNS * (FIELD_HEADER_BYTES + MAX_NAME_BYTES);
 pub(super) const MAX_RECORD_BYTES: usize =
     V1_MAX_RECORD_BYTES + MAX_COLUMNS * (DEFAULT_HEADER_BYTES + MAX_DEFAULT_BYTES);
+
+fn wider_default_target(scalar: ScalarType) -> bool {
+    matches!(
+        scalar,
+        ScalarType::Byte
+            | ScalarType::Int16
+            | ScalarType::Single
+            | ScalarType::Double
+            | ScalarType::Guid
+            | ScalarType::Decimal
+    )
+}
 
 fn word(raw: &[u8], at: usize) -> u16 {
     u16::from_le_bytes(raw[at..at + size_of::<u16>()].try_into().unwrap())
@@ -119,10 +133,18 @@ pub(super) fn encode(
     let has_policies = columns
         .iter()
         .any(|column| column.required().is_some() || column.allow_zero_length().is_some());
+    let has_wider_defaults = columns.iter().any(|column| {
+        column.default_literal().is_some() && wider_default_target(column.scalar_type())
+    });
+    let carriers = if has_wider_defaults {
+        Profile::Wider
+    } else {
+        Profile::Legacy
+    };
     let mut default_bytes = 0;
     for column in &columns {
         if let Some(value) = column.default_literal() {
-            let encoded = carrier::row_view(value)?;
+            let encoded = carrier::row_view(value, carriers)?;
             if encoded.bytes().len() > MAX_DEFAULT_BYTES {
                 return Err(FirstTableIntentError::InvalidRecord);
             }
@@ -157,14 +179,18 @@ pub(super) fn encode(
     raw.try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
     raw.resize(HEADER_BYTES, 0);
-    let magic = if has_policies {
+    let magic = if has_wider_defaults {
+        WIDER_MAGIC
+    } else if has_policies {
         POLICY_MAGIC
     } else if has_defaults {
         DEFAULT_MAGIC
     } else {
         MAGIC
     };
-    let profile = if has_policies {
+    let profile = if has_wider_defaults {
+        WIDER_CONSTRUCTION_PROFILE
+    } else if has_policies {
         POLICY_CONSTRUCTION_PROFILE
     } else if has_defaults {
         DEFAULT_CONSTRUCTION_PROFILE
@@ -199,8 +225,8 @@ pub(super) fn encode(
         raw.extend([precision, scale]);
         raw.extend(column.name().as_bytes());
         if let Some(value) = column.default_literal() {
-            let encoded = carrier::row_view(value)?;
-            raw.extend([encoded.tag, 0, 0, 0]);
+            let encoded = carrier::row_view(value, carriers)?;
+            raw.extend([encoded.tag(), 0, 0, 0]);
             raw.extend((encoded.bytes().len() as u32).to_le_bytes());
             raw.extend(encoded.bytes());
         }
@@ -281,13 +307,16 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, raw.len() as u64)
         .map_err(InspectError::from)?;
-    let (defaults_version, policies_version) = match &raw[..MAGIC.len()] {
-        version if version == MAGIC => (false, false),
-        version if version == DEFAULT_MAGIC => (true, false),
-        version if version == POLICY_MAGIC => (true, true),
+    let (defaults_version, policies_version, wider_version) = match &raw[..MAGIC.len()] {
+        version if version == MAGIC => (false, false, false),
+        version if version == DEFAULT_MAGIC => (true, false, false),
+        version if version == POLICY_MAGIC => (true, true, false),
+        version if version == WIDER_MAGIC => (true, true, true),
         _ => return Err(FirstTableIntentError::UnsupportedVersion),
     };
-    let expected_profile = if policies_version {
+    let expected_profile = if wider_version {
+        WIDER_CONSTRUCTION_PROFILE
+    } else if policies_version {
         POLICY_CONSTRUCTION_PROFILE
     } else if defaults_version {
         DEFAULT_CONSTRUCTION_PROFILE
@@ -326,6 +355,12 @@ pub(super) fn decode(
     let primary = cursor.name(usize::from(word(raw, PRIMARY_LENGTH_AT)))?;
     let mut columns = [CreateColumn::new("", ScalarType::Int32); MAX_COLUMNS];
     let mut defaults: [Option<carrier::Borrowed<'_>>; MAX_COLUMNS] = std::array::from_fn(|_| None);
+    let carriers = if wider_version {
+        Profile::Wider
+    } else {
+        Profile::Legacy
+    };
+    let mut found_wider_default = false;
     let mut found_policy = false;
     for (position, destination) in columns[..count].iter_mut().enumerate() {
         check(budget, cancelled)?;
@@ -350,6 +385,13 @@ pub(super) fn decode(
         }
         found_policy |= flags & (REQUIRED_PRESENT | ALLOW_EMPTY_PRESENT) != 0;
         if flags & DEFAULT_PRESENT != 0 {
+            let target = column(name, header)?.scalar_type();
+            if wider_default_target(target) {
+                if !wider_version {
+                    return Err(FirstTableIntentError::InvalidRecord);
+                }
+                found_wider_default = true;
+            }
             let default_header = cursor.take(DEFAULT_HEADER_BYTES)?;
             if default_header[1..4] != [0, 0, 0] {
                 return Err(FirstTableIntentError::InvalidRecord);
@@ -365,6 +407,7 @@ pub(super) fn decode(
             defaults[position] = Some(carrier::row_parse(
                 default_header[0],
                 payload,
+                carriers,
                 budget,
                 cancelled,
             )?);
@@ -387,7 +430,8 @@ pub(super) fn decode(
     if cursor.at != raw.len() {
         return Err(FirstTableIntentError::InvalidRecord);
     }
-    if policies_version && !found_policy
+    if wider_version && !found_wider_default
+        || policies_version && !wider_version && !found_policy
         || defaults_version && !policies_version && defaults.iter().all(Option::is_none)
     {
         return Err(FirstTableIntentError::InvalidRecord);

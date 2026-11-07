@@ -1,5 +1,6 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
-use super::{CompleteRows, NativeIntentError, Protocol, binding, carrier, names};
+use super::super::row_carrier as carrier;
+use super::{CompleteRows, NativeIntentError, Protocol, binding, names};
 use crate::{
     InspectError, RowInsert,
     header::check,
@@ -44,7 +45,7 @@ fn row_length(
     let mut length = ROW_HEADER_BYTES;
     for value in row.values() {
         check(budget, cancelled)?;
-        let encoded = carrier::row_view(value, protocol)?;
+        let encoded = carrier::row_view(value, protocol.carriers())?;
         carrier::pay_scan(encoded.bytes(), budget, cancelled)?;
         length = add(add(length, carrier::HEADER_BYTES)?, encoded.bytes().len())?;
     }
@@ -124,7 +125,7 @@ impl<'a> Cursor<'a> {
         }
         let length = self.u32()?;
         let bytes = self.take(length)?;
-        carrier::row_parse(header[0], bytes, protocol, budget, cancelled)
+        carrier::row_parse(header[0], bytes, protocol.carriers(), budget, cancelled)
     }
 
     fn finished(&self) -> bool {
@@ -273,7 +274,7 @@ impl CompleteRows {
             output.extend_from_slice(&(row.values().len() as u32).to_le_bytes());
             for value in row.values() {
                 check(budget, cancelled)?;
-                let encoded = carrier::row_view(value, protocol)?;
+                let encoded = carrier::row_view(value, protocol.carriers())?;
                 budget
                     .charge(Resource::Steps, carrier::HEADER_BYTES as u64)
                     .map_err(InspectError::from)?;

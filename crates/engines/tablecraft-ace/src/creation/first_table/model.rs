@@ -184,6 +184,11 @@ fn copy_default(value: &Value, budget: &mut ResourceBudget) -> Result<Value, Ins
     Ok(match value {
         Value::Text(text) => Value::Text(copy_name(text, budget)?),
         Value::Null => Value::Null,
+        Value::Byte(value) => Value::Byte(*value),
+        Value::Int16(value) => Value::Int16(*value),
+        Value::Single(value) => Value::Single(*value),
+        Value::Double(value) => Value::Double(*value),
+        Value::Decimal(value) => Value::Decimal(*value),
         Value::Boolean(value) => Value::Boolean(*value),
         Value::Int32(value) => Value::Int32(*value),
         Value::Int64(value) => Value::Int64(*value),

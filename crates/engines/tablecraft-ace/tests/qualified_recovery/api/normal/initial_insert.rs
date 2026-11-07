@@ -471,3 +471,6 @@ mod policies;
 
 #[path = "initial_insert/omission.rs"]
 mod omission;
+
+#[path = "initial_insert/numbers.rs"]
+mod numbers;

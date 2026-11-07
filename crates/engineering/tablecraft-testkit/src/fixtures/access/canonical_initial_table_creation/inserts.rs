@@ -1,7 +1,7 @@
 //! Literal first-row outcomes for independently authored initial declarations.
 use super::{Case, source};
 use crate::fixtures::access::{data_page, put16, put32};
-use tablecraft_core::values::Value;
+use tablecraft_core::values::{Decimal, Double, Guid, Single, Value};
 
 #[derive(Clone, Copy, Debug)]
 pub enum InsertCase {
@@ -62,7 +62,64 @@ pub fn first_insert(case: InsertCase) -> FirstInsert {
         ),
     };
     let before = source(declaration).bytes;
-    let mut after = before.clone();
+    let after = first_row_image(&before, record);
+
+    let mut row = vec![Value::Int32(1)];
+    row.extend(companion.clone());
+    FirstInsert {
+        declaration,
+        before,
+        after,
+        companion,
+        row,
+    }
+}
+
+/// All six newly admitted ordinary carriers in one literal native row.
+/// False selects non-NULL extremes, true the independent nullable outcome.
+pub fn number_companions(nulls: bool) -> (Vec<u8>, Vec<u8>, Vec<Value>) {
+    let before = super::number_companions().bytes;
+    let mut record = vec![7, 0, 1, 0, 0, 0];
+    let mut row = vec![Value::Int32(1)];
+    if nulls {
+        record.extend([0; 31]);
+        record.extend([37, 0, 37, 0, 1, 0, 1]);
+        row.extend([
+            Value::Null,
+            Value::Null,
+            Value::Null,
+            Value::Null,
+            Value::Null,
+            Value::Null,
+        ]);
+    } else {
+        // Byte MAX, Short MIN, Single minimum subnormal, Double negative zero,
+        // canonical GUID reordered into the native 4/2/2 little-endian fields.
+        record.extend([255, 0, 128, 1, 0, 0, 0]);
+        record.extend([0, 0, 0, 0, 0, 0, 0, 128]);
+        record.extend([
+            51, 34, 17, 0, 85, 68, 119, 102, 136, 153, 170, 187, 204, 221, 238, 255,
+        ]);
+        // Negative coefficient 123450, scale belongs to the declaration.
+        record.extend([128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 226, 1, 0]);
+        record.extend([54, 0, 37, 0, 1, 0, 127]);
+        row.extend([
+            Value::Byte(255),
+            Value::Int16(i16::MIN),
+            Value::Single(Single::from_bits(1)),
+            Value::Double(Double::from_bits(0x8000_0000_0000_0000)),
+            Value::Guid(Guid::from_bytes([
+                0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255,
+            ])),
+            Value::Decimal(Decimal::new(-123450, 4).unwrap()),
+        ]);
+    }
+    let after = first_row_image(&before, record);
+    (before, after, row)
+}
+
+fn first_row_image(before: &[u8], record: Vec<u8>) -> Vec<u8> {
+    let mut after = before.to_vec();
 
     // Declared membership, LAST and physical unique-key history each advance once.
     put32(&mut after, 7 * 4096 + 16, 1);
@@ -80,13 +137,5 @@ pub fn first_insert(case: InsertCase) -> FirstInsert {
     leaf[28] = 2;
     leaf[480..489].copy_from_slice(&[127, 128, 0, 0, 1, 0, 0, 8, 0]);
 
-    let mut row = vec![Value::Int32(1)];
-    row.extend(companion.clone());
-    FirstInsert {
-        declaration,
-        before,
-        after,
-        companion,
-        row,
-    }
+    after
 }

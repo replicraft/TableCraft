@@ -259,3 +259,29 @@ fn attach_properties(bytes: &mut [u8], property_bytes: &[u8]) {
     put16(&mut page, 2, (4096 - used) as u16);
     bytes[4 * 4096..5 * 4096].copy_from_slice(&page);
 }
+
+/// Attach literal caller-authored DefaultValue expression text to raw metadata.
+/// This deliberately neither formats typed values nor invokes an expression parser.
+pub fn with_default_expressions(mut bytes: Vec<u8>, defaults: &[(&str, &str)]) -> Vec<u8> {
+    if defaults.is_empty() {
+        return bytes;
+    }
+    let mut bag = b"MR2\0".to_vec();
+    bag.extend(block(128, &name("DefaultValue")));
+    for (column, expression) in defaults {
+        let label = name(column);
+        let mut body = (label.len() as u32 + 4).to_le_bytes().to_vec();
+        body.extend(label);
+        let text = expression
+            .encode_utf16()
+            .flat_map(u16::to_le_bytes)
+            .collect::<Vec<_>>();
+        body.extend((8_u16 + text.len() as u16).to_le_bytes());
+        body.extend([1, 12, 0, 0]);
+        body.extend((text.len() as u16).to_le_bytes());
+        body.extend(text);
+        bag.extend(block(1, &body));
+    }
+    attach_properties(&mut bytes, &bag);
+    bytes
+}

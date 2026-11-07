@@ -1,5 +1,5 @@
 //! Normal insertion planning and the existing fixed-length durable prepare path.
-use super::NativeClockInsertIntent;
+use super::{NativeClockInsertIntent, NativeIntentError};
 use crate::NativeOmittedInsertIntent;
 use crate::transaction::intent::RecoverableEditError;
 use crate::{
@@ -30,6 +30,9 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.ordinary_clock_insert.plan_recoverable").entered();
         let original =
             NativeOmittedInsertIntent::new(table, rows, self.as_bytes(), budget, cancelled)?;
+        if !original.is_legacy_profile() {
+            return Err(NativeIntentError::UnsupportedProfile.into());
+        }
         super::codec::length(original.encoded_length(budget, cancelled)?)?;
         // Original row/name/binding/envelope errors precede any needed callback.
         let (plan, reading) = self.capture_ordinary_clock_row_inserts(

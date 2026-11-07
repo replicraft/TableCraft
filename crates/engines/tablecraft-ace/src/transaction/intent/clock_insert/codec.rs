@@ -10,6 +10,10 @@ use tablecraft_expressions::functions::dates::clock::ClockReading;
 const MAGIC: &[u8; 8] = b"TCNA0005";
 const PREFIX: &[u8; 4] = b"TCNA";
 const PROFILE: u16 = 5;
+const ORIGINAL_MAGIC: &[u8; 8] = b"TCNA0002";
+const ORIGINAL_PROFILE: u16 = 2;
+const ORIGINAL_PROFILE_AT: usize = ORIGINAL_MAGIC.len() + size_of::<u32>();
+const ORIGINAL_PROFILE_END: usize = ORIGINAL_PROFILE_AT + size_of::<u16>();
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -146,7 +150,26 @@ impl NativeClockInsertIntent {
             }
             _ => return Err(NativeIntentError::InvalidRecord),
         };
-        let original = NativeOmittedInsertIntent::decode(&raw[HEADER_BYTES..], budget, cancelled)?;
+        // TCNA5 pins TCNA2's original row grammar. A newer omission-bearing
+        // record must not widen an existing execution envelope by delegation.
+        let nested = &raw[HEADER_BYTES..];
+        budget
+            .charge(Resource::Steps, ORIGINAL_PROFILE_END as u64)
+            .map_err(InspectError::from)?;
+        if nested.get(..ORIGINAL_MAGIC.len()) != Some(ORIGINAL_MAGIC.as_slice()) {
+            return Err(if nested.starts_with(PREFIX) {
+                NativeIntentError::UnsupportedVersion
+            } else {
+                NativeIntentError::InvalidRecord
+            });
+        }
+        let profile = nested
+            .get(ORIGINAL_PROFILE_AT..ORIGINAL_PROFILE_END)
+            .ok_or(NativeIntentError::InvalidRecord)?;
+        if u16::from_le_bytes(profile.try_into().unwrap()) != ORIGINAL_PROFILE {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
+        let original = NativeOmittedInsertIntent::decode(nested, budget, cancelled)?;
         Self::from_original(original, reading, budget, cancelled)
     }
 }

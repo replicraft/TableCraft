@@ -2,7 +2,10 @@
 use crate::{
     EditError, InsertFieldValue, InspectError, NativeColumn, NativeImage, OmittedRowInsert,
     RowInsert, TableProperties, TableSchema, WriteBlocker,
-    format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
+    format::data_type::{
+        BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC,
+        SHORT_BINARY, SHORT_TEXT, SINGLE,
+    },
     header::check,
     inspect_table_properties,
     table::mutation::{
@@ -53,6 +56,12 @@ pub(super) fn validate(
             let valid = matches!(
                 (field.native_type(), value),
                 (BOOLEAN, Value::Boolean(_))
+                    | (BYTE, Value::Byte(_) | Value::Null)
+                    | (INT16, Value::Int16(_) | Value::Null)
+                    | (SINGLE, Value::Single(_) | Value::Null)
+                    | (DOUBLE, Value::Double(_) | Value::Null)
+                    | (GUID, Value::Guid(_) | Value::Null)
+                    | (NUMERIC, Value::Decimal(_) | Value::Null)
                     | (INT32, Value::Int32(_) | Value::Null)
                     | (INT64, Value::Int64(_) | Value::Null)
                     | (CURRENCY, Value::Currency(_) | Value::Null)
@@ -60,7 +69,12 @@ pub(super) fn validate(
                     | (SHORT_TEXT, Value::Text(_) | Value::Null)
                     | (SHORT_BINARY, Value::Binary(_) | Value::Null)
             );
-            if !valid {
+            let finite = match value {
+                Value::Single(value) => f32::from_bits(value.to_bits()).is_finite(),
+                Value::Double(value) => f64::from_bits(value.to_bits()).is_finite(),
+                _ => true,
+            };
+            if !valid || !finite {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
             if schema.layout.physical_indexes > 1 {

@@ -1,8 +1,7 @@
 //! Exact original complete-row data shared by closed TCNA1, TCNA3 and TCNA4 families.
-mod carrier;
 mod codec;
 
-use super::{NativeIntentError, binding, model as names};
+use super::{NativeIntentError, binding, model as names, row_carrier::Profile};
 use crate::{InspectError, RowInsert, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
@@ -15,6 +14,13 @@ pub(super) enum Protocol {
 }
 
 impl Protocol {
+    const fn carriers(self) -> Profile {
+        match self {
+            Self::Complete => Profile::Wider,
+            Self::Existing | Self::Eof => Profile::Legacy,
+        }
+    }
+
     const fn magic(self) -> &'static [u8; 8] {
         match self {
             Self::Existing => b"TCNA0001",

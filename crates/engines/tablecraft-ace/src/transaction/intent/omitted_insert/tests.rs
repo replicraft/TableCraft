@@ -4,8 +4,10 @@ use crate::{InsertFieldValue, InspectError, NativeInsertIntent, OmittedRowInsert
 use std::{array, cell::Cell};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::{Currency, LegacyDateTime, Value},
+    values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single, Value},
 };
+
+use tablecraft_testkit::fixtures::access::tcna2;
 
 const POOLS: [Resource; 2] = [Resource::Bytes, Resource::Steps];
 
@@ -253,5 +255,46 @@ fn encode_and_decode_pay_exact_metadata_pools_and_cancel_at_the_actual_final_pol
             ));
             assert_eq!(seen.get(), stop);
         }
+    }
+}
+
+#[test]
+fn wider_original_presence_uses_distinct_closed_protocol_and_independent_tags() {
+    let values = [
+        Value::Byte(255),
+        Value::Int16(i16::MIN),
+        Value::Single(Single::from_bits(1)),
+        Value::Double(Double::from_bits(0x8000_0000_0000_0000)),
+        Value::Guid(Guid::from_bytes([0x11; 16])),
+        Value::Decimal(Decimal::new(-123450, 4).unwrap()),
+    ];
+    let mut fields = vec![InsertFieldValue::Omitted];
+    fields.extend(values.iter().cloned().map(InsertFieldValue::Supplied));
+    let intent = NativeOmittedInsertIntent::new(
+        "Defaults",
+        vec![OmittedRowInsert::new(fields)],
+        b"original",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut original = vec![None];
+    original.extend(values.iter().cloned().map(Some));
+    let binding = literal()[24..56].try_into().unwrap();
+    let expected = tcna2::wider_presence_wire("Defaults", 8, binding, vec![original]);
+    let raw = intent.encode(&mut budget(), &|| false).unwrap();
+    assert_eq!(raw, expected);
+    let decoded = NativeOmittedInsertIntent::decode(&raw, &mut budget(), &|| false).unwrap();
+    assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), raw);
+    for (original, decoded) in values.iter().zip(&decoded.rows()[0].values()[1..]) {
+        assert!(matches!(decoded, InsertFieldValue::Supplied(value) if value == original));
+    }
+    for (offset, byte) in [(7, b'2'), (12, 2), (84, 8), (92, 14), (93, 1)] {
+        let mut invalid = raw.clone();
+        invalid[offset] = byte;
+        assert!(
+            NativeOmittedInsertIntent::decode(&invalid, &mut budget(), &|| false).is_err(),
+            "offset {offset}"
+        );
     }
 }

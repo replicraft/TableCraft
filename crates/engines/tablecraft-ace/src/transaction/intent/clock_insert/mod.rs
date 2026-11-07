@@ -47,6 +47,9 @@ impl NativeClockInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
+        if !original.is_legacy_profile() {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
         codec::length(original.encoded_length(budget, cancelled)?)?;
         let reading = reading
             .map(|value| {

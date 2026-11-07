@@ -1,12 +1,20 @@
-//! Literal TCNA5 execution envelope; no native source, resolver or provider calls.
+//! Literal TCNA5 framing and early rejection before native qualification or provider calls.
 use super::{NativeClockInsertIntent, NativeIntentError};
-use crate::{InsertFieldValue, InspectError, NativeOmittedInsertIntent, OmittedRowInsert};
-use std::cell::Cell;
+use crate::{
+    InsertFieldValue, InspectError, NativeImage, NativeOmittedInsertIntent, OmittedRowInsert,
+    RecoverableEditError,
+};
+use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
-    values::{ExtendedDateTime, Value},
+    values::{Decimal, Double, ExtendedDateTime, Guid, Single, Value},
 };
-use tablecraft_expressions::functions::dates::clock::ClockReading;
+use tablecraft_expressions::{
+    EvalError,
+    functions::dates::clock::{Clock, ClockReading},
+};
+use tablecraft_model::CatalogScope;
+use tablecraft_testkit::fixtures::access::{canonical_blank_creation, tcna2::wider_presence_wire};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000, 0, 1_000_000)
@@ -176,4 +184,104 @@ fn complete_envelope_decode_pays_exact_pools_and_polls_entry_middle_terminal_can
         ));
         assert_eq!(seen.get(), stop);
     }
+}
+
+#[test]
+fn wider_original_carriers_cannot_be_constructed_inside_the_legacy_clock_envelope() {
+    let values = [
+        Value::Byte(24),
+        Value::Int16(-24),
+        Value::Single(Single::from_bits(0x8000_0000)),
+        Value::Double(Double::from_bits(1)),
+        Value::Guid(Guid::from_bytes([0x24; 16])),
+        Value::Decimal(Decimal::new(24, 2).unwrap()),
+    ];
+    for value in values {
+        for present in [false, true] {
+            let rows = vec![OmittedRowInsert::new(vec![
+                InsertFieldValue::Supplied(value.clone()),
+                InsertFieldValue::Omitted,
+                InsertFieldValue::Supplied(Value::Null),
+            ])];
+            assert!(matches!(
+                NativeClockInsertIntent::new(
+                    "Defaults",
+                    rows,
+                    b"original",
+                    present.then(reading),
+                    &mut budget(),
+                    &|| false,
+                ),
+                Err(NativeIntentError::UnsupportedProfile)
+            ));
+        }
+    }
+}
+
+#[test]
+fn a_well_framed_tcna6_record_cannot_be_nested_in_tcna5_or_allocate_decoded_rows() {
+    let nested = wider_presence_wire(
+        "Defaults",
+        8,
+        [0; 32],
+        vec![vec![Some(Value::Byte(24)), None, Some(Value::Null)]],
+    );
+    // Independent fixture bytes qualify as a standalone TCNA6 record. The
+    // failure below belongs to the legacy clock envelope, not malformed rows.
+    NativeOmittedInsertIntent::decode(&nested, &mut budget(), &|| false).unwrap();
+    for present in [false, true] {
+        let mut raw = literal(present)[..32].to_vec();
+        raw.extend_from_slice(&nested);
+        let length = raw.len() as u32;
+        raw[8..12].copy_from_slice(&length.to_le_bytes());
+        let mut no_allocations = ResourceBudget::new(0, 0, 1_000_000);
+        assert!(matches!(
+            NativeClockInsertIntent::decode(&raw, &mut no_allocations, &|| false),
+            Err(NativeIntentError::UnsupportedVersion)
+        ));
+        assert_eq!(no_allocations.remaining(Resource::Bytes), 0);
+
+        let mut wrong_profile = literal(present);
+        wrong_profile[44..46].copy_from_slice(&6_u16.to_le_bytes());
+        assert!(matches!(
+            NativeClockInsertIntent::decode(&wrong_profile, &mut no_allocations, &|| false),
+            Err(NativeIntentError::UnsupportedProfile)
+        ));
+    }
+}
+
+#[test]
+fn recoverable_clock_planning_rejects_a_wider_original_before_source_or_clock_work() {
+    struct ForbiddenClock;
+
+    impl Clock for ForbiddenClock {
+        fn read(&self) -> Result<ClockReading, EvalError> {
+            panic!("a refused original wire profile must not invoke a clock provider")
+        }
+    }
+
+    let before = canonical_blank_creation::source();
+    let mut work = ResourceBudget::new(100_000_000, 1_000_000, 100_000_000);
+    let image = NativeImage::capture(
+        &mut Cursor::new(&before),
+        CatalogScope::new(24),
+        &mut work,
+        &|| false,
+    )
+    .unwrap();
+    let rows = vec![OmittedRowInsert::new(vec![InsertFieldValue::Supplied(
+        Value::Byte(24),
+    )])];
+    assert!(matches!(
+        image.plan_recoverable_ordinary_clock_row_inserts(
+            "Defaults",
+            rows,
+            &ForbiddenClock,
+            &mut work,
+            &|| false,
+        ),
+        Err(RecoverableEditError::Intent(
+            NativeIntentError::UnsupportedProfile
+        ))
+    ));
 }

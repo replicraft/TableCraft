@@ -35,7 +35,8 @@ the existing retained filesystem journal pair and native V2 resizable journal:
 
 1. Encode the original schema intent before creating the fresh bundle: `TCNT0001`
    when defaults and policies are absent, `TCNT0002` for checked constant defaults
-   without policies, or `TCNT0003` when an explicit field policy is present.
+   without policies, `TCNT0003` when an explicit field policy is present, or
+   `TCNT0004` for any default on a newly supported Number/GUID target.
 2. Prepare the complete checked BEFORE/AFTER transaction against the same target.
 3. Commit the native resize/write operation once.
 4. Retire the acknowledged journal and follow the actual platform cleanup policy,
@@ -77,11 +78,40 @@ both optional Boolean policies alongside the same optional typed constant defaul
 It is emitted only when at least one policy is explicitly present, including an
 explicit false. Profiles 1 and 2 keep their original wire encoding and reconstructed
 native bytes; their records do not acquire inferred policies during recovery.
-All three profiles retain the same canonical original binding and fresh AFTER
+The original three profiles retain the same canonical original binding and fresh AFTER
 reconstruction. None executes a default expression or generates an initial record.
 
+Wider-default `TCNT0004` uses construction profile 4. It preserves the same
+canonical BEFORE, declarations and optional policy bits, while accepting Byte,
+Int16, finite Single/Double and exact declared Decimal defaults. An ordinary GUID
+can retain an explicit NULL default; non-NULL GUID DefaultValue expressions remain
+unqualified. Version 4 is selected when any default, including NULL, targets one
+of those newly supported families. Merely declaring a wider field without a
+default still uses the older applicable version. Profiles 2 and 3 continue to
+reject defaults on those targets, even NULL: their original constructor did not
+accept them, so recovery cannot silently enlarge their closed language. Version 4
+without a wider-target default refuses.
+
+These schema-intent changes do not widen the existing TCNA5 clock envelope.
+It retains nested TCNA2 only: construction and recoverable planning reject wider
+original supplied carriers before native qualification or clock callbacks, and
+decode checks the nested version/profile before allocating rows. TCNA6 cannot
+be nested in TCNA5. Legacy omitted/NULL original fields remain possible even
+when their native target declarations are wider; fresh source qualification still
+decides admission. There is no new clock-intent version.
+
+V4 value tags 8/9/10/11/12/13 retain Byte/Int16/Single/Double/GUID/Decimal payloads
+respectively. GUID non-NULL payloads are still rejected by declaration validation.
+Single and Double payloads preserve exact IEEE bits; Decimal retains its signed
+coefficient and scale. Float default text uses bounded scientific notation, with
+finite and exact bit-roundtrip checks, including signed zero and subnormals.
+Decimal declaration validation requires the exact declared scale and precision;
+no default-value rounding or implicit rescaling occurs. Rendered native expressions
+retain the existing 255-UTF-16-unit ceiling. These are checked constructive rules,
+not native Access parity evidence for every floating-point boundary.
+
 The eight-byte per-field header retains its existing layout. Profile 3 uses its
-flags byte as follows:
+flags byte as follows (V4 preserves these policy bits):
 
 | Bit | Meaning |
 | --- | --- |
@@ -94,7 +124,8 @@ flags byte as follows:
 A present policy with its value bit clear is explicitly false. Unknown bits,
 value bits without presence, any flags on the generated primary, AllowZeroLength
 on a non-Text field, mismatched version/profile pairs and profile 3 records with
-no policies refuse. Profiles 1 and 2 retain their narrower flag rules. Constant
+no policies refuse. Profile 4 requires a wider-target default instead of requiring
+a policy. Profiles 1 and 2 retain their narrower flag rules. Constant
 defaults keep the existing carrier checks and 255-UTF-16-unit rendered-expression
 ceiling, including quoting and escaping; policies do not relax that bound.
 

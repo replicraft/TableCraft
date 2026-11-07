@@ -60,6 +60,23 @@ const NULLABLE_COMPANIONS: [Column; 3] = [
     fixed("Score", 4, 4, 4),
     variable("Name", 10, 40, 0),
 ];
+const NUMBER_COMPANIONS: [Column; 7] = [
+    fixed("Id", 4, 0, 4),
+    fixed("ByteValue", 2, 4, 1),
+    fixed("ShortValue", 3, 5, 2),
+    fixed("SingleValue", 6, 7, 4),
+    fixed("DoubleValue", 7, 11, 8),
+    fixed("GuidValue", 15, 19, 16),
+    Column {
+        name: "DecimalValue",
+        native_type: 16,
+        fixed_offset: None,
+        width: 17,
+        variable_index: 0,
+        precision: 18,
+        scale: 4,
+    },
+];
 const MIXED: [Column; 14] = [
     fixed("Id", 4, 0, 4),
     fixed("Flag", 1, 0, 0),
@@ -106,6 +123,11 @@ pub fn source(case: Case) -> Source {
 /// A supplied LONG can accompany an omitted nullable Text field without defaults.
 pub fn nullable_companions() -> Source {
     encode_columns(&NULLABLE_COMPANIONS)
+}
+
+/// Ordinary Number storage, independent of production declarations or codecs.
+pub fn number_companions() -> Source {
+    encode_columns(&NUMBER_COMPANIONS)
 }
 
 fn encode_columns(columns: &'static [Column]) -> Source {

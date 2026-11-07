@@ -1,5 +1,6 @@
 //! Bounded literal defaults and separately authorized Date()/Now() binding.
 mod date;
+mod floating;
 
 use crate::{EditError, InspectError, NativeColumn, WriteBlocker, header::check};
 use tablecraft_core::{
@@ -124,6 +125,9 @@ fn assign(
         Expression::DateLiteral(text) => date::resolve(column, &text, budget, cancelled),
         Expression::Boolean(_) | Expression::Text(_) => {
             Err(EditError::Unsupported(WriteBlocker::Column))
+        }
+        expression if matches!(kind, ScalarType::Single | ScalarType::Double) => {
+            floating::resolve(&expression, kind, false, budget, cancelled)
         }
         expression => {
             let (coefficient, scale) = number(&expression, false, budget, cancelled)?;

@@ -1,5 +1,6 @@
 //! Audit literal projection is independent of producer assignment/rescale code.
 mod date;
+mod floating;
 
 use crate::{
     EditError, InspectError, NativeColumn, WriteBlocker, header::check,
@@ -110,6 +111,11 @@ pub(in crate::table::mutation) fn derive(
             }
             _ => break,
         }
+    }
+    if matches!(kind, ScalarType::Single | ScalarType::Double)
+        && !matches!(expression, Expression::Null)
+    {
+        return floating::derive(&expression, kind, sign < 0, budget, cancelled);
     }
     let (coefficient, scale) = match expression {
         Expression::Null if !numeric_unary => return Ok(Value::Null),

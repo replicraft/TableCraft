@@ -1,17 +1,28 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
+use super::super::row_carrier::{self as carrier, Profile};
 use super::{NativeIntentError, NativeOmittedInsertIntent, binding, names};
 use crate::{
     InsertFieldValue, InspectError, OmittedRowInsert,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
-    transaction::intent::fitted::carrier,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCNA0002";
 const PREFIX: &[u8; 4] = b"TCNA";
 const PROFILE: u16 = 2;
-const OMITTED_TAG: u8 = 8;
+const WIDER_MAGIC: &[u8; 8] = b"TCNA0006";
+const WIDER_PROFILE: u16 = 6;
+
+impl Profile {
+    const fn omitted_tag(self) -> u8 {
+        match self {
+            Self::Legacy => 8,
+            Self::Wider => 14,
+        }
+    }
+}
+
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -34,6 +45,7 @@ fn add(length: usize, extra: usize) -> Result<usize, NativeIntentError> {
 
 fn row_length(
     row: &OmittedRowInsert,
+    profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
@@ -45,7 +57,7 @@ fn row_length(
         check(budget, cancelled)?;
         length = add(length, carrier::HEADER_BYTES)?;
         if let InsertFieldValue::Supplied(value) = field {
-            let encoded = carrier::row_view(value)?;
+            let encoded = carrier::row_view(value, profile)?;
             carrier::pay_scan(encoded.bytes(), budget, cancelled)?;
             length = add(length, encoded.bytes().len())?;
         }
@@ -56,6 +68,7 @@ fn row_length(
 pub(super) fn validate_requests(
     name_bytes: usize,
     rows: &[OmittedRowInsert],
+    profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
@@ -70,7 +83,7 @@ pub(super) fn validate_requests(
         if Some(row.values().len()) != width {
             return Err(NativeIntentError::InvalidRecord);
         }
-        total = add(total, row_length(row, budget, cancelled)?)?;
+        total = add(total, row_length(row, profile, budget, cancelled)?)?;
     }
     check(budget, cancelled)?;
     Ok(total)
@@ -111,6 +124,7 @@ impl<'a> Cursor<'a> {
 
     fn cell(
         &mut self,
+        profile: Profile,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Option<carrier::Borrowed<'a>>, NativeIntentError> {
@@ -124,14 +138,14 @@ impl<'a> Cursor<'a> {
         }
         let length = self.u32()?;
         let bytes = self.take(length)?;
-        if header[0] == OMITTED_TAG {
+        if header[0] == profile.omitted_tag() {
             return if bytes.is_empty() {
                 Ok(None)
             } else {
                 Err(NativeIntentError::InvalidRecord)
             };
         }
-        carrier::row_parse(header[0], bytes, budget, cancelled).map(Some)
+        carrier::row_parse(header[0], bytes, profile, budget, cancelled).map(Some)
     }
 
     fn finished(&self) -> bool {
@@ -141,6 +155,7 @@ impl<'a> Cursor<'a> {
 
 struct Framing<'a> {
     table: &'a str,
+    profile: Profile,
     rows: &'a [u8],
     count: usize,
     before_length: u64,
@@ -156,13 +171,17 @@ fn preflight<'a>(
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&raw.len()) {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if &raw[..MAGIC.len()] != MAGIC {
-        return Err(if raw.starts_with(PREFIX) {
-            NativeIntentError::UnsupportedVersion
-        } else {
-            NativeIntentError::InvalidRecord
-        });
-    }
+    let (profile, expected_number) = match &raw[..MAGIC.len()] {
+        version if version == MAGIC => (Profile::Legacy, PROFILE),
+        version if version == WIDER_MAGIC => (Profile::Wider, WIDER_PROFILE),
+        _ => {
+            return Err(if raw.starts_with(PREFIX) {
+                NativeIntentError::UnsupportedVersion
+            } else {
+                NativeIntentError::InvalidRecord
+            });
+        }
+    };
     budget
         .charge(Resource::Steps, HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
@@ -173,7 +192,7 @@ fn preflight<'a>(
     {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != PROFILE {
+    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != expected_number {
         return Err(NativeIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
@@ -204,7 +223,7 @@ fn preflight<'a>(
         }
         width = Some(values);
         for _ in 0..values {
-            row.cell(budget, cancelled)?;
+            row.cell(profile, budget, cancelled)?;
         }
         if !row.finished() {
             return Err(NativeIntentError::InvalidRecord);
@@ -216,6 +235,7 @@ fn preflight<'a>(
     check(budget, cancelled)?;
     Ok(Framing {
         table,
+        profile,
         rows,
         count,
         before_length,
@@ -246,7 +266,9 @@ impl NativeOmittedInsertIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
-        let length = validate_requests(self.table().len(), self.rows(), budget, cancelled)?;
+        let profile = self.profile;
+        let length =
+            validate_requests(self.table().len(), self.rows(), profile, budget, cancelled)?;
         budget
             .charge_allocation(length as u64, 1)
             .map_err(InspectError::from)?;
@@ -257,9 +279,20 @@ impl NativeOmittedInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(if profile == Profile::Wider {
+            WIDER_MAGIC
+        } else {
+            MAGIC
+        });
         output.extend_from_slice(&(length as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(
+            &(if profile == Profile::Wider {
+                WIDER_PROFILE
+            } else {
+                PROFILE
+            })
+            .to_le_bytes(),
+        );
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -269,7 +302,7 @@ impl NativeOmittedInsertIntent {
         copy(&mut output, self.table().as_bytes(), budget, cancelled)?;
         for row in self.rows() {
             check(budget, cancelled)?;
-            let length = row_length(row, budget, cancelled)?;
+            let length = row_length(row, profile, budget, cancelled)?;
             budget
                 .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
                 .map_err(InspectError::from)?;
@@ -282,12 +315,12 @@ impl NativeOmittedInsertIntent {
                     .map_err(InspectError::from)?;
                 match field {
                     InsertFieldValue::Omitted => {
-                        output.extend_from_slice(&[OMITTED_TAG, 0, 0, 0]);
+                        output.extend_from_slice(&[profile.omitted_tag(), 0, 0, 0]);
                         output.extend_from_slice(&0_u32.to_le_bytes());
                     }
                     InsertFieldValue::Supplied(value) => {
-                        let encoded = carrier::row_view(value)?;
-                        output.extend_from_slice(&[encoded.tag, 0, 0, 0]);
+                        let encoded = carrier::row_view(value, profile)?;
+                        output.extend_from_slice(&[encoded.tag(), 0, 0, 0]);
                         output.extend_from_slice(&(encoded.bytes().len() as u32).to_le_bytes());
                         copy(&mut output, encoded.bytes(), budget, cancelled)?;
                     }
@@ -305,6 +338,7 @@ impl NativeOmittedInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         let frame = preflight(raw, budget, cancelled)?;
+        let profile = frame.profile;
         let table = names::copy_name(frame.table, budget)?;
         budget
             .charge_allocation(frame.count as u64, size_of::<OmittedRowInsert>() as u64)
@@ -330,7 +364,7 @@ impl NativeOmittedInsertIntent {
                 .try_reserve_exact(count)
                 .map_err(|_| InspectError::Allocation)?;
             for _ in 0..count {
-                let field = match row.cell(budget, cancelled)? {
+                let field = match row.cell(profile, budget, cancelled)? {
                     None => InsertFieldValue::Omitted,
                     Some(value) => {
                         InsertFieldValue::Supplied(carrier::owned(value, budget, cancelled)?)
@@ -346,6 +380,7 @@ impl NativeOmittedInsertIntent {
             rows,
             before_length: frame.before_length,
             before_binding: frame.before_binding,
+            profile,
         })
     }
 }

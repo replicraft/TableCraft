@@ -2,12 +2,14 @@
 
 Normal omitted-field INSERT generates checked Int32 Increment values from a
 qualified native declaration. Typed/SQL sessions and CLI journal insertion use
-the connected native planner; no caller permission flag or new intent version
-is involved.
+the connected native planner; no caller permission flag grants generation.
 
 The generated field is found at its actual declared position. Ordinary companions
-can use the implemented Boolean, Int32, Int64, Currency, legacy Date, Short Text
-and Short Binary carriers, with NULL only where representable. Complete dense
+can use Boolean, Byte, Int16, Int32, Int64, finite Single/Double, Currency,
+Decimal, legacy Date, ordinary GUID, Short Text and Short Binary carriers, with
+NULL only where representable. Decimal input must exactly match declared precision
+and retained scale; no rounding or implicit rescaling occurs. Ordinary GUID values
+are supplied storage values, not replication or random-ID generation. Complete dense
 field layout and fixed/variable spans must qualify. An ascending required unique
 primary root leaf remains required. A separate qualified multiple-owner profile
 also retains present manual Int32 ascending secondary leaves. Logical aliases
@@ -54,10 +56,10 @@ writes the fitted DATA rows, actual primary owner, counters and LAST. Separate
 proof rebinds original presence, derives signed values with wider arithmetic,
 reconstructs DATA and INDEX changes independently, compares the whole image and
 recaptures final Source. It consumes no staged rows, prepared keys or producer
-counter vector. TCNA2 and checked V1 recovery retain the original intent, without
+counter vector. TCNA2/TCNA6 and checked V1 recovery retain the original intent, without
 random providers or generation inference during replay. Companion defaults are
 reread from the original image by the producer and independently derived during
-proof; TCNA2 retains the user’s original omission rather than storing a fabricated
+proof; the intent retains the user’s original omission rather than storing a fabricated
 supplied value. Recovery reconstructs the same operation against its full bound
 source.
 
@@ -69,8 +71,8 @@ and constraints on omitted literal defaults. Producer expansion and independent
 proof reread actual source declarations; final Source constraint checks run before
 a qualified plan can be returned. These local headless cases do not establish
 native Access or another platform's filesystem behavior. First-table schema
-policies use [TCNT0003](FIRST_TABLE_PERSISTENCE.md); row INSERT continues to use
-the unchanged TCNA2 protocol.
+policies use [TCNT0003](FIRST_TABLE_PERSISTENCE.md); the historical narrow row
+INSERT cases retain their unchanged TCNA2 protocol.
 
 The nullable-absence follow-up aligns generated companions with the existing
 ordinary omission resolver. It compares absent-default INSERTs against complete
@@ -88,6 +90,41 @@ supplied/omitted presence rather than resolved row values. Previously accepted
 supplied/default-bearing generated requests keep the same resulting bytes; newly
 admitted nullable omissions reconstruct their NULL from the same full bound source.
 See Microsoft's [INSERT INTO omitted-field contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql).
+
+The wider Number follow-up selects `TCNA0006`/profile 6 only when an original
+supplied value uses Byte, Int16, Single, Double, GUID or Decimal. Legacy scalar
+payload tags remain unchanged; wider tags 8 through 13 match the complete-row
+TCNA4 carrier grammar, and omission uses tag 14. TCNA2 retains omission tag 8 and
+its original closed payload grammar. Merely targeting a wider field does not
+require TCNA6: omitted or explicitly NULL wider fields can remain TCNA2.
+TCNA5 remains the existing clock-input envelope over nested TCNA2 only. Its
+constructor and recoverable planner reject wider original supplied carriers before
+native qualification or any clock-provider callback. Decode checks the nested
+TCNA2 magic and profile before allocating decoded rows; nesting TCNA6 does not
+extend the older envelope. This restriction concerns original request grammar,
+not native target types: omitted and explicitly NULL wider fields can still use
+TCNA2 inside TCNA5 when freshly qualified. No new clock version is introduced.
+Recovery selects the original-presence decoder once, validates
+its exact version/profile, then reconstructs generation and defaults from the
+full bound BEFORE image. No decoder fallback grants admission.
+
+Wider typed constants support Byte, Int16, finite Single/Double and exact declared
+Decimal defaults. Ordinary GUID supports supplied values, genuine nullable
+absence and explicit NULL defaults; non-NULL GUID literal DefaultValue expressions
+remain unqualified. Float constants use bounded scientific text and exact bit
+roundtrips, with an independent proof parser preserving unary negative zero.
+Present malformed, overflowing or executable expressions never fall back to NULL.
+The same source, required-program, field-policy and complete-image proof gates
+remain mandatory. Existing secondary-key eligibility remains present Int32 only;
+nonindexed wider companions do not enlarge the admitted index-key families.
+First-table wider defaults use [TCNT0004](FIRST_TABLE_PERSISTENCE.md), leaving
+older schema-intent grammars unchanged.
+
+Focused independent fixtures define the complete wider-field native BEFORE/AFTER
+images and original-presence wire bytes. New cases cover supplied values, nullable
+omissions, typed refusal, exact scale, nonfinite rejection, default precedence and
+committed/interrupted recovery. These are headless qualification cases; their
+execution results and native Windows/Access comparisons are separate evidence.
 
 The initial two-Int32 route retains its
 [execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).

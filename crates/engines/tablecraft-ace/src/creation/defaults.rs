@@ -1,5 +1,6 @@
 //! Bounded canonical constant declarations, without an expression evaluator.
 mod date;
+mod numeric;
 
 use super::CreateDatabaseError;
 use crate::header::check;
@@ -28,6 +29,12 @@ impl Literal {
             Value::Null => Self::word(b"Null", budget, cancelled),
             Value::Boolean(true) => Self::word(b"True", budget, cancelled),
             Value::Boolean(false) => Self::word(b"False", budget, cancelled),
+            Value::Byte(value) => Self::number(i64::from(*value), false, budget, cancelled),
+            Value::Int16(value) => Self::number(i64::from(*value), false, budget, cancelled),
+            Value::Single(_) | Value::Double(_) | Value::Decimal(_) => {
+                let literal = numeric::Number::capture(value, budget, cancelled)?;
+                Self::word(literal.bytes(), budget, cancelled)
+            }
             Value::Int32(value) => Self::number(i64::from(*value), false, budget, cancelled),
             Value::Int64(value) => Self::number(*value, false, budget, cancelled),
             Value::Currency(value) => Self::number(value.scaled(), true, budget, cancelled),

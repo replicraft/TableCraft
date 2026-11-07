@@ -131,8 +131,8 @@ impl<'a> CreateColumn<'a> {
         Ok(self)
     }
 
-    /// Declare an exact constant default for Boolean, Int32, Int64, Currency,
-    /// reversible legacy Date or sized Short Text. Nullable families accept NULL.
+    /// Declare an exact typed scalar constant default. Nullable supported families
+    /// accept NULL; ordinary GUID currently accepts only an explicit NULL default.
     ///
     /// This metadata never replaces a supplied value. Date declaration formatting
     /// must preserve every original bit or preparation refuses before publication.
@@ -143,6 +143,24 @@ impl<'a> CreateColumn<'a> {
         }
         let compatible = match self.declaration {
             Declaration::Fixed(ScalarType::Boolean) => matches!(value, Value::Boolean(_)),
+            Declaration::Fixed(ScalarType::Byte) => matches!(value, Value::Byte(_) | Value::Null),
+            Declaration::Fixed(ScalarType::Int16) => matches!(value, Value::Int16(_) | Value::Null),
+            Declaration::Fixed(ScalarType::Single) => match value {
+                Value::Null => true,
+                Value::Single(value) => f32::from_bits(value.to_bits()).is_finite(),
+                _ => false,
+            },
+            Declaration::Fixed(ScalarType::Double) => match value {
+                Value::Null => true,
+                Value::Double(value) => f64::from_bits(value.to_bits()).is_finite(),
+                _ => false,
+            },
+            Declaration::Fixed(ScalarType::Guid) => matches!(value, Value::Null),
+            Declaration::Decimal(constraints) => match value {
+                Value::Null => true,
+                Value::Decimal(value) => constraints.validate(*value).is_ok(),
+                _ => false,
+            },
             Declaration::Fixed(ScalarType::Int32) => matches!(value, Value::Int32(_) | Value::Null),
             Declaration::Fixed(ScalarType::Int64) => matches!(value, Value::Int64(_) | Value::Null),
             Declaration::Fixed(ScalarType::Currency) => {

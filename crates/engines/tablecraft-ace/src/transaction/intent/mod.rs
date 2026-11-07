@@ -36,6 +36,7 @@ pub use omitted_insert::{
 
 mod complete_insert;
 mod eof_insert;
+mod row_carrier;
 pub use eof_insert::{
     NativeEofInsertIntent, QualifiedNativeEofInsertRecovery, RecoverableNativeEofInsertPlan,
     RecoverableNativeInsertOperation, qualify_native_eof_insert_recovery,

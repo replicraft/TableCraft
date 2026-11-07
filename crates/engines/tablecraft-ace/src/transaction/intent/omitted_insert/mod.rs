@@ -9,7 +9,7 @@ mod tests;
 pub use planning::RecoverableNativeOmittedInsertPlan;
 pub use recovery::{QualifiedNativeOmittedInsertRecovery, qualify_native_omitted_insert_recovery};
 
-use super::{NativeIntentError, binding, model as names};
+use super::{NativeIntentError, binding, model as names, row_carrier::Profile};
 use crate::{InspectError, OmittedRowInsert, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
@@ -21,6 +21,7 @@ pub struct NativeOmittedInsertIntent {
     rows: Vec<OmittedRowInsert>,
     before_length: u64,
     before_binding: [u8; 32],
+    profile: Profile,
 }
 
 impl NativeOmittedInsertIntent {
@@ -40,7 +41,18 @@ impl NativeOmittedInsertIntent {
         let _span = tracing::debug_span!("native.omitted_insert_intent.capture").entered();
         check(budget, cancelled)?;
         names::validate_name(table, budget, cancelled)?;
-        codec::validate_requests(table.len(), &rows, budget, cancelled)?;
+        let mut profile = Profile::Legacy;
+        for row in &rows {
+            for field in row.values() {
+                check(budget, cancelled)?;
+                if let crate::InsertFieldValue::Supplied(value) = field
+                    && Profile::for_value(value) == Profile::Wider
+                {
+                    profile = Profile::Wider;
+                }
+            }
+        }
+        codec::validate_requests(table.len(), &rows, profile, budget, cancelled)?;
         let before_binding = binding::digest(before, budget, cancelled)?;
         let table = names::copy_name(table, budget)?;
         check(budget, cancelled)?;
@@ -49,7 +61,13 @@ impl NativeOmittedInsertIntent {
             rows,
             before_length: before.len() as u64,
             before_binding,
+            profile,
         })
+    }
+
+    /// Legacy envelopes must not acquire the wider supplied-carrier grammar.
+    pub(super) fn is_legacy_profile(&self) -> bool {
+        self.profile == Profile::Legacy
     }
 
     /// Exact original-presence wire size for a bounded execution-input envelope.
@@ -58,7 +76,13 @@ impl NativeOmittedInsertIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<usize, NativeIntentError> {
-        codec::validate_requests(self.table().len(), self.rows(), budget, cancelled)
+        codec::validate_requests(
+            self.table().len(),
+            self.rows(),
+            self.profile,
+            budget,
+            cancelled,
+        )
     }
 
     /// Canonical caller-supplied table name without implicit normalization.
