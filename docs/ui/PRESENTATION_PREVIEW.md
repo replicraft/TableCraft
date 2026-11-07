@@ -1,5 +1,26 @@
 # Presentation preview
 
+## Native graphical review resumed — 6 November 2026
+
+The user resumed native app-window checks. A fresh macOS desktop build was opened
+with the resource-free `query-design-wide` synthetic scene. The observed window
+was 2560×1696 pixels at 2×: 1280×820 logical content plus the native title bar.
+System theme initially selected dark. Home/Query Design proportions, the source
+cards, ruled grid, object tabs and File/Open/Options were reviewed; switching the
+synthetic host to light preserved the layout without overlapping controls.
+
+The native Font dropdown starts with the search input. Pasting `selawik` into
+that input reduced the installed-family catalog to Selawik. Formatting remains
+unavailable. This review used invented data and did not open or modify a database.
+
+The review tool exposed the Backstage controls but did not reliably expose the
+workspace accessibility tree or deliver direct typing/function keys. Native F6,
+Escape and full assistive-tool traversal are therefore unverified; headless key
+tests do not substitute for those observations. Later actions also encountered
+the tool's user-state-change guard, so no further native interaction was forced.
+Windows/Linux behavior, monitor transitions and native Access comparison remain
+unqualified. Earlier dated suspension records below retain their historical scope.
+
 ## Query Design keyboard panes and menus — 5 November 2026
 
 The shared designer exposes separate source-list and grid focus panes. F6 and
@@ -13,8 +34,9 @@ Escape returns to that editor. Focused text inputs have an explicit theme-accent
 outline that remains visible when the caret blinks off.
 
 The full UI gate passed all 269 cases. All 21 Query Design cases passed again in
-a focused follow-up covering the final focus-outline paint refinement. Earlier source tests exposed an arrow-focus
-reset; it was fixed before the full gate. The initial repeat fixture was corrected
+a focused follow-up covering the final focus-outline paint refinement. Earlier
+source tests exposed an arrow-focus reset; it was fixed before the full gate.
+The initial repeat fixture was corrected
 to establish a genuinely held key, since egui normalizes repeat from its key state.
 Strict UI all-target Clippy, formatting, dependency boundaries and documentation
 links passed. Desktop tests were not repeated; no public action or host contract

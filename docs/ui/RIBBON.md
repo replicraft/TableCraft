@@ -117,8 +117,8 @@ retains that input owner, Escape closes the catalog before the temporary strip,
 and outside record clicks or object switches dismiss stale presentation.
 
 The synthetic scenes `ribbon-collapsed` and `ribbon-temporary` share the ordinary
-workspace presentation and retain the same resource-free host. Native app-window
-verification remains suspended; use the offscreen renderer and headless tests.
+workspace presentation and retain the same resource-free host. Native graphical
+review resumed on 6 November 2026, alongside offscreen rendering and headless tests.
 
 ## Remaining qualification
 
