@@ -25,3 +25,13 @@ These original repository assets use the repository license. The complete local
 file/hash inventory is in PROVENANCE.json. The older Fluent subset and its MIT
 notice remain retained source material but are not embedded by the active icon
 module.
+
+For native packaging, the headless `tablecraft-ui` example
+`export_application_icons` rasterizes `application-light.svg` directly at nine
+sizes from 16 through 1024 pixels and emits PNG, ICO and ICNS files. Set
+`TABLECRAFT_ICON_DIR` to a fresh directory with an existing parent, then run
+`cargo run --offline --locked -p tablecraft-ui --example export_application_icons`.
+The generated images are build outputs; they do not change this source inventory
+or install application icons. Four decode/container tests pass, and Apple's
+`iconutil` independently extracts the generated ICNS. Offscreen review covered
+16/256-pixel PNGs and the extracted 1024-pixel image on 7 November 2026.
