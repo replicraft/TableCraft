@@ -11,3 +11,7 @@ query-sql-view = SQL 보기
 query-design-view = 디자인 보기
 
 query-mock-error = 쿼리 오류 시뮬레이션입니다. 이전 샘플 결과는 계속 표시됩니다. SQL을 실행하거나 데이터베이스를 열지 않았습니다.
+
+query-results-current = 결과가 이 SQL 초안과 일치합니다.
+query-results-previous = 이전 결과입니다. 이 SQL 초안을 실행하여 업데이트하세요.
+query-results-unknown = 표시된 결과는 이 SQL 초안과 연결되어 있지 않습니다.

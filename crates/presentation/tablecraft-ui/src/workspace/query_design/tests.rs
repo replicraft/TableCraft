@@ -46,6 +46,37 @@ fn result() -> Data {
 }
 
 #[test]
+fn scratch_result_cannot_borrow_a_retained_designs_freshness_revision() {
+    let mut state = state();
+    let request = state.query_design_request().unwrap();
+    let draft = state.query_design_draft().unwrap().clone();
+    assert!(!draft.columns.is_empty());
+    assert!(state.begin_query_design_build(request, draft, QueryDesignCompletion::Run, 1));
+    assert_eq!(
+        state.set_query_design_built(1, built(&state), metadata()),
+        Some(QueryDesignCompletion::Run)
+    );
+    assert!(state.begin_query_design_run(2));
+    assert!(state.set_query_design_results(2, result()));
+    assert!(!state.query_results_previous());
+    let design_sql = state.sql.clone();
+    assert!(matches!(state.query_result, ResultOrigin::Design(_)));
+
+    assert!(state.set_query_data(Some("SELECT 7".into()), result()));
+    assert!(matches!(state.query_result, ResultOrigin::Sql(_)));
+    assert_eq!(state.sql, design_sql);
+    assert!(!state.query_design_results_previous());
+    assert!(state.query_results_previous());
+    let mut harness = Harness::builder().build_ui_state(
+        |ui, state: &mut State| assert!(state.show(ui).is_empty()),
+        state,
+    );
+    harness.run_steps(3);
+    let previous = harness.state().localizer.text("query-results-previous");
+    assert!(harness.query_by_label(&previous).is_some());
+}
+
+#[test]
 fn build_failure_preserves_draft_and_run_requires_exact_instance_receipt() {
     let mut state = state();
     let original_sql = state.sql.clone();
@@ -79,7 +110,7 @@ fn build_failure_preserves_draft_and_run_requires_exact_instance_receipt() {
     assert!(state.query_data.is_none());
     let mut old_result = result();
     old_result.rows[0][0] = Cell::scalar("7");
-    assert!(state.set_query_data(old_result));
+    assert!(state.set_query_data(None, old_result));
     let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
     assert!(state.begin_query_design_run(4));
     let mut malformed = result();

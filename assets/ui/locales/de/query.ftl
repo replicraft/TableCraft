@@ -11,3 +11,7 @@ query-sql-view = SQL-Ansicht
 query-design-view = Entwurfsansicht
 
 query-mock-error = Simulierter Abfragefehler. Die bisherigen Beispieldaten bleiben sichtbar. Es wurde kein SQL ausgeführt und keine Datenbank geöffnet.
+
+query-results-current = Die Ergebnisse entsprechen diesem SQL-Entwurf.
+query-results-previous = Vorherige Ergebnisse. Führen Sie diesen SQL-Entwurf aus, um sie zu aktualisieren.
+query-results-unknown = Die angezeigten Ergebnisse sind diesem SQL-Entwurf nicht zugeordnet.

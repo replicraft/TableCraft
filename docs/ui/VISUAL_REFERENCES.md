@@ -17,6 +17,15 @@ from the database header or title alone. The screenshots include OS/VM chrome;
 that chrome does not belong in TableCraft's shared workspace. Account details
 are partly obscured and are not product content to reproduce.
 
+## SQL workspace qualification — 6 November 2026
+
+The retained reference inventory has no SQL-editor or query-results capture.
+Query Design screenshots establish QBE layout; the Totals references show table
+datasheets. Neither establishes SQL-editor spacing or result-provenance messages.
+The [SQL workspace](SQL_WORKSPACE.md) therefore records those surfaces as
+TableCraft adaptations, with scoped offscreen evidence in the
+[presentation record](PRESENTATION_PREVIEW.md#scratch-sql-result-ownership--6-november-2026).
+
 ## Published dialog references — 5 November 2026
 
 Four additional Microsoft Support images were fetched and opened headlessly. The

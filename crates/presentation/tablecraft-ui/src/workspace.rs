@@ -51,6 +51,7 @@ pub use totals::{
 use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
 use egui::Ui;
+use query::provenance::{PendingSql, ResultOrigin};
 use tablecraft_display::Options;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
@@ -272,6 +273,8 @@ pub struct State {
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,
+    query_result: ResultOrigin,
+    query_pending: Option<PendingSql>,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -363,17 +366,18 @@ impl State {
         true
     }
 
-    /// Publish a query result into the one scratch SQL object.
-    pub fn set_query_data(&mut self, mut data: Data) -> bool {
+    /// Publish a result and its captured submitted SQL into the scratch object.
+    /// `None` retains unknown-origin data without claiming draft equivalence.
+    pub fn set_query_data(&mut self, submitted_sql: Option<String>, mut data: Data) -> bool {
         if data.source_revision.is_some() || data.row_ordinals.is_some() {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return false;
         }
-        if !self.admit_object_data(&data) {
+        if !self.admit_query_data(&submitted_sql, &data) {
             return false;
         }
         self.prepare_display(&mut data);
-        if !self.admit_object_data(&data) || !self.adopt_sql_publication() {
+        if !self.admit_query_data(&submitted_sql, &data) || !self.adopt_sql_publication() {
             return false;
         }
 
@@ -382,6 +386,7 @@ impl State {
         self.invalidate_edit();
         self.query_selection.reset(&data);
         self.query_data = Some(data);
+        self.query_result = submitted_sql.map_or(ResultOrigin::Unknown, ResultOrigin::Sql);
         true
     }
 
@@ -720,7 +725,7 @@ mod tests {
         assert_eq!(state.visible_data().unwrap().table, "Customers");
         state.view = DocumentView::Query;
         assert!(state.visible_data().is_none());
-        state.set_query_data(data("Query result", 0));
+        state.set_query_data(None, data("Query result", 0));
         assert_eq!(state.visible_data().unwrap().table, "Query result");
         state.view = DocumentView::Table;
         let page = state.visible_data().unwrap();
@@ -844,13 +849,13 @@ mod selection_tests {
         let mut state = State::default();
         state.dismiss_backstage();
         state.set_table_data(data("old table"));
-        state.set_query_data(data("old query"));
+        state.set_query_data(None, data("old query"));
         assert_eq!(state.selected_cell_text(), Some("old table"));
         state.select_view(DocumentView::Query);
         assert_eq!(state.selected_cell_text(), Some("old query"));
         state.set_table_data(data("new table"));
         assert_eq!(state.selected_cell_text(), Some("old query"));
-        state.set_query_data(data("new query"));
+        state.set_query_data(None, data("new query"));
         assert_eq!(state.selected_cell_text(), Some("new query"));
         state.select_view(DocumentView::Design);
         assert!(state.selected_cell_text().is_none());

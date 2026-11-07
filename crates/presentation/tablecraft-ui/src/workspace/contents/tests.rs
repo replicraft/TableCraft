@@ -30,7 +30,7 @@ fn state() -> State {
         }]],
         has_more: false,
     });
-    state.set_query_data(data());
+    state.set_query_data(None, data());
     state.schema = Some(Schema {
         table: "Original table".into(),
         declared_rows: 101,

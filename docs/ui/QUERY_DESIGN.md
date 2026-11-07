@@ -34,6 +34,11 @@ Run displays Datasheet results for the scratch object. A pending or failed run
 retains previous results with a qualification message; it never treats those
 rows as the new draft's completed result.
 
+Results retain an explicit design origin and the validated submitted SQL, separate
+from scratch SQL results and their mutable editor draft. Switching views cannot
+reuse one origin's freshness witness for another. See the
+[SQL workspace contract](SQL_WORKSPACE.md) for shared retention and result labels.
+
 Switching existing SQL to Design explicitly imports it. Unsupported or
 nonrepresentable clauses refuse with a visible diagnosis while preserving the
 original SQL, prior draft and previous results. Import is not permission to

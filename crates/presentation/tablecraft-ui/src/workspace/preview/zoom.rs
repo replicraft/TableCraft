@@ -20,16 +20,20 @@ impl Preview {
                 })
                 .is_some()
         );
-        self.state.sql = "SELECT [Notes] FROM [Customers];".into();
-        self.state.set_query_data(Data {
-            row_ordinals: None,
-            source_revision: None,
-            table: "Query results".into(),
-            offset: 0,
-            columns: vec!["Notes".into()],
-            rows: vec![vec![Cell::scalar(text)]],
-            has_more: false,
-        });
+        let sql = "SELECT [Notes] FROM [Customers];";
+        self.state.sql = sql.into();
+        self.state.set_query_data(
+            Some(sql.into()),
+            Data {
+                row_ordinals: None,
+                source_revision: None,
+                table: "Query results".into(),
+                offset: 0,
+                columns: vec!["Notes".into()],
+                rows: vec![vec![Cell::scalar(text)]],
+                has_more: false,
+            },
+        );
         assert!(self.state.open_zoom_cell());
     }
 }

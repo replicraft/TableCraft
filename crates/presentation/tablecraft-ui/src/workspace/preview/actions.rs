@@ -171,7 +171,8 @@ impl Preview {
                 });
                 self.state.error = None;
                 if self.state.sql == fixtures::SQL {
-                    self.state.set_query_data(fixtures::query());
+                    self.state
+                        .set_query_data(Some(fixtures::SQL.into()), fixtures::query());
                 } else {
                     self.state.error =
                         Some(self.state.localizer.text("settings-mock-sql-disabled"));

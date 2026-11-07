@@ -10,6 +10,7 @@ mod sources;
 
 pub(in crate::workspace) use preferences::Preferences;
 
+use super::query::provenance::ResultOrigin;
 use super::{Action, DocumentView, ObjectKind, ObjectTab, State, click};
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignSource, DesignTableMetadata, MAX_DESIGN_COLUMNS, MAX_DESIGN_SOURCES,
@@ -448,7 +449,18 @@ impl State {
         if !valid {
             return false;
         }
-        if !self.set_query_data(data) {
+        let pending = self
+            .query_design
+            .session
+            .as_mut()
+            .expect("matching Design run")
+            .pending
+            .take()
+            .expect("validated pending run");
+        let PendingKind::Run { sql } = pending.kind else {
+            unreachable!("validated Design run");
+        };
+        if !self.set_query_data(Some(sql), data) {
             let message = self
                 .error
                 .clone()
@@ -467,6 +479,9 @@ impl State {
         session.pending = None;
         session.error = None;
         session.result_revision = Some(session.revision);
+        if let ResultOrigin::Sql(sql) = std::mem::take(&mut self.query_result) {
+            self.query_result = ResultOrigin::Design(sql);
+        }
         true
     }
 

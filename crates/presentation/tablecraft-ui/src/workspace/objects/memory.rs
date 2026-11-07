@@ -118,11 +118,13 @@ impl Session {
             }
             Self::Sql {
                 data: page,
+                result_origin,
                 error,
                 design,
                 ..
             } => {
                 count.add(design.retained_bytes()?);
+                count.add(result_origin.retained_bytes());
                 if let Some(page) = page {
                     count.add(data(page)?);
                 }
@@ -173,6 +175,10 @@ impl State {
             count.add(data(page)?);
         }
         count.string(&self.sql);
+        count.add(self.query_result.retained_bytes());
+        if let Some(pending) = &self.query_pending {
+            count.string(&pending.sql);
+        }
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.table_filter.retained_bytes()?);
         count.add(self.totals.retained_bytes()?);
@@ -202,6 +208,17 @@ impl State {
             self.error = Some(self.localizer.text("objects-memory-limit"));
         }
         admitted
+    }
+
+    pub(in crate::workspace) fn admit_query_data(
+        &mut self,
+        submitted_sql: &Option<String>,
+        value: &Data,
+    ) -> bool {
+        let additional = data(value).and_then(|bytes| {
+            bytes.checked_add(submitted_sql.as_ref().map_or(0, String::capacity))
+        });
+        self.admit_object_bytes(additional)
     }
 
     pub(in crate::workspace) fn admit_object_data(&mut self, value: &Data) -> bool {

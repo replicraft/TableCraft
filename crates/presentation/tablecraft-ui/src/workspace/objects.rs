@@ -543,6 +543,8 @@ impl State {
         self.data = None;
         self.schema = None;
         self.query_data = None;
+        self.query_result = Default::default();
+        self.query_pending = None;
         self.saved_query = super::saved_query::SavedQueryState::default();
         self.table_selection = Default::default();
         self.query_selection = Default::default();

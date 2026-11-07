@@ -28,7 +28,9 @@ use zeroize::Zeroize;
 
 enum PendingOperation {
     Read,
-    Query,
+    Query {
+        request_id: u64,
+    },
     QueryDesignDescribe {
         request_id: u64,
         request: QueryDesignRequest,
@@ -180,16 +182,31 @@ impl Desktop {
         if matches!(&command, Command::Describe { .. }) {
             self.state.prepare_schema_view();
         }
-        let query = matches!(&command, Command::Query { .. });
+        let query_sql = if let Command::Query { sql } = &command {
+            let Some(captured) = self.state.capture_query_sql(sql) else {
+                return;
+            };
+            Some(captured)
+        } else {
+            None
+        };
         self.generation = self.worker.request(command);
+        self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
             self.state.begin_contents(target.clone(), self.generation);
             PendingOperation::Contents {
                 target,
                 request_id: self.generation,
             }
-        } else if query {
-            PendingOperation::Query
+        } else if let Some(sql) = query_sql {
+            if !self.state.begin_query_run(self.generation, sql) {
+                self.worker.cancel();
+                self.state.busy = false;
+                return;
+            }
+            PendingOperation::Query {
+                request_id: self.generation,
+            }
         } else {
             PendingOperation::Read
         };
@@ -374,8 +391,8 @@ impl Desktop {
                                 );
                             }
                         }
-                        PendingOperation::Query => {
-                            self.state.set_query_data(data);
+                        PendingOperation::Query { request_id } => {
+                            self.state.set_query_run_data(*request_id, data);
                         }
                         PendingOperation::SavedRun { target, request_id } => {
                             self.state
@@ -440,6 +457,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::Query { .. } => {
+                        self.state.clear_query_run();
+                        self.state.error = Some(error.to_string());
+                    }
                     PendingOperation::ReplaceFind { request_id } => {
                         self.state.fail_replace_find(*request_id, error.to_string());
                     }
@@ -627,10 +648,9 @@ impl eframe::App for Desktop {
                         && !self.state.busy
                         && !self.state.backstage_visible()
                         && !self.state.sql.trim().is_empty()
+                        && let Some(sql) = self.state.capture_query_draft()
                     {
-                        self.submit(Command::Query {
-                            sql: self.state.sql.clone(),
-                        });
+                        self.submit(Command::Query { sql });
                     }
                 }
                 Action::ReviewDelete { target } => self.review_delete(target),
@@ -659,6 +679,7 @@ impl eframe::App for Desktop {
                     } else {
                         self.worker.cancel();
                         self.state.busy = false;
+                        self.state.clear_query_run();
                         match &self.pending {
                             PendingOperation::ReplaceFind { request_id } => {
                                 self.state.fail_replace_find(
@@ -822,8 +843,9 @@ mod tests {
         let context = egui::Context::default();
         let mut desktop = Desktop::new(context.clone(), None);
         let mut frame = eframe::Frame::_new_kittest();
-        desktop.submit(Command::Query {
-            sql: "SELECT 1".into(),
+        desktop.submit(Command::Page {
+            table: "Items".into(),
+            offset: 0,
         });
         finish(&mut desktop, &context, &mut frame);
         assert_eq!(desktop.state.error.as_deref(), Some("no database is open"));

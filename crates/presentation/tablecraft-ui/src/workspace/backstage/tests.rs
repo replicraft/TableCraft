@@ -296,15 +296,18 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
         })
         .unwrap()
         .tab;
-    state.set_query_data(Data {
-        row_ordinals: None,
-        source_revision: None,
-        table: "Independent SQL result".into(),
-        offset: 0,
-        columns: vec!["Value".into()],
-        rows: vec![vec!["Earlier SQL value".into()]],
-        has_more: false,
-    });
+    state.set_query_data(
+        None,
+        Data {
+            row_ordinals: None,
+            source_revision: None,
+            table: "Independent SQL result".into(),
+            offset: 0,
+            columns: vec!["Value".into()],
+            rows: vec![vec!["Earlier SQL value".into()]],
+            has_more: false,
+        },
+    );
     let sql_rows = state.query_data.as_ref().unwrap().rows.as_ptr();
     assert!(state.activate_object(&saved_tab));
     let mut harness = Harness::builder()

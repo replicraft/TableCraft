@@ -1,14 +1,29 @@
 //! Query editor admission is shared with keyboard command handling.
+pub(super) mod provenance;
+
 use super::{Action, DocumentView, State, ribbon};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Frame, Margin, RichText, TextEdit, Ui};
+use provenance::ResultOrigin;
 
 const MAX_SQL_EDITOR_HEIGHT: f32 = 150.0;
 const MIN_SQL_EDITOR_HEIGHT: f32 = 24.0;
 const MIN_RESULTS_HEIGHT: f32 = 60.0;
 
 impl State {
+    fn query_result_status(&self, ui: &mut Ui) {
+        if self.query_data.is_some() {
+            let key = match &self.query_result {
+                ResultOrigin::Unknown => "query-results-unknown",
+                _ if self.query_results_previous() => "query-results-previous",
+                _ => "query-results-current",
+            };
+            let status = RichText::new(tr(ui, key)).color(crate::theme::palette(ui.ctx()).muted);
+            ui.label(status);
+        }
+    }
+
     pub(super) fn query_editor(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view != DocumentView::Query {
             return;
@@ -26,8 +41,11 @@ impl State {
             }
             self.query_design_report(ui);
             if self.query_design_results_visible() {
-                if self.query_data.is_some() && self.query_design_results_previous() {
+                let designed = matches!(self.query_result, ResultOrigin::Design(_));
+                if designed && self.query_data.is_some() && self.query_results_previous() {
                     ui.weak(tr(ui, "qbe-results-previous"));
+                } else if !designed {
+                    self.query_result_status(ui);
                 }
                 return;
             }
@@ -39,6 +57,7 @@ impl State {
             ui.label(
                 RichText::new(tr(ui, "query-help")).color(crate::theme::palette(ui.ctx()).muted),
             );
+            self.query_result_status(ui);
             let editor_height = if self.error.is_some() {
                 let reserved = ui.spacing().interact_size.y
                     + ui.spacing().item_spacing.y * 3.0

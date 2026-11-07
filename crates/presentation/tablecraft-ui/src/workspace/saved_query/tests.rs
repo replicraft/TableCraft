@@ -29,7 +29,7 @@ fn state() -> (State, SavedQueryTarget) {
             kind: ObjectKind::Sql,
         })
         .unwrap();
-    state.set_query_data(data("SQL result", "42"));
+    state.set_query_data(None, data("SQL result", "42"));
     (state, target)
 }
 

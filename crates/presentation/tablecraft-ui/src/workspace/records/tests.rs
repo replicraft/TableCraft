@@ -388,7 +388,7 @@ fn home_select_record_uses_visible_query_and_saved_result_without_native_handles
                 .selection
                 .select(state.saved_query.data.as_ref().unwrap(), 1, 1);
         } else {
-            state.set_query_data(result);
+            state.set_query_data(None, result);
             state
                 .query_selection
                 .select(state.query_data.as_ref().unwrap(), 1, 1);

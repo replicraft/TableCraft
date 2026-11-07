@@ -261,15 +261,18 @@ fn close_dispatches_exact_tab_instance_and_retains_independent_sql_object() {
             kind: ObjectKind::Sql,
         })
         .unwrap();
-    harness.state_mut().0.set_query_data(Data {
-        row_ordinals: None,
-        source_revision: None,
-        table: "Independent query".into(),
-        offset: 0,
-        columns: vec!["Value".into()],
-        rows: vec![vec![crate::Cell::scalar("retained result")]],
-        has_more: false,
-    });
+    harness.state_mut().0.set_query_data(
+        None,
+        Data {
+            row_ordinals: None,
+            source_revision: None,
+            table: "Independent query".into(),
+            offset: 0,
+            columns: vec!["Value".into()],
+            rows: vec![vec![crate::Cell::scalar("retained result")]],
+            has_more: false,
+        },
+    );
     harness.run();
     harness
         .get_all_by_role_and_label(Role::Button, "Close object")

@@ -11,3 +11,7 @@ query-sql-view = Vista SQL
 query-design-view = Vista Diseño
 
 query-mock-error = Error de consulta simulado. Los resultados de ejemplo anteriores siguen visibles. No se ejecutó SQL ni se abrió ninguna base de datos.
+
+query-results-current = Los resultados corresponden a este borrador SQL.
+query-results-previous = Resultados anteriores. Ejecute este borrador SQL para actualizarlos.
+query-results-unknown = Los resultados mostrados no están asociados a este borrador SQL.

@@ -1,5 +1,30 @@
 # Presentation preview
 
+## Scratch SQL result ownership — 6 November 2026
+
+The shared SQL object now retains the submitted SQL with its completed result,
+separately from the editable draft. Pending witnesses bind the request, SQL tab
+and document revision; memory admission includes pending and parked text. A
+failed, cancelled or refused run preserves earlier data and its origin. Explicit
+SQL, Query Design and unknown origins prevent one view from borrowing another's
+freshness witness. All eight query catalogs label matching, previous and
+unassociated results. See the [working contract](SQL_WORKSPACE.md).
+
+The focused gate passed 51 UI cases and all 66 desktop cases, including a real
+worker journey that changes the draft before polling, then fails, cancels and
+switches/closes tabs without losing the earlier result. Four SQL cases were
+rerun after the final status-color refinement. Strict all-target UI/desktop
+Clippy, formatting, dependency boundaries and documentation links passed. The
+complete UI/workspace test suites were not repeated for this change.
+
+Four offscreen frames were reviewed in light/dark themes: English at 1280×820,
+1×, and German at 900×580, 1.25×, including a long diagnostic/SQL editor. Status,
+Run and retained results remain visible. Rendering used the local macOS GPU with
+Windows keyboard conventions and opened no native windows. No retained Access
+capture shows SQL View or these status messages; their placement remains an
+adaptation. The change adds no database execution capability or native Access
+qualification.
+
 ## Datasheet accessibility structure — 6 November 2026
 
 The shared datasheet now exposes explicit AccessKit Grid, Row, ColumnHeader and

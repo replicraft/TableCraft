@@ -432,7 +432,8 @@ impl Preview {
                     document_revision: fixtures::REVISION,
                     kind: ObjectKind::Sql,
                 });
-                self.state.set_query_data(fixtures::query());
+                self.state
+                    .set_query_data(Some(fixtures::SQL.into()), fixtures::query());
             }
             Scene::SavedQuery => {
                 let target = fixtures::saved_target();

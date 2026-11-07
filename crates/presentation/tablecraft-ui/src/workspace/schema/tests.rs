@@ -394,15 +394,18 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
         .unwrap()
         .tab;
     state.sql = "SELECT 'independent SQL';".into();
-    state.set_query_data(Data {
-        row_ordinals: None,
-        source_revision: None,
-        table: "Query result".into(),
-        offset: 0,
-        columns: vec!["Literal".into()],
-        rows: vec![vec!["SQL row".into()]],
-        has_more: false,
-    });
+    state.set_query_data(
+        None,
+        Data {
+            row_ordinals: None,
+            source_revision: None,
+            table: "Query result".into(),
+            offset: 0,
+            columns: vec!["Literal".into()],
+            rows: vec![vec!["SQL row".into()]],
+            has_more: false,
+        },
+    );
     let query_rows = state.query_data.as_ref().unwrap().rows.as_ptr();
     assert!(state.data.is_none());
     assert!(state.schema.is_none());

@@ -1,5 +1,16 @@
 # Implementation status
 
+## Scratch SQL result ownership — 6 November 2026
+
+Results now retain the submitted SQL independently of the editable draft, with
+distinct SQL/design/unknown origins and bounded pending/parked ownership. Draft
+changes, failure and cancellation preserve earlier results with accurate status.
+The headless gate passed 51 focused UI cases, all 66 desktop cases and strict
+UI/desktop lint, with a focused follow-up for final status paint. English/German
+light/dark frames were reviewed offscreen. No database capability was added;
+native verification remains suspended. See the [contract](ui/SQL_WORKSPACE.md)
+and [scoped evidence](ui/PRESENTATION_PREVIEW.md#scratch-sql-result-ownership--6-november-2026).
+
 ## Datasheet accessibility structure — 6 November 2026
 
 Shared datasheets now expose explicit grid, row, header and cell structure while

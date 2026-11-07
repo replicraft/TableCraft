@@ -20,6 +20,7 @@ infrastructure or VBA execution.
 - [Datasheet display preferences and window chrome](DISPLAY_PREFERENCES.md)
 - [Complete native-view datasheet totals](DATASHEET_TOTALS.md)
 - [Source-bound visual query design](QUERY_DESIGN.md)
+- [Scratch SQL drafts and result ownership](SQL_WORKSPACE.md)
 - [Native Find and reviewed replacement](FIND_REPLACE.md)
 - [Ribbon presentation coverage and remaining qualification](RIBBON.md)
 - [Synthetic preview, themes and translations](PRESENTATION_PREVIEW.md)

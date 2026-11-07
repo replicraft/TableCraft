@@ -503,19 +503,7 @@ fn finish_failed_read(harness: &mut Harness<'_, Desktop>) -> String {
     message
 }
 
-#[test]
-fn cancelled_unloaded_table_retries_its_own_read_and_keeps_the_other_object() {
-    let (_directory, path, original, mut harness) = opened(multiple_tables());
-    let retained_tab = harness.state().state.active_object().unwrap();
-    let retained_rows = harness.state().state.data.as_ref().unwrap().rows.as_ptr();
-    let mixed = table(harness.state(), "Mixed Values");
-    harness.state_mut().open_object(mixed.clone());
-    let mixed_tab = tab(harness.state(), &mixed);
-    assert!(harness.state().state.busy);
-    assert!(harness.state().state.data.is_none());
-
-    // Deliver the real UI cancellation before polling a possibly completed read.
-    // This avoids racing the tiny independent fixture against the worker thread.
+fn cancel_before_poll(harness: &mut Harness<'_, Desktop>) {
     let input = egui::RawInput {
         screen_rect: Some(egui::Rect::from_min_size(
             egui::Pos2::ZERO,
@@ -536,6 +524,150 @@ fn cancelled_unloaded_table_retries_its_own_read_and_keeps_the_other_object() {
         harness.state_mut().ui(ui, &mut frame);
     });
     output.textures_delta.clear();
+}
+
+#[test]
+fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_tabs() {
+    let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
+    let table_tab = harness.state().state.active_object().unwrap();
+    let sql_target = ObjectTarget {
+        document_revision: table_tab.target.document_revision,
+        kind: ObjectKind::Sql,
+    };
+    harness.state_mut().open_object(sql_target.clone());
+    let sql_tab = harness.state().state.active_object().unwrap();
+    harness.state_mut().state.sql = "SELECT 1 AS [Value]".into();
+    harness
+        .state_mut()
+        .submit(tablecraft_runtime::Command::Query {
+            sql: "SELECT 1 AS [Value]".into(),
+        });
+    finish_reads(&mut harness);
+    assert!(!harness.state().state.query_results_previous());
+
+    harness.state_mut().state.sql = "SELECT 2 AS [Value]".into();
+    harness
+        .state_mut()
+        .submit(tablecraft_runtime::Command::Query {
+            sql: "SELECT 2 AS [Value]".into(),
+        });
+    // Edit the visible draft before polling even an already completed worker.
+    harness.state_mut().state.sql = "SELECT 3 AS [Value]".into();
+    finish_reads(&mut harness);
+    let retained = harness
+        .state()
+        .state
+        .query_data
+        .as_ref()
+        .unwrap()
+        .rows
+        .as_ptr();
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "2"
+    );
+    assert!(harness.state().state.query_results_previous());
+    let previous = harness
+        .state()
+        .state
+        .localizer
+        .text("query-results-previous");
+    assert!(harness.query_by_label(&previous).is_some());
+
+    harness
+        .state_mut()
+        .submit(tablecraft_runtime::Command::Query {
+            sql: "SELECT 1 / 0".into(),
+        });
+    finish_failed_read(&mut harness);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        retained
+    );
+    harness.state_mut().state.error = None;
+    harness.state_mut().state.sql = "SELECT 2 AS [Value]".into();
+    assert!(!harness.state().state.query_results_previous());
+    harness
+        .state_mut()
+        .submit(tablecraft_runtime::Command::Query {
+            sql: "SELECT 4 AS [Value]".into(),
+        });
+    cancel_before_poll(&mut harness);
+    harness.run_steps(3);
+    assert!(!harness.state().state.busy);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        retained
+    );
+    assert!(harness.state().state.query_results_previous());
+    harness.state_mut().state.error = None;
+    assert!(!harness.state().state.query_results_previous());
+    harness.state_mut().state.sql = "SELECT 3 AS [Value]".into();
+
+    harness.state_mut().activate_object(table_tab);
+    harness.run_steps(2);
+    assert!(harness.state().state.query_data.is_none());
+    harness.state_mut().activate_object(sql_tab.clone());
+    harness.run_steps(2);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        retained
+    );
+    assert!(harness.state().state.query_results_previous());
+    harness.state_mut().state.sql = "SELECT 5 AS [Value]".into();
+    harness
+        .state_mut()
+        .submit(tablecraft_runtime::Command::Query {
+            sql: "SELECT 5 AS [Value]".into(),
+        });
+    finish_reads(&mut harness);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "5"
+    );
+    assert!(!harness.state().state.query_results_previous());
+    harness.state_mut().close_object(sql_tab);
+    harness.state_mut().open_object(sql_target);
+    assert!(harness.state().state.query_data.is_none());
+    assert!(!harness.state().state.query_results_previous());
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn cancelled_unloaded_table_retries_its_own_read_and_keeps_the_other_object() {
+    let (_directory, path, original, mut harness) = opened(multiple_tables());
+    let retained_tab = harness.state().state.active_object().unwrap();
+    let retained_rows = harness.state().state.data.as_ref().unwrap().rows.as_ptr();
+    let mixed = table(harness.state(), "Mixed Values");
+    harness.state_mut().open_object(mixed.clone());
+    let mixed_tab = tab(harness.state(), &mixed);
+    assert!(harness.state().state.busy);
+    assert!(harness.state().state.data.is_none());
+
+    // Deliver the real UI cancellation before polling a possibly completed read.
+    // This avoids racing the tiny independent fixture against the worker thread.
+    cancel_before_poll(&mut harness);
     assert!(!harness.state().state.busy);
     assert!(harness.state().state.error.is_some());
     assert!(harness.state().state.data.is_none());

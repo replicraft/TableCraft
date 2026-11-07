@@ -11,3 +11,7 @@ query-sql-view = SQL ビュー
 query-design-view = デザイン ビュー
 
 query-mock-error = クエリ エラーのシミュレーションです。前回のサンプル結果は引き続き表示されます。SQL は実行されず、データベースも開かれていません。
+
+query-results-current = 結果はこの SQL 下書きに対応しています。
+query-results-previous = 以前の結果です。この SQL 下書きを実行して更新してください。
+query-results-unknown = 表示中の結果はこの SQL 下書きに関連付けられていません。

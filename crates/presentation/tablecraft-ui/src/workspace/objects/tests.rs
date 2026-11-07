@@ -144,7 +144,7 @@ fn saved_parameters_results_and_scratch_sql_have_independent_owners() {
     state.sql = "SELECT 'independent draft';".into();
     let mut result = data("Query results", "scratch result");
     result.source_revision = None;
-    state.set_query_data(result);
+    state.set_query_data(None, result);
     let scratch_rows = state.query_data.as_ref().unwrap().rows.as_ptr();
     let table = state.prepare_object_open(table("A")).unwrap().tab;
     assert!(state.set_table_data(data("A", "native row")));
@@ -165,6 +165,44 @@ fn saved_parameters_results_and_scratch_sql_have_independent_owners() {
     );
     assert!(state.activate_object(&table));
     assert_eq!(state.data.as_ref().unwrap().rows[0][0].text, "native row");
+}
+
+#[test]
+fn sql_result_origin_parks_with_its_rows_and_never_restores_as_workspace_preferences() {
+    let mut state = state();
+    let target = ObjectTarget {
+        document_revision: 7,
+        kind: ObjectKind::Sql,
+    };
+    let scratch = state.prepare_object_open(target.clone()).unwrap().tab;
+    state.sql = "SELECT 1".into();
+    let mut result = data("Query results", "1");
+    result.source_revision = None;
+    assert!(state.set_query_data(Some("SELECT 1".into()), result));
+    let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
+    let native = state.prepare_object_open(table("A")).unwrap().tab;
+    assert!(state.set_table_data(data("A", "native")));
+    assert!(!state.begin_query_run(1, "SELECT 2".into()));
+    assert!(state.query_pending.is_none());
+    assert_eq!(state.query_result.retained_bytes(), 0);
+    assert!(state.activate_object(&scratch));
+    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), rows);
+    assert!(!state.query_results_previous());
+    state.sql = "SELECT 2".into();
+    assert!(state.query_results_previous());
+    assert!(state.activate_object(&native));
+    let layout = state.capture_workspace_layout();
+    assert!(state.restore_workspace_layout(layout, ObjectKind::Sql));
+    assert_eq!(state.sql, "SELECT 2");
+    assert!(state.query_data.is_none());
+    assert_eq!(state.query_result.retained_bytes(), 0);
+    let fresh = state.active_object().unwrap();
+    assert_ne!(fresh.id, scratch.id);
+    assert!(state.close_object(&fresh));
+    let reopened = state.prepare_object_open(target).unwrap().tab;
+    assert_ne!(reopened.id, fresh.id);
+    assert!(state.query_data.is_none());
+    assert_eq!(state.query_result.retained_bytes(), 0);
 }
 
 #[test]
@@ -271,7 +309,7 @@ fn isolated_publishers_do_not_invent_objects_and_managed_publications_cannot_ret
     assert!(isolated.set_table_data(data("A", "isolated page")));
     let mut result = data("SQL result", "isolated query");
     result.source_revision = None;
-    isolated.set_query_data(result);
+    isolated.set_query_data(None, result);
     assert_eq!(
         isolated.data.as_ref().unwrap().rows[0][0].text,
         "isolated page"
@@ -289,7 +327,7 @@ fn isolated_publishers_do_not_invent_objects_and_managed_publications_cannot_ret
     assert!(!managed.set_table_data(data("B", "wrong object")));
     let mut query = data("Query result", "wrong kind");
     query.source_revision = None;
-    managed.set_query_data(query);
+    managed.set_query_data(None, query);
     assert_eq!(managed.active_object(), Some(a));
     assert_eq!(managed.data.as_ref().unwrap().rows[0][0].text, "owned page");
     assert!(managed.query_data.is_none());

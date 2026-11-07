@@ -21,7 +21,14 @@ fn state() -> State {
             system: false,
         }],
     });
-    state.select_view(DocumentView::Query);
+    assert!(
+        state
+            .prepare_object_open(crate::ObjectTarget {
+                document_revision: 7,
+                kind: crate::ObjectKind::Sql,
+            })
+            .is_some()
+    );
     state
 }
 
@@ -32,6 +39,82 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
             |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
             (state, Vec::new()),
         )
+}
+
+fn result(text: &str) -> crate::Data {
+    crate::Data {
+        source_revision: None,
+        row_ordinals: None,
+        table: "Query results".into(),
+        offset: 0,
+        columns: vec!["Value".into()],
+        rows: vec![vec![text.into()]],
+        has_more: false,
+    }
+}
+
+#[test]
+fn submitted_sql_provenance_survives_draft_changes_and_unknown_results_are_distinct() {
+    let mut state = state();
+    state.sql = "SELECT 1".into();
+    let captured = state.capture_query_sql("SELECT 1").unwrap();
+    assert!(state.begin_query_run(1, captured));
+    state.sql = "SELECT 2".into();
+    assert!(!state.set_query_run_data(9, result("stale")));
+    assert!(state.set_query_run_data(1, result("1")));
+    assert!(state.query_results_previous());
+    state.sql = "SELECT 1".into();
+    assert!(!state.query_results_previous());
+    let mut harness = harness(state);
+    harness.run_steps(3);
+    let current = harness.state().0.localizer.text("query-results-current");
+    assert!(harness.query_by_label(&current).is_some());
+
+    harness.state_mut().0.sql = "SELECT 2".into();
+    harness.run_steps(3);
+    let previous = harness.state().0.localizer.text("query-results-previous");
+    assert!(harness.query_by_label(&previous).is_some());
+    assert!(
+        harness
+            .state_mut()
+            .0
+            .set_query_data(None, result("synthetic"))
+    );
+    harness.run_steps(3);
+    let unknown = harness.state().0.localizer.text("query-results-unknown");
+    assert!(harness.query_by_label(&unknown).is_some());
+    assert!(harness.query_by_label(&current).is_none());
+}
+
+#[test]
+fn query_witness_admission_rejects_invalid_owners_and_capacity_without_losing_results() {
+    let mut state = state();
+    state.sql = "SELECT 1".into();
+    assert!(state.set_query_data(Some("SELECT 1".into()), result("1")));
+    let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
+    assert!(state.begin_query_run(1, "SELECT 2".into()));
+    assert!(!state.begin_query_run(0, "invalid".into()));
+    assert_eq!(state.query_pending.as_ref().unwrap().sql, "SELECT 2");
+
+    let oversized = String::with_capacity(64 * 1024 * 1024);
+    assert!(!state.begin_query_run(2, oversized));
+    assert_eq!(state.query_pending.as_ref().unwrap().sql, "SELECT 2");
+    state.clear_query_run();
+    let mut oversized = String::with_capacity(64 * 1024 * 1024);
+    oversized.push_str("SELECT 1");
+    assert!(!state.set_query_data(Some(oversized), result("replacement")));
+    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), rows);
+    state.error = None;
+    assert!(!state.query_results_previous());
+
+    assert!(state.begin_query_run(3, "SELECT 3".into()));
+    state.database.as_mut().unwrap().document_revision = 8;
+    assert!(!state.set_query_run_data(3, result("wrong document")));
+    assert!(!state.begin_query_run(4, "stale owner".into()));
+    assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), rows);
+    let mut absent = State::default();
+    assert!(!absent.begin_query_run(1, "SELECT 1".into()));
+    assert!(absent.query_pending.is_none());
 }
 
 #[test]

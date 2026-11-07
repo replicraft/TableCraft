@@ -64,14 +64,14 @@ fn rejected_publication_keeps_previous_page_and_query_has_no_native_identity() {
     assert_eq!(state.data.as_ref().unwrap().rows.len(), 2);
     assert!(state.error.is_some());
 
-    state.set_query_data(page());
+    state.set_query_data(None, page());
     assert!(state.query_data.is_none());
     assert!(state.error.is_some());
 
     let mut query = page();
     query.row_ordinals = None;
     query.source_revision = None;
-    state.set_query_data(query);
+    state.set_query_data(None, query);
     assert!(state.query_data.is_some());
     assert_eq!(state.query_data.as_ref().unwrap().parent_ordinal(0), None);
 }
@@ -115,7 +115,7 @@ fn display_order_keeps_native_targets_and_indexed_reverse_lookup_separate() {
     assert_eq!(data.parent_ordinal(0), None);
 
     let mut state = State::default();
-    state.set_query_data(data);
+    state.set_query_data(None, data);
     assert!(state.query_data.is_none());
 }
 

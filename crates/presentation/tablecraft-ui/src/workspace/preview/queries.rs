@@ -9,7 +9,8 @@ impl Preview {
             document_revision: fixtures::REVISION,
             kind: ObjectKind::Sql,
         });
-        self.state.set_query_data(fixtures::query());
+        self.state
+            .set_query_data(Some(fixtures::SQL.into()), fixtures::query());
         self.state.busy = true;
     }
 
@@ -18,7 +19,8 @@ impl Preview {
             document_revision: fixtures::REVISION,
             kind: ObjectKind::Sql,
         });
-        self.state.set_query_data(fixtures::query());
+        self.state
+            .set_query_data(Some(fixtures::SQL.into()), fixtures::query());
         self.state.error = Some(self.state.localizer.text("query-mock-error"));
     }
 

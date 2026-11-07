@@ -32,7 +32,7 @@ fn state(value: String, native: bool) -> State {
     if native {
         state.set_table_data(data);
     } else {
-        state.set_query_data(data);
+        state.set_query_data(None, data);
         state.select_view(DocumentView::Query);
     }
     state

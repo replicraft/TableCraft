@@ -11,3 +11,7 @@ query-sql-view = SQL View
 query-design-view = Design View
 
 query-mock-error = Synthetic query error. Previous sample results remain visible. No SQL was executed and no database was opened.
+
+query-results-current = Results match this SQL draft.
+query-results-previous = Previous results. Run this SQL draft to update them.
+query-results-unknown = Displayed results are not associated with this SQL draft.

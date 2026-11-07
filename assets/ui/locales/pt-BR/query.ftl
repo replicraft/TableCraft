@@ -11,3 +11,7 @@ query-sql-view = Modo SQL
 query-design-view = Modo Design
 
 query-mock-error = Erro de consulta simulado. Os resultados de exemplo anteriores continuam visíveis. Nenhum SQL foi executado e nenhum banco de dados foi aberto.
+
+query-results-current = Os resultados correspondem a este rascunho SQL.
+query-results-previous = Resultados anteriores. Execute este rascunho SQL para atualizá-los.
+query-results-unknown = Os resultados exibidos não estão associados a este rascunho SQL.

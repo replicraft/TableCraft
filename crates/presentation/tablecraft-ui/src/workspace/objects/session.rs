@@ -1,6 +1,7 @@
 //! Parked presentation values have exactly one owning object.
 use super::{ObjectKind, ObjectTab};
 use crate::datasheet::Selection;
+use crate::workspace::query::provenance::ResultOrigin;
 use crate::workspace::{
     Data, DocumentView, Schema, State, filtering::TableFilter, query_design::QueryDesign,
     records::RecordNavigation, saved_query::SavedQueryState, totals::Totals,
@@ -39,6 +40,7 @@ pub(super) enum Session {
     Sql {
         design: QueryDesign,
         data: Option<Data>,
+        result_origin: ResultOrigin,
         selection: Selection,
         error: Option<String>,
     },
@@ -65,6 +67,7 @@ impl Session {
             ObjectKind::Sql => Self::Sql {
                 design: QueryDesign::default(),
                 data: None,
+                result_origin: ResultOrigin::Unknown,
                 selection: Selection::default(),
                 error: None,
             },
@@ -91,6 +94,7 @@ impl Session {
             ObjectKind::Sql => Self::Sql {
                 design: mem::take(&mut state.query_design),
                 data: state.query_data.take(),
+                result_origin: mem::take(&mut state.query_result),
                 selection: mem::take(&mut state.query_selection),
                 error: state.error.take(),
             },
@@ -137,11 +141,13 @@ impl Session {
             Self::Sql {
                 design,
                 data,
+                result_origin,
                 selection,
                 error,
             } => {
                 state.query_design = design;
                 state.query_data = data;
+                state.query_result = result_origin;
                 state.query_selection = selection;
                 state.view = DocumentView::Query;
                 state.error = error;
