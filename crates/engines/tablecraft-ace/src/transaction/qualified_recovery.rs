@@ -1,6 +1,8 @@
 use crate::{
     EditError, InspectError, NativeImage, NativeInt32EditIntent, NativeIntentError, header::check,
 };
+#[cfg(feature = "ace16-create")]
+use crate::{FirstTableError, FirstTableIntentError};
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{CheckedV1, DurableStorage, JournalError, RecoveryOutcome, V1State};
@@ -23,6 +25,14 @@ pub enum NativeRecoveryQualificationError {
     /// The original source/requests fail the existing ordinary Jet4 write gates.
     #[error(transparent)]
     Edit(#[from] EditError),
+    /// The original first-table request failed closed framing or source binding.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FirstTableIntent(#[from] FirstTableIntentError),
+    /// The canonical blank or original first-table declaration failed qualification.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FirstTable(#[from] FirstTableError),
     /// A complete journal image differs from the independently rebuilt plan.
     #[error("journal images differ from the qualified original native edit")]
     ImageMismatch,

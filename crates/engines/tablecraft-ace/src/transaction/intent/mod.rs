@@ -52,3 +52,11 @@ pub use clock_insert::{
     NativeClockInsertIntent, QualifiedNativeClockInsertRecovery, RecoverableNativeClockInsertPlan,
     qualify_native_clock_insert_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod first_table;
+#[cfg(feature = "ace16-create")]
+pub use first_table::{
+    FirstTableIntentError, NativeFirstTableIntent, PreparedFirstTable, QualifiedFirstTableRecovery,
+    qualify_native_first_table_recovery,
+};

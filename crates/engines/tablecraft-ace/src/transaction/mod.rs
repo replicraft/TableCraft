@@ -154,3 +154,9 @@ pub use intent::{
     NativeClockInsertIntent, QualifiedNativeClockInsertRecovery, RecoverableNativeClockInsertPlan,
     qualify_native_clock_insert_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    FirstTableIntentError, NativeFirstTableIntent, PreparedFirstTable, QualifiedFirstTableRecovery,
+    qualify_native_first_table_recovery,
+};

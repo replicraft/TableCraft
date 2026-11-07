@@ -24,8 +24,9 @@ mod constraints;
 mod creation;
 #[cfg(feature = "ace16-create")]
 pub use creation::{
-    CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, create_ace16_database,
-    create_ace16_database_tables, create_ace16_int32_database, create_blank_ace16_database,
+    CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, FirstTableDefinition,
+    FirstTableError, FirstTablePlan, create_ace16_database, create_ace16_database_tables,
+    create_ace16_int32_database, create_blank_ace16_database,
 };
 mod encryption;
 mod error;
@@ -237,4 +238,10 @@ pub use transaction::{
 pub use transaction::{
     NativeClockInsertIntent, QualifiedNativeClockInsertRecovery, RecoverableNativeClockInsertPlan,
     qualify_native_clock_insert_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    FirstTableIntentError, NativeFirstTableIntent, PreparedFirstTable, QualifiedFirstTableRecovery,
+    qualify_native_first_table_recovery,
 };

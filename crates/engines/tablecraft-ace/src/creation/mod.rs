@@ -5,6 +5,7 @@ mod column;
 mod database;
 mod defaults;
 mod definition;
+mod first_table;
 mod input;
 mod multiple;
 mod primary;
@@ -20,6 +21,7 @@ pub use database::{
     CreatedDatabase, create_ace16_database, create_ace16_database_tables,
     create_ace16_int32_database, create_blank_ace16_database,
 };
+pub use first_table::{FirstTableDefinition, FirstTableError, FirstTablePlan};
 pub use multiple::CreateTable;
 pub use request::CreateDatabaseError;
 

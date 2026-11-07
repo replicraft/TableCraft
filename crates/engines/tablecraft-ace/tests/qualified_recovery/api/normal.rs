@@ -880,3 +880,7 @@ mod guid_update;
 
 #[path = "normal/indexed_guid_update.rs"]
 mod indexed_guid_update;
+
+#[cfg(feature = "ace16-create")]
+#[path = "normal/first_table.rs"]
+mod first_table;
