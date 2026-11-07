@@ -12,10 +12,10 @@ use crate::FirstTableReopen;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 use crate::editing::DocumentEdits;
-#[cfg(feature = "offline-edit")]
-use crate::editing::journal_path;
 #[cfg(feature = "ace16-create")]
 use crate::{CreationOutcome, CreationReport};
+#[cfg(feature = "offline-edit")]
+use crate::{InsertRetryWitness, editing::journal_path};
 use bytes::Bytes;
 #[cfg(all(
     feature = "offline-edit",
@@ -60,6 +60,27 @@ pub(super) struct Document {
 }
 
 impl Document {
+    #[cfg(feature = "offline-edit")]
+    pub(super) fn open_insert_original(
+        witness: &InsertRetryWitness,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            #[cfg(feature = "ace16-create")]
+            Error::CreatedSourceChanged => Error::InsertOriginalSourceChanged,
+            Error::SourceChanged => Error::InsertOriginalSourceChanged,
+            error => error,
+        })
+    }
+
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     pub(super) fn open_first_table_saved(
         witness: &FirstTableReopen,
@@ -144,11 +165,20 @@ impl Document {
         }
         file.close()?;
         check(cancelled)?;
-        if expected.is_some_and(|expected| expected != bytes.as_slice()) {
-            #[cfg(feature = "ace16-create")]
-            return Err(Error::CreatedSourceChanged);
-            #[cfg(not(feature = "ace16-create"))]
-            return Err(Error::SourceChanged);
+        if let Some(expected) = expected {
+            let mut matches = expected.len() == bytes.len();
+            for (original, captured) in expected.chunks(COPY_CHUNK).zip(bytes.chunks(COPY_CHUNK)) {
+                check(cancelled)?;
+                work.charge(Resource::Steps, original.len() as u64)?;
+                matches &= original == captured;
+            }
+            check(cancelled)?;
+            if !matches {
+                #[cfg(feature = "ace16-create")]
+                return Err(Error::CreatedSourceChanged);
+                #[cfg(not(feature = "ace16-create"))]
+                return Err(Error::SourceChanged);
+            }
         }
         let bytes = Bytes::from(bytes);
         #[cfg(all(

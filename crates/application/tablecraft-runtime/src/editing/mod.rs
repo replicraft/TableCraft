@@ -19,7 +19,8 @@ mod save;
 mod unsupported;
 
 pub use inserting::{
-    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedInsert,
+    InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
+    InsertTarget, ReviewedInsert,
 };
 pub use save::{
     SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,

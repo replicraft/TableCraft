@@ -503,6 +503,36 @@ a raw first-record buffer, followed by explicit row review after schema saving. 
 autosave remain separate work.
 
 
+### INSERT input retention and guarded retry
+
+`ReviewedInsert::retry_witness()` exposes an immutable `InsertRetryWitness`
+issued during actual row review. It retains the exact original source bytes,
+path and target through shared immutable ownership, without another full-image
+copy. It grants no rollback, replay or save authority.
+
+An explicit `Command::OpenInsertOriginal` captures the source under normal read
+limits and compares every original byte, charging comparison work and checking
+cancellation. Only a match publishes a fresh document revision. Drift returns
+`InsertOriginalSourceChanged`; it never falls back to ordinary Open, begins an
+insert or reuses an old review. This establishes content equality rather than
+physical file identity or a continued namespace lease.
+
+`InsertRetryEvidence` accumulates only the matching insertion operation chain.
+It captures `stopped_before_target_writes()` from the original Apply and current
+known outcomes from later recovery/release. A historical last-completed receipt
+does not establish the current result. Release alone is not undo. Observing a
+committed/replacement outcome prevents treating the same attempt as retryable.
+Even no-write/original-image evidence requires resource acknowledgment, explicit
+user retry, guarded opening, actual fresh field metadata and a new consuming
+Review/Apply. Display diagnostics cannot establish eligibility.
+
+The desktop retains exact input independently of native capabilities, including
+text hidden under omission/NULL. Failed/uncertain saves offer read-only copying
+or explicit input disposal; copying and disposal never mutate the database.
+Eligible retry returns to editing only after the guarded read and fresh binding.
+A recovered original image is not an inserted row, and source-drift refusal
+keeps the complete input available.
+
 ## Reviewed offline row deletion
 
 ReviewDelete captures a document revision, table and original row ordinal. The

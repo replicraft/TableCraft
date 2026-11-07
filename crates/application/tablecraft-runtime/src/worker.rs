@@ -30,6 +30,17 @@ impl Worker {
         let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
+            #[cfg(feature = "offline-edit")]
+            Command::OpenInsertOriginal { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_insert_original(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::ReviewFirstTable {
                 document_revision,
@@ -276,6 +287,8 @@ impl Worker {
                         || thread_shared.generation.load(Ordering::Acquire) != request.id
                 };
                 let operation = match &request.command {
+                    #[cfg(feature = "offline-edit")]
+                    Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewFirstTable { .. } => "review_first_table",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]

@@ -34,11 +34,11 @@ pub use creation::{
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
-    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReplaceError,
-    ReviewedDelete, ReviewedEdit, ReviewedInsert, SaveCleanupDisposition, SaveCompletion,
-    SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase,
-    SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
-    SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+    InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
+    InsertTarget, ReplaceError, ReviewedDelete, ReviewedEdit, ReviewedInsert,
+    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
+    SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveRetirementGuarantee,
+    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{FirstTableReopen, ReviewedFirstTable};
@@ -66,7 +66,7 @@ pub use totals::{
 pub use worker::Worker;
 
 use std::path::PathBuf;
-#[cfg(feature = "ace16-create")]
+#[cfg(any(feature = "ace16-create", feature = "offline-edit"))]
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::FirstTableError;
@@ -80,6 +80,9 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "offline-edit")]
+    #[error("original insertion source changed before reopening")]
+    InsertOriginalSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FirstTable(#[from] FirstTableError),
@@ -170,6 +173,11 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    /// Read-only guarded reopening; hosts separately decide whether retry is safe.
+    #[cfg(feature = "offline-edit")]
+    OpenInsertOriginal {
+        witness: Arc<InsertRetryWitness>,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewFirstTable {
         document_revision: u64,

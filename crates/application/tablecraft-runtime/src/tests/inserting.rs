@@ -5,6 +5,7 @@ use crate::{
     ReviewedInsert, SaveFailureKind, SaveOutcome, SaveStartFailure, SaveWorker, Worker,
 };
 use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
+use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 
 fn source() -> Vec<u8> {
     canonical_native17_creation::source(
@@ -139,7 +140,7 @@ fn source_drift_is_refused_before_journal_and_its_owner_requires_release() {
     assert!(!failure.can_recover);
     assert!(!saves.acknowledge(id));
     assert!(!bundle.exists());
-    assert_eq!(std::fs::read(&path).unwrap(), changed);
+    assert_retained_target_observation(&path, &changed);
     let released = saves.release(id).unwrap();
     let report = terminal(&saves);
     assert_eq!(report.id, released);
@@ -249,3 +250,5 @@ fn insertion_review_rejects_stale_drafts_wrong_width_and_invalid_typed_values() 
 
 #[cfg(feature = "ace16-create")]
 mod initial_tables;
+
+mod retry;

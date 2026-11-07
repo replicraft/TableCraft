@@ -1,4 +1,5 @@
 //! One reviewed row of original presence-bearing native INSERT intent.
+mod retry;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use super::EditError;
 use super::EditInput;
@@ -12,12 +13,11 @@ use crate::{
 };
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use bytes::Bytes;
+pub use retry::{InsertRetryEvidence, InsertRetryWitness};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-};
+use std::sync::atomic::{AtomicBool, Ordering};
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_access::editing::journal::{NativeJournalInsertPlan, NativeJournalInserter};
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
@@ -76,6 +76,7 @@ pub struct ReviewedInsert {
 pub(super) struct ReviewedInsertState {
     pub(super) path: PathBuf,
     pub(super) target: InsertTarget,
+    pub(super) retry: Arc<InsertRetryWitness>,
     #[cfg(any(target_os = "macos", target_os = "linux", windows))]
     pub(super) original: Bytes,
     #[cfg(any(target_os = "macos", target_os = "linux", windows))]
@@ -87,6 +88,12 @@ pub(super) struct ReviewedInsertState {
 }
 
 impl ReviewedInsert {
+    /// Borrow read-only original content evidence before consuming the review.
+    /// This grants no retry permission or automatic replay.
+    pub fn retry_witness(&self) -> Arc<InsertRetryWitness> {
+        Arc::clone(&self.state.retry)
+    }
+
     pub fn source_path(&self) -> &Path {
         &self.state.path
     }
@@ -177,11 +184,19 @@ impl Document {
         let review_target = copy_target(&target, &mut output)?;
         output.allocation(self.edits.path.as_os_str().len(), 1)?;
         output.allocation(1, size_of::<ReviewedInsertState>())?;
+        output.allocation(self.edits.path.as_os_str().len(), 1)?;
+        output.allocation(1, size_of::<InsertRetryWitness>())?;
+        let retry = Arc::new(InsertRetryWitness {
+            path: self.edits.path.clone(),
+            original: self.edits.original.clone(),
+            target: copy_target(&target, &mut output)?,
+        });
         let capability = ReviewedInsert {
             state: Box::new(ReviewedInsertState {
                 path: self.edits.path.clone(),
                 original: self.edits.original.clone(),
                 target,
+                retry,
                 values: retained_values,
                 plan,
                 valid: Arc::clone(&self.edits.valid),
