@@ -10,7 +10,7 @@ mod deleting;
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux")
 ))]
-pub(crate) mod editing;
+mod editing;
 mod filtering;
 mod find;
 mod formatting;
@@ -56,6 +56,28 @@ fn row_texts(rows: &[Vec<crate::Cell>]) -> Vec<Vec<&str>> {
     rows.iter()
         .map(|row| row.iter().map(|cell| cell.text.as_str()).collect())
         .collect()
+}
+
+#[cfg(all(
+    feature = "offline-edit",
+    any(
+        target_os = "macos",
+        target_os = "linux",
+        all(windows, feature = "ace16-create")
+    )
+))]
+pub(crate) fn terminal(worker: &crate::SaveWorker) -> crate::SaveReport {
+    let deadline = Instant::now() + Duration::from_secs(30);
+    loop {
+        if let Some(report) = worker.poll() {
+            return report;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "save did not publish a terminal outcome"
+        );
+        std::thread::yield_now();
+    }
 }
 
 fn poll(worker: &Worker) -> (u64, Result<Response, Error>) {

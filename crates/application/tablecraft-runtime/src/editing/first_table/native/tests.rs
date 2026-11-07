@@ -1,4 +1,4 @@
-use crate::tests::{editing::terminal, request};
+use crate::tests::{request, terminal};
 use crate::{
     Command, Error, Response, SaveKnownOutcome, SaveOutcome, SaveSchemaChange, SaveStartFailure,
     SaveWorker, Worker, journal_path,

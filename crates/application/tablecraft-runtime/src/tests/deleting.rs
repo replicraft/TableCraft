@@ -1,5 +1,5 @@
 //! Normal row deletion through the public review/save capability boundary.
-use super::{editing::terminal, open, request, stored::opened};
+use super::{open, request, stored::opened, terminal};
 use crate::{
     Command, DeleteReview, DeleteTarget, EditError, Error, Response, ReviewedDelete,
     SaveFailureKind, SaveOutcome, SaveStartFailure, SaveWorker, Worker,

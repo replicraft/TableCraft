@@ -1,5 +1,5 @@
 //! Public-worker INSERT review and the same nonreplaceable native save owner.
-use super::{editing::terminal, open, request, stored::opened};
+use super::{open, request, stored::opened, terminal};
 use crate::{
     Command, EditError, EditInput, Error, InsertInput, InsertReview, InsertTarget, Response,
     ReviewedInsert, SaveFailureKind, SaveOutcome, SaveStartFailure, SaveWorker, Worker,

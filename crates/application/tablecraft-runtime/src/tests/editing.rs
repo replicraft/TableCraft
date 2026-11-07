@@ -1,10 +1,9 @@
 //! Real public-worker draft/review/save acceptance on independent native bytes.
-use super::{open, request, stored::opened};
+use super::{open, request, stored::opened, terminal};
 use crate::{
     Command, EditInput, EditTarget, Response, ReviewedEdit, SaveOutcome, SaveStartFailure,
     SaveWorker,
 };
-use std::time::{Duration, Instant};
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn review(worker: &crate::Worker, revision: u64, text: &str) -> ReviewedEdit {
@@ -41,20 +40,6 @@ fn review(worker: &crate::Worker, revision: u64, text: &str) -> ReviewedEdit {
     assert_eq!(review.after.text, text);
     assert_eq!(review.changed_rows, 1);
     capability
-}
-
-pub(crate) fn terminal(worker: &SaveWorker) -> crate::SaveReport {
-    let deadline = Instant::now() + Duration::from_secs(30);
-    loop {
-        if let Some(report) = worker.poll() {
-            return report;
-        }
-        assert!(
-            Instant::now() < deadline,
-            "save did not publish a terminal outcome"
-        );
-        std::thread::yield_now();
-    }
 }
 
 #[test]
