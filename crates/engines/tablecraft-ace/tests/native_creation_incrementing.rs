@@ -2,6 +2,8 @@
 //! Matching fresh declarations use independent empty/first-row source endpoints.
 #[path = "native_creation_incrementing/components.rs"]
 mod components;
+#[path = "native_creation_incrementing/initial.rs"]
+mod initial;
 #[path = "native_creation_incrementing/resources.rs"]
 mod resources;
 

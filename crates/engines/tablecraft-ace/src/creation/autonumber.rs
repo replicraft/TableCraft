@@ -11,7 +11,6 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
 pub(super) const LONG_INCREMENT_FLAGS: u8 = FIXED_FLAG | UPDATABLE_FLAG | AUTO_NUMBER_FLAG;
-const PROFILE_COLUMNS: usize = 2;
 const GENERATED_COLUMN: usize = 0;
 
 pub(super) fn qualify(
@@ -27,7 +26,7 @@ pub(super) fn qualify(
     };
     check(budget, cancelled)?;
     if selected != GENERATED_COLUMN
-        || columns.count() != PROFILE_COLUMNS
+        || columns.scalar(selected) != ScalarType::Int32
         || rows.count() != 0
         || columns.primary_key_name(selected).is_none()
     {
@@ -35,8 +34,7 @@ pub(super) fn qualify(
     }
     for position in 0..columns.count() {
         check(budget, cancelled)?;
-        if columns.scalar(position) != ScalarType::Int32
-            || columns.policies(position) != (None, None)
+        if columns.policies(position) != (None, None)
             || columns.default_literal(position).is_some()
             || position != selected && columns.primary_key_name(position).is_some()
         {

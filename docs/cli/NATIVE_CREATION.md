@@ -178,16 +178,25 @@ remain separate.
 
 ## Explicit Increment primary
 
-An empty two-Int32 table can explicitly declare its first primary field as
-Increment AutoNumber:
+An empty table can explicitly declare its first Int32 primary field as Increment
+AutoNumber. One through sixteen constructible scalar fields are admitted:
 
 ```sh
 tablecraft create fresh.accdb --table Items --column Id --column Score \
   --primary-key Id PrimaryId --incrementing Id
 ```
 
-The same selector works with typed `--field Id int32 --field Score int32`.
-No initial rows, defaults or field policies are admitted in this initial profile.
+An initial ID-only table uses the same operation:
+
+```sh
+tablecraft create initial.accdb --table Table1 --field ID int32 \
+  --primary-key ID PrimaryKey --incrementing ID
+```
+
+Companions may use the existing fixed, Short Text, Short Binary or Decimal
+creation declarations. No initial rows, defaults or field policies are admitted
+in this Increment profile. This constructs a fresh file; it does not add a table
+to an existing blank database or widen generated INSERT eligibility.
 Later omitted-ID INSERT uses actual native metadata, checked LAST arithmetic and
 the normal journal service. Supplied IDs/NULL are never turned into omissions.
 Random generation and reseeding remain unsupported. See the

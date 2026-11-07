@@ -183,8 +183,9 @@ impl<'a> CreateColumn<'a> {
 
     /// Explicitly declare a fresh LONG Increment field, without issuing IDs.
     ///
-    /// The operation currently requires an empty two-LONG table, this field
-    /// first with an explicit primary key, and no optional policies/defaults.
+    /// The operation requires an empty table, this field first with an explicit
+    /// primary key, and no optional policies/defaults. Ordinary companions use
+    /// the same bounded fixed and sized-variable declarations as manual creation.
     /// Complete initial rows are never rewritten or interpreted as generation.
     pub fn with_incrementing_autonumber(mut self) -> Result<Self, CreateDatabaseError> {
         if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32))
