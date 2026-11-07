@@ -1,4 +1,5 @@
 //! Object navigation emits page intents without owning a database source.
+pub(super) mod activation;
 mod group;
 mod row;
 
@@ -16,8 +17,10 @@ const SEARCH_VERTICAL_PADDING: i8 = 5;
 impl State {
     pub(super) fn navigation(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if !self.navigation_visible() {
+            self.navigation_clicks = activation::Clicks::default();
             return;
         }
+        let mut clicks = std::mem::take(&mut self.navigation_clicks);
         let mut selected_object = None;
         let enter_pressed =
             ui.input(|input| input.key_pressed(egui::Key::Enter) && input.modifiers.is_none());
@@ -59,6 +62,19 @@ impl State {
                 let system = ui.checkbox(&mut self.show_system, tr(ui, "navigation-show-system"));
                 focus::register(ui, Pane::Navigation, &system, false);
                 ui.separator();
+                clicks.begin(
+                    ui,
+                    activation::Scope {
+                        revision: self
+                            .database
+                            .as_ref()
+                            .map(|database| database.document_revision),
+                        filter: self.filter.clone(),
+                        show_system: self.show_system,
+                        publication: self.focus_publication,
+                        ready: self.object_switch_ready(),
+                    },
+                );
                 if let Some(db) = &self.database {
                     let filter = self.filter.to_lowercase();
                     let system_label = tr(ui, "navigation-system");
@@ -132,7 +148,7 @@ impl State {
                                             if response.clicked() {
                                                 selected_object = Some(target.clone());
                                             }
-                                            if explicitly_opened(ui, &response, enter_pressed)
+                                            if clicks.opened(ui, &response, enter_pressed)
                                                 && self.can_open_object(&target)
                                             {
                                                 actions.push(Action::OpenObject { target });
@@ -195,7 +211,7 @@ impl State {
                                             if response.clicked() {
                                                 selected_object = Some(target.clone());
                                             }
-                                            if explicitly_opened(ui, &response, enter_pressed)
+                                            if clicks.opened(ui, &response, enter_pressed)
                                                 && self.can_open_object(&target)
                                             {
                                                 actions.push(Action::OpenObject { target });
@@ -209,19 +225,12 @@ impl State {
                     ui.weak(tr(ui, "navigation-open-first"));
                 }
             });
+        clicks.finish(ui);
+        self.navigation_clicks = clicks;
         if let Some(target) = selected_object {
             self.select_navigation_object(target);
         }
     }
-}
-
-fn explicitly_opened(ui: &mut Ui, response: &egui::Response, enter_pressed: bool) -> bool {
-    let keyboard_open =
-        response.has_focus() && enter_pressed && !egui::Popup::is_any_open(ui.ctx());
-    if keyboard_open {
-        ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
-    }
-    response.double_clicked() || keyboard_open
 }
 
 #[cfg(test)]

@@ -2,8 +2,9 @@
 mod joins;
 mod keyboard;
 
-use super::{Session, click, context_menu};
+use super::{Session, context_menu};
 use crate::localization::tr;
+use crate::workspace::click;
 use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignJoin, DesignJoinKind, DesignSource,

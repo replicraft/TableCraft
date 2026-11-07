@@ -1,5 +1,6 @@
 mod backstage;
 mod chrome;
+mod click;
 mod content;
 mod contents;
 mod deletion;
@@ -307,6 +308,7 @@ pub struct State {
     show_system: bool,
     objects: objects::Objects,
     navigation_hidden: bool,
+    navigation_clicks: navigation::activation::Clicks,
     backstage: backstage::Backstage,
 }
 

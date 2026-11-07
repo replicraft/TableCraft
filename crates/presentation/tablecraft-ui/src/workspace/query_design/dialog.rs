@@ -1,7 +1,6 @@
 //! Source-bound Add Tables dialog; unsupported query sources remain unavailable.
-use super::click;
 use crate::localization::tr;
-use crate::workspace::{Action, State, diagnostics};
+use crate::workspace::{Action, State, click, diagnostics};
 use egui::{Frame, ScrollArea};
 
 const TABLE_ROW_HEIGHT: f32 = 18.0;

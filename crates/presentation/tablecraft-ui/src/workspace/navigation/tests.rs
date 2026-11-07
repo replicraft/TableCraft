@@ -6,8 +6,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 
-#[test]
-fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filtering() {
+fn harness() -> Harness<'static, (State, Vec<Action>)> {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
@@ -31,6 +30,7 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         }],
     });
     let mut harness = Harness::builder()
+        .with_step_dt(1.0 / 60.0)
         .with_size(egui::vec2(1280.0, 820.0))
         .build_ui_state(
             |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
@@ -38,6 +38,12 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         );
     crate::configure(&harness.ctx);
     harness.run();
+    harness
+}
+
+#[test]
+fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filtering() {
+    let mut harness = harness();
     assert!(harness.query_by_label("All Objects").is_some());
     assert!(harness.query_by_label("All Access Objects").is_none());
     let search = harness.get_by_role_and_label(Role::TextInput, "Search objects");
@@ -240,4 +246,53 @@ fn navigation_rows_use_full_width_and_retain_exact_object_identity_after_filteri
         "a replaced document must not inherit an old object focus"
     );
     assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn adjacent_object_clicks_cannot_open_a_different_row_as_a_double_click() {
+    let mut harness = harness();
+    let first = harness
+        .get_all_by_role_and_label(Role::Button, "First")
+        .find(|node| !node.accesskit_node().is_disabled())
+        .unwrap()
+        .rect();
+    let second = harness
+        .get_all_by_role_and_label(Role::Button, "Second")
+        .next()
+        .unwrap()
+        .rect();
+    let first_edge = egui::pos2(first.center().x, first.bottom() - 0.5);
+    let second_edge = egui::pos2(second.center().x, second.top() + 0.5);
+    let distance = harness
+        .ctx
+        .options(|options| options.input_options.max_click_dist);
+    assert!(first_edge.distance(second_edge) < distance);
+
+    for (index, point) in [first_edge, second_edge, second_edge]
+        .into_iter()
+        .enumerate()
+    {
+        harness.event(egui::Event::PointerMoved(point));
+        for pressed in [true, false] {
+            harness.event(egui::Event::PointerButton {
+                pos: point,
+                button: egui::PointerButton::Primary,
+                pressed,
+                modifiers: egui::Modifiers::NONE,
+            });
+            harness.run_steps(1);
+        }
+        if index < 2 {
+            assert!(
+                harness.state().1.is_empty(),
+                "one click on each of two objects must only change selection"
+            );
+        }
+    }
+    assert!(matches!(
+        harness.state().1.as_slice(),
+        [Action::OpenObject { target }]
+            if target.document_revision == 17
+                && target.kind == ObjectKind::Table { name: "Second".into() }
+    ));
 }

@@ -1,4 +1,4 @@
-//! Pair pointer clicks on the same live designer control, independent of other widgets.
+//! Pair pointer clicks on the same live workspace control, independent of other widgets.
 use egui::{Id, Pos2, Response, Ui};
 
 pub(super) struct Pair {

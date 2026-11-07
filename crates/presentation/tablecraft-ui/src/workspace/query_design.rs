@@ -1,5 +1,4 @@
 //! Local QBE drafts require explicit source-bound canonicalization before execution.
-mod click;
 mod context_menu;
 mod dialog;
 mod grid;
@@ -11,7 +10,7 @@ mod sources;
 
 pub(in crate::workspace) use preferences::Preferences;
 
-use super::{Action, DocumentView, ObjectKind, ObjectTab, State};
+use super::{Action, DocumentView, ObjectKind, ObjectTab, State, click};
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignSource, DesignTableMetadata, MAX_DESIGN_COLUMNS, MAX_DESIGN_SOURCES,
     MAX_DESIGN_TEXT_BYTES, QueryDesignDraft,
