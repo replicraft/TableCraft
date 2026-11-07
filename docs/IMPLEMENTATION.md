@@ -1,5 +1,17 @@
 # Implementation status
 
+## Renewed platform audit — 7 November 2026
+
+Repository/release tooling now uses explicit UTF-8, and diagnostic generation
+writes the same UTF-8/LF bytes that its provenance hashes describe. Read/save
+workers retain their published results and resource owners when a host repaint
+callback panics. Portable CLI journal tests are enabled on Windows too. The
+audit also corrected accessibility deadlock/role issues in pending field-property
+work without changing its assertions. Fresh native batches pass 1,004 focused
+tests, and complete workspace strict lint passes on macOS ARM64. Cross-target
+coverage and remaining Windows/Linux runtime qualification are recorded in the
+[renewed audit](testing/CROSS_PLATFORM_AUDIT.md#renewed-source-and-host-review).
+
 ## Editable initial-table Design view — 7 November 2026
 
 The initial unsaved table now has one editor shared by Datasheet and Design

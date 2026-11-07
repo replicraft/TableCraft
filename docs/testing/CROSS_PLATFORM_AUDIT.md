@@ -162,6 +162,68 @@ that those six jobs passed. No push, workflow dispatch or release was performed
 for this audit. The existing release workflow still publishes only CLI archives;
 desktop archive tooling does not establish a published desktop release.
 
+## Renewed source and host review
+
+The follow-up review covers Windows/macOS/Linux on x86-64 and ARM64. It revisits
+native publication, locking and recovery; shared carriers, binary codecs and
+query semantics; runtime workers, desktop paths/dialogs/fonts; and repository
+and release tooling. Existing working changes were included in checks without
+being treated as native operating-system qualification.
+
+Additional corrections:
+
+- Cargo metadata, Git document inventories, UTF-8 artifacts and release
+  manifests now select UTF-8 explicitly rather than inheriting a Windows legacy
+  code page. Current diagnostic and dictionary generators use the same explicit
+  decoding. Diagnostic catalog output uses UTF-8/LF, matching its recorded hash
+  on Windows as well as Unix. Historical hash-pinned oracle scripts and receipts
+  remain unchanged.
+- Read/save workers contain panics from host repaint callbacks after publishing
+  their result. The worker continues processing, and retained save resources
+  remain available for explicit release and acknowledgement. This catches only
+  notification failures and does not replay operations.
+- Portable CLI journal preflight, output-failure and finalization tests are now
+  enabled on Windows too. Their synthetic Unix receipt cases exercise formatting;
+  they do not claim that Windows supplies a Unix directory barrier.
+- Fresh headless tests exposed a deadlock in pending field-property accessibility
+  labels: translation attempted to re-enter the context inside `widget_info`.
+  Labels are now resolved before entering that callback. The literal editor also
+  preserves egui's multiline accessibility role instead of replacing it with a
+  generic single-line annotation.
+
+The source review found no new host-endian wire encoding or architecture-only
+SIMD dependency in the reviewed shared code. Existing `wide` and AES consumers
+have fallback implementations; native zerocopy layouts retain explicit endian
+and alignment contracts. This establishes no additional file-format admission.
+Floating transcendental/financial calculations use Rust floating operations whose
+precision may vary by platform/toolchain. Portable execution does not promise
+bit-identical transcendental results or native Access numerical equivalence.
+
+`tempfile` remains appropriate for ordinary temporary files and content-only
+copies. It does not replace the required publisher's captured-parent identity,
+file/directory synchronization, typed uncertain outcomes or platform-specific
+retirement protocol. Windows local-NTFS restrictions and retained retired-journal
+policy remain intentional. No weaker fallback was introduced.
+
+Fresh macOS ARM64 library/binary batches pass 1,004 tests: 139 IO, 95 Access,
+108 CLI, 140 runtime, 420 shared UI and 102 desktop. Twelve focused native schema/
+initial-insertion recovery tests also pass. This is not the entire workspace
+regression suite. Repository tooling passes 81 top-level Python tests, 32 archive
+tests and eight association tests; all 881 formatter roots, the 20-package
+dependency guard and 7,911 documentation targets pass. Logs use the ignored
+`.cache/platform-audit-current-*` prefix. Initial property-render failures and
+the corrected byte-literal lint finding remain separate failed evidence.
+Strict all-target/all-feature Clippy passes for the complete 20-package workspace
+on macOS ARM64. The runtime also passes all 91 tests with optional capabilities
+disabled. Windows x64 and ARM64 pass all-target/all-feature checks of the 18
+packages other than CLI/SQLite; the existing local MSVC C SDK limitation remains
+an explicit exclusion, not a successful Windows CLI build.
+Intel macOS and both Linux architectures pass complete workspace
+all-target/all-feature cross-checks. Linux's bundled SQLite C compilation uses the retained Zig wrapper
+and a repository-local writable cache. Initial attempts failed because Zig's
+default global cache was outside the sandbox; their logs remain separate from
+the corrected passes.
+
 ## Remaining qualification
 
 - Actual Windows/Linux filesystem, sharing, ACL and retained-journal behavior
