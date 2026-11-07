@@ -330,7 +330,7 @@ impl State {
         let record_pending = continuation.is_some();
         let save = self.table_draft_save.take().unwrap();
         if let Some(continuation) = continuation {
-            self.initial_record = Some(continuation);
+            self.insert_continuation = Some(continuation);
         }
         let close_after_save = matches!(save.close, Some(CloseIntent::Tab(_)));
         let resume_transition = matches!(save.close, Some(CloseIntent::All));

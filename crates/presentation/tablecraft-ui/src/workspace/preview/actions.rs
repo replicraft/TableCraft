@@ -42,6 +42,26 @@ impl Preview {
             return;
         }
         match action {
+            Action::RetryInsert { save_id } => {
+                // Illustrate a refused synthetic read; this host has no witness,
+                // database source or native capability to reopen.
+                let operation = self.request();
+                if self.state.begin_insert_retry(save_id, operation) {
+                    self.state.fail_insert_retry(
+                        operation,
+                        self.state.localizer.text("insertion-mock-help"),
+                    );
+                }
+            }
+            Action::CancelInsertRetry { operation_id } => {
+                self.state.fail_insert_retry(
+                    operation_id,
+                    self.state.localizer.text("insertion-mock-help"),
+                );
+            }
+            Action::DiscardRetainedInsert { save_id } => {
+                self.state.discard_retained_insert(save_id);
+            }
             Action::BeginRecovery { attempt_id } => {
                 let operation = self.request();
                 if self.state.begin_recovery(attempt_id, operation) {

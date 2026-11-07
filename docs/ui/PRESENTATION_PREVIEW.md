@@ -1,5 +1,29 @@
 # Presentation preview
 
+## Retained row input and Yes/No controls — 7 November 2026
+
+The resource-free `retained-insert-input` and `retained-insert-retry` scenes drive
+actual review/save/failure/acknowledgment UI transitions. They retain original
+Value, Omitted and NULL input, including hidden raw text. Retry eligibility is a
+synthetic typed fact, never permission to open a file or write. The inventory is
+now 95 scenes, or 1,520 scene/theme/language combinations. Read-only previews are
+bounded, with explicit full-input copy buttons, a visible scrollbar and fixed
+footer actions. Unknown outcomes disable retry while preserving copy/discard.
+
+Six accepted normal-host frames were inspected from ignored
+`.cache/ui-previews/retained-input-accepted-20261107/`: English retained input in
+light/dark and checked/omitted Yes/No entry at 1280×820, 1×; German dark and
+Japanese light retry views at 900×580, 1.25×. Rendering was windowless on macOS
+with Windows input emulation. `TABLECRAFT_PREVIEW_INITIAL_EDIT=boolean` and
+`boolean-omitted` exercise actual initial-table checkbox widgets. Geometry checks
+center the checkbox across the complete column, separately from the mode control.
+
+The retained 1920×1141 Windows/VirtualBox Datasheet reference establishes stored
+checkbox placement; its scale is unrecorded. It contains no retained-error modal
+or explicit omitted-input checkbox. Those states remain TableCraft adaptations,
+not native Windows/Access interaction qualification. Earlier off-center checkbox
+and floating-scrollbar frames remain separate exploratory evidence.
+
 ## Inline field names and unsaved first records — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=rename|record` drives actual widgets in

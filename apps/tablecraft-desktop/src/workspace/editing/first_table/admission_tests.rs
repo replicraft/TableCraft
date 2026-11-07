@@ -22,6 +22,7 @@ fn unrelated_host_save_refusal_returns_the_exact_issued_request_to_naming() {
         table: "Other operation".into(),
         offset: 0,
         report: None,
+        insert_retry: None,
     });
     harness
         .get_by_role_and_label(Role::Button, "OK")

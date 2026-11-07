@@ -196,7 +196,10 @@ fn review_is_bound_to_current_intent_and_retained_save_owner_cannot_be_closed() 
         41,
         EditSaveOutcome::Failed("Resources released; prior commit receipt remains known.".into()),
     );
-    assert!(state.close_insert());
+    assert!(!state.close_insert());
+    assert!(state.acknowledge_insert_save(41, InsertRetryPermission::Blocked));
+    assert!(state.insert_continuation_pending());
+    assert!(state.discard_retained_insert(41));
 }
 
 fn generated_state() -> (State, InsertTarget) {

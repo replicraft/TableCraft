@@ -1,5 +1,27 @@
 # Implementation status
 
+## Retained INSERT input and guarded retry — 7 November 2026
+
+Row input now survives Save, recovery and terminal acknowledgment. Failed or
+uncertain results retain read-only values for copying or explicit discard;
+releasing resources is not rollback evidence. Runtime issues an original-image
+witness during review and tracks typed current outcomes independently from
+historical receipts. Eligible explicit retry compares every original byte before
+opening a fresh document, then requires actual table metadata, a new review and
+new Apply. The desktop only routes those shared services and UI transitions.
+Yes/No entry uses a centered keyboard-accessible checkbox; omitted input remains
+indeterminate without inventing a stored value.
+
+Local headless checks pass 136 runtime and 98 desktop tests. The full UI batch
+passes 388 cases; final focused runs pass seven record-control and seven retained-
+input cases after scrollbar and checkbox geometry corrections. Strict affected-
+package lint passes. Connected acceptance exercises a real source-drift failure,
+resource release, guarded retry refusal, exact-original restoration and a fresh
+reviewed INSERT. Six final windowless frames were rendered and inspected; native
+Windows/Linux execution and Access comparison remain unrun. See
+[runtime contracts](application/RUNTIME.md#insert-input-retention-and-guarded-retry)
+and [preview evidence](ui/PRESENTATION_PREVIEW.md).
+
 ## Header naming and unsaved first-record continuity — 7 November 2026
 
 Field names now edit in their headers with selected initial text, Enter/Tab

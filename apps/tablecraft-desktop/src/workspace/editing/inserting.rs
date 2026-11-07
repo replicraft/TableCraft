@@ -1,5 +1,8 @@
 //! Bridge reviewed row insertion to the shared, nonreplaceable save owner.
+pub(super) mod retry;
+
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
+use retry::InsertRetryContext;
 use tablecraft_runtime::{
     Command, EditInput as RuntimeEditInput, InsertDraft as RuntimeDraft,
     InsertInput as RuntimeInput, InsertReview as RuntimeReview, InsertTarget as RuntimeTarget,
@@ -59,6 +62,9 @@ impl Desktop {
                     .collect(),
             },
         );
+        if !self.state.insert_continuation_pending() {
+            self.editing.insert_retry = None;
+        }
     }
 
     pub(in crate::workspace) fn publish_insert_review(
@@ -116,6 +122,10 @@ impl Desktop {
         }
         let path = capability.source_path().to_path_buf();
         let table = capability.target().table.clone();
+        let retry = InsertRetryContext {
+            witness: capability.retry_witness(),
+            evidence: Default::default(),
+        };
         match self
             .editing
             .worker
@@ -128,6 +138,7 @@ impl Desktop {
                     table,
                     offset: 0,
                     report: None,
+                    insert_retry: Some(retry),
                     owner: SaveOwner::Insert,
                 });
                 self.state.begin_insert_save(review_id, save_id);
@@ -177,5 +188,5 @@ fn ui_input(input: RuntimeInput) -> InsertInput {
     }
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;

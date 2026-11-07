@@ -23,3 +23,14 @@ insertion-inline-help = 아래에서 새 레코드를 편집하세요. Tab으로
 insertion-stale-draft = 원본이 변경되었습니다. 입력 내용은 유지됩니다. 다시 열거나 보기를 변경하기 전에 이 레코드를 취소하세요.
 
 insertion-field-input = { $field } 입력 모드
+
+insertion-retained-help = 복사할 수 있도록 원래 입력 내용을 아래에 보관합니다. 이 화면에서는 레코드를 저장하거나 다시 저장하지 않습니다.
+insertion-retry-blocked = 저장 결과에 따라 이 레코드를 다시 시도할 수 없습니다. 입력 내용을 복사하거나 버리세요.
+insertion-reopening = 다시 열기 전에 원본 데이터베이스를 확인하는 중…
+insertion-retry-original = 원본 다시 열고 편집
+insertion-discard-retained = 보관된 입력 버리기
+
+insertion-copy-input = 전체 입력 복사
+insertion-preview-truncated = 미리보기가 축약되었습니다. 전체 텍스트는 “{ insertion-copy-input }”를 사용하세요.
+
+insertion-retained-schema-help = 테이블은 저장되었습니다. 원래 레코드 입력 내용은 아래에 보관됩니다.

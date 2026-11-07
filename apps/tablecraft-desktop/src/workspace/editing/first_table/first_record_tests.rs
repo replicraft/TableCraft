@@ -75,7 +75,7 @@ fn wait_for_bound_record(harness: &mut Harness<'_, Desktop>) {
         harness.run_steps(1);
         std::thread::yield_now();
     }
-    assert!(!harness.state().state.initial_record_pending());
+    assert!(!harness.state().state.insert_continuation_pending());
     assert!(!harness.state().state.has_unsaved_table_drafts());
     assert!(!harness.state().editing.has_save());
     let data = harness.state().state.data.as_ref().unwrap();

@@ -517,7 +517,7 @@ fn successful_schema_completion_retains_one_original_record_before_discarding_ed
         .complete_table_draft_save(request.id, database(72, Some("Contacts")))
         .unwrap();
     assert!(completion.record_pending);
-    assert!(state.initial_record.is_some());
+    assert!(state.insert_continuation.is_some());
     assert!(!state.has_unsaved_table_drafts());
     assert!(state.data.is_none());
 }
@@ -531,5 +531,5 @@ fn untouched_new_record_placeholder_never_creates_an_empty_record_continuation()
         .complete_table_draft_save(request.id, database(72, Some("Contacts")))
         .unwrap();
     assert!(!completion.record_pending);
-    assert!(state.initial_record.is_none());
+    assert!(state.insert_continuation.is_none());
 }

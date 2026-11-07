@@ -23,3 +23,14 @@ insertion-inline-help = Bearbeiten Sie den neuen Datensatz unten. Tab wechselt z
 insertion-stale-draft = Die Quelle wurde geändert. Ihre Eingaben bleiben erhalten; verwerfen Sie diesen Datensatz, bevor Sie die Datei erneut öffnen oder die Ansicht wechseln.
 
 insertion-field-input = Eingabemodus für { $field }
+
+insertion-retained-help = Die ursprünglichen Eingaben bleiben unten zum Kopieren erhalten. Diese Ansicht speichert keinen Datensatz und wiederholt keinen Speicherversuch.
+insertion-retry-blocked = Das Speicherergebnis erlaubt keinen erneuten Versuch für diesen Datensatz. Kopieren oder verwerfen Sie die Eingaben.
+insertion-reopening = Die ursprüngliche Datenbank wird vor dem erneuten Öffnen überprüft…
+insertion-retry-original = Original erneut öffnen und bearbeiten
+insertion-discard-retained = Beibehaltene Eingaben verwerfen
+
+insertion-copy-input = Vollständige Eingaben kopieren
+insertion-preview-truncated = Vorschau gekürzt. Verwenden Sie „{ insertion-copy-input }“ für den vollständigen Text.
+
+insertion-retained-schema-help = Die Tabelle ist gespeichert. Die ursprünglichen Datensatzeingaben bleiben unten erhalten.

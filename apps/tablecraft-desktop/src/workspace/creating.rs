@@ -72,7 +72,7 @@ impl Desktop {
             || self.creating.is_busy()
             || self.file_dialog.is_open()
             || self.state.insertion_dialog_open()
-            || self.state.initial_record_pending()
+            || self.state.insert_continuation_pending()
         {
             return;
         }

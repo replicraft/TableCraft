@@ -47,7 +47,7 @@ fn prepared() -> (State, InsertTarget, Vec<InsertField>) {
             " 00019 hidden ".into(),
         ],
     };
-    state.initial_record = Some(
+    state.insert_continuation = Some(
         state
             .prepare_initial_record(
                 &ObjectTarget {
@@ -69,7 +69,7 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
         .with_size(egui::vec2(1000.0, 600.0))
         .build_ui_state(
             |ui, state: &mut (State, Vec<Action>)| {
-                state.0.initial_record_dialog(ui.ctx(), &mut state.1)
+                state.0.insert_continuation_dialog(ui.ctx(), &mut state.1)
             },
             (state, Vec::new()),
         );
@@ -80,10 +80,13 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
 
 fn assert_retained(state: &State) {
     let retained = &state
-        .initial_record
+        .insert_continuation
         .as_ref()
         .expect("retain the original record")
-        .record;
+        .source;
+    let Seed::Initial(retained) = retained else {
+        panic!("initial schema record retained");
+    };
     assert_eq!(retained.raw_text[1], "  retained name  ");
     assert_eq!(retained.raw_text[2], " 00019 hidden ");
     assert_eq!(retained.inputs[2], InsertInput::Omitted);
@@ -110,7 +113,7 @@ fn prepared_record_emits_one_begin_then_transfers_only_into_the_actual_current_d
             fields,
         },
     );
-    assert!(!state.initial_record_pending());
+    assert!(!state.insert_continuation_pending());
     assert_eq!(state.initial_record_notice, Some(target));
     let Some(Dialog::Draft {
         draft,
@@ -185,7 +188,7 @@ fn begin_failure_and_close_keep_the_record_until_an_explicit_retry() {
 #[test]
 fn stale_database_disables_retry_without_loading_or_starting_another_source() {
     let (mut state, _, _) = prepared();
-    state.initial_record.as_mut().unwrap().auto_start = false;
+    state.insert_continuation.as_mut().unwrap().auto_start = false;
     state.database.as_mut().unwrap().document_revision += 1;
     let mut harness = harness(state);
     let retry = harness.get_by_role_and_label(Role::Button, "Retry new record");
@@ -197,7 +200,7 @@ fn stale_database_disables_retry_without_loading_or_starting_another_source() {
         .get_by_role_and_label(Role::Button, "Discard new record")
         .click_accesskit();
     harness.run_steps(2);
-    assert!(!harness.state().0.initial_record_pending());
+    assert!(!harness.state().0.insert_continuation_pending());
     assert!(
         harness
             .state()

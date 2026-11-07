@@ -23,3 +23,14 @@ insertion-inline-help = 编辑下方的新记录。Tab 切换字段，Shift+Ente
 insertion-stale-draft = 源已更改。输入内容已保留；请先取消此记录，再重新打开或切换视图。
 
 insertion-field-input = { $field } 输入模式
+
+insertion-retained-help = 原始输入保留在下方，可供复制。此视图不会保存记录或重试保存。
+insertion-retry-blocked = 保存结果不允许重试此记录。请复制输入内容或将其放弃。
+insertion-reopening = 正在验证原始数据库，然后重新打开…
+insertion-retry-original = 重新打开原始数据库并编辑
+insertion-discard-retained = 放弃保留的输入
+
+insertion-copy-input = 复制完整输入
+insertion-preview-truncated = 预览已缩短。请使用“{ insertion-copy-input }”获取完整文本。
+
+insertion-retained-schema-help = 表已保存。原始记录输入保留在下方。

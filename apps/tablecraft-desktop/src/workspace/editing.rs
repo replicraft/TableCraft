@@ -7,6 +7,7 @@ mod pasting;
 pub(super) mod recovery;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
+use inserting::retry::{InsertRetryContext, RetainedInsertRetry};
 use std::path::PathBuf;
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
@@ -15,8 +16,8 @@ use tablecraft_runtime::{
     SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
 use tablecraft_ui::{
-    EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs, Localizer,
-    ObjectKind, SaveCleanupNotice,
+    EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs,
+    InsertRetryPermission, Localizer, ObjectKind, SaveCleanupNotice,
 };
 
 pub(super) struct Editing {
@@ -25,6 +26,7 @@ pub(super) struct Editing {
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
     save: Option<ActiveSave>,
+    insert_retry: Option<RetainedInsertRetry>,
     refresh: Option<(u64, String, u32)>,
     refresh_cleanup: Option<SaveCleanupNotice>,
 }
@@ -51,6 +53,7 @@ struct ActiveSave {
     table: String,
     offset: u32,
     report: Option<SaveReport>,
+    insert_retry: Option<InsertRetryContext>,
 }
 
 impl Editing {
@@ -61,6 +64,7 @@ impl Editing {
             insert_review: None,
             delete_review: None,
             save: None,
+            insert_retry: None,
             refresh: None,
             refresh_cleanup: None,
         }
@@ -79,6 +83,10 @@ impl Editing {
         self.review = None;
         self.insert_review = None;
         self.delete_review = None;
+    }
+
+    pub(super) fn clear_insert_retry(&mut self) {
+        self.insert_retry = None;
     }
 }
 
@@ -206,6 +214,7 @@ impl Desktop {
                     table,
                     offset,
                     report: None,
+                    insert_retry: None,
                 });
                 self.state.begin_edit_save(review_id, save_id);
                 self.state.busy = false;
@@ -229,11 +238,24 @@ impl Desktop {
             return;
         }
         save.report = Some(report);
+        if let Some(retry) = &mut save.insert_retry {
+            retry.evidence.observe(report);
+        }
         if matches!(save.owner, SaveOwner::FirstTable) {
             self.first_table_save_report(report);
             return;
         }
-        let outcome = save_outcome(&self.state.localizer, report.outcome);
+        let outcome = match (save.owner, report.outcome) {
+            (SaveOwner::Insert, SaveOutcome::Saved { receipt })
+                if matches!(
+                    receipt.known,
+                    SaveKnownOutcome::RolledBack | SaveKnownOutcome::OriginalVerified
+                ) =>
+            {
+                EditSaveOutcome::Failed(known_result(&self.state.localizer, Some(receipt.known)))
+            }
+            _ => save_outcome(&self.state.localizer, report.outcome),
+        };
         match save.owner {
             SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
             SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
@@ -287,10 +309,19 @@ impl Desktop {
         let Some(save) = self.editing.save.as_ref().filter(|save| save.id == id) else {
             return;
         };
-        let workspace_restore = if matches!(
-            save.report.map(|report| report.outcome),
-            Some(SaveOutcome::Saved { .. })
-        ) {
+        if matches!(save.owner, SaveOwner::Insert) && !self.state.can_acknowledge_insert_save(id) {
+            return;
+        }
+        let refresh_after_ack = match save.owner {
+            SaveOwner::Insert => matches!(save.report.map(|report| report.outcome),
+                Some(SaveOutcome::Saved { receipt })
+                    if matches!(receipt.known, SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified)),
+            _ => matches!(
+                save.report.map(|report| report.outcome),
+                Some(SaveOutcome::Saved { .. })
+            ),
+        };
+        let workspace_restore = if refresh_after_ack {
             let Some(restore) = self.capture_workspace_restore() else {
                 return;
             };
@@ -307,17 +338,27 @@ impl Desktop {
                 self.state.close_edit();
             }
             SaveOwner::Insert => {
-                self.state.close_insert();
+                let permission = match &save.insert_retry {
+                    Some(retry) if retry.evidence.can_retry_original() => {
+                        InsertRetryPermission::OriginalImage
+                    }
+                    _ => InsertRetryPermission::Blocked,
+                };
+                self.state.acknowledge_insert_save(id, permission);
+                if !refresh_after_ack {
+                    self.editing.insert_retry =
+                        save.insert_retry.map(|context| RetainedInsertRetry {
+                            save_id: id,
+                            context,
+                        });
+                }
             }
             SaveOwner::Delete => {
                 self.state.close_delete();
             }
             SaveOwner::FirstTable => {}
         }
-        if matches!(
-            save.report.map(|report| report.outcome),
-            Some(SaveOutcome::Saved { .. })
-        ) {
+        if refresh_after_ack {
             self.select_file(save.path);
             self.open();
             if let Some(restore) = workspace_restore {
@@ -373,7 +414,7 @@ impl Desktop {
         if self.editing.has_save() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             self.cancel_current_save();
-        } else if self.state.insertion_dialog_open() || self.state.initial_record_pending() {
+        } else if self.state.insertion_dialog_open() || self.state.insert_continuation_pending() {
             // An inline record is still user input, not a persisted native row.
             // Keep it until the user explicitly saves or abandons the record.
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
@@ -561,5 +602,5 @@ fn failure_outcome(localizer: &Localizer, failure: SaveFailure) -> EditSaveOutco
     }
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;

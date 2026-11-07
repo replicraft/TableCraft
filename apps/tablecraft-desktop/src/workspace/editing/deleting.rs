@@ -102,6 +102,7 @@ impl Desktop {
                     table,
                     offset,
                     report: None,
+                    insert_retry: None,
                 });
                 self.state.begin_delete_save(review_id, save_id);
                 self.state.busy = false;
@@ -116,5 +117,5 @@ impl Desktop {
     }
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;

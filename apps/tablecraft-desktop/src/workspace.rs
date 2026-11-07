@@ -131,6 +131,10 @@ enum PendingOperation {
     Insert {
         request_id: u64,
     },
+    InsertRetry {
+        request_id: u64,
+        save_id: u64,
+    },
     Delete {
         request_id: u64,
     },
@@ -298,7 +302,7 @@ impl Desktop {
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
             || self.state.insertion_dialog_open()
-            || self.state.initial_record_pending()
+            || self.state.insert_continuation_pending()
         {
             return;
         }
@@ -336,7 +340,7 @@ impl Desktop {
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.insertion_dialog_open()
-            || self.state.initial_record_pending()
+            || self.state.insert_continuation_pending()
         {
             return;
         }
@@ -460,6 +464,14 @@ impl Desktop {
                     };
                     if let PendingOperation::FirstTableReopen { request_id } = self.pending {
                         self.finish_first_table_reopen(request_id, database);
+                        continue;
+                    }
+                    if let PendingOperation::InsertRetry {
+                        request_id,
+                        save_id,
+                    } = self.pending
+                    {
+                        self.finish_insert_retry(request_id, save_id, database);
                         continue;
                     }
                     self.state.database = Some(database);
@@ -630,6 +642,9 @@ impl Desktop {
                     PendingOperation::Insert { request_id } => {
                         self.state.fail_insert(*request_id, error.to_string());
                     }
+                    PendingOperation::InsertRetry { request_id, .. } => {
+                        self.state.fail_insert_retry(*request_id, error.to_string());
+                    }
                     PendingOperation::Contents { target, request_id } => {
                         self.state
                             .fail_contents(*request_id, target.clone(), error.to_string());
@@ -669,7 +684,13 @@ impl eframe::App for Desktop {
         self.poll();
         self.poll_saves();
         self.poll_recovery();
-        if !self.state.initial_record_pending()
+        if !self.state.insert_continuation_pending()
+            && !self.state.insertion_dialog_open()
+            && !self.editing.has_save()
+        {
+            self.editing.clear_insert_retry();
+        }
+        if !self.state.insert_continuation_pending()
             && !self.state.insertion_dialog_open()
             && !self.editing.has_save()
             && !self.state.busy
@@ -848,6 +869,11 @@ impl eframe::App for Desktop {
                 Action::ApplyDelete { review_id } => self.apply_delete(review_id),
                 Action::CloseDelete { request_id } => self.close_delete(request_id),
                 Action::BeginInsert { target } => self.begin_insert(target),
+                Action::RetryInsert { save_id } => self.retry_insert(save_id),
+                Action::DiscardRetainedInsert { save_id } => self.discard_insert_retry(save_id),
+                Action::CancelInsertRetry { operation_id } => {
+                    self.cancel_insert_retry(operation_id)
+                }
                 Action::ReviewInsert { draft_id, inputs } => self.review_insert(draft_id, inputs),
                 Action::ApplyInsert { review_id } => self.apply_insert(review_id),
                 Action::CloseInsert { request_id, .. } => self.close_insert(request_id),
@@ -974,7 +1000,7 @@ impl eframe::App for Desktop {
             && (self.editing.has_save()
                 || self.creating.is_busy()
                 || self.state.insertion_dialog_open()
-                || self.state.initial_record_pending())
+                || self.state.insert_continuation_pending())
         {
             ui.ctx()
                 .send_viewport_cmd(egui::ViewportCommand::CancelClose);

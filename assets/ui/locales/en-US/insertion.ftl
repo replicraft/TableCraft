@@ -23,3 +23,14 @@ insertion-inline-help = Edit the new record below. Tab moves between fields; Shi
 insertion-stale-draft = The source changed. Your input is retained; cancel this record before reopening or changing views.
 
 insertion-field-input = { $field } input mode
+
+insertion-retained-help = Original input is kept below for copying. No record is saved or retried by this view.
+insertion-retry-blocked = The save outcome does not permit retrying this record. Copy the input or discard it.
+insertion-reopening = Verifying the original database before reopening…
+insertion-retry-original = Reopen original and edit
+insertion-discard-retained = Discard retained input
+
+insertion-copy-input = Copy complete input
+insertion-preview-truncated = Preview shortened. Use “{ insertion-copy-input }” for the full text.
+
+insertion-retained-schema-help = The table is saved. The original record input is retained below.

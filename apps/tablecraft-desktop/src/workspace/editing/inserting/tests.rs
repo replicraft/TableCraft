@@ -7,6 +7,8 @@ use std::path::PathBuf;
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
 
+mod retry;
+
 fn opened() -> (
     tempfile::TempDir,
     PathBuf,

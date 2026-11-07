@@ -11,7 +11,6 @@ mod filtering;
 mod find;
 pub(crate) mod focus;
 mod home;
-mod initial_record;
 pub(crate) mod insertion;
 mod navigation;
 mod objects;
@@ -42,7 +41,9 @@ pub use find::{
     FindDirection, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
     ReplaceFindRequest,
 };
-pub use insertion::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget};
+pub use insertion::{
+    InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
+};
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
@@ -269,6 +270,15 @@ pub enum Action {
     ReleaseEditSave {
         save_id: u64,
     },
+    RetryInsert {
+        save_id: u64,
+    },
+    CancelInsertRetry {
+        operation_id: u64,
+    },
+    DiscardRetainedInsert {
+        save_id: u64,
+    },
     AcknowledgeEditSave {
         save_id: u64,
     },
@@ -332,7 +342,7 @@ pub struct State {
     paste_request: Option<editing::paste::ClipboardRequest>,
     ribbon_paste: Option<home::menus::paste::PendingPaste>,
     insertion: Option<insertion::Dialog>,
-    initial_record: Option<initial_record::Continuation>,
+    insert_continuation: Option<insertion::continuation::Continuation>,
     initial_record_notice: Option<InsertTarget>,
     deletion: Option<deletion::Dialog>,
     /// Host capability; false until the complete native Find service is ready.
@@ -671,7 +681,7 @@ impl State {
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_table_draft_save_shortcut(ui.ctx());
         let modal_open = self.table_draft_save.is_some()
-            || self.initial_record_pending()
+            || self.insert_continuation_pending()
             || self.table_draft_close.is_some()
             || self.contents_request_id().is_some()
             || self.edit_dialog_open()
@@ -751,7 +761,7 @@ impl State {
         self.contents_dialog(ui.ctx(), &mut actions);
         self.edit_dialog(ui.ctx(), &mut actions);
         self.insertion_dialog(ui.ctx(), &mut actions);
-        self.initial_record_dialog(ui.ctx(), &mut actions);
+        self.insert_continuation_dialog(ui.ctx(), &mut actions);
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);

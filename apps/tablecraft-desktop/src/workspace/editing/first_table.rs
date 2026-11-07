@@ -111,6 +111,7 @@ impl Desktop {
                     table: host.table.clone(),
                     offset: 0,
                     report: None,
+                    insert_retry: None,
                 });
                 self.state.busy = true;
             }
@@ -378,10 +379,10 @@ fn report_message(desktop: &Desktop, outcome: SaveOutcome) -> String {
     }
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod admission_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]

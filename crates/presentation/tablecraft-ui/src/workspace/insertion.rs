@@ -1,7 +1,10 @@
 //! Runtime-owned row insertion decisions, independent of cell-edit row handles.
+pub(super) mod continuation;
 mod dialog;
+pub use retained::InsertRetryPermission;
 mod initial;
 pub(crate) mod inline;
+mod retained;
 
 use super::{DocumentView, EditInput, EditSaveOutcome, InputHint, State};
 
@@ -93,10 +96,12 @@ pub(super) enum Dialog {
         save_id: u64,
         cancel_requested: bool,
         resolving: bool,
+        retained: Option<retained::RetainedInput>,
     },
     Finished {
         save_id: u64,
         outcome: EditSaveOutcome,
+        retained: Option<retained::RetainedInput>,
     },
 }
 
@@ -215,7 +220,8 @@ impl State {
     }
 
     pub fn can_insert_row(&self, target: &InsertTarget) -> bool {
-        !self.busy
+        self.insert_continuation_allows(target)
+            && !self.busy
             && !self.zoom_dialog_open()
             && self.edit.is_none()
             && self.insertion.is_none()
@@ -233,7 +239,7 @@ impl State {
                 request_id,
                 error: None,
             });
-            self.initial_record_insert_started(request_id);
+            self.insert_continuation_started(request_id);
         }
     }
 
@@ -245,7 +251,7 @@ impl State {
                 if *expected == request_id && target == &draft.target);
         if !accepts || !self.insert_source_current(&draft.target) {
             if current_request {
-                self.reject_initial_record_draft(request_id);
+                self.reject_insert_continuation_draft(request_id);
             }
             return;
         }
@@ -265,7 +271,7 @@ impl State {
             review: None,
             error: None,
         });
-        self.adopt_initial_record(request_id, draft_id);
+        self.adopt_insert_continuation(request_id, draft_id);
     }
 
     pub fn can_review_insert(&self, draft_id: u64, proposed: &[InsertInput]) -> bool {
@@ -360,35 +366,100 @@ impl State {
     }
 
     pub fn begin_insert_save(&mut self, review_id: u64, save_id: u64) {
-        if self.can_apply_insert(review_id) {
-            self.insertion = Some(Dialog::Saving {
-                save_id,
-                cancel_requested: false,
-                resolving: false,
-            });
+        if !self.can_apply_insert(review_id) {
+            return;
         }
+        let Some(Dialog::Draft { draft, entries, .. }) = self.insertion.take() else {
+            return;
+        };
+        self.insertion = Some(Dialog::Saving {
+            save_id,
+            cancel_requested: false,
+            resolving: false,
+            retained: Some(retained::RetainedInput {
+                draft,
+                entries,
+                initial_notice: self.initial_record_notice.take(),
+            }),
+        });
     }
 
     pub fn begin_insert_resolution(&mut self, save_id: u64, operation_id: u64) {
-        if matches!(&self.insertion,
-            Some(Dialog::Finished { save_id: expected, outcome: EditSaveOutcome::Retained { .. } })
+        if !matches!(&self.insertion,
+            Some(Dialog::Finished { save_id: expected, outcome: EditSaveOutcome::Retained { .. }, .. })
                 if *expected == save_id)
         {
-            self.insertion = Some(Dialog::Saving {
-                save_id: operation_id,
-                cancel_requested: false,
-                resolving: true,
-            });
+            return;
         }
+        let Some(Dialog::Finished { retained, .. }) = self.insertion.take() else {
+            return;
+        };
+        self.insertion = Some(Dialog::Saving {
+            save_id: operation_id,
+            cancel_requested: false,
+            resolving: true,
+            retained,
+        });
     }
 
     pub fn set_insert_save_outcome(&mut self, save_id: u64, outcome: EditSaveOutcome) {
-        if matches!(&self.insertion,
+        if !matches!(&self.insertion,
             Some(Dialog::Saving { save_id: expected, .. })
             | Some(Dialog::Finished { save_id: expected, .. }) if *expected == save_id)
         {
-            self.insertion = Some(Dialog::Finished { save_id, outcome });
+            return;
         }
+        let retained = match self.insertion.take() {
+            Some(Dialog::Saving { retained, .. } | Dialog::Finished { retained, .. }) => retained,
+            _ => return,
+        };
+        self.insertion = Some(Dialog::Finished {
+            save_id,
+            outcome,
+            retained,
+        });
+    }
+
+    pub fn can_acknowledge_insert_save(&self, save_id: u64) -> bool {
+        matches!(&self.insertion,
+            Some(Dialog::Finished { save_id: expected, outcome, retained })
+                if *expected == save_id
+                    && !matches!(outcome, EditSaveOutcome::Retained { .. })
+                    && (retained.is_none() || self.insert_continuation.is_none()))
+    }
+
+    /// Call only after the host acknowledged the actual native terminal owner.
+    pub fn acknowledge_insert_save(
+        &mut self,
+        save_id: u64,
+        permission: InsertRetryPermission,
+    ) -> bool {
+        if !self.can_acknowledge_insert_save(save_id) {
+            return false;
+        }
+        let Some(Dialog::Finished {
+            outcome, retained, ..
+        }) = self.insertion.take()
+        else {
+            return false;
+        };
+        if (permission == InsertRetryPermission::OriginalImage
+            || !matches!(outcome, EditSaveOutcome::Saved(_)))
+            && let Some(retained) = retained
+        {
+            let message = match outcome {
+                EditSaveOutcome::Saved(message)
+                | EditSaveOutcome::Cancelled(message)
+                | EditSaveOutcome::Failed(message) => message,
+                EditSaveOutcome::Retained { message, .. } => message,
+            };
+            self.insert_continuation = Some(continuation::Continuation::retained(
+                save_id, permission, retained, message,
+            ));
+        } else {
+            self.insert_continuation_closed();
+        }
+        true
     }
 
     pub fn fail_insert(&mut self, request_id: u64, message: String) {
@@ -460,11 +531,14 @@ impl State {
     }
 
     pub fn close_insert(&mut self) -> bool {
-        if self.insert_save_pending() {
+        if matches!(
+            &self.insertion,
+            Some(Dialog::Saving { .. } | Dialog::Finished { .. })
+        ) {
             return false;
         }
         self.insertion = None;
-        self.initial_record_insert_closed();
+        self.insert_continuation_closed();
         true
     }
 

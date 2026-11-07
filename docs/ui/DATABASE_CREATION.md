@@ -248,8 +248,8 @@ Schema Save and row Save are separate operations. After the schema receives its
 acknowledged completion and guarded reopen succeeds, an actually modified record
 buffer is transferred to a fresh runtime-issued insertion draft for that real
 table and document revision. The transfer retains the original draft identities
-and checks the real field names, order and declared carriers. An untouched placeholder never inserts an empty
-record. Original Omitted/NULL/supplied intent and hidden raw text are retained;
+and checks the real field names, order and declared carriers. An untouched
+placeholder never inserts an empty record. Original Omitted/NULL/supplied intent and hidden raw text are retained;
 display formatting never becomes edit input.
 
 The reopened Datasheet shows the retained record for the existing explicit
@@ -270,6 +270,35 @@ This is a TableCraft continuation through two reviewed operations, not Access
 record autosave or an atomic schema-and-record transaction. Connected headless
 desktop checks cover the real schema save/reopen followed by retained row input;
 native Windows execution and Access interaction comparison remain unqualified.
+
+### Retaining input after a row-save failure
+
+Acknowledging a failed or cancelled insertion retains the original input and its
+Omitted/NULL/value choices in a copyable view. Retaining that input does not
+repeat a write or assert that the original file was restored. The schema's known
+completion remains separate; discarding retained row input never deletes the
+table. A terminal or unknown row outcome uses a neutral saved-schema notice;
+it does not claim that the row is unsaved when commitment is uncertain.
+
+The retained view renders only the first 512 Unicode scalar values per field,
+with an explicit shortened-preview notice. Copy complete input copies that
+field's entire original raw text, including text hidden under Omitted or NULL.
+The bounded preview does not truncate the retained backing input or shape up to
+eight MiB into the read-only editor.
+
+Reopen original and edit is enabled only by typed runtime evidence that the
+operation stopped before target writes, or that the original image was rolled
+back or verified. An observed committed/replacement outcome blocks this retry;
+unknown outcomes default to blocked. Releasing resources alone does not grant
+retry permission. The host must complete a guarded read against the captured
+original-content witness, then obtain and validate a fresh insertion draft
+before restoring the input. A failed or cancelled reopen retains the copyable
+input. Successful reopening still requires a new explicit Review and Apply;
+it never replays the previous operation automatically.
+
+This is input retention with a narrowly admitted return to editing, not general
+native Undo, reversal of a committed insertion or a promise of restored physical
+file identity.
 
 ## Evidence and remaining qualification
 

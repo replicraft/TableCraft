@@ -23,3 +23,14 @@ insertion-inline-help = 下の新しいレコードを編集します。Tabで�
 insertion-stale-draft = ソースが変更されました。入力内容は保持されています。再度開いたり表示を切り替えたりする前に、このレコードを取り消してください。
 
 insertion-field-input = { $field } の入力モード
+
+insertion-retained-help = コピーできるように元の入力内容を以下に保持しています。この画面ではレコードの保存や再試行は行いません。
+insertion-retry-blocked = 保存結果により、このレコードは再試行できません。入力内容をコピーするか破棄してください。
+insertion-reopening = 再度開く前に元のデータベースを確認しています…
+insertion-retry-original = 元のデータベースを開いて編集
+insertion-discard-retained = 保持した入力内容を破棄
+
+insertion-copy-input = 入力内容をすべてコピー
+insertion-preview-truncated = プレビューは短縮されています。全文には「{ insertion-copy-input }」を使用してください。
+
+insertion-retained-schema-help = テーブルは保存されています。元のレコードの入力内容を以下に保持しています。

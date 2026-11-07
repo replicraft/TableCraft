@@ -130,8 +130,15 @@ impl State {
                         } => {
                             save_display::pending(ui, *cancel_requested, *resolving);
                         }
-                        Dialog::Finished { outcome, .. } => {
+                        Dialog::Finished {
+                            outcome, retained, ..
+                        } => {
                             save_display::outcome(ui, outcome);
+                            if !matches!(outcome, EditSaveOutcome::Saved(_))
+                                && let Some(retained) = retained
+                            {
+                                retained.show(ui);
+                            }
                         }
                     });
                 let footer_width = footer_width(ui, dialog);
@@ -201,7 +208,9 @@ impl State {
                                 actions.push(Action::CancelEditSave { save_id: *save_id });
                             }
                         }
-                        Dialog::Finished { save_id, outcome } => match outcome {
+                        Dialog::Finished {
+                            save_id, outcome, ..
+                        } => match outcome {
                             EditSaveOutcome::Retained {
                                 can_recover,
                                 can_release,
@@ -256,6 +265,11 @@ impl State {
             }
         }
         if close && !self.insert_save_pending() {
+            if let Some(Dialog::Finished { save_id, .. }) = &self.insertion {
+                // Keep the exact input until the host acknowledges resources.
+                actions.push(Action::AcknowledgeEditSave { save_id: *save_id });
+                return;
+            }
             match self.insertion.take() {
                 Some(Dialog::Checking { request_id, .. }) => actions.push(Action::CloseInsert {
                     request_id,
@@ -267,9 +281,6 @@ impl State {
                     request_id,
                     draft_id: Some(draft.id),
                 }),
-                Some(Dialog::Finished { save_id, .. }) => {
-                    actions.push(Action::AcknowledgeEditSave { save_id })
-                }
                 _ => {}
             }
         }

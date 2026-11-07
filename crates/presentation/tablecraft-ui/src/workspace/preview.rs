@@ -69,6 +69,8 @@ pub enum Scene {
     NewRecord,
     GeneratedNewRecord,
     InsertReview,
+    RetainedInsertInput,
+    RetainedInsertRetry,
     DeleteChecking,
     DeleteReview,
     Find,
@@ -124,7 +126,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 93] = [
+    pub const ALL: [Self; 95] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -166,6 +168,8 @@ impl Scene {
         Self::NewRecord,
         Self::GeneratedNewRecord,
         Self::InsertReview,
+        Self::RetainedInsertInput,
+        Self::RetainedInsertRetry,
         Self::DeleteChecking,
         Self::DeleteReview,
         Self::Find,
@@ -288,6 +292,8 @@ impl Scene {
             Self::NewRecord => "new-record",
             Self::GeneratedNewRecord => "new-record-generated",
             Self::InsertReview => "insert-review",
+            Self::RetainedInsertInput => "retained-insert-input",
+            Self::RetainedInsertRetry => "retained-insert-retry",
             Self::DeleteChecking => "delete-checking",
             Self::DeleteReview => "delete-review",
             Self::Find => "find",
@@ -492,6 +498,9 @@ impl Preview {
             Scene::Edit => self.open_edit(),
             Scene::NewRecord | Scene::GeneratedNewRecord => self.prepare_insert_scene(false),
             Scene::InsertReview => self.prepare_insert_scene(true),
+            Scene::RetainedInsertInput | Scene::RetainedInsertRetry => {
+                self.prepare_retained_insert_scene(scene)
+            }
             Scene::DeleteChecking => self.prepare_delete_scene(false),
             Scene::DeleteReview => self.prepare_delete_scene(true),
             Scene::Find => self.prepare_find_scene(false),

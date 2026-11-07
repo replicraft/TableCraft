@@ -23,3 +23,14 @@ insertion-inline-help = Edite el nuevo registro de abajo. Tab avanza entre campo
 insertion-stale-draft = El origen ha cambiado. Se conserva su entrada; cancele este registro antes de volver a abrirlo o cambiar de vista.
 
 insertion-field-input = Modo de entrada de { $field }
+
+insertion-retained-help = La entrada original se conserva abajo para copiarla. Esta vista no guarda registros ni vuelve a intentar guardarlos.
+insertion-retry-blocked = El resultado del guardado no permite reintentar este registro. Copie la entrada o descártela.
+insertion-reopening = Verificando la base de datos original antes de volver a abrirla…
+insertion-retry-original = Reabrir el original y editar
+insertion-discard-retained = Descartar la entrada conservada
+
+insertion-copy-input = Copiar entrada completa
+insertion-preview-truncated = Vista previa abreviada. Use «{ insertion-copy-input }» para obtener el texto completo.
+
+insertion-retained-schema-help = La tabla está guardada. La entrada original del registro se conserva abajo.

@@ -27,6 +27,34 @@ impl Preview {
         }
     }
 
+    pub(super) fn prepare_retained_insert_scene(&mut self, scene: Scene) {
+        self.prepare_insert_scene(false);
+        let (draft_id, proposed) = self
+            .state
+            .prepare_retained_insert_preview()
+            .expect("bounded synthetic insertion input");
+        self.mock_review_insert(draft_id, proposed);
+        let review_id = match &self.state.insertion {
+            Some(Dialog::Draft {
+                review: Some(review),
+                ..
+            }) => review.id,
+            _ => unreachable!("synthetic insertion was reviewed"),
+        };
+        let save_id = self.request();
+        self.state.begin_insert_save(review_id, save_id);
+        self.state.set_insert_save_outcome(
+            save_id,
+            EditSaveOutcome::Failed(self.state.localizer.text("insertion-mock-help")),
+        );
+        let permission = if scene == Scene::RetainedInsertRetry {
+            crate::InsertRetryPermission::OriginalImage
+        } else {
+            crate::InsertRetryPermission::Blocked
+        };
+        assert!(self.state.acknowledge_insert_save(save_id, permission));
+    }
+
     pub(super) fn mock_begin_insert(&mut self, target: InsertTarget) {
         if !self.state.can_insert_row(&target) {
             return;
@@ -149,10 +177,12 @@ impl Preview {
                 Dialog::Finished {
                     save_id: current,
                     outcome,
+                    ..
                 },
             ) => {
                 if save_id == current && !matches!(outcome, EditSaveOutcome::Retained { .. }) {
-                    self.state.close_insert();
+                    self.state
+                        .acknowledge_insert_save(*save_id, crate::InsertRetryPermission::Blocked);
                 }
                 true
             }
@@ -161,6 +191,7 @@ impl Preview {
                 Dialog::Finished {
                     save_id: current,
                     outcome: EditSaveOutcome::Retained { can_recover, .. },
+                    ..
                 },
             ) if save_id == current && *can_recover => {
                 let original = *save_id;
@@ -177,6 +208,7 @@ impl Preview {
                 Dialog::Finished {
                     save_id: current,
                     outcome: EditSaveOutcome::Retained { can_release, .. },
+                    ..
                 },
             ) if save_id == current && *can_release => {
                 let original = *save_id;
@@ -238,5 +270,62 @@ mod tests {
             matches!(&ordinary.state().insertion, Some(Dialog::Draft { draft, .. })
             if draft.fields.iter().all(|field| !field.auto_number))
         );
+    }
+}
+
+#[cfg(test)]
+mod retained_tests {
+    use super::*;
+    use egui::accesskit::Role;
+    use egui_kittest::{
+        Harness,
+        kittest::{NodeT, Queryable},
+    };
+
+    #[test]
+    fn retained_scenes_keep_raw_input_without_creating_rows_or_retry_authority() {
+        for scene in [Scene::RetainedInsertInput, Scene::RetainedInsertRetry] {
+            let preview = Preview::new(scene);
+            let rows = preview.state().data.as_ref().unwrap().rows.len();
+            let field = preview.state().data.as_ref().unwrap().columns[1]
+                .name
+                .clone();
+            assert!(preview.state().insert_continuation_pending());
+            assert!(!preview.state().insertion_dialog_open());
+            assert!(preview.state().current_insert_target().is_none());
+            let mut harness = Harness::builder()
+                .with_size(egui::vec2(900.0, 580.0))
+                .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
+            crate::configure(&harness.ctx);
+            harness.run_steps(2);
+            let retry = harness
+                .state()
+                .state()
+                .localizer
+                .text("insertion-retry-original");
+            let button = harness.get_by_role_and_label(Role::Button, &retry);
+            assert_eq!(
+                button.accesskit_node().is_disabled(),
+                scene == Scene::RetainedInsertInput
+            );
+            assert!(
+                harness
+                    .get_by_role_and_label(Role::MultilineTextInput, &field)
+                    .accesskit_node()
+                    .data()
+                    .is_read_only()
+            );
+            if scene == Scene::RetainedInsertRetry {
+                button.click_accesskit();
+                harness.run_steps(3);
+                assert!(harness.state().state().insert_continuation_pending());
+                assert!(!harness.state().state().insertion_dialog_open());
+                assert!(harness.state().state().current_insert_target().is_none());
+            }
+            assert_eq!(
+                harness.state().state().data.as_ref().unwrap().rows.len(),
+                rows
+            );
+        }
     }
 }
