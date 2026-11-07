@@ -33,8 +33,8 @@ impl Desktop {
         });
         self.generation = id;
         self.pending = PendingOperation::Insert { request_id: id };
-        self.state.busy = true;
         self.state.begin_insert_review(draft_id, inputs, id);
+        self.state.busy = true;
     }
 
     pub(in crate::workspace) fn publish_insert_draft(
