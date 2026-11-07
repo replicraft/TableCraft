@@ -116,3 +116,6 @@ pub(super) fn drag_title(response: &Response) {
             .send_viewport_cmd(ViewportCommand::Maximized(!maximized));
     }
 }
+
+#[cfg(test)]
+mod tests;

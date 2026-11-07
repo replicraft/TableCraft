@@ -47,9 +47,6 @@ impl State {
                 bottom: if window::enabled() { 0 } else { 4 },
             }))
             .show(ui, |ui| {
-                if self.inline_insert_active() {
-                    ui.disable();
-                }
                 ui.horizontal(|ui| {
                     ui.add(
                         Icon::Application
@@ -62,6 +59,7 @@ impl State {
                         ui.add_space(8.0);
                         ui.separator();
                         let open_available = !self.busy
+                            && !self.insertion_dialog_open()
                             && !self.edit_dialog_open()
                             && !self.saved_query_prompt_open();
                         if quick_access::show(
