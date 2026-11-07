@@ -1,5 +1,27 @@
 # Presentation preview
 
+## Datasheet accessibility structure — 6 November 2026
+
+The shared datasheet now exposes explicit AccessKit Grid, Row, ColumnHeader and
+GridCell containers around its existing value widgets. Record selectors retain
+their RowHeader actions. Coordinates follow displayed order across pages rather
+than physical record identity. Only rendered rows enter the tree, and a total
+count is omitted while EOF is unknown or an empty page beyond EOF cannot prove
+the relation length. New Column, insertion controls, totals and decorative rules
+remain outside the stored record/field topology.
+
+Two focused checks cover hierarchy, measured bounds, sparse sorted membership,
+virtualization and empty/unknown counts. All 274 UI tests and 65 desktop tests
+passed, as did strict all-target UI/desktop Clippy, formatting, dependency
+boundaries and local documentation links. No database capability was added.
+
+Rebuilt light/dark datasheet PNGs at 1280×820, 1× were opened and reviewed against
+the retained Access Home/datasheet capture. Both PNGs are byte-identical to the
+retained renderer's pre-change frames. Rendering used the local macOS GPU
+offscreen with Windows keyboard conventions; no native windows were opened or
+controlled. Dark styling remains an adaptation. This verifies renderer structure
+and appearance, not native screen-reader behavior or Windows Access equivalence.
+
 ## Multi-row browser checks and headless verification — 6 November 2026
 
 The user returned verification to headless mode after this review. Native window

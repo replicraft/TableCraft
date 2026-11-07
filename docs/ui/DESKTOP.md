@@ -257,10 +257,15 @@ reader comparisons.
 The normal-host read-only journey now has a first native macOS observation for
 one supplied single-row ACCDB: File/Open, automatic first table, explicit SELECT,
 schema inspection, datasheet return and object close/reopen. This is a narrow
-passing journey, not the complete browser acceptance gate below. Larger MDB/ACCDB
-fixtures, paging/NULL/error/cancellation cases, filter/sort/totals and the observed
-native repaint/observation uncertainty remain separate qualification work. See
-the [native journey record](PRESENTATION_PREVIEW.md#first-real-file-browser-journey--6-november-2026).
+passing journey, not the complete browser acceptance gate below. The later
+[multi-row browser record](PRESENTATION_PREVIEW.md#multi-row-browser-checks-and-headless-verification--6-november-2026)
+adds observed ACE 16 paging, filtering and sorting, plus a headless Jet 4 journey
+covering later pages, complete-view totals, SQL and schema inspection. It also
+records the bounded runtime EOF checks.
+Broader fixture coverage, native error/cancellation traversal and the observed
+repaint/observation uncertainty remain separate qualification work. The earlier
+[native journey](PRESENTATION_PREVIEW.md#first-real-file-browser-journey--6-november-2026)
+remains a dated observation.
 
 The current request prioritizes polished mocks of existing functionality. The
 broader Access-compatible GUI goal is not complete merely because this slice
@@ -275,11 +280,12 @@ builds or its mock scenarios pass.
 | Ribbon artwork | Original generated, hash-inventoried SVGs with theme/disabled variants; disabled preview commands cannot dispatch | Exact Windows interaction and pixel fidelity remain unqualified. |
 | Existing mock workflows | Source-bound scenes, admission/state checks and the dated [presentation verification](PRESENTATION_PREVIEW.md) | Synthetic outcomes do not qualify backend operations. |
 | Access reference fidelity | Retained Home/datasheet, Table Design and Account Backstage captures guide their corresponding surfaces | Published parameter and attachment images extend the reference record; other dialog/dark layouts remain adaptations, and native interaction parity is still unqualified. |
-| Native behavior | Earlier macOS observations are recorded below with their scope and dates; graphical review resumed at the user's request on 6 November 2026 | Current full keyboard/assistive-tool traversal, Windows/Linux window behavior and monitor-scale transitions remain unqualified. |
+| Native behavior | Earlier macOS observations are recorded below with their scope and dates; current verification is headless-only at the user's request | Current full keyboard/assistive-tool traversal, Windows/Linux window behavior and monitor-scale transitions remain unqualified. |
 
 These limits do not authorize new database functionality or resume deferred
-SQLite, project or VBA work. Headless checks and offscreen renders complement
-native review; they cannot establish native compatibility by substitution.
+SQLite, project or VBA work. Current checks use headless tests and offscreen
+renders without opening native windows. Earlier native observations remain
+historical; headless checks cannot establish native compatibility by substitution.
 
 [UI index](README.md) · [Native reads](../access/NATIVE_READING.md) ·
 [Native queries](../access/queries/NATIVE_QUERIES.md) ·
@@ -356,8 +362,21 @@ Tab focus, full cell copy/accessibility value and the shared render smoke. The
 shortcut fixture was corrected for egui's actual key-event API; the accessibility
 assertion uses Label's AccessKit value property. No production workaround was
 added for either test API assumption. Strict lint for all three packages passes.
-Cells have real selectable/focusable Label semantics; complete grid topology and
-screen-reader/platform qualification remain future work.
+Cells retain selectable/focusable value widgets. The shared datasheet now places
+those widgets under explicit AccessKit Grid, Row, ColumnHeader and GridCell
+containers, with the existing record selector exposed as RowHeader at column zero.
+The selector header is intentionally blank. Field columns begin at one; the header
+has row index zero and records use their displayed position across pages, independently
+of sparse physical row identity. Only rendered records enter the accessibility tree.
+The total row count includes the header and is supplied only on a known final page;
+it remains unspecified while more pages exist or an empty nonzero page cannot
+establish the true end. Click to Add, insertion controls,
+totals and painted empty-grid rules do not invent stored fields or records.
+Headless topology checks cover sparse sorted membership, bounded rendered rows,
+actual node bounds and unknown/empty-page count boundaries. All 274 shared UI and
+65 desktop tests, plus strict all-target UI/desktop Clippy, passed for this change.
+These are renderer semantics; native screen-reader/platform qualification remains
+future work.
 
 A subsequent mailbox review found and fixed a fast-result publication race and
 concurrent pending-request ordering. Submission/cancel now serialize generation,

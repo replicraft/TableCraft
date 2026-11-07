@@ -1,5 +1,14 @@
 # Implementation status
 
+## Datasheet accessibility structure — 6 November 2026
+
+Shared datasheets now expose explicit grid, row, header and cell structure while
+preserving existing value widgets and record selection. Coordinates follow the
+displayed view, and unknown totals remain unspecified. All 274 UI tests and 65
+desktop tests passed, along with strict UI/desktop lint. Reviewed light/dark
+offscreen frames were unchanged; native screen-reader qualification remains open.
+Verification stays headless. See the [scoped record](ui/PRESENTATION_PREVIEW.md#datasheet-accessibility-structure--6-november-2026).
+
 ## Multi-row desktop browser verification — 6 November 2026
 
 Verification is headless again at the user's request. Before that change, the

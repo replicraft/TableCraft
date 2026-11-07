@@ -1,3 +1,4 @@
+mod accessibility;
 mod add_column;
 mod clipboard;
 mod collection_columns;
@@ -12,7 +13,7 @@ use super::{Action, Cell, Data, HorizontalAlignment, InsertTarget, SortSpec, Sor
 use crate::localization::{for_context, message, tr};
 use crate::workspace::focus::{self, Pane};
 use crate::workspace::ribbon::Icon;
-use egui::{Response, ScrollArea, Sense, Ui, WidgetInfo, WidgetType};
+use egui::{Response, ScrollArea, Sense, Ui, WidgetInfo, WidgetType, accesskit::Role};
 use egui_extras::{Column, TableBuilder};
 use std::borrow::Cow;
 
@@ -200,6 +201,8 @@ fn render_rows(
                 let body_height =
                     (ui.available_height() - HEADER_ROW_HEIGHT * scale - totals_height)
                         .max(DATA_ROW_HEIGHT * scale);
+                let mut grid = accessibility::grid(ui, data);
+                let mut header_row = accessibility::row(ui, &grid, 0, None);
                 let mut column_rects = Vec::new();
                 // Reserve background paint before cells and the empty-state
                 // message; the rules must never cover actual record contents.
@@ -252,21 +255,29 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                let label = column_header(
+                                accessibility::cell(
                                     ui,
-                                    data,
-                                    index,
-                                    view.sort_header.as_ref(),
-                                    actions,
+                                    &mut header_row,
+                                    index + 1,
+                                    Role::ColumnHeader,
+                                    |ui| {
+                                        let label = column_header(
+                                            ui,
+                                            data,
+                                            index,
+                                            view.sort_header.as_ref(),
+                                            actions,
+                                        );
+                                        let description = message(
+                                            ui,
+                                            "datasheet-field-name",
+                                            &[("name", column.name.clone())],
+                                        );
+                                        ui.ctx().accesskit_node_builder(label.id, |node| {
+                                            node.set_description(description);
+                                        });
+                                    },
                                 );
-                                let description = message(
-                                    ui,
-                                    "datasheet-field-name",
-                                    &[("name", column.name.clone())],
-                                );
-                                ui.ctx().accesskit_node_builder(label.id, |node| {
-                                    node.set_description(description);
-                                });
                             });
                         }
                         if add_column {
@@ -318,6 +329,7 @@ fn render_rows(
                                 }
                                 return;
                             }
+                            let mut semantic_row = None;
                             row_drawn(index);
                             let number = data
                                 .display_ordinal(index)
@@ -331,17 +343,31 @@ fn render_rows(
                                         crate::theme::palette(ui.ctx()).active_header,
                                     );
                                 }
-                                let native_focus = row_selector(
+                                let semantic_row = semantic_row.insert(accessibility::row(
                                     ui,
-                                    data,
+                                    &grid,
                                     index,
-                                    number,
-                                    selection,
-                                    (!collection_layout).then_some(pane),
+                                    Some(data.offset),
+                                ));
+                                accessibility::cell(
+                                    ui,
+                                    semantic_row,
+                                    0,
+                                    Role::GenericContainer,
+                                    |ui| {
+                                        let native_focus = row_selector(
+                                            ui,
+                                            data,
+                                            index,
+                                            number,
+                                            selection,
+                                            (!collection_layout).then_some(pane),
+                                        );
+                                        if native_focus {
+                                            *owner = Some(SelectionOwner::Native);
+                                        }
+                                    },
                                 );
-                                if native_focus {
-                                    *owner = Some(SelectionOwner::Native);
-                                }
                             });
                             for (position, (column, text)) in
                                 data.columns.iter().zip(&data.rows[index]).enumerate()
@@ -357,42 +383,55 @@ fn render_rows(
                                         };
                                         ui.painter().rect_filled(ui.max_rect(), 0.0, fill);
                                     }
-                                    let response = cell(ui, text, &column.name, number, active);
-                                    if ui.is_enabled()
-                                        && (response.has_focus()
-                                            || response.clicked()
-                                            || response.secondary_clicked())
-                                    {
-                                        *owner = Some(SelectionOwner::Native);
-                                    }
-                                    selection.observe(ui, index, position, &response);
-                                    if !collection_layout
-                                        && !selection.row_selected()
-                                        && selection.selected(index, position)
-                                    {
-                                        focus::register(ui, pane, &response, true);
-                                    }
-                                    if ui.is_enabled() && selection.selected(index, position) {
-                                        ui.painter().rect_stroke(
-                                            ui.max_rect(),
-                                            0.0,
-                                            egui::Stroke::new(
-                                                1.0,
-                                                crate::theme::palette(ui.ctx()).accent,
-                                            ),
-                                            egui::StrokeKind::Inside,
-                                        );
-                                    }
-                                    if !selection.row_selected() {
-                                        collect_contents_action(
-                                            ui,
-                                            &response,
-                                            data,
-                                            (index, position),
-                                            !collection_layout,
-                                            actions,
-                                        );
-                                    }
+                                    accessibility::cell(
+                                        ui,
+                                        semantic_row
+                                            .as_mut()
+                                            .expect("record selector precedes fields"),
+                                        position + 1,
+                                        Role::GridCell,
+                                        |ui| {
+                                            let response =
+                                                cell(ui, text, &column.name, number, active);
+                                            if ui.is_enabled()
+                                                && (response.has_focus()
+                                                    || response.clicked()
+                                                    || response.secondary_clicked())
+                                            {
+                                                *owner = Some(SelectionOwner::Native);
+                                            }
+                                            selection.observe(ui, index, position, &response);
+                                            if !collection_layout
+                                                && !selection.row_selected()
+                                                && selection.selected(index, position)
+                                            {
+                                                focus::register(ui, pane, &response, true);
+                                            }
+                                            if ui.is_enabled()
+                                                && selection.selected(index, position)
+                                            {
+                                                ui.painter().rect_stroke(
+                                                    ui.max_rect(),
+                                                    0.0,
+                                                    egui::Stroke::new(
+                                                        1.0,
+                                                        crate::theme::palette(ui.ctx()).accent,
+                                                    ),
+                                                    egui::StrokeKind::Inside,
+                                                );
+                                            }
+                                            if !selection.row_selected() {
+                                                collect_contents_action(
+                                                    ui,
+                                                    &response,
+                                                    data,
+                                                    (index, position),
+                                                    !collection_layout,
+                                                    actions,
+                                                );
+                                            }
+                                        },
+                                    );
                                 });
                             }
                             if add_column {
@@ -400,6 +439,11 @@ fn render_rows(
                             }
                         });
                     });
+                grid.expand_to_include_rect(body.inner_rect);
+                for rect in &column_rects {
+                    grid.expand_to_include_rect(*rect);
+                }
+                accessibility::bounds(&grid);
                 if let Some(background) = empty_grid {
                     let content_bottom =
                         body.inner_rect.top() + body.content_size.y - body.state.offset.y;
@@ -596,7 +640,8 @@ fn row_selector(
     response
         .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label.clone()));
     ui.ctx().accesskit_node_builder(response.id, |node| {
-        node.set_role(egui::accesskit::Role::RowHeader);
+        node.set_role(Role::RowHeader);
+        node.set_column_index(0);
         node.set_selected(selection.row_selected() && selection.row() == Some(row));
     });
     if response.has_focus() {
