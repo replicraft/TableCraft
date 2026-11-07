@@ -58,6 +58,13 @@ The Field editor's Shift+F10 opens its existing alias/remove context menu. Escap
 from a keyboard-opened menu returns focus to that editor. Tab and Shift+Tab use
 the actual input controls; text-editing arrows remain text-editing keys.
 
+A focused source field also accepts Shift+F10 for its existing Join to menu.
+Keyboard activation enters the first available source/field item; Tab can choose
+another explicit target before Enter creates the join. Escape from the root menu
+returns to the source field. These menus share their current-owner popup helper;
+pointer opening retains pointer anchoring. No join is inferred from names or
+relationships, and opening the menu never runs a query.
+
 Microsoft's [Access keyboard contract](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
 documents F6 between Query Design panes, diagram arrows/output keys and the
 context-menu shortcut. Home/End and continuing the cycle through Navigation and

@@ -1,9 +1,9 @@
-//! The existing field menu is reachable from its focused editor without a pointer.
+//! Designer context menus share pointer anchoring and guarded keyboard entry.
 use egui::{Key, Modifiers, Popup, Response, SetOpenCommand, Ui};
 
 pub(super) fn show(ui: &mut Ui, response: &Response, contents: impl FnOnce(&mut Ui, bool)) {
     let popup_id = Popup::default_response_id(response);
-    let origin_id = response.id.with("keyboard_field_menu");
+    let origin_id = response.id.with("keyboard_context_menu");
     let was_open = Popup::is_id_open(ui.ctx(), popup_id);
     let mut keyboard_origin =
         was_open && ui.data(|memory| memory.get_temp::<bool>(origin_id).unwrap_or(false));

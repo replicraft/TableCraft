@@ -1,7 +1,8 @@
 //! Source cards expose exact metadata fields and explicit, owned join edges.
+mod joins;
 mod keyboard;
 
-use super::{Session, click};
+use super::{Session, click, context_menu};
 use crate::localization::tr;
 use egui::{Frame, Rect, Response, ScrollArea, Stroke, Ui};
 use tablecraft_builders::query::{
@@ -74,7 +75,7 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
                         }
                     });
                     draw_joins(ui, session, &events.anchors);
-                    joins_changed = join_controls(ui, session);
+                    joins_changed = joins::show(ui, session);
                 });
         });
 
@@ -236,8 +237,8 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
                 events.column = Some(DesignColumn::field(source.id, field.name.clone()));
             }
         }
-        response.context_menu(|ui| {
-            join_menu(ui, session, &reference, events);
+        context_menu::show(ui, &response, |ui, keyboard_open| {
+            join_menu(ui, session, &reference, events, keyboard_open);
         });
         keyboard.row(response, DesignExpression::Field(reference));
     }
@@ -289,8 +290,15 @@ fn field_row(ui: &mut Ui, name: &str, selected: bool) -> Response {
     response.on_hover_text(name)
 }
 
-fn join_menu(ui: &mut Ui, session: &Session, left: &DesignField, events: &mut SourceEvents) {
-    ui.menu_button(tr(ui, "qbe-join"), |ui| {
+fn join_menu(
+    ui: &mut Ui,
+    session: &Session,
+    left: &DesignField,
+    events: &mut SourceEvents,
+    keyboard_open: bool,
+) {
+    let mut first_source = None;
+    let join = ui.menu_button(tr(ui, "qbe-join"), |ui| {
         for source in &session.draft.sources {
             if source.id == left.source_id {
                 continue;
@@ -302,23 +310,45 @@ fn join_menu(ui: &mut Ui, session: &Session, left: &DesignField, events: &mut So
             else {
                 continue;
             };
-            ui.menu_button(source.alias.as_deref().unwrap_or(&source.table), |ui| {
-                for field in &metadata.fields {
-                    if ui.button(&field.name).clicked() {
-                        events.join = Some(DesignJoin {
-                            left: left.clone(),
-                            right: DesignField {
-                                source_id: source.id,
-                                column: field.name.clone(),
-                            },
-                            kind: DesignJoinKind::Inner,
-                        });
-                        ui.close();
+            let mut first_field = None;
+            let source_menu =
+                ui.menu_button(source.alias.as_deref().unwrap_or(&source.table), |ui| {
+                    for field in &metadata.fields {
+                        let target = ui.button(&field.name);
+                        first_field.get_or_insert_with(|| target.clone());
+                        if target.clicked() {
+                            events.join = Some(DesignJoin {
+                                left: left.clone(),
+                                right: DesignField {
+                                    source_id: source.id,
+                                    column: field.name.clone(),
+                                },
+                                kind: DesignJoinKind::Inner,
+                            });
+                            ui.close();
+                        }
                     }
-                }
-            });
+                });
+            if keyboard_activated(&source_menu.response)
+                && let Some(target) = first_field
+            {
+                target.request_focus();
+            }
+            first_source.get_or_insert(source_menu.response);
         }
     });
+    if keyboard_activated(&join.response)
+        && let Some(target) = first_source
+    {
+        target.request_focus();
+    }
+    if keyboard_open {
+        join.response.request_focus();
+    }
+}
+
+fn keyboard_activated(response: &Response) -> bool {
+    response.clicked() && !response.clicked_by(egui::PointerButton::Primary)
 }
 
 fn draw_joins(ui: &Ui, session: &Session, anchors: &[(DesignField, Rect)]) {
@@ -341,44 +371,8 @@ fn draw_joins(ui: &Ui, session: &Session, anchors: &[(DesignField, Rect)]) {
     }
 }
 
-fn join_controls(ui: &mut Ui, session: &mut Session) -> bool {
-    let mut changed = false;
-    let mut remove = None;
-    for (index, join) in session.draft.joins.iter_mut().enumerate() {
-        ui.horizontal(|ui| {
-            ui.label(format!("{} ↔ {}", join.left.column, join.right.column));
-            egui::ComboBox::from_id_salt(("qbe_join_kind", index))
-                .selected_text(tr(ui, join_key(join.kind)))
-                .show_ui(ui, |ui| {
-                    for kind in [
-                        DesignJoinKind::Inner,
-                        DesignJoinKind::Left,
-                        DesignJoinKind::Right,
-                    ] {
-                        changed |= ui
-                            .selectable_value(&mut join.kind, kind, tr(ui, join_key(kind)))
-                            .changed();
-                    }
-                });
-            if ui.button(tr(ui, "qbe-remove-join")).clicked() {
-                remove = Some(index);
-            }
-        });
-    }
-    if let Some(index) = remove {
-        session.draft.joins.remove(index);
-        changed = true;
-    }
-    changed
-}
-
-fn join_key(kind: DesignJoinKind) -> &'static str {
-    match kind {
-        DesignJoinKind::Inner => "qbe-inner",
-        DesignJoinKind::Left => "qbe-left",
-        DesignJoinKind::Right => "qbe-right",
-    }
-}
-
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod menu_tests;

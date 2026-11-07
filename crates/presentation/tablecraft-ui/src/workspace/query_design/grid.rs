@@ -1,7 +1,5 @@
 //! Column-oriented QBE cells preserve local drafts and bounded literal input.
-mod field_menu;
-
-use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session};
+use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, context_menu};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextEdit, Ui};
@@ -108,7 +106,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             // source or charge display-only wildcard text.
                                             budget.remaining = previous_budget;
                                         }
-                                        field_menu::show(ui, &response, |ui, keyboard_open| {
+                                        context_menu::show(ui, &response, |ui, keyboard_open| {
                                             let mut alias =
                                                 column.alias.clone().unwrap_or_default();
                                             ui.label(tr(ui, "qbe-alias"));
