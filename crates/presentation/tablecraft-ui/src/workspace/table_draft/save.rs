@@ -83,6 +83,7 @@ impl State {
             || self.busy
             || self.creation_is_pending()
             || self.table_draft_save.is_some()
+            || self.table_draft_field_delete_open()
         {
             return false;
         }

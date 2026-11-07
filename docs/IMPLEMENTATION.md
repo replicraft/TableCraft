@@ -1,5 +1,32 @@
 # Implementation status
 
+## Correcting unsaved initial fields — 7 November 2026
+
+Initial-table headers now expose Rename Field and Delete Field through secondary
+click, Shift+F10 and the accessibility context-menu action. Primary click remains
+focus-only; no sort/filter chevron is repurposed. The generated ID is protected.
+Deletion confirms the exact field, tab, document and schema/raw-record revisions.
+Cancellation preserves hidden text and Omitted/NULL/value choices; confirmation
+removes only that declaration and its pending entry without cloning the row.
+Renderer-neutral builders preserve survivor identities and never reuse removed
+IDs. No stored schema mutation or new native-write route is introduced.
+
+The modal blocks competing Save/Open/Create/Close transitions. A connected test
+also verifies that a native Close attempt cannot leave a deferred action stuck
+after cancellation. Another real desktop scenario removes a preceding Text field,
+saves the surviving schema, rebinds `Score = 7` and separately reviews/applies its
+first row without shifting the value into another column.
+
+Local headless verification passes 14 builder, 397 shared UI and 100 desktop
+tests, plus strict affected-package all-target/all-feature lint. Both Windows
+architectures compile all affected targets/features. All 881 formatter roots pass.
+Four normal-host offscreen frames were rendered and inspected; compact geometry
+checks cover eight languages and both themes. The initial test API compile failure
+and missing accessible name on the protected ID were corrected, with original
+logs retained. Native Windows/Linux execution and Access comparison remain
+unrun. See [creation scope](ui/DATABASE_CREATION.md#initial-field-header-commands)
+and [visual evidence](ui/PRESENTATION_PREVIEW.md#initial-field-context-commands--7-november-2026).
+
 ## Cross-platform save-path audit follow-up — 7 November 2026
 
 Portable creation, editing, recovery and desktop interaction cases now compile

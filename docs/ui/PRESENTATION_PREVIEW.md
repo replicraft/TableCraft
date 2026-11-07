@@ -1,5 +1,29 @@
 # Presentation preview
 
+## Initial-field context commands — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=field-menu|delete-field` drives actual field
+widgets in `initial-table-draft`: creates and names a Short Text field, types
+`Ada`, focuses its ColumnHeader and opens the context menu with Shift+F10.
+Delete mode chooses the real menu command and stops at confirmation. These modes
+are exclusive with other preview interactions. The scene inventory stays at 95;
+neither mode supplies a native handle, write permission or stored row.
+
+Four normal-host frames were rendered and inspected windowlessly on macOS ARM64
+with Windows input emulation. English light/dark menus use 1280×820 pixels at
+1×; German dark/Japanese light confirmations use 900×580 logical points at
+1.25× (1125×725 pixels). The menu keeps centered header names and separate
+shortcut-menu semantics. Confirmation text wraps within the viewport, with
+Cancel initially focused and both actions visible. Frames remain under ignored
+`.cache/ui-previews/draft-field-correction-20261107/`.
+
+The actual 1920×1141 Windows/VirtualBox Datasheet reference was reopened, with
+unknown display scale. It contains no open field context menu or deletion
+confirmation. Those states follow the documented workflow and remain explicit
+TableCraft adaptations. The focused geometry test separately checks all eight
+languages in both themes at 320×420 with a complete 64-unit Unicode field name.
+Native Windows interaction and Access save/reopen comparison remain unverified.
+
 ## Retained row input and Yes/No controls — 7 November 2026
 
 The resource-free `retained-insert-input` and `retained-insert-retry` scenes drive

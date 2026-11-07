@@ -45,3 +45,12 @@ table-record-preparing = テーブルを保存しました。新しいレコー�
 table-record-retry = 新しいレコードを再試行
 table-record-discard = 新しいレコードを破棄
 table-record-invalid = テーブルを保存しましたが、新しいレコードを準備できませんでした。入力内容は保持されています。
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = { $field } のフィールドオプション
+table-draft-rename-field = フィールド名の変更
+table-draft-delete-field = フィールドの削除
+table-draft-delete-field-title = 未保存のフィールドを削除
+table-draft-delete-field-question = 未保存のフィールド「{ $field }」を削除しますか？
+table-draft-delete-field-warning = この未保存のテーブルから、フィールドとそのレコード入力が削除されます。データベースは変更されていません。
+table-draft-delete-field-confirm = フィールドを削除

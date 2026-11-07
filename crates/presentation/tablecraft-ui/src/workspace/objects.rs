@@ -351,6 +351,7 @@ impl State {
         !self.busy
             && self.table_draft_close.is_none()
             && self.table_draft_save.is_none()
+            && !self.table_draft_field_delete_open()
             && !self.backstage_visible()
             && !self.edit_dialog_open()
             && !self.insertion_dialog_open()

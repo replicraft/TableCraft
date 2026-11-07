@@ -209,7 +209,11 @@ impl Desktop {
     }
 
     fn submit(&mut self, command: Command) {
-        if self.editing.has_save() || self.creating.is_busy() || self.recovery.is_some() {
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.recovery.is_some()
+            || self.state.table_draft_field_delete_open()
+        {
             return;
         }
         if self.state.table_draft_save_open()
@@ -301,6 +305,7 @@ impl Desktop {
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
+            || self.state.table_draft_field_delete_open()
             || self.state.insertion_dialog_open()
             || self.state.insert_continuation_pending()
         {
@@ -317,6 +322,7 @@ impl Desktop {
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_save_open()
+            || self.state.table_draft_field_delete_open()
         {
             return;
         }
@@ -341,6 +347,7 @@ impl Desktop {
             || self.recovery.is_some()
             || self.state.insertion_dialog_open()
             || self.state.insert_continuation_pending()
+            || self.state.table_draft_field_delete_open()
         {
             return;
         }

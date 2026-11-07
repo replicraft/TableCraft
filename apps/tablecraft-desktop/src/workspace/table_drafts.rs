@@ -19,7 +19,7 @@ impl Desktop {
             drop(action);
             return None;
         }
-        if self.state.table_draft_save_open() {
+        if self.state.table_draft_save_open() || self.state.table_draft_field_delete_open() {
             drop(action);
             return None;
         }
@@ -66,7 +66,10 @@ impl Desktop {
         if !context.input(|input| input.viewport().close_requested()) {
             return;
         }
-        if self.deferred_draft_action.is_some() || self.state.table_draft_save_open() {
+        if self.deferred_draft_action.is_some()
+            || self.state.table_draft_save_open()
+            || self.state.table_draft_field_delete_open()
+        {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             return;
         }

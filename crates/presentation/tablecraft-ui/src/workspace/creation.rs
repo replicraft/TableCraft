@@ -128,7 +128,11 @@ impl State {
     }
 
     pub(super) fn open_creation(&mut self) {
-        if self.creation_available && !self.busy && !self.insertion_dialog_open() {
+        if self.creation_available
+            && !self.busy
+            && !self.insertion_dialog_open()
+            && !self.table_draft_field_delete_open()
+        {
             self.creation.open = true;
             self.creation.outcome = None;
             self.error = None;
@@ -142,6 +146,7 @@ impl State {
 
     fn creation_ready(&self) -> bool {
         self.creation_available
+            && !self.table_draft_field_delete_open()
             && self.creation.open
             && self.creation.selected
             && !self.busy

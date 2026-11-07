@@ -1,7 +1,7 @@
 //! Actual unsaved row input crosses two separately acknowledged native saves.
 use super::test_support::{add_named_field, name_and_confirm, start_save};
-use crate::workspace::Desktop;
 use crate::workspace::test_support::{app_harness, finish_reads, finish_save, opened};
+use crate::workspace::{Desktop, table_drafts::DeferredDraftAction};
 use egui::accesskit::Role;
 use egui_kittest::{
     Harness,
@@ -11,7 +11,7 @@ use std::{
     path::PathBuf,
     time::{Duration, Instant},
 };
-use tablecraft_runtime::SaveOutcome;
+use tablecraft_runtime::{Command, SaveOutcome};
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 use tablecraft_ui::FluentArgs;
 
@@ -208,4 +208,153 @@ fn invalid_row_retains_input_and_the_saved_schema_then_corrects_without_recreati
     assert_eq!(data.rows.len(), 1);
     assert_eq!(data.rows[0][1].text, "42");
     assert!(!harness.state().state.can_create_first_table());
+}
+
+#[test]
+fn removed_initial_field_does_not_shift_surviving_input_across_both_native_saves() {
+    let (_directory, path, mut harness) =
+        pending_record("table-draft-short-text", "Discard", "remove me");
+    add_named_field(&mut harness, "table-draft-long-integer", "Score");
+    let mut arguments = FluentArgs::new();
+    arguments.set("field", "Score");
+    let score_label = harness
+        .state()
+        .state
+        .localizer
+        .format("table-draft-record-field", &arguments);
+    harness
+        .get_by_role_and_label(Role::TextInput, &score_label)
+        .focus();
+    harness.run_steps(1);
+    harness
+        .get_by_role_and_label(Role::TextInput, &score_label)
+        .type_text("7");
+    harness.run_steps(2);
+
+    harness
+        .get_by_role_and_label(Role::ColumnHeader, "Discard")
+        .click_secondary();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Delete Field")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+    arguments.set("field", "Discard");
+    let discarded_label = harness
+        .state()
+        .state
+        .localizer
+        .format("table-draft-record-field", &arguments);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, &discarded_label)
+            .value()
+            .as_deref(),
+        Some("remove me")
+    );
+
+    harness
+        .get_by_role_and_label(Role::ColumnHeader, "Discard")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::SHIFT, egui::Key::F10);
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Delete Field")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Delete field")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        canonical_blank_creation::source()
+    );
+
+    save_schema_and_bind_record(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.columns.len(), 2);
+    assert!(data.rows.is_empty());
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Score")
+            .value()
+            .as_deref(),
+        Some("7")
+    );
+    review(&mut harness);
+    apply_and_acknowledge(&mut harness);
+    let rows = &harness.state().state.data.as_ref().unwrap().rows;
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0].len(), 2);
+    assert_eq!(rows[0][0].text, "1");
+    assert_eq!(rows[0][1].text, "7");
+}
+
+#[test]
+fn field_confirmation_blocks_native_close_without_leaving_a_deferred_transition() {
+    let (_directory, path, mut harness) = pending_record("table-draft-short-text", "Name", "Ada");
+    harness
+        .get_by_role_and_label(Role::ColumnHeader, "Name")
+        .click_secondary();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Delete Field")
+        .click_accesskit();
+    harness.run_steps(2);
+    let generation = harness.state().generation;
+    harness.state_mut().open_request(Command::Open {
+        path: path.with_file_name("must-not-open.accdb"),
+        password: String::new(),
+    });
+    assert_eq!(harness.state().generation, generation);
+    assert!(harness.state().deferred_draft_action.is_none());
+
+    harness
+        .input_mut()
+        .viewports
+        .get_mut(&egui::ViewportId::ROOT)
+        .unwrap()
+        .events
+        .push(egui::ViewportEvent::Close);
+    harness.run_steps(1);
+    assert!(
+        harness.output().viewport_output[&egui::ViewportId::ROOT]
+            .commands
+            .contains(&egui::ViewportCommand::CancelClose)
+    );
+    assert!(harness.state().deferred_draft_action.is_none());
+    assert!(harness.state().state.table_draft_field_delete_open());
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+
+    harness
+        .input_mut()
+        .viewports
+        .get_mut(&egui::ViewportId::ROOT)
+        .unwrap()
+        .events
+        .push(egui::ViewportEvent::Close);
+    harness.run_steps(2);
+    assert!(matches!(
+        harness.state().deferred_draft_action,
+        Some(DeferredDraftAction::CloseWindow)
+    ));
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(harness.state().deferred_draft_action.is_none());
+    assert!(harness.state().state.has_modified_table_drafts());
+    assert_eq!(
+        std::fs::read(path).unwrap(),
+        canonical_blank_creation::source()
+    );
 }

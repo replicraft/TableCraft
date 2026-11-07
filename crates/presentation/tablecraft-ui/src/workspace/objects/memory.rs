@@ -185,6 +185,9 @@ impl State {
         if let Some(save) = &self.table_draft_save {
             count.add(save.retained_bytes());
         }
+        if let Some(confirmation) = &self.table_draft_field_delete {
+            count.add(confirmation.retained_bytes());
+        }
         count.string(&self.sql);
         count.add(self.query_result.retained_bytes());
         if let Some(pending) = &self.query_pending {

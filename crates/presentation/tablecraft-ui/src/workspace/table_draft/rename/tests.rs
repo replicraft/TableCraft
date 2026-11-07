@@ -149,10 +149,12 @@ fn pending_name_survives_parking_and_protected_id_never_becomes_an_editor() {
     assert!(harness.state().0.object_tabs().contains(&scratch));
     harness.key_press(egui::Key::Escape);
     harness.run_steps(3);
-    let header = harness.get_by_role_and_label(Role::Label, "ID");
+    let header = harness.get_by_role_and_label(Role::ColumnHeader, "ID");
     header.click();
     harness.run_steps(1);
-    harness.get_by_role_and_label(Role::Label, "ID").click();
+    harness
+        .get_by_role_and_label(Role::ColumnHeader, "ID")
+        .click();
     harness.run_steps(2);
     assert!(
         harness

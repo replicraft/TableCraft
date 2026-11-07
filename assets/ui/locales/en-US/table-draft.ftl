@@ -45,3 +45,12 @@ table-record-preparing = The table was saved. Preparing your new record…
 table-record-retry = Retry new record
 table-record-discard = Discard new record
 table-record-invalid = The table was saved, but the new record could not be prepared. Your input is retained.
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = Field options for { $field }
+table-draft-rename-field = Rename Field
+table-draft-delete-field = Delete Field
+table-draft-delete-field-title = Delete unsaved field
+table-draft-delete-field-question = Delete the unsaved field “{ $field }”?
+table-draft-delete-field-warning = This removes the field and its pending record input from this unsaved table. The database has not been changed.
+table-draft-delete-field-confirm = Delete field

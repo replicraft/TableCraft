@@ -77,6 +77,21 @@ impl RowDraft {
         true
     }
 
+    /// Preflight removal without cloning or discarding any retained input.
+    pub(super) fn removal(&self, id: DraftFieldId) -> Option<(usize, u64)> {
+        let position = self.entries.iter().position(|entry| entry.id == id)?;
+        if self.entries[position].kind == DraftFieldType::AutoNumberIncrement {
+            return None;
+        }
+        Some((position, self.revision.checked_add(1)?))
+    }
+
+    /// Called only after both schema and row preflights have succeeded.
+    pub(super) fn remove_prepared(&mut self, position: usize, revision: u64) {
+        self.entries.remove(position);
+        self.revision = revision;
+    }
+
     pub(super) fn revision(&self) -> u64 {
         self.revision
     }

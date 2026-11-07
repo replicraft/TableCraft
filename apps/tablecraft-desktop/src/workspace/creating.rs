@@ -41,7 +41,11 @@ impl Creating {
 
 impl Desktop {
     pub(super) fn creation_selected(&mut self, selection: Option<PathBuf>) {
-        if self.editing.has_save() || self.creating.is_busy() || self.state.busy {
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.state.busy
+            || self.state.table_draft_field_delete_open()
+        {
             return;
         }
         if let Some(path) = selection {
@@ -73,6 +77,7 @@ impl Desktop {
             || self.file_dialog.is_open()
             || self.state.insertion_dialog_open()
             || self.state.insert_continuation_pending()
+            || self.state.table_draft_field_delete_open()
         {
             return;
         }

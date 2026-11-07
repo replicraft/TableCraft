@@ -45,3 +45,12 @@ table-record-preparing = Die Tabelle wurde gespeichert. Der neue Datensatz wird 
 table-record-retry = Neuen Datensatz erneut vorbereiten
 table-record-discard = Neuen Datensatz verwerfen
 table-record-invalid = Die Tabelle wurde gespeichert, aber der neue Datensatz konnte nicht vorbereitet werden. Ihre Eingaben bleiben erhalten.
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = Feldoptionen für { $field }
+table-draft-rename-field = Feld umbenennen
+table-draft-delete-field = Feld löschen
+table-draft-delete-field-title = Ungespeichertes Feld löschen
+table-draft-delete-field-question = Das ungespeicherte Feld „{ $field }“ löschen?
+table-draft-delete-field-warning = Dadurch werden das Feld und seine noch nicht gespeicherten Datensatzeingaben aus dieser ungespeicherten Tabelle entfernt. Die Datenbank wurde nicht geändert.
+table-draft-delete-field-confirm = Feld löschen

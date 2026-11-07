@@ -45,3 +45,12 @@ table-record-preparing = 테이블이 저장되었습니다. 새 레코드를 �
 table-record-retry = 새 레코드 다시 시도
 table-record-discard = 새 레코드 버리기
 table-record-invalid = 테이블은 저장되었지만 새 레코드를 준비하지 못했습니다. 입력 내용은 유지됩니다.
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = { $field } 필드 옵션
+table-draft-rename-field = 필드 이름 바꾸기
+table-draft-delete-field = 필드 삭제
+table-draft-delete-field-title = 저장하지 않은 필드 삭제
+table-draft-delete-field-question = 저장하지 않은 필드 “{ $field }”을(를) 삭제하시겠습니까?
+table-draft-delete-field-warning = 이 저장하지 않은 테이블에서 필드와 해당 레코드 입력이 제거됩니다. 데이터베이스는 변경되지 않았습니다.
+table-draft-delete-field-confirm = 필드 삭제

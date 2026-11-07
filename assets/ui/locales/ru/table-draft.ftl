@@ -45,3 +45,12 @@ table-record-preparing = Таблица сохранена. Подготовка
 table-record-retry = Повторить подготовку записи
 table-record-discard = Отменить новую запись
 table-record-invalid = Таблица сохранена, но подготовить новую запись не удалось. Введённые данные сохранены.
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = Параметры поля { $field }
+table-draft-rename-field = Переименовать поле
+table-draft-delete-field = Удалить поле
+table-draft-delete-field-title = Удаление несохранённого поля
+table-draft-delete-field-question = Удалить несохранённое поле «{ $field }»?
+table-draft-delete-field-warning = Поле и введённые для него данные записи будут удалены из этой несохранённой таблицы. База данных не изменена.
+table-draft-delete-field-confirm = Удалить поле

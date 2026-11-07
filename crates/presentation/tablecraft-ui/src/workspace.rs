@@ -370,6 +370,7 @@ pub struct State {
     pub table_save_available: bool,
     first_table_creation: Option<u64>,
     table_draft_save: Option<table_draft::save::SaveDialog>,
+    table_draft_field_delete: Option<table_draft::field_delete::Confirmation>,
     table_draft: Option<table_draft::Editor>,
     table_draft_close: Option<table_draft::CloseIntent>,
     table_draft_discard_approved: Option<(ObjectTab, u64, u64)>,
@@ -555,6 +556,9 @@ impl State {
 
     /// Record explicit navigation to Design before the host submits Describe.
     pub fn prepare_schema_view(&mut self) {
+        if self.table_draft_field_delete_open() {
+            return;
+        }
         self.invalidate_edit();
         self.reset_record_navigation();
         self.schema_activation_pending = true;
@@ -579,7 +583,11 @@ impl State {
     }
 
     fn select_view(&mut self, view: DocumentView) {
-        if self.edit_save_pending() || self.insertion_dialog_open() || self.recovery_prompt_open() {
+        if self.edit_save_pending()
+            || self.insertion_dialog_open()
+            || self.recovery_prompt_open()
+            || self.table_draft_field_delete_open()
+        {
             return;
         }
         self.invalidate_edit();
@@ -596,7 +604,10 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
-        if self.insertion_dialog_open() || self.recovery_prompt_open() {
+        if self.insertion_dialog_open()
+            || self.recovery_prompt_open()
+            || self.table_draft_field_delete_open()
+        {
             return;
         }
         self.clear_object_sessions();
@@ -618,7 +629,11 @@ impl State {
 
     /// Enter File/Open without changing the current session or running task.
     pub fn show_open(&mut self) {
-        if self.edit_save_pending() || self.insertion_dialog_open() || self.recovery_prompt_open() {
+        if self.edit_save_pending()
+            || self.insertion_dialog_open()
+            || self.recovery_prompt_open()
+            || self.table_draft_field_delete_open()
+        {
             return;
         }
         self.invalidate_edit();
@@ -637,7 +652,7 @@ impl State {
     }
 
     fn file_picker_ready(&self) -> bool {
-        self.file_picker_available && !self.busy
+        self.file_picker_available && !self.busy && !self.table_draft_field_delete_open()
     }
 
     fn query_ready(&self) -> bool {
@@ -681,6 +696,7 @@ impl State {
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_table_draft_save_shortcut(ui.ctx());
         let modal_open = self.table_draft_save.is_some()
+            || self.table_draft_field_delete_open()
             || self.insert_continuation_pending()
             || self.table_draft_close.is_some()
             || self.contents_request_id().is_some()
@@ -769,12 +785,14 @@ impl State {
         self.query_design_dialog(ui.ctx(), &mut actions);
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
+        self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);
         if !self.saved_query_prompt_open()
             && !self.zoom_dialog_open()
             && !self.find_window_open()
             && self.table_draft_save.is_none()
             && self.table_draft_close.is_none()
+            && !self.table_draft_field_delete_open()
             && !self.recovery_prompt_open()
         {
             self.finish_ribbon_keyboard(ui, !actions.is_empty());

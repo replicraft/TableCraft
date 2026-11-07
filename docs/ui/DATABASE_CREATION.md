@@ -192,6 +192,45 @@ first-record entry in an unsaved table, or the Save/Discard interactions. Those
 interaction details use documented contracts and headless checks; exact native
 interaction parity remains unverified.
 
+## Initial-field header commands
+
+Microsoft documents two rename entry points in Datasheet view: editing the
+heading directly or choosing Rename Field from its shortcut menu. Deletion uses
+Delete Field from that menu and an explicit confirmation; it also discards the
+column's data. A primary-key field cannot be deleted through Datasheet view.
+See [Add or delete a column in a datasheet](https://support.microsoft.com/en-us/access/add-or-delete-a-column-in-a-datasheet).
+These are shortcut-menu commands, distinct from clicking a heading to select a
+column or using its arrow to filter values. Microsoft documents those separate
+surfaces in [Working with datasheets](https://support.microsoft.com/en-us/access/working-with-datasheets).
+The [Access keyboard contract](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+provides Shift+F10 or the Windows Menu key for shortcut menus. The draft's field
+commands use the header context menu rather than repurposing a sort/filter
+chevron as a schema-command dropdown.
+The current shared UI supports secondary click, focused Shift+F10 and the
+accessibility context-menu action.
+
+TableCraft applies these commands only to its initial, unsaved table draft.
+Rename Field opens the existing header-name editor; validation, cancellation and
+stable field identity keep the pending record input attached to the same field.
+Delete Field asks for confirmation using the full current field name and warns
+that the unsaved declaration and its pending record input will be discarded.
+Cancellation keeps both. Confirmation removes that field from the draft rather
+than issuing native DDL or changing a persisted table. The generated ID primary
+key remains protected. Click to Add is a declaration placeholder, not a field
+to rename or delete.
+
+The deletion confirmation is a bounded initial-draft adaptation, with explicit
+Delete field and Cancel actions. It is not a claim to reproduce Access's exact
+confirmation wording or persisted schema-deletion behavior. An existing
+TableCraft save, review or unresolved outcome must finish before these draft
+commands become available; retained record input cannot bypass that boundary.
+
+The retained 1920×1141 Windows/VirtualBox Datasheet image was reopened for this
+slice; its display scale is unknown. It shows field headings and Click to Add,
+but no open header shortcut menu or deletion confirmation. Those surfaces follow
+the documented interaction and TableCraft's explicit draft boundary rather than
+a captured-menu pixel match. Native Windows/Access interaction remains unverified.
+
 ## Saving the initial table
 
 The shared Save prompt accepts an exact table name and submits

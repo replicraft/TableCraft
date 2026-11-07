@@ -4,7 +4,7 @@ use crate::workspace::ribbon::Icon;
 use crate::{datasheet::grid_cell, localization::tr};
 use egui::{RichText, Ui};
 use egui_extras::{Column, TableBuilder};
-use tablecraft_builders::table::MAX_DRAFT_FIELDS;
+use tablecraft_builders::table::{DraftFieldId, MAX_DRAFT_FIELDS};
 
 const HEADER_HEIGHT: f32 = 22.0;
 const ROW_HEIGHT: f32 = 22.0;
@@ -19,10 +19,15 @@ const ADD_CHEVRON_GUTTER: f32 = 20.0;
 const ADD_CHEVRON_HALF_WIDTH: f32 = 3.0;
 const ADD_CHEVRON_HALF_HEIGHT: f32 = 1.5;
 
-pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
+pub(super) enum Event {
+    Save,
+    DeleteField(DraftFieldId),
+}
+
+pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<Event> {
     if !editor.record.synchronize(&editor.draft) {
         ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
-        return false;
+        return None;
     }
     let colors = palette(ui.ctx());
     let footer_height = footer_height(ui, editor);
@@ -31,6 +36,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
     let body_height = (grid_height - HEADER_HEIGHT - scrollbar_height).max(0.0);
     let mut addition = None;
     let mut rename = None;
+    let mut delete_field = None;
     let mut rename_outcome = None;
     ui.scope(|ui| {
         ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
@@ -76,6 +82,18 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                                     editor.error |= active.rejected;
                                     return;
                                 }
+                                if !field.is_primary() {
+                                    match super::header::show(ui, field, editor.rename.is_none()) {
+                                        Some(super::header::Command::Rename) => {
+                                            rename = Some((field.id(), field.name().into()));
+                                        }
+                                        Some(super::header::Command::Delete) => {
+                                            delete_field = Some(field.id());
+                                        }
+                                        None => {}
+                                    }
+                                    return;
+                                }
                                 let rect = ui.max_rect();
                                 let inset = if field.is_primary() {
                                     let icon_rect = egui::Rect::from_min_size(
@@ -99,12 +117,10 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                                             .sense(egui::Sense::click()),
                                     )
                                     .on_hover_text(field.name());
-                                if !field.is_primary()
-                                    && editor.rename.is_none()
-                                    && response.double_clicked()
-                                {
-                                    rename = Some((field.id(), field.name().into()));
-                                }
+                                ui.ctx().accesskit_node_builder(response.id, |node| {
+                                    node.set_role(egui::accesskit::Role::ColumnHeader);
+                                    node.set_label(field.name());
+                                });
                             });
                         }
                         header.col(|ui| {
@@ -275,7 +291,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
         .on_disabled_hover_text(tr(ui, "table-draft-save-unavailable"))
         .clicked();
     let requested = std::mem::take(&mut editor.save_requested);
-    clicked || (requested && can_save)
+    if let Some(field) = delete_field {
+        Some(Event::DeleteField(field))
+    } else if clicked || (requested && can_save) {
+        Some(Event::Save)
+    } else {
+        None
+    }
 }
 
 fn footer_height(ui: &Ui, editor: &Editor) -> f32 {

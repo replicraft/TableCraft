@@ -45,3 +45,12 @@ table-record-preparing = 表已保存。正在准备新记录…
 table-record-retry = 重试新记录
 table-record-discard = 放弃新记录
 table-record-invalid = 表已保存，但无法准备新记录。输入内容已保留。
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = { $field } 的字段选项
+table-draft-rename-field = 重命名字段
+table-draft-delete-field = 删除字段
+table-draft-delete-field-title = 删除未保存的字段
+table-draft-delete-field-question = 要删除未保存的字段“{ $field }”吗？
+table-draft-delete-field-warning = 这将从此未保存的表中移除该字段及其待保存的记录输入。数据库尚未更改。
+table-draft-delete-field-confirm = 删除字段

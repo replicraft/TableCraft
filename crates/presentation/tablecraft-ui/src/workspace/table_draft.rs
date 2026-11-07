@@ -1,8 +1,10 @@
 //! Unsaved table presentation, separate from native catalog and row authority.
 mod close;
 mod creating;
+pub(super) mod field_delete;
 mod gallery;
 mod grid;
+mod header;
 mod record;
 mod rename;
 pub(super) mod save;
@@ -104,20 +106,33 @@ impl State {
             && !self.creation_is_pending()
             && self.table_draft_close.is_none()
             && self.table_draft_save.is_none()
+            && !self.table_draft_field_delete_open()
             && self
                 .table_draft
                 .as_ref()
                 .is_none_or(|editor| !editor.save_blocked);
         let can_save = self.can_save_table_draft();
+        let tab = self.active_object().unwrap();
         let Some(editor) = &mut self.table_draft else {
             ui.label(tr(ui, "table-draft-unavailable"));
             return true;
         };
-        let save = ui
-            .add_enabled_ui(enabled, |ui| grid::show(ui, editor, can_save))
+        let event = ui
+            .add_enabled_ui(enabled, |ui| {
+                ui.push_id(("initial_table_editor", tab.id), |ui| {
+                    grid::show(ui, editor, can_save)
+                })
+                .inner
+            })
             .inner;
-        if save {
-            self.request_table_draft_save();
+        match event {
+            Some(grid::Event::Save) => {
+                self.request_table_draft_save();
+            }
+            Some(grid::Event::DeleteField(field)) => {
+                self.request_table_draft_field_delete(field);
+            }
+            None => {}
         }
         true
     }
@@ -128,6 +143,7 @@ impl State {
             || self.creation_is_pending()
             || self.table_draft_close.is_some()
             || self.table_draft_save.is_some()
+            || self.table_draft_field_delete_open()
         {
             return false;
         }
@@ -164,6 +180,9 @@ impl State {
 
     /// Returns true when a close confirmation now owns the transition.
     pub fn request_table_draft_discard(&mut self) -> bool {
+        if self.table_draft_field_delete_open() {
+            return false;
+        }
         if let Some(intent) = &self.table_draft_close {
             return matches!(intent, CloseIntent::All);
         }

@@ -69,9 +69,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         "record" => "-initial-record",
         "boolean" => "-initial-boolean",
         "boolean-omitted" => "-initial-boolean-omitted",
+        "field-menu" => "-initial-field-menu",
+        "delete-field" => "-initial-delete-field",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean or boolean-omitted",
+                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu or delete-field",
             )
             .into());
         }
@@ -274,6 +276,21 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
             harness
                 .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
                 .type_text(INITIAL_RECORD_TEXT);
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
+    }
+    if matches!(mode, "field-menu" | "delete-field") {
+        harness
+            .get_by_role_and_label(egui::accesskit::Role::ColumnHeader, field)
+            .focus();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        harness.key_press_modifiers(egui::Modifiers::SHIFT, egui::Key::F10);
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        if mode == "delete-field" {
+            let label = localizer.text("table-draft-delete-field");
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::Button, &label)
+                .click_accesskit();
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }
     }

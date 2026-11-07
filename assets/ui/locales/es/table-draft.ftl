@@ -45,3 +45,12 @@ table-record-preparing = La tabla se guardó. Preparando el nuevo registro…
 table-record-retry = Reintentar nuevo registro
 table-record-discard = Descartar nuevo registro
 table-record-invalid = La tabla se guardó, pero no se pudo preparar el nuevo registro. Se conserva lo introducido.
+
+# Initial unsaved fields only; deleting also discards their pending record input.
+table-draft-field-options = Opciones del campo { $field }
+table-draft-rename-field = Cambiar nombre del campo
+table-draft-delete-field = Eliminar campo
+table-draft-delete-field-title = Eliminar campo sin guardar
+table-draft-delete-field-question = ¿Eliminar el campo sin guardar «{ $field }»?
+table-draft-delete-field-warning = Se eliminarán el campo y sus datos de registro pendientes de esta tabla sin guardar. La base de datos no se ha modificado.
+table-draft-delete-field-confirm = Eliminar campo

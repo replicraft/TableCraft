@@ -328,3 +328,22 @@ fn boolean_checkbox_is_centered_on_the_full_field_with_a_separate_mode_gutter() 
     assert!(checkbox.right() < mode.left());
     assert!(field.contains_rect(checkbox));
 }
+
+#[test]
+fn field_removal_preflight_keeps_input_and_refuses_exhausted_revision() {
+    let mut table = TableDraft::initial();
+    let removed = table.add_field(DraftFieldType::ShortText).unwrap();
+    let kept = table.add_field(DraftFieldType::LongInteger).unwrap();
+    let mut row = RowDraft::new();
+    assert!(row.synchronize(&table));
+    assert!(row.set_input(removed, value("hidden retained text")));
+    assert!(row.set_input(removed, InsertInput::Omitted));
+    assert!(row.set_input(kept, value("0007")));
+    let snapshot = table.snapshot("Items").unwrap();
+    let original = row.raw_texts(&snapshot).unwrap();
+    assert!(row.removal(table.fields()[0].id()).is_none());
+    row.revision = u64::MAX;
+    assert!(row.removal(removed).is_none());
+    assert_eq!(row.raw_texts(&snapshot).unwrap(), original);
+    assert_eq!(row.revision(), u64::MAX);
+}
