@@ -355,9 +355,16 @@ impl Desktop {
     }
 
     pub(super) fn guard_save_close(&mut self, ctx: &egui::Context) {
-        if self.editing.has_save() && ctx.input(|input| input.viewport().close_requested()) {
+        if !ctx.input(|input| input.viewport().close_requested()) {
+            return;
+        }
+        if self.editing.has_save() {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
             self.cancel_current_save();
+        } else if self.state.insertion_dialog_open() {
+            // An inline record is still user input, not a persisted native row.
+            // Keep it until the user explicitly saves or abandons the record.
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
         }
     }
 }

@@ -305,7 +305,8 @@ impl Desktop {
     }
 
     fn open_request(&mut self, command: Command) {
-        if self.editing.has_save() || self.creating.is_busy() {
+        if self.editing.has_save() || self.creating.is_busy() || self.state.insertion_dialog_open()
+        {
             return;
         }
         let Some(DeferredDraftAction::Open(command)) =

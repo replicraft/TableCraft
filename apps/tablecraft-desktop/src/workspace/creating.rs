@@ -68,7 +68,11 @@ impl Desktop {
     }
 
     pub(super) fn create_database(&mut self, request: CreationRequest) {
-        if self.editing.has_save() || self.creating.is_busy() || self.file_dialog.is_open() {
+        if self.editing.has_save()
+            || self.creating.is_busy()
+            || self.file_dialog.is_open()
+            || self.state.insertion_dialog_open()
+        {
             return;
         }
         let Some(DeferredDraftAction::Create(request)) =

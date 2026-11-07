@@ -160,3 +160,62 @@ fn invalid_input_and_changed_or_cancelled_drafts_never_apply_an_old_review() {
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
 }
+
+#[test]
+fn pending_record_survives_host_open_create_and_window_close_requests() {
+    let (directory, path, original, mut harness) = opened();
+    begin(&mut harness, "4");
+    let generation = harness.state().generation;
+    let revision = harness
+        .state()
+        .state
+        .database
+        .as_ref()
+        .unwrap()
+        .document_revision;
+    let other = directory.path().join("other.accdb");
+    std::fs::write(&other, &original).unwrap();
+
+    harness.state_mut().open_request(Command::Open {
+        path: other,
+        password: String::new(),
+    });
+    let destination = directory.path().join("new.accdb");
+    harness
+        .state_mut()
+        .create_database(tablecraft_ui::CreationRequest {
+            id: 1,
+            destination: destination.to_str().unwrap().to_owned(),
+        });
+    assert_eq!(harness.state().generation, generation);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .database
+            .as_ref()
+            .unwrap()
+            .document_revision,
+        revision
+    );
+    assert!(harness.state().state.insertion_dialog_open());
+    assert!(!destination.exists());
+
+    harness
+        .input_mut()
+        .viewports
+        .get_mut(&egui::ViewportId::ROOT)
+        .unwrap()
+        .events
+        .push(egui::ViewportEvent::Close);
+    harness.run_steps(1);
+    assert!(
+        harness.output().viewport_output[&egui::ViewportId::ROOT]
+            .commands
+            .contains(&egui::ViewportCommand::CancelClose)
+    );
+    assert!(harness.state().state.insertion_dialog_open());
+    assert!(!harness.state().editing.has_save());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!journal_path(&path).exists());
+}
