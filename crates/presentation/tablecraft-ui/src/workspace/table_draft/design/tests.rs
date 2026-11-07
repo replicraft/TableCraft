@@ -215,7 +215,7 @@ fn type_changes_preserve_hidden_omitted_null_and_invalid_boolean_text_without_co
                 .focus();
             harness.run_steps(1);
             harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::A);
-            harness.event(egui::Event::Text("True".into()));
+            harness.event(egui::Event::Text("true".into()));
             harness.run_steps(2);
             assert!(
                 harness

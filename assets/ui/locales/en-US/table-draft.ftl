@@ -56,9 +56,23 @@ table-draft-delete-field-warning = This removes the field and its pending record
 table-draft-delete-field-confirm = Delete field
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = Edit field names and types in this unsaved table. Description and property editing are not available yet.
+table-draft-design-help = Edit names, types and supported field properties in this unsaved table. Other properties are not available yet.
 table-draft-design-name = Field name for { $field }
 table-draft-design-type = Data type for { $field }
 table-draft-design-input-help = Pending record input stays as entered when the type changes. It must be valid for the selected type before Review and Apply.
 table-draft-design-protected = The initial AutoNumber primary key cannot be changed.
 table-draft-design-add-field = Add field
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = Not set
+table-draft-property-no = No
+table-draft-property-yes = Yes
+table-draft-property-type-default = Type default
+table-draft-property-absent = No default
+table-draft-property-null = NULL
+table-draft-property-literal = Literal
+table-draft-property-literal-input = Literal default
+table-draft-property-invalid-size = Enter a whole number from 1 to 255.
+table-draft-property-input-limit = Property input exceeds its limit. The previous text is retained.
+table-draft-property-invalid = Correct invalid field-property input before saving.
+table-draft-property-help = Constants only: enter text without SQL quotes, numbers with a decimal point, true/false, or an ISO date and time. No formulas are evaluated. Input allows 4096 UTF-8 bytes; a saved default must fit 255 UTF-16 units, including added and escaped quotes.

@@ -229,7 +229,7 @@ fn boolean_checkbox_keeps_omission_mixed_and_writes_only_explicit_canonical_valu
         let snapshot = harness.state().0.snapshot("Items").unwrap();
         assert_eq!(
             harness.state().1.inputs(&snapshot).unwrap()[1],
-            value("True")
+            value("true")
         );
         harness
             .get_by_role_and_label(Role::CheckBox, &label)
@@ -239,7 +239,7 @@ fn boolean_checkbox_keeps_omission_mixed_and_writes_only_explicit_canonical_valu
         harness.run_steps(2);
         assert_eq!(
             harness.state().1.inputs(&snapshot).unwrap()[1],
-            value("False")
+            value("false")
         );
         harness
             .get_by_role_and_label(Role::Button, &mode_label)
@@ -259,7 +259,7 @@ fn boolean_checkbox_keeps_omission_mixed_and_writes_only_explicit_canonical_valu
             harness.state().1.inputs(&snapshot).unwrap()[1],
             InsertInput::Omitted
         );
-        assert_eq!(harness.state().1.raw_texts(&snapshot).unwrap()[1], "False");
+        assert_eq!(harness.state().1.raw_texts(&snapshot).unwrap()[1], "false");
         assert_eq!(
             harness
                 .get_by_role_and_label(Role::CheckBox, &label)
@@ -277,7 +277,7 @@ fn boolean_checkbox_keeps_omission_mixed_and_writes_only_explicit_canonical_valu
         harness.run_steps(2);
         assert_eq!(
             harness.state().1.inputs(&snapshot).unwrap()[1],
-            value("False")
+            value("false")
         );
         assert_eq!(
             harness
@@ -327,6 +327,61 @@ fn boolean_checkbox_is_centered_on_the_full_field_with_a_separate_mode_gutter() 
     assert!((checkbox.center().y - field.center().y).abs() < 0.5);
     assert!(checkbox.right() < mode.left());
     assert!(field.contains_rect(checkbox));
+}
+
+#[test]
+fn noncanonical_boolean_text_stays_editable_until_explicitly_corrected() {
+    for raw in ["True", "FALSE", "maybe"] {
+        let mut table = TableDraft::initial();
+        let field = table.add_field(DraftFieldType::YesNo).unwrap();
+        let mut row = RowDraft::new();
+        assert!(row.synchronize(&table));
+        assert!(row.set_input(field, value(raw)));
+        let mut harness = Harness::builder().build_ui_state(
+            |ui, state: &mut (TableDraft, RowDraft)| {
+                state.1.show_cell(ui, &state.0.fields()[1]);
+            },
+            (table, row),
+        );
+        crate::configure(&harness.ctx);
+        harness.run_steps(2);
+        let mut arguments = crate::FluentArgs::new();
+        arguments.set("field", "Field1");
+        let label = crate::Localizer::default().format("table-draft-record-field", &arguments);
+        assert!(
+            harness
+                .query_by_role_and_label(Role::CheckBox, &label)
+                .is_none()
+        );
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::TextInput, &label)
+                .value()
+                .as_deref(),
+            Some(raw)
+        );
+        let snapshot = harness.state().0.snapshot("Items").unwrap();
+        assert_eq!(harness.state().1.inputs(&snapshot).unwrap()[1], value(raw));
+
+        harness
+            .get_by_role_and_label(Role::TextInput, &label)
+            .focus();
+        harness.run_steps(1);
+        harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+        harness.event(egui::Event::Text("true".into()));
+        harness.run_steps(2);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::CheckBox, &label)
+                .accesskit_node()
+                .toggled(),
+            Some(egui::accesskit::Toggled::True)
+        );
+        assert_eq!(
+            harness.state().1.inputs(&snapshot).unwrap()[1],
+            value("true")
+        );
+    }
 }
 
 #[test]

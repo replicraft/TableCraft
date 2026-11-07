@@ -373,7 +373,7 @@ pub struct State {
     table_draft_field_delete: Option<table_draft::field_delete::Confirmation>,
     table_draft: Option<table_draft::Editor>,
     table_draft_close: Option<table_draft::CloseIntent>,
-    table_draft_discard_approved: Option<(ObjectTab, u64, u64)>,
+    table_draft_discard_approved: Option<(ObjectTab, u64, u64, u64)>,
     view: DocumentView,
     ribbon_tab: ribbon::Tab,
     ribbon_display: chrome::ribbon_display::RibbonDisplay,

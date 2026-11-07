@@ -56,9 +56,23 @@ table-draft-delete-field-warning = 这将从此未保存的表中移除该字段
 table-draft-delete-field-confirm = 删除字段
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = 编辑此未保存的表中的字段名称和类型。描述和属性编辑尚不可用。
+table-draft-design-help = 编辑未保存表的名称、类型和受支持的字段属性。其他属性暂不可用。
 table-draft-design-name = { $field } 的字段名称
 table-draft-design-type = { $field } 的数据类型
 table-draft-design-input-help = 更改类型时，待保存的记录输入将保持原样。在审阅和应用之前，输入必须符合所选类型。
 table-draft-design-protected = 初始自动编号主键无法更改。
 table-draft-design-add-field = 添加字段
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = 未设置
+table-draft-property-no = 否
+table-draft-property-yes = 是
+table-draft-property-type-default = 类型默认值
+table-draft-property-absent = 无默认值
+table-draft-property-null = NULL
+table-draft-property-literal = 字面量
+table-draft-property-literal-input = 默认值字面量
+table-draft-property-invalid-size = 请输入 1 到 255 之间的整数。
+table-draft-property-input-limit = 属性输入超出限制。已保留原来的文本。
+table-draft-property-invalid = 保存前请更正无效的字段属性。
+table-draft-property-help = 仅限常量：文本无需 SQL 引号，数字使用小数点，布尔值使用 true/false，日期和时间使用 ISO 格式。不会计算公式。输入上限为 4096 个 UTF-8 字节；保存的默认值必须在 255 个 UTF-16 单位以内，包括添加和转义的引号。

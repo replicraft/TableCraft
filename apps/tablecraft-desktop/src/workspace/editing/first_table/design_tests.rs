@@ -8,7 +8,7 @@ use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 use tablecraft_ui::FluentArgs;
 
-fn view(harness: &mut Harness<'_, Desktop>, key: &str) {
+pub(super) fn view(harness: &mut Harness<'_, Desktop>, key: &str) {
     let label = harness.state().state.localizer.text(key);
     harness
         .get_by_role_and_label(Role::Button, "View")

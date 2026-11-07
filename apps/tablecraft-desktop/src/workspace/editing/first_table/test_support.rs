@@ -56,11 +56,7 @@ pub(super) fn start_save(harness: &mut Harness<'_, Desktop>, name: &str) {
     name_and_confirm(harness, name);
 }
 
-pub(super) fn pending_record(
-    key: &str,
-    name: &str,
-    text: &str,
-) -> (tempfile::TempDir, PathBuf, Harness<'static, Desktop>) {
+pub(super) fn initial_table() -> (tempfile::TempDir, PathBuf, Harness<'static, Desktop>) {
     let (directory, path, _, mut harness) = opened(canonical_blank_creation::source());
     harness
         .get_by_role_and_label(Role::Tab, "Create")
@@ -70,15 +66,24 @@ pub(super) fn pending_record(
         .get_by_role_and_label(Role::Button, "Table")
         .click_accesskit();
     harness.run_steps(2);
+    (directory, path, harness)
+}
+
+pub(super) fn field_label(harness: &Harness<'_, Desktop>, key: &str, field: &str) -> String {
+    let mut arguments = FluentArgs::new();
+    arguments.set("field", field);
+    harness.state().state.localizer.format(key, &arguments)
+}
+
+pub(super) fn pending_record(
+    key: &str,
+    name: &str,
+    text: &str,
+) -> (tempfile::TempDir, PathBuf, Harness<'static, Desktop>) {
+    let (directory, path, mut harness) = initial_table();
     add_named_field(&mut harness, key, name);
 
-    let mut arguments = FluentArgs::new();
-    arguments.set("field", name);
-    let label = harness
-        .state()
-        .state
-        .localizer
-        .format("table-draft-record-field", &arguments);
+    let label = field_label(&harness, "table-draft-record-field", name);
     harness
         .get_by_role_and_label(Role::TextInput, &label)
         .focus();

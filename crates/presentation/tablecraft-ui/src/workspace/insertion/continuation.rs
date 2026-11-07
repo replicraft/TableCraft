@@ -1,6 +1,7 @@
 //! Retain exact insertion intent across schema publication and native save outcomes.
 use super::{Dialog, InsertRetryPermission, retained::RetainedInput};
 use crate::localization::tr;
+use crate::workspace::objects::memory::Counter;
 use crate::workspace::{
     Action, Database, InitialRecord, InsertInput, InsertTarget, ObjectKind, ObjectTarget, State,
 };
@@ -47,6 +48,20 @@ pub(in crate::workspace) struct Continuation {
 }
 
 impl Continuation {
+    pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = Counter::new(size_of::<Self>());
+        count.string(&self.target.table);
+        count.add(match &self.source {
+            Seed::Initial(record) => record.retained_bytes()?,
+            Seed::Retained(input) => input.retained_bytes()?,
+        });
+        if let Some(retry) = &self.retry {
+            count.string(&retry.outcome);
+            count.optional(&retry.message);
+        }
+        count.finish()
+    }
+
     pub(super) fn retained(
         save_id: u64,
         permission: InsertRetryPermission,

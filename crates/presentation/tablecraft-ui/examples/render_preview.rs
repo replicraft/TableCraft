@@ -1,4 +1,7 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
+#[path = "render_preview/initial_properties.rs"]
+mod initial_properties;
+
 use egui_kittest::{Harness, kittest::Queryable};
 use image::ImageFormat;
 use std::{env, error::Error, fs, io, path::PathBuf};
@@ -73,9 +76,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         "delete-field" => "-initial-delete-field",
         "design" => "-initial-design",
         "design-type" => "-initial-design-type",
+        "design-properties" => "-initial-design-properties",
+        "design-default" => "-initial-design-default",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design or design-type",
+                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties or design-default",
             )
             .into());
         }
@@ -296,7 +301,10 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }
     }
-    if matches!(mode, "design" | "design-type") {
+    if matches!(
+        mode,
+        "design" | "design-type" | "design-properties" | "design-default"
+    ) {
         harness
             .get_by_role_and_label(egui::accesskit::Role::Tab, &localizer.text("ribbon-home"))
             .click_accesskit();
@@ -327,6 +335,9 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
                 .get_by_role_and_label(egui::accesskit::Role::ComboBox, &selector)
                 .click_accesskit();
             harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
+        if matches!(mode, "design-properties" | "design-default") {
+            initial_properties::edit(harness, mode == "design-default");
         }
     }
 }

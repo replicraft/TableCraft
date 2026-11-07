@@ -328,10 +328,11 @@ impl State {
             return false;
         }
         let approved = self.table_draft_discard_approved.as_ref().is_some_and(
-            |(approved, revision, record_revision)| {
+            |(approved, revision, record_revision, property_revision)| {
                 approved == tab
                     && self.table_draft_revision_for(tab) == Some(*revision)
                     && self.table_draft_record_revision_for(tab) == Some(*record_revision)
+                    && self.table_draft_property_revision_for(tab) == Some(*property_revision)
             },
         );
         if self.modified_table_draft(tab) && !approved {
@@ -723,6 +724,11 @@ impl State {
                 }) => Some(editor.draft.revision()),
                 _ => None,
             })
+    }
+
+    pub(super) fn table_draft_property_revision_for(&self, tab: &ObjectTab) -> Option<u64> {
+        self.table_draft_editor(tab)
+            .map(|editor| editor.property_revision())
     }
 
     pub(super) fn table_draft_record_revision_for(&self, tab: &ObjectTab) -> Option<u64> {

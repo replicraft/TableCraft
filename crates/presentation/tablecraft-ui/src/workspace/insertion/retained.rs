@@ -1,6 +1,7 @@
 //! Exact insertion input retained independently of an expired native capability.
 use super::{Dialog, FieldInput, InsertDraft, InsertTarget, State, entries_within_limits};
 use crate::localization::tr;
+use crate::workspace::objects::memory::Counter;
 use egui::Ui;
 
 const COPY_ROWS: usize = 2;
@@ -20,6 +21,24 @@ pub(in crate::workspace) struct RetainedInput {
 }
 
 impl RetainedInput {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = Counter::new(size_of::<Self>());
+        count.add(size_of::<InsertDraft>());
+        count.string(&self.draft.target.table);
+        count.vector(&self.draft.fields);
+        for field in &self.draft.fields {
+            count.string(&field.name);
+        }
+        count.vector(&self.entries);
+        for entry in &self.entries {
+            count.string(&entry.text);
+        }
+        if let Some(target) = &self.initial_notice {
+            count.string(&target.table);
+        }
+        count.finish()
+    }
+
     pub(super) fn show(&self, ui: &mut Ui) {
         ui.separator();
         ui.label(tr(ui, "insertion-retained-help"));

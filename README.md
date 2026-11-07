@@ -92,10 +92,11 @@ File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
 creation uses local NTFS and still requires runtime qualification.
 Existing destinations are never replaced. The new file opens with an unsaved
 `Table1` draft. Its bounded initial schema can be saved; qualified stored tables
-also support reviewed row insertion. Names and supported types can be edited in
-the initial table's Design view. Fields can also be named in their headers, and a
-first record can be entered before saving the table. That record then uses a separate reviewed row save. General
-schema authoring remains unfinished. Windows saves retain an intact retired journal
+also support reviewed row insertion. Names, supported types and bounded field
+properties can be edited in the initial table's Design view. Fields can also be
+named in their headers, and a first record can be entered before saving the table.
+That record then uses a separate reviewed row save. General schema authoring
+remains unfinished. Windows saves retain an intact retired journal
 artifact rather than claiming durable deletion.
 See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
 Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with

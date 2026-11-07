@@ -56,9 +56,23 @@ table-draft-delete-field-warning = 이 저장하지 않은 테이블에서 필�
 table-draft-delete-field-confirm = 필드 삭제
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = 이 저장하지 않은 테이블의 필드 이름과 형식을 편집합니다. 설명 및 속성 편집은 아직 사용할 수 없습니다.
+table-draft-design-help = 저장하지 않은 테이블의 이름, 형식 및 지원되는 필드 속성을 편집합니다. 다른 속성은 아직 사용할 수 없습니다.
 table-draft-design-name = { $field }의 필드 이름
 table-draft-design-type = { $field }의 데이터 형식
 table-draft-design-input-help = 형식을 변경해도 보류 중인 레코드 입력은 그대로 유지됩니다. 검토하고 적용하기 전에 선택한 형식에 맞는지 확인해야 합니다.
 table-draft-design-protected = 초기 일련 번호 기본 키는 변경할 수 없습니다.
 table-draft-design-add-field = 필드 추가
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = 설정 안 됨
+table-draft-property-no = 아니요
+table-draft-property-yes = 예
+table-draft-property-type-default = 형식 기본값
+table-draft-property-absent = 기본값 없음
+table-draft-property-null = NULL
+table-draft-property-literal = 리터럴
+table-draft-property-literal-input = 기본값 리터럴
+table-draft-property-invalid-size = 1부터 255까지의 정수를 입력하세요.
+table-draft-property-input-limit = 속성 입력이 제한을 초과했습니다. 이전 텍스트는 유지됩니다.
+table-draft-property-invalid = 저장하기 전에 잘못된 필드 속성을 수정하세요.
+table-draft-property-help = 상수만 입력하세요. 텍스트에는 SQL 따옴표를 붙이지 않고, 숫자에는 소수점으로 마침표를 사용하세요. 논리값은 true/false, 날짜와 시간은 ISO 형식으로 입력하세요. 수식은 계산하지 않습니다. 입력 한도는 UTF-8 4096바이트이며, 저장할 기본값은 추가되거나 이스케이프된 따옴표를 포함해 UTF-16 255단위 이내여야 합니다.

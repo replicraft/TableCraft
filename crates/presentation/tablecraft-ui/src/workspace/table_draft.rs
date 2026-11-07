@@ -14,6 +14,7 @@ pub use save::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
 use super::objects::{ObjectKind, ObjectTab};
 use super::{Action, State};
 use crate::localization::tr;
+use design::properties::editor::Editors;
 use egui::Ui;
 use tablecraft_builders::table::{DraftFieldType, TableDraft};
 
@@ -21,6 +22,7 @@ pub(super) struct Editor {
     pub(super) draft: TableDraft,
     pub(in crate::workspace) design: design::Design,
     record: record::RowDraft,
+    properties: Editors,
     rename: Option<rename::Rename>,
     focus_add: bool,
     save_requested: bool,
@@ -42,6 +44,7 @@ impl Editor {
             draft: TableDraft::initial(),
             design: design::Design::default(),
             record: record::RowDraft::new(),
+            properties: Editors::default(),
             rename: None,
             focus_add: true,
             save_requested: false,
@@ -71,6 +74,10 @@ impl Editor {
         !self.save_blocked
     }
 
+    pub(super) fn property_revision(&self) -> u64 {
+        self.properties.revision()
+    }
+
     pub(super) fn record_revision(&self) -> u64 {
         self.record.revision()
     }
@@ -78,6 +85,7 @@ impl Editor {
     pub(super) fn is_modified(&self) -> bool {
         self.draft.is_modified()
             || self.record.is_modified()
+            || self.properties.rejected()
             || self.rename.as_ref().is_some_and(|rename| {
                 rename.rejected
                     || self
@@ -92,6 +100,7 @@ impl Editor {
         size_of::<Self>()
             + self.draft.retained_bytes()
             + self.record.retained_bytes()
+            + self.properties.retained_bytes()
             + self
                 .rename
                 .as_ref()

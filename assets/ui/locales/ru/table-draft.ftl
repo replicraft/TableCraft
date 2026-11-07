@@ -56,9 +56,23 @@ table-draft-delete-field-warning = Поле и введённые для нег�
 table-draft-delete-field-confirm = Удалить поле
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = Изменяйте имена и типы полей в этой несохранённой таблице. Редактирование описания и свойств пока недоступно.
+table-draft-design-help = Редактируйте имена, типы и поддерживаемые свойства полей этой несохранённой таблицы. Остальные свойства пока недоступны.
 table-draft-design-name = Имя поля { $field }
 table-draft-design-type = Тип данных поля { $field }
 table-draft-design-input-help = При смене типа введённые данные записи сохраняются без изменений. Перед проверкой и применением они должны соответствовать выбранному типу.
 table-draft-design-protected = Исходный первичный ключ типа «Счётчик» нельзя изменить.
 table-draft-design-add-field = Добавить поле
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = Не задано
+table-draft-property-no = Нет
+table-draft-property-yes = Да
+table-draft-property-type-default = По умолчанию для типа
+table-draft-property-absent = Без значения по умолчанию
+table-draft-property-null = NULL
+table-draft-property-literal = Литерал
+table-draft-property-literal-input = Литерал по умолчанию
+table-draft-property-invalid-size = Введите целое число от 1 до 255.
+table-draft-property-input-limit = Ввод свойства превышает ограничение. Предыдущий текст сохранён.
+table-draft-property-invalid = Исправьте недопустимые свойства полей перед сохранением.
+table-draft-property-help = Только константы: текст без кавычек SQL, числа с десятичной точкой, true/false или дата и время в формате ISO. Формулы не вычисляются. Ввод ограничен 4096 байтами UTF-8; сохранённое значение по умолчанию — 255 единицами UTF-16, включая добавленные и экранированные кавычки.

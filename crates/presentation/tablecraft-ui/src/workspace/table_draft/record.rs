@@ -262,13 +262,7 @@ impl RowDraft {
     ) -> egui::Response {
         let entry = &self.entries[position];
         let selected = if entry.choice == Choice::Value {
-            if entry.text.eq_ignore_ascii_case("True") {
-                Some(true)
-            } else if entry.text.eq_ignore_ascii_case("False") {
-                Some(false)
-            } else {
-                None
-            }
+            entry.text.parse::<bool>().ok()
         } else {
             None
         };
@@ -305,7 +299,7 @@ impl RowDraft {
             self.set_input(
                 field.id(),
                 InsertInput::Value(EditInput {
-                    text: if checked { "True" } else { "False" }.into(),
+                    text: if checked { "true" } else { "false" }.into(),
                     is_null: false,
                 }),
             );
@@ -342,9 +336,7 @@ impl RowDraft {
                 let width = (ui.available_width() - INPUT_MODE_WIDTH).max(MIN_INPUT_WIDTH);
                 let checkbox = field.kind() == DraftFieldType::YesNo
                     && (choice == Choice::Omitted
-                        || choice == Choice::Value
-                            && (text.eq_ignore_ascii_case("True")
-                                || text.eq_ignore_ascii_case("False")));
+                        || choice == Choice::Value && text.parse::<bool>().is_ok());
                 let response = if checkbox {
                     self.show_boolean(ui, field, position, width)
                 } else {

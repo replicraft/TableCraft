@@ -179,6 +179,7 @@ fn stale_discard_approval_cannot_close_a_newer_draft_revision() {
         tab.clone(),
         1,
         state.table_draft_record_revision_for(&tab).unwrap(),
+        state.table_draft_property_revision_for(&tab).unwrap(),
     ));
     assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
     assert!(!state.close_object(&tab));
@@ -265,7 +266,12 @@ fn stale_discard_approval_cannot_close_new_record_input_with_unchanged_schema() 
     let tab = state.active_object().unwrap();
     let schema_revision = state.table_draft_revision_for(&tab).unwrap();
     let record_revision = state.table_draft_record_revision_for(&tab).unwrap();
-    state.table_draft_discard_approved = Some((tab.clone(), schema_revision, record_revision));
+    state.table_draft_discard_approved = Some((
+        tab.clone(),
+        schema_revision,
+        record_revision,
+        state.table_draft_property_revision_for(&tab).unwrap(),
+    ));
     let editor = state.table_draft.as_mut().unwrap();
     let field = editor.draft.fields()[1].id();
     assert!(editor.record.set_input(

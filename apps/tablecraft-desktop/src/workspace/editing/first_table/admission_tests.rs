@@ -75,6 +75,7 @@ fn another_request_cannot_reset_the_existing_first_table_review_owner() {
         tab: tab.clone(),
         snapshot,
         record_revision: 0,
+        property_revision: 0,
     });
 
     let owner = harness.state().first_table.as_ref().unwrap();

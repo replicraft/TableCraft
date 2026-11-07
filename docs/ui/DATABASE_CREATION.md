@@ -66,7 +66,7 @@ text and the existing per-field editor limits. Oversized insertion is rejected
 whole, visibly blocks Save and requires an accepted edit or mode correction.
 No row is stored while editing this buffer.
 
-| Gallery choice | Native declaration | Authored constant default |
+| Gallery choice | Initial native declaration | Initial type default |
 | --- | --- | --- |
 | Short Text (255) | Short Text, 255 UTF-16 units | Absent |
 | Number (Long Integer) | Signed 32-bit integer | `0` |
@@ -75,9 +75,10 @@ No row is stored while editing this buffer.
 | Date & Time | Legacy Date/Time | Absent; no implicit current date/time |
 | Yes/No | Boolean | `False` |
 
-These defaults are persisted metadata, retained in the reviewed declaration;
-they are not placeholder row values or display formatting. Choosing a field
-never inserts a record. After saving, generated-ID insertion can resolve
+These are the initial Type default choices before any Design property edits.
+The default selected for Save is persisted metadata retained in the reviewed
+declaration; it is not a placeholder row value or display formatting. Choosing a
+field never inserts a record. After saving, generated-ID insertion can resolve
 omitted companions with these checked constant defaults while preserving original
 field presence for fresh proof and recovery. Supplied values take precedence;
 a missing or unsupported default does not silently select another route. The
@@ -251,17 +252,20 @@ persisted conversion semantics through this draft surface.
 
 The editable Design view belongs to the same initial, unsaved table as Datasheet
 view. Ordinary field names and the six supported declaration types can be
-changed there; the initial AutoNumber primary key remains protected. Description
-and general property authoring are disabled rather than accepting values that
-would not be saved. Property facts describe the current draft declaration, not
-an observation of already stored metadata. Existing persisted-table Design view
-remains read only.
+changed there; the initial AutoNumber primary key remains protected. Four field
+properties are editable in the lower General pane: Short Text Field Size,
+Required, Allow Zero Length and Default Value. Description, Caption, validation
+rules/messages and Lookup authoring remain unavailable. The pane describes the
+current draft declaration, not an observation of already stored metadata.
+Existing persisted-table Design view remains read only.
 
 Changing a draft field's type keeps its field identity and all pending record
 input exactly as entered, including Omitted/NULL modes and text hidden by those
-modes. It changes the declaration and its supported default policy, without
-converting, clearing or inventing a record value. Returning to Datasheet view
-allows correction. Invalid or noncanonical Yes/No text remains editable as text
+modes. The Type default mode follows the newly selected type; other explicit
+default choices keep their original raw input. Short Text capacity and Allow Zero Length
+retain hidden choices while another type applies, becoming effective again when
+Short Text is restored. None of these edits converts, clears or invents a record
+value. Returning to Datasheet view allows correction. Invalid or noncanonical Yes/No text remains editable as text
 instead of silently appearing as False; an incompatible explicit NULL is retained
 rather than changed to a value. The eventual row review still requires valid
 input for the saved declaration. Schema saving and record review remain separate,
@@ -272,6 +276,48 @@ initial-schema request and reviewed runtime save route as Datasheet view. It doe
 not introduce native ALTER TABLE, persisted schema conversion, additional field
 types or an alternative record-save path. Pending schema saves and unresolved
 outcomes keep their existing editing guards in both views.
+
+### Supported field properties
+
+| Property | Current initial-table behavior |
+| --- | --- |
+| Field Size | Short Text accepts 1–255 UTF-16 code units; the initial capacity is 255. Other supported types retain their fixed declared size. |
+| Required | No or Yes. New ordinary fields start with explicit No. |
+| Allow Zero Length | Short Text only: Yes or No. New Short Text starts with explicit Yes. |
+| Default Value | Type default, No default, NULL or a typed literal constant. The generated ID has none of these editable properties. |
+
+Microsoft documents [Required's default No and AutoNumber exclusion](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/required-property-access).
+Its [AllowZeroLength contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/allowzerolength-property)
+distinguishes the user-interface default Yes from the programmatic default No.
+TableCraft's authoring defaults follow those documented UI choices. Its lower-level
+native API still preserves omitted properties separately from explicit Boolean
+declarations; the UI offers Access's Yes/No choices. These declarations do not
+establish native Access save/reopen
+or interaction parity.
+
+Required and Allow Zero Length remain separate: an empty text value is not NULL.
+They do not change the pending record's Omitted/NULL/Value mode or generate input
+while the schema is being edited. Invalid Field Size text stays editable and
+blocks Save until corrected. Native review still checks complete declarations;
+choosing a property value does not bypass type, capacity or insertion constraints.
+
+Type default uses the initial defaults in the gallery table above. No default
+removes that declaration; NULL requests a typed NULL default rather than the
+text `NULL`. Literal input goes through the runtime's exact scalar-input parser
+for the selected field type. Enter text without wrapping SQL quotes, integers
+or Currency with invariant numeric syntax, lowercase `true`/`false`, or a legacy
+Date/Time such as `2026-11-07T12:30:00`. Text `Now()` is stored as text; a Date/Time
+literal `Now()` is refused. No SQL, VBA, formula, clock or name lookup is executed.
+NULL remains subject to the native carrier rules; Yes/No does not admit it.
+
+The raw literal editor retains up to 4,096 UTF-8 bytes. This is an input-retention
+limit, separate from the native constant-expression ceiling of 255 UTF-16 code
+units. Stored text expressions include their added surrounding quotes and doubled
+embedded quotes, so even a value that fits the field's data capacity may exceed
+the default-expression limit. Review refuses such declarations before a journal
+or write; it does not truncate them. Literal/type mismatches are also reported at
+review, with the draft retained for correction. The default buffer stays associated
+with its field when switching modes or types; another field cannot inherit it.
 
 ## Saving the initial table
 
@@ -293,11 +339,15 @@ retired artifact; the completion report distinguishes those namespace facts from
 native commitment and does not claim durable Windows deletion. See
 [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
 
-Default-bearing definitions use closed `TCNT0002` intents. Existing
-`TCNT0001` declarations retain their encoding and recovery route; they do not
-acquire newly inferred defaults during replay. Fresh recovery reconstructs the
-captured constant declarations before qualifying the original and replacement
-images. Neither intent permits executing an arbitrary default expression.
+Definitions with explicit Required or Allow Zero Length policies use closed
+`TCNT0003` intents, retaining property presence independently from true/false.
+Ordinary newly authored fields carry the explicit UI policies above and therefore
+use that route. Policy-free default-bearing definitions retain `TCNT0002`;
+policy-free definitions without defaults retain `TCNT0001`. Their existing
+encodings and recovery routes remain distinct, without newly inferred defaults
+or properties during replay. Fresh recovery reconstructs the captured declarations
+before qualifying the original and replacement images. No intent permits executing
+an arbitrary default expression.
 
 Only an acknowledged committed/verified-replacement receipt with the matching
 schema count starts guarded reopening. Reopening compares the complete captured

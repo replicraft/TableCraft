@@ -56,9 +56,23 @@ table-draft-delete-field-warning = Dadurch werden das Feld und seine noch nicht 
 table-draft-delete-field-confirm = Feld löschen
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = Bearbeiten Sie Feldnamen und Datentypen in dieser ungespeicherten Tabelle. Beschreibungen und Eigenschaften können noch nicht bearbeitet werden.
+table-draft-design-help = Bearbeiten Sie Namen, Typen und unterstützte Feldeigenschaften dieser ungespeicherten Tabelle. Andere Eigenschaften sind noch nicht verfügbar.
 table-draft-design-name = Feldname für { $field }
 table-draft-design-type = Datentyp für { $field }
 table-draft-design-input-help = Noch nicht gespeicherte Datensatzeingaben bleiben bei einem Typwechsel unverändert. Vor der Prüfung und Übernahme müssen sie für den gewählten Typ gültig sein.
 table-draft-design-protected = Der ursprüngliche AutoWert-Primärschlüssel kann nicht geändert werden.
 table-draft-design-add-field = Feld hinzufügen
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = Nicht festgelegt
+table-draft-property-no = Nein
+table-draft-property-yes = Ja
+table-draft-property-type-default = Typstandard
+table-draft-property-absent = Kein Standardwert
+table-draft-property-null = NULL
+table-draft-property-literal = Literal
+table-draft-property-literal-input = Literaler Standardwert
+table-draft-property-invalid-size = Geben Sie eine ganze Zahl zwischen 1 und 255 ein.
+table-draft-property-input-limit = Die Eigenschaftseingabe überschreitet ihr Limit. Der bisherige Text bleibt erhalten.
+table-draft-property-invalid = Korrigieren Sie ungültige Feldeigenschaften vor dem Speichern.
+table-draft-property-help = Nur Konstanten: Text ohne SQL-Anführungszeichen, Zahlen mit Dezimalpunkt, true/false oder Datum und Uhrzeit im ISO-Format eingeben. Formeln werden nicht ausgewertet. Eingabe: höchstens 4096 UTF-8-Bytes; gespeicherter Standardwert: höchstens 255 UTF-16-Einheiten einschließlich hinzugefügter und maskierter Anführungszeichen.

@@ -269,6 +269,12 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         None => {}
     }
     ui.add_space(8.0);
+    if editor.properties.rejected() {
+        ui.colored_label(
+            ui.visuals().error_fg_color,
+            tr(ui, "table-draft-property-invalid"),
+        );
+    }
     if editor.record.has_rejected_input() {
         ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
     }
@@ -320,6 +326,9 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
         + text_height("table-draft-empty-note")
         + ui.spacing().interact_size.y.max(line_height)
         + ui.spacing().item_spacing.y * 2.0;
+    if editor.properties.rejected() {
+        height += text_height("table-draft-property-invalid") + ui.spacing().item_spacing.y;
+    }
     if editor.record.has_rejected_input() {
         height += text_height("insertion-input-limit") + ui.spacing().item_spacing.y;
     }

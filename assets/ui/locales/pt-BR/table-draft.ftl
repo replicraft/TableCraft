@@ -56,9 +56,23 @@ table-draft-delete-field-warning = Isso remove o campo e os dados pendentes de s
 table-draft-delete-field-confirm = Excluir campo
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = Edite os nomes e tipos de campo desta tabela não salva. A edição de descrições e propriedades ainda não está disponível.
+table-draft-design-help = Edite nomes, tipos e propriedades de campo compatíveis nesta tabela não salva. As demais propriedades ainda não estão disponíveis.
 table-draft-design-name = Nome do campo { $field }
 table-draft-design-type = Tipo de dados de { $field }
 table-draft-design-input-help = Os dados pendentes do registro são mantidos como foram digitados quando o tipo muda. Eles devem ser válidos para o tipo selecionado antes de revisar e aplicar.
 table-draft-design-protected = A chave primária inicial de Numeração Automática não pode ser alterada.
 table-draft-design-add-field = Adicionar campo
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = Não definido
+table-draft-property-no = Não
+table-draft-property-yes = Sim
+table-draft-property-type-default = Padrão do tipo
+table-draft-property-absent = Sem valor padrão
+table-draft-property-null = NULL
+table-draft-property-literal = Literal
+table-draft-property-literal-input = Literal do valor padrão
+table-draft-property-invalid-size = Digite um número inteiro entre 1 e 255.
+table-draft-property-input-limit = A entrada da propriedade excede o limite. O texto anterior foi mantido.
+table-draft-property-invalid = Corrija as propriedades de campo inválidas antes de salvar.
+table-draft-property-help = Somente constantes: texto sem aspas SQL, números com ponto decimal, true/false ou data e hora no formato ISO. Fórmulas não são avaliadas. A entrada permite 4096 bytes UTF-8; o padrão salvo deve caber em 255 unidades UTF-16, incluindo aspas adicionadas e escapadas.

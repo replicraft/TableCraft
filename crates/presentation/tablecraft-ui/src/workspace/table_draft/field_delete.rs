@@ -13,6 +13,7 @@ pub(in crate::workspace) struct Confirmation {
     name: String,
     schema_revision: u64,
     record_revision: u64,
+    property_revision: u64,
     focus_cancel: bool,
 }
 
@@ -49,7 +50,7 @@ impl State {
         else {
             return false;
         };
-        if editor.record.removal(field).is_none() {
+        if editor.record.removal(field).is_none() || editor.properties.removal(field).is_none() {
             return false;
         }
         self.table_draft_field_delete = Some(Confirmation {
@@ -58,6 +59,7 @@ impl State {
             name: declaration.name().into(),
             schema_revision: editor.draft.revision(),
             record_revision: editor.record_revision(),
+            property_revision: editor.property_revision(),
             focus_cancel: true,
         });
         true
@@ -92,6 +94,7 @@ impl State {
             || editor.rename.is_some()
             || editor.draft.revision() != confirmation.schema_revision
             || editor.record_revision() != confirmation.record_revision
+            || editor.property_revision() != confirmation.property_revision
             || !editor.draft.fields().iter().any(|field| {
                 field.id() == confirmation.field
                     && !field.is_primary()
@@ -103,12 +106,20 @@ impl State {
         let Some((position, record_revision)) = editor.record.removal(confirmation.field) else {
             return false;
         };
+        let Some((property_position, property_revision)) =
+            editor.properties.removal(confirmation.field)
+        else {
+            return false;
+        };
         // Builder removal is allocation-free and validates its own revision
         // before mutation. The preflighted Vec removal below cannot fail.
         if editor.draft.remove_field(confirmation.field).is_err() {
             return false;
         }
         editor.record.remove_prepared(position, record_revision);
+        editor
+            .properties
+            .remove_prepared(property_position, property_revision);
         editor.focus_add = true;
         editor.error = false;
         editor.save_requested = false;

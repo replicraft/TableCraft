@@ -1,5 +1,35 @@
 # Implementation status
 
+## Initial field-property authoring — 7 November 2026
+
+Design now edits Short Text capacity, Required, Allow Zero Length and typed
+constant defaults through one shared authoring model. New ordinary fields use
+documented Access UI defaults; AutoNumber stays protected. Exact invalid size and
+literal input survive view/tab changes and block Save rather than becoming a
+truncated or converted value. Raw property revisions invalidate stale Save,
+delete and discard witnesses independently of valid schema changes. Snapshot
+memory accounting includes owned defaults through parked first-record states.
+
+Runtime lowers explicit types and policies into a consuming native schema review.
+Policy-bearing schemas use TCNT0003; policy-free TCNT0001/TCNT0002 records retain
+their existing reconstruction. Normal generated-ID insertion admits only the
+closed policy/default groups and still enforces native constraints. A field with
+no default still cannot be omitted in this bounded insertion route. Descriptions,
+captions, validation expressions, Lookup authoring and stored ALTER remain
+unavailable. Text that resembles a function is literal text, never evaluated code.
+
+Connected desktop cases prove property metadata after native save/reopen, an
+omitted first-record value using its stored default, a real checkbox reaching a
+native Boolean row, and an empty-value refusal followed by correction. Final
+local checks pass 25 builder, 140 runtime, 421 shared UI and 105 desktop tests,
+plus 27 focused native creation/intent/recovery checks and strict affected-package
+lint. Both Windows architectures compile all affected targets/features; all 881
+formatter roots pass. Four corrected offscreen frames were inspected after
+fixing compact-pane clipping. Failed exploratory results remain retained.
+Native Windows/Linux execution and Access comparison remain unrun. See
+[creation scope](ui/DATABASE_CREATION.md#supported-field-properties) and
+[visual evidence](ui/PRESENTATION_PREVIEW.md#initial-field-property-authoring--7-november-2026).
+
 ## Renewed platform audit — 7 November 2026
 
 Repository/release tooling now uses explicit UTF-8, and diagnostic generation

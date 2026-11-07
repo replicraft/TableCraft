@@ -2,6 +2,7 @@
 mod dialog;
 
 use super::{CloseIntent, State};
+use crate::workspace::objects::memory::Counter;
 use crate::{Database, InsertInput, ObjectKind, ObjectTab, ObjectTarget};
 use std::sync::atomic::{AtomicU64, Ordering};
 use tablecraft_builders::table::TableDraftSnapshot;
@@ -15,6 +16,7 @@ pub struct TableSaveRequest {
     pub tab: ObjectTab,
     pub snapshot: TableDraftSnapshot,
     pub record_revision: u64,
+    pub property_revision: u64,
 }
 
 /// Original unsaved record intent paired with its exact declared table schema.
@@ -23,6 +25,24 @@ pub struct InitialRecord {
     pub inputs: Vec<InsertInput>,
     /// Exact retained editor text, including text hidden by Omitted or NULL.
     pub raw_text: Vec<String>,
+}
+
+impl InitialRecord {
+    pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
+        let mut count = Counter::new(size_of::<Self>());
+        count.add(self.snapshot.retained_bytes());
+        count.vector(&self.inputs);
+        for input in &self.inputs {
+            if let InsertInput::Value(value) = input {
+                count.string(&value.text);
+            }
+        }
+        count.vector(&self.raw_text);
+        for text in &self.raw_text {
+            count.string(text);
+        }
+        count.finish()
+    }
 }
 
 pub struct TableDraftSaveCompletion {
@@ -44,6 +64,7 @@ pub(in crate::workspace) struct SaveDialog {
     tab: ObjectTab,
     revision: u64,
     record_revision: u64,
+    property_revision: u64,
     name: String,
     id: Option<u64>,
     phase: Phase,
@@ -64,7 +85,7 @@ impl State {
             && !self.creation_is_pending()
             && self.active_object().is_some_and(|tab| {
                 self.table_draft_editor(&tab)
-                    .is_some_and(|editor| !editor.save_blocked)
+                    .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected())
             })
     }
 
@@ -105,6 +126,7 @@ impl State {
             || !editor.commit_rename()
             || !editor.record.synchronize(&editor.draft)
             || editor.record.has_rejected_input()
+            || editor.properties.rejected()
         {
             return false;
         }
@@ -112,6 +134,7 @@ impl State {
             tab,
             revision: editor.draft.revision(),
             record_revision: editor.record.revision(),
+            property_revision: editor.property_revision(),
             name: editor.save_name.clone(),
             id: None,
             phase: Phase::Naming,
@@ -146,6 +169,7 @@ impl State {
             || save.phase != Phase::Issued
             || save.tab != request.tab
             || save.record_revision != request.record_revision
+            || save.property_revision != request.property_revision
             || !self.save_binding(save)
         {
             return false;
@@ -171,6 +195,8 @@ impl State {
             && self.table_draft_revision_for(&save.tab) == Some(save.revision)
             && self.table_draft_editor(&save.tab).is_some_and(|editor| {
                 editor.record.revision() == save.record_revision
+                    && editor.property_revision() == save.property_revision
+                    && !editor.properties.rejected()
                     && !editor.record.has_rejected_input()
                     && editor.rename.is_none()
             })
@@ -275,10 +301,10 @@ impl State {
         match &self.table_draft_close {
             Some(CloseIntent::Tab(tab)) => self
                 .table_draft_editor(tab)
-                .is_some_and(|editor| !editor.save_blocked),
+                .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected()),
             Some(CloseIntent::All) => self.object_tabs().iter().any(|tab| {
                 self.table_draft_editor(tab)
-                    .is_some_and(|editor| !editor.save_blocked)
+                    .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected())
             }),
             None => false,
         }

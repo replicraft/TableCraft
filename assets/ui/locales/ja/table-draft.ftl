@@ -56,9 +56,23 @@ table-draft-delete-field-warning = この未保存のテーブルから、フィ
 table-draft-delete-field-confirm = フィールドを削除
 
 # Editable initial-table Design view; persisted native schemas remain read only.
-table-draft-design-help = この未保存のテーブルのフィールド名と型を編集できます。説明とプロパティの編集はまだ利用できません。
+table-draft-design-help = 未保存のテーブルの名前、型、および対応するフィールドプロパティを編集できます。その他のプロパティはまだ利用できません。
 table-draft-design-name = { $field } のフィールド名
 table-draft-design-type = { $field } のデータ型
 table-draft-design-input-help = 型を変更しても、保留中のレコード入力はそのまま保持されます。確認して適用する前に、選択した型に適合させてください。
 table-draft-design-protected = 最初のオートナンバー型の主キーは変更できません。
 table-draft-design-add-field = フィールドを追加
+
+# Supported initial-field properties; default input is an unevaluated constant.
+table-draft-property-unset = 未設定
+table-draft-property-no = いいえ
+table-draft-property-yes = はい
+table-draft-property-type-default = 型の既定値
+table-draft-property-absent = 既定値なし
+table-draft-property-null = NULL
+table-draft-property-literal = リテラル
+table-draft-property-literal-input = 既定値のリテラル
+table-draft-property-invalid-size = 1 から 255 までの整数を入力してください。
+table-draft-property-input-limit = プロパティの入力が上限を超えています。元のテキストは保持されます。
+table-draft-property-invalid = 保存する前に、無効なフィールドプロパティを修正してください。
+table-draft-property-help = 定数のみです。テキストは SQL の引用符なしで、数値は小数点にピリオドを使い、真偽値は true/false、日時は ISO 形式で入力します。数式は評価しません。入力は UTF-8 で4096バイト以内、保存する既定値は追加・エスケープされる引用符も含めて UTF-16 で255単位以内です。

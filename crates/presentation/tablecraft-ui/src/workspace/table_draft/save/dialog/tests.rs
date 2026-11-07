@@ -368,6 +368,7 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     let substituted = TableSaveRequest {
         id: request.id,
         record_revision: request.record_revision,
+        property_revision: request.property_revision,
         tab: request.tab.clone(),
         snapshot: TableDraft::initial().snapshot("Contacts").unwrap(),
     };
@@ -379,6 +380,7 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     let wrong_type = TableSaveRequest {
         id: request.id,
         record_revision: request.record_revision,
+        property_revision: request.property_revision,
         tab: request.tab.clone(),
         snapshot: other.snapshot("Contacts").unwrap(),
     };
@@ -386,6 +388,7 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     let mut wrong_target = TableSaveRequest {
         id: request.id,
         record_revision: request.record_revision,
+        property_revision: request.property_revision,
         tab: request.tab.clone(),
         snapshot: state
             .table_draft
@@ -483,6 +486,7 @@ fn row_revision_is_bound_to_issued_save_and_terminal_cancellation_retains_exact_
             .snapshot("Contacts")
             .unwrap(),
         record_revision: request.record_revision + 1,
+        property_revision: request.property_revision,
     };
     assert!(!state.begin_table_draft_save(&substituted));
     assert!(!state.busy);
@@ -532,4 +536,24 @@ fn untouched_new_record_placeholder_never_creates_an_empty_record_continuation()
         .unwrap();
     assert!(!completion.record_pending);
     assert!(state.insert_continuation.is_none());
+}
+
+#[test]
+fn raw_property_edit_with_unchanged_model_cannot_consume_a_previously_issued_save() {
+    let mut state = state();
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let request = issue(&mut state, "Contacts");
+    let editor = state.table_draft.as_mut().unwrap();
+    let field = editor.draft.fields()[1].id();
+    let position = editor.properties.ensure(&editor.draft, field).unwrap();
+    assert!(!editor.properties.set_size(
+        &mut editor.draft,
+        position,
+        "invalid units".into(),
+        false
+    ));
+    assert!(editor.draft.snapshot("Contacts").unwrap() == request.snapshot);
+    assert!(!state.begin_table_draft_save(&request));
+    assert!(!state.busy);
+    assert!(state.table_draft.as_ref().unwrap().properties.rejected());
 }

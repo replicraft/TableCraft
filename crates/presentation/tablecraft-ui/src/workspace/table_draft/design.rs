@@ -1,5 +1,5 @@
 //! Editable initial declarations share the same unsaved model as Datasheet view.
-mod properties;
+pub(in crate::workspace::table_draft) mod properties;
 #[cfg(test)]
 mod tests;
 
@@ -19,6 +19,8 @@ const MIN_TYPE_WIDTH: f32 = 100.0;
 const MIN_DESCRIPTION_WIDTH: f32 = 100.0;
 const PROPERTIES_HEIGHT: f32 = 180.0;
 const MIN_PROPERTIES_HEIGHT: f32 = 100.0;
+// Header, generated ID, one ordinary field and the Add field row remain visible.
+const MIN_GRID_ROWS: f32 = 4.0;
 const FOOTER_PADDING: f32 = 12.0;
 const KEY_SIZE: f32 = 12.0;
 const SELECTOR_HALF_WIDTH: f32 = 3.0;
@@ -121,7 +123,8 @@ impl State {
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
-        if editor.save_blocked || editor.rename.is_some() {
+        if editor.save_blocked || editor.rename.is_some() || editor.properties.field_rejected(field)
+        {
             return false;
         }
         let Some(current) = editor
@@ -178,6 +181,12 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                     tr(ui, "table-draft-invalid-name"),
                 );
             }
+            if editor.properties.rejected() {
+                ui.colored_label(
+                    ui.visuals().error_fg_color,
+                    tr(ui, "table-draft-property-invalid"),
+                );
+            }
             if editor.record.has_rejected_input() {
                 ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
             }
@@ -191,7 +200,8 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                 .add_enabled(can_save, egui::Button::new(tr(ui, "table-draft-save")))
                 .clicked();
         });
-    let properties_limit = (ui.available_height() / 2.0).max(MIN_PROPERTIES_HEIGHT);
+    let properties_limit =
+        (ui.available_height() - MIN_GRID_ROWS * ROW_HEIGHT).max(MIN_PROPERTIES_HEIGHT);
     egui::Panel::bottom(ui.make_persistent_id("draft_design_properties"))
         .resizable(true)
         .default_size(PROPERTIES_HEIGHT)
@@ -466,6 +476,9 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
     let mut keys = vec!["table-draft-design-input-help"];
     if editor.error {
         keys.push("table-draft-invalid-name");
+    }
+    if editor.properties.rejected() {
+        keys.push("table-draft-property-invalid");
     }
     if editor.record.has_rejected_input() {
         keys.push("insertion-input-limit");

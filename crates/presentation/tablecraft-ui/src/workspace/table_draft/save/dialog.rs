@@ -212,6 +212,7 @@ impl State {
                 tab: save.tab.clone(),
                 snapshot,
                 record_revision: save.record_revision,
+                property_revision: save.property_revision,
             },
         });
     }

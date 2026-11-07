@@ -1,5 +1,36 @@
 # Presentation preview
 
+## Initial field-property authoring — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=design-properties|design-default` drives the
+actual source-free widgets: add/name a Short Text field, enter a pending record,
+switch to Design, set Field Size to 40, Required to Yes, Allow Zero Length to No
+and a literal default to `Ada`. Default mode leaves the actual four-choice menu
+open. Both modes require `initial-table-draft` and remain exclusive with other
+preview interactions. They do not open a database or issue a native save.
+
+Four accepted normal-host frames were rendered and inspected windowlessly on
+macOS ARM64 with Windows input emulation. English light/dark use 1280×820 pixels
+at 1×; German light/Japanese dark use 900×580 logical points at 1.25×
+(1125×725 pixels). Accepted frames remain under ignored
+`.cache/ui-previews/initial-properties-accepted-20261107/`.
+
+The earlier `initial-properties-20261107/` frames exposed a clipped literal row
+in compact layouts. The corrected split reserves an upper header/ID/field/Add
+grid while allowing the lower pane's five active controls to fit. All eight
+languages and both themes now check those controls below General and above the
+footer, including a real multiline literal value. Unsupported property rows and
+long help remain scrollable; foreground menus may overlay the footer. The literal
+editor retains its native multiline accessibility role and exact raw line breaks.
+
+The actual private 1920×1165 Windows/VirtualBox Table Design capture was reopened;
+its scale is unknown. It establishes the upper grid, lower General/Lookup sheet
+and right help area, but shows AutoNumber properties. It does not qualify these
+Short Text widgets, constant-mode menu, unsaved-state behavior or dark theme.
+Those remain documented TableCraft adaptations. The three connected desktop
+workflows use real schema/row services; offscreen frames do not establish native
+Windows/Linux execution or Access save/reopen parity.
+
 ## Initial-table Design view — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=design|design-type` creates and names a Short
@@ -736,9 +767,9 @@ Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
 Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
-has 20 section files: `shell`, `ribbon`, `backstage`, `datasheet`, `query`,
+has 23 section files: `shell`, `ribbon`, `backstage`, `creation`, `table-draft`, `datasheet`, `query`,
 `saved-query`, `design`, `editing`, `insertion`, `deletion`, `collections`,
-`navigation`, `objects`, `diagnostics`, `settings`, `find`, `filtering`, `zoom`, `totals` and `query-design`
+`navigation`, `objects`, `diagnostics`, `recovery`, `settings`, `find`, `filtering`, `zoom`, `totals` and `query-design`
 `.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and

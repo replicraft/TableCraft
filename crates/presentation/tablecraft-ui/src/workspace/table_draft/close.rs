@@ -58,12 +58,13 @@ impl State {
         } else {
             match intent {
                 CloseIntent::Tab(tab) => {
-                    if let (Some(revision), Some(record_revision)) = (
+                    if let (Some(revision), Some(record_revision), Some(property_revision)) = (
                         self.table_draft_revision_for(&tab),
                         self.table_draft_record_revision_for(&tab),
+                        self.table_draft_property_revision_for(&tab),
                     ) {
                         self.table_draft_discard_approved =
-                            Some((tab.clone(), revision, record_revision));
+                            Some((tab.clone(), revision, record_revision, property_revision));
                         actions.push(Action::CloseObject { tab });
                     }
                 }
