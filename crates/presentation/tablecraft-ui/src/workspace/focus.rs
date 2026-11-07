@@ -36,12 +36,14 @@ struct Anchor {
     pane: Pane,
     id: Id,
     preferred: bool,
+    record: bool,
 }
 
 #[derive(Clone)]
 struct Frame {
     panes: Vec<Pane>,
     number: u64,
+    pass: u64,
     scope: Id,
     direction: Option<Direction>,
     anchors: Vec<Anchor>,
@@ -79,6 +81,15 @@ fn registry_id() -> Id {
 
 /// Standalone widgets register nothing unless a workspace frame is active.
 pub(crate) fn register(ui: &Ui, pane: Pane, response: &Response, preferred: bool) {
+    register_anchor(ui, pane, response, preferred, false);
+}
+
+/// A rendered row/cell control, distinct from an object tab in the same pane.
+pub(crate) fn register_record(ui: &Ui, pane: Pane, response: &Response, preferred: bool) {
+    register_anchor(ui, pane, response, preferred, true);
+}
+
+fn register_anchor(ui: &Ui, pane: Pane, response: &Response, preferred: bool, record: bool) {
     if !response.enabled() || !response.sense.is_focusable() {
         return;
     }
@@ -97,11 +108,13 @@ pub(crate) fn register(ui: &Ui, pane: Pane, response: &Response, preferred: bool
                 .find(|anchor| anchor.id == response.id)
             {
                 anchor.preferred |= preferred;
+                anchor.record |= record;
             } else {
                 frame.anchors.push(Anchor {
                     pane,
                     id: response.id,
                     preferred,
+                    record,
                 });
             }
         }
@@ -197,6 +210,7 @@ impl State {
         });
         let frame = Frame {
             number: ui.ctx().cumulative_frame_nr(),
+            pass: ui.ctx().cumulative_pass_nr(),
             scope: self.pane_scope(),
             direction,
             anchors: Vec::new(),
@@ -204,6 +218,28 @@ impl State {
         };
         ui.ctx()
             .data_mut(|data| data.insert_temp(registry_id(), Some(frame)));
+    }
+
+    pub(super) fn native_record_has_focus(&self, ui: &Ui) -> bool {
+        let focused = ui.memory(|memory| memory.focused());
+        let number = ui.ctx().cumulative_frame_nr();
+        let pass = ui.ctx().cumulative_pass_nr();
+        let scope = self.pane_scope();
+        ui.ctx().data(|data| {
+            data.get_temp::<Option<Frame>>(registry_id())
+                .flatten()
+                .is_some_and(|frame| {
+                    frame.number == number
+                        && frame.pass == pass
+                        && frame.scope == scope
+                        && frame.direction.is_none()
+                        && frame.anchors.iter().any(|anchor| {
+                            anchor.pane == Pane::Document
+                                && anchor.record
+                                && Some(anchor.id) == focused
+                        })
+                })
+        })
     }
 
     pub(super) fn finish_pane_focus(&mut self, ui: &Ui) {

@@ -149,6 +149,29 @@ Traversal across group boundaries and focus styling remain TableCraft
 adaptations; the retained screenshots show no active keyboard-focus or KeyTip
 state. Verification results belong in the [presentation record](PRESENTATION_PREVIEW.md).
 
+## New-record shortcut
+
+Ctrl+Plus opens the existing reviewed New Record dialog when a current local
+native table cell, row selector or appended New-row control owns focus. On
+macOS TableCraft uses Command+Plus, matching its other platform-command
+shortcuts; this is an adaptation, not native Mac Access parity. Logical Plus
+also accepts layouts where Plus is unshifted, while Equals requires Shift.
+Owned repeats are consumed without opening another request, and the shortcut
+does not change application or datasheet zoom.
+
+Text editors, Find, modal reviews, Ribbon/object tabs, query results and unsaved
+table designs retain their own input ownership. Admission still checks the
+actual table/document target. The command opens the existing omission-aware
+review workflow; it does not provide inline new-row editing or change record
+commit and Escape behavior. New-row controls expose the localized shortcut in
+their tooltip.
+
+[Microsoft's Access keyboard reference](https://support.microsoft.com/en-us/accessibility/access/keyboard-shortcuts-for-access)
+documents Ctrl+Plus for adding a record. The retained Windows datasheet capture
+(`Bildschirmfoto_2026-10-28_12-07-35.png`, 1920 × 1141; scale unrecorded)
+shows the appended new row; keyboard behavior is grounded in that Microsoft
+contract and headless interaction checks, rather than a native Access run.
+
 ## Remaining qualification
 
 This inventory does not establish complete native Ribbon parity. Full galleries,

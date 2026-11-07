@@ -16,3 +16,4 @@ insertion-input-limit = A nova linha excede o tamanho de entrada suportado. Encu
 insertion-mock-help = Somente entrada sintética. Nenhum arquivo de banco de dados é aberto ou alterado.
 insertion-generated-value = (Novo)
 insertion-auto-number-help = Numeração Automática: atribuída automaticamente ao salvar a nova linha.
+insertion-shortcut-help = Adicionar um novo registro ({ $shortcut }).

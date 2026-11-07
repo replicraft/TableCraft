@@ -324,10 +324,15 @@ fn render_rows(
                                                     egui::Button::new(tr(ui, "insertion-title"))
                                                         .frame(false)
                                                         .truncate();
-                                                if ui
-                                                    .add_sized(ui.available_size(), button)
-                                                    .clicked()
-                                                {
+                                                let response =
+                                                    ui.add_sized(ui.available_size(), button);
+                                                focus::register_record(
+                                                    ui,
+                                                    pane,
+                                                    &response,
+                                                    data.rows.is_empty(),
+                                                );
+                                                if response.clicked() {
                                                     actions.push(Action::BeginInsert {
                                                         target: target.clone(),
                                                     });
@@ -429,7 +434,7 @@ fn render_rows(
                                                 && !selection.row_selected()
                                                 && selection.selected(index, position)
                                             {
-                                                focus::register(ui, pane, &response, true);
+                                                focus::register_record(ui, pane, &response, true);
                                             }
                                             if ui.is_enabled()
                                                 && selection.selected(index, position)
@@ -654,7 +659,7 @@ fn row_selector(
         && selection.row_selected()
         && selection.row() == Some(row)
     {
-        focus::register(ui, pane, &response, true);
+        focus::register_record(ui, pane, &response, true);
     }
     let label = message(
         ui,

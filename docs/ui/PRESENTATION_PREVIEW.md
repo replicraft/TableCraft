@@ -1,5 +1,28 @@
 # Presentation preview
 
+## New-record keyboard intent — 7 November 2026
+
+Ctrl+Plus, or Command+Plus on macOS, opens the existing reviewed insertion
+workflow from a currently rendered native cell, record selector or appended
+New-row control. It does not add inline record editing. Current-pass focus
+registration distinguishes those controls from document tabs and other chrome;
+the shortcut is consumed before egui's application zoom handler.
+
+Five focused interaction tests pass. They cover the three platform modifier
+profiles, logical Plus and Shift+Equals, real held-key repeats, unchanged
+application/datasheet zoom, unchanged rows, empty tables, stale targets and
+text/modal/query/draft/tab ownership. Thirteen keyboard/Ribbon checks and five
+pane-focus regressions also pass, including Copy's focus return and F6. The
+connected desktop create/save/insert test now uses the actual keyboard route for
+both ID-only inserts and observes persisted IDs 1 and 2 after reopening. Strict
+UI/desktop lint passes. These are scoped headless observations, not a full UI
+suite rerun or native Windows/Access keyboard qualification.
+
+The retained datasheet capture was reopened; it shows the appended new row but
+contains no active shortcut or keyboard-focus state. The documented Microsoft
+shortcut and the macOS adaptation are recorded in the [Ribbon contract](RIBBON.md#new-record-shortcut).
+No native app windows were opened and no new visual surface was introduced.
+
 ## Initial table Save As — 7 November 2026
 
 The `initial-table-save-name` scene opens the shared naming workflow without a

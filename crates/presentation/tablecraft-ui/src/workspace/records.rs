@@ -1,4 +1,5 @@
 //! Visible record positions remain distinct from native snapshot ordinals.
+mod shortcuts;
 mod toolbar;
 
 use super::ribbon::{CommandSize, Icon, command_menu};

@@ -99,7 +99,16 @@ impl State {
             }
         }
         let insert = self.current_insert_target();
-        if record_button(ui, Icon::NewRecord, "insertion-title", insert.is_some()).clicked()
+        if record_button(ui, Icon::NewRecord, "insertion-title", insert.is_some())
+            .on_hover_text(message(
+                ui,
+                "insertion-shortcut-help",
+                &[(
+                    "shortcut",
+                    crate::keyboard::new_record_shortcut_text(ui.ctx()),
+                )],
+            ))
+            .clicked()
             && let Some(target) = insert
         {
             actions.push(Action::BeginInsert { target });

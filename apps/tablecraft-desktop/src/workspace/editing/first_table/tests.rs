@@ -144,9 +144,42 @@ fn file_new_field_declaration_ctrl_s_and_query_use_the_same_persisted_database()
 }
 
 fn insert_generated_row(harness: &mut Harness<'_, Desktop>, companion: Option<&str>) {
-    harness
-        .get_by_role_and_label(Role::Button, "New")
-        .click_accesskit();
+    if companion.is_none() {
+        // The upper New-row affordance is the actual datasheet control. The
+        // separate navigator button shares its accessible name but is chrome.
+        let header_bottom = harness
+            .get_all_by_role(Role::ColumnHeader)
+            .map(|node| node.rect().bottom())
+            .fold(0.0, f32::max);
+        harness
+            .get_all_by_role_and_label(Role::Button, "New row")
+            .filter(|node| node.rect().top() >= header_bottom)
+            .min_by(|left, right| left.rect().top().total_cmp(&right.rect().top()))
+            .expect("the native table exposes a new-record row")
+            .focus();
+        harness.run_steps(1);
+        let zoom = harness.ctx.zoom_factor();
+        let modifiers = if harness.ctx.os() == egui::os::OperatingSystem::Mac {
+            egui::Modifiers {
+                mac_cmd: true,
+                command: true,
+                ..Default::default()
+            }
+        } else {
+            egui::Modifiers {
+                ctrl: true,
+                command: true,
+                ..Default::default()
+            }
+        };
+        harness.key_press_modifiers(modifiers, egui::Key::Plus);
+        harness.run_steps(1);
+        assert_eq!(harness.ctx.zoom_factor(), zoom);
+    } else {
+        harness
+            .get_by_role_and_label(Role::Button, "New")
+            .click_accesskit();
+    }
     harness.run_steps(1);
     finish_reads(harness);
 

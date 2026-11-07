@@ -16,3 +16,4 @@ insertion-input-limit = 新行超过了支持的输入大小。请在审核前�
 insertion-mock-help = 仅为合成输入。不会打开或更改数据库文件。
 insertion-generated-value = (新建)
 insertion-auto-number-help = 自动编号：保存新行时自动分配。
+insertion-shortcut-help = 添加新记录（{ $shortcut }）。

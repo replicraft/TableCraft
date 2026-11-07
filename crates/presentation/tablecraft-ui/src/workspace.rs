@@ -714,6 +714,7 @@ impl State {
                 }
             });
         });
+        self.new_record_shortcut(ui, &mut actions);
         self.finish_ribbon_paste(ui, &actions);
         self.finish_paste(ui.ctx(), &mut actions, paste_receipt);
         self.accept_zoom_request(ui.ctx());

@@ -16,3 +16,4 @@ insertion-input-limit = 새 행이 지원되는 입력 크기를 초과합니다
 insertion-mock-help = 합성 입력 전용입니다. 데이터베이스 파일을 열거나 변경하지 않습니다.
 insertion-generated-value = (새 항목)
 insertion-auto-number-help = 자동 번호: 새 행을 저장할 때 자동으로 할당됩니다.
+insertion-shortcut-help = 새 레코드 추가 ({ $shortcut }).

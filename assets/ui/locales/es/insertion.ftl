@@ -16,3 +16,4 @@ insertion-input-limit = La nueva fila supera el tamaño de entrada admitido. Aco
 insertion-mock-help = Solo entrada sintética. No se abre ni modifica ningún archivo de base de datos.
 insertion-generated-value = (Nuevo)
 insertion-auto-number-help = Autonumeración: se asigna automáticamente al guardar la nueva fila.
+insertion-shortcut-help = Agregar un nuevo registro ({ $shortcut }).

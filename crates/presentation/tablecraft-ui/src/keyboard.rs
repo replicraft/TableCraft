@@ -72,15 +72,7 @@ pub(crate) fn consume_object_shortcut(ctx: &Context) -> Option<ObjectShortcut> {
 }
 
 fn object_shortcut(os: OperatingSystem, key: Key, modifiers: Modifiers) -> Option<ObjectShortcut> {
-    let mac = os == OperatingSystem::Mac;
-    let command = if mac {
-        modifiers.mac_cmd && !modifiers.ctrl
-    } else {
-        modifiers.ctrl && !modifiers.mac_cmd
-    };
-    // `command` is egui's semantic mirror; physical Ctrl/Cmd, Shift and Alt
-    // determine this exact chord, including raw integrations without the mirror.
-    if !command || modifiers.alt {
+    if !platform_command(os, modifiers) {
         return None;
     }
     match (key, modifiers.shift) {
@@ -92,6 +84,52 @@ fn object_shortcut(os: OperatingSystem, key: Key, modifiers: Modifiers) -> Optio
         }
         _ => None,
     }
+}
+
+fn platform_command(os: OperatingSystem, modifiers: Modifiers) -> bool {
+    let command = if os == OperatingSystem::Mac {
+        modifiers.mac_cmd && !modifiers.ctrl
+    } else {
+        modifiers.ctrl && !modifiers.mac_cmd
+    };
+    // `command` is egui's semantic mirror; physical modifiers establish ownership.
+    command && !modifiers.alt
+}
+
+fn new_record_chord(os: OperatingSystem, key: Key, modifiers: Modifiers) -> bool {
+    platform_command(os, modifiers) && (key == Key::Plus || key == Key::Equals && modifiers.shift)
+}
+
+/// Called only after a current native table widget establishes focus ownership.
+/// Logical Plus covers keypad and unshifted-plus layouts. Shift+Equals supports
+/// integrations reporting the US physical spelling; bare Equals keeps GUI zoom.
+pub(crate) fn consume_new_record_shortcut(ctx: &Context) -> bool {
+    let os = ctx.os();
+    ctx.input_mut(|input| {
+        let mut requested = false;
+        input.events.retain(|event| {
+            let egui::Event::Key {
+                key,
+                pressed: true,
+                modifiers,
+                repeat,
+                ..
+            } = event
+            else {
+                return true;
+            };
+            if !new_record_chord(os, *key, *modifiers) {
+                return true;
+            }
+            requested |= !repeat;
+            false
+        });
+        requested
+    })
+}
+
+pub(crate) fn new_record_shortcut_text(ctx: &Context) -> String {
+    ctx.format_shortcut(&egui::KeyboardShortcut::new(Modifiers::COMMAND, Key::Plus))
 }
 
 #[cfg(test)]
@@ -145,5 +183,59 @@ mod tests {
         assert!(!press(Key::Enter, false, true, false).query);
         assert!(press(Key::Escape, false, false, true).cancel);
         assert!(!press(Key::Escape, false, false, false).cancel);
+    }
+}
+
+#[cfg(test)]
+mod new_record_tests {
+    use super::*;
+
+    #[test]
+    fn new_record_chords_respect_logical_keys_and_physical_modifiers() {
+        for os in [
+            OperatingSystem::Windows,
+            OperatingSystem::Nix,
+            OperatingSystem::Mac,
+        ] {
+            let base = Modifiers {
+                ctrl: os != OperatingSystem::Mac,
+                mac_cmd: os == OperatingSystem::Mac,
+                command: true,
+                ..Modifiers::NONE
+            };
+            assert!(new_record_chord(os, Key::Plus, base));
+            assert!(new_record_chord(
+                os,
+                Key::Plus,
+                Modifiers {
+                    shift: true,
+                    ..base
+                }
+            ));
+            assert!(new_record_chord(
+                os,
+                Key::Equals,
+                Modifiers {
+                    shift: true,
+                    ..base
+                }
+            ));
+            assert!(!new_record_chord(os, Key::Equals, base));
+            assert!(!new_record_chord(
+                os,
+                Key::Plus,
+                Modifiers { alt: true, ..base }
+            ));
+            assert!(!new_record_chord(os, Key::Plus, Modifiers::NONE));
+            assert!(!new_record_chord(
+                os,
+                Key::Plus,
+                Modifiers {
+                    ctrl: true,
+                    mac_cmd: true,
+                    ..base
+                }
+            ));
+        }
     }
 }

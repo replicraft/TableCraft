@@ -16,3 +16,4 @@ insertion-input-limit = The new row exceeds the supported input size. Shorten it
 insertion-mock-help = Synthetic input only. No database file is opened or changed.
 insertion-generated-value = (New)
 insertion-auto-number-help = AutoNumber: assigned automatically when the new row is saved.
+insertion-shortcut-help = Add a new record ({ $shortcut }).

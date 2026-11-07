@@ -16,3 +16,4 @@ insertion-input-limit = 新しい行の入力サイズが上限を超えてい�
 insertion-mock-help = 合成入力のみです。データベースファイルは開かれず、変更されません。
 insertion-generated-value = (新規)
 insertion-auto-number-help = オートナンバー型: 新しい行の保存時に自動的に割り当てられます。
+insertion-shortcut-help = 新しいレコードを追加 ({ $shortcut })。

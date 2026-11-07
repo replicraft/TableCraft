@@ -155,6 +155,14 @@ impl State {
                         target.is_some(),
                         CommandSize::Small,
                     )
+                    .on_hover_text(crate::localization::message(
+                        ui,
+                        "insertion-shortcut-help",
+                        &[(
+                            "shortcut",
+                            crate::keyboard::new_record_shortcut_text(ui.ctx()),
+                        )],
+                    ))
                     .on_hover_text(t.text("insertion-intent-help"))
                     .clicked()
                         && let Some(target) = target

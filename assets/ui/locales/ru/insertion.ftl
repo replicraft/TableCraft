@@ -16,3 +16,4 @@ insertion-input-limit = Новая строка превышает допуст�
 insertion-mock-help = Только синтетический ввод. Файл базы данных не открывается и не изменяется.
 insertion-generated-value = (Новая)
 insertion-auto-number-help = Счётчик: значение назначается автоматически при сохранении новой строки.
+insertion-shortcut-help = Добавить новую запись ({ $shortcut }).

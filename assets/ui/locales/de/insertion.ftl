@@ -16,3 +16,4 @@ insertion-input-limit = Die neue Zeile überschreitet die unterstützte Eingabeg
 insertion-mock-help = Nur synthetische Eingabe. Keine Datenbankdatei wird geöffnet oder geändert.
 insertion-generated-value = (Neu)
 insertion-auto-number-help = AutoWert: wird beim Speichern der neuen Zeile automatisch vergeben.
+insertion-shortcut-help = Neuen Datensatz hinzufügen ({ $shortcut }).
