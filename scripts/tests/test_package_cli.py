@@ -218,6 +218,76 @@ class PackagingTests(unittest.TestCase):
             self.build_archive(target)
         self.assertEqual(before, archive.read_bytes())
 
+    def test_dangling_checksum_symlink_is_refused_without_writing_its_target(self):
+        target = "x86_64-pc-windows-msvc"
+        output = self.root / "dist"
+        output.mkdir()
+        archive = output / contract.archive_name(VERSION, target)
+        sidecar = archive.with_name(archive.name + ".sha256")
+        outside = self.root / "outside-checksum"
+        try:
+            sidecar.symlink_to(outside)
+        except OSError as error:
+            self.skipTest(f"Host does not permit creating symlink fixtures: {error}")
+
+        with self.assertRaisesRegex(ValueError, "fresh paths"):
+            self.build_archive(target)
+        self.assertTrue(sidecar.is_symlink())
+        self.assertFalse(outside.exists())
+        self.assertFalse(archive.exists())
+
+    def test_archive_created_after_preflight_is_not_removed(self):
+        target = "x86_64-pc-windows-msvc"
+        output = self.root / "dist"
+        archive = output / contract.archive_name(VERSION, target)
+        original_open = Path.open
+
+        def raced_open(path, mode="r", *args, **kwargs):
+            if path == archive and mode == "xb":
+                with original_open(path, "xb") as stream:
+                    stream.write(b"Another invocation owns this archive")
+            return original_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", raced_open):
+            with self.assertRaises(FileExistsError):
+                self.build_archive(target)
+        self.assertEqual(archive.read_bytes(), b"Another invocation owns this archive")
+        self.assertFalse(archive.with_name(archive.name + ".sha256").exists())
+
+    def test_checksum_created_after_preflight_is_not_overwritten_or_removed(self):
+        target = "x86_64-pc-windows-msvc"
+        output = self.root / "dist"
+        archive = output / contract.archive_name(VERSION, target)
+        sidecar = archive.with_name(archive.name + ".sha256")
+        original_verify = package.verify_archive
+
+        def verify_then_race(*args, **kwargs):
+            original_verify(*args, **kwargs)
+            sidecar.write_bytes(b"Another invocation owns this checksum")
+
+        with patch.object(package, "verify_archive", side_effect=verify_then_race):
+            with self.assertRaises(FileExistsError):
+                self.build_archive(target)
+        self.assertEqual(sidecar.read_bytes(), b"Another invocation owns this checksum")
+        self.assertFalse(archive.exists())
+        self.assertFalse((output / package.LICENSE_BUNDLE).exists())
+
+    def test_incomplete_notice_copy_cleans_only_files_created_by_this_invocation(self):
+        target = "x86_64-pc-windows-msvc"
+        output = self.root / "dist"
+        original_copy = package.shutil.copyfileobj
+
+        def fail_notice_copy(source, destination, *args, **kwargs):
+            if getattr(destination, "name", None) == str(output / package.LICENSE_BUNDLE):
+                destination.write(b"Incomplete notice")
+                raise OSError("Synthetic notice copy failure")
+            return original_copy(source, destination, *args, **kwargs)
+
+        with patch.object(package.shutil, "copyfileobj", side_effect=fail_notice_copy):
+            with self.assertRaisesRegex(OSError, "notice copy failure"):
+                self.build_archive(target)
+        self.assertEqual(list(output.iterdir()), [])
+
     def test_extracted_smoke_checks_version_and_help(self):
         target = "aarch64-apple-darwin"
         archive = self.build_archive(target)

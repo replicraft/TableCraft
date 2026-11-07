@@ -63,44 +63,53 @@ def package(version, target, binary, output):
         if contract.digest(standalone) != contract.digest(license_source):
             raise ValueError("Existing standalone third-party licenses differ")
     archive = output / contract.archive_name(version, target)
-    if archive.exists() or archive.is_symlink() or archive.with_name(archive.name + ".sha256").exists():
+    sidecar = archive.with_name(archive.name + ".sha256")
+    if archive.exists() or archive.is_symlink() or sidecar.exists() or sidecar.is_symlink():
         raise ValueError("Release assets must be written to fresh paths")
+    created = []
     try:
-        if "windows" in target:
-            with zipfile.ZipFile(archive, "x", zipfile.ZIP_DEFLATED) as stream:
-                for name, path in sorted(files.items()):
-                    info = zipfile.ZipInfo(name, date_time=ZIP_EPOCH)
-                    info.create_system = 3
-                    mode = EXECUTABLE_MODE if name == executable else DATA_MODE
-                    info.external_attr = (stat.S_IFREG | mode) << 16
-                    info.compress_type = zipfile.ZIP_DEFLATED
-                    with path.open("rb") as source, stream.open(info, "w", force_zip64=True) as destination:
-                        shutil.copyfileobj(source, destination)
-                info = zipfile.ZipInfo(MANIFEST, date_time=ZIP_EPOCH)
-                info.create_system = 3
-                info.external_attr = (stat.S_IFREG | DATA_MODE) << 16
-                info.compress_type = zipfile.ZIP_DEFLATED
-                stream.writestr(info, metadata)
-        else:
-            with archive.open("xb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as zipped:
-                with tarfile.open(fileobj=zipped, mode="w") as stream:
+        with archive.open("xb") as raw:
+            created.append(archive)
+            if "windows" in target:
+                with zipfile.ZipFile(raw, "w", zipfile.ZIP_DEFLATED) as stream:
                     for name, path in sorted(files.items()):
-                        info = tarfile.TarInfo(name)
-                        info.size = path.stat().st_size
-                        info.mode = EXECUTABLE_MODE if name == executable else DATA_MODE
-                        with path.open("rb") as source:
-                            stream.addfile(info, source)
-                    info = tarfile.TarInfo(MANIFEST)
-                    info.size = len(metadata)
-                    info.mode = DATA_MODE
-                    stream.addfile(info, io.BytesIO(metadata))
+                        info = zipfile.ZipInfo(name, date_time=ZIP_EPOCH)
+                        info.create_system = 3
+                        mode = EXECUTABLE_MODE if name == executable else DATA_MODE
+                        info.external_attr = (stat.S_IFREG | mode) << 16
+                        info.compress_type = zipfile.ZIP_DEFLATED
+                        with path.open("rb") as source, stream.open(info, "w", force_zip64=True) as destination:
+                            shutil.copyfileobj(source, destination)
+                    info = zipfile.ZipInfo(MANIFEST, date_time=ZIP_EPOCH)
+                    info.create_system = 3
+                    info.external_attr = (stat.S_IFREG | DATA_MODE) << 16
+                    info.compress_type = zipfile.ZIP_DEFLATED
+                    stream.writestr(info, metadata)
+            else:
+                with gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as zipped:
+                    with tarfile.open(fileobj=zipped, mode="w") as stream:
+                        for name, path in sorted(files.items()):
+                            info = tarfile.TarInfo(name)
+                            info.size = path.stat().st_size
+                            info.mode = EXECUTABLE_MODE if name == executable else DATA_MODE
+                            with path.open("rb") as source:
+                                stream.addfile(info, source)
+                        info = tarfile.TarInfo(MANIFEST)
+                        info.size = len(metadata)
+                        info.mode = DATA_MODE
+                        stream.addfile(info, io.BytesIO(metadata))
+
         verify_archive(archive, version, target)
-        archive.with_name(archive.name + ".sha256").write_bytes(checksum(archive))
+        with sidecar.open("xb") as destination:
+            created.append(sidecar)
+            destination.write(checksum(archive))
         if not standalone.exists():
             with license_source.open("rb") as source, standalone.open("xb") as destination:
+                created.append(standalone)
                 shutil.copyfileobj(source, destination)
     except BaseException:
-        archive.unlink(missing_ok=True)
+        for path in reversed(created):
+            path.unlink(missing_ok=True)
         raise
     return archive
 

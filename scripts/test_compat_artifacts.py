@@ -8,17 +8,16 @@ from compat_artifacts import ArtifactStore
 
 
 class ArtifactStoreTests(unittest.TestCase):
-    def test_scope_rejects_parent_absolute_and_symlink_escapes_without_hiding_missing_files(self):
+    def test_scope_rejects_parent_and_absolute_escapes_without_hiding_missing_files(self):
         with tempfile.TemporaryDirectory() as directory:
             outer = Path(directory).resolve()
             root = outer / 'evidence'
             root.mkdir()
             store = ArtifactStore(root)
             (outer / 'outside.json').write_text('{}')
-            (root / 'escape').symlink_to(outer, target_is_directory=True)
             self.assertEqual(store.path('./nested/../missing.json'), root / 'missing.json')
             self.assertEqual(store.path(root / 'inside.json'), root / 'inside.json')
-            for value in ('../outside.json', outer / 'outside.json', 'escape/outside.json'):
+            for value in ('../outside.json', outer / 'outside.json'):
                 with self.subTest(value=value):
                     with self.assertRaises(ValueError):
                         store.path(value)
@@ -30,6 +29,23 @@ class ArtifactStoreTests(unittest.TestCase):
                 store.pin('missing.json')
             with self.assertRaises(FileNotFoundError):
                 store.load('missing.json')
+
+    def test_symlink_escape_is_refused_when_platform_permits_creation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            outer = Path(directory).resolve()
+            root = outer / 'evidence'
+            root.mkdir()
+            (outer / 'outside.json').write_text('{}')
+            try:
+                (root / 'escape').symlink_to(outer, target_is_directory=True)
+            except OSError as error:
+                self.skipTest(f"Host does not permit creating symlink fixtures: {error}")
+
+            store = ArtifactStore(root)
+            for read in (store.path, store.pin, store.load):
+                with self.subTest(read=read.__name__):
+                    with self.assertRaises(ValueError):
+                        read('escape/outside.json')
 
     def test_literal_hashes_changed_files_and_json_errors_are_observed_fresh(self):
         with tempfile.TemporaryDirectory() as directory:
