@@ -157,6 +157,16 @@ The optional `fresh-publication` feature adds
 `publication::RequiredOutput::capture` and its consuming `publish` operation.
 It is a generic fresh-output protocol, not an image journal or native-save
 permission. The caller opts in; the existing host publisher remains unchanged.
+`tempfile` remains appropriate for ordinary temporary files and test isolation.
+It does not replace this required-publication contract: its
+[`persist`](https://docs.rs/tempfile/latest/tempfile/struct.NamedTempFile.html#method.persist)
+does not synchronize either file contents or the containing directory, and
+[`persist_noclobber`](https://docs.rs/tempfile/latest/tempfile/struct.NamedTempFile.html#method.persist_noclobber)
+does not promise atomic publication on every platform. These APIs also do not
+supply the captured-parent and typed uncertain-outcome contract below. Keep
+platform-specific code limited to those additional guarantees rather than
+reimplementing ordinary temporary-file consumers.
+
 The first macOS all-feature library check and initial eight focused publication
 functions passed. Static review then corrected name-buffer allocation accounting
 and reserved-final staging-name handling; all ten focused functions passed with

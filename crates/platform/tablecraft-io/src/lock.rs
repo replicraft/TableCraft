@@ -1,4 +1,7 @@
 //! Nonblocking OS file locks; not a database's shared-file locking protocol.
+#[cfg(windows)]
+mod windows;
+
 use crate::{
     IoError,
     open::{open_regular_readonly, open_regular_readwrite},
@@ -21,7 +24,7 @@ impl SharedFile {
     /// Contention returns LockBusy; there is no waiting, retry or lock-file creation.
     /// Unix checks file kind after a nonblocking open, before attempting the lock.
     pub fn open(path: &Path) -> Result<Self, IoError> {
-        let file = open_regular_readonly(path)?;
+        let file = open_regular_readonly(path).map_err(open_error)?;
         file.try_lock_shared().map_err(lock_error)?;
         Ok(Self(file))
     }
@@ -62,7 +65,7 @@ impl ExclusiveFile {
     /// Open an existing regular file without truncation and try an exclusive lock.
     /// The caller owns file creation, durable namespace setup and path identity.
     pub fn open(path: &Path) -> Result<Self, IoError> {
-        let file = open_regular_readwrite(path)?;
+        let file = open_regular_readwrite(path).map_err(open_error)?;
         file.try_lock().map_err(lock_error)?;
         Ok(Self(file))
     }
@@ -136,5 +139,16 @@ fn lock_error(error: TryLockError) -> IoError {
     match error {
         TryLockError::WouldBlock => IoError::LockBusy,
         TryLockError::Error(error) => error.into(),
+    }
+}
+
+fn open_error(error: io::Error) -> IoError {
+    #[cfg(windows)]
+    {
+        windows::open_error(error)
+    }
+    #[cfg(not(windows))]
+    {
+        error.into()
     }
 }

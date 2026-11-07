@@ -5,7 +5,7 @@ use thiserror::Error;
 /// I/O failures omit host error messages, paths and payloads.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum IoError {
-    /// A cooperating handle holds an incompatible OS file lock.
+    /// A handle holds an incompatible OS file lock or Windows sharing mode.
     #[error("file lock is busy")]
     LockBusy,
     /// Host I/O/synchronization failure or EOF, retaining only its portable kind.
