@@ -237,7 +237,7 @@ fn common_date_and_currency_bounds_use_native_values_instead_of_display_strings(
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn reviewed_edit_reopens_and_reapplies_the_common_field_criterion() {
     use crate::workspace::test_support::finish_save;

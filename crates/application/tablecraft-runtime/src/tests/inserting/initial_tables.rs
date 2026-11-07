@@ -3,7 +3,7 @@ use super::{terminal, value};
 use crate::tests::{open, request, stored::opened};
 use crate::{
     Command, EditError, Error, InsertDraft, InsertInput, InsertTarget, Response, SaveKnownOutcome,
-    SaveOutcome, SaveSchemaChange, SaveWorker, Worker, journal_path,
+    SaveOutcome, SaveReceipt, SaveSchemaChange, SaveWorker, Worker, journal_path,
 };
 use std::path::PathBuf;
 use tablecraft_builders::table::{DraftFieldType, TableDraft};
@@ -15,6 +15,21 @@ enum Companion {
     LongInteger,
     DefaultLongInteger,
     ShortText,
+}
+
+fn assert_retirement(receipt: SaveReceipt) {
+    let expected = if cfg!(windows) {
+        (
+            Some(crate::SaveRetirementGuarantee::NtfsWriteThroughRename),
+            Some(crate::SaveCleanupDisposition::RetainedArtifact),
+        )
+    } else {
+        (
+            Some(crate::SaveRetirementGuarantee::CapturedParentBarrier),
+            Some(crate::SaveCleanupDisposition::Removed),
+        )
+    };
+    assert_eq!((receipt.retirement, receipt.cleanup), expected);
 }
 
 fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, SaveWorker, u64) {
@@ -52,14 +67,7 @@ fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, S
     };
     assert_eq!(report.id, operation);
     assert_eq!(receipt.known, SaveKnownOutcome::Committed);
-    assert_eq!(
-        receipt.retirement,
-        Some(crate::SaveRetirementGuarantee::CapturedParentBarrier)
-    );
-    assert_eq!(
-        receipt.cleanup,
-        Some(crate::SaveCleanupDisposition::Removed)
-    );
+    assert_retirement(receipt);
     assert_eq!(receipt.changed_rows, None);
     assert_eq!(
         receipt.schema_change,
@@ -149,14 +157,7 @@ fn first_row_uses_native_generated_id_and_only_the_stored_companion_default() {
         };
         assert_eq!(report.id, operation);
         assert_eq!(receipt.known, SaveKnownOutcome::Committed);
-        assert_eq!(
-            receipt.retirement,
-            Some(crate::SaveRetirementGuarantee::CapturedParentBarrier)
-        );
-        assert_eq!(
-            receipt.cleanup,
-            Some(crate::SaveCleanupDisposition::Removed)
-        );
+        assert_retirement(receipt);
         assert_eq!(receipt.matched_rows, None);
         assert_eq!(receipt.changed_rows, Some(1));
         assert_eq!(receipt.schema_change, None);

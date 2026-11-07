@@ -74,7 +74,7 @@ fn multiple_table_service_publishes_all_four_independent_complete_images() {
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 0);
 
         let receipt = prepared.publish(&mut allowance, &|| false).unwrap();
-        assert!(receipt.namespace_synced());
+        super::assert_publication(&receipt);
         assert_eq!(
             (
                 receipt.table_count(),

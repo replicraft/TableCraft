@@ -1,6 +1,6 @@
 //! Actual Home selection, checked pages and retained filter ownership.
 use super::*;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::workspace::test_support::finish_save;
 use crate::workspace::test_support::{finish_reads, focus_cell, opened, request_find};
 use egui::accesskit::Role;
@@ -8,10 +8,10 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_ui::EditTarget;
 
 fn source() -> Vec<u8> {
@@ -134,7 +134,7 @@ fn selection_pages_toggle_and_clear_keep_physical_membership_and_original_bytes(
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn reviewed_edit_reopens_with_fresh_filter_identity_and_removes_the_changed_record() {
     let (_directory, path, original, mut harness) = opened(source());

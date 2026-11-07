@@ -98,6 +98,47 @@ The complete-byte engine availability predicate has six passing focused cases;
 it never substitutes for fresh write admission. Current evidence lives in
 ignored `.cache/gui-create-table-*20261107.log` files.
 
+## Save-path and packaging follow-up
+
+A second source review covered engine/adapter filesystem use, runtime/host
+integration, dependencies, CI and release tooling. It found Windows coverage
+exclusions that the earlier cross-checks could not expose: several portable
+adapter creation/offline-save, runtime editing and desktop interaction suites
+were never compiled there. Those suites now include Windows. Unix-only inode,
+directory-retargeting and foreign-directory cleanup scenarios remain explicitly
+scoped. Windows assertions retain its actual write-through retirement and intact
+retired artifact rather than claiming Unix directory synchronization or removal.
+
+Held-target observations also differ: Windows's exclusive sharing denies an
+ordinary path read before lock acquisition, whereas Unix permits that read.
+Shared testkit machinery checks the exact Windows sharing violation while the
+lease is held, and consumers verify complete bytes after explicit release.
+The shared/exclusive lock API now maps only Windows sharing/lock violations to
+`LockBusy` at open time; access-denied and other errors retain their original
+kind. Windows-only test cases cover both denial and reopening after handle close;
+their native execution remains unrun locally.
+This follows the distinct [Windows system error codes](https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-).
+
+CLI packaging now rejects dangling checksum symlinks, creates archive/checksum
+paths exclusively and removes only outputs created by that invocation after a
+later failure. Artifact-path tests separate optional symlink setup from universal
+path validation, so missing Windows symlink privileges do not skip ordinary
+coverage. The configured six native CI hosts remain unchanged. Native Windows/
+Linux filesystem, GUI, installation and power-loss qualification still require
+execution on those environments; none is established by cross-compilation.
+
+Fresh follow-up evidence is in ignored `.cache/platform-followup-*20261107.log`
+files. All six target triples pass all-target/all-feature checks of IO, Access,
+runtime and desktop, including the shared UI dependency and newly enabled test
+consumers. On macOS ARM64, the affected library/binary batch passes 857 tests:
+95 Access adapter, 98 desktop, 139 IO, 136 runtime and 389 shared UI. This is not
+the full workspace integration suite. Repository tooling passes 74 top-level
+Python tests, 31 archive tests and eight association tests; all 881 formatter
+roots, the 20-package dependency guard and 7,906 documentation targets pass.
+Strict all-target/all-feature lint also passes for the affected five packages on
+macOS ARM64 and for IO, Access, runtime and desktop on both Windows architectures.
+The Windows lint results are cross-target evidence, not native test execution.
+
 ## Native CI and release boundaries
 
 The CI matrix now names these native runner/host pairs:

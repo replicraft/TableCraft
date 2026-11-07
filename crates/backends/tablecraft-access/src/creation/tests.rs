@@ -1,6 +1,7 @@
 use super::*;
 use std::fs;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::publication::PublicationGuarantee;
 use tablecraft_testkit::fixtures::access::canonical_creation::{self, Case};
 use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
@@ -27,7 +28,7 @@ fn shared_creation_service_publishes_six_independently_qualified_complete_images
         );
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 0);
         let receipt = prepared.publish(&mut budget(), &|| false).unwrap();
-        assert!(receipt.namespace_synced());
+        assert_publication(&receipt);
         assert_eq!(
             (receipt.row_count(), receipt.column_count()),
             (source.rows.len(), source.columns.len())
@@ -64,3 +65,22 @@ mod variable;
 mod multiple;
 
 mod blank;
+
+fn assert_publication(receipt: &CreationReceipt) {
+    #[cfg(unix)]
+    {
+        assert_eq!(
+            receipt.guarantee(),
+            PublicationGuarantee::CapturedParentBarrier
+        );
+        assert!(receipt.namespace_synced());
+    }
+    #[cfg(windows)]
+    {
+        assert_eq!(
+            receipt.guarantee(),
+            PublicationGuarantee::NtfsWriteThroughRename
+        );
+        assert!(!receipt.namespace_synced());
+    }
+}

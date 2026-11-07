@@ -1,12 +1,20 @@
 use super::*;
 use crate::editing::offline::{CompletionKind, VerifiedImage, plan::MutationIntent};
-use std::{fs, io::Cursor, os::unix::fs::MetadataExt, path::Path};
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
     CreateColumn, FirstTableError, PropertyGroupKind, inspect_table_properties, read_table,
 };
 use tablecraft_core::values::{Currency, Value};
 use tablecraft_db::{InsertValue, OmittingInsertableTable};
-use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
+use tablecraft_io::journal::{
+    RecoveryOutcome,
+    filesystem::OfflineJournalPair,
+    filesystem_contracts::{CleanupDisposition, RetirementGuarantee},
+};
+#[cfg(windows)]
+use tablecraft_io::{IoError, SharedFile};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_testkit::fixtures::access::{
@@ -48,6 +56,7 @@ fn first_table_commits_the_same_file_with_schema_receipt_and_no_row_counts() {
         let bundle = directory.path().join("journal");
         let original = canonical_blank_creation::source();
         fs::write(&path, &original).unwrap();
+        #[cfg(unix)]
         let identity = fs::metadata(&path).unwrap();
 
         let staged = open(&path)
@@ -57,7 +66,8 @@ fn first_table_commits_the_same_file_with_schema_receipt_and_no_row_counts() {
         assert_eq!(staged.table(), "Items");
         assert_eq!(staged.column_count(), columns);
         assert!(!bundle.exists());
-        assert_eq!(fs::read(&path).unwrap(), original);
+        assert_eq!(staged.plan.before_bytes(), original);
+        assert_staged_read_state(&path, &original);
 
         let (session, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
         assert_eq!(receipt.kind(), CompletionKind::Applied);
@@ -73,12 +83,16 @@ fn first_table_commits_the_same_file_with_schema_receipt_and_no_row_counts() {
         assert_eq!(session.state(), SessionState::Ready);
         assert_eq!(session.last_completed(), Some(receipt));
         assert_eq!(session.pair_state(), None);
-        assert_eq!(fs::read(&path).unwrap(), expected(text));
-        let after = fs::metadata(&path).unwrap();
-        assert_eq!((after.dev(), after.ino()), (identity.dev(), identity.ino()));
-        assert!(!bundle.exists());
-        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        assert_completion(&receipt);
         session.release().unwrap();
+        assert_eq!(fs::read(&path).unwrap(), expected(text));
+        #[cfg(unix)]
+        {
+            let after = fs::metadata(&path).unwrap();
+            assert_eq!((after.dev(), after.ino()), (identity.dev(), identity.ino()));
+        }
+        assert!(!bundle.exists());
+        assert_terminal_entries(directory.path(), 1);
     }
 }
 
@@ -116,11 +130,11 @@ fn first_table_review_mismatch_and_noncanonical_sources_create_no_journal() {
         assert_eq!(failure.pair_state(), None);
         assert_eq!(failure.current_outcome(), None);
         assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        failure.into_session().release().unwrap();
         assert_eq!(
             fs::read(&path).unwrap(),
             if stale_review { original } else { changed }
         );
-        failure.into_session().release().unwrap();
     }
 }
 
@@ -208,6 +222,9 @@ fn explicit_first_table_recovery_preserves_schema_kind_and_original_rollback() {
                 RecoveryOutcome::RolledBack
             })
         );
+        assert_eq!(session.state(), SessionState::Ready);
+        assert_completion(&receipt);
+        session.release().unwrap();
         assert_eq!(
             fs::read(&path).unwrap(),
             if committed {
@@ -216,9 +233,7 @@ fn explicit_first_table_recovery_preserves_schema_kind_and_original_rollback() {
                 canonical_blank_creation::source()
             }
         );
-        assert_eq!(session.state(), SessionState::Ready);
-        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
-        session.release().unwrap();
+        assert_terminal_entries(directory.path(), 1);
     }
 }
 
@@ -234,7 +249,11 @@ fn retired_first_table_confirmation_reports_current_image_and_schema_separately(
         let retired = fs::read_dir(directory.path())
             .unwrap()
             .map(|entry| entry.unwrap().path())
-            .find(|path| path.is_dir())
+            .find(|path| {
+                path.file_name()
+                    .and_then(|name| name.to_str())
+                    .is_some_and(|name| name.starts_with(".tablecraft-retired-"))
+            })
             .unwrap();
         let before_confirmation = fs::read(&path).unwrap();
         let (session, receipt) = open(&path)
@@ -257,9 +276,10 @@ fn retired_first_table_confirmation_reports_current_image_and_schema_separately(
             receipt.schema_change(),
             committed.then_some(SchemaChange::FirstTableCreated { column_count: 2 })
         );
-        assert_eq!(fs::read(&path).unwrap(), before_confirmation);
-        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        assert_completion(&receipt);
         session.release().unwrap();
+        assert_eq!(fs::read(&path).unwrap(), before_confirmation);
+        assert_terminal_entries(directory.path(), 1);
     }
 }
 
@@ -342,7 +362,8 @@ fn first_table_apply_preserves_typed_constant_defaults_without_inventing_a_date_
     let staged = open(&path)
         .plan_first_table_if_original(default_definition(), &original, &mut budget(), &|| false)
         .unwrap();
-    assert_eq!(fs::read(&path).unwrap(), original);
+    assert_eq!(staged.plan.before_bytes(), original);
+    assert_staged_read_state(&path, &original);
     assert!(!bundle.exists());
     let (session, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
     assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
@@ -352,8 +373,9 @@ fn first_table_apply_preserves_typed_constant_defaults_without_inventing_a_date_
         receipt.schema_change(),
         Some(SchemaChange::FirstTableCreated { column_count: 6 })
     );
-    assert_default_metadata(&fs::read(&path).unwrap());
+    assert_completion(&receipt);
     session.release().unwrap();
+    assert_default_metadata(&fs::read(&path).unwrap());
 }
 
 #[test]
@@ -372,6 +394,9 @@ fn default_bearing_first_table_intent_recovers_pending_and_committed_images() {
             receipt.schema_change(),
             committed.then_some(SchemaChange::FirstTableCreated { column_count: 6 })
         );
+        assert_eq!(session.state(), SessionState::Ready);
+        assert_completion(&receipt);
+        session.release().unwrap();
         let bytes = fs::read(&path).unwrap();
         if committed {
             assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
@@ -381,8 +406,7 @@ fn default_bearing_first_table_intent_recovers_pending_and_committed_images() {
             assert_eq!(bytes, canonical_blank_creation::source());
         }
         assert!(!bundle.exists());
-        assert_eq!(session.state(), SessionState::Ready);
-        session.release().unwrap();
+        assert_terminal_entries(directory.path(), 1);
     }
 }
 
@@ -397,8 +421,17 @@ fn saved_initial_defaults_compose_with_generated_insert_and_preserve_original_pr
         let staged = open(&path)
             .plan_first_table_if_original(default_definition(), &original, &mut budget(), &|| false)
             .unwrap();
-        let (session, _) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
-        let before_insert = fs::read(&path).unwrap();
+        let (mut session, _) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
+        let slot = session.slot_mut().unwrap();
+        let before_insert = NativeImage::capture(
+            slot.target.as_mut().unwrap(),
+            slot.scope,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+        .as_bytes()
+        .to_vec();
         let supplied = [
             Value::Int32(7),
             Value::Int64(8),
@@ -420,14 +453,16 @@ fn saved_initial_defaults_compose_with_generated_insert_and_preserve_original_pr
             .plan_insert_with_omissions(input, &mut budget(), &|| false)
             .unwrap();
         assert_eq!(staged.inserted_rows(), 1);
-        assert_eq!(fs::read(&path).unwrap(), before_insert);
+        assert_staged_read_state(&path, &before_insert);
         assert!(!bundle.exists());
         let (session, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
         assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
         assert_eq!(receipt.matched_rows(), None);
         assert_eq!(receipt.changed_rows(), Some(1));
         assert_eq!(receipt.schema_change(), None);
+        assert_completion(&receipt);
         session.release().unwrap();
+        assert_terminal_entries(directory.path(), 2);
 
         let bytes = fs::read(&path).unwrap();
         assert_default_metadata(&bytes);
@@ -453,4 +488,47 @@ fn saved_initial_defaults_compose_with_generated_insert_and_preserve_original_pr
         expected.push(Value::Null);
         assert_eq!(table.rows(), [expected]);
     }
+}
+
+fn assert_staged_read_state(path: &Path, expected: &[u8]) {
+    #[cfg(unix)]
+    assert_eq!(fs::read(path).unwrap(), expected);
+    #[cfg(windows)]
+    {
+        let _ = expected;
+        assert!(matches!(SharedFile::open(path), Err(IoError::LockBusy)));
+    }
+}
+
+fn assert_completion(receipt: &Receipt) {
+    #[cfg(unix)]
+    {
+        assert_eq!(
+            receipt.retirement(),
+            Some(RetirementGuarantee::CapturedParentBarrier)
+        );
+        assert_eq!(receipt.cleanup(), Some(CleanupDisposition::Removed));
+    }
+    #[cfg(windows)]
+    {
+        assert_eq!(
+            receipt.retirement(),
+            Some(RetirementGuarantee::NtfsWriteThroughRename)
+        );
+        assert_eq!(
+            receipt.cleanup(),
+            Some(CleanupDisposition::RetainedArtifact)
+        );
+    }
+}
+
+fn assert_terminal_entries(directory: &Path, retired_count: usize) {
+    #[cfg(unix)]
+    let expected = {
+        let _ = retired_count;
+        1
+    };
+    #[cfg(windows)]
+    let expected = 1 + retired_count;
+    assert_eq!(fs::read_dir(directory).unwrap().count(), expected);
 }

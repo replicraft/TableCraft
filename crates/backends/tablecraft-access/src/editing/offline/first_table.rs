@@ -116,5 +116,5 @@ impl StagedFirstTable {
     }
 }
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;

@@ -6,7 +6,9 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-use std::{os::unix::fs::MetadataExt, path::PathBuf};
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+use std::path::PathBuf;
 use tablecraft_builders::table::DraftFieldType;
 use tablecraft_runtime::{SaveFailureKind, SaveOutcome};
 use tablecraft_testkit::fixtures::access::{canonical_blank_creation, mutation_fixture};
@@ -79,6 +81,7 @@ fn issue_without_dispatch(harness: &mut Harness<'_, Desktop>) -> TableSaveReques
 #[test]
 fn file_new_field_declaration_ctrl_s_and_query_use_the_same_persisted_database() {
     let (_directory, path, mut harness) = created();
+    #[cfg(unix)]
     let inode = std::fs::metadata(&path).unwrap().ino();
     assert!(
         harness
@@ -89,6 +92,7 @@ fn file_new_field_declaration_ctrl_s_and_query_use_the_same_persisted_database()
     harness.run_steps(2);
     start_save(&mut harness, "Contacts");
     finish_reads(&mut harness);
+    #[cfg(unix)]
     assert_eq!(std::fs::metadata(&path).unwrap().ino(), inode);
     assert!(!harness.state().editing.has_save());
     assert!(harness.state().first_table.is_none());
@@ -216,6 +220,7 @@ fn newly_saved_initial_schemas_accept_native_generated_rows_and_refresh_real_con
         ),
     ] {
         let (_directory, path, mut harness) = created();
+        #[cfg(unix)]
         let inode = std::fs::metadata(&path).unwrap().ino();
         if let Some(kind) = kind {
             assert!(harness.state_mut().state.add_table_draft_field(kind));
@@ -228,6 +233,7 @@ fn newly_saved_initial_schemas_accept_native_generated_rows_and_refresh_real_con
 
         for (position, value) in values.into_iter().enumerate() {
             insert_generated_row(&mut harness, value);
+            #[cfg(unix)]
             assert_eq!(std::fs::metadata(&path).unwrap().ino(), inode);
             assert!(!journal_path(&path).exists());
             assert!(!harness.state().editing.has_save());

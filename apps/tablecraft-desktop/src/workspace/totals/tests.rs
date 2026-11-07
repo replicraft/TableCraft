@@ -233,7 +233,7 @@ fn totals_currency_is_exact_and_old_source_or_inactive_object_targets_cannot_dis
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn reviewed_edit_reopens_totals_preferences_and_recomputes_on_the_fresh_source() {
     use crate::workspace::test_support::finish_save;

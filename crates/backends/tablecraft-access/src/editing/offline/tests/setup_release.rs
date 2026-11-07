@@ -3,9 +3,16 @@ use crate::editing::offline::{
     Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedUpdate,
 };
 use std::{fs, io::ErrorKind, path::Path};
+use tablecraft_ace::NativeImage;
 use tablecraft_core::values::Value;
 use tablecraft_db::{CellUpdate, EditableTable};
-use tablecraft_io::{IoError, SharedFile, journal::filesystem::PairError};
+use tablecraft_io::{
+    IoError, SharedFile,
+    journal::{
+        filesystem::PairError,
+        filesystem_contracts::{CleanupDisposition, RetirementGuarantee},
+    },
+};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
@@ -40,23 +47,42 @@ fn release_after_setup_collision_preserves_last_receipt_namespace_and_current_im
     fs::write(&path, mutation_fixture::database()).unwrap();
     let session =
         OfflineWriteSession::open(&path, CatalogScope::new(1), &mut budget(), &|| false).unwrap();
-    let (session, receipt) = stage(session, 10, 12)
+    let (mut session, receipt) = stage(session, 10, 12)
         .apply(&root.path().join("completed"), &mut budget(), &|| false)
         .unwrap();
-    let current = fs::read(&path).unwrap();
-    assert_eq!(
-        receipt.retirement(),
-        Some(tablecraft_io::journal::filesystem_contracts::RetirementGuarantee::CapturedParentBarrier)
-    );
-    assert_eq!(
-        receipt.cleanup(),
-        Some(tablecraft_io::journal::filesystem_contracts::CleanupDisposition::Removed)
-    );
+    let slot = session.slot_mut().unwrap();
+    let current = NativeImage::capture(
+        slot.target.as_mut().unwrap(),
+        slot.scope,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap()
+    .as_bytes()
+    .to_vec();
+    #[cfg(unix)]
+    {
+        assert_eq!(
+            receipt.retirement(),
+            Some(RetirementGuarantee::CapturedParentBarrier)
+        );
+        assert_eq!(receipt.cleanup(), Some(CleanupDisposition::Removed));
+    }
+    #[cfg(windows)]
+    {
+        assert_eq!(
+            receipt.retirement(),
+            Some(RetirementGuarantee::NtfsWriteThroughRename)
+        );
+        assert_eq!(
+            receipt.cleanup(),
+            Some(CleanupDisposition::RetainedArtifact)
+        );
+    }
     assert_eq!(session.last_completed(), Some(receipt));
 
     let bundle = root.path().join("occupied");
-    fs::create_dir(&bundle).unwrap();
-    fs::write(bundle.join("sentinel"), b"foreign namespace").unwrap();
+    fs::write(&bundle, b"foreign namespace").unwrap();
     let failure = collision(stage(session, 12, 14), &bundle);
     assert_eq!(failure.state(), SessionState::IncompleteSetup);
     assert_eq!(failure.phase(), Phase::Setup);
@@ -70,10 +96,7 @@ fn release_after_setup_collision_preserves_last_receipt_namespace_and_current_im
     failure.into_session().release().unwrap();
     SharedFile::open(&path).unwrap().close().unwrap();
     assert_eq!(fs::read(&path).unwrap(), current);
-    assert_eq!(
-        fs::read(bundle.join("sentinel")).unwrap(),
-        b"foreign namespace"
-    );
+    assert_eq!(fs::read(bundle).unwrap(), b"foreign namespace");
 }
 
 #[test]
@@ -126,6 +149,11 @@ fn setup_release_error_retains_typed_setup_and_excludes_another_release_or_recov
     assert_eq!(failure.state(), SessionState::ReleaseUncertain);
     assert!(failure.setup_failure().is_some());
     assert!(matches!(SharedFile::open(&path), Err(IoError::LockBusy)));
+    #[cfg(windows)]
+    assert!(fs::read(&path).is_err());
+    // Drop is only best effort here, never an acknowledged release. The test
+    // observes preservation after the retained descriptor actually closes.
+    drop(failure);
     assert_eq!(fs::read(&path).unwrap(), original);
     assert_eq!(fs::read(bundle).unwrap(), b"foreign journal entry");
 }

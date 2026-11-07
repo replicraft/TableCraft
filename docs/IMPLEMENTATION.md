@@ -1,5 +1,19 @@
 # Implementation status
 
+## Cross-platform save-path audit follow-up — 7 November 2026
+
+Portable creation, editing, recovery and desktop interaction cases now compile
+on Windows rather than being silently excluded. Tests preserve Windows sharing
+restrictions and intact retired journals; Unix inode/namespace-specific cases
+remain scoped. Windows sharing/lock violations at lock-open boundaries now report
+`LockBusy`, preserving genuine permission errors. CLI archive/checksum outputs
+use exclusive creation and protect competing or symlinked paths.
+
+All six supported OS/architecture targets pass affected-package all-target/
+all-feature cross-checks. The macOS ARM64 affected library/binary batch passes
+857 tests; no native Windows/Linux execution or full workspace integration pass
+is claimed. See [audit findings and exact evidence](testing/CROSS_PLATFORM_AUDIT.md#save-path-and-packaging-follow-up).
+
 ## Retained INSERT input and guarded retry — 7 November 2026
 
 Row input now survives Save, recovery and terminal acknowledgment. Failed or

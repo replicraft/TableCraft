@@ -56,7 +56,7 @@ fn typed_service_publishes_ten_complete_fixed_and_ieee_source_images() {
         );
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 0);
         let receipt = prepared.publish(&mut allowance, &|| false).unwrap();
-        assert!(receipt.namespace_synced());
+        super::assert_publication(&receipt);
         assert_eq!(
             (receipt.row_count(), receipt.column_count()),
             (source.rows.len(), 10)

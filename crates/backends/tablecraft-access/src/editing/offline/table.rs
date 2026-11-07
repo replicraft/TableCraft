@@ -9,7 +9,7 @@ use tablecraft_db::{
 
 const IMAGE_COMPARE_CHUNK_BYTES: usize = 64 * 1024;
 
-#[cfg(all(test, any(target_os = "macos", target_os = "linux")))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod original_tests;
 
 /// A real snapshot and normal journal editor, retaining the session's exclusive

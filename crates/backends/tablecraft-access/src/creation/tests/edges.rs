@@ -1,17 +1,17 @@
 use super::{CreationDestination, CreationError, budget};
-use std::{
-    cell::{Cell, RefCell},
-    fs, io,
-    path::Path,
-};
+#[cfg(unix)]
+use std::cell::{Cell, RefCell};
+use std::fs;
+#[cfg(unix)]
+use std::{io, path::Path};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_io::{
-    IoError,
-    publication::{PublicationError, RequiredOutput},
-};
+#[cfg(unix)]
+use tablecraft_io::publication::RequiredOutput;
+use tablecraft_io::{IoError, publication::PublicationError};
 use tablecraft_testkit::fixtures::access::canonical_creation::{self, Case};
 use tablecraft_testkit::fixtures::access::canonical_native17_creation as native17;
 
+#[cfg(unix)]
 #[test]
 fn creation_receipt_retains_the_captured_parent_after_textual_path_retargeting() {
     let mut source = canonical_creation::source(Case::One);
@@ -73,9 +73,11 @@ enum Refusal {
     EarlyCancellation,
     Bytes,
     Steps,
+    #[cfg(unix)]
     AfterPayloadWrite,
 }
 
+#[cfg(unix)]
 fn complete_private_payload(parent: &Path, length: u64) -> io::Result<bool> {
     for entry in fs::read_dir(parent)? {
         let entry = entry?;
@@ -98,6 +100,7 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
         Refusal::EarlyCancellation,
         Refusal::Bytes,
         Refusal::Steps,
+        #[cfg(unix)]
         Refusal::AfterPayloadWrite,
     ] {
         let mut source = canonical_creation::source(Case::One);
@@ -120,12 +123,15 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
             Refusal::Steps => ResourceBudget::new(256 * 1024 * 1024, 100_000, 0),
             _ => budget(),
         };
+        #[cfg(unix)]
         let observed_payload = Cell::new(false);
+        #[cfg(unix)]
         let observation_error = RefCell::new(None);
         let cancelled = || {
             if matches!(mode, Refusal::EarlyCancellation) {
                 return true;
             }
+            #[cfg(unix)]
             if matches!(mode, Refusal::AfterPayloadWrite) {
                 match complete_private_payload(root.path(), source.bytes.len() as u64) {
                     Ok(true) => {
@@ -144,6 +150,7 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
         let error = prepared
             .publish(&mut publish_budget, &cancelled)
             .expect_err("an unpublished creation must reject cancellation or insufficient work");
+        #[cfg(unix)]
         assert!(observation_error.borrow().is_none());
         match error {
             CreationError::Publication(PublicationError::NotPublished {
@@ -154,7 +161,11 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
                 assert_eq!(cleanup, None);
                 assert!(!temporary_may_remain);
                 match mode {
-                    Refusal::EarlyCancellation | Refusal::AfterPayloadWrite => {
+                    Refusal::EarlyCancellation => {
+                        assert_eq!(cause, IoError::Cancelled);
+                    }
+                    #[cfg(unix)]
+                    Refusal::AfterPayloadWrite => {
                         assert_eq!(cause, IoError::Cancelled);
                     }
                     Refusal::Bytes => {
@@ -171,6 +182,7 @@ fn prepared_creation_cancellation_and_publish_limits_leave_no_final_or_staged_fi
             }
             other => panic!("publication state must remain NotPublished: {other:?}"),
         }
+        #[cfg(unix)]
         if matches!(mode, Refusal::AfterPayloadWrite) {
             assert!(
                 observed_payload.get(),

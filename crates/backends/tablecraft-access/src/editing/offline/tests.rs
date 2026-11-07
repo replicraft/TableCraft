@@ -1,28 +1,34 @@
 mod setup_release;
 
-use super::{
-    Cause, CompletionKind, KnownOutcome, OfflineWriteSession, Phase, Receipt, SessionState,
-    VerifiedImage,
-};
+#[cfg(unix)]
+use super::{Cause, OfflineWriteSession, Phase, SessionState, VerifiedImage};
+use super::{CompletionKind, KnownOutcome, Receipt};
+#[cfg(unix)]
 use std::{
     fs,
     path::{Path, PathBuf},
 };
+#[cfg(unix)]
 use tablecraft_ace::{
     Int32Update, NativeImage, NativeInt32EditIntent, qualify_jet4_int32_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_io::journal::RecoveryOutcome;
+#[cfg(unix)]
 use tablecraft_io::{
     IoError, SharedFile,
-    journal::{RecoveryOutcome, filesystem::OfflineJournalPair, inspect_v1},
+    journal::{filesystem::OfflineJournalPair, inspect_v1},
 };
+#[cfg(unix)]
 use tablecraft_model::CatalogScope;
+#[cfg(unix)]
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000_000, 1_000_000, 1_000_000_000)
 }
 
+#[cfg(unix)]
 fn replacement() -> Vec<u8> {
     let mut expected = mutation_fixture::database();
     let offset = 12 * 4096 + 4091;
@@ -31,6 +37,7 @@ fn replacement() -> Vec<u8> {
     expected
 }
 
+#[cfg(unix)]
 fn create_retired(root: &Path, committed: bool) -> PathBuf {
     let database = root.join("target.mdb");
     let original = mutation_fixture::database();
@@ -85,6 +92,7 @@ fn create_retired(root: &Path, committed: bool) -> PathBuf {
     database
 }
 
+#[cfg(unix)]
 #[test]
 fn confirmed_images_keep_observation_only_diagnostics_after_cleanup_failure() {
     for committed in [false, true] {

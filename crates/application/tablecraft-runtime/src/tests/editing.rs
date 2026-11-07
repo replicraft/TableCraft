@@ -5,6 +5,7 @@ use crate::{
     SaveWorker,
 };
 use tablecraft_testkit::fixtures::access::mutation_fixture;
+use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 
 fn review(worker: &crate::Worker, revision: u64, text: &str) -> ReviewedEdit {
     let Response::EditDraft(draft) = request(
@@ -123,7 +124,7 @@ fn unrelated_source_change_refuses_before_journal_and_retains_lease_until_releas
     assert!(failure.can_release);
     assert!(!failure.can_recover);
     assert!(!saves.acknowledge(id));
-    assert_eq!(std::fs::read(&path).unwrap(), changed);
+    assert_retained_target_observation(&path, &changed);
     assert!(!bundle.exists());
 
     let release = saves.release(id).unwrap();
@@ -137,6 +138,7 @@ fn unrelated_source_change_refuses_before_journal_and_retains_lease_until_releas
         }
     ));
     assert!(saves.acknowledge(release));
+    assert_eq!(std::fs::read(&path).unwrap(), changed);
 }
 
 #[test]

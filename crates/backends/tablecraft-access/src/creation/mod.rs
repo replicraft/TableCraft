@@ -2,7 +2,7 @@
 mod error;
 mod service;
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests;
 
 pub use error::CreationError;

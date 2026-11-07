@@ -3,12 +3,12 @@ mod captions;
 mod contents;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod deleting;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod editing;
 mod filtering;
@@ -17,13 +17,13 @@ mod first_table_availability;
 mod formatting;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod inserting;
 mod query_design;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux")
+    any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod replacing;
 #[cfg(all(

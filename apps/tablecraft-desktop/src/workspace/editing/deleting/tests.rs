@@ -5,6 +5,7 @@ use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_runtime::{SaveFailureKind, SaveOutcome};
 use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
+use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 
 fn source() -> Vec<u8> {
     canonical_native17_creation::source(
@@ -120,7 +121,7 @@ fn source_drift_refuses_delete_and_keeps_owner_until_explicit_release_and_ack() 
         if failure.kind == SaveFailureKind::SourceChanged && failure.can_release && !failure.can_recover));
     assert!(harness.state().editing.has_save());
     assert!(!harness.state().editing.worker.acknowledge(report.id));
-    assert_eq!(std::fs::read(&path).unwrap(), changed);
+    assert_retained_target_observation(&path, &changed);
     assert!(!journal_path(&path).exists());
 
     harness

@@ -1,13 +1,13 @@
 //! Real clipboard events enter the same source-bound review and save workflow.
 use super::*;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::workspace::test_support::finish_save;
 use crate::workspace::test_support::{finish_reads, focus_cell, opened};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn pasted_text_requires_review_and_explicit_apply_before_native_save() {
     let (_directory, path, original, mut harness) = opened(mutation_fixture::database());

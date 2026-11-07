@@ -1,13 +1,13 @@
 //! Real desktop object ownership over independent native fixtures.
 use crate::workspace::Desktop;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use crate::workspace::test_support::finish_save;
 use crate::workspace::test_support::{finish_reads, focus_cell, opened};
 use eframe::App;
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use std::time::{Duration, Instant};
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::saved_queries::{
     EMPTY_ID, Fragment, QUERY_ID, database_with_query_flags,
@@ -15,7 +15,7 @@ use tablecraft_testkit::fixtures::access::saved_queries::{
 use tablecraft_testkit::fixtures::access::{
     canonical_multiple_creation, canonical_native17_creation, field_presentation, mutation_fixture,
 };
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 use tablecraft_ui::EditTarget;
 use tablecraft_ui::{FilterComparison, ObjectKind, ObjectTab, ObjectTarget, SortSpec};
 
@@ -385,7 +385,7 @@ fn saved_tabs_inspect_inertly_and_keep_separate_committed_parameters_and_results
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
-#[cfg(any(target_os = "macos", target_os = "linux"))]
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[test]
 fn save_owner_vetoes_other_tabs_and_reopen_revokes_old_object_and_row_rights() {
     let (_directory, path, original, mut harness) = opened(multiple_tables());

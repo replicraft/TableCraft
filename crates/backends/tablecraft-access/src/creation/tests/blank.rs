@@ -26,7 +26,7 @@ fn blank_publication_reopens_as_only_system_tables_and_never_clobbers_an_existin
     );
     assert_eq!(fs::read_dir(root.path()).unwrap().count(), 0);
     let receipt = prepared.publish(&mut budget(), &|| false).unwrap();
-    assert!(receipt.namespace_synced());
+    super::assert_publication(&receipt);
     assert_eq!(
         (
             receipt.table_count(),
