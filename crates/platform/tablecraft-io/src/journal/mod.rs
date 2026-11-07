@@ -8,6 +8,8 @@
 //! A completed journal remains intact for host-controlled durable cleanup.
 mod error;
 pub use error::{CommitError, JournalError};
+mod region;
+pub use region::BoundedJournalRegion;
 mod storage;
 pub use storage::{DurableStorage, ResizableDurableStorage};
 mod resizable;

@@ -56,6 +56,35 @@ callbacks still own timeouts; cancellation cannot interrupt a callback that has
 not returned. These read/write helpers do not allocate payload buffers or choose
 byte ceilings; optional image journaling has explicit allocation/size policies.
 
+## Prefix-protected image journal storage
+
+The optional `journal` feature exposes `BoundedJournalRegion`. It exclusively
+borrows an existing `DurableStorage`, verifies its physical length against a
+checked prefix/cap and establishes logical offset zero after that prefix. V1 and
+V2 journals can use it without changing their record formats. The host supplies
+and qualifies the prefix; the region proves no identity, binding, namespace or
+native write permission.
+
+Logical seeks and transfers cannot reach the prefix or exceed the cap. Writes
+past logical EOF refuse instead of creating holes. Reads, writes and seeks add no
+hidden metadata or positioning callbacks; normal I/O helpers retain cumulative
+work accounting. Constructor callbacks use explicit resource and cancellation
+checks. The view does not implement target-resizing capability.
+
+Length queries and flush/sync callbacks may move an arbitrary backend's cursor,
+so subsequent transfers require an explicit absolute seek. A non-Interrupted
+transfer error also invalidates the cached length; callers must refresh actual
+length and reseek before recovery. Interrupted retries retain the existing I/O
+contracts. Underlying sync provides the actual barrier; a region adds no stronger
+durability guarantee.
+
+Actual V1 preparation, commit and pending recovery, and V2 preparation, commit
+and recovery preserve the complete prefix in local tests. Fault cases cover
+partial transfers, invalid counts/positions, moving callbacks, cap/overflow/hole
+refusal, callback counts and exact/one-below setup work and cancellation. The full
+121-case IO library suite passes on macOS. This adapter does not enable Windows
+same-file journal pairing or application Save.
+
 ## Native engine integration
 
 ACE header/page reads use read-at-offset and translate IoError into the existing
@@ -195,15 +224,20 @@ qualification have not been performed locally. The historical macOS results belo
 do not establish those Windows outcomes. Unsupported routes do not downgrade to
 another publication method.
 
-The Windows publisher is IO's sole local unsafe-code exception. IO declares
+Checked Windows filesystem calls now have one private `windows_fs` owner,
+shared by the required publisher. Namespace policy and cumulative accounting
+remain with its caller. This extraction supplies actual handle identity, local
+NTFS qualification, exclusive write-through creation, no-replace rename, file
+flush and owned-stage deletion-on-close primitives; it does not activate a
+Windows filesystem journal or native Save service.
+
+That Windows-gated module is IO's sole local unsafe-code exception. IO declares
 `unsafe_code = "deny"` instead of inheriting the workspace's non-overridable
-`forbid`, and allows unsafe only on the Windows-gated `publication::windows`
-module. Workspace `forbid` and the existing Clippy `all = "warn"` policy remain
-unchanged elsewhere. The exception covers the documented Windows ABI calls,
-bounded aligned information buffers and adoption of newly owned OS handles;
-each unsafe block records its specific lifetime, layout or ownership conditions.
-It is a scoped reviewed implementation boundary, not independent unsafe-code or
-Windows runtime qualification.
+`forbid`; workspace `forbid` and Clippy `all = "warn"` remain unchanged elsewhere.
+The exception covers the documented Windows ABI calls, bounded aligned buffers
+and adoption of newly owned handles. Each unsafe block records its lifetime,
+layout or ownership conditions. This remains a scoped implementation boundary,
+not independent unsafe-code or Windows runtime qualification.
 
 
 The focused publication tests exercise sanitized pre-publication faults,
@@ -216,6 +250,80 @@ The first strict check found only a test-only function-pointer type-complexity
 lint, corrected by a named alias without behavior or trace changes.
 See the [observed IO result](../testing/results/io-required-fresh-publication-2026-10-30.json).
 
+
+## Windows same-file journal integration — current work
+
+Fresh-file publication is implemented; Windows same-file journal pairing and
+application Save are not enabled. The working private `windows_fs` extraction
+above is reusable platform machinery, not a Windows implementation of the Unix
+bundle's setup/retirement/cleanup contract. The existing native V1/V2 image
+protocols remain independent of this platform integration.
+
+The concrete next route is a local-NTFS flat sidecar containing an immutable
+binding/intent prefix and a checked region-relative journal. Its target, sidecar
+and captured-parent identities must come from actual held handles, using the
+volume serial plus the full 128-bit file identifier. They must not be folded into
+the Unix binding's device/inode slots. Microsoft documents that those two fields
+together identify an open file on one computer.
+[FILE_ID_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info)
+
+The flat binding needs its own closed format/identity scheme: prefix and journal
+share one file intentionally, unlike the existing five-distinct-object Unix
+bundle. Checked offsets, intent length/digest and immutable metadata must keep
+all journal reads, seeks and writes outside the prefix; sparse holes and target/
+sidecar aliases refuse. Setup must publish and flush the complete active sidecar
+before exposing any native target-write capability. Persisted names remain data,
+not authority to discover or open a target.
+
+Journal files contain original/replacement data and intent. Their creation must
+supply an explicit protected DACL for the current user before writing that data,
+rather than inherit the parent directory's grants or rely on the default
+security descriptor. The current generic staging helper uses default security
+and does not implement this journal requirement. Reopening must check the actual
+security descriptor as well as identity/binding. Microsoft's security-descriptor
+controls distinguish default/null DACLs from a protected DACL that excludes
+inherited ACEs; descriptor construction is an explicit operation.
+[Security descriptor control](https://learn.microsoft.com/en-us/windows/win32/secauthz/security-descriptor-control),
+[descriptor creation](https://learn.microsoft.com/en-us/windows/win32/secauthz/creating-a-security-descriptor-for-a-new-object-in-c--)
+
+Resource release also needs a Windows-specific lifecycle. The current staging
+helper opens with sharing disabled, and its captured parent omits delete sharing.
+Those restrictions survive an OS lock's release until the respective handles
+close. Existing Unix `ExclusiveFile::try_release` only calls `File::unlock` and
+retains the file; copying that transition would acknowledge release while still
+blocking ordinary target/sidecar opens and parent renames. Windows integration
+must close the relevant retained handles before acknowledging their release, or
+use a separately qualified sharing/locking design. Subsequent cleanup must retain
+its identity guarantees without assuming the closed parent is still captured.
+This is a pending integration requirement, not a defect in the Unix-only pair.
+[Windows handle sharing](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew#parameters),
+[Rust File::unlock](https://doc.rust-lang.org/std/fs/struct.File.html#method.unlock)
+
+After a separately acknowledged native commit/recovery result, retirement can
+rename the same write-through sidecar handle to its reserved nonce-derived name,
+without replacement, then flush that retained file. This uses the existing NTFS
+metadata contract, not an invented parent-directory flush.
+[FILE_RENAME_INFO](https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_rename_info),
+[write-through metadata behavior](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew#caching-behavior)
+
+The initial safe cleanup policy is to retain that intact retired artifact. A
+successful deletion request is not proof of durable namespace removal: ordinary
+Windows deletion waits for the last handle to close, while a volume-wide flush
+requires administrative privileges. These contracts do not supply the Unix
+bundle's acknowledged unlink-plus-parent-barrier sequence.
+[DeleteFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew),
+[FlushFileBuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers)
+
+Integration therefore needs typed retirement/cleanup facts in receipts and a
+distinct target transfer after acknowledged retirement with an intentionally
+retained artifact. Existing `into_target_after_clean` must keep requiring
+`RetiredClean`; Windows must not fabricate that state or silently downgrade a
+failed cleanup. `Retired` already distinguishes durable retirement from removal.
+Known native completion survives later namespace failures; uncertain rename
+outcomes prohibit replay, and a failed terminal flush permits only an explicit
+held-file barrier retry. Intact retired files remain confirmation-only, never
+active-recovery fallbacks. Actual Windows filesystem, crash/power-loss and native
+Access execution remain unrun.
 
 ## Inspecting a versioned image journal
 

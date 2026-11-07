@@ -1,5 +1,20 @@
 # Implementation status
 
+## Windows journal integration foundations — 7 November 2026
+
+Checked Windows file operations now have one private IO owner consumed by the
+existing fresh-file publisher. The generic bounded journal-region adapter also
+runs unchanged V1/V2 protocols behind a protected logical prefix, with cap,
+no-hole, error-state and resource/cancellation guards. All 121 IO library tests
+pass on macOS; strict all-target/all-feature IO lint passes locally and for both
+Windows MSVC architectures. Windows execution remains unrun.
+
+This does not enable Windows same-file Save. The flat-sidecar binding, private
+security descriptor, paired owner, durable retirement/retained-artifact receipts
+and application integration remain pending. The [IO contract](foundation/IO.md#windows-same-file-journal-integration--current-work)
+records those exact remaining requirements without treating retirement as durable
+garbage deletion.
+
 ## First records in newly authored tables — 7 November 2026
 
 Saved initial ID-only, ID-plus-Long-Integer and ID-plus-Short-Text tables use the

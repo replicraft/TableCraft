@@ -17,10 +17,10 @@ mod error;
 mod protocol;
 #[cfg(unix)]
 mod unix;
-#[cfg(any(windows, test))]
-mod windows_names;
 #[cfg(windows)]
 mod windows;
+#[cfg(any(windows, test))]
+mod windows_names;
 
 pub use error::{ParentIdentity, PublicationError, PublicationGuarantee, PublicationReceipt};
 
