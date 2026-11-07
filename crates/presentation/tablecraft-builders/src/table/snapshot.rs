@@ -1,5 +1,7 @@
 //! Immutable, bounded declaration captured at an explicit save request.
-use super::{DraftFieldId, DraftFieldType, TableDraft, TableDraftError, valid_name};
+use super::{
+    DraftDefaultMode, DraftFieldId, DraftFieldType, TableDraft, TableDraftError, valid_name,
+};
 
 #[derive(PartialEq, Eq)]
 pub struct SnapshotField {
@@ -7,6 +9,10 @@ pub struct SnapshotField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    short_text_units: Option<u16>,
+    required: Option<bool>,
+    allow_zero_length: Option<bool>,
+    default_mode: DraftDefaultMode,
 }
 
 impl SnapshotField {
@@ -25,9 +31,27 @@ impl SnapshotField {
     pub fn is_primary(&self) -> bool {
         self.primary
     }
+
+    pub fn short_text_units(&self) -> Option<u16> {
+        self.short_text_units
+    }
+
+    pub fn required(&self) -> Option<bool> {
+        self.required
+    }
+
+    pub fn allow_zero_length(&self) -> Option<bool> {
+        self.allow_zero_length
+    }
+
+    pub fn default_mode(&self) -> &DraftDefaultMode {
+        &self.default_mode
+    }
 }
 
 /// Exact owned declaration. It carries no native file, table or record authority.
+/// Only properties applicable to the captured type are included; an editor's
+/// hidden Short Text policy caches remain outside this effective declaration.
 /// Equality compares declarations exactly; it does not provide SQL value equality.
 #[derive(PartialEq, Eq)]
 pub struct TableDraftSnapshot {
@@ -47,6 +71,17 @@ impl TableDraftSnapshot {
 
     pub fn fields(&self) -> &[SnapshotField] {
         &self.fields
+    }
+
+    pub fn retained_bytes(&self) -> usize {
+        size_of::<Self>()
+            + self.table_name.capacity()
+            + self.fields.capacity() * size_of::<SnapshotField>()
+            + self
+                .fields
+                .iter()
+                .map(|field| field.name.capacity() + field.default_mode.retained_bytes())
+                .sum::<usize>()
     }
 }
 
@@ -74,6 +109,10 @@ impl TableDraft {
                 name: copy_name(field.name())?,
                 kind: field.kind(),
                 primary: field.is_primary(),
+                short_text_units: field.short_text_units(),
+                required: field.required(),
+                allow_zero_length: field.allow_zero_length(),
+                default_mode: field.default_mode().try_copy()?,
             });
         }
         Ok(TableDraftSnapshot {

@@ -1,4 +1,9 @@
+mod properties;
+
+pub use properties::DraftDefaultMode;
+
 use super::{MAX_DRAFT_FIELDS, TableDraftError, valid_name};
+use properties::FieldProperties;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct DraftFieldId(u64);
@@ -19,6 +24,7 @@ pub struct DraftField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    properties: FieldProperties,
 }
 
 impl DraftField {
@@ -54,6 +60,7 @@ impl TableDraft {
                 name: "ID".into(),
                 kind: DraftFieldType::AutoNumberIncrement,
                 primary: true,
+                properties: FieldProperties::new(DraftFieldType::AutoNumberIncrement),
             }],
             revision: 0,
             next_field: 2,
@@ -79,7 +86,7 @@ impl TableDraft {
             + self
                 .fields
                 .iter()
-                .map(|field| field.name.capacity())
+                .map(|field| field.name.capacity() + field.properties.retained_bytes())
                 .sum::<usize>()
     }
 
@@ -116,6 +123,7 @@ impl TableDraft {
             name,
             kind,
             primary: false,
+            properties: FieldProperties::new(kind),
         });
         self.next_field = next_field;
         self.revision = next_revision;
@@ -143,7 +151,9 @@ impl TableDraft {
     }
 
     /// Change only an unsaved field declaration; no pending input is converted.
-    /// Existing identifiers, names and positions stay stable.
+    /// Existing identifiers, names and positions stay stable. Required/default
+    /// choices remain exact; Short Text capacity and Allow Zero Length retain
+    /// hidden caches but are exposed only when Short Text applies again.
     pub fn set_field_type(
         &mut self,
         id: DraftFieldId,

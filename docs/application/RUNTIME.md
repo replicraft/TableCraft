@@ -80,14 +80,54 @@ complete source. Ordinary and recovered Open remain inert until that command.
 With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
 `Command::ReviewFirstTable` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
-Short Text (255 UTF-16 units), Long/Large Integer, Currency, Yes/No and legacy
-Date/Time declarations into the native definition. Numeric/Currency companion
-defaults are exact zero literals; Yes/No is false. Text and Date/Time retain
-absent defaults. No system clock, display format or inferred Number subtype
-changes these declarations.
+Short Text (1–255 UTF-16 units), Long/Large Integer, Currency, Yes/No and legacy
+Date/Time declarations into the native definition. The immutable snapshot also
+carries effective capacity, exact optional Required/AllowZeroLength policies and
+an explicit default mode. New ordinary authoring fields start with Required=false;
+Short Text starts with AllowZeroLength=true, following the documented UI defaults.
+Explicit omission remains available and is never reconstructed as false or true.
+No system clock, display format or inferred Number subtype changes these declarations.
 It captures the standard original image and qualifies the complete canonical
 blank-to-first-table plan. This admits neither arbitrary imported-file DDL nor
 record creation, field alteration or silent type inference.
+
+### Initial-field property lowering
+
+`TableDraftSnapshot` owns the exact applicable field properties and original default
+input. Short Text capacity is checked in 1..=255 UTF-16 units. Hidden Text capacity
+and AllowZeroLength choices survive editor type switches but do not become
+properties of a non-Text snapshot. Required and explicit default choices remain
+exact across ordinary type changes; the protected AutoNumber ID refuses all such
+property changes. The renderer-neutral builder validates bounds, applicability and
+revision changes, without importing core carriers or evaluating expressions.
+
+Runtime lowers `DraftDefaultMode::TypeDefault` to Int32/Int64/Currency zero,
+Boolean false, or an absent Text/DateTime default. `Absent` retains absence;
+`Null` retains an actual NULL carrier. `Literal` passes the exact raw text through
+`scalar_input::parse` with the selected type, then native `CreateColumn` validation.
+Text is literal text, integers and Currency use the shared invariant numeric
+syntax, Boolean uses lowercase true/false, and legacy DateTime uses the shared
+explicit civil/bit input profile. No SQL parser, VBA evaluator, clock, field lookup
+or display-formatted input participates. A text literal `Now()` is quoted text;
+a DateTime formula `Now()` is invalid. Unsupported NULL carriers, irreversible
+dates, incompatible values and out-of-profile declarations refuse before save
+setup rather than silently changing or dropping the default.
+
+The builder/editor's 4,096-byte UTF-8 bound retains input; it does not enlarge the
+engine's separate 255-UTF-16-unit constant-expression ceiling or the declared
+field capacity. Added surrounding quotes and doubled embedded quotes count toward
+that expression limit. Native admission rejects an oversized expression without
+truncation or a journal. Required/AllowZeroLength use exact optional Boolean
+presence, independently from NULL, an empty string and an omitted record field.
+
+Explicit-policy definitions use TCNT0003/profile 3. Existing policy-free
+TCNT0001/profile 1 and default-bearing TCNT0002/profile 2 remain reconstructable
+under their original rules; their decoders do not gain inferred UI properties.
+The saved original intent and rederived native definition carry these properties
+through the existing first-table save and recovery path. Subsequent INSERT still
+uses its actual captured schema, original field presence and consuming review.
+This is working initial-schema authoring, not imported-field alteration, arbitrary
+default evaluation, Windows runtime evidence or native Access qualification.
 
 The consuming `ReviewedFirstTable` retains the original content, exact owned
 native definition and the document's invalidation token. It also exposes an
@@ -498,15 +538,18 @@ locally on macOS on 7 November 2026, including these two new connected cases and
 the three initial schema variants. This is not a full-runtime regression run,
 Windows filesystem-journal observation or native Access comparison.
 
-The initial-table route now authors checked constant defaults for its explicit
-numeric, Currency and Yes/No choices, retained through TCNT0002 recovery. Existing
-TCNT0001 schemas and sources with absent defaults remain distinct. Omitted
-companions use only the insertion service’s qualified stored policies; the UI
-never supplies a guessed value. No AllowZeroLength policy is added. Empty Short
-Text remains subject to the native explicit-AllowZeroLength coverage gate, and
-this runtime metadata addition does not weaken it. The unsaved schema now retains
-a raw first-record buffer, followed by explicit row review after schema saving. Inference from entered data and implicit Access
-autosave remain separate work.
+The initial-table route authors checked constant defaults and explicit field
+policies through the property-lowering contract above. Existing policy-free
+TCNT0001/TCNT0002 schemas and absent defaults remain distinct from new TCNT0003
+policy-bearing declarations. Omitted companions use only the insertion service's
+qualified stored policies; the UI never supplies a guessed record value. New
+Short Text authoring records an explicit AllowZeroLength=true UI default, with
+No remaining a deliberate UI alternative. The lower-level native API also retains
+absent declarations. Empty Text still requires the native insertion route's actual
+explicit policy; an absent declaration does not bypass that coverage gate.
+The unsaved schema retains a raw first-record buffer,
+followed by explicit row review after schema saving. Inference from entered data
+and implicit Access autosave remain separate work.
 
 
 ### INSERT input retention and guarded retry

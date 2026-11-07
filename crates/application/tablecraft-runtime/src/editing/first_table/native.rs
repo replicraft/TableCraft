@@ -1,3 +1,5 @@
+mod declaration;
+
 use super::{FirstTableReopen, ReviewedFirstTable, ReviewedFirstTableState};
 use crate::{
     Error, Response,
@@ -7,19 +9,10 @@ use crate::{
 };
 use bytes::Bytes;
 use std::sync::Arc;
-use tablecraft_ace::{CreateColumn, FirstTableDefinition, NativeImage};
-use tablecraft_builders::table::{DraftFieldType, SHORT_TEXT_UNITS, TableDraftSnapshot};
-use tablecraft_core::{
-    limits::Resource,
-    values::{Currency, Value},
-};
-use tablecraft_schema::ScalarType;
+use tablecraft_ace::NativeImage;
+use tablecraft_builders::table::TableDraftSnapshot;
+use tablecraft_core::limits::Resource;
 
-const PRIMARY_INDEX_NAME: &str = "PrimaryKey";
-const LONG_DEFAULT: Value = Value::Int32(0);
-const LARGE_DEFAULT: Value = Value::Int64(0);
-const BOOLEAN_DEFAULT: Value = Value::Boolean(false);
-const CURRENCY_DEFAULT: Value = Value::Currency(Currency::from_scaled(0));
 const REOPEN_COPY_CHUNK_BYTES: usize = 16 * 1024;
 
 impl Document {
@@ -38,48 +31,7 @@ impl Document {
         }
         let mut work = budget();
         check(cancelled)?;
-        work.charge_allocation(
-            snapshot.fields().len() as u64,
-            size_of::<CreateColumn<'_>>() as u64,
-        )?;
-        let mut columns = Vec::new();
-        columns.try_reserve_exact(snapshot.fields().len())?;
-        for (position, field) in snapshot.fields().iter().enumerate() {
-            check(cancelled)?;
-            let column = match field.kind() {
-                DraftFieldType::AutoNumberIncrement if position == 0 && field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::Int32)
-                        .with_primary_key(PRIMARY_INDEX_NAME)?
-                        .with_incrementing_autonumber()?
-                }
-                DraftFieldType::ShortText if !field.is_primary() => {
-                    CreateColumn::short_text(field.name(), usize::from(SHORT_TEXT_UNITS))?
-                }
-                DraftFieldType::LongInteger if !field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::Int32)
-                        .with_default_literal(&LONG_DEFAULT)?
-                }
-                DraftFieldType::LargeInteger if !field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::Int64)
-                        .with_default_literal(&LARGE_DEFAULT)?
-                }
-                DraftFieldType::YesNo if !field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::Boolean)
-                        .with_default_literal(&BOOLEAN_DEFAULT)?
-                }
-                DraftFieldType::Currency if !field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::Currency)
-                        .with_default_literal(&CURRENCY_DEFAULT)?
-                }
-                DraftFieldType::DateTime if !field.is_primary() => {
-                    CreateColumn::new(field.name(), ScalarType::DateTime)
-                }
-                _ => return Err(EditError::Unavailable.into()),
-            };
-            columns.push(column);
-        }
-        let definition =
-            FirstTableDefinition::capture(snapshot.table_name(), &columns, &mut work, cancelled)?;
+        let definition = declaration::capture(snapshot, &mut work, cancelled)?;
         let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
         let plan = image.plan_first_table(definition, &mut work, cancelled)?;
 

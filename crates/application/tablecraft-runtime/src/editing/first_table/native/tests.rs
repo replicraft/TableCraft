@@ -7,6 +7,8 @@ use std::path::PathBuf;
 use tablecraft_builders::table::{DraftFieldType, TableDraft};
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
+mod properties;
+
 fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("new.accdb");
