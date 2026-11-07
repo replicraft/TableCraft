@@ -3,6 +3,8 @@ mod cell;
 mod column;
 mod contents;
 mod controls;
+#[cfg(feature = "ace16-create")]
+mod creation;
 mod display;
 mod document;
 #[cfg(feature = "offline-edit")]
@@ -23,6 +25,12 @@ mod worker;
 pub use cell::{Cell, CellKind, DisplayControl, HorizontalAlignment};
 pub use column::Column;
 pub use contents::{CollectionKind, ContentsTarget};
+#[cfg(feature = "ace16-create")]
+pub use creation::{
+    CreationFailure, CreationOperation, CreationOutcome, CreationPhase, CreationPublication,
+    CreationReceipt, CreationReport, CreationRequest, CreationStartError, CreationStartFailure,
+    CreationWorker,
+};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
@@ -55,6 +63,8 @@ pub use totals::{
 pub use worker::Worker;
 
 use std::path::PathBuf;
+#[cfg(feature = "ace16-create")]
+use std::sync::Arc;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
 };
@@ -63,6 +73,15 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    Creation(#[from] tablecraft_ace::CreateDatabaseError),
+    #[cfg(feature = "ace16-create")]
+    #[error("creation report does not acknowledge a published database")]
+    NoCreatedReceipt,
+    #[cfg(feature = "ace16-create")]
+    #[error("created database contents changed before opening")]
+    CreatedSourceChanged,
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Replace(#[from] ReplaceError),
@@ -138,6 +157,12 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    /// Reopen only an acknowledged creation whose fresh snapshot still matches
+    /// the canonical blank image. This does not attest physical file identity.
+    #[cfg(feature = "ace16-create")]
+    OpenCreated {
+        report: Arc<CreationReport>,
+    },
     #[cfg(feature = "offline-edit")]
     ReplaceFindMatch {
         request: FindRequest,

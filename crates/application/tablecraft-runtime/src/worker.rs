@@ -30,6 +30,17 @@ impl Worker {
         let mut document = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
+            #[cfg(feature = "ace16-create")]
+            Command::OpenCreated { report } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_created(report, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
             Command::Open { path, password } => {
                 // A failed open cannot leave the old file behind a new UI title.
                 document = None;
@@ -247,6 +258,8 @@ impl Worker {
                 };
                 let operation = match &request.command {
                     Command::Open { .. } => "open",
+                    #[cfg(feature = "ace16-create")]
+                    Command::OpenCreated { .. } => "open_created",
                     #[cfg(feature = "offline-edit")]
                     Command::BeginEdit { .. } => "begin_edit",
                     #[cfg(feature = "offline-edit")]

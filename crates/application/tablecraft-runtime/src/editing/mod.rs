@@ -24,6 +24,7 @@ pub use save::{
 };
 
 use crate::{Cell, scalar_input::InputHint};
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 use bytes::Bytes;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::sync::{
@@ -117,16 +118,6 @@ impl DocumentEdits {
 impl Drop for DocumentEdits {
     fn drop(&mut self) {
         self.valid.store(false, Ordering::Release);
-    }
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
-pub(crate) struct DocumentEdits;
-
-#[cfg(not(any(target_os = "macos", target_os = "linux")))]
-impl DocumentEdits {
-    pub(crate) fn new(_path: PathBuf, _original: Bytes) -> Self {
-        Self
     }
 }
 

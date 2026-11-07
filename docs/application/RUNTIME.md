@@ -6,6 +6,53 @@ owns native windows and dialogs, forwards commands and moves owned results into
 the shared UI's presentation types. Engine interpretation stays in ACE, Access
 adapts it, and query evaluation stays in the query libraries.
 
+## Fresh blank database creation
+
+The optional `ace16-create` feature exposes `CreationRequest::blank`,
+`CreationWorker` and owned terminal creation reports independently of
+`offline-edit`. The desktop explicitly enables both features. ACE owns bounded
+serialization; Access adapts it through `CreationDestination::capture`,
+`prepare_blank` and `publish`. Runtime supplies one cumulative native allowance
+and cooperative cancellation across those three phases. The result is an
+unencrypted ACE 16 database with zero user tables, columns and rows, serialized
+from its own system catalog and maps rather than a copied template.
+
+Creation uses a separate nonreplaceable worker. `start` consumes an explicit
+destination request, refuses another operation while work or an unacknowledged
+report remains, and allocates its report owner before filesystem publication.
+Repeated `poll` calls retain the same terminal report; `acknowledge` requires its
+exact operation ID. A rejected start returns the unconsumed request. Dropping the
+worker is not publication cancellation or final-file cleanup; hosts retain it
+until terminal acknowledgement.
+
+Reports distinguish capture, construction and publication failures while owning
+the original typed cause. Publication facts preserve not-published (including
+possible staging residue), uncertain visibility, published-but-unconfirmed and
+published-with-cleanup-failure outcomes. A cancellation request does not imply
+rollback or absence of a file. Neither a failure nor cancellation authorizes an
+automatic retry or deletion of a visible/uncertain destination.
+
+Required publication uses the Unix implementation on macOS and Linux and a
+separate local-NTFS write-through handle-relative rename on Windows. Receipts
+expose `guarantee()`; Windows does not claim a separately synced parent directory.
+Unsupported locations refuse without a weaker fallback. Actual Windows filesystem
+execution remains unverified. Existing files are never overwritten. See [fresh construction and publication](../access/writes/FRESH_DATABASE_CREATION.md).
+
+`Command::OpenCreated` accepts only a successful retained report. It constructs
+the expected deterministic blank image and compares it with the bytes obtained
+by normal bounded file capture before `Source` qualification. A changed capture
+is refused; there is no ordinary path-open fallback. This content check does not
+attest physical file identity or revalidate the publication's parent identity.
+The read worker retains its usual generation checks. Failure to open the created
+file does not erase the host's successful publication receipt.
+
+Five feature-local runtime creation checks cover retained operation/report
+ownership, publication and guarded reopen behavior. The corresponding shared UI
+and desktop checks remain headless. Independent Jackcess reading qualifies only
+the observed generated structure; native Access open/save remains unqualified.
+The desktop workflow and unimplemented initial `Table1`/table-authoring steps are
+recorded in [database creation](../ui/DATABASE_CREATION.md).
+
 ## Session and task ownership
 
 Open captures an immutable image of a stable/offline file up to 64 MiB, closing

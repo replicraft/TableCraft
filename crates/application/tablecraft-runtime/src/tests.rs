@@ -76,7 +76,7 @@ fn open(path: &Path, password: &str) -> Command {
     }
 }
 
-fn request(worker: &Worker, command: Command) -> Result<Response, Error> {
+pub(crate) fn request(worker: &Worker, command: Command) -> Result<Response, Error> {
     let expected = worker.request(command);
     let (actual, response) = poll(worker);
     assert_eq!(actual, expected);

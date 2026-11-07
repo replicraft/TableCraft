@@ -5,11 +5,23 @@ use super::{
     display::Presentation,
     source::Source,
 };
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
+use crate::editing::DocumentEdits;
 #[cfg(feature = "offline-edit")]
-use crate::editing::{DocumentEdits, journal_path};
+use crate::editing::journal_path;
+#[cfg(feature = "ace16-create")]
+use crate::{CreationOutcome, CreationReport};
 use bytes::Bytes;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux")
+))]
+use std::sync::atomic::AtomicBool;
 #[cfg(feature = "offline-edit")]
-use std::{fs::symlink_metadata, io::ErrorKind, sync::atomic::AtomicBool};
+use std::{fs::symlink_metadata, io::ErrorKind};
 use std::{
     path::{Path, absolute},
     sync::Arc,
@@ -18,6 +30,8 @@ use tablecraft_access::NativeBrowser;
 #[cfg(feature = "offline-edit")]
 use tablecraft_ace::InspectError;
 use tablecraft_ace::NativeTableStorage;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::create_blank_ace16_database;
 use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
@@ -30,7 +44,10 @@ pub(super) struct Document {
     pub(crate) filter_source: Arc<()>,
     pub(super) source: Source,
     pub(super) revision: u64,
-    #[cfg(feature = "offline-edit")]
+    #[cfg(all(
+        feature = "offline-edit",
+        any(target_os = "macos", target_os = "linux")
+    ))]
     pub(crate) edits: DocumentEdits,
 }
 
@@ -41,15 +58,43 @@ impl Document {
         revision: u64,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(path, password, revision, cancelled, None)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn open_created(
+        report: &CreationReport,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        if !matches!(report.outcome(), CreationOutcome::Created(_)) {
+            return Err(Error::NoCreatedReceipt);
+        }
+        let mut work = budget();
+        let expected = create_blank_ace16_database(&mut work, cancelled)?;
+        Self::open_with_expected(
+            report.destination(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(expected.as_bytes()),
+        )
+    }
+
+    fn open_with_expected(
+        path: &Path,
+        password: &mut String,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+        expected: Option<&[u8]>,
+    ) -> Result<(Self, Response), Error> {
         // Take credentials immediately, including on path or snapshot failures.
         let password = Zeroizing::new(std::mem::take(password));
         let mut work = budget();
         check(cancelled)?;
         let source_path = absolute(path).map_err(tablecraft_ace::InspectError::from)?;
         #[cfg(feature = "offline-edit")]
-        let retained_path = source_path.clone();
-        #[cfg(feature = "offline-edit")]
-        match symlink_metadata(journal_path(&retained_path)) {
+        match symlink_metadata(journal_path(&source_path)) {
             Ok(_) => return Err(Error::RetainedJournal),
             Err(error) if error.kind() == ErrorKind::NotFound => {}
             Err(error) => return Err(InspectError::from(error).into()),
@@ -72,19 +117,31 @@ impl Document {
         }
         file.close()?;
         check(cancelled)?;
+        if expected.is_some_and(|expected| expected != bytes.as_slice()) {
+            #[cfg(feature = "ace16-create")]
+            return Err(Error::CreatedSourceChanged);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Error::SourceChanged);
+        }
         let bytes = Bytes::from(bytes);
-        #[cfg(feature = "offline-edit")]
+        #[cfg(all(
+            feature = "offline-edit",
+            any(target_os = "macos", target_os = "linux")
+        ))]
         let edits = {
-            work.charge_allocation(retained_path.as_os_str().len() as u64, 1)?;
+            work.charge_allocation(source_path.as_os_str().len() as u64, 1)?;
             work.charge_allocation(1, size_of::<AtomicBool>() as u64)?;
-            DocumentEdits::new(retained_path, bytes.clone())
+            DocumentEdits::new(source_path.clone(), bytes.clone())
         };
         let (source, format) = Source::open(bytes, password.as_str(), &mut work, cancelled)?;
         let mut document = Self {
             filter_source: Arc::new(()),
             source,
             revision,
-            #[cfg(feature = "offline-edit")]
+            #[cfg(all(
+                feature = "offline-edit",
+                any(target_os = "macos", target_os = "linux")
+            ))]
             edits,
         };
         let mut browser = NativeBrowser::new(&mut document.source, SCOPE, work, cancelled);

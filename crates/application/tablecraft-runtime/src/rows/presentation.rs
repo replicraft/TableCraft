@@ -53,7 +53,10 @@ impl Metadata {
         crate::column::native(name, self.properties.as_ref(), output)
     }
 
-    #[cfg(feature = "offline-edit")]
+    #[cfg(all(
+        feature = "offline-edit",
+        any(target_os = "macos", target_os = "linux")
+    ))]
     pub(crate) fn require_replace_control(
         &self,
         name: &str,
@@ -196,7 +199,10 @@ impl Metadata {
         formatting::apply(self.properties.as_ref(), columns, rows, output)
     }
 
-    #[cfg(feature = "offline-edit")]
+    #[cfg(all(
+        feature = "offline-edit",
+        any(target_os = "macos", target_os = "linux")
+    ))]
     pub fn enrich(
         &self,
         columns: &[Column],

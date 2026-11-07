@@ -11,6 +11,7 @@ publish = false
 workspace = true
 
 [features]
+ace16-create = ["tablecraft-access/ace16-create"]
 offline-edit = [
     "tablecraft-access/offline-write-session",
     "dep:tablecraft-db",
