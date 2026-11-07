@@ -1,15 +1,23 @@
-//! Original presence and exact supplied carriers for ordinary companions.
+//! Original presence, exact supplied carriers and stored constant companion defaults.
 use crate::{
-    EditError, InsertFieldValue, OmittedRowInsert, RowInsert, WriteBlocker,
+    EditError, InsertFieldValue, InspectError, NativeColumn, NativeImage, OmittedRowInsert,
+    RowInsert, TableProperties, TableSchema, WriteBlocker,
     format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
     header::check,
+    inspect_table_properties,
     table::mutation::{
-        autonumber_counter, insert_defaults::values::copy_value, preserved_source::Source,
+        autonumber_counter,
+        insert_defaults::{declaration, literal, values::copy_value},
+        preserved_source::Source,
     },
 };
-use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 pub(super) fn validate(
+    image: &NativeImage,
     source: &Source,
     column: usize,
     requests: &[OmittedRowInsert],
@@ -17,6 +25,7 @@ pub(super) fn validate(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let schema = source.table.schema();
+    let properties = capture_properties(image, schema, budget, cancelled)?;
 
     for request in requests {
         check(budget, cancelled)?;
@@ -33,8 +42,13 @@ pub(super) fn validate(
                 }
                 continue;
             }
-            let InsertFieldValue::Supplied(value) = original else {
-                return Err(EditError::Unsupported(WriteBlocker::Column));
+            let default;
+            let value = match original {
+                InsertFieldValue::Supplied(value) => value,
+                InsertFieldValue::Omitted => {
+                    default = resolve_default(field, &properties, budget, cancelled)?;
+                    &default
+                }
             };
             let valid = matches!(
                 (field.native_type(), value),
@@ -70,6 +84,8 @@ pub(super) fn validate(
 }
 
 pub(super) fn expand(
+    image: &NativeImage,
+    source: &Source,
     generated: &autonumber_counter::Plan,
     requests: &[OmittedRowInsert],
     budget: &mut ResourceBudget,
@@ -79,6 +95,7 @@ pub(super) fn expand(
         return Err(EditError::Preservation);
     }
 
+    let properties = capture_properties(image, source.table.schema(), budget, cancelled)?;
     let mut rows = super::vector(requests.len(), budget, cancelled)?;
     for (request, generated_value) in requests.iter().zip(&generated.values) {
         check(budget, cancelled)?;
@@ -91,10 +108,16 @@ pub(super) fn expand(
                 }
                 values.push(Value::Int32(*generated_value));
             } else {
-                let InsertFieldValue::Supplied(value) = original else {
-                    return Err(EditError::Preservation);
+                let value = match original {
+                    InsertFieldValue::Supplied(value) => copy_value(value, budget, cancelled)?,
+                    InsertFieldValue::Omitted => resolve_default(
+                        &source.table.schema().columns()[position],
+                        &properties,
+                        budget,
+                        cancelled,
+                    )?,
                 };
-                values.push(copy_value(value, budget, cancelled)?);
+                values.push(value);
             }
         }
         rows.push(RowInsert::new(values));
@@ -102,4 +125,37 @@ pub(super) fn expand(
 
     check(budget, cancelled)?;
     Ok(rows)
+}
+
+pub(super) fn capture_properties(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableProperties, EditError> {
+    let properties = inspect_table_properties(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        schema.name(),
+        budget,
+        cancelled,
+    )?;
+    budget
+        .charge(Resource::Steps, schema.name().len() as u64)
+        .map_err(InspectError::from)?;
+    if properties.object_id() != schema.object_id() || properties.name() != schema.name() {
+        return Err(EditError::Preservation);
+    }
+    Ok(properties)
+}
+
+fn resolve_default(
+    column: &NativeColumn,
+    properties: &TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Value, EditError> {
+    let property = declaration::capture(column, properties, budget, cancelled)?
+        .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    literal::resolve(column, property.text()?, budget, cancelled)
 }

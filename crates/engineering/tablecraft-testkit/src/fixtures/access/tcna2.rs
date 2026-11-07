@@ -22,6 +22,8 @@ pub fn original_presence_wire(
                 Some(Value::Boolean(value)) => (1, vec![u8::from(value)]),
                 Some(Value::Int32(value)) => (2, value.to_le_bytes().to_vec()),
                 Some(Value::Int64(value)) => (3, value.to_le_bytes().to_vec()),
+                Some(Value::Currency(value)) => (4, value.scaled().to_le_bytes().to_vec()),
+                Some(Value::DateTime(value)) => (5, value.to_bits().to_le_bytes().to_vec()),
                 Some(Value::Text(value)) => (6, value.into_bytes()),
                 Some(Value::Binary(value)) => (7, value),
                 _ => panic!("closed original literal presence carriers"),

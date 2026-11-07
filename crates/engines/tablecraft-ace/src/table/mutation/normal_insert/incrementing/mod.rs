@@ -28,11 +28,11 @@ pub(super) fn plan(
         .filter(|count| *count <= MAX_LIVE_ROWS)
         .ok_or(InspectError::StructureLimit)?;
 
-    binding::validate(&source, counter.column, requests, budget, cancelled)?;
+    binding::validate(&image, &source, counter.column, requests, budget, cancelled)?;
 
     let generated = autonumber_counter::prepare(counter, requests.len(), budget, cancelled)?;
     let counter = generated.source;
-    let rows = binding::expand(&generated, requests, budget, cancelled)?;
+    let rows = binding::expand(&image, &source, &generated, requests, budget, cancelled)?;
 
     properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
     let (facts, optional) =

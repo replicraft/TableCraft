@@ -4,7 +4,10 @@ use crate::{
     RowInsert, WriteBlocker,
     format::data_type::{BOOLEAN, CURRENCY, DATE_TIME, INT32, INT64, SHORT_BINARY, SHORT_TEXT},
     header::check,
-    table::mutation::{insert_defaults::values::copy_value, record_insertion::properties},
+    table::mutation::{
+        insert_defaults::{declaration, proof_literal, values::copy_value},
+        record_insertion::properties,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::{
@@ -35,6 +38,8 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
     let counter = super::mode::capture(&image, &source, budget, cancelled)?;
+    let defaults =
+        super::binding::capture_properties(&image, source.table.schema(), budget, cancelled)?;
 
     // Derive from the exact original word with wider arithmetic independently
     // of the producer's counter::prepare vector and checked-add loop.
@@ -66,8 +71,26 @@ pub(in crate::table::mutation::normal_insert) fn prove(
                 }
                 values.push(Value::Int32(value));
             } else {
-                let InsertFieldValue::Supplied(supplied) = original else {
-                    return Err(EditError::Unsupported(WriteBlocker::Column));
+                let derived;
+                let supplied = match original {
+                    InsertFieldValue::Supplied(value) => value,
+                    InsertFieldValue::Omitted => {
+                        let property = declaration::capture(field, &defaults, budget, cancelled)?
+                            .ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+                        let mut used_clock = false;
+                        derived = proof_literal::derive(
+                            field,
+                            property.text()?,
+                            None,
+                            &mut used_clock,
+                            budget,
+                            cancelled,
+                        )?;
+                        if used_clock {
+                            return Err(EditError::Preservation);
+                        }
+                        &derived
+                    }
                 };
                 match (field.native_type(), supplied) {
                     (BOOLEAN, Value::Boolean(_))

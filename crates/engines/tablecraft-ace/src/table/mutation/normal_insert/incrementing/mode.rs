@@ -11,7 +11,12 @@ use crate::{
     inspect_table_properties,
     table::{
         indexes::page::LEAF,
-        mutation::{autonumber_counter, preserved_source::Source, record_insertion},
+        mutation::{
+            autonumber_counter,
+            insert_defaults::{declaration, literal},
+            preserved_source::Source,
+            record_insertion,
+        },
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -87,6 +92,9 @@ pub(super) fn inspect(
         return Ok(Mode::Increment);
     }
     crate::properties::framing::validate(&properties, budget, cancelled)?;
+    if companion_defaults(schema, generated, &properties, budget, cancelled)? {
+        return Ok(Mode::Increment);
+    }
     let [group] = properties.groups() else {
         return Ok(Mode::Unknown);
     };
@@ -209,4 +217,64 @@ pub(super) fn capture(
     }
 
     Ok(counter)
+}
+
+// Only checked constant declarations on ordinary companions preserve Increment
+// mode. The binding and independent proof separately project actual omissions
+// from the original declarations; supplied values retain their exact carriers.
+fn companion_defaults(
+    schema: &TableSchema,
+    generated: usize,
+    properties: &crate::TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    if properties.groups().is_empty() {
+        return Ok(false);
+    }
+    for group in properties.groups() {
+        check(budget, cancelled)?;
+        if group.kind() != PropertyGroupKind::Column {
+            return Ok(false);
+        }
+        let mut selected = None;
+        for (position, column) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    (column.name().len() + group.name().len()) as u64,
+                )
+                .map_err(InspectError::from)?;
+            if !column.name().eq_ignore_ascii_case(group.name()) {
+                continue;
+            }
+            if position == generated || selected.replace(column).is_some() {
+                return Ok(false);
+            }
+        }
+        let Some(column) = selected else {
+            return Ok(false);
+        };
+        let [property] = group.properties() else {
+            return Ok(false);
+        };
+        budget
+            .charge(Resource::Steps, property.name().len() as u64)
+            .map_err(InspectError::from)?;
+        if !property.name().eq_ignore_ascii_case("DefaultValue")
+            || property.native_type() != MEMO_PROPERTY
+            || property.flags() != DDL_PROPERTY
+        {
+            return Ok(false);
+        }
+        // Capture rejects duplicate declarations across groups and generated
+        // defaults; the existing bounded parser checks target carrier semantics.
+        if declaration::capture(column, properties, budget, cancelled)?.is_none() {
+            return Ok(false);
+        }
+        literal::resolve(column, property.text()?, budget, cancelled)?;
+    }
+    check(budget, cancelled)?;
+    Ok(true)
 }

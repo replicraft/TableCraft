@@ -14,15 +14,19 @@ also retains present manual Int32 ascending secondary leaves. Logical aliases
 must agree on each physical owner, with exactly one actual primary declaration.
 
 Complete Source, property, constraint and record checks precede planning. Native
-AutoIncrement flags and complete inspected property absence select Increment in
-this qualified profile. The stored `GenUniqueID()` declaration selects Random
+AutoIncrement flags and complete inspected generated-field property absence
+select Increment in this qualified profile. Checked constant DefaultValue-only
+groups on ordinary companions no longer obscure that mode; unknown properties
+and policies still refuse. The stored `GenUniqueID()` declaration selects Random
 and refuses; unknown or malformed declarations do not fall back to Increment.
 LAST alone, a column name, omission or a primary index never establishes mode.
 
-Original requests must omit the actual generated field and supply every ordinary
-companion with an exact runtime carrier. Supplied generated values and explicit
-NULL remain supplied and refuse. Omitted companions do not activate defaults in
-this route. Boolean NULL refuses, and existing empty-Text declaration checks
+Original requests must omit the actual generated field. Ordinary companions may
+be supplied with exact runtime carriers or omitted when the captured field has
+a checked constant literal default. Explicit companion NULL remains NULL and
+does not activate a default. Missing defaults, executable expressions and clock
+functions remain refused for omitted companions. Supplied generated values and
+explicit generated NULL remain supplied and refuse. Boolean NULL refuses, and existing empty-Text declaration checks
 remain mandatory. LAST is incremented with checked signed arithmetic; it is
 never repaired from the maximum live key. Generated collisions report
 DuplicateKey. Exhaustion, unsupported declarations and resource/cancellation
@@ -34,7 +38,11 @@ proof rebinds original presence, derives signed values with wider arithmetic,
 reconstructs DATA and INDEX changes independently, compares the whole image and
 recaptures final Source. It consumes no staged rows, prepared keys or producer
 counter vector. TCNA2 and checked V1 recovery retain the original intent, without
-random providers or generation inference during replay.
+random providers or generation inference during replay. Companion defaults are
+reread from the original image by the producer and independently derived during
+proof; TCNA2 retains the user’s original omission rather than storing a fabricated
+supplied value. Recovery reconstructs the same operation against its full bound
+source.
 
 The initial two-Int32 route retains its
 [execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).
@@ -64,6 +72,6 @@ eight filesystem cold restart contexts pass. See the
 [batch execution record](../../testing/results/ace16-multi-index-increment-writes-2026-11-02.json).
 
 Nullable/descending secondary keys, retained NODEs, allocation/splits,
-ordinary default composition, Random generation, reseeding and broader field
+broader default/policy composition, Random generation, reseeding and broader field
 properties remain active work. Independent reader agreement does not establish
 native Microsoft Access save/reopen compatibility.
