@@ -76,7 +76,11 @@ def package(version, target, binary, output):
                     info.compress_type = zipfile.ZIP_DEFLATED
                     with path.open("rb") as source, stream.open(info, "w", force_zip64=True) as destination:
                         shutil.copyfileobj(source, destination)
-                stream.writestr(MANIFEST, metadata)
+                info = zipfile.ZipInfo(MANIFEST, date_time=ZIP_EPOCH)
+                info.create_system = 3
+                info.external_attr = (stat.S_IFREG | DATA_MODE) << 16
+                info.compress_type = zipfile.ZIP_DEFLATED
+                stream.writestr(info, metadata)
         else:
             with archive.open("xb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as zipped:
                 with tarfile.open(fileobj=zipped, mode="w") as stream:

@@ -1,6 +1,7 @@
 """Independent native header/archive fixtures for the portable CLI release gate."""
 import io
 from pathlib import Path
+import stat
 import struct
 import sys
 import tarfile
@@ -106,6 +107,29 @@ class PackagingTests(unittest.TestCase):
                 contract.executable_name(target), "LICENSE", "ThirdPartyLicenses.txt",
                 "RELEASE.json",
             })
+
+    def test_windows_zip_metadata_and_bytes_do_not_depend_on_host_clock(self):
+        target = "x86_64-pc-windows-msvc"
+        binary = self.root / "input.exe"
+        binary.write_bytes(native_binary(target))
+        archives = []
+        for position, clock in enumerate([
+            (2020, 1, 2, 3, 4, 6, 3, 2, -1),
+            (2030, 7, 8, 9, 10, 12, 0, 189, -1),
+        ]):
+            with patch("zipfile.time.localtime", return_value=clock):
+                archive = package.package(
+                    VERSION, target, binary, self.root / f"output-{position}",
+                )
+            archives.append(archive.read_bytes())
+            with zipfile.ZipFile(archive) as source:
+                for entry in source.infolist():
+                    expected_mode = 0o755 if entry.filename == "tablecraft.exe" else 0o644
+                    self.assertEqual(entry.date_time, (1980, 1, 1, 0, 0, 0))
+                    self.assertEqual(entry.create_system, 3)
+                    self.assertEqual(entry.external_attr >> 16, stat.S_IFREG | expected_mode)
+                    self.assertEqual(entry.compress_type, zipfile.ZIP_DEFLATED)
+        self.assertEqual(archives[0], archives[1])
 
     def test_complete_release_has_six_archives_six_sidecars_shared_licenses_and_complete_manifest(self):
         for target in contract.TARGETS:

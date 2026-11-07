@@ -71,6 +71,15 @@ permissions. Extra paths, duplicate names, symlinks and stale output files refus
 Temporary extraction has owned cleanup and does not follow archive paths outside
 its directory.
 
+Every Windows ZIP member, including `RELEASE.json`, now explicitly records the
+same fixed timestamp, creator system, regular-file mode and compression method.
+The manifest previously inherited the host clock/platform metadata when passed
+as a filename to `writestr`; Python documents that timestamp behavior. A focused
+test now varies the host clock and checks byte-identical archives and every
+member's metadata. This makes the packaging of identical inputs reproducible;
+it is not a claim of reproducible Rust binaries across toolchains or platforms.
+[Python ZIP metadata contract](https://docs.python.org/3.13/library/zipfile.html#zipfile.ZipFile.writestr)
+
 After collecting all six archives, sidecars and the identical shared
 `ThirdPartyLicenses.txt` into a fresh directory:
 
@@ -112,3 +121,11 @@ actionlint -shellcheck= .github/workflows/release.yml
 Synthetic packaging tests, local native smoke checks, remote CI and publication
 are separate evidence. Packaging does not change native database compatibility,
 writing or VBA limits.
+
+The current cross-platform packaging audit passes 27 tracked CLI/desktop archive
+tests and eight association-metadata tests locally on macOS. Both workflow files
+pass the retained actionlint 1.7.12 check. The updated six-platform headless
+[CI configuration](DEVELOPMENT.md#configured-native-ci-coverage--7-november-2026)
+has not been remotely rerun here; no workflow, tag, push or release was initiated.
+The release workflow remains CLI-only, and user-owned desktop notice drafts are
+not incorporated by this audit.
