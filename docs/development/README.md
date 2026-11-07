@@ -10,4 +10,5 @@ Contributing, dependency policy, tracing and CLI release packaging.
 - [Development baseline](DEVELOPMENT.md)
 - [Library choices](LIBRARY_POLICY.md)
 - [CLI release preparation](RELEASING.md)
+- [Desktop archive preparation](DESKTOP_PACKAGING.md)
 - [Structured operation diagnostics](TRACING.md)
