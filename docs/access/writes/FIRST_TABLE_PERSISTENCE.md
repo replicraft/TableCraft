@@ -27,14 +27,19 @@ the existing retained filesystem journal pair and native V2 resizable journal:
 1. Encode the original `TCNT0001` schema intent before creating the fresh bundle.
 2. Prepare the complete checked BEFORE/AFTER transaction against the same target.
 3. Commit the native resize/write operation once.
-4. Retire and clean the acknowledged bundle, retaining the same target lease.
+4. Retire the acknowledged journal and follow the actual platform cleanup policy,
+   retaining the same target lease.
 
 This path does not publish another fresh file, replace a pathname, regenerate an
 arbitrary original database or route through `RequiredOutput`. Namespace setup,
 uncertain commit, cleanup and release errors retain the same resources through
 `Failure`; no automatic retry, rollback, final-file deletion or unlock follows.
-The filesystem-journal platform limits remain separate from Windows fresh-file
-publication support.
+On macOS/Linux, finalization removes the verified retired bundle and acknowledges
+the captured-parent barrier. Windows now uses the separate local-NTFS flat
+sidecar owner: write-through retirement rename plus retained-file flush, then
+strict same-target transfer with the retired artifact intact. It never claims
+durable deletion or retries failed removal as retention. Fresh-file publication
+and same-file persistence remain distinct protocols.
 
 ## Typed completion and recovery
 
@@ -42,6 +47,9 @@ Successful application reports `SchemaChange::FirstTableCreated { column_count }
 through `Receipt::schema_change()`. `matched_rows()` and `changed_rows()` both
 return `None`; creating an empty schema is not a zero-row UPDATE. Existing row
 operations retain their original matched/changed semantics and no schema change.
+`retirement()` reports the actual acknowledged namespace mechanism; `cleanup()`
+reports `Removed` on Unix or `RetainedArtifact` for the Windows owner only after
+the corresponding completion. Native commitment alone fills neither fact.
 
 Explicit recovery selects the TCNT decoder once from its own action prefix. A
 corrupt or unsupported TCNT frame never falls through to an UPDATE, INSERT or

@@ -54,11 +54,11 @@ Switching tabs parks the actual draft. Closing a pristine draft discards it
 without writing. A changed draft requires explicit discard or cancellation.
 Database replacement, a new creation request and window close retain their
 original requested action while the same confirmation is pending; another
-request cannot replace it. Cancellation keeps the draft. On macOS/Linux, the
-Save action now requests a table name and runs the source-bound persistence
-operation described below. Windows keeps Save unavailable because same-file
-filesystem-journal ownership is not implemented there; its fresh-file creation
-publisher does not supply that capability.
+request cannot replace it. Cancellation keeps the draft. The Save action requests
+a table name and runs the source-bound persistence operation described below.
+macOS/Linux use their retained bundle owner; Windows now uses a separate
+local-NTFS flat-sidecar owner. Fresh-file creation alone does not grant same-file
+Save capability, and actual Windows execution remains unqualified.
 
 Microsoft's [Create a new database](https://support.microsoft.com/en-us/access/create-a-new-database)
 describes the intended complete continuation: Create opens an initial `Table1`
@@ -70,7 +70,7 @@ remain unfinished.
 
 ## Saving the initial table
 
-On macOS/Linux, the shared Save prompt accepts an exact table name and submits
+The shared Save prompt accepts an exact table name and submits
 the current immutable draft snapshot. Its supported schema is the initial ID
 AutoNumber primary key plus explicitly added Short Text or Long Integer fields,
 within the sixteen-field ceiling. No records are authored by this operation.
@@ -82,7 +82,11 @@ then issues a consuming review. Its existing nonreplaceable SaveWorker acquires
 the target, compares all original bytes and rederives the native operation under
 that same retained descriptor. A distinct TCNT schema intent and checked V2
 journal resize the original file; the operation does not replace the path with a
-freshly created image. See [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
+freshly created image. Unix finalization acknowledges retirement/removal barriers.
+Windows acknowledges its write-through retirement rename and retains the intact
+retired artifact; the completion report distinguishes those namespace facts from
+native commitment and does not claim durable Windows deletion. See
+[first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
 
 Only an acknowledged committed/verified-replacement receipt with the matching
 schema count starts guarded reopening. Reopening compares the complete captured
@@ -103,9 +107,10 @@ All 79 desktop checks pass, including the connected create/save/query flow,
 same-file identity, cancellation before review dispatch, source drift, host
 admission refusal and deferred file opening after successful Save. The shared
 batch passes all 123 runtime and ten builder tests; eleven focused Save UI cases
-pass, including keyboard confirmation and retained-resource controls. Windows
-fresh creation remains implemented, while Windows same-file Save and native
-Access save/reopen remain unqualified.
+pass, including keyboard confirmation and retained-resource controls. These are
+historical local results. Windows fresh creation and same-file Save are now
+implemented, but actual Windows execution and native Access save/reopen remain
+unqualified.
 
 ## Evidence and remaining qualification
 

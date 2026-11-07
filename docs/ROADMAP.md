@@ -2124,7 +2124,8 @@ draft. Explicit Short Text/Long Integer declarations retain protected AutoNumber
 primary-ID metadata, bounded field identities and revisions without manufacturing
 native rows or catalog membership. The initial Save implementation now connects
 the table-name prompt to the exact canonical-blank schema operation on
-macOS/Linux. See [the workflow and current limits](ui/DATABASE_CREATION.md).
+macOS/Linux and local-NTFS Windows. The latter's filesystem execution remains
+unqualified. See [the workflow and current limits](ui/DATABASE_CREATION.md).
 
 Original declarations are retained in a distinct TCNT intent; native V2
 qualification reconstructs both complete journal images. The existing exclusive
@@ -2132,12 +2133,17 @@ target/session owns same-file resizing, recovery and finalization. Typed schema
 completion omits row counts, and a matching acknowledgement plus guarded native
 reopen precedes draft promotion. Pending transitions remain bound through
 cancellation and failure rather than silently replacing the requested action.
-The five focused adapter checks pass; connected runtime/UI/desktop validation is
-pending before this Save workflow is promoted as qualified.
+The five focused adapter checks and subsequent connected runtime/UI/desktop
+checks passed locally; their recorded counts remain in the owning workflow docs.
+Windows now has a separate flat-sidecar filesystem owner consumed by Access and
+the runtime Save worker. Acknowledged write-through retirement retains the
+complete retired artifact; receipts distinguish that fact from Unix removal and
+from native completion. This implementation and cross-compilation do not qualify
+Windows filesystem execution, durable deletion or native Access parity.
 
-Next: finish that connected validation and offscreen review, implement Windows
-same-file journal ownership, then expand the genuine initial-table workflow with
-record entry, data-type inference and broader schema authoring. General
-imported-file DDL, complete Design view, shared-file writes and native Access
-save/reopen comparison remain separate work. Windows fresh-file publication does
-not supply same-file journal durability. No SQLite/native-project scope resumes.
+Next: expand the genuine initial-table workflow with inline record entry,
+data-type inference and broader schema authoring. Existing reviewed row insertion
+is separate from inline entry. General imported-file DDL, complete Design view,
+shared-file writes and native Access save/reopen comparison remain separate work.
+Actual Windows security/sharing, same-file save/reopen and crash/power-loss
+qualification remain outstanding. No SQLite/native-project scope resumes.

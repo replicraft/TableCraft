@@ -84,12 +84,16 @@ cargo run -p tablecraft-desktop -- path/to/example.accdb
 The first desktop slice provides table navigation, bounded datasheets, field
 inspection and a SQL editor over existing Access services. It opens a snapshot of a stable file up to
 64 MiB; close other writers first. Restricted reviewed offline cell edits are
-available on macOS/Linux. General editing, designers and desktop release
+implemented on macOS/Linux and local-NTFS Windows; actual Windows execution
+remains unqualified. General editing, designers and desktop release
 packaging remain in development. See the [desktop guide](docs/ui/DESKTOP.md).
 File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
 creation uses local NTFS and still requires runtime qualification.
 Existing destinations are never replaced. The new file opens with an unsaved
-`Table1` draft; saving new tables and entering their records remain unavailable.
+`Table1` draft. Its bounded initial schema can be saved; qualified stored tables
+also support reviewed row insertion. Inline record entry and general schema
+authoring remain unfinished. Windows saves retain an intact retired journal
+artifact rather than claiming durable deletion.
 See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
 Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with
 light/dark themes and interface languages under File → Options.

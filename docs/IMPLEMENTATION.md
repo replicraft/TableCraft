@@ -1,5 +1,34 @@
 # Implementation status
 
+## Windows same-file Save integration — 7 November 2026
+
+Windows now has a local-NTFS flat journal owner, with a protected current-user
+DACL, full retained file identities and an immutable intent/binding prefix.
+The existing native V1/V2 protocols operate only in its checked journal region.
+The Access adapter, runtime, desktop and CLI select that implementation through
+their existing save services. Initial-table Save and the qualified offline row
+edits no longer have a Windows platform refusal. Native edit eligibility is
+unchanged.
+
+Windows retirement intentionally retains the intact private artifact. Typed
+receipts distinguish its write-through rename acknowledgement from the Unix
+parent-directory barrier and distinguish retained artifacts from acknowledged
+removal. Desktop terminal messages and revision-bound status notices report the
+actual receipt, with translations in all eight supported languages. The shared
+UI owns presentation only; filesystem policy stays in IO and Access.
+
+The local macOS batch passes all 137 IO, 125 runtime and 81 desktop tests, plus
+11 Access offline library checks, 16 Access session integration checks and 21
+CLI journal checks. The new resource-free retained-artifact scene passes all
+16 language/theme combinations; four normal-host frames were inspected
+offscreen. Strict selected-package lint passes. Windows x64 and ARM64 service
+and desktop checks pass; actual Windows filesystem/security/sharing, crash or
+power-loss behavior and native Access save/reopen remain unrun. The Windows CLI
+cross-check stops in the existing bundled SQLite C dependency because the local
+cross-compiler has no Windows C SDK headers; this is not a successful Windows
+CLI build. See the [IO lifecycle contract](foundation/IO.md#windows-same-file-journal-integration--current-work)
+and [preview evidence](ui/PRESENTATION_PREVIEW.md#retained-private-recovery-journal--7-november-2026).
+
 ## Windows journal integration foundations — 7 November 2026
 
 Checked Windows file operations now have one private IO owner consumed by the
@@ -9,11 +38,10 @@ no-hole, error-state and resource/cancellation guards. All 121 IO library tests
 pass on macOS; strict all-target/all-feature IO lint passes locally and for both
 Windows MSVC architectures. Windows execution remains unrun.
 
-This does not enable Windows same-file Save. The flat-sidecar binding, private
+At this earlier foundation stage, Windows same-file Save was not enabled. The flat-sidecar binding, private
 security descriptor, paired owner, durable retirement/retained-artifact receipts
-and application integration remain pending. The [IO contract](foundation/IO.md#windows-same-file-journal-integration--current-work)
-records those exact remaining requirements without treating retirement as durable
-garbage deletion.
+and application integration were pending; the later integration above supplies
+them without treating retirement as durable garbage deletion.
 
 ## First records in newly authored tables — 7 November 2026
 
