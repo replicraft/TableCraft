@@ -26,3 +26,16 @@ table-draft-save-cancelling = Cancelando salvamento…
 table-draft-save-stale = O salvamento não pertence mais a este rascunho de tabela.
 table-draft-save-blocked = O salvamento continua bloqueado após um resultado não resolvido. Reabra o banco para inspecioná-lo ou descarte este rascunho.
 table-draft-save-reopen-failed = A tabela foi salva, mas não foi possível concluir a reabertura. Reabra o banco de dados antes de salvar este rascunho novamente.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = Número Grande
+table-draft-currency = Moeda
+table-draft-date-time = Data e Hora
+table-draft-yes-no = Sim/Não
+table-draft-long-text = Texto Longo
+table-draft-lookup-relationship = Pesquisa e Relação
+table-draft-rich-text = Rich Text
+table-draft-attachment = Anexo
+table-draft-hyperlink = Hiperlink
+table-draft-calculated-field = Campo Calculado
+table-draft-more-fields = Mais Campos

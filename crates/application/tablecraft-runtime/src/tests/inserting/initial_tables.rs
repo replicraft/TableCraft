@@ -13,6 +13,7 @@ use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 enum Companion {
     None,
     LongInteger,
+    DefaultLongInteger,
     ShortText,
 }
 
@@ -21,7 +22,7 @@ fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, S
     let mut draft = TableDraft::initial();
     match companion {
         Companion::None => {}
-        Companion::LongInteger => {
+        Companion::LongInteger | Companion::DefaultLongInteger => {
             draft.add_field(DraftFieldType::LongInteger).unwrap();
         }
         Companion::ShortText => {
@@ -97,10 +98,11 @@ fn begin(worker: &Worker, revision: u64) -> InsertDraft {
 }
 
 #[test]
-fn first_row_uses_native_generated_id_in_all_three_saved_initial_schemas() {
+fn first_row_uses_native_generated_id_and_only_the_stored_companion_default() {
     for companion in [
         Companion::None,
         Companion::LongInteger,
+        Companion::DefaultLongInteger,
         Companion::ShortText,
     ] {
         let (_directory, path, worker, saves, revision) = saved_initial(companion);
@@ -112,6 +114,10 @@ fn first_row_uses_native_generated_id_in_all_three_saved_initial_schemas() {
             Companion::LongInteger => {
                 inputs.push(value("42", false));
                 Some("42")
+            }
+            Companion::DefaultLongInteger => {
+                inputs.push(InsertInput::Omitted);
+                Some("0")
             }
             Companion::ShortText => {
                 inputs.push(value("Ada", false));
@@ -130,6 +136,9 @@ fn first_row_uses_native_generated_id_in_all_three_saved_initial_schemas() {
         };
         assert_eq!(review.inserted_rows, 1);
         assert!(matches!(review.inputs[0], InsertInput::Omitted));
+        if matches!(companion, Companion::DefaultLongInteger) {
+            assert!(matches!(review.inputs[1], InsertInput::Omitted));
+        }
         assert_eq!(std::fs::read(&path).unwrap(), before);
         assert!(!journal_path(&path).exists());
 

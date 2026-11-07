@@ -210,3 +210,85 @@ fn reopen_witness_does_not_accept_before_bytes_or_a_changed_after_image() {
     ));
     assert_eq!(std::fs::read(&path).unwrap(), changed);
 }
+
+#[test]
+fn common_initial_fields_save_and_reopen_with_native_types_and_explicit_defaults() {
+    use crate::FieldPropertyValue;
+
+    let (_directory, path, reader, document_revision) = opened();
+    let mut draft = TableDraft::initial();
+    for kind in [
+        DraftFieldType::LongInteger,
+        DraftFieldType::LargeInteger,
+        DraftFieldType::YesNo,
+        DraftFieldType::Currency,
+        DraftFieldType::DateTime,
+    ] {
+        draft.add_field(kind).unwrap();
+    }
+    let Response::FirstTableReviewed { capability } = request(
+        &reader,
+        Command::ReviewFirstTable {
+            document_revision,
+            snapshot: draft.snapshot("TypedFields").unwrap(),
+        },
+    )
+    .unwrap() else {
+        panic!("expected a checked initial schema");
+    };
+    let witness = capability.reopen_witness();
+    let saver = SaveWorker::new(|| {});
+    let operation = saver
+        .start_first_table(capability, journal_path(&path))
+        .unwrap();
+    assert!(matches!(
+        terminal(&saver).outcome,
+        SaveOutcome::Saved { .. }
+    ));
+    assert!(saver.acknowledge(operation));
+    request(&reader, Command::OpenFirstTableSaved { witness }).unwrap();
+    let Response::Details {
+        fields,
+        declared_rows,
+        ..
+    } = request(
+        &reader,
+        Command::Describe {
+            table: "TypedFields".into(),
+        },
+    )
+    .unwrap()
+    else {
+        panic!("expected reopened native field metadata");
+    };
+    assert_eq!(declared_rows, 0);
+    assert_eq!(
+        fields
+            .iter()
+            .map(|field| field.native_type)
+            .collect::<Vec<_>>(),
+        [4, 4, 19, 1, 5, 8]
+    );
+    let defaults = fields
+        .iter()
+        .map(|field| {
+            &field
+                .properties
+                .iter()
+                .find(|property| property.name == "DefaultValue")
+                .unwrap()
+                .value
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        defaults,
+        [
+            &FieldPropertyValue::Absent,
+            &FieldPropertyValue::Text("0".into()),
+            &FieldPropertyValue::Text("0".into()),
+            &FieldPropertyValue::Text("False".into()),
+            &FieldPropertyValue::Text("0.0000".into()),
+            &FieldPropertyValue::Absent,
+        ]
+    );
+}

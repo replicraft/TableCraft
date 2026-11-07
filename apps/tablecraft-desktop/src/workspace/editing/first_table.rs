@@ -383,3 +383,6 @@ mod test_support;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod creating_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod field_types_tests;

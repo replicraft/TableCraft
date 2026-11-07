@@ -26,3 +26,16 @@ table-draft-save-cancelling = Cancelando el guardado…
 table-draft-save-stale = El guardado ya no pertenece a este borrador de tabla.
 table-draft-save-blocked = El guardado sigue bloqueado tras un resultado sin resolver. Vuelva a abrir la base de datos para revisarla o descarte este borrador.
 table-draft-save-reopen-failed = La tabla se guardó, pero no se pudo volver a abrir. Vuelva a abrir la base de datos antes de guardar este borrador de nuevo.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = Número grande
+table-draft-currency = Moneda
+table-draft-date-time = Fecha y hora
+table-draft-yes-no = Sí/No
+table-draft-long-text = Texto largo
+table-draft-lookup-relationship = Búsqueda y relación
+table-draft-rich-text = Texto enriquecido
+table-draft-attachment = Datos adjuntos
+table-draft-hyperlink = Hipervínculo
+table-draft-calculated-field = Campo calculado
+table-draft-more-fields = Más campos

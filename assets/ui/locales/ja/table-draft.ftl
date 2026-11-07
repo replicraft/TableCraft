@@ -26,3 +26,16 @@ table-draft-save-cancelling = 保存をキャンセル中…
 table-draft-save-stale = この保存は現在のテーブルの下書きに対応していません。
 table-draft-save-blocked = 保存結果が未解決のため、保存はブロックされています。データベースを開き直して確認するか、この下書きを破棄してください。
 table-draft-save-reopen-failed = テーブルは保存されましたが、開き直すことができませんでした。この下書きを再度保存する前に、データベースを開き直してください。
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = 大きい数値
+table-draft-currency = 通貨
+table-draft-date-time = 日付と時刻
+table-draft-yes-no = Yes/No
+table-draft-long-text = 長いテキスト
+table-draft-lookup-relationship = ルックアップとリレーションシップ
+table-draft-rich-text = リッチ テキスト
+table-draft-attachment = 添付ファイル
+table-draft-hyperlink = ハイパーリンク
+table-draft-calculated-field = 集計フィールド
+table-draft-more-fields = その他のフィールド

@@ -26,3 +26,16 @@ table-draft-save-cancelling = Speichern wird abgebrochen…
 table-draft-save-stale = Der Speichervorgang gehört nicht mehr zu diesem Tabellenentwurf.
 table-draft-save-blocked = Nach einem ungeklärten Speichervorgang bleibt das Speichern gesperrt. Öffnen Sie die Datenbank zur Prüfung erneut oder verwerfen Sie diesen Entwurf.
 table-draft-save-reopen-failed = Die Tabelle wurde gespeichert, konnte aber nicht erneut geöffnet werden. Öffnen Sie die Datenbank erneut, bevor Sie diesen Entwurf wieder speichern.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = Große Zahl
+table-draft-currency = Währung
+table-draft-date-time = Datum und Uhrzeit
+table-draft-yes-no = Ja/Nein
+table-draft-long-text = Langer Text
+table-draft-lookup-relationship = Nachschlagen und Beziehung
+table-draft-rich-text = Rich-Text
+table-draft-attachment = Anlage
+table-draft-hyperlink = Hyperlink
+table-draft-calculated-field = Berechnetes Feld
+table-draft-more-fields = Weitere Felder

@@ -26,3 +26,16 @@ table-draft-save-cancelling = 正在取消保存…
 table-draft-save-stale = 此保存操作已不再属于当前表草稿。
 table-draft-save-blocked = 保存结果未解决，仍禁止保存。请重新打开数据库检查，或放弃此草稿。
 table-draft-save-reopen-failed = 表已保存，但未能完成重新打开。再次保存此草稿前，请重新打开数据库。
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = 大数字
+table-draft-currency = 货币
+table-draft-date-time = 日期和时间
+table-draft-yes-no = 是/否
+table-draft-long-text = 长文本
+table-draft-lookup-relationship = 查阅和关系
+table-draft-rich-text = 格式文本
+table-draft-attachment = 附件
+table-draft-hyperlink = 超链接
+table-draft-calculated-field = 计算字段
+table-draft-more-fields = 更多字段

@@ -1,5 +1,31 @@
 # Presentation preview
 
+## Initial field gallery — 7 November 2026
+
+`TABLECRAFT_PREVIEW_FIELD_GALLERY=true` opens the actual Click to Add header
+menu in `initial-table-draft` through its accessibility action. It is restricted
+to that scene and cannot combine with another preview focus workflow. The scene
+remains source-free; it supplies neither a runtime save capability nor native
+rows. The inventory stays at 93 scenes.
+
+Four normal-host frames were rendered and inspected on macOS with Windows input
+emulation: English light/dark at 1280×820, 1×; German dark and Japanese light
+at 900×580, 1.25×. Final frames are under ignored
+`.cache/ui-previews/field-gallery-accepted-20261107/`. The menu retains six working
+choices and seven disabled advanced choices, with wrapped left-aligned captions
+and a consistent icon gutter. A separate chevron gutter prevents the German
+header caption from overlapping its dropdown arrow; the complete caption remains
+accessible when visually truncated. Earlier centered/overlapping explorations
+remain separately under the non-accepted field-gallery cache directories.
+
+The actual private Datasheet reference was reopened at 1920×1141, Windows/
+VirtualBox, scale unrecorded. It establishes the Click to Add header location but
+contains no expanded menu. Expanded-menu grouping/order is a documented
+TableCraft adaptation, not an exact captured Access reproduction or native
+Windows interaction qualification. Five final headless gallery tests cover
+working types, disabled actions, all eight languages in both themes, wide-schema
+focus reveal and the German header bounds.
+
 ## Explicit first-table command — 7 November 2026
 
 The `first-table-ready` scene shows a synthetic canonical-blank qualification

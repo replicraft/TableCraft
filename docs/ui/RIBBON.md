@@ -36,6 +36,17 @@ Datasheet and Design respectively. Retained captures guide both surfaces, but no
 retained screenshot captures this Create activation. This implementation does
 not enable arbitrary table addition or the full field designer.
 
+The initial Datasheet's Click to Add gallery uses the
+[field-type reference boundaries](DATABASE_CREATION.md#click-to-add-reference-boundaries).
+It offers Short Text (255), Number (Long Integer), Large Number, Currency,
+Date & Time and Yes/No with the exact declarations/defaults recorded there.
+Long Text, Lookup & Relationship, Rich Text, Attachment, Hyperlink, Calculated
+Field and More Fields remain disabled. The gallery belongs to the draft surface,
+separate from the contextual Table Fields Ribbon's disabled field-management
+previews. The retained Windows captures do
+not show the expanded gallery; documented type choices and explicit subtype
+controls are not a claim of native menu or application-default parity.
+
 ## Font catalog and caption alignment — 5 November 2026
 
 View, Paste and Zoom place their chevrons 3.5 logical points below the actual

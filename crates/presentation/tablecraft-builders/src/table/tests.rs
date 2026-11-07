@@ -93,3 +93,28 @@ fn save_names_bound_utf16_and_refuse_invalid_whole_input() {
     assert_eq!(draft.revision(), 0);
     assert!(!draft.is_modified());
 }
+
+#[test]
+fn scalar_gallery_fields_retain_their_exact_kinds_in_the_saved_snapshot() {
+    let kinds = [
+        DraftFieldType::LongInteger,
+        DraftFieldType::LargeInteger,
+        DraftFieldType::YesNo,
+        DraftFieldType::Currency,
+        DraftFieldType::DateTime,
+    ];
+    let mut draft = TableDraft::initial();
+    for kind in kinds {
+        draft.add_field(kind).unwrap();
+    }
+    let snapshot = draft.snapshot("TypedFields").unwrap();
+    assert_eq!(
+        snapshot.fields()[0].kind(),
+        DraftFieldType::AutoNumberIncrement
+    );
+    assert!(snapshot.fields()[0].is_primary());
+    for (field, kind) in snapshot.fields()[1..].iter().zip(kinds) {
+        assert_eq!(field.kind(), kind);
+        assert!(!field.is_primary());
+    }
+}

@@ -4,7 +4,7 @@ use crate::workspace::ribbon::Icon;
 use crate::{datasheet::grid_cell, localization::tr};
 use egui::{RichText, Ui};
 use egui_extras::{Column, TableBuilder};
-use tablecraft_builders::table::{DraftFieldType, MAX_DRAFT_FIELDS};
+use tablecraft_builders::table::MAX_DRAFT_FIELDS;
 
 const HEADER_HEIGHT: f32 = 22.0;
 const ROW_HEIGHT: f32 = 22.0;
@@ -16,6 +16,11 @@ const PRIMARY_ICON_GAP: f32 = 4.0;
 const NAME_INPUT_CHARACTERS: usize = 64;
 const NAME_INPUT_BYTES: usize = 256;
 const FOOTER_PADDING: f32 = 12.0;
+const ADD_CHEVRON_INSET: f32 = 8.0;
+const ADD_LABEL_PADDING: f32 = 4.0;
+const ADD_CHEVRON_GUTTER: f32 = 20.0;
+const ADD_CHEVRON_HALF_WIDTH: f32 = 3.0;
+const ADD_CHEVRON_HALF_HEIGHT: f32 = 1.5;
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
     let colors = palette(ui.ctx());
@@ -93,14 +98,79 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                         header.col(|ui| {
                             columns.push(ui.max_rect());
                             grid_cell(ui, true);
-                            ui.put(
-                                ui.max_rect(),
-                                egui::Label::new(
-                                    RichText::new(tr(ui, "datasheet-click-to-add")).italics(),
-                                )
-                                .halign(egui::Align::Center)
-                                .truncate(),
-                            );
+                            let enabled = editor.draft.fields().len() < MAX_DRAFT_FIELDS;
+                            ui.add_enabled_ui(enabled, |ui| {
+                                let label = tr(ui, "datasheet-click-to-add");
+                                let button = egui::Button::new("")
+                                    .min_size(ui.available_size())
+                                    .frame(false);
+                                let (response, _) =
+                                    egui::containers::menu::MenuButton::from_button(button).ui(
+                                        ui,
+                                        |ui| {
+                                            addition = super::gallery::show(ui);
+                                        },
+                                    );
+                                response.widget_info(|| {
+                                    egui::WidgetInfo::labeled(
+                                        egui::WidgetType::Button,
+                                        ui.is_enabled(),
+                                        &label,
+                                    )
+                                });
+                                let text_rect = egui::Rect::from_min_max(
+                                    response.rect.min + egui::vec2(ADD_LABEL_PADDING, 0.0),
+                                    response.rect.max - egui::vec2(ADD_CHEVRON_GUTTER, 0.0),
+                                );
+                                let mut layout = egui::text::LayoutJob::simple(
+                                    label,
+                                    egui::TextStyle::Button.resolve(ui.style()),
+                                    ui.visuals().widgets.inactive.fg_stroke.color,
+                                    text_rect.width().max(0.0),
+                                );
+                                layout.wrap.max_rows = 1;
+                                layout.wrap.break_anywhere = true;
+                                for section in &mut layout.sections {
+                                    section.format.italics = true;
+                                }
+                                let text = ui.painter().layout_job(layout);
+                                let origin = egui::pos2(
+                                    text_rect.center().x - text.size().x / 2.0,
+                                    text_rect.center().y - text.size().y / 2.0,
+                                );
+                                ui.painter().with_clip_rect(text_rect).galley(
+                                    origin,
+                                    text,
+                                    ui.visuals().widgets.inactive.fg_stroke.color,
+                                );
+                                let center = egui::pos2(
+                                    response.rect.right() - ADD_CHEVRON_INSET,
+                                    response.rect.center().y,
+                                );
+                                ui.painter().add(egui::Shape::line(
+                                    vec![
+                                        center
+                                            + egui::vec2(
+                                                -ADD_CHEVRON_HALF_WIDTH,
+                                                -ADD_CHEVRON_HALF_HEIGHT,
+                                            ),
+                                        center + egui::vec2(0.0, ADD_CHEVRON_HALF_HEIGHT),
+                                        center
+                                            + egui::vec2(
+                                                ADD_CHEVRON_HALF_WIDTH,
+                                                -ADD_CHEVRON_HALF_HEIGHT,
+                                            ),
+                                    ],
+                                    ui.visuals().widgets.inactive.fg_stroke,
+                                ));
+                                if editor.focus_add {
+                                    response.request_focus();
+                                    response.scroll_to_me(None);
+                                    editor.focus_add = false;
+                                } else if response.has_focus() {
+                                    response.scroll_to_me(None);
+                                }
+                            });
                         });
                     })
                     .body(|mut body| {
@@ -123,28 +193,6 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
                             }
                             row.col(|ui| {
                                 grid_cell(ui, false);
-                                let enabled = editor.draft.fields().len() < MAX_DRAFT_FIELDS;
-                                ui.add_enabled_ui(enabled, |ui| {
-                                    let menu =
-                                        ui.menu_button(tr(ui, "datasheet-click-to-add"), |ui| {
-                                            if ui.button(tr(ui, "table-draft-short-text")).clicked()
-                                            {
-                                                addition = Some(DraftFieldType::ShortText);
-                                                ui.close();
-                                            }
-                                            if ui
-                                                .button(tr(ui, "table-draft-long-integer"))
-                                                .clicked()
-                                            {
-                                                addition = Some(DraftFieldType::LongInteger);
-                                                ui.close();
-                                            }
-                                        });
-                                    if editor.focus_add {
-                                        menu.response.request_focus();
-                                        editor.focus_add = false;
-                                    }
-                                });
                             });
                         });
                     });
@@ -206,6 +254,9 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> bool {
             }
             if ui.button(tr(ui, "table-draft-apply-name")).clicked() {
                 editor.error = editor.draft.rename_field(*id, name).is_err();
+                if !editor.error {
+                    editor.focus_add = true;
+                }
             }
         });
     }

@@ -1,5 +1,37 @@
 # Implementation status
 
+## Initial field gallery and stored defaults — 7 November 2026
+
+The initial Datasheet draft now exposes six explicit field choices: Short Text,
+Long Integer, Large Integer, Currency, legacy Date/Time and Yes/No. Click to Add
+is the actual column-header dropdown, with horizontal focus reveal, a reserved
+chevron gutter and full accessible captions. Eight Fluent catalogs cover working
+and disabled advanced choices. The desktop remains a thin consumer of the shared
+UI and runtime schema service.
+
+Native declarations retain exact companion constants through TCNT0002; old
+TCNT0001 bytes and decoding remain unchanged. Numeric/Currency choices store zero
+and Yes/No stores false. Text and Date/Time do not invent defaults. The subsequent
+Increment INSERT now accepts these checked declarations and derives omitted
+companion constants from original metadata in both producer and independent
+proof. TCNA2 retains original presence, explicit NULL stays distinct and missing
+or executable defaults refuse. Recovery rechecks complete BEFORE/AFTER content.
+No general field alteration, inferred fields or record entry in the unsaved
+draft is supplied by this work.
+
+Local checks pass 53 creation tests (one ignored), five schema-intent tests, five
+Increment-creation integration tests (three ignored), four initial insertion/
+recovery tests, eight adapter tests and eleven builder tests. The normal-insert
+unit target passes three live cases; 46 source-gated cases remain ignored. Complete runtime
+and desktop batches pass 131 and 94 tests. A 355-case shared UI batch and five
+final gallery/header follow-ups pass. The original runtime regression and a
+fixture-oracle carrier omission were retained in logs and corrected rather than
+weakening assertions. Both Windows architectures pass affected-package all-target/
+all-feature cross-checks; all four isolated runtime capability combinations pass.
+Native Windows/Linux execution and Microsoft Access comparison remain separate.
+See [creation](ui/DATABASE_CREATION.md), [Increment insertion](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+and [preview evidence](ui/PRESENTATION_PREVIEW.md).
+
 ## Explicit Create → Table after Open — 7 November 2026
 
 An ordinary or recovered canonical blank ACE 16 database now exposes explicit

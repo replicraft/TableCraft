@@ -9,10 +9,17 @@ use bytes::Bytes;
 use std::sync::Arc;
 use tablecraft_ace::{CreateColumn, FirstTableDefinition, NativeImage};
 use tablecraft_builders::table::{DraftFieldType, SHORT_TEXT_UNITS, TableDraftSnapshot};
-use tablecraft_core::limits::Resource;
+use tablecraft_core::{
+    limits::Resource,
+    values::{Currency, Value},
+};
 use tablecraft_schema::ScalarType;
 
 const PRIMARY_INDEX_NAME: &str = "PrimaryKey";
+const LONG_DEFAULT: Value = Value::Int32(0);
+const LARGE_DEFAULT: Value = Value::Int64(0);
+const BOOLEAN_DEFAULT: Value = Value::Boolean(false);
+const CURRENCY_DEFAULT: Value = Value::Currency(Currency::from_scaled(0));
 const REOPEN_COPY_CHUNK_BYTES: usize = 16 * 1024;
 
 impl Document {
@@ -50,6 +57,22 @@ impl Document {
                 }
                 DraftFieldType::LongInteger if !field.is_primary() => {
                     CreateColumn::new(field.name(), ScalarType::Int32)
+                        .with_default_literal(&LONG_DEFAULT)?
+                }
+                DraftFieldType::LargeInteger if !field.is_primary() => {
+                    CreateColumn::new(field.name(), ScalarType::Int64)
+                        .with_default_literal(&LARGE_DEFAULT)?
+                }
+                DraftFieldType::YesNo if !field.is_primary() => {
+                    CreateColumn::new(field.name(), ScalarType::Boolean)
+                        .with_default_literal(&BOOLEAN_DEFAULT)?
+                }
+                DraftFieldType::Currency if !field.is_primary() => {
+                    CreateColumn::new(field.name(), ScalarType::Currency)
+                        .with_default_literal(&CURRENCY_DEFAULT)?
+                }
+                DraftFieldType::DateTime if !field.is_primary() => {
+                    CreateColumn::new(field.name(), ScalarType::DateTime)
                 }
                 _ => return Err(EditError::Unavailable.into()),
             };

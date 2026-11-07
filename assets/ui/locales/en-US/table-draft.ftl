@@ -26,3 +26,16 @@ table-draft-save-cancelling = Cancelling the save…
 table-draft-save-stale = The save no longer belongs to this table draft.
 table-draft-save-blocked = Saving remains blocked after an unresolved save. Reopen the database to inspect it, or discard this draft.
 table-draft-save-reopen-failed = The table was saved, but reopening could not be completed. Reopen the database before saving this draft again.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = Large Number
+table-draft-currency = Currency
+table-draft-date-time = Date & Time
+table-draft-yes-no = Yes/No
+table-draft-long-text = Long Text
+table-draft-lookup-relationship = Lookup & Relationship
+table-draft-rich-text = Rich Text
+table-draft-attachment = Attachment
+table-draft-hyperlink = Hyperlink
+table-draft-calculated-field = Calculated Field
+table-draft-more-fields = More Fields

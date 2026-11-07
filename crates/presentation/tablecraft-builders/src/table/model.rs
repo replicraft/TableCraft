@@ -8,6 +8,10 @@ pub enum DraftFieldType {
     AutoNumberIncrement,
     ShortText,
     LongInteger,
+    LargeInteger,
+    YesNo,
+    Currency,
+    DateTime,
 }
 
 pub struct DraftField {

@@ -69,7 +69,11 @@ complete source. Ordinary and recovered Open remain inert until that command.
 With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
 `Command::ReviewFirstTable` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
-Short Text (255 UTF-16 units)/Long Integer declarations into the native definition.
+Short Text (255 UTF-16 units), Long/Large Integer, Currency, Yes/No and legacy
+Date/Time declarations into the native definition. Numeric/Currency companion
+defaults are exact zero literals; Yes/No is false. Text and Date/Time retain
+absent defaults. No system clock, display format or inferred Number subtype
+changes these declarations.
 It captures the standard original image and qualifies the complete canonical
 blank-to-first-table plan. This admits neither arbitrary imported-file DDL nor
 record creation, field alteration or silent type inference.
@@ -477,10 +481,11 @@ locally on macOS on 7 November 2026, including these two new connected cases and
 the three initial schema variants. This is not a full-runtime regression run,
 Windows filesystem-journal observation or native Access comparison.
 
-The initial-table route still authors no companion defaults or AllowZeroLength
-policy. Increment insertion currently requires explicit companion values or NULL;
-an ordinary companion left omitted is not silently replaced by an invented
-value. Empty Short Text remains subject to the native explicit-AllowZeroLength
+The initial-table route now authors checked constant defaults for its explicit
+numeric, Currency and Yes/No choices, retained through TCNT0002 recovery. Existing
+TCNT0001 schemas and sources with absent defaults remain distinct. Omitted
+companions use only the insertion service’s qualified stored policies; the UI
+never supplies a guessed value. No AllowZeroLength policy is added. Empty Short Text remains subject to the native explicit-AllowZeroLength
 coverage gate, and this runtime metadata addition does not weaken it. Direct
 editing of the unsaved draft's first record, inference from entered data and
 inline Access autosave remain separate work.

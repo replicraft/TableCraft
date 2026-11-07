@@ -42,13 +42,33 @@ separate object/session identity, an ID AutoNumber primary declaration and one
 new-record placeholder; it is absent from the persisted navigation catalog.
 There are no native row handles, stored records or manufactured query results.
 
-Click to Add offers explicit Short Text (255 UTF-16 units) and Long Integer
-fields, followed by field naming. The shared renderer-neutral table builder
-retains field identities and a revision; rejected names and exhausted limits do
-not partially change the design. Its current authoring ceiling is sixteen
-fields, and the initial generated ID is protected. This is a bounded authoring
-profile, not the full Access field designer. Record entry and automatic type
-inference are not implemented.
+Click to Add offers six explicit field declarations, followed by field naming.
+The shared renderer-neutral table builder retains field identities and a revision;
+rejected names and exhausted limits do not partially change the design. Its
+current authoring ceiling is sixteen fields, and the initial generated ID is
+protected. This is a bounded authoring profile, not the full Access field
+designer. Record entry within the unsaved schema and automatic type inference
+are not implemented.
+
+| Gallery choice | Native declaration | Authored constant default |
+| --- | --- | --- |
+| Short Text (255) | Short Text, 255 UTF-16 units | Absent |
+| Number (Long Integer) | Signed 32-bit integer | `0` |
+| Large Number | Signed 64-bit integer | `0` |
+| Currency | Fixed-point Currency | `0.0000` |
+| Date & Time | Legacy Date/Time | Absent; no implicit current date/time |
+| Yes/No | Boolean | `False` |
+
+These defaults are persisted metadata, retained in the reviewed declaration;
+they are not placeholder row values or display formatting. Choosing a field
+never inserts a record. After saving, generated-ID insertion can resolve
+omitted companions with these checked constant defaults while preserving original
+field presence for fresh proof and recovery. Supplied values take precedence;
+a missing or unsupported default does not silently select another route. The initial ID keeps Increment generation and its primary
+key; it has no explicit constant default. Other Number sizes, Decimal,
+Replication ID/GUID and Date/Time Extended are not silently substituted.
+Long Text, Lookup & Relationship, Rich Text, Attachment, Hyperlink, Calculated
+Field and More Fields remain visible disabled entries with unavailable tooltips.
 
 Switching tabs parks the actual draft. Closing a pristine draft discards it
 without writing. A changed draft requires explicit discard or cancellation.
@@ -100,12 +120,45 @@ headless checks do not establish actual Windows execution or native Access
 behavior. The new explicit-open acceptance checks are separate from the
 historical test counts below; native Access comparison remains pending.
 
+## Click to Add reference boundaries
+
+Microsoft documents explicit Click to Add choices for
+[Short Text](https://support.microsoft.com/en-us/access/create-or-delete-a-short-text-field),
+[Number, Large Number and Currency](https://support.microsoft.com/en-us/access/create-or-delete-a-number-or-currency-field),
+[Date & Time](https://support.microsoft.com/en-us/access/add-a-date-or-time-stamp-to-new-records)
+and [Yes/No](https://support.microsoft.com/en-us/access/create-or-delete-a-yes-no-field-in-access-databases).
+Choosing a declaration and then naming it is distinct from entering data and
+letting Access infer a type. Neither workflow establishes all persisted field
+properties merely from a type's storage representation.
+
+Number has multiple Field Size choices. Access exposes a configurable
+[default number field size](https://support.microsoft.com/en-us/access/customize-design-settings-for-objects-in-your-database),
+so a generic Number choice alone does not establish one universal numeric subtype.
+TableCraft labels its supported Number choice as Long Integer explicitly;
+it does not import Access application options or offer the other subtypes.
+The gallery's constant zero/False defaults are explicit declarations. Arbitrary
+Default Value expressions, Required, validation, extra indexing and display
+properties remain separate capabilities. Microsoft's
+[default-value contract](https://support.microsoft.com/en-us/access/set-default-values-for-fields-or-controls)
+distinguishes an absent default from an explicit value. The
+[date-stamp workflow](https://support.microsoft.com/en-us/access/add-a-date-or-time-stamp-to-new-records)
+sets `Now()` or `Date()` separately after adding a Date & Time field; TableCraft
+does not invent either expression.
+
+The retained Windows Access Datasheet and Design images were reopened for this
+slice: 1920×1141 and 1920×1165 pixels, respectively, inside VirtualBox, with
+unknown display scale. They show Click to Add and native field types but no
+expanded field-type gallery. Gallery composition and subtype controls therefore
+use the documented workflows rather than a claimed captured-menu match.
+Long Text, Rich Text, Attachment, lookup and calculated-field workflows require
+additional semantics; listing their documented names does not enable them.
+
 ## Saving the initial table
 
 The shared Save prompt accepts an exact table name and submits
 the current immutable draft snapshot. Its supported schema is the initial ID
-AutoNumber primary key plus explicitly added Short Text or Long Integer fields,
-within the sixteen-field ceiling. No records are authored by this operation.
+AutoNumber primary key plus the explicit field declarations and defaults listed
+above, within the sixteen-field ceiling. No records are authored by this operation.
 The UI keeps the draft distinct from the persisted database while review and
 saving run; neither accepting the name nor closing the prompt proves a save.
 
@@ -119,6 +172,12 @@ Windows acknowledges its write-through retirement rename and retains the intact
 retired artifact; the completion report distinguishes those namespace facts from
 native commitment and does not claim durable Windows deletion. See
 [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
+
+Default-bearing definitions use closed `TCNT0002` intents. Existing
+`TCNT0001` declarations retain their encoding and recovery route; they do not
+acquire newly inferred defaults during replay. Fresh recovery reconstructs the
+captured constant declarations before qualifying the original and replacement
+images. Neither intent permits executing an arbitrary default expression.
 
 Only an acknowledged committed/verified-replacement receipt with the matching
 schema count starts guarded reopening. Reopening compares the complete captured

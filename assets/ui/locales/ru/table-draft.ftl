@@ -26,3 +26,16 @@ table-draft-save-cancelling = Отмена сохранения…
 table-draft-save-stale = Сохранение больше не относится к этому черновику таблицы.
 table-draft-save-blocked = Сохранение заблокировано из-за неясного результата. Снова откройте базу для проверки или отмените этот черновик.
 table-draft-save-reopen-failed = Таблица сохранена, но повторное открытие не завершено. Откройте базу заново, прежде чем снова сохранять этот черновик.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = Большое число
+table-draft-currency = Денежный
+table-draft-date-time = Дата и время
+table-draft-yes-no = Логический
+table-draft-long-text = Длинный текст
+table-draft-lookup-relationship = Подстановка и отношение
+table-draft-rich-text = Форматированный текст
+table-draft-attachment = Вложение
+table-draft-hyperlink = Гиперссылка
+table-draft-calculated-field = Вычисляемое поле
+table-draft-more-fields = Другие поля

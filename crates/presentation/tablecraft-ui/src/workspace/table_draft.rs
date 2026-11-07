@@ -1,6 +1,7 @@
 //! Unsaved table presentation, separate from native catalog and row authority.
 mod close;
 mod creating;
+mod gallery;
 mod grid;
 pub(super) mod save;
 pub use save::{TableDraftSaveCompletion, TableSaveRequest};

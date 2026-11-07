@@ -26,3 +26,16 @@ table-draft-save-cancelling = 저장 취소 중…
 table-draft-save-stale = 저장이 더 이상 이 테이블 초안에 해당하지 않습니다.
 table-draft-save-blocked = 저장 결과가 해결되지 않아 저장이 차단되었습니다. 데이터베이스를 다시 열어 확인하거나 이 초안을 버리세요.
 table-draft-save-reopen-failed = 테이블은 저장되었지만 다시 열기를 완료하지 못했습니다. 이 초안을 다시 저장하기 전에 데이터베이스를 다시 여세요.
+
+# Click-to-Add declarations; unsupported options remain visible and disabled.
+table-draft-large-integer = 큰 숫자
+table-draft-currency = 통화
+table-draft-date-time = 날짜 및 시간
+table-draft-yes-no = 예/아니요
+table-draft-long-text = 긴 텍스트
+table-draft-lookup-relationship = 조회 및 관계
+table-draft-rich-text = 서식 있는 텍스트
+table-draft-attachment = 첨부 파일
+table-draft-hyperlink = 하이퍼링크
+table-draft-calculated-field = 계산 필드
+table-draft-more-fields = 기타 필드

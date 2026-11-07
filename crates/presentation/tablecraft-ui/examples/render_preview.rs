@@ -48,6 +48,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         ""
     };
+    let field_gallery = match setting("TABLECRAFT_PREVIEW_FIELD_GALLERY", "false")?.as_str() {
+        "false" => false,
+        "true" => true,
+        _ => return Err(io::Error::other("field-gallery setting must be true or false").into()),
+    };
+    if field_gallery && scenes != [Scene::InitialTableDraft] {
+        return Err(
+            io::Error::other("field-gallery rendering requires initial-table-draft").into(),
+        );
+    }
+    let gallery_suffix = if field_gallery { "-field-gallery" } else { "" };
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
     let scale = setting("TABLECRAFT_PREVIEW_SCALE", "1")?.parse::<f32>()?;
@@ -74,7 +85,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             );
         }
     };
-    if !ribbon_suffix.is_empty() && (focus_steps != 0 || font_search.is_some()) {
+    if (!ribbon_suffix.is_empty() && (focus_steps != 0 || font_search.is_some()))
+        || (field_gallery
+            && (focus_steps != 0 || font_search.is_some() || !ribbon_suffix.is_empty()))
+    {
         return Err(io::Error::other("choose one preview keyboard focus workflow").into());
     }
     let focus_suffix = if focus_steps == 0 {
@@ -160,9 +174,20 @@ fn main() -> Result<(), Box<dyn Error>> {
             harness.event(egui::Event::Text(query.clone()));
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }
+        if field_gallery {
+            let label = harness
+                .state()
+                .state()
+                .localizer
+                .text("datasheet-click-to-add");
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::Button, &label)
+                .click_accesskit();
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
