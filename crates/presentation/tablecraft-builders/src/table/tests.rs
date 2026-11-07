@@ -215,3 +215,73 @@ fn removing_fields_releases_capacity_without_reusing_identifiers_or_resetting_di
     assert!(draft.is_modified());
     assert_eq!(draft.revision(), 32);
 }
+
+#[test]
+fn field_type_changes_preserve_identity_name_order_and_owned_snapshot() {
+    let mut draft = TableDraft::initial();
+    let field = draft.add_field(DraftFieldType::ShortText).unwrap();
+    let neighbor = draft.add_field(DraftFieldType::DateTime).unwrap();
+    draft.rename_field(field, "Amount").unwrap();
+    let original = draft.snapshot("Items").unwrap();
+
+    for kind in [
+        DraftFieldType::LongInteger,
+        DraftFieldType::LargeInteger,
+        DraftFieldType::YesNo,
+        DraftFieldType::Currency,
+        DraftFieldType::DateTime,
+        DraftFieldType::ShortText,
+    ] {
+        let revision = draft.revision();
+        draft.set_field_type(field, kind).unwrap();
+        assert_eq!(draft.revision(), revision + 1);
+        assert!(draft.is_modified());
+        assert_eq!(draft.fields().len(), 3);
+        assert_eq!(draft.fields()[1].id(), field);
+        assert_eq!(draft.fields()[1].name(), "Amount");
+        assert_eq!(draft.fields()[1].kind(), kind);
+        assert!(!draft.fields()[1].is_primary());
+        assert_eq!(draft.fields()[2].id(), neighbor);
+        assert_eq!(draft.fields()[2].kind(), DraftFieldType::DateTime);
+
+        let current = draft.snapshot("Items").unwrap();
+        draft.set_field_type(field, kind).unwrap();
+        assert!(draft.snapshot("Items").unwrap() == current);
+    }
+    assert_eq!(original.fields()[1].kind(), DraftFieldType::ShortText);
+    assert_eq!(original.fields()[1].name(), "Amount");
+    assert_eq!(original.revision(), 3);
+}
+
+#[test]
+fn protected_and_missing_field_type_changes_refuse_atomically() {
+    let mut draft = TableDraft::initial();
+    let protected = draft.fields()[0].id();
+    let pristine = draft.snapshot("Items").unwrap();
+    for kind in [
+        DraftFieldType::ShortText,
+        DraftFieldType::AutoNumberIncrement,
+    ] {
+        assert_eq!(
+            draft.set_field_type(protected, kind),
+            Err(TableDraftError::ProtectedField)
+        );
+        assert!(draft.snapshot("Items").unwrap() == pristine);
+        assert!(!draft.is_modified());
+    }
+
+    let field = draft.add_field(DraftFieldType::ShortText).unwrap();
+    let current = draft.snapshot("Items").unwrap();
+    assert_eq!(
+        draft.set_field_type(field, DraftFieldType::AutoNumberIncrement),
+        Err(TableDraftError::ProtectedField)
+    );
+    assert!(draft.snapshot("Items").unwrap() == current);
+    draft.remove_field(field).unwrap();
+    let current = draft.snapshot("Items").unwrap();
+    assert_eq!(
+        draft.set_field_type(field, DraftFieldType::Currency),
+        Err(TableDraftError::MissingField)
+    );
+    assert!(draft.snapshot("Items").unwrap() == current);
+}

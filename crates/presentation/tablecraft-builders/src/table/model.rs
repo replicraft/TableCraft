@@ -142,6 +142,41 @@ impl TableDraft {
         Ok(())
     }
 
+    /// Change only an unsaved field declaration; no pending input is converted.
+    /// Existing identifiers, names and positions stay stable.
+    pub fn set_field_type(
+        &mut self,
+        id: DraftFieldId,
+        kind: DraftFieldType,
+    ) -> Result<(), TableDraftError> {
+        let position = self
+            .fields
+            .iter()
+            .position(|field| field.id == id)
+            .ok_or(TableDraftError::MissingField)?;
+        if self.fields[position].primary {
+            return Err(TableDraftError::ProtectedField);
+        }
+        match kind {
+            DraftFieldType::AutoNumberIncrement => return Err(TableDraftError::ProtectedField),
+            DraftFieldType::ShortText
+            | DraftFieldType::LongInteger
+            | DraftFieldType::LargeInteger
+            | DraftFieldType::YesNo
+            | DraftFieldType::Currency
+            | DraftFieldType::DateTime => {}
+        }
+        if self.fields[position].kind == kind {
+            return Ok(());
+        }
+        let revision = self.revision.checked_add(1).ok_or(TableDraftError::Limit)?;
+
+        self.fields[position].kind = kind;
+        self.revision = revision;
+        self.modified = true;
+        Ok(())
+    }
+
     pub fn rename_field(&mut self, id: DraftFieldId, name: &str) -> Result<(), TableDraftError> {
         let position = self
             .fields
@@ -175,3 +210,6 @@ impl TableDraft {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;
