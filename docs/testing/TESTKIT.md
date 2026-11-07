@@ -126,9 +126,12 @@ produce their expected bytes. Tests opt into the support they actually use:
 
 The Access support module is available on macOS and Linux, matching its retained
 offline-session test boundary. Optional support dependencies belong to the
-engineering testkit and are enabled for test consumers. A consumer may forward
-its matching capability feature to the dev-dependency support feature; that does
-not make the testkit a production dependency.
+engineering testkit and are enabled explicitly by test consumers. The Access
+adapter selects `access-support` in its dev-dependency declaration, rather than
+forwarding its production `offline-write-session` feature into the testkit.
+That keeps normal library feature resolution independent of the cyclic
+development-only adapter observation. Standalone library checks and minimal
+workspace lint must both pass; an all-features build alone can hide this error.
 
 Each CLI integration target configures a testkit `Runner` once with
 `Runner::new(env!("CARGO_BIN_EXE_tablecraft"))` and calls `CLI.run(args)`.
