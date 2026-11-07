@@ -16,12 +16,15 @@ impl State {
             ObjectKind::Table { name } => Some(name.clone()),
             _ => None,
         });
+        let draft = active
+            .as_ref()
+            .is_some_and(|tab| matches!(tab.target.kind, ObjectKind::DraftTable { .. }));
         let datasheet_available = active
             .as_ref()
             .is_some_and(|tab| self.can_view_object_datasheet(tab));
         let enabled = active
             .as_ref()
-            .is_some_and(|tab| table.is_some() && self.can_activate_object(tab));
+            .is_some_and(|tab| (table.is_some() || draft) && self.can_activate_object(tab));
         let icon = if self.view == DocumentView::Design {
             Icon::ViewDatasheet
         } else {
@@ -49,7 +52,9 @@ impl State {
                 )
                 .clicked()
                 {
-                    if let Some(tab) = active.as_ref() {
+                    if draft {
+                        self.queue_table_draft_view(false);
+                    } else if let Some(tab) = active.as_ref() {
                         actions.push(Action::ViewObjectDatasheet { tab: tab.clone() });
                     }
                     ui.close();
@@ -58,14 +63,18 @@ impl State {
                     ui,
                     Icon::ViewDesign,
                     &t.text("ribbon-table-design"),
-                    table.is_some(),
+                    table.is_some() || draft,
                     CommandSize::Small,
                 )
                 .clicked()
                 {
-                    actions.push(Action::ViewSchema {
-                        table: table.expect("enabled for an existing table"),
-                    });
+                    if draft {
+                        self.queue_table_draft_view(true);
+                    } else {
+                        actions.push(Action::ViewSchema {
+                            table: table.expect("enabled for an existing table"),
+                        });
+                    }
                     ui.close();
                 }
             });

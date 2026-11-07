@@ -367,6 +367,9 @@ impl State {
                     ObjectKind::Table { name } => Some(name.clone()),
                     _ => None,
                 });
+                let draft = active
+                    .as_ref()
+                    .is_some_and(|tab| matches!(tab.target.kind, ObjectKind::DraftTable { .. }));
                 let design_available = ui.is_enabled()
                     && self.view != DocumentView::Design
                     && active
@@ -393,9 +396,13 @@ impl State {
                         )
                     });
                     if design.clicked() && self.view != DocumentView::Design {
-                        actions.push(Action::ViewSchema {
-                            table: table.clone().expect("enabled table view"),
-                        });
+                        if draft {
+                            self.queue_table_draft_view(true);
+                        } else {
+                            actions.push(Action::ViewSchema {
+                                table: table.clone().expect("enabled table view"),
+                            });
+                        }
                     }
                 }
                 if datasheet_available {
@@ -413,7 +420,11 @@ impl State {
                     if datasheet.clicked()
                         && let Some(tab) = active
                     {
-                        actions.push(Action::ViewObjectDatasheet { tab });
+                        if draft {
+                            self.queue_table_draft_view(false);
+                        } else {
+                            actions.push(Action::ViewObjectDatasheet { tab });
+                        }
                     }
                 }
             });

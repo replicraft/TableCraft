@@ -54,3 +54,11 @@ table-draft-delete-field-title = 删除未保存的字段
 table-draft-delete-field-question = 要删除未保存的字段“{ $field }”吗？
 table-draft-delete-field-warning = 这将从此未保存的表中移除该字段及其待保存的记录输入。数据库尚未更改。
 table-draft-delete-field-confirm = 删除字段
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = 编辑此未保存的表中的字段名称和类型。描述和属性编辑尚不可用。
+table-draft-design-name = { $field } 的字段名称
+table-draft-design-type = { $field } 的数据类型
+table-draft-design-input-help = 更改类型时，待保存的记录输入将保持原样。在审阅和应用之前，输入必须符合所选类型。
+table-draft-design-protected = 初始自动编号主键无法更改。
+table-draft-design-add-field = 添加字段

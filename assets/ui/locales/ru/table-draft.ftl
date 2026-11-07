@@ -54,3 +54,11 @@ table-draft-delete-field-title = Удаление несохранённого �
 table-draft-delete-field-question = Удалить несохранённое поле «{ $field }»?
 table-draft-delete-field-warning = Поле и введённые для него данные записи будут удалены из этой несохранённой таблицы. База данных не изменена.
 table-draft-delete-field-confirm = Удалить поле
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = Изменяйте имена и типы полей в этой несохранённой таблице. Редактирование описания и свойств пока недоступно.
+table-draft-design-name = Имя поля { $field }
+table-draft-design-type = Тип данных поля { $field }
+table-draft-design-input-help = При смене типа введённые данные записи сохраняются без изменений. Перед проверкой и применением они должны соответствовать выбранному типу.
+table-draft-design-protected = Исходный первичный ключ типа «Счётчик» нельзя изменить.
+table-draft-design-add-field = Добавить поле

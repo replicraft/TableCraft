@@ -72,7 +72,14 @@ impl State {
                                     ObjectKind::SavedQuery { name, .. } => {
                                         (name.clone(), Icon::Search)
                                     }
-                                    ObjectKind::DraftTable { .. } => ("Table1".into(), Icon::Table),
+                                    ObjectKind::DraftTable { .. } => (
+                                        "Table1".into(),
+                                        if selected && self.table_draft_design_visible() {
+                                            Icon::TableEdit
+                                        } else {
+                                            Icon::Table
+                                        },
+                                    ),
                                     ObjectKind::Sql => (tr(ui, "shell-query"), Icon::Search),
                                 };
                                 let id = ui.make_persistent_id((
@@ -87,6 +94,34 @@ impl State {
                                         tab(ui, id, &title, icon, selected, true, can_close)
                                     })
                                     .inner;
+                                if matches!(object.target.kind, ObjectKind::DraftTable { .. }) {
+                                    response.context_menu(|ui| {
+                                        if ui
+                                            .add_enabled(
+                                                self.can_view_object_datasheet(&object),
+                                                egui::Button::new(tr(ui, "ribbon-datasheet")),
+                                            )
+                                            .clicked()
+                                        {
+                                            if self.activate_object(&object) {
+                                                self.queue_table_draft_view(false);
+                                            }
+                                            ui.close();
+                                        }
+                                        if ui
+                                            .add_enabled(
+                                                self.can_view_object_design(&object),
+                                                egui::Button::new(tr(ui, "ribbon-table-design")),
+                                            )
+                                            .clicked()
+                                        {
+                                            if self.activate_object(&object) {
+                                                self.queue_table_draft_view(true);
+                                            }
+                                            ui.close();
+                                        }
+                                    });
+                                }
                                 if selected {
                                     focus::register(ui, Pane::Document, &response, false);
                                     if reveal_active {

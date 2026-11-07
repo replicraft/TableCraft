@@ -231,6 +231,48 @@ but no open header shortcut menu or deletion confirmation. Those surfaces follow
 the documented interaction and TableCraft's explicit draft boundary rather than
 a captured-menu pixel match. Native Windows/Access interaction remains unverified.
 
+## Initial-table Design view
+
+The retained Design capture, `Bildschirmfoto_2026-10-28_12-07-50.png`, was
+reopened for this slice: 1920×1165 pixels inside Windows/VirtualBox, with unknown
+display scale. Its upper field grid has a narrow selector/key gutter and Field
+Name, Data Type and Description (Optional) columns. A separate lower Field
+Properties pane contains General and Lookup tabs, property/value rows and a help
+area. The contextual Table Design Ribbon remains separate from the grid.
+These captured surfaces guide the draft editor's layout; they do not establish
+native editing or exact interaction parity.
+
+Microsoft's [new-table Design workflow](https://support.microsoft.com/en-us/access/create-a-new-database)
+enters names and types in the upper grid and uses the lower pane for the selected
+field's properties. Its [type-change contract](https://support.microsoft.com/en-us/access/modify-or-change-the-data-type-setting-for-a-field)
+selects a new Data Type and then saves the table. Persisted-field conversion can
+truncate or remove data or be refused. TableCraft does not implement those
+persisted conversion semantics through this draft surface.
+
+The editable Design view belongs to the same initial, unsaved table as Datasheet
+view. Ordinary field names and the six supported declaration types can be
+changed there; the initial AutoNumber primary key remains protected. Description
+and general property authoring are disabled rather than accepting values that
+would not be saved. Property facts describe the current draft declaration, not
+an observation of already stored metadata. Existing persisted-table Design view
+remains read only.
+
+Changing a draft field's type keeps its field identity and all pending record
+input exactly as entered, including Omitted/NULL modes and text hidden by those
+modes. It changes the declaration and its supported default policy, without
+converting, clearing or inventing a record value. Returning to Datasheet view
+allows correction. Invalid or noncanonical Yes/No text remains editable as text
+instead of silently appearing as False; an incompatible explicit NULL is retained
+rather than changed to a value. The eventual row review still requires valid
+input for the saved declaration. Schema saving and record review remain separate,
+so a failed record preparation does not recreate the schema or discard its input.
+
+Switching views does not write the database. Save uses the same immutable
+initial-schema request and reviewed runtime save route as Datasheet view. It does
+not introduce native ALTER TABLE, persisted schema conversion, additional field
+types or an alternative record-save path. Pending schema saves and unresolved
+outcomes keep their existing editing guards in both views.
+
 ## Saving the initial table
 
 The shared Save prompt accepts an exact table name and submits

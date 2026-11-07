@@ -1,6 +1,7 @@
 //! Unsaved table presentation, separate from native catalog and row authority.
 mod close;
 mod creating;
+pub(in crate::workspace) mod design;
 pub(super) mod field_delete;
 mod gallery;
 mod grid;
@@ -18,6 +19,7 @@ use tablecraft_builders::table::{DraftFieldType, TableDraft};
 
 pub(super) struct Editor {
     pub(super) draft: TableDraft,
+    pub(in crate::workspace) design: design::Design,
     record: record::RowDraft,
     rename: Option<rename::Rename>,
     focus_add: bool,
@@ -38,6 +40,7 @@ impl Editor {
     pub(super) fn initial() -> Self {
         Self {
             draft: TableDraft::initial(),
+            design: design::Design::default(),
             record: record::RowDraft::new(),
             rename: None,
             focus_add: true,
@@ -62,6 +65,10 @@ impl Editor {
         self.error = false;
         self.focus_add = true;
         true
+    }
+
+    pub(in crate::workspace) fn view_available(&self) -> bool {
+        !self.save_blocked
     }
 
     pub(super) fn record_revision(&self) -> u64 {
@@ -120,11 +127,16 @@ impl State {
         let event = ui
             .add_enabled_ui(enabled, |ui| {
                 ui.push_id(("initial_table_editor", tab.id), |ui| {
-                    grid::show(ui, editor, can_save)
+                    if editor.design.active {
+                        design::show(ui, editor, can_save)
+                    } else {
+                        grid::show(ui, editor, can_save)
+                    }
                 })
                 .inner
             })
             .inner;
+        let view_requested = editor.design.requested.take();
         match event {
             Some(grid::Event::Save) => {
                 self.request_table_draft_save();
@@ -132,7 +144,20 @@ impl State {
             Some(grid::Event::DeleteField(field)) => {
                 self.request_table_draft_field_delete(field);
             }
+            Some(grid::Event::AddField(kind)) => {
+                self.add_table_draft_field(kind);
+            }
+            Some(grid::Event::ChangeType(field, kind)) => {
+                self.set_table_draft_field_type(field, kind);
+            }
             None => {}
+        }
+        if let Some(design) = view_requested {
+            if design {
+                self.show_table_draft_design();
+            } else {
+                self.show_table_draft_datasheet();
+            }
         }
         true
     }

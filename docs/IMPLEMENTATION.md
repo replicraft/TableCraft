@@ -1,5 +1,35 @@
 # Implementation status
 
+## Editable initial-table Design view — 7 November 2026
+
+The initial unsaved table now has one editor shared by Datasheet and Design
+views. Ribbon, status and tab-menu transitions remain local; they neither request
+native metadata nor save a file. The chosen view, selected field, pending name
+and raw record input stay with the parked object. UI-triggered view changes wait
+for current widget input before committing a valid name and switching. Invalid
+names remain exact and block the transition; another name cell cannot replace
+that editor. Blocked parked drafts cannot steal the active SQL session.
+
+Design follows the retained three-column grid and lower General/Lookup property
+sheet with right help. Names and six supported nonprimary types are editable;
+AutoNumber is protected. Known declaration facts are read-only, with unsupported
+Description/property authoring disabled. Type changes retain identities, raw
+text, omission/NULL modes and hidden text without conversion or whole-row copying.
+Invalid Yes/No input stays textual for correction rather than displaying false.
+The same source-bound schema Save and separate first-row Review/Apply remain in
+use. Connected desktop cases prove saving from Design, Text `42` becoming a
+native Number declaration and row, and invalid Boolean input refusing review
+without a write. No stored-table ALTER or native conversion parity is claimed.
+
+Final local headless checks pass 17 builder, 410 shared UI and 102 desktop tests,
+plus strict affected-package all-target/all-feature lint. Both Windows
+architectures compile all affected targets/features; all 881 formatter roots pass.
+Four final offscreen frames were rendered and inspected after correcting grid
+painting over the lower pane. Original compile/test-label/setup failures and
+exploratory paint evidence remain in ignored logs. Native Windows/Linux execution
+and Access comparison remain unrun. See [creation scope](ui/DATABASE_CREATION.md#initial-table-design-view)
+and [visual evidence](ui/PRESENTATION_PREVIEW.md#initial-table-design-view--7-november-2026).
+
 ## Correcting unsaved initial fields — 7 November 2026
 
 Initial-table headers now expose Rename Field and Delete Field through secondary

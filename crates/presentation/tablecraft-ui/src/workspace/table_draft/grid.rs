@@ -4,7 +4,7 @@ use crate::workspace::ribbon::Icon;
 use crate::{datasheet::grid_cell, localization::tr};
 use egui::{RichText, Ui};
 use egui_extras::{Column, TableBuilder};
-use tablecraft_builders::table::{DraftFieldId, MAX_DRAFT_FIELDS};
+use tablecraft_builders::table::{DraftFieldId, DraftFieldType, MAX_DRAFT_FIELDS};
 
 const HEADER_HEIGHT: f32 = 22.0;
 const ROW_HEIGHT: f32 = 22.0;
@@ -22,6 +22,8 @@ const ADD_CHEVRON_HALF_HEIGHT: f32 = 1.5;
 pub(super) enum Event {
     Save,
     DeleteField(DraftFieldId),
+    AddField(DraftFieldType),
+    ChangeType(DraftFieldId, DraftFieldType),
 }
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<Event> {

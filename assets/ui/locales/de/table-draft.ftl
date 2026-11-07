@@ -54,3 +54,11 @@ table-draft-delete-field-title = Ungespeichertes Feld löschen
 table-draft-delete-field-question = Das ungespeicherte Feld „{ $field }“ löschen?
 table-draft-delete-field-warning = Dadurch werden das Feld und seine noch nicht gespeicherten Datensatzeingaben aus dieser ungespeicherten Tabelle entfernt. Die Datenbank wurde nicht geändert.
 table-draft-delete-field-confirm = Feld löschen
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = Bearbeiten Sie Feldnamen und Datentypen in dieser ungespeicherten Tabelle. Beschreibungen und Eigenschaften können noch nicht bearbeitet werden.
+table-draft-design-name = Feldname für { $field }
+table-draft-design-type = Datentyp für { $field }
+table-draft-design-input-help = Noch nicht gespeicherte Datensatzeingaben bleiben bei einem Typwechsel unverändert. Vor der Prüfung und Übernahme müssen sie für den gewählten Typ gültig sein.
+table-draft-design-protected = Der ursprüngliche AutoWert-Primärschlüssel kann nicht geändert werden.
+table-draft-design-add-field = Feld hinzufügen

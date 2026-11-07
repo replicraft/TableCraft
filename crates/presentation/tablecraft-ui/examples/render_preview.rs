@@ -71,9 +71,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         "boolean-omitted" => "-initial-boolean-omitted",
         "field-menu" => "-initial-field-menu",
         "delete-field" => "-initial-delete-field",
+        "design" => "-initial-design",
+        "design-type" => "-initial-design-type",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu or delete-field",
+                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design or design-type",
             )
             .into());
         }
@@ -290,6 +292,39 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
             let label = localizer.text("table-draft-delete-field");
             harness
                 .get_by_role_and_label(egui::accesskit::Role::Button, &label)
+                .click_accesskit();
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+        }
+    }
+    if matches!(mode, "design" | "design-type") {
+        harness
+            .get_by_role_and_label(egui::accesskit::Role::Tab, &localizer.text("ribbon-home"))
+            .click_accesskit();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        harness
+            .get_by_role_and_label(
+                egui::accesskit::Role::Button,
+                &localizer.text("ribbon-view"),
+            )
+            .click_accesskit();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        harness
+            .get_by_role_and_label(
+                egui::accesskit::Role::Button,
+                &localizer.text("ribbon-table-design"),
+            )
+            .click_accesskit();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        harness
+            .get_by_role_and_label(egui::accesskit::Role::Button, field)
+            .click_accesskit();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        if mode == "design-type" {
+            let mut arguments = FluentArgs::new();
+            arguments.set("field", field);
+            let selector = localizer.format("table-draft-design-type", &arguments);
+            harness
+                .get_by_role_and_label(egui::accesskit::Role::ComboBox, &selector)
                 .click_accesskit();
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }

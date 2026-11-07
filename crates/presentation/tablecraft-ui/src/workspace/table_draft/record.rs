@@ -55,26 +55,56 @@ impl RowDraft {
         let Some(revision) = self.revision.checked_add(1) else {
             return false;
         };
+        if self.entries.len() == draft.fields().len()
+            && self
+                .entries
+                .iter()
+                .zip(draft.fields())
+                .all(|(entry, field)| entry.id == field.id())
+        {
+            for (entry, field) in self.entries.iter_mut().zip(draft.fields()) {
+                entry.kind = field.kind();
+            }
+            self.revision = revision;
+            return true;
+        }
         let mut entries = Vec::new();
         if entries.try_reserve_exact(draft.fields().len()).is_err() {
             return false;
         }
         for field in draft.fields() {
-            let retained = self
-                .entries
-                .iter()
-                .find(|entry| entry.id == field.id() && entry.kind == field.kind());
-            entries.push(retained.cloned().unwrap_or_else(|| Entry {
+            let retained = self.entries.iter().find(|entry| entry.id == field.id());
+            let mut entry = retained.cloned().unwrap_or_else(|| Entry {
                 id: field.id(),
                 kind: field.kind(),
                 choice: Choice::Omitted,
                 text: String::new(),
                 rejected: false,
-            }));
+            });
+            entry.kind = field.kind();
+            entries.push(entry);
         }
         self.entries = entries;
         self.revision = revision;
         true
+    }
+
+    pub(super) fn type_change(&self, id: DraftFieldId) -> Option<(usize, u64)> {
+        let position = self.entries.iter().position(|entry| entry.id == id)?;
+        if self.entries[position].kind == DraftFieldType::AutoNumberIncrement {
+            return None;
+        }
+        Some((position, self.revision.checked_add(1)?))
+    }
+
+    pub(super) fn change_type_prepared(
+        &mut self,
+        position: usize,
+        revision: u64,
+        kind: DraftFieldType,
+    ) {
+        self.entries[position].kind = kind;
+        self.revision = revision;
     }
 
     /// Preflight removal without cloning or discarding any retained input.
@@ -310,7 +340,12 @@ impl RowDraft {
         ui.push_id(("initial_record", field.id()), |ui| {
             ui.horizontal(|ui| {
                 let width = (ui.available_width() - INPUT_MODE_WIDTH).max(MIN_INPUT_WIDTH);
-                let response = if field.kind() == DraftFieldType::YesNo {
+                let checkbox = field.kind() == DraftFieldType::YesNo
+                    && (choice == Choice::Omitted
+                        || choice == Choice::Value
+                            && (text.eq_ignore_ascii_case("True")
+                                || text.eq_ignore_ascii_case("False")));
+                let response = if checkbox {
                     self.show_boolean(ui, field, position, width)
                 } else {
                     let id = ui.make_persistent_id("value");

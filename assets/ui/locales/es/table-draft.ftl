@@ -54,3 +54,11 @@ table-draft-delete-field-title = Eliminar campo sin guardar
 table-draft-delete-field-question = ¿Eliminar el campo sin guardar «{ $field }»?
 table-draft-delete-field-warning = Se eliminarán el campo y sus datos de registro pendientes de esta tabla sin guardar. La base de datos no se ha modificado.
 table-draft-delete-field-confirm = Eliminar campo
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = Edite los nombres y tipos de campo de esta tabla sin guardar. La edición de descripciones y propiedades aún no está disponible.
+table-draft-design-name = Nombre del campo { $field }
+table-draft-design-type = Tipo de datos de { $field }
+table-draft-design-input-help = Los datos de registro pendientes se conservan tal como se introdujeron al cambiar el tipo. Deben ser válidos para el tipo seleccionado antes de revisar y aplicar.
+table-draft-design-protected = La clave principal Autonumeración inicial no se puede cambiar.
+table-draft-design-add-field = Agregar campo

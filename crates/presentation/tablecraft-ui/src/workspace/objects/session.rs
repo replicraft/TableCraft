@@ -113,8 +113,13 @@ impl Session {
         state.clear_object_slots();
         match self {
             Self::DraftTable { editor } => {
+                let design = editor.as_ref().is_some_and(|editor| editor.design.active);
                 state.table_draft = editor;
-                state.view = DocumentView::Table;
+                state.view = if design {
+                    DocumentView::Design
+                } else {
+                    DocumentView::Table
+                };
             }
             Self::Table {
                 data,

@@ -396,3 +396,6 @@ mod field_types_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod first_record_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod design_tests;

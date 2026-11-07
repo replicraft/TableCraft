@@ -236,29 +236,55 @@ impl State {
     }
 
     pub fn can_view_object_datasheet(&self, tab: &ObjectTab) -> bool {
-        matches!(tab.target.kind, ObjectKind::Table { .. }) && self.can_activate_object(tab)
+        self.can_select_table_object_view(tab)
     }
 
     pub fn prepare_object_datasheet(&mut self, tab: &ObjectTab) -> Option<ObjectOpen> {
         if !self.can_view_object_datasheet(tab) || !self.activate_object(tab) {
             return None;
         }
-        self.view = DocumentView::Table;
-        self.finish_object_activation();
+        if matches!(tab.target.kind, ObjectKind::DraftTable { .. }) {
+            if !self.show_table_draft_datasheet() {
+                return None;
+            }
+        } else {
+            self.view = DocumentView::Table;
+            self.finish_object_activation();
+        }
         self.active_object_load()
     }
 
     pub fn can_view_object_design(&self, tab: &ObjectTab) -> bool {
-        matches!(tab.target.kind, ObjectKind::Table { .. }) && self.can_activate_object(tab)
+        self.can_select_table_object_view(tab)
+    }
+
+    fn can_select_table_object_view(&self, tab: &ObjectTab) -> bool {
+        self.can_activate_object(tab)
+            && match tab.target.kind {
+                ObjectKind::Table { .. } => true,
+                ObjectKind::DraftTable { .. } => {
+                    !self.creation_is_pending()
+                        && self
+                            .table_draft_editor(tab)
+                            .is_some_and(|editor| editor.view_available())
+                }
+                _ => false,
+            }
     }
 
     pub fn prepare_object_design(&mut self, tab: &ObjectTab) -> Option<ObjectOpen> {
         if !self.can_view_object_design(tab) || !self.activate_object(tab) {
             return None;
         }
-        self.view = DocumentView::Design;
-        self.finish_object_activation();
-        self.schema_activation_pending = self.schema.is_none();
+        if matches!(tab.target.kind, ObjectKind::DraftTable { .. }) {
+            if !self.show_table_draft_design() {
+                return None;
+            }
+        } else {
+            self.view = DocumentView::Design;
+            self.finish_object_activation();
+            self.schema_activation_pending = self.schema.is_none();
+        }
         self.active_object_load()
     }
 
@@ -582,7 +608,7 @@ impl State {
         self.view = DocumentView::Table;
     }
 
-    fn finish_object_activation(&mut self) {
+    pub(super) fn finish_object_activation(&mut self) {
         self.bump_focus_publication();
         self.design_focus_pending = None;
         self.pane_focus_entry = None;

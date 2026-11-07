@@ -41,7 +41,7 @@ fn explicit_initial_draft_never_invents_catalog_rows_or_native_loads() {
     let tab = state.active_object().unwrap();
     assert!(matches!(tab.target.kind, ObjectKind::DraftTable { .. }));
     assert!(!state.active_object_load().unwrap().needs_load);
-    assert!(!state.can_view_object_design(&tab));
+    assert!(state.can_view_object_design(&tab));
     assert!(!state.has_modified_table_drafts());
     assert!(state.close_object(&tab));
     assert!(!state.has_unsaved_table_drafts());

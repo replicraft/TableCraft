@@ -54,3 +54,11 @@ table-draft-delete-field-title = Excluir campo não salvo
 table-draft-delete-field-question = Excluir o campo não salvo “{ $field }”?
 table-draft-delete-field-warning = Isso remove o campo e os dados pendentes de seu registro desta tabela não salva. O banco de dados não foi alterado.
 table-draft-delete-field-confirm = Excluir campo
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = Edite os nomes e tipos de campo desta tabela não salva. A edição de descrições e propriedades ainda não está disponível.
+table-draft-design-name = Nome do campo { $field }
+table-draft-design-type = Tipo de dados de { $field }
+table-draft-design-input-help = Os dados pendentes do registro são mantidos como foram digitados quando o tipo muda. Eles devem ser válidos para o tipo selecionado antes de revisar e aplicar.
+table-draft-design-protected = A chave primária inicial de Numeração Automática não pode ser alterada.
+table-draft-design-add-field = Adicionar campo

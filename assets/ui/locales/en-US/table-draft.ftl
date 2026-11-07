@@ -54,3 +54,11 @@ table-draft-delete-field-title = Delete unsaved field
 table-draft-delete-field-question = Delete the unsaved field “{ $field }”?
 table-draft-delete-field-warning = This removes the field and its pending record input from this unsaved table. The database has not been changed.
 table-draft-delete-field-confirm = Delete field
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = Edit field names and types in this unsaved table. Description and property editing are not available yet.
+table-draft-design-name = Field name for { $field }
+table-draft-design-type = Data type for { $field }
+table-draft-design-input-help = Pending record input stays as entered when the type changes. It must be valid for the selected type before Review and Apply.
+table-draft-design-protected = The initial AutoNumber primary key cannot be changed.
+table-draft-design-add-field = Add field

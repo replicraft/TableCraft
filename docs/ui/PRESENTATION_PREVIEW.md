@@ -1,5 +1,38 @@
 # Presentation preview
 
+## Initial-table Design view — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=design|design-type` creates and names a Short
+Text field, enters raw `Ada`, switches through the actual View menu and selects
+the field in Design view. Type mode opens the actual six-choice selector.
+These source-free modes are restricted to `initial-table-draft` and exclusive
+with other preview interactions. The inventory stays at 95 scenes; mock view
+facts supply no native metadata, review capability or write permission.
+
+Four accepted normal-host frames were rendered and inspected windowlessly on
+macOS ARM64 with Windows input emulation. English light/dark use 1280×820 pixels
+at 1×; German dark/Japanese light use 900×580 logical points at 1.25×
+(1125×725 pixels). Frames remain under ignored
+`.cache/ui-previews/initial-design-accepted-20261107/`.
+
+The upper Field Name / Data Type / Description grid is clipped independently
+from Field Properties and the footer. General/Lookup tabs and a right help area
+remain separate. Blank ruled space has no fields, row identities or widgets.
+Foreground type menus may overlay the lower pane without allowing grid painting
+to do so. The earlier exploratory frames under `initial-design-20261107/` exposed
+column rules and blank-row painting over the lower pane; they remain retained,
+separate from the corrected frames. Paint checks inspect emitted clipped shapes
+at both window sizes/themes and distinguish grid rules from the properties
+pane's own divider. Compact layout checks cover all eight languages/both themes
+at the desktop minimum of 900×580.
+
+The actual 1920×1165 Windows/VirtualBox Table Design reference was reopened;
+its display scale is unknown. It establishes the three-column grid, lower
+General/Lookup sheet, right help and contextual Ribbon. No retained capture
+establishes an unsaved type-change popup or dark theme. Those states, explicit
+unavailable controls and the reviewed-save footer remain TableCraft adaptations.
+Native Windows interaction and Access conversion/save parity remain unverified.
+
 ## Initial-field context commands — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=field-menu|delete-field` drives actual field

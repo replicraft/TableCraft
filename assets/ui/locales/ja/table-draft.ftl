@@ -54,3 +54,11 @@ table-draft-delete-field-title = 未保存のフィールドを削除
 table-draft-delete-field-question = 未保存のフィールド「{ $field }」を削除しますか？
 table-draft-delete-field-warning = この未保存のテーブルから、フィールドとそのレコード入力が削除されます。データベースは変更されていません。
 table-draft-delete-field-confirm = フィールドを削除
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = この未保存のテーブルのフィールド名と型を編集できます。説明とプロパティの編集はまだ利用できません。
+table-draft-design-name = { $field } のフィールド名
+table-draft-design-type = { $field } のデータ型
+table-draft-design-input-help = 型を変更しても、保留中のレコード入力はそのまま保持されます。確認して適用する前に、選択した型に適合させてください。
+table-draft-design-protected = 最初のオートナンバー型の主キーは変更できません。
+table-draft-design-add-field = フィールドを追加

@@ -54,3 +54,11 @@ table-draft-delete-field-title = 저장하지 않은 필드 삭제
 table-draft-delete-field-question = 저장하지 않은 필드 “{ $field }”을(를) 삭제하시겠습니까?
 table-draft-delete-field-warning = 이 저장하지 않은 테이블에서 필드와 해당 레코드 입력이 제거됩니다. 데이터베이스는 변경되지 않았습니다.
 table-draft-delete-field-confirm = 필드 삭제
+
+# Editable initial-table Design view; persisted native schemas remain read only.
+table-draft-design-help = 이 저장하지 않은 테이블의 필드 이름과 형식을 편집합니다. 설명 및 속성 편집은 아직 사용할 수 없습니다.
+table-draft-design-name = { $field }의 필드 이름
+table-draft-design-type = { $field }의 데이터 형식
+table-draft-design-input-help = 형식을 변경해도 보류 중인 레코드 입력은 그대로 유지됩니다. 검토하고 적용하기 전에 선택한 형식에 맞는지 확인해야 합니다.
+table-draft-design-protected = 초기 일련 번호 기본 키는 변경할 수 없습니다.
+table-draft-design-add-field = 필드 추가

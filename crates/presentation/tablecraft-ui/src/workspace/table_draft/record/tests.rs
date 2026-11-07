@@ -347,3 +347,40 @@ fn field_removal_preflight_keeps_input_and_refuses_exhausted_revision() {
     assert_eq!(row.raw_texts(&snapshot).unwrap(), original);
     assert_eq!(row.revision(), u64::MAX);
 }
+
+#[test]
+fn declaration_type_changes_keep_raw_modes_and_allocation_instead_of_resetting_input() {
+    for mode in [Choice::Omitted, Choice::Value, Choice::Null] {
+        let mut table = TableDraft::initial();
+        let field = table.add_field(DraftFieldType::ShortText).unwrap();
+        let mut row = RowDraft::new();
+        assert!(row.synchronize(&table));
+        assert!(row.set_input(
+            field,
+            InsertInput::Value(EditInput {
+                text: "0007 Ω original".into(),
+                is_null: mode == Choice::Null,
+            })
+        ));
+        if mode == Choice::Omitted {
+            assert!(row.set_input(field, InsertInput::Omitted));
+        }
+        let allocation = row.entries[1].text.as_ptr();
+        for kind in [
+            DraftFieldType::LongInteger,
+            DraftFieldType::YesNo,
+            DraftFieldType::Currency,
+        ] {
+            table.set_field_type(field, kind).unwrap();
+            assert!(row.synchronize(&table));
+            assert!(row.entries[1].choice == mode);
+            assert_eq!(row.entries[1].text, "0007 Ω original");
+            assert_eq!(row.entries[1].text.as_ptr(), allocation);
+            assert_eq!(row.entries[1].kind, kind);
+        }
+        row.revision = u64::MAX;
+        assert!(row.type_change(field).is_none());
+        assert_eq!(row.entries[1].text.as_ptr(), allocation);
+        assert_eq!(row.entries[1].text, "0007 Ω original");
+    }
+}
