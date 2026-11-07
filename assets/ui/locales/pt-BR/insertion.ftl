@@ -2,7 +2,7 @@
 insertion-title = Nova linha
 insertion-target = Tabela: { $table }
 insertion-checking = Lendo os campos desta nova linha…
-insertion-intent-help = Escolha explicitamente Omitido, NULL ou Valor. Campos omitidos não são fornecidos; valores padrão e gerados não são presumidos.
+insertion-intent-help = Escolha Omitido, NULL ou Valor para os campos editáveis. Campos omitidos não são fornecidos; campos de Numeração Automática são somente leitura e permanecem omitidos.
 insertion-omitted = Omitido
 insertion-null = NULL
 insertion-value = Valor
@@ -14,3 +14,5 @@ insertion-review = Revisar nova linha
 insertion-field-limit = Esta tabela tem campos demais para a caixa de diálogo limitada de nova linha.
 insertion-input-limit = A nova linha excede o tamanho de entrada suportado. Encurte os valores antes de revisar.
 insertion-mock-help = Somente entrada sintética. Nenhum arquivo de banco de dados é aberto ou alterado.
+insertion-generated-value = (Novo)
+insertion-auto-number-help = Numeração Automática: atribuída automaticamente ao salvar a nova linha.

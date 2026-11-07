@@ -54,6 +54,7 @@ impl Desktop {
                         name: field.name,
                         input_hint: crate::view_models::input_hint(field.input_hint),
                         nullable: field.nullable,
+                        auto_number: field.auto_number,
                     })
                     .collect(),
             },

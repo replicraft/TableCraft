@@ -383,6 +383,7 @@ fn german_and_japanese_input_hints_render_in_cell_and_row_forms_without_changing
                             name: "Amount".into(),
                             input_hint: hint,
                             nullable: true,
+                            auto_number: false,
                         }],
                     },
                 );

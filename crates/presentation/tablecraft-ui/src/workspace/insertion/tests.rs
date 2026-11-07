@@ -7,6 +7,15 @@ use egui_kittest::{
 };
 
 fn state() -> (State, InsertTarget) {
+    state_with_fields(vec![InsertField {
+        name: "Name".into(),
+        input_hint: crate::InputHint::Text,
+        nullable: true,
+        auto_number: false,
+    }])
+}
+
+fn state_with_fields(fields: Vec<InsertField>) -> (State, InsertTarget) {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
@@ -27,7 +36,10 @@ fn state() -> (State, InsertTarget) {
         source_revision: Some(7),
         table: "Empty table".into(),
         offset: 0,
-        columns: vec!["Name".into()],
+        columns: fields
+            .iter()
+            .map(|field| field.name.clone().into())
+            .collect(),
         rows: Vec::new(),
         has_more: false,
     });
@@ -45,11 +57,7 @@ fn state() -> (State, InsertTarget) {
         InsertDraft {
             id: 20,
             target: target.clone(),
-            fields: vec![InsertField {
-                name: "Name".into(),
-                input_hint: crate::InputHint::Text,
-                nullable: true,
-            }],
+            fields,
         },
     );
     (state, target)
@@ -185,4 +193,114 @@ fn review_is_bound_to_current_intent_and_retained_save_owner_cannot_be_closed() 
         EditSaveOutcome::Failed("Resources released; prior commit receipt remains known.".into()),
     );
     assert!(state.close_insert());
+}
+
+fn generated_state() -> (State, InsertTarget) {
+    state_with_fields(vec![
+        InsertField {
+            name: "Sequence".into(),
+            input_hint: crate::InputHint::Int32,
+            nullable: false,
+            auto_number: true,
+        },
+        InsertField {
+            name: "ID".into(),
+            input_hint: crate::InputHint::Int32,
+            nullable: true,
+            auto_number: false,
+        },
+    ])
+}
+
+#[test]
+fn actual_auto_number_metadata_is_read_only_while_an_ordinary_id_stays_editable() {
+    let (state, _) = generated_state();
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(900.0, 580.0))
+        .build_ui_state(
+            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    let generated = harness.get_by_role_and_label(Role::Label, "(New)");
+    assert!(
+        !generated
+            .accesskit_node()
+            .data()
+            .supports_action(egui::accesskit::Action::SetValue)
+    );
+    assert!(
+        !generated
+            .accesskit_node()
+            .data()
+            .supports_action(egui::accesskit::Action::Focus)
+    );
+    assert_eq!(harness.get_all_by_role(Role::MultilineTextInput).count(), 1);
+    for choice in ["Omitted", "NULL", "Value"] {
+        assert_eq!(
+            harness
+                .get_all_by_role_and_label(Role::RadioButton, choice)
+                .count(),
+            1
+        );
+    }
+    harness
+        .get_by_role_and_label(Role::RadioButton, "Value")
+        .click_accesskit();
+    harness.run();
+    harness.get_by_role(Role::MultilineTextInput).type_text("9");
+    harness.run();
+    harness
+        .get_by_role_and_label(Role::Button, "Review new row")
+        .click_accesskit();
+    harness.run();
+    assert!(
+        matches!(harness.state().1.as_slice(), [Action::ReviewInsert { draft_id: 20, inputs }]
+        if inputs == &[InsertInput::Omitted, InsertInput::Value(EditInput { text: "9".into(), is_null: false })])
+    );
+    assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn generated_value_or_null_cannot_be_admitted_even_if_private_entry_state_is_changed() {
+    let (mut state, target) = generated_state();
+    for choice in [Choice::Value, Choice::Null] {
+        if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+            entries[0].choice = choice;
+            entries[0].text = "123".into();
+        }
+        let proposed = match &state.insertion {
+            Some(Dialog::Draft { entries, .. }) => inputs(entries),
+            _ => unreachable!(),
+        };
+        assert!(!state.can_review_insert(20, &proposed));
+        state.begin_insert_review(20, proposed, 2);
+        assert!(matches!(
+            &state.insertion,
+            Some(Dialog::Draft { pending: None, .. })
+        ));
+    }
+    if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+        entries[0] = FieldInput::default();
+    }
+    let omitted = vec![InsertInput::Omitted, InsertInput::Omitted];
+    assert!(state.can_review_insert(20, &omitted));
+    state.begin_insert_review(20, omitted.clone(), 3);
+    assert!(state.set_insert_review(
+        3,
+        InsertReview {
+            id: 30,
+            draft_id: 20,
+            target,
+            inputs: omitted,
+            inserted_rows: 1,
+        }
+    ));
+    assert!(state.can_apply_insert(30));
+    if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
+        entries[0].choice = Choice::Value;
+        entries[0].text = "123".into();
+    }
+    assert!(!state.can_apply_insert(30));
 }

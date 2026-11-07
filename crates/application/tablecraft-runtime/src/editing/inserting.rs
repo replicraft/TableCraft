@@ -21,7 +21,7 @@ use std::sync::{
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_access::editing::journal::{NativeJournalInsertPlan, NativeJournalInserter};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
-use tablecraft_ace::NativeImage;
+use tablecraft_ace::{InspectError, NativeImage, TableFeatures, inspect_table_features};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 #[cfg(any(target_os = "macos", target_os = "linux"))]
@@ -49,6 +49,9 @@ pub struct InsertField {
     pub input_hint: InputHint,
     /// Reader nullability does not establish native Required/default semantics.
     pub nullable: bool,
+    /// Actual native AutoNumber/replication-ID marker. This does not select a
+    /// generation mode or grant native insertion permission; input stays omitted.
+    pub auto_number: bool,
 }
 
 pub struct InsertDraft {
@@ -107,6 +110,8 @@ impl Document {
             return Err(EditError::ReadOnlySource.into());
         }
         let mut work = budget();
+        let features =
+            inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
@@ -118,11 +123,13 @@ impl Document {
         output.allocation(columns.len(), size_of::<InsertField>())?;
         let mut fields = Vec::new();
         fields.try_reserve_exact(columns.len())?;
-        for column in columns {
+        validate_feature_columns(&features, columns, &mut output)?;
+        for (column, feature) in columns.iter().zip(features.columns()) {
             fields.push(InsertField {
                 name: output.text(column.name())?,
                 input_hint: InputHint::from(column.data_type()),
                 nullable: column.nullable(),
+                auto_number: feature.auto_number(),
             });
         }
         let id = super::ids::issue_id()?;
@@ -151,9 +158,13 @@ impl Document {
         let mut output = Presentation::new(cancelled);
         let target = copy_target(target, &mut output)?;
         let mut work = budget();
+        let features =
+            inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
+        validate_feature_columns(&features, inserter.columns(), &mut output)?;
+        require_omitted_auto_numbers(&features, inputs, &mut output)?;
         let values = parse_inputs(inserter.columns(), inputs, &mut output)?;
         let retained_values = parse_inputs(inserter.columns(), inputs, &mut output)?;
         let plan = inserter
@@ -218,6 +229,42 @@ fn check_input_limits(inputs: &[InsertInput], cancelled: &dyn Fn() -> bool) -> R
             if bytes > MAX_INSERT_INPUT_BYTES {
                 return Err(EditError::InputLimit.into());
             }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+fn validate_feature_columns(
+    features: &TableFeatures,
+    columns: &[Column],
+    output: &mut Presentation<'_>,
+) -> Result<(), Error> {
+    if features.schema().columns().len() != columns.len() {
+        return Err(InspectError::Malformed.into());
+    }
+    for (feature, column) in features.columns().zip(columns) {
+        output.work(feature.column().name().len() as u64 + column.name().len() as u64)?;
+        if feature.column().name() != column.name() {
+            return Err(InspectError::Malformed.into());
+        }
+    }
+    Ok(())
+}
+
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+fn require_omitted_auto_numbers(
+    features: &TableFeatures,
+    inputs: &[InsertInput],
+    output: &mut Presentation<'_>,
+) -> Result<(), Error> {
+    if features.schema().columns().len() != inputs.len() {
+        return Err(EditError::InvalidInput.into());
+    }
+    for (feature, input) in features.columns().zip(inputs) {
+        output.work(1)?;
+        if feature.auto_number() && !matches!(input, InsertInput::Omitted) {
+            return Err(EditError::InvalidInput.into());
         }
     }
     Ok(())

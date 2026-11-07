@@ -2,7 +2,7 @@
 insertion-title = 새 행
 insertion-target = 테이블: { $table }
 insertion-checking = 새 행의 필드를 읽는 중…
-insertion-intent-help = 생략, NULL 또는 값을 명시적으로 선택하세요. 생략한 필드는 제공하지 않으며 기본값이나 생성될 값을 추측하지 않습니다.
+insertion-intent-help = 편집할 수 있는 필드는 생략, NULL 또는 값을 선택하세요. 생략한 필드는 제공되지 않으며 자동 번호 필드는 읽기 전용으로 생략된 상태를 유지합니다.
 insertion-omitted = 생략
 insertion-null = NULL
 insertion-value = 값
@@ -14,3 +14,5 @@ insertion-review = 새 행 검토
 insertion-field-limit = 이 테이블에는 제한된 새 행 대화 상자에서 지원하는 것보다 많은 필드가 있습니다.
 insertion-input-limit = 새 행이 지원되는 입력 크기를 초과합니다. 검토하기 전에 값을 줄이세요.
 insertion-mock-help = 합성 입력 전용입니다. 데이터베이스 파일을 열거나 변경하지 않습니다.
+insertion-generated-value = (새 항목)
+insertion-auto-number-help = 자동 번호: 새 행을 저장할 때 자동으로 할당됩니다.

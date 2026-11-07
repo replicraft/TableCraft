@@ -143,6 +143,92 @@ fn file_new_field_declaration_ctrl_s_and_query_use_the_same_persisted_database()
     );
 }
 
+fn insert_generated_row(harness: &mut Harness<'_, Desktop>, companion: Option<&str>) {
+    harness
+        .get_by_role_and_label(Role::Button, "New")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+
+    // The actual native generation declaration must reach the host. The user
+    // cannot enter an ID or turn it into an explicit NULL/value in this dialog.
+    assert!(
+        harness
+            .query_by_role_and_label(Role::MultilineTextInput, "ID")
+            .is_none()
+    );
+    if let Some(value) = companion {
+        harness
+            .get_by_role_and_label(Role::RadioButton, "Value")
+            .click_accesskit();
+        harness.run_steps(2);
+        harness
+            .get_by_role_and_label(Role::MultilineTextInput, "Field1")
+            .focus();
+        harness.run_steps(1);
+        harness
+            .get_by_role_and_label(Role::MultilineTextInput, "Field1")
+            .type_text(value);
+        harness.run_steps(2);
+    }
+    harness
+        .get_by_role_and_label(Role::Button, "Review new row")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+    assert!(harness.state().editing.insert_review.is_some());
+    harness
+        .get_by_role_and_label(Role::Button, "Apply new row to original file")
+        .click_accesskit();
+    harness.run_steps(1);
+    let report = finish_save(harness);
+    assert!(
+        matches!(report.outcome, SaveOutcome::Saved { receipt } if receipt.changed_rows == Some(1) && receipt.schema_change.is_none())
+    );
+    harness
+        .get_by_role_and_label(Role::Button, "Close")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(harness);
+}
+
+#[test]
+fn newly_saved_initial_schemas_accept_native_generated_rows_and_refresh_real_contents() {
+    for (kind, values) in [
+        (None, [None, None]),
+        (Some(DraftFieldType::LongInteger), [Some("7"), Some("8")]),
+        (
+            Some(DraftFieldType::ShortText),
+            [Some("Ada"), Some("Grace")],
+        ),
+    ] {
+        let (_directory, path, mut harness) = created();
+        let inode = std::fs::metadata(&path).unwrap().ino();
+        if let Some(kind) = kind {
+            assert!(harness.state_mut().state.add_table_draft_field(kind));
+        }
+        harness.run_steps(2);
+        start_save(&mut harness, "Contacts");
+        finish_reads(&mut harness);
+        assert!(!harness.state().state.has_unsaved_table_drafts());
+        assert!(harness.state().state.data.as_ref().unwrap().rows.is_empty());
+
+        for (position, value) in values.into_iter().enumerate() {
+            insert_generated_row(&mut harness, value);
+            assert_eq!(std::fs::metadata(&path).unwrap().ino(), inode);
+            assert!(!journal_path(&path).exists());
+            assert!(!harness.state().editing.has_save());
+            let data = harness.state().state.data.as_ref().unwrap();
+            assert_eq!(data.table, "Contacts");
+            assert_eq!(data.rows.len(), position + 1);
+            assert_eq!(data.rows[position][0].text, (position + 1).to_string());
+            if let Some(value) = value {
+                assert_eq!(data.rows[position][1].text, value);
+            }
+        }
+    }
+}
+
 #[test]
 fn cancelling_the_read_only_review_keeps_the_named_draft_and_original_file() {
     let (_directory, path, mut harness) = created();

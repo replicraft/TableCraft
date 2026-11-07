@@ -39,6 +39,7 @@ fn review(
     assert_eq!(draft.fields.len(), 2);
     assert_eq!(draft.fields[0].name, "Id");
     assert_eq!(draft.fields[1].name, "Score");
+    assert!(draft.fields.iter().all(|field| !field.auto_number));
     let Response::InsertReviewed { review, capability } = request(
         worker,
         Command::ReviewInsert {
@@ -245,3 +246,6 @@ fn insertion_review_rejects_stale_drafts_wrong_width_and_invalid_typed_values() 
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
+
+#[cfg(feature = "ace16-create")]
+mod initial_tables;

@@ -66,6 +66,7 @@ pub enum Scene {
     History,
     Edit,
     NewRecord,
+    GeneratedNewRecord,
     InsertReview,
     DeleteChecking,
     DeleteReview,
@@ -118,7 +119,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 88] = [
+    pub const ALL: [Self; 89] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -158,6 +159,7 @@ impl Scene {
         Self::History,
         Self::Edit,
         Self::NewRecord,
+        Self::GeneratedNewRecord,
         Self::InsertReview,
         Self::DeleteChecking,
         Self::DeleteReview,
@@ -275,6 +277,7 @@ impl Scene {
             Self::History => "history",
             Self::Edit => "edit",
             Self::NewRecord => "new-record",
+            Self::GeneratedNewRecord => "new-record-generated",
             Self::InsertReview => "insert-review",
             Self::DeleteChecking => "delete-checking",
             Self::DeleteReview => "delete-review",
@@ -460,7 +463,7 @@ impl Preview {
             Scene::Multivalue => self.open_collection("Categories", CollectionKind::Multivalue),
             Scene::History => self.open_collection("Notes", CollectionKind::VersionHistory),
             Scene::Edit => self.open_edit(),
-            Scene::NewRecord => self.prepare_insert_scene(false),
+            Scene::NewRecord | Scene::GeneratedNewRecord => self.prepare_insert_scene(false),
             Scene::InsertReview => self.prepare_insert_scene(true),
             Scene::DeleteChecking => self.prepare_delete_scene(false),
             Scene::DeleteReview => self.prepare_delete_scene(true),

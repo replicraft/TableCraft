@@ -1,5 +1,5 @@
 //! Explicit field intent and runtime review; this renderer never supplies defaults.
-use super::{Choice, Dialog, FieldInput, entries_within_limits, inputs};
+use super::{Choice, Dialog, FieldInput, entries_within_limits, generated_entries_omitted, inputs};
 use crate::localization::{for_context, message, tr};
 use crate::workspace::{Action, EditSaveOutcome, State, diagnostics, save_display};
 use egui::{Id, Ui};
@@ -75,8 +75,13 @@ impl State {
                                 ui.push_id((draft.id, position), |ui| {
                                     ui.separator();
                                     let label = ui.label(&field.name);
-                                    ui.small(field.input_hint.label(&for_context(ui.ctx())));
-                                    changed |= field_input(ui, entry, field.nullable, label.id);
+                                    if field.auto_number {
+                                        ui.label(tr(ui, "insertion-generated-value"));
+                                        ui.small(tr(ui, "insertion-auto-number-help"));
+                                    } else {
+                                        ui.small(field.input_hint.label(&for_context(ui.ctx())));
+                                        changed |= field_input(ui, entry, field.nullable, label.id);
+                                    }
                                 });
                             }
                             if changed {
@@ -143,7 +148,10 @@ impl State {
                                 ui,
                                 Id::new(("insert_review", draft.id)),
                                 "insertion-review",
-                                pending.is_none() && !busy && entries_within_limits(entries),
+                                pending.is_none()
+                                    && !busy
+                                    && entries_within_limits(entries)
+                                    && generated_entries_omitted(&draft.fields, entries),
                             ) {
                                 actions.push(Action::ReviewInsert {
                                     draft_id: draft.id,

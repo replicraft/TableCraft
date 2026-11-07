@@ -2,7 +2,7 @@
 insertion-title = 新しい行
 insertion-target = テーブル: { $table }
 insertion-checking = 新しい行のフィールドを読み込んでいます…
-insertion-intent-help = 「省略」「NULL」「値」を明示的に選択してください。省略したフィールドは指定されません。既定値や生成される値を推測しません。
+insertion-intent-help = 編集可能なフィールドでは、省略、NULL、値を選択します。省略したフィールドは指定されません。オートナンバー型は読み取り専用で、省略されたままになります。
 insertion-omitted = 省略
 insertion-null = NULL
 insertion-value = 値
@@ -14,3 +14,5 @@ insertion-review = 新しい行を確認
 insertion-field-limit = このテーブルのフィールド数は、新しい行ダイアログの上限を超えています。
 insertion-input-limit = 新しい行の入力サイズが上限を超えています。確認する前に値を短くしてください。
 insertion-mock-help = 合成入力のみです。データベースファイルは開かれず、変更されません。
+insertion-generated-value = (新規)
+insertion-auto-number-help = オートナンバー型: 新しい行の保存時に自動的に割り当てられます。

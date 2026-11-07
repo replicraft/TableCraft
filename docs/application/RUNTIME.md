@@ -394,13 +394,27 @@ continue to use actual schema/native values, independently of the hint tag.
 
 The same `offline-edit` worker now accepts BeginInsert/ReviewInsert. InsertTarget
 contains a document revision and table name, with no invented existing row handle.
-The metadata draft supplies original field names, input carrier descriptions and
-reader nullability; it does not promise that a complete row will pass native
-admission. Each field retains explicit Omitted or Value intent, with NULL separate
-from literal text. The UI keeps text while toggling those choices.
+The metadata draft supplies original field names, input carrier descriptions,
+reader nullability and `InsertField::auto_number`. The marker comes from the
+actual inert native `ColumnFeatures` metadata, aligned against the insertion
+schema by complete field count and exact names. It is not inferred from an ID
+name, scalar type, last-issued counter or displayed value, and does not select
+Increment versus Random/replication-ID generation semantics. Metadata inspection
+does not promise that a complete row will pass native admission.
 
-Review parses supplied text against actual declared types and runs the normal
-presence-bearing native INSERT planner over the captured image. It returns exact
+Ordinary fields retain explicit Omitted or Value intent, with NULL separate from
+literal text; their UI text survives choice changes. AutoNumber-marked fields
+remain omitted in this reviewed application-input contract. Hosts can show them
+as read-only `(New)` rather than offer supplied/NULL input. Review independently
+rejects both supplied values and explicit NULL for these fields, even if a caller
+bypasses the renderer. The native planner still owns generator-mode, counter,
+constraint and index admission. This application-input policy does not change or
+ban the separate explicit SQL/engine append contracts, which retain their own
+native qualification.
+
+Review rechecks the actual native AutoNumber markers, requires their omission,
+then parses ordinary supplied text against actual declared types and runs the
+normal presence-bearing native INSERT planner over the captured image. It returns exact
 reviewed inputs, a one-row count and an opaque consuming ReviewedInsert capability.
 No native file lease is held while the user types or considers the review.
 Formatting preferences never alter these inputs or substitute displayed values.
@@ -425,6 +439,26 @@ random provider, so defaults needing those capabilities remain refused. Encrypte
 and packaged sources are read-only here; native saves are currently macOS/Linux
 only. This adds no general create-table, multirow, external-source or inline
 Access autosave guarantee. See [normal INSERT](../access/writes/NORMAL_ACE_INSERT.md).
+
+New connected runtime scenarios save the initial schema into the actual canonical
+blank, reopen it through its content witness, then use this existing insertion
+review/save path for ID-only, ID-plus-Long-Integer and ID-plus-Short-Text tables.
+They check original omission through review, native-generated first ID, stored
+companion values, one-row rather than schema completion, journal cleanup and
+ordinary reopening. A separate refusal case keeps the file unchanged when app
+input supplies an ID or NULL. All six focused runtime insertion tests passed
+locally on macOS on 7 November 2026, including these two new connected cases and
+the three initial schema variants. This is not a full-runtime regression run,
+Windows filesystem-journal observation or native Access comparison.
+
+The initial-table route still authors no companion defaults or AllowZeroLength
+policy. Increment insertion currently requires explicit companion values or NULL;
+an ordinary companion left omitted is not silently replaced by an invented
+value. Empty Short Text remains subject to the native explicit-AllowZeroLength
+coverage gate, and this runtime metadata addition does not weaken it. Direct
+editing of the unsaved draft's first record, inference from entered data and
+inline Access autosave remain separate work.
+
 
 ## Reviewed offline row deletion
 

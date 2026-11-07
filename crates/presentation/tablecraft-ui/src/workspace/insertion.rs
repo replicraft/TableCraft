@@ -16,6 +16,8 @@ pub struct InsertField {
     pub name: String,
     pub input_hint: InputHint,
     pub nullable: bool,
+    /// Stored AutoNumber metadata; generator support is separately qualified.
+    pub auto_number: bool,
 }
 
 pub struct InsertDraft {
@@ -124,8 +126,16 @@ fn text_bytes_fit<'a>(mut texts: impl Iterator<Item = &'a str>) -> bool {
         .is_some()
 }
 
-fn inputs_match(entries: &[FieldInput], proposed: &[InsertInput]) -> bool {
-    entries.len() == proposed.len()
+fn generated_entries_omitted(fields: &[InsertField], entries: &[FieldInput]) -> bool {
+    fields.len() == entries.len()
+        && fields.iter().zip(entries).all(|(field, entry)| {
+            !field.auto_number || (entry.choice == Choice::Omitted && entry.text.is_empty())
+        })
+}
+
+fn inputs_match(fields: &[InsertField], entries: &[FieldInput], proposed: &[InsertInput]) -> bool {
+    generated_entries_omitted(fields, entries)
+        && entries.len() == proposed.len()
         && entries
             .iter()
             .zip(proposed)
@@ -226,7 +236,7 @@ impl State {
             && draft.id == draft_id
             && within_input_limits(proposed)
             && self.insert_source_current(&draft.target)
-            && inputs_match(entries, proposed)
+            && inputs_match(&draft.fields, entries, proposed)
     }
 
     pub fn begin_insert_review(
@@ -244,7 +254,7 @@ impl State {
             error,
         }) = &mut self.insertion
             && draft.id == draft_id
-            && inputs_match(entries, &proposed)
+            && inputs_match(&draft.fields, entries, &proposed)
         {
             *active = request_id;
             *pending = Some(proposed);
@@ -269,7 +279,7 @@ impl State {
             && draft.id == reviewed.draft_id
             && draft.target == reviewed.target
             && pending.as_deref() == Some(reviewed.inputs.as_slice())
-            && inputs_match(entries, &reviewed.inputs)
+            && inputs_match(&draft.fields, entries, &reviewed.inputs)
         {
             *pending = None;
             *review = Some(Box::new(reviewed));
@@ -295,7 +305,7 @@ impl State {
             && review.id == review_id
             && review.draft_id == draft.id
             && review.target == draft.target
-            && inputs_match(entries, &review.inputs)
+            && inputs_match(&draft.fields, entries, &review.inputs)
     }
 
     pub fn begin_insert_save(&mut self, review_id: u64, save_id: u64) {

@@ -1,5 +1,26 @@
 # Implementation status
 
+## First records in newly authored tables — 7 November 2026
+
+Saved initial ID-only, ID-plus-Long-Integer and ID-plus-Short-Text tables use the
+existing reviewed native insertion path. Runtime exposes the stored AutoNumber
+marker; the shared dialog shows `(New)` without editable ID/NULL controls and
+retains generated fields as omitted. Ordinary fields remain explicitly Omitted,
+NULL or Value. No name-based ID inference or client-generated value supplies the
+record. This is the existing offline insertion dialog, not Access inline autosave.
+
+Six runtime insertion checks pass, including actual first-table Save/reopen and
+first-record insertion across the three schemas. A connected desktop case creates
+and saves each schema, inserts two records and verifies IDs 1/2, companion values,
+same-file identity and refreshed rows; both earlier desktop insertion regressions
+also pass. Five initial-creation checks and three native insertion/recovery checks
+pass against independent raw fixtures, including Short Text NULL. Windows x64
+runtime/IO/testkit strict lint passes; Windows same-file saving remains unavailable.
+Five focused UI checks pass, including the generated scene across all eight
+languages and both themes. Four normal-host frames were inspected offscreen.
+Native Access comparisons remain unrun. See the
+[runtime insertion contract](application/RUNTIME.md#reviewed-offline-row-insertion).
+
 ## First-table Save integration — 7 November 2026
 
 The initial draft now connects to a bounded real same-file schema save on

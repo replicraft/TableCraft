@@ -1,11 +1,12 @@
 //! Synthetic row-insertion responses; no source is opened or persisted.
-use super::Preview;
+use super::{Preview, Scene};
 use crate::workspace::insertion::Dialog;
 use crate::{
     Action, EditSaveOutcome, InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget,
 };
 
 const MOCK_FIELD_COUNT: usize = 3;
+const MOCK_AUTO_NUMBER_POSITION: usize = 0;
 
 impl Preview {
     pub(super) fn prepare_insert_scene(&mut self, reviewed: bool) {
@@ -30,6 +31,7 @@ impl Preview {
         if !self.state.can_insert_row(&target) {
             return;
         }
+        let generated = self.scene() == Scene::GeneratedNewRecord;
         let fields = self
             .state
             .data
@@ -38,10 +40,16 @@ impl Preview {
             .columns
             .iter()
             .take(MOCK_FIELD_COUNT)
-            .map(|column| InsertField {
+            .enumerate()
+            .map(|(position, column)| InsertField {
                 name: column.name.clone(),
-                input_hint: crate::InputHint::Text,
-                nullable: true,
+                input_hint: if generated && position == MOCK_AUTO_NUMBER_POSITION {
+                    crate::InputHint::Int32
+                } else {
+                    crate::InputHint::Text
+                },
+                nullable: !(generated && position == MOCK_AUTO_NUMBER_POSITION),
+                auto_number: generated && position == MOCK_AUTO_NUMBER_POSITION,
             })
             .collect();
         let request = self.request();
@@ -182,5 +190,53 @@ impl Preview {
             }
             _ => false,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{Locale, Localizer, Theme};
+
+    #[test]
+    fn generated_insert_scene_renders_in_all_locales_and_themes_without_a_file_host() {
+        let context = egui::Context::default();
+        context.enable_accesskit();
+        crate::configure(&context);
+        for locale in Locale::ALL {
+            for theme in [Theme::Light, Theme::Dark] {
+                let mut preview = Preview::new(Scene::GeneratedNewRecord);
+                preview.state_mut().localizer = Localizer::new(locale).unwrap();
+                preview.state_mut().theme = theme;
+                assert!(
+                    matches!(&preview.state().insertion, Some(Dialog::Draft { draft, .. })
+                    if draft.fields[0].auto_number && draft.fields[1..].iter().all(|field| !field.auto_number))
+                );
+                for _ in 0..2 {
+                    let mut output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(egui::Rect::from_min_size(
+                                egui::Pos2::ZERO,
+                                egui::vec2(900.0, 580.0),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| preview.show(ui),
+                    );
+                    assert!(!output.shapes.is_empty());
+                    output.textures_delta.clear();
+                }
+                assert_eq!(
+                    preview.state().localizer.diagnostics(),
+                    crate::localization::LocalizationDiagnostics::default()
+                );
+                assert!(preview.state().data.as_ref().unwrap().rows.len() > 1);
+            }
+        }
+        let ordinary = Preview::new(Scene::NewRecord);
+        assert!(
+            matches!(&ordinary.state().insertion, Some(Dialog::Draft { draft, .. })
+            if draft.fields.iter().all(|field| !field.auto_number))
+        );
     }
 }

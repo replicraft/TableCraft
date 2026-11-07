@@ -515,7 +515,7 @@ TABLECRAFT_PREVIEW_SCENE=options \
 cargo run -p tablecraft-ui --example render_preview
 ```
 
-Omit `TABLECRAFT_PREVIEW_SCENE` to export all 88 scenes. Artifacts are PNGs at
+Omit `TABLECRAFT_PREVIEW_SCENE` to export all 89 scenes. Artifacts are PNGs at
 1280 × 820 logical pixels, default 1× scale, using Windows keyboard conventions on the
 local renderer. Animated pending and focused-text scenes advance exactly three frames rather than waiting
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
@@ -1008,7 +1008,16 @@ size, pixel scale, build platform and chosen regional locale with reviewed image
 
 ## Explicit new-row presentation
 
-The `new-record` and `insert-review` scenes show the same bounded row-insertion
+The `new-record` and `insert-review` scenes retain ordinary editable fields. The
+`new-record-generated` scene adds an explicit synthetic AutoNumber metadata flag
+for its first field, rendered as read-only `(New)` with no NULL/Value controls.
+That placeholder does not reserve or predict an ID. Both remaining fields retain
+Omitted/NULL/Value choices. The scene still performs no native I/O; the synthetic
+host retains its existing mock notice. Normal-host rendering uses the actual
+application chrome without that notice. Native metadata, not a column's name,
+selects the generated presentation in actual hosts.
+
+These scenes show the same bounded row-insertion
 modal used by the desktop host, with clearly labeled synthetic fields and no
 file persistence. Home and the record toolbar expose New row without adding an
 invented stored row, generated value or native row ordinal to the datasheet.
@@ -1020,6 +1029,22 @@ single save owner. Backend admission remains responsible for supported types,
 constraints and native insertion; the dialog does not assume defaults or skip
 required programs. This explicit offline dialog is a provisional application
 workflow, not a verified replica of Access's inline new-record row.
+
+Normal-host generated-field frames were reviewed offscreen on macOS with Windows
+chrome emulation: English light/dark at 1280×820 and 1×, German dark/Japanese light
+at 900×580 and 1.25×. The generated placeholder and ordinary field choices remain
+distinct, translated help wraps, and the footer stays within the compact viewport.
+Artifacts remain local under `.cache/ui-previews/generated-insert-20261107/`.
+The retained Table1 screenshot was reopened for its `(New)` row convention; it
+contains no corresponding offline insertion dialog. No native windows were opened
+and these frames establish no Access inline interaction or save parity.
+
+Five focused insertion UI tests pass. They cover metadata-selected read-only
+fields, editable ordinary fields named ID, refusal of substituted generated
+values/NULL, retained review/save ownership and the generated scene's sixteen
+language/theme combinations without a file host. The connected desktop test
+also passes actual creation, table Save and two inserts in each supported initial
+schema; native generator IDs are observed only after saving and reopening.
 
 
 The `delete-checking` and `delete-review` scenes exercise the existing reviewed,
