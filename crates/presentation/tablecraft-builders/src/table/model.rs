@@ -123,6 +123,25 @@ impl TableDraft {
         Ok(id)
     }
 
+    /// Remove one unsaved field without changing surviving identities or order.
+    /// The initial AutoNumber remains protected; removed identifiers are never reused.
+    pub fn remove_field(&mut self, id: DraftFieldId) -> Result<(), TableDraftError> {
+        let position = self
+            .fields
+            .iter()
+            .position(|field| field.id == id)
+            .ok_or(TableDraftError::MissingField)?;
+        if self.fields[position].primary {
+            return Err(TableDraftError::ProtectedField);
+        }
+        let revision = self.revision.checked_add(1).ok_or(TableDraftError::Limit)?;
+
+        self.fields.remove(position);
+        self.revision = revision;
+        self.modified = true;
+        Ok(())
+    }
+
     pub fn rename_field(&mut self, id: DraftFieldId, name: &str) -> Result<(), TableDraftError> {
         let position = self
             .fields
