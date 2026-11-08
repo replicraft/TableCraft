@@ -1,4 +1,6 @@
 //! Real public-worker draft/review/save acceptance on independent native bytes.
+mod genuine_jet4;
+
 use super::{open, request, stored::opened, terminal};
 use crate::{
     Command, EditInput, EditTarget, Response, ReviewedEdit, SaveOutcome, SaveStartFailure,

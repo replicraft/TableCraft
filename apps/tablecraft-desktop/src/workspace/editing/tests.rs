@@ -1,4 +1,6 @@
 //! Real host admission and acknowledgment over the existing runtime/testkit path.
+mod genuine_jet4;
+
 use super::*;
 use eframe::App;
 use std::time::{Duration, Instant};
@@ -39,7 +41,20 @@ fn begin(desktop: &mut Desktop) -> (u64, u64, EditInput) {
         column: "Score".into(),
         parent_ordinal: 1,
     };
-    desktop.begin_edit(target);
+    begin_target(desktop, target, "20", None)
+}
+
+fn begin_target(
+    desktop: &mut Desktop,
+    target: EditTarget,
+    original: &str,
+    pasted_text: Option<String>,
+) -> (u64, u64, EditInput) {
+    if let Some(text) = &pasted_text {
+        desktop.begin_paste_edit(target, text.clone());
+    } else {
+        desktop.begin_edit(target);
+    }
     let request_id = desktop.generation;
     let deadline = Instant::now() + Duration::from_secs(10);
     let response = loop {
@@ -54,11 +69,12 @@ fn begin(desktop: &mut Desktop) -> (u64, u64, EditInput) {
         panic!("expected actual native draft");
     };
     let draft_id = draft.id;
+    assert_eq!(draft.original.text, original);
+    assert_eq!(draft.initial.text, original);
     let input = EditInput {
-        text: draft.initial.text.clone(),
+        text: pasted_text.unwrap_or_else(|| draft.initial.text.clone()),
         is_null: draft.initial.is_null,
     };
-    assert_eq!(input.text, "20");
     desktop.state.busy = false;
     desktop.publish_edit_draft(request_id, draft);
     (request_id, draft_id, input)
