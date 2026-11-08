@@ -18,9 +18,14 @@ fn review_update(
     sql: &str,
 ) -> (crate::QueryUpdateReview, ReviewedQueryUpdate) {
     let (target, _) = inspect(worker, revision, sql);
-    let Response::QueryUpdateReviewed { review, capability } =
-        request(worker, Command::ReviewQueryUpdate { target }).unwrap()
-    else {
+    let Response::QueryUpdateReviewed { review, capability } = request(
+        worker,
+        Command::ReviewQueryUpdate {
+            target,
+            parameters: Vec::new(),
+        },
+    )
+    .unwrap() else {
         panic!("expected a lease-free native SQL UPDATE review");
     };
     assert_eq!(review.document_revision, revision);
@@ -64,9 +69,14 @@ fn ace16_headers_save_and_reopen_against_independent_complete_image_overlays() {
             table.name, table.columns[1], table.columns[1]
         );
         let (target, _) = inspect(&worker, revision, &sql);
-        let Response::QueryUpdateReviewed { review, capability } =
-            request(&worker, Command::ReviewQueryUpdate { target }).unwrap()
-        else {
+        let Response::QueryUpdateReviewed { review, capability } = request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target,
+                parameters: Vec::new(),
+            },
+        )
+        .unwrap() else {
             panic!("expected ordinary ACE16 SQL UPDATE review");
         };
         assert_eq!(review.table, table.name);
@@ -218,7 +228,8 @@ fn inspected_identity_and_document_lifetime_reject_old_reviews_before_save() {
         request(
             &other,
             Command::ReviewQueryUpdate {
-                target: target.clone()
+                target: target.clone(),
+                parameters: Vec::new(),
             }
         ),
         Err(Error::StaleQuery)
@@ -226,7 +237,13 @@ fn inspected_identity_and_document_lifetime_reject_old_reviews_before_save() {
     let (_, capability) = review_update(&worker, revision, target.sql());
     request(&worker, open(&path, "")).unwrap();
     assert!(matches!(
-        request(&worker, Command::ReviewQueryUpdate { target }),
+        request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target,
+                parameters: Vec::new()
+            }
+        ),
         Err(Error::StaleQuery)
     ));
     let saves = SaveWorker::new(|| {});
@@ -258,17 +275,22 @@ fn zero_match_and_noop_reviews_keep_honest_counts_and_all_original_bytes() {
 }
 
 #[test]
-fn unsupported_actions_declared_parameters_eager_errors_and_read_only_sources_never_write() {
+fn unsupported_actions_eager_errors_and_read_only_sources_never_write() {
     let original = mutation_fixture::database();
     let (directory, path, worker, revision) = opened(&original);
     for sql in [
-        "PARAMETERS [Value] LONG; UPDATE Items SET Score=[Value]",
         "SELECT * FROM Items",
         "UPDATE Items INNER JOIN Other ON Items.Id=Other.Id SET Items.Score=1",
     ] {
         let (target, _) = inspect(&worker, revision, sql);
         assert!(matches!(
-            request(&worker, Command::ReviewQueryUpdate { target }),
+            request(
+                &worker,
+                Command::ReviewQueryUpdate {
+                    target,
+                    parameters: Vec::new()
+                }
+            ),
             Err(Error::QueryUpdate(RecoverableError::Shape(
                 QueryError::Unsupported
             )))
@@ -280,7 +302,13 @@ fn unsupported_actions_declared_parameters_eager_errors_and_read_only_sources_ne
         "UPDATE Items SET Score=1 WHERE FALSE AND 1/0=0",
     );
     assert!(matches!(
-        request(&worker, Command::ReviewQueryUpdate { target }),
+        request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target,
+                parameters: Vec::new()
+            }
+        ),
         Err(Error::QueryUpdate(RecoverableError::Plan(
             UpdateError::Query(QueryError::Evaluation(
                 tablecraft_expressions::EvalError::DivisionByZero
@@ -319,7 +347,13 @@ fn unsupported_actions_declared_parameters_eager_errors_and_read_only_sources_ne
         "UPDATE Items SET Score=42 WHERE Id=2",
     );
     assert!(matches!(
-        request(&worker, Command::ReviewQueryUpdate { target }),
+        request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target,
+                parameters: Vec::new()
+            }
+        ),
         Err(Error::Edit(crate::EditError::ReadOnlySource))
     ));
     assert_eq!(
@@ -398,4 +432,137 @@ fn stored_text_policy_selects_updated_rows_independently_of_database_default() {
             assert_eq!(rows[2][5].text, "3000");
         }
     }
+}
+
+#[test]
+fn declared_update_inputs_review_save_and_reopen_one_frozen_native_plan() {
+    let original = mutation_fixture::database();
+    let expected = mutation_fixture::with_rows(&[(1, 10), (2, 25), (3, 35)]);
+    let (directory, path, worker, revision) = opened(&original);
+    let sql = "PARAMETERS minimum LONG, increment LONG; UPDATE Items SET Score=Score+increment WHERE Id>=minimum";
+    let (target, specs) = inspect(&worker, revision, sql);
+    assert_eq!(specs.len(), 2);
+    let mut parameters = vec![
+        crate::ParameterInput {
+            name: "minimum".into(),
+            kind: "int32".into(),
+            text: "2".into(),
+            is_null: false,
+        },
+        crate::ParameterInput {
+            name: "increment".into(),
+            kind: "int32".into(),
+            text: "5".into(),
+            is_null: false,
+        },
+    ];
+    let Response::QueryUpdateReviewed { review, capability } = request(
+        &worker,
+        Command::ReviewQueryUpdate {
+            target,
+            parameters: parameters.clone(),
+        },
+    )
+    .unwrap() else {
+        panic!("expected typed action review");
+    };
+    assert_eq!((review.matched_rows, review.changed_rows), (2, 2));
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    // The reviewed plan owns resolved native carriers, never this mutable input.
+    parameters[1].text = "999".into();
+    let receipt = save_and_acknowledge(capability, directory.path().join("parameters.journal"));
+    assert_eq!(
+        (receipt.matched_rows, receipt.changed_rows),
+        (Some(2), Some(2))
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    request(&worker, open(&path, "")).unwrap();
+    let Response::Data { rows, .. } = request(
+        &worker,
+        Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("expected reopened typed action rows");
+    };
+    assert_eq!(rows[1][1].text, "25");
+    assert_eq!(rows[2][1].text, "35");
+}
+
+#[test]
+fn invalid_action_inputs_refuse_before_unreadable_native_data() {
+    let mut original = mutation_fixture::database();
+    original[12 * 4096] = 0;
+    let (_directory, path, worker, revision) = opened(&original);
+    let (target, _) = inspect(
+        &worker,
+        revision,
+        "PARAMETERS replacement LONG; UPDATE Items SET Score=replacement",
+    );
+    let input = crate::ParameterInput {
+        name: "replacement".into(),
+        kind: "int32".into(),
+        text: "42".into(),
+        is_null: false,
+    };
+    for parameters in [
+        Vec::new(),
+        vec![crate::ParameterInput {
+            kind: "text".into(),
+            ..input.clone()
+        }],
+        vec![input.clone(), input.clone()],
+        vec![crate::ParameterInput {
+            name: "other".into(),
+            ..input.clone()
+        }],
+    ] {
+        assert!(matches!(
+            request(
+                &worker,
+                Command::ReviewQueryUpdate {
+                    target: target.clone(),
+                    parameters,
+                }
+            ),
+            Err(Error::ParameterInput)
+        ));
+    }
+    assert!(matches!(
+        request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target,
+                parameters: vec![crate::ParameterInput {
+                    text: "DELETE FROM Items".into(),
+                    ..input
+                }],
+            }
+        ),
+        Err(Error::InvalidScalarInput)
+    ));
+    let (limited, _) = inspect(
+        &worker,
+        revision,
+        "PARAMETERS replacement TEXT(2); UPDATE Items SET Score=1 WHERE FALSE",
+    );
+    assert!(matches!(
+        request(
+            &worker,
+            Command::ReviewQueryUpdate {
+                target: limited,
+                parameters: vec![crate::ParameterInput {
+                    name: "replacement".into(),
+                    kind: "text".into(),
+                    text: "abc".into(),
+                    is_null: false
+                }],
+            }
+        ),
+        Err(Error::ParameterInput)
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!crate::journal_path(&path).exists());
 }

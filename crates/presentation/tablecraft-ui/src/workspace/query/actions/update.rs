@@ -4,6 +4,7 @@ mod dialog;
 
 use crate::workspace::objects::MAX_RETAINED_BYTES;
 use crate::workspace::objects::memory::Counter;
+use crate::workspace::query::parameters::{ParameterInput, retained_inputs};
 use crate::workspace::{DocumentView, EditSaveOutcome, ObjectTab, State};
 
 const MAX_REPORT_BYTES: usize = 4096;
@@ -21,6 +22,7 @@ pub(in crate::workspace) struct Origin {
     pub(in crate::workspace) sql_revision: u64,
     pub(in crate::workspace) object: ObjectTab,
     pub(in crate::workspace) publication: u64,
+    pub(in crate::workspace) parameters: Vec<ParameterInput>,
 }
 
 impl Origin {
@@ -90,6 +92,7 @@ fn outcome_message(outcome: &EditSaveOutcome) -> &String {
 impl Session {
     pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
         let mut count = Counter::new(self.origin.sql.capacity());
+        count.add(retained_inputs(&self.origin.parameters)?);
         match &self.phase {
             Phase::Reviewing { error, .. } => {
                 if let Some(error) = error {
@@ -120,11 +123,12 @@ impl State {
         inspection_id: u64,
         sql: &str,
         request_id: u64,
+        parameters: Vec<ParameterInput>,
     ) -> bool {
         if request_id == 0 || self.query_update.is_some() {
             return false;
         }
-        let Some(origin) = self.take_query_update_origin(inspection_id, sql) else {
+        let Some(origin) = self.take_query_update_origin(inspection_id, sql, &parameters) else {
             return false;
         };
         self.query_update = Some(Session {

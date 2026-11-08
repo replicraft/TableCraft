@@ -71,7 +71,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_batch_update").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_batch_update_table(query)
+            sql::local_batch_update_table(query, false)
                 .map_err(|error| Cause::Planning(sql::RecoverableError::Shape(error)))?;
             let slot = self.slot_mut()?;
             slot.current = None;

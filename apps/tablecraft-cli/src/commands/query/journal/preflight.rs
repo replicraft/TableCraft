@@ -32,7 +32,7 @@ pub(super) fn prepare(
             Route::Single
         }
         Statement::Update(_) => {
-            sql::local_batch_update_table(query.query()).map_err(Error::Shape)?;
+            sql::local_batch_update_table(query.query(), false).map_err(Error::Shape)?;
             Route::Batch
         }
         _ => return Err(Error::Shape(tablecraft_query::QueryError::Unsupported)),

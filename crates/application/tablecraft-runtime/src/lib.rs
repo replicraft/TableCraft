@@ -321,6 +321,7 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     ReviewQueryUpdate {
         target: Arc<InspectedQuery>,
+        parameters: Vec<ParameterInput>,
     },
     InspectSavedQuery {
         target: SavedQueryTarget,

@@ -18,7 +18,12 @@ fn reviewing() -> State {
     let captured = state.capture_query_draft().unwrap();
     let original_allocation = captured.as_ptr();
     assert!(state.begin_query_parameter_inspection(INSPECTION, captured));
-    assert!(state.begin_query_update_review(INSPECTION, SQL, REQUEST));
+    assert!(matches!(
+        state.set_query_parameter_details(INSPECTION, SQL, Vec::new()),
+        Some(Action::RunParameterizedQuery { inspection_id: INSPECTION, parameters })
+            if parameters.is_empty()
+    ));
+    assert!(state.begin_query_update_review(INSPECTION, SQL, REQUEST, Vec::new()));
     assert_eq!(
         state.query_update.as_ref().unwrap().origin.sql.as_ptr(),
         original_allocation

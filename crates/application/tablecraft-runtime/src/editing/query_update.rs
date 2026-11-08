@@ -1,5 +1,8 @@
 //! Lease-free SQL UPDATE review owns the actual native plan, never UI authority.
-use crate::{Error, InspectedQuery, Response, document::Document};
+use crate::{
+    Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
+    query::parameters,
+};
 use std::path::{Path, PathBuf};
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
@@ -48,9 +51,12 @@ impl Document {
     pub(crate) fn review_query_update(
         &mut self,
         target: &InspectedQuery,
+        inputs: &[ParameterInput],
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
-        platform::review(self, target, cancelled)
+        let mut output = Presentation::new(cancelled);
+        parameters::validate_input_limits(inputs, &mut output)?;
+        platform::review(self, target, inputs, &mut output, cancelled)
     }
 }

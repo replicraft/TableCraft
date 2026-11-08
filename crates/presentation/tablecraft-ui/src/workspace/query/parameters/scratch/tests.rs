@@ -397,3 +397,140 @@ fn actual_object_roundtrip_rejects_old_inspection_after_restoring_the_same_sql_a
     assert!(!state.scratch_parameter_prompt_open());
     assert_eq!(state.query_data.as_ref().unwrap().rows.as_ptr(), rows);
 }
+
+#[test]
+fn update_handoff_requires_final_confirmation_and_moves_original_sql_and_inputs() {
+    let sql =
+        "PARAMETERS [First] Text, [Second] Long; UPDATE Items SET Name=[First] WHERE Id=[Second]";
+    let mut harness = open(sql, vec![spec("First", "text"), spec("Second", "int32")]);
+    let original_sql = harness
+        .state()
+        .0
+        .query_parameters
+        .as_ref()
+        .unwrap()
+        .sql
+        .as_ptr();
+    let rows = harness.state().0.query_data.as_ref().unwrap().rows.as_ptr();
+    assert!(
+        !harness
+            .state_mut()
+            .0
+            .begin_query_update_review(INSPECTION, sql, 42, Vec::new())
+    );
+    harness
+        .get_by_role_and_label(Role::TextInput, "First")
+        .focus();
+    harness.run_steps(1);
+    harness.event(egui::Event::Text("'); DELETE FROM Items; --".into()));
+    harness.key_press(Key::Enter);
+    harness.run_steps(2);
+    assert!(harness.state().1.is_empty());
+
+    let Phase::Prompt(body) = &harness.state().0.query_parameters.as_ref().unwrap().phase else {
+        panic!("the second parameter must still need confirmation");
+    };
+    let unconfirmed = copy_inputs(&body.draft).unwrap();
+    assert!(
+        !harness
+            .state_mut()
+            .0
+            .begin_query_update_review(INSPECTION, sql, 42, unconfirmed)
+    );
+    harness
+        .get_by_role_and_label(Role::TextInput, "Second")
+        .focus();
+    harness.run_steps(1);
+    harness.event(egui::Event::Text("7".into()));
+    harness.key_press(Key::Enter);
+    harness.run_steps(2);
+    let [
+        Action::RunParameterizedQuery {
+            inspection_id: INSPECTION,
+            parameters,
+        },
+    ] = harness.state().1.as_slice()
+    else {
+        panic!("only the final prompt confirmation dispatches inputs");
+    };
+    let confirmed = copy_inputs(parameters).unwrap();
+    let Phase::Ready(body) = &harness.state().0.query_parameters.as_ref().unwrap().phase else {
+        panic!("confirmed inputs must remain privately owned");
+    };
+    let original_inputs = body.draft.as_ptr();
+    let original_text = body.draft[0].text.as_ptr();
+    let before = harness.state().0.object_bytes().unwrap();
+    let origin = harness
+        .state_mut()
+        .0
+        .take_query_update_origin(INSPECTION, sql, &confirmed)
+        .unwrap();
+    assert_eq!(origin.sql.as_ptr(), original_sql);
+    assert_eq!(origin.parameters.as_ptr(), original_inputs);
+    assert_eq!(origin.parameters[0].text.as_ptr(), original_text);
+    assert_eq!(origin.parameters, confirmed);
+    assert_eq!(origin.parameters[0].text, "'); DELETE FROM Items; --");
+    assert_eq!(origin.parameters[1].text, "7");
+    assert!(harness.state().0.query_parameters.is_none());
+    assert!(harness.state().0.object_bytes().unwrap() < before);
+    assert_previous(&harness, rows, sql);
+}
+
+#[test]
+fn update_handoff_rejects_changed_confirmed_inputs_and_stale_prompt_identity() {
+    let sql = "PARAMETERS [Name] Text; UPDATE Items SET Name=[Name]";
+    let mut harness = open(sql, vec![spec("Name", "text")]);
+    let rows = harness.state().0.query_data.as_ref().unwrap().rows.as_ptr();
+    harness
+        .get_by_role_and_label(Role::TextInput, "Name")
+        .focus();
+    harness.run_steps(1);
+    harness.event(egui::Event::Text("confirmed".into()));
+    harness.key_press(Key::Enter);
+    harness.run_steps(2);
+    let [Action::RunParameterizedQuery { parameters, .. }] = harness.state().1.as_slice() else {
+        panic!("expected the confirmed parameter action");
+    };
+    let confirmed = copy_inputs(parameters).unwrap();
+    for change in 0..5 {
+        let mut altered = copy_inputs(&confirmed).unwrap();
+        match change {
+            0 => altered[0].name = "Other".into(),
+            1 => altered[0].kind = "int32".into(),
+            2 => altered[0].text.push('!'),
+            3 => altered[0].is_null = true,
+            4 => altered.clear(),
+            _ => unreachable!(),
+        }
+        assert!(
+            !harness
+                .state_mut()
+                .0
+                .begin_query_update_review(INSPECTION, sql, 42, altered)
+        );
+        assert!(harness.state().0.query_parameters.is_some());
+        assert!(!harness.state().0.query_update_dialog_open());
+        assert_previous(&harness, rows, sql);
+    }
+    assert!(!harness.state_mut().0.begin_query_update_review(
+        INSPECTION + 1,
+        sql,
+        42,
+        copy_inputs(&confirmed).unwrap(),
+    ));
+    assert!(!harness.state_mut().0.begin_query_update_review(
+        INSPECTION,
+        sql,
+        0,
+        copy_inputs(&confirmed).unwrap(),
+    ));
+    harness.state_mut().0.bump_focus_publication();
+    assert!(
+        !harness
+            .state_mut()
+            .0
+            .begin_query_update_review(INSPECTION, sql, 42, confirmed)
+    );
+    assert!(!harness.state().0.query_update_dialog_open());
+    assert_previous(&harness, rows, sql);
+}

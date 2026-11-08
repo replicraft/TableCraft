@@ -2315,3 +2315,26 @@ Clippy, formatting, links and dependency guards passed. Four normal-host Options
 and saved-parameter frames were rendered offscreen in light/dark at 1280×820, 1×
 on macOS with Windows chrome emulation; representative light Options/dark prompt
 frames were inspected. No native app windows were opened.
+
+## Declared UPDATE parameters — 8 November 2026
+
+The existing scratch parameter prompts now precede qualified UPDATE review.
+No prompt or warning layout was redesigned. The retained Microsoft parameter
+reference (`ac-enterparametervaluedialogbox.jpg`, 233 × 123 pixels) was reopened;
+its original Access build, platform and display scale remain unknown. No matching
+Access UPDATE warning capture is available, so that warning remains an adaptation.
+
+Two current offscreen frames in the ignored
+`.cache/ui-previews/query-update-parameters-20261108/` directory were rendered on
+macOS ARM64 using the normal host with Windows input emulation:
+
+| Surface | Locale/theme | Logical size | Scale |
+| --- | --- | --- | --- |
+| Scratch parameter prompt | en-US/light | 1280 × 820 | 1× |
+| Reviewed UPDATE warning | de/dark | 900 × 580 | 1.25× |
+
+The shared UI gate passes 505 tests, including prompt confirmation, original
+allocation transfer, changed-input/stale-source refusals and all existing preview
+scenes. Desktop passes 132 tests, including a real parameterized UPDATE through
+prompt, confirmation, save and fresh reopen. These are headless observations;
+no native window was launched and no Windows/Access comparison is claimed.

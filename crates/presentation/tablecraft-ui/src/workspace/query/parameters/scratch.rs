@@ -64,21 +64,21 @@ impl State {
         &mut self,
         inspection_id: u64,
         sql: &str,
+        inputs: &Vec<ParameterInput>,
     ) -> Option<crate::workspace::query::actions::update::Origin> {
-        let session = self.query_parameters.as_ref()?;
-        if session.inspection_id != inspection_id
-            || session.sql != sql
-            || !session.current(self)
-            || !matches!(session.phase, Phase::Inspecting)
-        {
+        if !self.can_run_parameterized_query(inspection_id, sql, inputs) {
             return None;
         }
         let session = self.query_parameters.take()?;
+        let Phase::Ready(body) = session.phase else {
+            unreachable!("checked confirmed scratch parameters")
+        };
         Some(crate::workspace::query::actions::update::Origin {
             sql: session.sql,
             sql_revision: session.sql_revision,
             object: session.object,
             publication: session.publication,
+            parameters: body.draft,
         })
     }
 

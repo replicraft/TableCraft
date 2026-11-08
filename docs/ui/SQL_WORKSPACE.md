@@ -19,8 +19,8 @@ saved-definition editing remain unfinished.
 
 ## Reviewed local UPDATE
 
-Run inspects the actual statement, then requests a source-bound runtime UPDATE
-review. Desktop does not parse SQL or reinterpret a failed read as a write. The
+Run inspects the actual statement, acquires any declared typed parameters, then
+requests a source-bound runtime UPDATE review. Desktop does not parse SQL or reinterpret a failed read as a write. The
 shared confirmation displays the actual target table, matched records and records
 with effective changes. Yes applies the reviewed operation; No/Escape before
 acceptance drops the lease-free review and preserves prior results, SQL and selection.
@@ -30,8 +30,9 @@ documents explicit confirmation and the absence of Undo; no corresponding local
 warning capture is retained, so the dialog layout remains an adaptation.
 
 The original scratch inspection's SQL allocation, edit revision, tab/document
-identity and publication witness transfer into the action session. They are not
-recaptured from mutable UI state. Stale/duplicate callbacks cannot replace an
+identity, publication witness and fully confirmed parameter inputs transfer into
+the action session. They are not recaptured from mutable UI state. An incomplete
+prompt or altered input envelope cannot enter review. Stale/duplicate callbacks cannot replace an
 accepted review. After the save worker accepts the opaque runtime capability,
 Cancel/Escape requests cancellation rather than dropping ownership. Retained
 failures use the existing Recover/Release controls; all terminal outcomes require
@@ -44,7 +45,7 @@ gain native row handles. Synthetic preview scenes use the same controls but only
 canned DTOs and explicit mock outcomes; no database capability is present.
 
 The existing native writer qualifications still apply. This does not enable older
-ACE writers, encrypted/package editing, declared action parameters, joined/external
+ACE writers, encrypted/package editing, joined/external
 targets or additional expression contexts. Unsupported action/DDL kinds stop after
 inspection without a write; unsupported UPDATE shapes fail before confirmation.
 Evaluated LIKE still needs a supplied mode and is not enabled by this UI route.
@@ -67,7 +68,9 @@ SELECT [Minimum] AS [Echo];
 Input is literal data. VALUE declarations require a chosen concrete carrier;
 NULL is separate from text. Type, length and precision validation remains owned
 by runtime/query services. Unknown column names do not invent prompts, and this
-flow does not add transitive named-query parameter propagation or action SQL.
+flow does not add transitive named-query parameter propagation. Qualified local
+UPDATE uses these same prompts before its separate Yes/No confirmation; other
+action kinds retain their explicit refusal.
 
 Acquisition captures the exact SQL tab, document, edit revision, text and focus
 publication. SQL A→B→A changes, tab/source replacement and stale replies cannot

@@ -49,10 +49,16 @@ impl Preview {
         {
             return None;
         }
+        let Some(Action::RunParameterizedQuery { parameters, .. }) = self
+            .state
+            .set_query_parameter_details(inspection, &sql, Vec::new())
+        else {
+            return None;
+        };
         let request = self.request();
         if !self
             .state
-            .begin_query_update_review(inspection, &sql, request)
+            .begin_query_update_review(inspection, &sql, request, parameters)
         {
             return None;
         }

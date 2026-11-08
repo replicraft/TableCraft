@@ -1,5 +1,32 @@
 # Implementation status
 
+## Declared UPDATE parameters — 8 November 2026
+
+Scratch UPDATE now uses the existing typed prompts before native review and
+Yes/No confirmation. Shared UI transfers the original SQL/tab/document/publication
+witness and confirmed inputs; altered or incomplete prompts cannot enter review.
+Desktop routes literal envelopes to runtime. Runtime validates source identity,
+input limits and declared constraints before native capture/scanning, using one
+cumulative presentation allowance. Save consumes the sealed native plan without
+reevaluating SQL or parameters. Prompt cancellation preserves previous results.
+
+The neutral planner preserves original-row SET semantics, field-first resolution,
+Scalar/VALUE provenance and actual stored-field collation. Legacy APIs without an
+input contract continue to refuse declarations. Existing writer/profile,
+encryption, external-target and expression-context restrictions remain explicit.
+Native saved action definitions, append/DELETE and broader schema editing are
+still separate roadmap work.
+
+The final gates pass 1,807 query tests, 172 runtime tests plus its diagnostic
+integration test, 113 Access adapter units, 505 shared UI tests and 132 desktop
+tests. New native tests check complete independent AFTER bytes and save/reopen;
+malformed inputs fail before unreadable DATA. Strict affected-package lint,
+minimal-feature checks and Windows/Linux shared-library compilation pass, along
+with strict lint of FreeBSD's unsupported runtime branch. These checks do not
+establish native Windows/Access execution parity. Initial failures and corrected
+runs remain in ignored logs. Headless visual evidence is recorded in the
+[presentation preview](ui/PRESENTATION_PREVIEW.md#declared-update-parameters--8-november-2026).
+
 ## GUI-reviewed SQL UPDATE — 8 November 2026
 
 Scratch Run now uses runtime statement classification: retrieval retains its

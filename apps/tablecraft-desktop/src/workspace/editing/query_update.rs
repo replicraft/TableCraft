@@ -1,33 +1,38 @@
 //! Route inspected UPDATE reviews and consume only runtime-issued save authority.
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
+use crate::workspace::query_parameters::runtime_inputs;
 use std::sync::Arc;
 use tablecraft_runtime::{
     Command, InspectedQuery, QueryUpdateReview as RuntimeReview, ReviewedQueryUpdate, journal_path,
 };
-use tablecraft_ui::QueryUpdateReview;
+use tablecraft_ui::{ParameterInput, QueryUpdateReview};
 
 impl Desktop {
-    pub(in crate::workspace) fn begin_query_update_from_inspection(
+    pub(in crate::workspace) fn begin_query_update_from_parameters(
         &mut self,
         inspection_id: u64,
         target: Arc<InspectedQuery>,
+        parameters: Vec<ParameterInput>,
     ) {
         if self.editing.has_save()
             || !self
                 .state
-                .query_parameter_inspection_current(inspection_id, target.sql())
+                .can_run_parameterized_query(inspection_id, target.sql(), &parameters)
         {
             return;
         }
         self.editing.clear_review();
         let request_id = self.worker.request(Command::ReviewQueryUpdate {
             target: Arc::clone(&target),
+            parameters: runtime_inputs(&parameters),
         });
         self.generation = request_id;
-        if !self
-            .state
-            .begin_query_update_review(inspection_id, target.sql(), request_id)
-        {
+        if !self.state.begin_query_update_review(
+            inspection_id,
+            target.sql(),
+            request_id,
+            parameters,
+        ) {
             self.worker.cancel();
             self.clear_query_parameters();
             self.pending = PendingOperation::Read;

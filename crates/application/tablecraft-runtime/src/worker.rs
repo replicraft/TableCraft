@@ -263,10 +263,10 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .run_query(target, parameters, clock.as_ref(), cancelled),
             #[cfg(feature = "offline-edit")]
-            Command::ReviewQueryUpdate { target } => document
+            Command::ReviewQueryUpdate { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_query_update(target, cancelled),
+                .review_query_update(target, parameters, cancelled),
             Command::InspectSavedQuery { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?

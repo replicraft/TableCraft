@@ -108,10 +108,6 @@ impl Desktop {
         }
 
         match target.operation() {
-            QueryOperation::Update => {
-                self.begin_query_update_from_inspection(request_id, target);
-                return;
-            }
             QueryOperation::Unsupported => {
                 self.state.fail_query_parameter_inspection(request_id);
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
@@ -119,7 +115,7 @@ impl Desktop {
                 self.pending = PendingOperation::Read;
                 return;
             }
-            QueryOperation::Read => {}
+            QueryOperation::Read | QueryOperation::Update => {}
         }
 
         let specs = parameters
@@ -183,19 +179,19 @@ impl Desktop {
         }
 
         let target = Arc::clone(&inspected.target);
+        if target.operation() == QueryOperation::Update {
+            self.begin_query_update_from_parameters(inspection_id, target, parameters);
+            return;
+        }
+        if target.operation() != QueryOperation::Read {
+            return;
+        }
+
         let Some(sql) = self.state.capture_query_sql(target.sql()) else {
             return;
         };
 
-        let inputs = parameters
-            .iter()
-            .map(|input| RuntimeInput {
-                name: input.name.clone(),
-                kind: input.kind.clone(),
-                text: input.text.clone(),
-                is_null: input.is_null,
-            })
-            .collect();
+        let inputs = runtime_inputs(&parameters);
 
         let request_id = self.worker.request(Command::RunQuery {
             target,
@@ -219,6 +215,18 @@ impl Desktop {
         self.state.busy = true;
         self.state.error = None;
     }
+}
+
+pub(in crate::workspace) fn runtime_inputs(parameters: &[ParameterInput]) -> Vec<RuntimeInput> {
+    parameters
+        .iter()
+        .map(|input| RuntimeInput {
+            name: input.name.clone(),
+            kind: input.kind.clone(),
+            text: input.text.clone(),
+            is_null: input.is_null,
+        })
+        .collect()
 }
 
 #[cfg(test)]

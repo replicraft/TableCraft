@@ -84,7 +84,7 @@ the binder and complete original-row cells, supplying the existing resolver to
 WHERE and SET evaluation. Existing shared-pool and split-pool APIs retain their
 policy-free defaults and charge order. Scalar DB contracts stay query-neutral.
 
-The Access `plan_recoverable_batch_update_with_comparison` consumer derives these
+The Access `plan_recoverable_batch_update_with_options` consumer derives these
 identities from actual native column declarations and aligns by field name and
 carrier to the real scalar projection. Native schema capture and alignment spend
 native allowance; validation and query evaluation spend query allowance. Supplied
@@ -110,9 +110,17 @@ same validation as retrieval. Parameter text is never parsed as SQL.
 Binding and parameter validation precede row evaluation. Every WHERE and SET
 expression still uses the original row, and the backend finish occurs only after
 all rows succeed. Parameter comparison and text validation consume query work
-and observe cancellation. This library capability does not yet enable action
-parameters in the native adapter, runtime review command or desktop prompt flow;
-those consumers continue to refuse them until their source-bound handoff is wired.
+and observe cancellation. The Access consumer accepts `NativeUpdateOptions`,
+derives stored-field policies itself and supplies the explicit typed bindings to
+the neutral planner. Legacy planners without a parameter input contract still
+refuse declarations.
+
+The runtime validates literal envelopes and declared constraints from immutable
+inspected SQL before native reads. Desktop routes confirmed scratch prompts into
+that review; the original SQL and confirmed input allocations move into its
+source-bound UI witness. Save consumes the sealed native plan without SQL or
+parameter reevaluation. Prompt cancellation retains previous results and creates
+no journal.
 
 ## Retained offline session boundary
 

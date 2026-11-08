@@ -673,12 +673,15 @@ expanding native save support beyond macOS, Linux and Windows. A FreeBSD library
 compile checks the unsupported branch; it does not qualify FreeBSD native editing.
 
 With `offline-edit`, `ReviewQueryUpdate` accepts an opaque `InspectedQuery` from
-this exact open document. It rechecks both the private source identity and the
+this exact open document and explicit literal `ParameterInput` envelopes. It rechecks both the private source identity and the
 document revision before parsing the immutable SQL. The current local batch
 UPDATE shape uses the existing native journal editor and original-row query
 planner: every SET expression is evaluated before one consuming native finish.
-Declared action parameters, joined/external targets and unsupported expression
-contexts remain refused rather than being substituted or ignored. Evaluated LIKE
+Declared parameters use the shared strict input service before native image
+capture or source construction. Envelope checks, typed conversion and review
+presentation share one cumulative presentation allowance. Joined/external targets
+and unsupported expression contexts remain refused rather than being substituted
+or ignored. Evaluated LIKE
 still requires a supplied wildcard mode and is refused in this action route;
 it does not silently assume ANSI-89 for an ANSI-92 database.
 
@@ -1337,7 +1340,8 @@ parameters through shared UI staging, then execute the exact retained target.
 Parameterless SQL continues from the same explicit Run after inert inspection.
 Desktop owns DTO/request routing and the runtime target's lifetime; query parsing,
 parameter conversion and execution remain in runtime/query services. The
-classified UPDATE route separately uses reviewed action confirmation; other action
+classified UPDATE route uses the same confirmed parameter acquisition before
+reviewed action confirmation; only the sealed plan survives into save. Other action
 kinds and persisted query definitions remain unsupported. See the
 [scratch workspace contract](../ui/SQL_WORKSPACE.md#declared-scratch-parameters).
 

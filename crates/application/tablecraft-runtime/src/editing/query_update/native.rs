@@ -1,11 +1,12 @@
 //! Native lease-free review retains one checked plan and its source invalidation token.
 use super::{QueryUpdateReview, QueryUpdateTarget, ReviewedQueryUpdate};
 use crate::{
-    Error, InspectedQuery, Response,
+    Error, InspectedQuery, ParameterInput, Response,
     controls::{SCOPE, check, comparison_budget, update_query_budget, update_review_budget},
     display::Presentation,
     document::Document,
     editing::{EditError, ids::issue_id},
+    query::parameters,
 };
 use std::{
     cell::RefCell,
@@ -26,14 +27,17 @@ pub(in crate::editing) struct State {
 pub(super) fn review(
     document: &mut Document,
     target: &InspectedQuery,
+    inputs: &[ParameterInput],
+    output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     let mut query_work = update_query_budget();
     query_work.charge(Resource::Bytes, target.sql().len() as u64)?;
     query_work.charge(Resource::Steps, target.sql().len() as u64)?;
     let parsed = parse_query(target.sql(), ParseLimits::default())?;
-    let table =
-        sql::local_batch_update_table(parsed.query()).map_err(sql::RecoverableError::Shape)?;
+    let table = sql::local_batch_update_table(parsed.query(), true)
+        .map_err(sql::RecoverableError::Shape)?;
+    let bindings = parameters::bindings(parsed.query(), inputs, output)?;
     if !document.source.editable_native() {
         return Err(EditError::ReadOnlySource.into());
     }
@@ -52,19 +56,21 @@ pub(super) fn review(
         let mut native = native_pool
             .try_borrow_mut()
             .map_err(|_| Error::Native(InspectError::Unsupported))?;
-        sql::plan_recoverable_batch_update_with_comparison(
+        sql::plan_recoverable_batch_update_with_options(
             image,
             parsed.query(),
             &mut native,
             &mut query_work,
-            resolver.default_collation(),
-            &resolver,
+            sql::NativeUpdateOptions {
+                parameters: &bindings,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
             cancelled,
         )?
     };
     check(cancelled)?;
 
-    let mut output = Presentation::new(cancelled);
     let review_table = output.text(table)?;
     let capability_table = output.text(table)?;
     let matched_rows = plan.matched_rows();

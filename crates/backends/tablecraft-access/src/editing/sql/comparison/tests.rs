@@ -4,7 +4,7 @@ use crate::{
     NativeCollationResolver,
     editing::{
         NativeEditError,
-        sql::{RecoverableError, plan_recoverable_batch_update_with_comparison},
+        sql::{NativeUpdateOptions, RecoverableError, plan_recoverable_batch_update_with_options},
     },
 };
 use std::{cell::RefCell, io::Cursor};
@@ -46,13 +46,16 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
             ParseLimits::default(),
         )
         .unwrap();
-        let plan = plan_recoverable_batch_update_with_comparison(
+        let plan = plan_recoverable_batch_update_with_options(
             image(&before),
             parsed.query(),
             &mut budget(),
             &mut budget(),
-            resolver.default_collation(),
-            &resolver,
+            NativeUpdateOptions {
+                parameters: &[],
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
             &|| false,
         )
         .unwrap();
@@ -71,13 +74,16 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
         )
         .unwrap();
         assert!(matches!(
-            plan_recoverable_batch_update_with_comparison(
+            plan_recoverable_batch_update_with_options(
                 image(&before),
                 literal.query(),
                 &mut budget(),
                 &mut budget(),
-                resolver.default_collation(),
-                &resolver,
+                NativeUpdateOptions {
+                    parameters: &[],
+                    collation: resolver.default_collation(),
+                    resolver: &resolver
+                },
                 &|| false,
             ),
             Err(RecoverableError::Plan(UpdateError::Query(
@@ -146,13 +152,16 @@ fn native_metadata_refusal_cannot_consume_or_refill_the_independent_query_allowa
     .unwrap();
     for cancelled in [false, true] {
         let mut query = budget();
-        let result = plan_recoverable_batch_update_with_comparison(
+        let result = plan_recoverable_batch_update_with_options(
             image(&case.before),
             parsed.query(),
             &mut ResourceBudget::new(0, 0, 0),
             &mut query,
-            resolver.default_collation(),
-            &resolver,
+            NativeUpdateOptions {
+                parameters: &[],
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
             &|| cancelled,
         );
         if cancelled {
@@ -169,4 +178,60 @@ fn native_metadata_refusal_cannot_consume_or_refill_the_independent_query_allowa
         }
         assert_eq!(query, budget());
     }
+}
+
+#[test]
+fn explicit_native_parameter_context_preserves_legacy_declaration_refusal() {
+    let before = tablecraft_testkit::fixtures::access::mutation_fixture::database();
+    let expected = tablecraft_testkit::fixtures::access::mutation_fixture::with_rows(&[
+        (1, 10),
+        (2, 25),
+        (3, 30),
+    ]);
+    let parsed = parse_query(
+        "PARAMETERS replacement LONG, selected LONG; UPDATE Items SET Score=replacement WHERE Id=selected",
+        ParseLimits::default(),
+    ).unwrap();
+    assert!(matches!(
+        crate::editing::sql::local_batch_update_table(parsed.query(), false),
+        Err(QueryError::Unsupported)
+    ));
+    assert!(matches!(
+        crate::editing::sql::plan_recoverable_batch_update(
+            image(&before),
+            parsed.query(),
+            &mut budget(),
+            None,
+            &|| false,
+        ),
+        Err(RecoverableError::Shape(QueryError::Unsupported))
+    ));
+    let comparison_pool = RefCell::new(budget());
+    let resolver = NativeCollationResolver::new_deferred_default(
+        NativeSortOrder::from_native_bytes([9, 4, 0, 1]),
+        &comparison_pool,
+        &|| false,
+    )
+    .unwrap();
+    let parameters = [
+        ("replacement", tablecraft_core::values::Value::Int32(25)),
+        ("selected", tablecraft_core::values::Value::Int32(2)),
+    ];
+    let plan = plan_recoverable_batch_update_with_options(
+        image(&before),
+        parsed.query(),
+        &mut budget(),
+        &mut budget(),
+        NativeUpdateOptions {
+            parameters: &parameters,
+            collation: resolver.default_collation(),
+            resolver: &resolver,
+        },
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(plan.matched_rows(), 1);
+    assert_eq!(plan.backend().changed_rows(), 1);
+    assert_eq!(plan.backend().before_bytes(), before);
+    assert_eq!(plan.backend().after_bytes(), expected);
 }

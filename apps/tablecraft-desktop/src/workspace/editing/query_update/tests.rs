@@ -179,9 +179,8 @@ fn stale_source_apply_retains_resources_until_explicit_release_and_acknowledgmen
 }
 
 #[test]
-fn declared_update_parameters_and_unsupported_actions_never_open_value_prompts_or_write() {
+fn unsupported_actions_never_open_value_prompts_or_write() {
     for sql in [
-        "PARAMETERS [Value] LONG; UPDATE Items SET Score=[Value] WHERE Id=1",
         "DELETE FROM Items WHERE Id=1",
         "INSERT INTO Items (Id,Score) VALUES (4,40)",
     ] {
@@ -234,4 +233,78 @@ fn declared_update_parameters_and_unsupported_actions_never_open_value_prompts_o
             harness.run_steps(2);
         }
     }
+}
+
+#[test]
+fn declared_update_prompts_precede_review_and_save_the_confirmed_values_once() {
+    let (_directory, path, original, mut harness) = opened();
+    let sql = "PARAMETERS [Increment] LONG, [Chosen] LONG; UPDATE Items SET Score=Score+[Increment] WHERE Id=[Chosen]";
+    run(&mut harness, sql);
+    assert!(harness.state().query_parameters.is_some());
+    assert!(harness.state().editing.query_update_review.is_none());
+    assert!(!harness.state().editing.has_save());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!journal_path(&path).exists());
+
+    for (name, value) in [("Increment", "7"), ("Chosen", "2")] {
+        harness.get_by_role_and_label(Role::TextInput, name).focus();
+        harness.run_steps(1);
+        harness.event(egui::Event::Text(value.into()));
+        harness.run_steps(1);
+        harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .click_accesskit();
+        harness.run_steps(2);
+    }
+    finish_reads(&mut harness);
+    assert!(harness.state().query_parameters.is_none());
+    assert!(harness.state().editing.query_update_review.is_some());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99"
+    );
+
+    harness
+        .get_by_role_and_label(Role::Button, "Yes")
+        .click_accesskit();
+    harness.run_steps(1);
+    let report = finish_save(&mut harness);
+    assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
+        if receipt.matched_rows == Some(1) && receipt.changed_rows == Some(1)));
+    harness
+        .get_by_role_and_label(Role::Button, "Close")
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.sql, sql);
+    assert!(harness.state().state.query_data.is_none());
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        mutation_fixture::with_rows(&[(1, 10), (2, 27), (3, 30)])
+    );
+    assert!(!journal_path(&path).exists());
+}
+
+#[test]
+fn cancelling_an_update_parameter_prompt_preserves_results_and_never_reviews() {
+    let (_directory, path, original, mut harness) = opened();
+    run(
+        &mut harness,
+        "PARAMETERS [Value] LONG; UPDATE Items SET Score=[Value] WHERE Id=1",
+    );
+    assert!(harness.state().query_parameters.is_some());
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(harness.state().query_parameters.is_none());
+    assert!(harness.state().editing.query_update_review.is_none());
+    assert!(!harness.state().editing.has_save());
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!journal_path(&path).exists());
 }
