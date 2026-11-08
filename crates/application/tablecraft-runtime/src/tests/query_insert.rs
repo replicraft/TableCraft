@@ -44,7 +44,7 @@ fn review(
     (review, capability)
 }
 
-fn save(capability: ReviewedQueryInsert, bundle: std::path::PathBuf) {
+fn save(capability: ReviewedQueryInsert, bundle: std::path::PathBuf, count: usize) {
     let saves = SaveWorker::new(|| {});
     let id = saves.start_query_insert(capability, bundle).unwrap();
     let report = terminal(&saves);
@@ -52,7 +52,7 @@ fn save(capability: ReviewedQueryInsert, bundle: std::path::PathBuf) {
         panic!("expected native SQL INSERT save: {report:?}");
     };
     assert_eq!(receipt.matched_rows, None);
-    assert_eq!(receipt.changed_rows, Some(1));
+    assert_eq!(receipt.changed_rows, Some(count));
     assert!(saves.acknowledge(id));
 }
 
@@ -90,7 +90,7 @@ fn omitted_default_and_explicit_null_remain_distinct_through_native_save_and_reo
         .unwrap()
         .release()
         .unwrap();
-        save(capability, directory.path().join("insert.journal"));
+        save(capability, directory.path().join("insert.journal"), 1);
         assert!(
             std::fs::read(&path).unwrap() == expected,
             "committed INSERT differs from independent image"
@@ -137,42 +137,76 @@ impl Clock for OnceClock {
 }
 
 #[test]
-fn needed_clock_is_sampled_once_at_review_and_never_during_save() {
-    let original = fixtures::clock_source();
-    let expected = fixtures::clock_inserted(&original, 24, 0.5_f64.to_bits());
-    let directory = tempfile::tempdir().unwrap();
-    let path = directory.path().join("clock.accdb");
-    std::fs::write(&path, &original).unwrap();
-    let clock = Arc::new(OnceClock {
-        calls: AtomicUsize::new(0),
-    });
-    let worker = crate::Worker::with_query_clock(|| {}, clock.clone());
-    let Response::Opened {
-        document_revision, ..
-    } = request(&worker, open(&path, "")).unwrap()
-    else {
-        panic!("expected document");
-    };
-    let sql = "PARAMETERS new_id LONG; INSERT INTO Items (Id) VALUES (new_id)";
-    let (target, _) = inspect(&worker, document_revision, sql);
-    assert_eq!(clock.calls.load(Ordering::Relaxed), 0);
-    let Response::QueryInsertReviewed { capability, .. } = request(
-        &worker,
-        Command::ReviewQueryInsert {
-            target,
-            parameters: vec![input("24")],
-        },
-    )
-    .unwrap() else {
-        panic!("expected captured-clock INSERT");
-    };
-    assert_eq!(clock.calls.load(Ordering::Relaxed), 1);
-    save(capability, directory.path().join("clock.journal"));
-    assert_eq!(clock.calls.load(Ordering::Relaxed), 1);
-    assert!(
-        std::fs::read(path).unwrap() == expected,
-        "retained clock INSERT differs from independent image"
-    );
+fn needed_clock_is_sampled_once_for_values_or_a_complete_select_batch() {
+    for (sql, count) in [
+        (
+            "PARAMETERS new_id LONG; INSERT INTO Items (Id) VALUES (new_id)",
+            1,
+        ),
+        (
+            "PARAMETERS new_id LONG; INSERT INTO Items (Id) \
+             SELECT new_id FROM Items UNION ALL SELECT new_id+1 FROM Items",
+            2,
+        ),
+        (
+            "PARAMETERS new_id LONG; INSERT INTO Items (Id) \
+             SELECT new_id FROM Items WHERE Id<0",
+            0,
+        ),
+    ] {
+        let original = fixtures::clock_source();
+        let rows = (0..count)
+            .map(|offset| (24 + offset as i32, Some(0.5_f64.to_bits())))
+            .collect::<Vec<_>>();
+        let expected = fixtures::clock_inserted_rows(&original, &rows);
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clock.accdb");
+        std::fs::write(&path, &original).unwrap();
+        let clock = Arc::new(OnceClock {
+            calls: AtomicUsize::new(0),
+        });
+        let worker = crate::Worker::with_query_clock(|| {}, clock.clone());
+        let Response::Opened {
+            document_revision, ..
+        } = request(&worker, open(&path, "")).unwrap()
+        else {
+            panic!("expected document");
+        };
+        let (target, _) = inspect(&worker, document_revision, sql);
+        assert_eq!(clock.calls.load(Ordering::Relaxed), 0);
+        let Response::QueryInsertReviewed { review, capability } = request(
+            &worker,
+            Command::ReviewQueryInsert {
+                target,
+                parameters: vec![input("24")],
+            },
+        )
+        .unwrap() else {
+            panic!("expected reviewed INSERT");
+        };
+        assert_eq!(review.inserted_rows, count);
+        let reads = usize::from(count != 0);
+        assert_eq!(clock.calls.load(Ordering::Relaxed), reads);
+        assert!(std::fs::read(&path).unwrap() == original);
+
+        save(capability, directory.path().join("clock.journal"), count);
+        assert_eq!(clock.calls.load(Ordering::Relaxed), reads);
+        assert!(
+            std::fs::read(&path).unwrap() == expected,
+            "retained clock INSERT differs from independent image"
+        );
+        request(&worker, open(&path, "")).unwrap();
+        let Response::Data { rows, .. } = request(
+            &worker,
+            Command::Query {
+                sql: "SELECT Count(*) AS Records FROM Items".into(),
+            },
+        )
+        .unwrap() else {
+            panic!("expected freshly reopened membership");
+        };
+        assert_eq!(rows[0][0].text, (1 + count).to_string());
+    }
 }
 
 #[test]

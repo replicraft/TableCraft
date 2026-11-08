@@ -16,4 +16,4 @@ query-action-delete-confirmation = ¿Eliminar permanentemente estos registros re
 query-action-insert-title = Consulta de datos anexados
 query-action-insert-reviewing = Revisando la consulta de datos anexados…
 query-action-insert-inserted = Registros que se anexarán: { $count }
-query-action-insert-confirmation = ¿Anexar este registro revisado a la base de datos original?
+query-action-insert-confirmation = ¿Anexar los registros revisados a la base de datos original?

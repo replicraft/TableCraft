@@ -44,14 +44,14 @@ impl Clock for LocalClock {
 /// providers. Nested/named reads share them. A subsequent explicit run starts
 /// from the reviewed default seed, matching the existing CLI policy; this does
 /// not claim Access application-session Randomize/Rnd lifecycle compatibility.
-pub(super) struct Context<'a> {
+pub(crate) struct Context<'a> {
     clock: &'a dyn Clock,
     random: RndState,
     messages: EnglishErrorMessages,
 }
 
 impl<'a> Context<'a> {
-    pub(super) fn new(clock: &'a dyn Clock) -> Self {
+    pub(crate) fn new(clock: &'a dyn Clock) -> Self {
         Self {
             clock,
             random: RndState::default(),
@@ -59,7 +59,7 @@ impl<'a> Context<'a> {
         }
     }
 
-    pub(super) fn options(&self) -> ExecutionOptions<'_> {
+    pub(crate) fn options(&self) -> ExecutionOptions<'_> {
         ExecutionOptions {
             clock: Some(self.clock),
             random: Some(&self.random),

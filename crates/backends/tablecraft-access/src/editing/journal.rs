@@ -1,7 +1,7 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
 mod deleting;
 mod fitted;
-mod inserting;
+pub(in crate::editing) mod inserting;
 
 pub use inserting::{NativeJournalInsertPlan, NativeJournalInserter};
 mod fixed;

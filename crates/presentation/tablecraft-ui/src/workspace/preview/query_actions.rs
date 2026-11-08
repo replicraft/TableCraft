@@ -7,7 +7,10 @@ const UPDATE_SQL: &str =
     "UPDATE [Customers] SET [Balance] = [Balance] + 25 WHERE [City] = 'Madrid'";
 
 const DELETE_SQL: &str = "DELETE FROM [Customers] WHERE [City] = 'Madrid'";
-const INSERT_SQL: &str = "INSERT INTO [Customers] ([CustomerName],[City],[Balance]) VALUES ('New customer','Madrid',CCur(25))";
+const INSERT_SQL: &str = concat!(
+    "INSERT INTO [Customers] ([CustomerName],[City],[Balance]) ",
+    "SELECT [CustomerName],[City],[Balance] FROM [Prospects] WHERE [City] = 'Madrid'",
+);
 
 impl Preview {
     pub(super) fn prepare_query_action_scene(&mut self, scene: Scene) {
@@ -96,7 +99,7 @@ impl Preview {
                     matched_rows: 2,
                     deleted_rows: 2,
                 },
-                QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 1 },
+                QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
             },
         };
         self.state

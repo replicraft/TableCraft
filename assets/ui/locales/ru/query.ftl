@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = Запрос SQL
-query-help = Выполните поддерживаемый запрос чтения или проверьте поддерживаемый UPDATE, DELETE либо INSERT VALUES перед сохранением.
+query-help = Выполните поддерживаемое чтение; проверьте поддерживаемый UPDATE, DELETE или INSERT (VALUES/SELECT).
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Выполнить запрос
 query-empty = Выполните запрос для просмотра результатов.

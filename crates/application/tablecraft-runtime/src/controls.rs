@@ -9,8 +9,8 @@ mod action;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 pub(crate) use action::{
-    action_persistence_budget, action_proof_budget, action_query_budget, action_recovery_budget,
-    action_review_budget,
+    action_persistence_budget, action_proof_budget, action_query_budget, action_query_limits,
+    action_recovery_budget, action_review_budget,
 };
 
 use super::Error;

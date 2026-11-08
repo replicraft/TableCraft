@@ -1,8 +1,8 @@
 # Fresh qualification of reviewed native INSERTs
 
 This working query/engine/adapter boundary now supplies the runtime and desktop
-SQL INSERT VALUES workflow. Typed values are reviewed before an exclusive offline
-lease is acquired. The shared Append query warning requires explicit confirmation,
+SQL INSERT VALUES and qualified SELECT-append workflows. Inputs are reviewed
+before an exclusive offline lease is acquired. The shared Append query warning requires explicit confirmation,
 and save consumes the sealed candidate without reevaluating SQL or host inputs.
 Existing datasheet insertion and legacy CLI insertion remain separate consumers;
 their current restrictions are unchanged.
@@ -19,7 +19,8 @@ order. A later expression error cannot publish a partial row.
 VALUES binding has no input relation or row/identity source. Only explicitly
 declared, unqualified parameter names enter the existing closed expression
 profile. Conversion constructors remain the existing finite set; this does not
-enable Date/Now calls, UDFs, domains, dynamic Eval, subqueries or INSERT SELECT.
+enable Date/Now calls, UDFs, domains, dynamic Eval or subqueries in VALUES.
+SELECT append uses a separate retrieval route; it does not widen VALUES binding.
 SQL-looking parameter text is literal data. Destination field policy arrays are
 refused rather than applied as provenance to fresh literals/parameters; their
 comparisons use the explicit default provider.
@@ -37,6 +38,31 @@ metadata and selects complete or omission intent once. Query work pays shape,
 binding, evaluation and output vectors; native work pays metadata and finish.
 An optional host clock authorizes only needed source-qualified stored defaults,
 not explicit clock expressions. Invalid VALUES cannot reach that finish/provider.
+
+## Complete SELECT staging before native finish
+
+The separate `prepare_native_insert_select` adapter consumes a metadata-only
+`NativeJournalInserter` and returns a `PreparedNativeInsertSelect`. Actual target
+metadata and field mapping are established before source retrieval. It selects
+complete or omission handling once, without fallback; the omission finish can
+use the explicit default clock only for needed qualified defaults. See the
+[backend-neutral staging contract](../../query/INSERT_SELECT.md).
+
+Runtime supplies the original stable `NativeSource` and its existing query
+providers, database text comparison and LIKE policies. Retrieval, named-schema
+discovery and stored assignments share one cumulative query allowance. Native
+source callbacks borrow the same native allowance used for capture/metadata.
+Only after preparation has returned does consuming `finish` borrow that allowance
+for one native batch finish. No source scan runs while that mutable borrow is held.
+
+All required original retrieval work completes before assignment/native finish,
+including EOF, UNION promotion, sorting and eager errors. Self-append cannot read
+an inserted prefix. Supplied NULL remains supplied and omissions remain omitted
+for every row. Valid lossless Strings publish only at final stored Text assignment;
+non-storable states never collapse to NULL, zero or numeric error codes. A late
+failure publishes no appended prefix and never calls native finish. Empty
+retrieval still invokes complete native admission and can produce a zero-row plan.
+Native source, macro, relationship, index and generation gates remain unchanged.
 
 ## Five sealed native families
 
@@ -71,13 +97,14 @@ lease while waiting for review or confirmation.
 `ReviewQueryInsert` accepts the same open document's immutable `InspectedQuery`
 and literal typed parameter inputs. It validates source identity, document
 revision, input limits and declaration constraints before native capture. The
-current shape is one local VALUES row. INSERT SELECT, multiple VALUES tuples,
-external destinations and broader expression providers do not become supported
-through classification or parameter binding.
+parsed shape selects one local VALUES row or qualified SELECT append through
+separate routes. Multiple VALUES tuples, external destinations and broader action
+contexts do not become supported through classification or parameter binding.
 
 The worker's existing clock is supplied only for source-qualified needed stored
-Date/Now defaults during review. Complete supplied values, supplied NULL, empty
-requests and unneeded defaults do not sample it. The native source/declaration
+Date/Now defaults during native review finish. SELECT append finishes complete
+retrieval first; its explicit query providers retain their read-query context.
+Complete supplied values, supplied NULL, empty requests and unneeded defaults do not sample it. The native source/declaration
 checks still precede the at-most-once provider call. Its captured civil reading
 or exact absence remains in the original Clock-family intent; save and recovery
 use that input without another clock call. This does not establish native Access
@@ -87,9 +114,9 @@ The response separates `QueryInsertReview` facts (table, document revision,
 inserted rows and review ID) from the opaque `ReviewedQueryInsert` capability.
 INSERT has no matched-old-row count. Shared UI captures the expected Insert kind
 and confirmed SQL/parameter witness, then accepts only the corresponding typed
-`Insert { inserted_rows }` effect. The current VALUES profile requires one
-inserted record. A display DTO cannot construct a native plan or select another
-save operation.
+`Insert { inserted_rows }` effect. VALUES reports one record; SELECT append can
+report zero or multiple records without a presentation-imposed ceiling. A display
+DTO cannot construct a native plan or select another save operation.
 
 `SaveWorker::start_query_insert` preserves the exact selected native plan variant
 through fresh offline staging. The common action-save owner uses its INSERT
@@ -136,8 +163,10 @@ fixture/expectation runs remain in ignored verification logs.
 Current normal generated-field restrictions, required-program gates and
 [clock-profile limits](NORMAL_CLOCK_DEFAULTS.md) remain explicit. Microsoft’s
 [INSERT contract](https://support.microsoft.com/en-us/access/insert-into-statement)
-also describes explicit AutoNumber values and INSERT SELECT; this bounded route
-does not claim either merely because the syntax can be parsed. Current generated
+also describes explicit AutoNumber values; those remain outside the current
+supplied-generated-value profile. SELECT append now uses actual staged retrieval
+and native batch finish, rather than parser acceptance alone. Current generated
 field policies, wider clock request grammars and generated/default-clock
 composition stay within their existing native admission. Broader append query
-designer, saved-action and multirow SELECT behavior remain roadmap work.
+designer, saved-action persistence, target/expression contexts and remaining
+native-profile qualification remain roadmap work.

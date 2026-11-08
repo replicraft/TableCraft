@@ -16,4 +16,4 @@ query-action-delete-confirmation = Permanently delete these reviewed records fro
 query-action-insert-title = Append query
 query-action-insert-reviewing = Reviewing the append query…
 query-action-insert-inserted = Records to append: { $count }
-query-action-insert-confirmation = Append this reviewed record to the original database?
+query-action-insert-confirmation = Append the reviewed records to the original database?

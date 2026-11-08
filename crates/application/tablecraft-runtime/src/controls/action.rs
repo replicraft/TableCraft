@@ -2,6 +2,7 @@
 use super::{NATIVE_BYTES, NATIVE_ROWS, NATIVE_STEPS};
 use crate::{Error, document::SNAPSHOT_BYTES};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_query::QueryLimits;
 
 const QUERY_BYTES: u64 = 16 * 1024 * 1024;
 const QUERY_ROWS: u64 = 10_000;
@@ -38,7 +39,16 @@ pub(crate) fn action_review_budget(bytes: usize) -> Result<ResourceBudget, Error
 }
 
 pub(crate) fn action_query_budget() -> ResourceBudget {
-    ResourceBudget::new(QUERY_BYTES, QUERY_ROWS, QUERY_STEPS)
+    let limits = action_query_limits();
+    ResourceBudget::new(limits.bytes, limits.rows, limits.steps)
+}
+
+pub(crate) fn action_query_limits() -> QueryLimits {
+    QueryLimits {
+        bytes: QUERY_BYTES,
+        rows: QUERY_ROWS,
+        steps: QUERY_STEPS,
+    }
 }
 
 /// Fresh source equality, original binding and rebuilt-image proof. This pool

@@ -12,8 +12,9 @@ pub use deleting::{
 };
 #[cfg(feature = "journal")]
 pub use inserting::{
-    RecoverableInsertError, local_insert_table, plan_recoverable_insert,
-    plan_recoverable_insert_with_clock, plan_recoverable_insert_with_options,
+    PreparedNativeInsertSelect, RecoverableInsertError, local_insert_select_table,
+    local_insert_table, plan_recoverable_insert, plan_recoverable_insert_with_clock,
+    plan_recoverable_insert_with_options, prepare_native_insert_select,
 };
 
 #[cfg(feature = "journal")]

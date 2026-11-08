@@ -3,7 +3,7 @@
 The scratch SQL object separates the editable draft from the text that produced
 its displayed results. Explicit Run uses runtime-owned statement classification:
 retrieval uses the read query service, while qualified local UPDATE, DELETE and
-single-record INSERT VALUES enter a separate review and confirmation workflow.
+INSERT VALUES or SELECT append enter a separate review and confirmation workflow.
 Editing the draft, selecting a cached result view or switching object tabs does
 not execute SQL.
 
@@ -15,8 +15,8 @@ Those providers do not authorize writes, select database collation or turn
 display formatting into SQL conversion policy. Declared scratch parameters use
 the [shared runtime parameter service](../application/RUNTIME.md#scratch-query-parameter-service)
 and the same staged dialog controls as saved queries. Local UPDATE, DELETE and
-single-record INSERT VALUES use the reviewed action service described below.
-INSERT SELECT, broader action contexts, DDL and native saved-definition editing
+qualified INSERT VALUES/SELECT use the reviewed action service described below.
+Broader action contexts, DDL and native saved-definition editing
 remain unfinished.
 
 ## Reviewed local action queries
@@ -28,8 +28,8 @@ records and records with effective changes. DELETE confirmation displays matched
 records and the native plan's deleted-root count. DELETE removes whole records;
 it does not clear selected field values or erase retained payload bytes. The
 INSERT warning is labelled Append query and displays the native plan's inserted
-count, with no matched-old-row count. This SQL profile admits one VALUES row;
-its effect must describe exactly one inserted record.
+count, with no matched-old-row count. VALUES admits one record; qualified SELECT
+append can report zero or multiple records. The UI does not invent a batch limit.
 
 The shared `QueryActionReview` carries a typed UPDATE, DELETE or INSERT effect.
 The presentation owner captures the expected `QueryActionKind` when review begins
@@ -77,36 +77,43 @@ Existing native writer qualifications still apply. This does not enable older
 write profiles, encrypted/package editing, joined/external targets, cascades or
 additional expression contexts. Unsupported action/DDL kinds stop after
 inspection without a write; unsupported action shapes fail before confirmation.
-Evaluated LIKE still needs a supplied mode and is not enabled by this UI route.
+SELECT append uses the database query mode for LIKE where qualified; other action
+contexts retain their existing explicit mode restrictions.
 See the runtime contracts for
 [UPDATE](../application/RUNTIME.md#reviewed-sql-update-actions),
 [DELETE](../application/RUNTIME.md#reviewed-sql-delete-actions) and
 [INSERT](../application/RUNTIME.md#reviewed-sql-insert-actions).
 
-## INSERT VALUES presence and defaults
+## INSERT presence, retrieval and defaults
 
-The current append route accepts one local `INSERT INTO … VALUES (…)` statement.
-Named fields may reorder or omit columns; positional VALUES must cover every
-exposed field. Parameters remain literal typed inputs. Every supplied expression
-succeeds before a consuming native finish, and native declarations own carrier,
-default, generation and constraint decisions.
+Append accepts a single local `INSERT INTO … VALUES (…)` or a qualified
+`INSERT INTO … SELECT …`. VALUES keeps its closed expression profile; SELECT
+uses the existing read-query engine and its qualified providers, comparison,
+LIKE and named-source contracts. This is bounded append support, not general SQL
+or DDL. See [shared SELECT staging](../query/INSERT_SELECT.md).
 
-An omitted field retains omission intent. Supplied NULL and supplied empty Text
-remain distinct and do not request a stored default. The native planner may
-resolve a source-qualified constant default, nullable absence or Increment mode;
-a name such as Id or an omission by itself does not establish a generator.
-Current generated-field restrictions still reject supplied generated values or
-NULL. Microsoft's [INSERT contract](https://support.microsoft.com/en-us/access/insert-into-statement)
-also permits explicit AutoNumber values and multi-record SELECT append; those
-broader contracts are not supplied by this one-row GUI route.
+Named fields may reorder or omit columns; positional appends must cover every
+exposed field. Parameters remain literal typed inputs. Actual native target
+metadata is captured before retrieval. SELECT reads the complete original source
+under shared allowances, including self-append, and finishes required eager work
+before assignment and one native batch finish. Late errors cannot append a
+prefix; even an empty result must pass native admission.
 
-Needed, qualified Date/Now stored defaults use the runtime worker's existing
-clock during review. The native clock family retains its captured civil input;
-confirmation, save and recovery never resample it. Explicit Date/Now VALUES
-expressions remain outside this closed expression profile. Inspection and
-unneeded defaults do not sample time. Generated/default-clock composition and
-wider clock request grammars retain their existing restrictions. The retained
-reading is this review policy, not a claim of native Access clock timing parity.
+An omitted field retains omission intent for every row. Supplied NULL and supplied
+empty Text do not request a stored default. Native declarations own carriers,
+defaults, generation and constraints. Current generated-field restrictions still
+reject supplied generated values or NULL; Microsoft's
+[INSERT contract](https://support.microsoft.com/en-us/access/insert-into-statement)
+permits explicit AutoNumber values, but those are not supplied by these routes.
+
+Needed, qualified Date/Now stored defaults use the runtime worker's clock at
+native review finish, after complete SELECT retrieval. The default provider is
+read at most once for the batch; the native clock family retains that civil input.
+Confirmation, save and recovery never resample it or rerun SQL. Empty requests
+and unneeded defaults do not sample it. Explicit SELECT clock expressions keep
+their read-query context; explicit clock expressions in VALUES remain outside
+its closed profile. Generated/default-clock composition retains existing limits.
+This policy does not establish native Access clock timing parity.
 
 ## Declared scratch parameters
 
@@ -126,7 +133,7 @@ Input is literal data. VALUE declarations require a chosen concrete carrier;
 NULL is separate from text. Type, length and precision validation remains owned
 by runtime/query services. Unknown column names do not invent prompts, and this
 flow does not add transitive named-query parameter propagation. Qualified local
-UPDATE, DELETE and single-record INSERT VALUES use these same prompts before
+UPDATE, DELETE and qualified VALUES/SELECT INSERT use these same prompts before
 their separate Yes/No confirmation; unsupported action shapes retain their
 explicit refusal.
 

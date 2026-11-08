@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL query
-query-help = Run a supported read query, or review a supported UPDATE, DELETE, or INSERT VALUES before saving.
+query-help = Run supported reads; review supported UPDATE, DELETE or INSERT (VALUES/SELECT).
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Run query
 query-empty = Run a query to see its results.

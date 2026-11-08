@@ -1,8 +1,12 @@
 //! Normal INSERT retains complete values or explicit original field presence.
+mod select;
 use super::NativeMutationOptions;
 use crate::editing::{
     NativeEditError,
     journal::{self, NativeJournalInsertPlan, NativeJournalInserter},
+};
+pub use select::{
+    PreparedNativeInsertSelect, local_insert_select_table, prepare_native_insert_select,
 };
 use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
@@ -15,7 +19,7 @@ use thiserror::Error;
 /// Failure before any journal or target mutation exists.
 #[derive(Debug, Error)]
 pub enum RecoverableInsertError {
-    /// Not a closed local INSERT VALUES request.
+    /// Not an admitted local INSERT source profile.
     #[error(transparent)]
     Shape(#[from] QueryError),
     /// Actual native metadata inspection failed.

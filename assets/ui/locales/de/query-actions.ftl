@@ -16,4 +16,4 @@ query-action-delete-confirmation = Diese geprüften Datensätze dauerhaft aus de
 query-action-insert-title = Anfügeabfrage
 query-action-insert-reviewing = Anfügeabfrage wird geprüft…
 query-action-insert-inserted = Anzufügende Datensätze: { $count }
-query-action-insert-confirmation = Diesen geprüften Datensatz an die ursprüngliche Datenbank anfügen?
+query-action-insert-confirmation = Die geprüften Datensätze an die ursprüngliche Datenbank anfügen?

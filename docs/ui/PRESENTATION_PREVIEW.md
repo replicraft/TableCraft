@@ -1,5 +1,38 @@
 # Presentation preview
 
+## Reviewed INSERT SELECT append — 8 November 2026
+
+The existing three INSERT scene IDs now use a plausible synthetic SELECT append
+with two records. No database, native capability or save worker exists in these
+scenes. The scene inventory remains 107; the eight-locale/two-theme headless
+matrix covers 1,712 combinations, not inspected exports of every combination.
+
+Three normal-host offscreen review frames in ignored
+`.cache/ui-previews/query-append-20261108/` were rendered and inspected on macOS
+ARM64 with Windows input emulation:
+
+| Locale/theme | Logical size | Scale |
+| --- | --- | --- |
+| en-US/light | 1280 × 820 | 1× |
+| de/dark | 900 × 580 | 1.25× |
+| ja/light | 900 × 580 | 2× |
+
+Each shows two records to append, generic record confirmation, no matched-row
+label, no-Undo text and visible Yes/No controls with No initially focused. Text
+fits without clipping; compact localized Ribbons retain horizontal overflow.
+There is no retained Access append-warning capture, so geometry and wording
+remain adaptations rather than verified native Access interaction.
+
+The initial expanded query help hid previous results in the existing long-error
+900 × 580 test. Concise help in all eight locales restored the viewport without
+changing its test or hiding controls. The unchanged regression and full 508-test
+UI retry pass. Connected desktop tests preserve VALUES coverage and now exercise
+SELECT counts zero/two, typed prompts, No/Yes, complete independent AFTER bytes
+and fresh membership without duplicate append. Runtime and adapter tests retain
+separate clock, source, assignment and native admission evidence. No native
+windows or Access processes were launched. Cross-target compilation does not
+establish execution or compatibility on another platform.
+
 ## Reviewed SQL INSERT VALUES — 8 November 2026
 
 Three production-presentation scenes (`query-insert-review`, `query-insert-saving`

@@ -18,7 +18,7 @@ pub enum QueryActionKind {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum QueryActionEffect {
-    /// One qualified single-row VALUES append, without a matched-old-row count.
+    /// Qualified append count, without a matched-old-row count or UI-imposed limit.
     Insert { inserted_rows: usize },
     Update {
         matched_rows: usize,
@@ -41,7 +41,7 @@ impl QueryActionEffect {
 
     fn valid(self) -> bool {
         match self {
-            Self::Insert { inserted_rows } => inserted_rows == 1,
+            Self::Insert { .. } => true,
             Self::Update {
                 matched_rows,
                 changed_rows,

@@ -1,5 +1,44 @@
 # Implementation status
 
+## GUI-reviewed INSERT SELECT append — 8 November 2026
+
+Scratch Run now reviews qualified local INSERT SELECT/UNION appends through the
+same typed parameter, confirmation and consuming save workflow as INSERT VALUES.
+The query service stages the entire original retrieval and stored assignments
+before one native batch finish. Its candidate owns the actual target editor;
+source callbacks and finish use the same native allowance at separate phases,
+with independent cumulative query and comparison pools. No inserted prefix can
+become self-append input or be saved after a later read/assignment failure.
+
+Supplied NULL and omissions remain distinct. Clock-aware batch finish captures
+needed stored defaults once after complete retrieval; empty and fully supplied
+batches do not sample that provider. Exact source-bound TCNA families, fresh proof,
+recovery ownership and source refusal remain unchanged. GUI counts can be zero,
+one or multiple, without invented matched-old-row counts or an arbitrary UI cap.
+No preserves prior results; acknowledgment reopens without action replay.
+
+The connected desktop checks compare complete independent AFTER bytes for
+self-append and verify fresh membership without duplicate insertion. Runtime
+checks cover empty and two-row appends, one captured default clock read and
+save/reopen. Existing VALUES cases remain covered. Wider native profile, target,
+generated/default, required-program and saved-action limitations remain explicit
+in [reviewed INSERTs](access/writes/REVIEWED_INSERTS.md).
+
+Final gates pass 1,832 query tests (including 115 units), 131 Access adapter
+units, 179 runtime tests plus its diagnostic integration, 134 desktop tests and
+508 shared UI tests. Strict affected-package lint, minimal builds, Windows/Linux
+shared-library compilation, FreeBSD unsupported-runtime lint and the preview
+build pass. The first UI run exposed a long-error/compact-viewport regression
+from expanded help; shorter localized help passes the unchanged test and full UI
+retry. Initial and corrected logs remain in ignored `.cache/append-*` files.
+Three normal-host offscreen append frames were inspected; no native app windows
+were launched and no new Windows/Access comparison is claimed.
+
+Next is persisted table rename through a real catalog mutation, source-bound
+intent, recovery and Navigation Pane workflow; other table/column CRUD, native
+profile expansion and broader query behavior remain on the
+[parity roadmap](features/ACCESS_PARITY_ROADMAP.md).
+
 ## Shared editing platform boundary — 8 November 2026
 
 Runtime editing now selects native or explicitly unsupported implementations once

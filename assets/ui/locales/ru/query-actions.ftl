@@ -16,4 +16,4 @@ query-action-delete-confirmation = Безвозвратно удалить эт�
 query-action-insert-title = Запрос на добавление
 query-action-insert-reviewing = Проверка запроса на добавление…
 query-action-insert-inserted = Записей для добавления: { $count }
-query-action-insert-confirmation = Добавить эту проверенную запись в исходную базу данных?
+query-action-insert-confirmation = Добавить проверенные записи в исходную базу данных?

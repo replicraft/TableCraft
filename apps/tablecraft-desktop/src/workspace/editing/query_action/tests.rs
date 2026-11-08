@@ -195,7 +195,7 @@ fn stale_source_apply_retains_resources_until_explicit_release_and_acknowledgmen
 fn unsupported_actions_never_open_value_prompts_or_write() {
     for sql in [
         "DELETE FROM Items AS i, Items AS j WHERE i.Id=j.Id",
-        "INSERT INTO Items (Id,Score) SELECT Id,Score FROM Items",
+        "INSERT INTO Items (Id,Score) IN 'external.accdb' SELECT Id,Score FROM Items",
     ] {
         let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
         let rows = harness
@@ -408,7 +408,8 @@ fn typed_delete_no_preserves_original_and_yes_commits_literal_images_without_ree
 }
 
 #[test]
-fn typed_append_decline_and_save_preserve_omission_versus_explicit_null() {
+fn typed_values_and_select_appends_preserve_presence_and_save_the_original_batch_once() {
+    let mut cases = Vec::new();
     for (sql, value, supplied_null) in [
         (
             "PARAMETERS [Added] LONG; INSERT INTO Items (Id) VALUES ([Added])",
@@ -423,7 +424,31 @@ fn typed_append_decline_and_save_preserve_omission_versus_explicit_null() {
     ] {
         let source = defaults::source(defaults::Case::Seven);
         let (expected, _) = defaults::inserted(&source, supplied_null).unwrap();
-        let (_directory, path, original, mut harness) = opened(source.bytes);
+        cases.push((sql, value, source.bytes, expected, 1));
+    }
+    let source = defaults::clock_source();
+    let expected =
+        defaults::clock_inserted_rows(&source, &[(24, Some(0.0_f64.to_bits())), (25, None)]);
+    cases.push((
+        "PARAMETERS [Added] LONG; INSERT INTO Items (Id,Score) \
+         SELECT [Added],Score FROM Items UNION ALL SELECT [Added]+1,NULL FROM Items",
+        "24",
+        source,
+        expected,
+        2,
+    ));
+    let source = defaults::clock_source();
+    cases.push((
+        "PARAMETERS [Added] LONG; INSERT INTO Items (Id) \
+         SELECT [Added] FROM Items WHERE Id<0",
+        "24",
+        source.clone(),
+        source,
+        0,
+    ));
+
+    for (sql, value, source, expected, inserted) in cases {
+        let (_directory, path, original, mut harness) = opened(source);
         for accept in [false, true] {
             run(&mut harness, sql);
             assert!(harness.state().query_parameters.is_some());
@@ -453,7 +478,7 @@ fn typed_append_decline_and_save_preserve_omission_versus_explicit_null() {
             }
             let report = finish_save(&mut harness);
             assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
-                if receipt.matched_rows.is_none() && receipt.changed_rows == Some(1)));
+                if receipt.matched_rows.is_none() && receipt.changed_rows == Some(inserted)));
             harness
                 .get_by_role_and_label(Role::Button, "Close")
                 .click_accesskit();
@@ -470,7 +495,7 @@ fn typed_append_decline_and_save_preserve_omission_versus_explicit_null() {
         run(&mut harness, "SELECT Count(*) AS Remaining FROM Items");
         assert_eq!(
             harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
-            "2"
+            (1 + inserted).to_string()
         );
     }
 }

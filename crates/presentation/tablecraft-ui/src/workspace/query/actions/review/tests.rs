@@ -12,6 +12,7 @@ const REVIEW: u64 = 13;
 const SQL: &str = "UPDATE Items SET Score=77 WHERE Id>=2";
 const DELETE_SQL: &str = "DELETE FROM Items WHERE Id>=2";
 const INSERT_SQL: &str = "INSERT INTO Items(Id,Score) VALUES(4,40)";
+const INSERT_SELECT_SQL: &str = "INSERT INTO Items(Id,Score) SELECT Id,Score FROM Candidates";
 
 fn reviewing() -> State {
     reviewing_kind(QueryActionKind::Update)
@@ -23,6 +24,10 @@ fn reviewing_kind(kind: QueryActionKind) -> State {
         QueryActionKind::Delete => DELETE_SQL,
         QueryActionKind::Insert => INSERT_SQL,
     };
+    reviewing_sql(kind, sql)
+}
+
+fn reviewing_sql(kind: QueryActionKind, sql: &str) -> State {
     let mut state = state();
     assert!(state.replace_query_sql(sql.into()));
     assert!(state.set_query_data(Some("SELECT 1".into()), result("old result")));
@@ -281,13 +286,27 @@ fn delete_and_append_warnings_use_actual_effect_counts_and_the_shared_yes_no_sav
             "query-action-insert-inserted",
             "1",
         ),
+        (
+            QueryActionKind::Insert,
+            INSERT_SELECT_SQL,
+            "Append query",
+            "query-action-insert-inserted",
+            "0",
+        ),
+        (
+            QueryActionKind::Insert,
+            INSERT_SELECT_SQL,
+            "Append query",
+            "query-action-insert-inserted",
+            "2",
+        ),
     ] {
         for yes in [false, true] {
-            let mut state = reviewing_kind(kind);
+            let mut state = reviewing_sql(kind, sql);
             let review = if kind == QueryActionKind::Delete {
                 delete_facts(4)
             } else {
-                insert_facts(1)
+                insert_facts(count.parse().unwrap())
             };
             assert!(state.set_query_action_review(REQUEST, review));
             let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
@@ -391,7 +410,7 @@ fn insert_facts(inserted_rows: usize) -> QueryActionReview {
 }
 
 #[test]
-fn append_requires_exact_single_values_count_and_the_same_captured_action_kind() {
+fn append_accepts_backend_counts_and_requires_the_same_captured_action_kind() {
     for kind in [QueryActionKind::Update, QueryActionKind::Delete] {
         let mut state = reviewing_kind(kind);
         assert!(!state.set_query_action_review(REQUEST, insert_facts(1)));
@@ -400,10 +419,14 @@ fn append_requires_exact_single_values_count_and_the_same_captured_action_kind()
     let mut insertion = reviewing_kind(QueryActionKind::Insert);
     assert!(!insertion.set_query_action_review(REQUEST, facts()));
     assert!(!insertion.set_query_action_review(REQUEST, delete_facts(4)));
-    for invalid_count in [0, 2, usize::MAX] {
-        assert!(!insertion.set_query_action_review(REQUEST, insert_facts(invalid_count)));
-        assert!(!insertion.can_apply_query_action(REVIEW));
+
+    for inserted_rows in [0, 1, 2, usize::MAX] {
+        let mut batch = reviewing_kind(QueryActionKind::Insert);
+        assert_eq!(insert_facts(inserted_rows).effect.matched_rows(), None);
+        assert!(batch.set_query_action_review(REQUEST, insert_facts(inserted_rows)));
+        assert!(batch.can_apply_query_action(REVIEW));
     }
+
     assert_eq!(insert_facts(1).effect.matched_rows(), None);
     assert!(insertion.set_query_action_review(REQUEST, insert_facts(1)));
     assert!(!insertion.set_query_action_review(REQUEST, facts()));

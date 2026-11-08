@@ -16,4 +16,4 @@ query-action-delete-confirmation = Excluir permanentemente estes registros revis
 query-action-insert-title = Consulta de acréscimo
 query-action-insert-reviewing = Revisando a consulta de acréscimo…
 query-action-insert-inserted = Registros a acrescentar: { $count }
-query-action-insert-confirmation = Acrescentar este registro revisado ao banco de dados original?
+query-action-insert-confirmation = Acrescentar os registros revisados ao banco de dados original?

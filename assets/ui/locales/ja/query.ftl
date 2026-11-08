@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL クエリ
-query-help = 対応する読み取りクエリを実行するか、対応する UPDATE、DELETE、INSERT VALUES を保存前に確認します。
+query-help = 対応する読み取りを実行するか、対応する UPDATE、DELETE、INSERT（VALUES/SELECT）を確認します。
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = クエリの実行
 query-empty = クエリを実行すると結果が表示されます。
