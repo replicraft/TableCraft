@@ -137,18 +137,7 @@ impl TableDraft {
             .next_field
             .checked_add(1)
             .ok_or(TableDraftError::Limit)?;
-        let mut suffix = 1;
-        let name = loop {
-            let candidate = format!("Field{suffix}");
-            if !self
-                .fields
-                .iter()
-                .any(|field| field.name.eq_ignore_ascii_case(&candidate))
-            {
-                break candidate;
-            }
-            suffix += 1;
-        };
+        let name = super::next_field_name(self.fields.iter().map(|field| field.name.as_str()))?;
         self.insert_field(kind, name, next_revision, next_field)
     }
 

@@ -5,6 +5,8 @@
 //! and default-mode choices persist across ordinary type changes without parsing
 //! or conversion. Native consumers still validate all syntax and compatibility.
 mod model;
+mod names;
+pub use names::next_field_name;
 mod snapshot;
 
 pub use model::{
