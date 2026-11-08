@@ -191,3 +191,6 @@ fn malformed_version_three_never_retries_a_frozen_add_column_decoder() {
         Err(Cause::AddColumnIntent(_))
     ));
 }
+
+#[path = "default_zero_tests/failures.rs"]
+mod failures;
