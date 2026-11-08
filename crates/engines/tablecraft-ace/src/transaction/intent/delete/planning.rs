@@ -1,4 +1,5 @@
 //! Normal deletion planning and the existing fixed-length durable prepare path.
+mod requalify;
 use super::NativeDeleteIntent;
 use crate::transaction::intent::RecoverableEditError;
 use crate::{NativeEditPlan, NativeImage, PreparedNativeEdit, RowDelete};

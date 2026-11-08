@@ -1,5 +1,33 @@
 # Implementation status
 
+## Reviewed DELETE planning and fresh proof — 8 November 2026
+
+The neutral DELETE planner now accepts complete typed parameters and actual field
+policies, keeping query selection separate from backend work. UPDATE and DELETE
+share the working `MutationOptions` and immutable row-policy owner, with direct
+consumer imports. Existing no-input APIs still refuse declared parameters.
+
+The engine can now freshly requalify a sealed DELETE using its original TCND
+requests, complete original/rebuilt images and removed count. Access offline
+staging consumes that candidate without replaying SQL or a mutable UI ordinal,
+retains locks/receipts on failure and creates no journal before explicit apply.
+Independent native golden bytes and separate persistence/reopen observations are
+recorded in the [reviewed DELETE contract](access/writes/REVIEWED_DELETES.md).
+
+The selected query batch passes 95 units, eight legacy editing tests, 22 batch
+UPDATE tests and five VALUE-parameter tests. Native DELETE checks pass 27 tests;
+32 corpus-dependent tests remain ignored. Access adapter units pass 116 and
+runtime passes 172 plus its diagnostic test. Strict affected-package lint,
+minimal-feature checks, Windows/Linux runtime-library compilation and strict lint
+of FreeBSD's unsupported runtime branch pass. Formatting, dependency boundaries
+and documentation links pass. These checks preserve writer gates rather than
+establishing new format or native Access compatibility; no native window was
+launched.
+
+DELETE is not yet dispatched by the desktop SQL editor. The next application
+slice is its typed runtime review/save capability and shared action confirmation,
+reusing UPDATE's parameter acquisition and nonreplaceable save owner.
+
 ## Declared UPDATE parameters — 8 November 2026
 
 Scratch UPDATE now uses the existing typed prompts before native review and

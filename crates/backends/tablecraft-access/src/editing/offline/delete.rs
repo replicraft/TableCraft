@@ -14,7 +14,7 @@ use tablecraft_sql::query::Query;
 /// A qualified normal deletion retaining the SAME target before journal setup.
 /// Counts are available for report allocation before any durable effects.
 pub struct StagedDelete {
-    staged: StagedUpdate,
+    pub(super) staged: StagedUpdate,
 }
 
 impl StagedDelete {
