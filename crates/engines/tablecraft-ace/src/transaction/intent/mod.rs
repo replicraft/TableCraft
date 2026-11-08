@@ -77,3 +77,11 @@ pub use rename_table::{
     RecoverableNativeTableRenamePlan, RecoverableTableRenameError, TableRenameIntentError,
     qualify_native_table_rename_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod add_column;
+#[cfg(feature = "ace16-create")]
+pub use add_column::{
+    AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,
+    RecoverableAddColumnPlan, qualify_native_add_column_recovery,
+};

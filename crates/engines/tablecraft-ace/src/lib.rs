@@ -271,3 +271,9 @@ pub use transaction::{
 
 #[cfg(feature = "journal")]
 pub use table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,
+    RecoverableAddColumnPlan, qualify_native_add_column_recovery,
+};
