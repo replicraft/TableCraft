@@ -22,6 +22,7 @@ pub struct SavedQuerySqlRequest {
 #[derive(Debug, PartialEq, Eq)]
 pub enum SavedQuerySqlError {
     SourceChanged,
+    MemoryLimit,
     Host(String),
 }
 

@@ -27,11 +27,16 @@ impl State {
         review_id: u64,
         message: Option<String>,
     ) -> bool {
-        if !self.saved_sql_accepted_review_current(request_id, request, review_id)
-            || !self.admit_object_bytes(Some(message.as_ref().map_or(0, String::capacity)))
-        {
+        if !self.saved_sql_accepted_review_current(request_id, request, review_id) {
             return false;
         }
+        let error = message.map(|message| {
+            if self.admit_object_bytes(Some(message.capacity())) {
+                SavedQuerySqlError::Host(message)
+            } else {
+                SavedQuerySqlError::MemoryLimit
+            }
+        });
         let Some(draft) = self
             .saved_sql_lifecycle_state_mut(&request.target)
             .and_then(|state| state.sql.as_mut())
@@ -39,7 +44,7 @@ impl State {
             return false;
         };
         draft.pending = None;
-        draft.error = message.map(SavedQuerySqlError::Host);
+        draft.error = error;
         self.refresh_saved_sql_lifecycle_memory(&request.target);
         true
     }

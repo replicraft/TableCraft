@@ -159,13 +159,20 @@ impl State {
                         pending.request_id == request_id && pending.snapshot == *request
                     })
             })
-            || !self.admit_object_bytes(Some(message.capacity()))
         {
             return false;
         }
+        // Reporting failure must not strand an unlocked review. Preserve its
+        // exact draft and publish a bounded diagnostic when the payload cannot
+        // fit; only this matching pending request is released.
+        let error = if self.admit_object_bytes(Some(message.capacity())) {
+            SavedQuerySqlError::Host(message)
+        } else {
+            SavedQuerySqlError::MemoryLimit
+        };
         let draft = self.saved_query.sql.as_mut().unwrap();
         draft.pending = None;
-        draft.error = Some(SavedQuerySqlError::Host(message));
+        draft.error = Some(error);
         true
     }
 

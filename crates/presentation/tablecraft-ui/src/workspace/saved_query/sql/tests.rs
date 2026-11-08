@@ -2,6 +2,7 @@ use super::*;
 use crate::workspace::{ObjectKind, ObjectTarget, SavedQueryTarget, State};
 use crate::{Database, SavedQuery};
 
+mod memory_failure;
 mod mutation_guards;
 
 fn state() -> (State, SavedQueryTarget) {

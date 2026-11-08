@@ -6,6 +6,7 @@ use crate::workspace::{
     query::parameters::copy_text,
 };
 use egui::{RichText, TextEdit, Ui};
+use std::borrow::Cow;
 use tablecraft_builders::query::MAX_DESIGN_TEXT_BYTES;
 
 use super::SavedQuerySqlError;
@@ -16,7 +17,24 @@ const MIN_SQL_EDITOR_HEIGHT: f32 = 24.0;
 impl State {
     pub(super) fn saved_query_sql_editor(&mut self, ui: &mut Ui) {
         let label = ui.label(tr(ui, "query-title"));
-        let Some((_, proposed, revision, _)) = self.saved_query_sql() else {
+        if let Some(error) = self.saved_query_sql_error() {
+            let message = match error {
+                SavedQuerySqlError::SourceChanged => {
+                    Cow::Owned(self.localizer.text("saved-query-sql-source-changed"))
+                }
+                SavedQuerySqlError::MemoryLimit => {
+                    Cow::Owned(self.localizer.text("objects-memory-limit"))
+                }
+                SavedQuerySqlError::Host(message) => Cow::Borrowed(message.as_str()),
+            };
+            let target = self
+                .selected_saved_target()
+                .map(|target| (target.document_revision, target.object_id));
+            let revision = self.saved_query_sql().map(|(_, _, revision, _)| revision);
+            let id = ui.make_persistent_id(("saved_query_sql_error", target, revision));
+            diagnostics::show(ui, id, &message);
+        }
+        let Some((_, proposed, _, _)) = self.saved_query_sql() else {
             ui.weak(tr(ui, "ribbon-unavailable"));
             return;
         };
@@ -85,21 +103,6 @@ impl State {
                 ui.spinner();
                 ui.label(tr(ui, "saved-query-working"));
             });
-        }
-        if let Some(error) = self.saved_query_sql_error() {
-            let message = match error {
-                SavedQuerySqlError::SourceChanged => {
-                    self.localizer.text("saved-query-sql-source-changed")
-                }
-                SavedQuerySqlError::Host(message) => message.clone(),
-            };
-            let id = ui.make_persistent_id((
-                "saved_query_sql_error",
-                document_revision,
-                object_id,
-                revision,
-            ));
-            diagnostics::show(ui, id, &message);
         }
     }
 }
