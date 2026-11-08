@@ -417,6 +417,12 @@ impl Desktop {
                 Ok(Response::QueryParameters { target, parameters }) => {
                     self.publish_query_parameters(generation, target, parameters);
                 }
+                Ok(Response::QueryUpdateReviewed { .. }) => {
+                    // No desktop command requests an action review until its
+                    // confirmation workflow is connected. Drop an unsolicited
+                    // capability without dispatching it to the save worker.
+                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
                 }

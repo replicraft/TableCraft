@@ -1,5 +1,7 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 mod deleting;
+mod query_update;
+pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 #[cfg(feature = "ace16-create")]
 mod table_creation;
 #[cfg(all(

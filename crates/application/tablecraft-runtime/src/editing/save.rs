@@ -6,7 +6,7 @@ pub use native::SaveWorker;
 
 use super::ReviewedEdit;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-use super::{ReviewedDelete, ReviewedInsert};
+use super::{ReviewedDelete, ReviewedInsert, ReviewedQueryUpdate};
 use std::fmt;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 use std::path::PathBuf;
@@ -229,6 +229,16 @@ impl SaveWorker {
         reviewed: ReviewedDelete,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedDelete>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+    pub fn start_query_update(
+        &self,
+        reviewed: ReviewedQueryUpdate,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryUpdate>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

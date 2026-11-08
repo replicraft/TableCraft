@@ -1,5 +1,41 @@
 # Implementation status
 
+## Runtime-reviewed SQL UPDATE saves — 8 November 2026
+
+The read worker now reviews immutable inspected local UPDATE SQL against the
+exact open document and returns honest matched/changed counts plus an opaque
+consuming capability. Review holds no exclusive lease. The existing save worker
+accepts that capability, freshly requalifies complete original/rebuilt images and
+uses its original journal/recovery/terminal receipt owner without replaying SQL.
+Independent query, native review, fresh proof and persistence allowances are
+explicit; retained and restart recovery have a finite complete-image allowance.
+
+Stored field text policies now survive scalar projection, binding and original-row
+WHERE/SET evaluation, with the actual native resolver. Unknown/conflicting policies
+retain explicit failures; the shared eager IIf branch-policy contract is unchanged.
+The field-policy regression includes retained BeforeChange execution and native
+save/reopen rather than changing writer gates to admit an unsuitable raw source.
+
+The final runtime batch passes 169 tests; neutral batch planning passes 13 and
+adapter units pass 112. These cover Jet 4 and both supported ACE16 headers, complete
+independent AFTER images, native reopen, unlocked reviews, busy/stale/source-drift
+refusals, retained resource release, empty/no-op counts and required program effects.
+The desktop batch passes 127 tests. Strict affected-package lint, minimal and
+offline-only feature checks, formatting and dependency guards pass, along with
+runtime production-library compilation for Windows x64/ARM64, Intel macOS and
+Linux x64/ARM64. These builds do not establish execution on those platforms or
+native Access comparison. Initial failed test/admission runs remain in the ignored
+logs. See the
+[contract and evidence](access/writes/REVIEWED_UPDATES.md#runtime-action-ownership-and-field-policies--8-november-2026)
+and [runtime service](application/RUNTIME.md#reviewed-sql-update-actions).
+
+Desktop normal Run still executes retrieval only; its unavailable action-response
+branch drops unexpected capabilities without saving. GUI warning/confirmation
+and action dispatch are next. Declared action parameters, evaluated LIKE without
+a supplied mode, joined/external targets, broader execution contexts, other action
+kinds and DDL remain explicit work. No older-format writer or native Access parity
+is enabled by this integration.
+
 ## Independent query/native UPDATE review planning — 8 November 2026
 
 Batch SQL UPDATE planning now has a real Access adapter route with separate

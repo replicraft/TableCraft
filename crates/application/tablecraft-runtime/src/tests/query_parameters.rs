@@ -25,7 +25,7 @@ impl Clock for CountingClock {
     }
 }
 
-fn inspect(
+pub(super) fn inspect(
     worker: &Worker,
     document_revision: u64,
     sql: &str,

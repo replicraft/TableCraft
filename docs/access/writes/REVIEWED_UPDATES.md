@@ -63,15 +63,40 @@ A query failure cannot trigger native finish or retry evaluation. The local-targ
 parameter, collation, carrier and constraint restrictions remain unchanged.
 
 Journal preparation/commit retain their existing explicit persistence budget.
-The runtime action workflow must supply and bound these phases deliberately;
-these APIs do not automatically establish end-to-end host quotas or enable GUI
-actions. Initial native intent hashing still belongs to the native planning
-allowance; fresh requalification's hashing belongs to its separate proof allowance.
+The [runtime action service](../../application/RUNTIME.md#reviewed-sql-update-actions)
+now supplies bounded query, native review, fresh proof and persistence allowances
+for the qualified UPDATE route. Initial native intent hashing still belongs to
+the combined native review allowance; fresh requalification's hashing belongs to
+its separate proof allowance. Recovery uses an explicit finite combined pool.
+These policies do not automatically enable GUI action confirmation or expand
+native writer eligibility.
 
 `NativeRecoveryQualificationError` preserves typed capture, intent, normal-planner
 and image/count mismatch failures. Requalification creates no journal and writes
 no target. Its consumed candidate is discarded on failure; any separately owned
 filesystem resource remains the caller's responsibility.
+
+## Stored field comparison policies
+
+The optional query `UpdateComparisonOptions` and
+`plan_batch_update_with_comparison` route preserve field text identities through
+the binder and complete original-row cells, supplying the existing resolver to
+WHERE and SET evaluation. Existing shared-pool and split-pool APIs retain their
+policy-free defaults and charge order. Scalar DB contracts stay query-neutral.
+
+The Access `plan_recoverable_batch_update_with_comparison` consumer derives these
+identities from actual native column declarations and aligns by field name and
+carrier to the real scalar projection. Native schema capture and alignment spend
+native allowance; validation and query evaluation spend query allowance. Supplied
+policy numbers alone are not a native metadata source. Missing, ambiguous or
+inconsistent alignment refuses; unknown/conflicting policies retain the existing
+query errors. The runtime action service uses this route with its actual database
+resolver instead of reducing every comparison to the database default.
+
+Eager conditional branches retain the existing shared query policy rules: IIf
+merges both result-branch policies. This change does not redefine mixed-policy
+expressions, qualify additional native sort orders or provide missing wildcard,
+clock, random or application contexts.
 
 ## Retained offline session boundary
 
@@ -151,3 +176,35 @@ The corrected batch passes without changing production accounting.
 Two Access adapter cases additionally exercise real native planning against an
 independent complete AFTER and distinguish native snapshot failure from query
 refusal. These are API/fixture checks, not connected runtime or Access evidence.
+
+### Runtime action ownership and field policies — 8 November 2026
+
+The complete runtime unit batch passes 169 cases, including seven new SQL action
+scenarios and two phase-budget cases. Actions cover Jet 4 and both supported ACE
+16 headers, independent complete AFTER images, native reopen, lease-free review,
+nonreplaceable saves, stale inspected identities/document invalidation, protected
+tail drift, retained release, unchanged/empty counts and eager-error/read-only
+refusals. No runtime action silently activates the desktop confirmation flow.
+
+The field-policy journey retains the existing positive BeforeChange program and
+varies only its Text descriptor between supported General Legacy and General
+2010, keeping the database default unchanged. Actual row selection differs; the
+independent complete AFTER includes the program-adjusted value, then the native
+file is saved and reopened. An initial plain unindexed 15-column-catalog source
+was rejected by its existing ordinary-content writer grammar before query
+execution. That failed admission is retained in the log; it was not bypassed.
+The positive journey uses an already-admitted program source instead.
+
+Thirteen neutral batch tests and all 112 adapter unit cases pass. Initial compile
+and test failures (borrowed-source lifetime, missing public field documentation,
+an incorrect IIf policy expectation and an unsuitable encryption test header)
+remain in ignored `.cache/runtime-query-update-*20261108.log`. Corrections retain
+the shared eager conditional policy contract and existing native/encryption gates.
+All execution evidence is local Rust/macOS qualification, separate from native
+Access comparison and non-macOS execution.
+
+Final validation also passed 127 desktop tests, strict affected-package lint,
+minimal/offline-only feature checks, formatting, dependency boundaries and runtime
+production-library cross-compilation for Windows x64/ARM64, Intel macOS and Linux
+x64/ARM64. Logs use the `qualified-*` suffix in the same ignored directory. No
+native app window or native Access process was launched.

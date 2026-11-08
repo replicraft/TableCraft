@@ -51,7 +51,7 @@ use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
 use zeroize::Zeroizing;
 
-const SNAPSHOT_BYTES: u64 = 64 * 1024 * 1024;
+pub(crate) const SNAPSHOT_BYTES: u64 = 64 * 1024 * 1024;
 const COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Document {

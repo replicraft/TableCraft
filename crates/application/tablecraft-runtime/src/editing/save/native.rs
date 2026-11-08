@@ -2,6 +2,7 @@
 mod apply;
 mod apply_delete;
 mod apply_insert;
+mod apply_query_update;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
 mod outcomes;
@@ -13,6 +14,7 @@ use self::{
     apply::apply,
     apply_delete::apply_delete,
     apply_insert::apply_insert,
+    apply_query_update::apply_query_update,
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
 };
@@ -22,8 +24,8 @@ use super::{
 #[cfg(feature = "ace16-create")]
 use crate::editing::ReviewedTableCreation;
 use crate::{
-    controls::budget,
-    editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert},
+    controls::update_recovery_budget,
+    editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryUpdate},
 };
 use std::{
     panic::{AssertUnwindSafe, catch_unwind},
@@ -41,6 +43,7 @@ enum Task {
     Apply(ReviewedEdit, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
+    ApplyQueryUpdate(ReviewedQueryUpdate, PathBuf),
     Restart(PathBuf, PathBuf),
     Recover,
     Release,
@@ -119,9 +122,10 @@ impl SaveWorker {
                 let operation = match &task {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
-                    Task::Apply(..) | Task::ApplyInsert(..) | Task::ApplyDelete(..) => {
-                        SaveOperation::Apply
-                    }
+                    Task::Apply(..)
+                    | Task::ApplyInsert(..)
+                    | Task::ApplyDelete(..)
+                    | Task::ApplyQueryUpdate(..) => SaveOperation::Apply,
                     Task::Restart(..) | Task::Recover => SaveOperation::Recover,
                     Task::Release => SaveOperation::Release,
                 };
@@ -133,7 +137,6 @@ impl SaveWorker {
                 let span =
                     tracing::debug_span!("application save task", operation = operation_name);
                 let _entered = span.enter();
-                let mut work = budget();
                 let outcome = match task {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(reviewed, bundle) => {
@@ -148,14 +151,23 @@ impl SaveWorker {
                     Task::ApplyDelete(reviewed, bundle) => {
                         apply_delete(reviewed, bundle, &mut retained, &cancelled)
                     }
+                    Task::ApplyQueryUpdate(reviewed, bundle) => {
+                        apply_query_update(reviewed, bundle, &mut retained, &cancelled)
+                    }
                     Task::Restart(source, bundle) => {
                         restart(source, bundle, &mut retained, &cancelled)
                     }
                     Task::Recover => match retained.take().map(RetainedOwner::into_session) {
-                        Some(session) => finish(
-                            session.recover_pending(&mut work, &cancelled),
-                            &mut retained,
-                        ),
+                        Some(session) => {
+                            // Recovery includes complete journal image validation and
+                            // fresh native reconstruction, separately from the normal
+                            // native planning allowance used before an initial write.
+                            let mut work = update_recovery_budget();
+                            finish(
+                                session.recover_pending(&mut work, &cancelled),
+                                &mut retained,
+                            )
+                        }
                         None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
                     },
                     Task::Release => match retained.take().map(RetainedOwner::into_session) {
@@ -215,6 +227,17 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedDelete>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyDelete)
+    }
+
+    /// Consume an unlocked SQL UPDATE review through the same nonreplaceable
+    /// save owner. Rejection returns the original review without filesystem work.
+    pub fn start_query_update(
+        &self,
+        reviewed: ReviewedQueryUpdate,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryUpdate>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryUpdate)
     }
 
     #[cfg(feature = "ace16-create")]

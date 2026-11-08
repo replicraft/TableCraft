@@ -37,10 +37,11 @@ pub use editing::{CreatedTableReopen, ReviewedTableCreation};
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
-    InsertTarget, ReplaceError, ReviewedDelete, ReviewedEdit, ReviewedInsert,
-    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
-    SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveRetirementGuarantee,
-    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
+    InsertTarget, QueryUpdateReview, ReplaceError, ReviewedDelete, ReviewedEdit, ReviewedInsert,
+    ReviewedQueryUpdate, SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind,
+    SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport,
+    SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure,
+    SaveWorker, journal_path,
 };
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
@@ -114,6 +115,9 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     Edit(#[from] EditError),
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    QueryUpdate(#[from] tablecraft_access::editing::sql::RecoverableError),
     #[error(transparent)]
     Filter(#[from] FilterError),
     #[error(transparent)]
@@ -314,6 +318,10 @@ pub enum Command {
         target: Arc<InspectedQuery>,
         parameters: Vec<ParameterInput>,
     },
+    #[cfg(feature = "offline-edit")]
+    ReviewQueryUpdate {
+        target: Arc<InspectedQuery>,
+    },
     InspectSavedQuery {
         target: SavedQueryTarget,
     },
@@ -359,6 +367,11 @@ pub enum Response {
     QueryParameters {
         target: Arc<InspectedQuery>,
         parameters: Vec<ParameterSpec>,
+    },
+    #[cfg(feature = "offline-edit")]
+    QueryUpdateReviewed {
+        review: QueryUpdateReview,
+        capability: ReviewedQueryUpdate,
     },
     SavedQuery {
         target: SavedQueryTarget,

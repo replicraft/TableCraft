@@ -663,6 +663,70 @@ Single, Double, Currency and Decimal instructions explicitly require the invaria
 never become implicit input syntax. Parsing and unchanged DATE/float preservation
 continue to use actual schema/native values, independently of the hint tag.
 
+## Reviewed SQL UPDATE actions
+
+With `offline-edit`, `ReviewQueryUpdate` accepts an opaque `InspectedQuery` from
+this exact open document. It rechecks both the private source identity and the
+document revision before parsing the immutable SQL. The current local batch
+UPDATE shape uses the existing native journal editor and original-row query
+planner: every SET expression is evaluated before one consuming native finish.
+Declared action parameters, joined/external targets and unsupported expression
+contexts remain refused rather than being substituted or ignored. Evaluated LIKE
+still requires a supplied wildcard mode and is refused in this action route;
+it does not silently assume ANSI-89 for an ANSI-92 database.
+
+Review returns `QueryUpdateReview` display facts (table, document revision,
+matched and effectively changed rows, review identifier) plus a separate opaque
+`ReviewedQueryUpdate`. No exclusive native lease or journal is retained while a
+host considers confirmation. Plain native sources alone can enter this route;
+encrypted/package sources retain the read-only editing boundary. Database text
+comparison uses the existing deferred database collation resolver and its
+independent comparison allowance. The adapter derives stored text policy identities
+from actual native declarations, aligns them to the projected scalar snapshot and
+carries them through binding and original-row evaluation. Field policy governs
+comparisons involving that field; unknown/conflicting policies refuse through
+the existing query contract. No ASCII or system-locale fallback is added.
+
+`SaveWorker::start_query_update` consumes that exact capability through the same
+nonreplaceable mailbox as cell edits, insertion and deletion. It checks document
+validity, opens the target exclusively and stages the whole sealed query/native
+plan against fresh bytes from the retained descriptor. Complete BEFORE equality,
+original-intent verification and complete independently rebuilt AFTER/count
+checks precede journal creation. SQL is not evaluated again. Source drift retains
+the actual session for explicit release, and later failures use the existing
+journal recovery/terminal receipt lifecycle. Busy/stale admission returns the
+original capability; cancellation requests never fabricate rollback.
+
+The runtime supplies finite phase allowances in `controls/update.rs`:
+
+- Query binding, evaluation and complete request materialization: 16 MiB,
+  10,000 row charges and one million work steps, independently from native work.
+- Initial native review: existing 512 MiB/100,000 row limits, with five million
+  steps plus one actual BEFORE length and framing allowance for initial binding.
+  This is a combined native planning/hash allowance, not an independent hash pool.
+- Fresh requalification: ordinary native capture/rebuild allowance plus a proof
+  pool with two BEFORE lengths in bytes, no rows and a checked allowance for
+  complete comparison/hash traversals. No counters transfer between these pools.
+- Journal persistence: separate bounded allowance derived from reviewed BEFORE
+  and AFTER lengths, retaining 512 MiB/100,000 row ceilings. Retained and restart
+  recovery use a fixed finite envelope based on the existing 64 MiB document
+  limit, before trusting any journal lengths. Recovery reconstruction and
+  persistence share that explicitly named pool; they are not represented as the
+  ordinary five-million-step planner quota.
+
+Each phase spends its allowance cumulatively and fails explicitly on exhaustion.
+Image sizes must be nonzero and within the existing document envelope. These
+ceilings do not guarantee that every database within 64 MiB admits an UPDATE.
+Matched counts include unchanged assignments; changed counts describe the native
+plan. A successful save is followed by an explicit fresh open; the old read
+snapshot is not silently relabeled as updated.
+
+The runtime route is implemented; desktop action review/confirmation and dispatch
+remain unconnected. An unsolicited action-review response is discarded by the
+desktop without saving and reports the existing localized unavailable message.
+Normal GUI Run still uses the documented retrieval workflow. Broader action SQL,
+append/DELETE, native QueryDef persistence and DDL remain roadmap work.
+
 ## Reviewed offline row insertion
 
 The same `offline-edit` worker now accepts BeginInsert/ReviewInsert. InsertTarget

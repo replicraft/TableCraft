@@ -38,6 +38,21 @@ impl InspectedQuery {
 }
 
 impl Document {
+    /// Validate an issued inspection before any consumer parses or captures data.
+    pub(crate) fn require_query_inspection(
+        &self,
+        target: &InspectedQuery,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), Error> {
+        check(cancelled)?;
+        if target.document_revision != self.revision
+            || !Arc::ptr_eq(&target.source, &self.filter_source)
+        {
+            return Err(Error::StaleQuery);
+        }
+        Ok(())
+    }
+
     /// Parse only syntax and declared parameter types. No native source callback,
     /// binding scan, execution provider, clock, or random sequence is consulted.
     pub(crate) fn inspect_query(
@@ -78,12 +93,7 @@ impl Document {
         clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
-        check(cancelled)?;
-        if target.document_revision != self.revision
-            || !Arc::ptr_eq(&target.source, &self.filter_source)
-        {
-            return Err(Error::StaleQuery);
-        }
+        self.require_query_inspection(target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
         let parsed = parse_query(target.sql(), ParseLimits::default())?;

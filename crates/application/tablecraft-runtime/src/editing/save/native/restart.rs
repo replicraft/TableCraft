@@ -4,7 +4,7 @@ use super::{
     outcomes::{failed_open, finish},
 };
 use crate::{
-    controls::{SCOPE, budget},
+    controls::{SCOPE, budget, update_recovery_budget},
     editing::SaveOutcome,
 };
 use std::path::PathBuf;
@@ -21,8 +21,11 @@ pub(super) fn restart(
         Ok(session) => session,
         Err(error) => return failed_open(&error),
     };
+    // Opening remains bounded by the ordinary native allowance. Journal image
+    // validation and original-request reconstruction use their own finite pool.
+    let mut recovery = update_recovery_budget();
     finish(
-        session.recover_update(&bundle, &mut work, cancelled),
+        session.recover_update(&bundle, &mut recovery, cancelled),
         retained,
     )
 }
