@@ -397,6 +397,9 @@ pub enum Response {
         /// Exact captured native source admission, tied to document_revision.
         /// This is not a draft or permission to bypass fresh review/save checks.
         table_creation_available: bool,
+        /// Canonical blank admission for manual first-table Design. Additional
+        /// tables do not gain this capability from ordinary creation admission.
+        table_design_available: bool,
         title: String,
         format: String,
         tables: Vec<Table>,

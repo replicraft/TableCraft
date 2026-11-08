@@ -35,6 +35,9 @@ impl Document {
         let mut work = budget();
         check(cancelled)?;
         let definition = declaration::capture(snapshot, &mut work, cancelled)?;
+        if definition.is_manual() && !matches!(profile, TableCreationProfile::First) {
+            return Err(EditError::Unavailable.into());
+        }
         let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
         let (expected, columns, definition) = match profile {
             TableCreationProfile::First => {

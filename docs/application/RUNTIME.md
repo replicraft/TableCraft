@@ -116,10 +116,28 @@ append-table operation against the current standard original image. It does not
 retry one operation as another after refusal. Document invalidation revokes the
 review; Save detects changed file content through complete original-image
 comparison. The advisory Open result cannot authorize Save. This admits neither
-arbitrary imported-file DDL nor record creation, field alteration, manual Design schemas or
+arbitrary imported-file DDL nor record creation, field alteration or
 silent type inference. After each acknowledged Save, a fresh Open qualifies the actual resulting source
 before another Create → Table can become available. Retained prior availability
 or table count alone cannot enable it.
+
+Canonical blank Open also publishes a separate revision-bound
+`table_design_available` fact. It enables an empty manual Design draft; ordinary
+append availability cannot grant it. Manual snapshots without a generated field
+lower through `FirstTableDefinition::capture_manual`, retaining actual optional
+key position and all explicit field policies/defaults/Descriptions. They require
+the captured First profile; Added refuses manual declarations. No source retry or
+dummy primary root is used. Actual schema constraints and complete BEFORE bytes
+are rechecked by the same consuming SaveWorker and guarded reopen.
+
+Manual first-table requests use TCNT6 and yield a real keyless table or one
+supported manual numeric primary. A UI Yes decision that adds a protected
+Increment ID instead produces the existing generated declaration and its
+applicable TCNT1–5 intent. Authoring-view origin does not redefine native storage.
+Pending first-record inputs remain separate, keyed by draft identity; only an
+actual generated field requires Omitted. A manual primary does not become a
+generated value or suppress the original supplied first field. The actual fresh
+insertion draft still checks names, types and generation before adopting inputs.
 
 ### Initial-field property lowering
 

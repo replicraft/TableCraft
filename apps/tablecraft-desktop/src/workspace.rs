@@ -437,6 +437,7 @@ impl Desktop {
                     document_revision,
                     source_path,
                     table_creation_available,
+                    table_design_available,
                     title,
                     format,
                     tables,
@@ -474,6 +475,7 @@ impl Desktop {
                             request_id,
                             database,
                             table_creation_available,
+                            table_design_available,
                         );
                         continue;
                     }
@@ -487,12 +489,15 @@ impl Desktop {
                             save_id,
                             database,
                             table_creation_available,
+                            table_design_available,
                         );
                         continue;
                     }
                     self.state.database = Some(database);
                     self.state
                         .set_table_creation_available(document_revision, table_creation_available);
+                    self.state
+                        .set_table_design_available(document_revision, table_design_available);
                     self.recovery_opened(generation, document_revision);
                     self.state.dismiss_backstage();
                     if matches!(self.pending, PendingOperation::CreatedOpen) {

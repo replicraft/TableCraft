@@ -246,12 +246,14 @@ fn encrypted_open_reports_password_errors_and_allows_same_worker_retry() {
         tables,
         document_revision: _revision,
         table_creation_available,
+        table_design_available,
         ..
     } = request(&worker, open(&path, "public workflow password")).unwrap()
     else {
         panic!("expected authenticated database");
     };
     assert!(!table_creation_available);
+    assert!(!table_design_available);
     assert!(tables.iter().any(|table| table.name == "ROULETTE_TB"));
     #[cfg(feature = "offline-edit")]
     assert!(matches!(
@@ -370,6 +372,7 @@ fn explicit_cancel_discards_a_late_result() {
             document_revision: 1,
             source_path: PathBuf::new(),
             table_creation_available: false,
+            table_design_available: false,
             title: String::new(),
             format: String::new(),
             tables: Vec::new(),

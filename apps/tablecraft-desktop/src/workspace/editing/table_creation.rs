@@ -223,6 +223,7 @@ impl Desktop {
         id: u64,
         database: Database,
         table_creation_available: bool,
+        table_design_available: bool,
     ) {
         let Some(mut host) = self.table_creation.take() else {
             return;
@@ -243,6 +244,8 @@ impl Desktop {
             let revision = database.document_revision;
             self.state
                 .set_table_creation_available(revision, table_creation_available);
+            self.state
+                .set_table_design_available(revision, table_design_available);
             self.state.set_save_cleanup(revision, host.cleanup);
         }
         self.filter = None;

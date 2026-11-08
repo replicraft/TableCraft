@@ -227,13 +227,16 @@ impl Document {
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         ))]
-        let table_creation_available = table_creation.is_some();
+        let (table_creation_available, table_design_available) = (
+            table_creation.is_some(),
+            matches!(table_creation, Some(TableCreationProfile::First)),
+        );
         #[cfg(not(all(
             feature = "offline-edit",
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         )))]
-        let table_creation_available = false;
+        let (table_creation_available, table_design_available) = (false, false);
         let mut document = Self {
             filter_source: Arc::new(()),
             source,
@@ -298,6 +301,7 @@ impl Document {
                 document_revision: revision,
                 source_path,
                 table_creation_available,
+                table_design_available,
                 title,
                 format,
                 tables,

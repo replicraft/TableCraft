@@ -46,6 +46,10 @@ pub(super) fn capture(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FirstTableDefinition, Error> {
     let mut input = Presentation::new(cancelled);
+    let generated = snapshot
+        .fields()
+        .iter()
+        .any(|field| field.kind() == DraftFieldType::AutoNumberIncrement);
     input.allocation(snapshot.fields().len(), size_of::<Option<Value>>())?;
     let mut defaults = Vec::new();
     defaults.try_reserve_exact(snapshot.fields().len())?;
@@ -90,22 +94,22 @@ pub(super) fn capture(
                     .with_primary_key(PRIMARY_INDEX_NAME)?
                     .with_incrementing_autonumber()?
             }
-            DraftFieldType::ShortText if !field.is_primary() => CreateColumn::short_text(
+            DraftFieldType::ShortText => CreateColumn::short_text(
                 field.name(),
                 usize::from(field.short_text_units().ok_or(EditError::Unavailable)?),
             )?,
             DraftFieldType::AutoNumberIncrement => return Err(EditError::Unavailable.into()),
-            DraftFieldType::Number
-                if !field.is_primary() && field.decimal_constraints().is_some() =>
-            {
+            DraftFieldType::Number if field.decimal_constraints().is_some() => {
                 CreateColumn::decimal(
                     field.name(),
                     field.decimal_constraints().ok_or(EditError::Unavailable)?,
                 )
             }
-            _ if !field.is_primary() => CreateColumn::new(field.name(), scalar(field)?),
-            _ => return Err(EditError::Unavailable.into()),
+            _ => CreateColumn::new(field.name(), scalar(field)?),
         };
+        if field.kind() != DraftFieldType::AutoNumberIncrement && field.is_primary() {
+            column = column.with_primary_key(PRIMARY_INDEX_NAME)?;
+        }
         if let Some(required) = field.required() {
             column = column.with_required(required);
         }
@@ -120,10 +124,9 @@ pub(super) fn capture(
         }
         columns.push(column);
     }
-    Ok(FirstTableDefinition::capture(
-        snapshot.table_name(),
-        &columns,
-        work,
-        cancelled,
-    )?)
+    Ok(if generated {
+        FirstTableDefinition::capture(snapshot.table_name(), &columns, work, cancelled)?
+    } else {
+        FirstTableDefinition::capture_manual(snapshot.table_name(), &columns, work, cancelled)?
+    })
 }

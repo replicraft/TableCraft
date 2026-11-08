@@ -369,6 +369,7 @@ pub struct State {
     filter: String,
     pub table_save_available: bool,
     table_creation: Option<u64>,
+    table_design: Option<u64>,
     table_draft_save: Option<table_draft::save::SaveDialog>,
     table_draft_field_delete: Option<table_draft::field_delete::Confirmation>,
     table_draft: Option<table_draft::Editor>,
