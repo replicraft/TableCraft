@@ -1,7 +1,10 @@
 //! Actual query binder over metadata-only insertion and an explicit host provider.
 use super::{Error, NativeJournalInsertPlan, NativeJournalInserter};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
+use tablecraft_db::{
+    CompleteInsertableBatch, InsertValue, InsertableTable, OmittingInsertableBatch,
+    OmittingInsertableTable,
+};
 use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_schema::{Column, SchemaPolicy};
 
@@ -23,12 +26,15 @@ impl InsertableTable for ClockInserter<'_> {
     fn name(&self) -> &str {
         self.inserter.name()
     }
+
     fn columns(&self) -> &[Column] {
         self.inserter.columns()
     }
+
     fn schema_policy(&self) -> SchemaPolicy {
         self.inserter.schema_policy()
     }
+
     fn requires_field_list(&self) -> bool {
         self.inserter.requires_field_list()
     }
@@ -54,3 +60,29 @@ impl OmittingInsertableTable for ClockInserter<'_> {
             .plan_insert_with_omissions_and_clock(values, self.provider, budget, cancelled)
     }
 }
+
+impl CompleteInsertableBatch for ClockInserter<'_> {
+    fn plan_insert_rows(
+        self,
+        rows: Vec<Vec<Value>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        self.inserter.plan_insert_rows(rows, budget, cancelled)
+    }
+}
+
+impl OmittingInsertableBatch for ClockInserter<'_> {
+    fn plan_insert_rows_with_omissions(
+        self,
+        rows: Vec<Vec<InsertValue>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self::Plan, Self::Error> {
+        self.inserter
+            .plan_presence_rows(rows, Some(self.provider), budget, cancelled)
+    }
+}
+
+#[cfg(test)]
+mod tests;

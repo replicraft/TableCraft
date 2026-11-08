@@ -265,25 +265,33 @@ pub fn clock_source() -> Vec<u8> {
 /// Independent literal append to the local two-column clock source.
 /// The expected DATE bits are supplied as data, with no clock or native codec.
 pub fn clock_inserted(before: &[u8], id: i32, date_bits: u64) -> Vec<u8> {
+    clock_inserted_rows(before, &[(id, Some(date_bits))])
+}
+
+/// Independent ordered raw append, including explicit NULL and an empty batch.
+/// Expected DATE bits are input data; no engine planner or default evaluator is used.
+pub fn clock_inserted_rows(before: &[u8], rows: &[(i32, Option<u64>)]) -> Vec<u8> {
     let mut after = before.to_vec();
-    let page = &mut after[8 * 4096..9 * 4096];
-    let count = word(page, 12);
-    let end = word(page, 14 + 2 * (count - 1));
-    let start = end - 15;
-    let mut row = 2_u16.to_le_bytes().to_vec();
-    row.extend(id.to_le_bytes());
-    row.extend(date_bits.to_le_bytes());
-    row.push(3);
-    page[start..end].copy_from_slice(&row);
-    put16(page, 14 + 2 * count, u16::try_from(start).unwrap());
-    put16(page, 12, u16::try_from(count + 1).unwrap());
-    put16(
-        page,
-        2,
-        u16::try_from(start - (14 + 2 * (count + 1))).unwrap(),
-    );
-    after[7 * 4096 + 16..7 * 4096 + 20]
-        .copy_from_slice(&u32::try_from(count + 1).unwrap().to_le_bytes());
+    for &(id, date_bits) in rows {
+        let page = &mut after[8 * 4096..9 * 4096];
+        let count = word(page, 12);
+        let end = word(page, 14 + 2 * (count - 1));
+        let start = end - 15;
+        let mut row = 2_u16.to_le_bytes().to_vec();
+        row.extend(id.to_le_bytes());
+        row.extend(date_bits.unwrap_or(0).to_le_bytes());
+        row.push(if date_bits.is_some() { 3 } else { 1 });
+        page[start..end].copy_from_slice(&row);
+        put16(page, 14 + 2 * count, u16::try_from(start).unwrap());
+        put16(page, 12, u16::try_from(count + 1).unwrap());
+        put16(
+            page,
+            2,
+            u16::try_from(start - (14 + 2 * (count + 1))).unwrap(),
+        );
+        after[7 * 4096 + 16..7 * 4096 + 20]
+            .copy_from_slice(&u32::try_from(count + 1).unwrap().to_le_bytes());
+    }
     after
 }
 

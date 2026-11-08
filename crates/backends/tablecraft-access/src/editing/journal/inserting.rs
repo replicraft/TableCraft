@@ -1,15 +1,14 @@
 //! Metadata-only insertion; complete native admission occurs at finish.
 mod batch;
-mod clock;
+pub(in crate::editing) mod clock;
 mod complete_batch;
 mod plan;
+mod presence;
 
 use super::Error;
 use crate::editing::NativeEditError;
 pub use plan::NativeJournalInsertPlan;
-use tablecraft_ace::{
-    InsertFieldValue, InspectError, NativeImage, OmittedRowInsert, RowInsert, inspect_table_schema,
-};
+use tablecraft_ace::{InspectError, NativeImage, RowInsert, inspect_table_schema};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -158,59 +157,5 @@ impl NativeJournalInserter {
 
     pub(in crate::editing) fn with_clock(self, provider: &dyn Clock) -> clock::ClockInserter<'_> {
         clock::ClockInserter::new(self, provider)
-    }
-
-    fn plan_presence(
-        self,
-        values: Vec<InsertValue>,
-        provider: Option<&dyn Clock>,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeJournalInsertPlan, Error> {
-        check(budget, cancelled)?;
-        budget
-            .charge_allocation(
-                values.len() as u64,
-                std::mem::size_of::<InsertFieldValue>() as u64,
-            )
-            .map_err(InspectError::from)
-            .map_err(NativeEditError::from)?;
-        let mut native = Vec::new();
-        native
-            .try_reserve_exact(values.len())
-            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
-        for value in values {
-            check(budget, cancelled)?;
-            native.push(match value {
-                InsertValue::Supplied(value) => InsertFieldValue::Supplied(value),
-                InsertValue::Omitted => InsertFieldValue::Omitted,
-            });
-        }
-        budget
-            .charge_allocation(1, std::mem::size_of::<OmittedRowInsert>() as u64)
-            .map_err(InspectError::from)
-            .map_err(NativeEditError::from)?;
-        let mut rows = Vec::new();
-        rows.try_reserve_exact(1)
-            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
-        rows.push(OmittedRowInsert::new(native));
-        if let Some(provider) = provider
-            && self
-                .image
-                .select_native_ordinary_clock_defaults(&self.name, &rows, budget, cancelled)
-                .map_err(tablecraft_ace::RecoverableEditError::from)?
-        {
-            return self
-                .image
-                .plan_recoverable_ordinary_clock_row_inserts(
-                    &self.name, rows, provider, budget, cancelled,
-                )
-                .map(NativeJournalInsertPlan::Clock)
-                .map_err(Error::from);
-        }
-        self.image
-            .plan_recoverable_ordinary_omitted_row_inserts(&self.name, rows, budget, cancelled)
-            .map(NativeJournalInsertPlan::Omitted)
-            .map_err(Error::from)
     }
 }
