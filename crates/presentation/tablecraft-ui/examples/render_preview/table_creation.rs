@@ -89,6 +89,31 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
     }
 
     add_design_field(harness, "design-type-short-text", "Name");
+    if matches!(mode, "design-delete-ready" | "design-delete-field") {
+        add_design_field(harness, "design-type-number", "Score");
+        harness.get_by_role_and_label(Role::Button, "Name").click();
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        let delete = localizer.text("ribbon-delete-rows");
+        assert!(
+            !harness
+                .get_by_role_and_label(Role::Button, &delete)
+                .accesskit_node()
+                .is_disabled()
+        );
+        if mode == "design-delete-field" {
+            harness
+                .get_by_role_and_label(Role::Button, &delete)
+                .click_accesskit();
+            harness.run();
+            assert!(harness.state().state().table_draft_field_delete_open());
+            assert!(
+                harness
+                    .get_by_role_and_label(Role::Button, &localizer.text("table-draft-cancel"))
+                    .is_focused()
+            );
+        }
+        return;
+    }
     if matches!(mode, "design-existing-pending" | "design-existing-selected") {
         let revision = harness.state().state().table_draft_revision().unwrap();
         harness

@@ -202,6 +202,7 @@ impl State {
                 .as_ref()
                 .is_none_or(|editor| !editor.save_blocked);
         let can_save = self.can_save_table_draft();
+        let can_delete = self.can_delete_selected_table_draft_field();
         let tab = self.active_object().unwrap();
         let Some(editor) = &mut self.table_draft else {
             ui.label(tr(ui, "table-draft-unavailable"));
@@ -211,7 +212,7 @@ impl State {
             .add_enabled_ui(enabled, |ui| {
                 ui.push_id(("initial_table_editor", tab.id), |ui| {
                     if editor.design.active {
-                        design::show(ui, editor, can_save)
+                        design::show(ui, editor, can_save, can_delete)
                     } else {
                         grid::show(ui, editor, can_save)
                     }
@@ -220,6 +221,7 @@ impl State {
             })
             .inner;
         let view_requested = editor.design.requested.take();
+        let delete_requested = editor.design.delete_requested.take();
         match event {
             Some(grid::Event::Save) => {
                 self.request_table_draft_save();
@@ -231,6 +233,9 @@ impl State {
                 self.set_table_draft_field_type(field, kind);
             }
             None => {}
+        }
+        if let Some(field) = delete_requested {
+            self.request_table_draft_field_delete(field);
         }
         if let Some(design) = view_requested {
             if design {

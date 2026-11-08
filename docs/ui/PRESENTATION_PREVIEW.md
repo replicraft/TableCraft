@@ -1,5 +1,32 @@
 # Presentation preview
 
+## Design draft-field deletion — 7 November 2026
+
+`TABLECRAFT_PREVIEW_TABLE_COMMAND=design-delete-ready` authors two declarations
+through the real shared widgets, selects Name's row and checks the enabled Delete
+Rows command. `design-delete-field` then opens the existing draft confirmation
+and checks its initially focused Cancel action. These use the existing table-ready
+scenes, with no native database writes or runtime actions.
+
+Six normal-host offscreen frames in ignored
+`.cache/ui-previews/design-delete-20261107/` were rendered and inspected on macOS
+ARM64 with Windows input emulation: English light command-ready and English dark
+confirmation at 1280×820, 1×; Korean light command-ready and German dark
+confirmation at 900×580 logical points, 1.25× (1125×725 pixels). English dark and
+Japanese light pending-field frames also check that the Field Properties heading
+stays centered while the new row is active, at those respective sizes/scales.
+No native application windows were opened.
+
+The actual retained 1920×1165 Windows/VirtualBox Design capture was reopened,
+unknown DPI. It shows Delete Rows in Tools and the lower properties heading,
+but no deletion confirmation or active keyboard state. The confirmation retains
+TableCraft's explicit unsaved-field scope and Delete field/Cancel wording; it
+is not a captured native Access dialog or evidence of persisted schema deletion.
+The [documented Access workflow](https://support.microsoft.com/en-us/access/add-or-delete-a-column-in-a-datasheet)
+provides the selected-row Delete Rows/Delete entry points. Dark styling,
+confirmation layout and exact event timing retain their recorded qualification
+limits.
+
 ## Existing-field activation in Design — 7 November 2026
 
 `TABLECRAFT_PREVIEW_TABLE_COMMAND=design-existing-pending` authors a committed

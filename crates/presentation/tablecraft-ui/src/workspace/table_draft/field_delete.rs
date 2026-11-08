@@ -28,6 +28,46 @@ impl State {
         self.table_draft_field_delete.is_some()
     }
 
+    pub(in crate::workspace) fn table_draft_field_delete_queued(&self) -> bool {
+        self.table_draft
+            .as_ref()
+            .is_some_and(|editor| editor.design.delete_requested.is_some())
+    }
+
+    /// Only an existing selected Design declaration can own Delete Rows.
+    pub fn can_delete_selected_table_draft_field(&self) -> bool {
+        if !self.object_switch_ready()
+            || self.creation_is_pending()
+            || !self.table_draft_design_visible()
+        {
+            return false;
+        }
+        let Some(editor) = &self.table_draft else {
+            return false;
+        };
+        if editor.save_blocked || editor.rename.is_some() || editor.new_field.editing() {
+            return false;
+        }
+        let Some(field) = editor.design.selected_field(&editor.draft) else {
+            return false;
+        };
+        !field.is_protected()
+            && editor.record.removal(field.id()).is_some()
+            && editor.properties.removal(field.id()).is_some()
+    }
+
+    /// Ribbon clicks resolve after this frame's raw editor input, before a
+    /// confirmation captures its schema/record/property witnesses.
+    pub(in crate::workspace) fn queue_delete_selected_table_draft_field(&mut self) -> bool {
+        if !self.can_delete_selected_table_draft_field() {
+            return false;
+        }
+        let editor = self.table_draft.as_mut().unwrap();
+        let field = editor.design.selected_field(&editor.draft).unwrap().id();
+        editor.design.delete_requested = Some(field);
+        true
+    }
+
     /// Capture an unsaved declaration and raw-record revision; never native authority.
     pub fn request_table_draft_field_delete(&mut self, field: DraftFieldId) -> bool {
         if !self.object_switch_ready() || self.creation_is_pending() {
@@ -169,3 +209,6 @@ impl State {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod design_tests;

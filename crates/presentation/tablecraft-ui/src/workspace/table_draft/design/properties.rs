@@ -79,7 +79,7 @@ pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
     if editor.new_field.editing() {
-        ui.label(tr(ui, "design-field-properties"));
+        ui.vertical_centered(|ui| ui.label(tr(ui, "design-field-properties")));
         return;
     }
     ui.vertical_centered(|ui| ui.label(tr(ui, "design-field-properties")));

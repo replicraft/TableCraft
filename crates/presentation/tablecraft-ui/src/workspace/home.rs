@@ -37,15 +37,21 @@ impl State {
             });
             if self.ribbon_tab == ribbon::Tab::TableDesign {
                 let mut primary_clicked = false;
+                let mut delete_clicked = false;
                 ribbon::design(
                     ui,
                     &t,
                     self.can_toggle_table_draft_primary_key(),
                     self.table_draft_primary_key_selected(),
                     &mut primary_clicked,
+                    self.can_delete_selected_table_draft_field(),
+                    &mut delete_clicked,
                 );
                 if primary_clicked {
                     self.toggle_table_draft_primary_key();
+                }
+                if delete_clicked {
+                    self.queue_delete_selected_table_draft_field();
                 }
                 return;
             }

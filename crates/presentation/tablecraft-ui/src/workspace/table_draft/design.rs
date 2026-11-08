@@ -36,6 +36,7 @@ const SELECTOR_HALF_HEIGHT: f32 = 4.0;
 pub(in crate::workspace) struct Design {
     pub(in crate::workspace) active: bool,
     pub(super) requested: Option<bool>,
+    pub(super) delete_requested: Option<DraftFieldId>,
     selected: Option<DraftFieldId>,
     lookup: bool,
     pending_focus: Option<(DraftFieldId, activation::Target)>,
@@ -186,7 +187,12 @@ pub(super) fn type_key(kind: DraftFieldType) -> &'static str {
     }
 }
 
-pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<Event> {
+pub(super) fn show(
+    ui: &mut Ui,
+    editor: &mut Editor,
+    can_save: bool,
+    can_delete: bool,
+) -> Option<Event> {
     if !editor.record.synchronize(&editor.draft) || !editor.descriptions.synchronize(&editor.draft)
     {
         ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
@@ -341,6 +347,15 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                         ui.visuals().text_color(),
                                         egui::Stroke::NONE,
                                     ));
+                                }
+                                if can_delete
+                                    && editor.design.selected == Some(field.id())
+                                    && response.has_focus()
+                                    && response.enabled()
+                                    && !egui::Popup::is_any_open(ui.ctx())
+                                    && consume_unmodified_delete(ui)
+                                {
+                                    event = Some(Event::DeleteField(field.id()));
                                 }
                                 if response.clicked() {
                                     activation_request = Some(activation::Request {
@@ -618,4 +633,27 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
                     + ui.spacing().item_spacing.y
             })
             .sum::<f32>()
+}
+
+// consume_key intentionally allows extra Shift/Alt modifiers. Row deletion
+// requires the exact event chord, independent of the frame's final key state.
+fn consume_unmodified_delete(ui: &Ui) -> bool {
+    ui.input_mut(|input| {
+        let mut consumed = false;
+        input.events.retain(|event| {
+            if matches!(event, egui::Event::Key {
+                key: egui::Key::Delete,
+                pressed: true,
+                modifiers,
+                ..
+            } if *modifiers == egui::Modifiers::NONE)
+            {
+                consumed = true;
+                false
+            } else {
+                true
+            }
+        });
+        consumed
+    })
 }

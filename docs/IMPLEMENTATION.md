@@ -1,5 +1,28 @@
 # Implementation status
 
+## Design draft-field deletion — 7 November 2026
+
+Table Design's Delete Rows command and unmodified Delete on a focused existing
+row selector now use the same guarded draft-field confirmation as Datasheet's
+Delete Field. Manual primary fields are removable in Design; the generated ID
+stays protected. Blank-row input, text editors, popups, modal and unavailable
+states do not become field-delete targets. Ribbon requests capture witnesses
+after the current frame's editor input. Temporary collapsed Ribbons close when
+the command is accepted and remain closed after Cancel. This edits an unsaved
+declaration only; persisted schema deletion remains unimplemented.
+
+All 476 shared-UI and 119 desktop tests pass, including seven focused Design
+deletion cases. The first five cases passed; the expanded shortcut test then
+reproduced Shift+Delete being accepted by egui's logical modifier matching. The
+corrected handler consumes only exact unmodified key events. Same-batch focus
+and pointer tests passed without requiring a broader focus refactor. Failed and
+accepted logs remain separate under ignored `.cache/gui-design-delete-*20261107.log`.
+Strict affected-package lint, Windows x64/ARM64, Intel macOS and Linux x64/ARM64
+compilation, formatting, dependency and documentation checks pass. Six offscreen
+frames were inspected across themes and translated compact layouts; see the
+[presentation record](ui/PRESENTATION_PREVIEW.md#design-draft-field-deletion--7-november-2026).
+No native windows were opened, and no native Access/platform execution claim is added.
+
 ## Design field activation — 7 November 2026
 
 Selecting an existing field now resolves the inline pending declaration before

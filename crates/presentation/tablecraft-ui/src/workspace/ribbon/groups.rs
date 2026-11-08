@@ -132,6 +132,8 @@ pub(in crate::workspace) fn design(
     primary_available: bool,
     primary_selected: bool,
     primary_clicked: &mut bool,
+    delete_available: bool,
+    delete_clicked: &mut bool,
 ) {
     group(ui, &t.text("ribbon-tools"), |ui| {
         ui.horizontal(|ui| {
@@ -161,13 +163,15 @@ pub(in crate::workspace) fn design(
                     "ribbon-insert-rows",
                     CommandSize::Small,
                 );
-                unavailable(
+                *delete_clicked |= super::command(
                     ui,
-                    t,
                     Icon::DeleteRows,
-                    "ribbon-delete-rows",
+                    &t.text("ribbon-delete-rows"),
+                    delete_available,
                     CommandSize::Small,
-                );
+                )
+                .on_disabled_hover_text(t.text("ribbon-unavailable"))
+                .clicked();
                 unavailable(
                     ui,
                     t,

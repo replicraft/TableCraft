@@ -401,6 +401,17 @@ than issuing native DDL or changing a persisted table. The generated ID primary
 key remains protected. Click to Add is a declaration placeholder, not a field
 to rename or delete.
 
+In an unsaved Design draft, select an existing field row and use Table Design >
+Tools > Delete Rows, or press Delete while its row selector has keyboard focus.
+Both entry points use the same revision-bound confirmation above. An ordinary
+manual primary field can be removed in Design; the generated protected ID cannot.
+Text editors, the blank new-field row, open popups and unavailable/modal states
+do not supply a field-delete shortcut target. Ribbon requests are resolved after
+the current frame's editor input before capturing confirmation witnesses. A
+temporary collapsed Ribbon closes when it accepts the request and stays closed
+after cancellation. This is deletion from an unsaved draft, not persisted
+`ALTER TABLE` or deletion of stored column data.
+
 The deletion confirmation is a bounded initial-draft adaptation, with explicit
 Delete field and Cancel actions. It is not a claim to reproduce Access's exact
 confirmation wording or persisted schema-deletion behavior. An existing

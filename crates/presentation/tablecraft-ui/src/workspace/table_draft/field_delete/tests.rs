@@ -9,7 +9,7 @@ use egui_kittest::{
 };
 use tablecraft_builders::table::{DraftFieldId, DraftFieldType};
 
-fn harness() -> Harness<'static, (State, Vec<Action>)> {
+pub(super) fn harness() -> Harness<'static, (State, Vec<Action>)> {
     let mut preview = Preview::new(Scene::InitialTableDraft);
     let mut state = std::mem::take(preview.state_mut());
     state.table_save_available = true;
@@ -28,7 +28,7 @@ fn harness() -> Harness<'static, (State, Vec<Action>)> {
     harness
 }
 
-fn ids(harness: &Harness<'_, (State, Vec<Action>)>) -> Vec<DraftFieldId> {
+pub(super) fn ids(harness: &Harness<'_, (State, Vec<Action>)>) -> Vec<DraftFieldId> {
     harness
         .state()
         .0
@@ -42,7 +42,7 @@ fn ids(harness: &Harness<'_, (State, Vec<Action>)>) -> Vec<DraftFieldId> {
         .collect()
 }
 
-fn set_input(state: &mut State, id: DraftFieldId, text: &str, is_null: bool) {
+pub(super) fn set_input(state: &mut State, id: DraftFieldId, text: &str, is_null: bool) {
     assert!(state.table_draft.as_mut().unwrap().record.set_input(
         id,
         InsertInput::Value(EditInput {
@@ -402,7 +402,7 @@ fn a_parked_drafts_popup_does_not_transfer_to_the_next_draft_with_reused_field_i
     assert!(harness.state().1.is_empty());
 }
 
-fn manual_primary_harness() -> (Harness<'static, (State, Vec<Action>)>, DraftFieldId) {
+pub(super) fn manual_primary_harness() -> (Harness<'static, (State, Vec<Action>)>, DraftFieldId) {
     let mut harness = harness();
     let state = &mut harness.state_mut().0;
     state.table_draft = Some(super::super::Editor::design("Table1".into()));
