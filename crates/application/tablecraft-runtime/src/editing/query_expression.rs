@@ -1,4 +1,7 @@
 //! Source-bound existing-query review, independent of rows and schema authoring.
+mod outcome;
+pub use outcome::{QueryExpressionOutcomeError, QueryExpressionReopenFacts};
+
 use super::platform;
 use crate::{Error, Response, SavedQueryTarget, document::Document};
 use bytes::Bytes;

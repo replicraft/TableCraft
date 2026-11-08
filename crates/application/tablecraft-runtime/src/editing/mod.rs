@@ -35,7 +35,10 @@ pub use inserting::{
 };
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
-pub use query_expression::{QueryExpressionReopen, QueryExpressionReview, ReviewedQueryExpression};
+pub use query_expression::{
+    QueryExpressionOutcomeError, QueryExpressionReopen, QueryExpressionReopenFacts,
+    QueryExpressionReview, ReviewedQueryExpression,
+};
 pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
 pub use query_sql::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};

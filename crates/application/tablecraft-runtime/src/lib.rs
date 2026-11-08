@@ -40,14 +40,15 @@ pub use editing::{
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
-    InsertTarget, QueryDeleteReview, QueryExpressionReopen, QueryExpressionReview,
-    QueryInsertReview, QueryUpdateReview, ReplaceError, ReviewedDelete, ReviewedEdit,
-    ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression, ReviewedQueryInsert,
-    ReviewedQueryUpdate, ReviewedTableRename, SaveCleanupDisposition, SaveCompletion,
-    SaveDatabaseOptionsChange, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation,
-    SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt, SaveReport, SaveRetirementGuarantee,
-    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
-    TableRenameReopen, TableRenameReview, journal_path,
+    InsertTarget, QueryDeleteReview, QueryExpressionOutcomeError, QueryExpressionReopen,
+    QueryExpressionReopenFacts, QueryExpressionReview, QueryInsertReview, QueryUpdateReview,
+    ReplaceError, ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete,
+    ReviewedQueryExpression, ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
+    SaveCleanupDisposition, SaveCompletion, SaveDatabaseOptionsChange, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveQueryChange,
+    SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
+    SaveStartError, SaveStartFailure, SaveWorker, TableRenameReopen, TableRenameReview,
+    journal_path,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};

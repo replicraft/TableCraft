@@ -166,6 +166,30 @@ connected runtime cases are **unrun** at this checkpoint. The desktop only
 handles unsolicited review responses as unavailable; no GUI command dispatch or
 SQL-editor persistence is enabled by this service.
 
+## Runtime outcome-facts checkpoint
+
+The subsequent [completed SQL/creator batch](results/sql-creator-focused-2026-11-08.json)
+passes the five existing query-expression runtime cases and six SQL bridge cases.
+Those checks are separate from the newly authored receipt-facts tests below.
+
+`SaveOutcome::query_expression_reopen_facts` owns the query-specific receipt
+classification. Its typed result reports only whether acknowledged current facts
+may describe the accepted replacement and an actual completed query receipt, if
+one exists. A Saved replacement with missing query facts, row counts or foreign
+schema/settings facts returns `QueryExpressionOutcomeError`. Current original or
+rollback facts take precedence over historical replacement receipts. Failed
+retained owners never trigger reopening; explicit recovery/release remains
+required. A released known replacement may lack a finalization receipt, and the
+service does not manufacture one.
+
+These facts are not permission to read or replay an action. A host must retain
+the SAME accepted `QueryExpressionReopen` and complete its fresh full-image check
+before resolving visible SQL or publishing a new document revision. An explicitly
+unchanged semantic review can separately use its full BEFORE-equal-AFTER witness;
+it must not invent a journal commit or treat a failed original outcome as that
+review. Three focused outcome-facts tests are authored but unrun at this
+checkpoint. This library extraction does not enable GUI editing.
+
 ## Required proof before a normal native save
 
 The candidate requires the following source qualification; broader native saves
