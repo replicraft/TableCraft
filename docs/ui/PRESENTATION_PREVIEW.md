@@ -1,5 +1,42 @@
 # Presentation preview
 
+## Additional-table workflow — 7 November 2026
+
+The resource-free `additional-table-ready` scene contains loaded `Table1`
+metadata before invoking the real Create → Table control. Its revision-bound
+synthetic availability fact illustrates presentation only; it grants no runtime
+review, file lease or native save capability. The existing first-table scene
+shares the same command path. `TABLECRAFT_PREVIEW_TABLE_COMMAND=create|save-name`
+captures either the resulting draft or its Ctrl+S naming dialog and refuses
+other scenes or combined interaction workflows.
+
+Four normal-host frames were inspected under ignored
+`.cache/ui-previews/add-table-20261107/`: English light draft and dark naming
+dialog at 1280×820 pixels, plus German light naming and Korean dark draft at
+900×580 logical points and 1.25× scale (1125×725 pixels). Rendering was windowless
+on macOS ARM64 with Windows input emulation. The tab and dialog consistently
+suggest `Table2`, while navigation retains `Table1`. Compact translated Ribbons
+scroll horizontally without dropping commands.
+
+An initial Korean capture failed because its translated Ribbon command and
+navigation collapse button share the same label. The renderer now selects the
+upper Ribbon command from the matching accessible buttons; the corrected frame
+passes. This changes only the resource-free interaction selector.
+
+The actual private datasheet reference, a 1920×1165 Windows/VirtualBox capture
+with unknown scale, was reopened for the tab, navigation and grid composition.
+It does not depict Create → Table or the Save As dialog. Their workflow follows
+the [creation contract](DATABASE_CREATION.md); dialog styling and dark mode remain
+adaptations rather than Access visual-parity evidence. Separate actual desktop
+acceptance saves both schemas and rows, then uses a fresh host's query controls
+to read `17` from `Table1` and the exact text `  Ada  ` from `Table2`. Rendering
+does not establish those backend outcomes or native Windows/Access behavior.
+All six preview tests pass, including all 96 scenes across the existing locale
+and theme matrix. Strict runtime/shared-UI/desktop all-target/all-feature lint,
+the focused fresh-host query scenario and all 882 formatter roots pass. The
+initial selector failure and initial test event-ordering failure remain in their
+separate ignored logs; corrected passes do not overwrite them.
+
 ## Number field sizes — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=design-number-size|design-decimal` adds and

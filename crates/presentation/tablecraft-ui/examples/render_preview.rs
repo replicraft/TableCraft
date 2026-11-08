@@ -3,6 +3,8 @@
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
 mod initial_properties;
+#[path = "render_preview/table_creation.rs"]
+mod table_creation;
 
 use egui_kittest::{Harness, kittest::Queryable};
 use image::ImageFormat;
@@ -92,6 +94,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !initial_suffix.is_empty() && scenes != [Scene::InitialTableDraft] {
         return Err(io::Error::other("initial editing requires initial-table-draft").into());
     }
+    let table_command = setting("TABLECRAFT_PREVIEW_TABLE_COMMAND", "none")?;
+    let table_suffix = match table_command.as_str() {
+        "none" => "",
+        "create" => "-create-table",
+        "save-name" => "-table-save-name",
+        _ => {
+            return Err(io::Error::other("table command must be none, create or save-name").into());
+        }
+    };
+    if !table_suffix.is_empty()
+        && !matches!(
+            scenes.as_slice(),
+            [Scene::FirstTableReady | Scene::AdditionalTableReady]
+        )
+    {
+        return Err(io::Error::other("table command requires a table-ready scene").into());
+    }
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
     let scale = setting("TABLECRAFT_PREVIEW_SCALE", "1")?.parse::<f32>()?;
@@ -122,6 +141,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(focus_steps != 0)
         + usize::from(font_search.is_some())
         + usize::from(field_gallery)
+        + usize::from(!table_suffix.is_empty())
         + usize::from(!initial_suffix.is_empty());
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
@@ -223,9 +243,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if !initial_suffix.is_empty() {
             edit_initial_table(&mut harness, &initial_edit);
         }
+        if !table_suffix.is_empty() {
+            table_creation::create(&mut harness, table_command == "save-name");
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

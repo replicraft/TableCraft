@@ -261,48 +261,55 @@ fn ribbon_display_scenes_keep_real_layout_states_and_the_same_loaded_records() {
 }
 
 #[test]
-fn first_table_ready_preview_starts_without_a_draft_and_uses_the_actual_table_command() {
+fn table_ready_previews_use_the_actual_table_command_and_loaded_name_suggestion() {
     use egui::accesskit::Role;
     use egui_kittest::{
         Harness,
         kittest::{NodeT, Queryable},
     };
 
-    assert_eq!(
-        "first-table-ready".parse::<Scene>().unwrap(),
-        Scene::FirstTableReady
-    );
-    let preview = Preview::new(Scene::FirstTableReady);
-    assert!(preview.state().mock_preview);
-    assert!(preview.state().can_create_table());
-    assert!(preview.state().database.as_ref().unwrap().tables.is_empty());
-    assert!(preview.state().data.is_none());
-    assert!(preview.state().active_object().is_none());
-    assert!(!preview.state().has_unsaved_table_drafts());
-    let mut harness = Harness::builder()
-        .with_size(egui::vec2(1280.0, 820.0))
-        .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
-    crate::configure(&harness.ctx);
-    harness.run_steps(2);
-    let table = harness.get_by_role_and_label(Role::Button, "Table");
-    assert!(!table.accesskit_node().is_disabled());
-    table.click_accesskit();
-    harness.run_steps(2);
-    assert!(harness.state().state().has_unsaved_table_drafts());
-    assert!(harness.state().state().data.is_none());
-    assert!(
-        harness
-            .state()
-            .state()
-            .database
-            .as_ref()
-            .unwrap()
-            .tables
-            .is_empty()
-    );
-    assert!(
-        harness
-            .get_by_role_and_label(Role::Button, "Click to Add")
-            .is_focused()
-    );
+    for (scene, count, name) in [
+        (Scene::FirstTableReady, 0, "Table1"),
+        (Scene::AdditionalTableReady, 1, "Table2"),
+    ] {
+        assert_eq!(scene.as_str().parse::<Scene>().unwrap(), scene);
+        let preview = Preview::new(scene);
+        assert!(preview.state().mock_preview);
+        assert!(preview.state().can_create_table());
+        assert_eq!(
+            preview.state().database.as_ref().unwrap().tables.len(),
+            count
+        );
+        assert!(preview.state().data.is_none());
+        assert!(preview.state().active_object().is_none());
+        assert!(!preview.state().has_unsaved_table_drafts());
+        let mut harness = Harness::builder()
+            .with_size(egui::vec2(1280.0, 820.0))
+            .build_ui_state(|ui, preview: &mut Preview| preview.show(ui), preview);
+        crate::configure(&harness.ctx);
+        harness.run_steps(2);
+        let table = harness.get_by_role_and_label(Role::Button, "Table");
+        assert!(!table.accesskit_node().is_disabled());
+        table.click_accesskit();
+        harness.run_steps(2);
+        assert!(harness.state().state().has_unsaved_table_drafts());
+        assert!(harness.state().state().data.is_none());
+        assert_eq!(
+            harness
+                .state()
+                .state()
+                .database
+                .as_ref()
+                .unwrap()
+                .tables
+                .len(),
+            count
+        );
+        harness.get_by_role_and_label(Role::Tab, name);
+        assert!(
+            harness
+                .get_by_role_and_label(Role::Button, "Click to Add")
+                .is_focused()
+        );
+    }
 }

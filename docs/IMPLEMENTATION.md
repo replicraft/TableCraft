@@ -1,5 +1,36 @@
 # Implementation status
 
+## Qualified second-table creation — 7 November 2026
+
+Create → Table now opens an unsaved Datasheet draft for either the canonical
+blank or a qualified existing one-table ACE 16 source. Runtime publishes a
+revision-bound source fact; creation review and the consuming save still validate
+the exact source, declarations and original bytes. A successful added-table
+receipt and complete-image reopen preserve the existing table while giving the
+new table fresh source/row identities. A third table, unqualified layouts and
+arbitrary imported database DDL remain unavailable.
+
+The draft and Save prompt share a suggested unused `TableN` name from the loaded
+table/query names. This is presentation guidance, not native collation or save
+authority. Duplicate-name refusal retains exact field/record input without a
+write; correction proceeds through the same reviewed save. Existing table tabs
+and unsaved SQL survive with fresh source bindings, and an entered first record
+uses a separate Review/Apply operation. Create → Table Design remains disabled:
+its manual first-field and primary-key workflow is separate from the protected-ID
+Datasheet draft.
+
+A focused fresh-host follow-up queries both saved tables through the actual SQL
+editor, confirming the original `17` and exact new text `  Ada  `. Four inspected
+offscreen frames retain `Table1` in navigation and suggest `Table2` in the draft
+and naming dialog, across light/dark and compact translated layouts; see
+[the presentation evidence](ui/PRESENTATION_PREVIEW.md#additional-table-workflow--7-november-2026).
+
+The affected local headless batch passes all 427 shared UI, 111 desktop and 149
+runtime tests. These affected packages also compile in all six Windows/macOS/Linux
+x86-64/ARM64 cross-checks; this does not establish native Windows/Linux filesystem or GUI
+execution, or native Access save/reopen parity. Historical results below retain
+their original scope. See [creation and addition](ui/DATABASE_CREATION.md#creating-the-first-table-after-open).
+
 ## Number field-size authoring — 7 November 2026
 
 The initial table's Number declaration now offers Byte, Integer, Long Integer,
@@ -17,9 +48,10 @@ pass. The latter retain TCNA5's nested TCNA2 grammar instead of silently accepti
 the new TCNA6 row dialect. Strict affected-package lint passes. Five offscreen
 normal-host frames were inspected in light/dark and compact translated layouts;
 see [the visual evidence](ui/PRESENTATION_PREVIEW.md#number-field-sizes--7-november-2026).
-This does not establish native Access or Windows/Linux execution. Adding another
-table to an existing database and a faithful fresh Table Design/key-selection
-workflow remain separate unfinished authoring work.
+This does not establish native Access or Windows/Linux execution. At that
+checkpoint, adding another table and a faithful fresh Table Design/key-selection
+workflow remained separate unfinished authoring work; the qualified second-table
+follow-up above extends the former.
 
 ## Cross-platform audit follow-up — 7 November 2026
 
@@ -265,15 +297,16 @@ and [preview evidence](ui/PRESENTATION_PREVIEW.md).
 
 ## Explicit Create → Table after Open — 7 November 2026
 
-An ordinary or recovered canonical blank ACE 16 database now exposes explicit
-Create → Table without inventing a draft during Open. Runtime reports a
+At this checkpoint, an ordinary or recovered canonical blank ACE 16 database
+exposed explicit Create → Table without inventing a draft during Open. Runtime reports a
 revision-bound fact from the exact immutable captured bytes, using the engine’s
 same complete-byte predicate as planning. Readable noncanonical blanks and
-existing user tables remain readable but do not gain schema-write eligibility.
+existing user tables remained readable without gaining schema-write eligibility.
 The shared UI opens the existing Datasheet draft, preserves parked SQL text and
 focuses Click to Add. Review and same-file Save retain fresh source checks.
-Table Design and general table addition remain unfinished. Source-free Backstage
-pages also hide Back while retaining Home/Escape navigation.
+Table Design and table addition remained unfinished; the qualified second-table
+follow-up above extends the latter. Source-free Backstage pages also hide Back
+while retaining Home/Escape navigation.
 
 The complete local headless batches pass 130 runtime, 351 UI and 93 desktop tests.
 Six focused engine cases cover the shared predicate, exact limits and cancellation.

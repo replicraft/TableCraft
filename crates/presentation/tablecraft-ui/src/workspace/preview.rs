@@ -21,7 +21,7 @@ mod totals;
 mod zoom;
 
 use super::objects::{ObjectKind, ObjectTarget};
-use super::{State, ribbon::Tab};
+use super::{State, Table, ribbon::Tab};
 use crate::{CollectionKind, ContentsTarget, EditInput, EditSaveOutcome, EditTarget};
 use std::str::FromStr;
 
@@ -94,6 +94,7 @@ pub enum Scene {
     InitialTableDraft,
     InitialTableSaveName,
     FirstTableReady,
+    AdditionalTableReady,
     Backstage,
     Options,
     About,
@@ -126,7 +127,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 95] = [
+    pub const ALL: [Self; 96] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -193,6 +194,7 @@ impl Scene {
         Self::InitialTableDraft,
         Self::InitialTableSaveName,
         Self::FirstTableReady,
+        Self::AdditionalTableReady,
         Self::Backstage,
         Self::Options,
         Self::About,
@@ -317,6 +319,7 @@ impl Scene {
             Self::InitialTableDraft => "initial-table-draft",
             Self::InitialTableSaveName => "initial-table-save-name",
             Self::FirstTableReady => "first-table-ready",
+            Self::AdditionalTableReady => "additional-table-ready",
             Self::Backstage => "backstage",
             Self::Options => "options",
             Self::About => "about",
@@ -601,7 +604,10 @@ impl Preview {
                 }
             }
             Scene::Templates => self.state.backstage = super::backstage::Backstage::New,
-            Scene::InitialTableDraft | Scene::InitialTableSaveName | Scene::FirstTableReady => {
+            Scene::InitialTableDraft
+            | Scene::InitialTableSaveName
+            | Scene::FirstTableReady
+            | Scene::AdditionalTableReady => {
                 for tab in self.state.object_tabs() {
                     self.state.close_object(&tab);
                 }
@@ -610,9 +616,17 @@ impl Preview {
                     database.queries.clear();
                     database.title = "Database1 : Database | Database1.accdb (Access 2016)".into();
                     database.title_path = Some("Synthetic workspace/Database1.accdb".into());
+                    if scene == Scene::AdditionalTableReady {
+                        database.tables.push(Table {
+                            name: "Table1".into(),
+                            local: true,
+                            system: false,
+                            storage: "Local".into(),
+                        });
+                    }
                 }
                 self.state.dismiss_backstage();
-                if scene == Scene::FirstTableReady {
+                if matches!(scene, Scene::FirstTableReady | Scene::AdditionalTableReady) {
                     // Synthetic availability illustrates the actual command. It
                     // is not runtime qualification or native write permission.
                     let revision = self.state.database.as_ref().unwrap().document_revision;
