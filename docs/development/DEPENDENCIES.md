@@ -1,5 +1,22 @@
 # Adopted dependency and licensing baseline
 
+## Windows filesystem cleanup — 8 November 2026
+
+The Windows-only IO member enables the existing `windows-sys` 0.61.2
+`Wdk_System_SystemServices` feature for its generated
+`FILE_FS_DEVICE_INFORMATION`. Registry versions and the production dependency
+closure do not change. `File::sync_all` replaces the direct flush FFI wrapper;
+the pinned Rust implementation uses the same Windows call. Private typed
+information-class selection preserves existing handle and buffer checks.
+
+The selected IO gate passes 139 units, 16 integration checks and four doctests
+on macOS. Strict native and Windows x64 lint, Windows ARM64 fresh-publication
+and filesystem-journal builds, and minimal WASM compilation pass. These are
+compilation/local tests, not Windows filesystem execution. No `fs4`, richer
+Windows binding or security-wrapper package is adopted; the
+[focused review](DEPENDENCY_REVIEW.md#focused-library-review--8-november-2026)
+records why they do not replace this boundary's current obligations.
+
 ## Legacy DATE presentation semantics — 7 November 2026
 
 Display now directly consumes the existing `tablecraft-core` value owner for

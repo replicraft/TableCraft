@@ -213,6 +213,36 @@ synthetic benchmark wins alone do not establish product superiority.
 
 ## Delivery order and acceptance
 
+The user set the following project order on 8 November 2026:
+
+1. Complete the accepted library refactors and measured experiments. Prefer real
+   reductions in custom ownership/FFI or measured workload improvements; a library
+   that weakens native guarantees is not an automatic adoption. Keep the pending
+   persisted-rename work intact while this first phase is completed.
+2. Complete the native read/write/query program below, including its per-profile,
+   preservation, constraint, recovery and host acceptance. Current positive slices
+   do not close the full target.
+3. Audit implementation ownership and dependencies again against the working
+   code. Extract or add a crate only for a real useful boundary; do not generate
+   the prospective crate chart as empty packages. Revisit library opportunities
+   with the completed workloads and measured bottlenecks.
+4. Implement `tablecraft-web` using the same presentation and application services.
+   Keep browser-only dependencies, entropy, scheduling, file and platform adapters
+   behind browser target/features. Desktop inherits changes only where they are
+   beneficial to both hosts. Browser storage must have an explicit contract,
+   without claiming native file-lock/journal guarantees from compilation alone.
+5. Localize web and desktop together through the accepted nine-language Fluent
+   direction: English fallback, German, Spanish, Russian, Brazilian Portuguese,
+   Korean, Japanese, Simplified Chinese and experimental Hindi. Use root
+   `localizations/` catalogs with automatically discovered sections, cached literal
+   lookups, shared locale selection and catalog/variable/glyph/layout checks.
+   Selawik remains the primary face with Noto fallbacks. The detailed private
+   localization instructions remain private; implementation and public operating
+   documentation follow in this phase, not ahead of the browser host.
+
+SQLite, native projects and VBA execution remain deferred throughout this order.
+The native backend delivery sequence is:
+
 1. Establish the per-profile operation/fixture ledger and repair shared GUI query
    context/parameters. Keep existing read/write regressions intact.
 2. Build shared reviewed action-query dispatch and native persisted schema services,

@@ -1,5 +1,32 @@
 # Dependency and reference review
 
+## Focused library review — 8 November 2026
+
+This review starts the accepted library-refactor phase; it is not an exhaustive
+claim about the eventual completed backend. Repeat the ownership/dependency audit
+after native read/write/query completion and before the browser host.
+
+| Candidate | Current decision and evidence |
+| --- | --- |
+| `fs4` | No adoption for current IO. Shared/exclusive locks already use safe standard-library `File::try_lock` APIs. Its allocation/space APIs remain future candidates with real consumers; it does not replace private ACL or retained-handle publication checks. |
+| `windows` | Retain `windows-sys` for this boundary. Richer result/types can help other consumers, but file-information APIs still require unsafe buffer/layout proofs. Switching bindings alone does not remove the current security or durability obligations. |
+| `windows-permissions` 0.2.4 | Do not adopt this release for private sidecars. Its source lacks the needed token/impersonation and descriptor-control wrappers; `GetSecurityInfo` allocates outside the current caller-sized descriptor bound, and convenience ACE accessors truncate unknown bits. It would add `winapi` 0.3/older `bitflags` while retaining critical raw checks. The reviewed upstream last commit is June 2021; license MIT. |
+| `cap-std` / `cap-fs-ext` | Retain as candidates for actual filesystem-capability consumers. The current publisher already owns a qualified parent handle and validated leaf. These crates do not supply its protected DACL, NTFS, reparse, identity or write-through/retirement qualification. Adding a forwarding `Dir` wrapper has no demonstrated benefit here. |
+| `bytes` | Already adopted; investigate working whole-owned immutable snapshot sharing. A sliced `Bytes` value can retain a larger backing allocation, so accepting arbitrary slices under a length-only quota is insufficient. Writable AFTER buffers and fresh source proof remain separate. |
+| `rayon` | Benchmark independent native AES page transforms before production adoption. Keep validation/publication serial, finite work and zeroizing buffers, and deterministic failure/cancellation behavior. General query execution retains stateful providers, fallible ordered evaluation and shared-budget ownership. |
+
+The concrete Windows cleanup uses the existing generated
+`FILE_FS_DEVICE_INFORMATION` and standard `File::sync_all`. Pinned Rust 1.99's
+Windows implementation invokes the same `FlushFileBuffers` call on the retained
+handle. Private typed information-class selection also removes arbitrary
+layout/class pairings. These changes do not qualify execution on Windows.
+
+Primary sources: [Rust file locks](https://doc.rust-lang.org/std/fs/struct.File.html#method.try_lock),
+[fs4](https://docs.rs/fs4/latest/fs4/),
+[Microsoft file-information binding](https://microsoft.github.io/windows-docs-rs/doc/windows/Win32/Storage/FileSystem/fn.SetFileInformationByHandle.html),
+[Windows permissions source](https://github.com/danieldulaney/windows-permissions-rs),
+[cap-std directory API](https://docs.rs/cap-std/latest/cap_std/fs/struct.Dir.html).
+
 Reviewed 18 October 2026 against all three supplied library, Wine and standalone
 RustVBA proposals, with the later VBA deferral taking precedence. Every named
 library/tool has an explicit disposition below; repetitions share one entry.

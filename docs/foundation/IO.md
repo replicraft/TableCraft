@@ -247,6 +247,15 @@ flush and owned-stage deletion-on-close primitives. Fresh publication and the
 separate flat filesystem journal now consume that same platform owner; the
 extraction alone did not establish native Save or Windows execution evidence.
 
+The 8 November cleanup uses the generated Windows
+`FILE_FS_DEVICE_INFORMATION` layout instead of a handwritten ABI copy. Information
+queries bind the selected class to one of their three actual output types. File
+and directory flushes use `File::sync_all`; the pinned Rust 1.99 implementation
+calls the same `FlushFileBuffers` API on the same retained handle and preserves
+its failure behavior. No new security/locking abstraction or native write profile
+is introduced. Windows compilation and local IO tests are separate from actual
+Windows filesystem execution.
+
 That Windows-gated module is IO's sole local unsafe-code exception. IO declares
 `unsafe_code = "deny"` instead of inheriting the workspace's non-overridable
 `forbid`; workspace `forbid` and Clippy `all = "warn"` remain unchanged elsewhere.

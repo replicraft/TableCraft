@@ -13,6 +13,7 @@ use windows_sys::Wdk::Storage::FileSystem::{
     FILE_CREATE, FILE_NON_DIRECTORY_FILE, FILE_OPEN_REPARSE_POINT, FILE_SYNCHRONOUS_IO_NONALERT,
     FILE_WRITE_THROUGH, FileFsDeviceInformation, NtCreateFile, NtQueryVolumeInformationFile,
 };
+use windows_sys::Wdk::System::SystemServices::FILE_FS_DEVICE_INFORMATION;
 use windows_sys::Win32::Foundation::{
     GENERIC_READ, GENERIC_WRITE, HANDLE, INVALID_HANDLE_VALUE, RtlNtStatusToDosError,
     UNICODE_STRING,
@@ -20,11 +21,11 @@ use windows_sys::Win32::Foundation::{
 use windows_sys::Win32::Storage::FileSystem::{
     CreateFileW, DELETE, FILE_ADD_FILE, FILE_ATTRIBUTE_DIRECTORY, FILE_ATTRIBUTE_NORMAL,
     FILE_ATTRIBUTE_REPARSE_POINT, FILE_ATTRIBUTE_TAG_INFO, FILE_DISPOSITION_INFO,
-    FILE_FLAG_BACKUP_SEMANTICS, FILE_FLAG_OPEN_REPARSE_POINT, FILE_ID_INFO, FILE_LIST_DIRECTORY,
-    FILE_READ_ATTRIBUTES, FILE_RENAME_INFO, FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_TRAVERSE,
-    FileAttributeTagInfo, FileDispositionInfo, FileIdInfo, FileRenameInfo, FlushFileBuffers,
-    GetFileInformationByHandleEx, GetVolumeInformationByHandleW, OPEN_EXISTING, SYNCHRONIZE,
-    SetFileInformationByHandle,
+    FILE_FLAG_BACKUP_SEMANTICS, FILE_FLAG_OPEN_REPARSE_POINT, FILE_ID_INFO,
+    FILE_INFO_BY_HANDLE_CLASS, FILE_LIST_DIRECTORY, FILE_READ_ATTRIBUTES, FILE_RENAME_INFO,
+    FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_TRAVERSE, FileAttributeTagInfo, FileDispositionInfo,
+    FileIdInfo, FileRenameInfo, GetFileInformationByHandleEx, GetVolumeInformationByHandleW,
+    OPEN_EXISTING, SYNCHRONIZE, SetFileInformationByHandle,
 };
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 
@@ -85,12 +86,23 @@ impl From<CreateFailure> for PrivateCreateFailure {
     }
 }
 
-// FILE_FS_DEVICE_INFORMATION's two ULONG fields are fixed by the Windows ABI.
-#[repr(C)]
-#[derive(Default)]
-struct DeviceInformation {
-    device_type: u32,
-    characteristics: u32,
+// Each supported output owns its matching information class. Callers cannot
+// combine an arbitrary output layout with a different Windows information class.
+trait HandleInformation: Default {
+    const CLASS: FILE_INFO_BY_HANDLE_CLASS;
+}
+
+impl HandleInformation for FILE_ID_INFO {
+    const CLASS: FILE_INFO_BY_HANDLE_CLASS = FileIdInfo;
+}
+
+impl HandleInformation for FILE_ATTRIBUTE_TAG_INFO {
+    const CLASS: FILE_INFO_BY_HANDLE_CLASS = FileAttributeTagInfo;
+}
+
+#[cfg(feature = "filesystem-journal")]
+impl HandleInformation for FILE_STANDARD_INFO {
+    const CLASS: FILE_INFO_BY_HANDLE_CLASS = FileStandardInfo;
 }
 
 fn last_error() -> IoError {
@@ -105,14 +117,14 @@ fn handle(file: &File) -> HANDLE {
     file.as_raw_handle()
 }
 
-fn query<T: Default>(file: &File, class: i32) -> Result<T, IoError> {
+fn query<T: HandleInformation>(file: &File) -> Result<T, IoError> {
     let mut information = T::default();
     // SAFETY: information is a correctly aligned writable output of the selected
-    // Windows ABI structure. Every call site selects the matching information class.
+    // Windows ABI structure. The private trait binds that structure to its class.
     let success = unsafe {
         GetFileInformationByHandleEx(
             handle(file),
-            class,
+            T::CLASS,
             (&mut information as *mut T).cast(),
             size_of::<T>() as u32,
         )
@@ -124,7 +136,7 @@ fn query<T: Default>(file: &File, class: i32) -> Result<T, IoError> {
 }
 
 pub(crate) fn identity(file: &File) -> Result<FileIdentity, IoError> {
-    let information: FILE_ID_INFO = query(file, FileIdInfo)?;
+    let information: FILE_ID_INFO = query(file)?;
     Ok(FileIdentity {
         volume: information.VolumeSerialNumber,
         file_id: information.FileId.Identifier,
@@ -132,11 +144,9 @@ pub(crate) fn identity(file: &File) -> Result<FileIdentity, IoError> {
 }
 
 pub(crate) fn flush(file: &File) -> Result<(), IoError> {
-    // SAFETY: file retains a valid synchronous handle through the callback.
-    if unsafe { FlushFileBuffers(handle(file)) } == 0 {
-        return Err(last_error());
-    }
-    Ok(())
+    // On Windows, Rust's sync_all invokes FlushFileBuffers on this same retained
+    // handle, preserving the file and directory flush behavior and error path.
+    file.sync_all().map_err(Into::into)
 }
 
 /// Open a bounded terminated absolute directory path without following its
@@ -165,7 +175,7 @@ pub(crate) fn open_parent(path: &[u16]) -> Result<File, IoError> {
     }
     // SAFETY: successful CreateFileW returned unique ownership.
     let parent = unsafe { File::from_raw_handle(raw) };
-    let attributes: FILE_ATTRIBUTE_TAG_INFO = query(&parent, FileAttributeTagInfo)?;
+    let attributes: FILE_ATTRIBUTE_TAG_INFO = query(&parent)?;
     if attributes.FileAttributes & FILE_ATTRIBUTE_DIRECTORY == 0
         || attributes.FileAttributes & FILE_ATTRIBUTE_REPARSE_POINT != 0
     {
@@ -195,7 +205,7 @@ pub(crate) fn qualify_local_ntfs(parent: &File) -> Result<(), IoError> {
     if name[..5] != [78, 84, 70, 83, 0] {
         return Err(IoError::Io(ErrorKind::Unsupported));
     }
-    let mut device = DeviceInformation::default();
+    let mut device = FILE_FS_DEVICE_INFORMATION::default();
     let mut status = IO_STATUS_BLOCK::default();
     // SAFETY: synchronous directory handle and exact FILE_FS_DEVICE_INFORMATION
     // layout; output lives until the synchronous query completes.
@@ -203,15 +213,15 @@ pub(crate) fn qualify_local_ntfs(parent: &File) -> Result<(), IoError> {
         NtQueryVolumeInformationFile(
             handle(parent),
             &mut status,
-            (&mut device as *mut DeviceInformation).cast(),
-            size_of::<DeviceInformation>() as u32,
+            (&mut device as *mut FILE_FS_DEVICE_INFORMATION).cast(),
+            size_of::<FILE_FS_DEVICE_INFORMATION>() as u32,
             FileFsDeviceInformation,
         )
     };
     if result < 0 {
         return Err(nt_error(result));
     }
-    if device.device_type != FILE_DEVICE_DISK || device.characteristics & FILE_REMOTE_DEVICE != 0 {
+    if device.DeviceType != FILE_DEVICE_DISK || device.Characteristics & FILE_REMOTE_DEVICE != 0 {
         return Err(IoError::Io(ErrorKind::Unsupported));
     }
     Ok(())
@@ -368,8 +378,8 @@ pub(crate) fn delete_on_close(file: &File) -> Result<(), IoError> {
 
 #[cfg(feature = "filesystem-journal")]
 fn require_regular(file: &File, private: bool) -> Result<(), IoError> {
-    let attributes: FILE_ATTRIBUTE_TAG_INFO = query(file, FileAttributeTagInfo)?;
-    let standard: FILE_STANDARD_INFO = query(file, FileStandardInfo)?;
+    let attributes: FILE_ATTRIBUTE_TAG_INFO = query(file)?;
+    let standard: FILE_STANDARD_INFO = query(file)?;
     if attributes.FileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT) != 0
         || standard.Directory
         || standard.DeletePending
