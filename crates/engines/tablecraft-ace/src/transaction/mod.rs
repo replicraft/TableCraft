@@ -190,6 +190,13 @@ pub use intent::{
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
+    DefaultZeroAddColumnIntentError, NativeDefaultZeroAddColumnIntent,
+    QualifiedDefaultZeroAddColumnRecovery, RecoverableDefaultZeroAddColumnPlan,
+    qualify_native_default_zero_add_column_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
     DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
     RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
 };

@@ -94,6 +94,15 @@ pub use add_column::{
     RecoverableAddColumnPlan, qualify_native_add_column_recovery,
 };
 
+#[cfg(feature = "ace16-create")]
+mod default_zero_add_column;
+#[cfg(feature = "ace16-create")]
+pub use default_zero_add_column::{
+    DefaultZeroAddColumnIntentError, NativeDefaultZeroAddColumnIntent,
+    QualifiedDefaultZeroAddColumnRecovery, RecoverableDefaultZeroAddColumnPlan,
+    qualify_native_default_zero_add_column_recovery,
+};
+
 mod query_expression;
 pub use query_expression::{
     NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,

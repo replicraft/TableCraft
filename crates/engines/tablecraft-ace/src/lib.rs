@@ -284,6 +284,13 @@ pub use transaction::{
     RecoverableAddColumnPlan, qualify_native_add_column_recovery,
 };
 
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    DefaultZeroAddColumnIntentError, NativeDefaultZeroAddColumnIntent,
+    QualifiedDefaultZeroAddColumnRecovery, RecoverableDefaultZeroAddColumnPlan,
+    qualify_native_default_zero_add_column_recovery,
+};
+
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,
