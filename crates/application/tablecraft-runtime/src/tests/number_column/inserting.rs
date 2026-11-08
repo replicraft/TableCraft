@@ -35,7 +35,7 @@ fn added_number_accepts_omitted_null_and_supplied_rows_after_guarded_schema_reop
                 text: "unused explicit NULL input".into(),
                 is_null: true,
             }),
-            "",
+            "NULL",
             true,
         ),
         (
@@ -106,6 +106,9 @@ fn added_number_accepts_omitted_null_and_supplied_rows_after_guarded_schema_reop
         let row = &rows[position];
         assert_eq!(row[0].text, (position + 1).to_string());
         assert_eq!(row[1].text, expected);
-        assert_eq!(row[1].kind == CellKind::Null, is_null);
+        assert!(matches!(
+            row[1].kind,
+            CellKind::Scalar { is_null: actual, .. } if actual == is_null
+        ));
     }
 }
