@@ -1,15 +1,24 @@
 //! Append one empty Increment table while retaining existing native identities.
-mod append;
 mod audit;
 mod availability;
 mod build;
 mod geometry;
-mod source;
+pub(in crate::creation) mod source;
 
 use super::{CreateDatabaseError, FirstTableDefinition};
 use crate::{InspectError, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
+
+impl From<super::catalog_page::PageError> for AddTableError {
+    fn from(error: super::catalog_page::PageError) -> Self {
+        match error {
+            super::catalog_page::PageError::Inspect(error) => Self::Inspect(error),
+            super::catalog_page::PageError::Source => Self::Source,
+            super::catalog_page::PageError::Capacity => Self::Capacity,
+        }
+    }
+}
 
 pub use availability::{
     AddTableSourceCapabilities, add_table_source_available, add_table_source_capabilities,

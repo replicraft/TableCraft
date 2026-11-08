@@ -8,9 +8,9 @@ use super::super::{
 };
 use super::{
     AddTableError,
-    append::Page,
     source::{self, Source},
 };
+use crate::creation::catalog_page::Page;
 use crate::{
     InspectError, NativeImage,
     format::{layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},

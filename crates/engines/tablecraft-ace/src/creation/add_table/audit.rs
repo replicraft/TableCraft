@@ -1,4 +1,5 @@
 //! Independent original-byte envelope and decoded appended native role checks.
+use crate::creation::catalog_page::Page;
 mod catalog;
 mod definition;
 mod empty_pages;
@@ -6,7 +7,6 @@ mod properties;
 use super::super::FirstTableDefinition;
 use super::{
     AddTableError,
-    append::Page,
     source::{self, Source},
 };
 use crate::{

@@ -61,3 +61,16 @@ assumes the original seven-role ledger, so composition needs its own source guar
 and retained-intent qualification. Existing rename V1/V2 guards still require
 inline OFF properties and do not admit this new external-LVAL source. This
 reference supplies no normal option mutation, recovery or frontend admission.
+
+## Native candidate checkpoint
+
+`NativeImage::plan_disable_name_auto_correct` now constructs a separate owning
+candidate on the source-qualified single-table creator ledger. It reuses the
+existing native catalog record owner and shared dense-page append helper,
+appends the one external property LVAL page, and verifies exact unchanged source
+bytes outside the evidenced append/count/map-bit scope. It does not silently
+change creator defaults. This candidate has no original persistence intent,
+adapter/runtime review or frontend setting yet. Its compilation, focused
+candidate tests and SDK full-image comparisons are pending the coordinated batch.
+Existing add-table and rename contracts are unchanged: the newly added role is
+not automatically admitted by either earlier source language.

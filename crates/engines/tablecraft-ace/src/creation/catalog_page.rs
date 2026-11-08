@@ -1,5 +1,4 @@
 //! Checked dense DATA-page append without relocating a single existing record.
-use super::AddTableError;
 use crate::{
     InspectError,
     format::{
@@ -10,6 +9,17 @@ use crate::{
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub(super) enum PageError {
+    #[error(transparent)]
+    Inspect(#[from] InspectError),
+    #[error("dense native page source is unsupported")]
+    Source,
+    #[error("dense native page append capacity is exhausted")]
+    Capacity,
+}
 
 const HEADER_BYTES: usize = slot_offset(0);
 const SLOT_BYTES: usize = size_of::<u16>();
@@ -33,18 +43,18 @@ impl Page {
         owner: u32,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, AddTableError> {
+    ) -> Result<Self, PageError> {
         check(budget, cancelled)?;
         if raw.len() != PAGE_BYTES
             || raw[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || raw[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()] != owner.to_le_bytes()
             || raw[8..12] != [0; 4]
         {
-            return Err(AddTableError::Source);
+            return Err(PageError::Source);
         }
         let count = word(raw, 12);
         if count > MAX_SLOTS {
-            return Err(AddTableError::Source);
+            return Err(PageError::Source);
         }
         budget
             .charge_allocation(count as u64, size_of::<Range<usize>>() as u64)
@@ -59,13 +69,13 @@ impl Page {
             check(budget, cancelled)?;
             let start = word(raw, HEADER_BYTES + slot * SLOT_BYTES);
             if start < directory || start >= end {
-                return Err(AddTableError::Source);
+                return Err(PageError::Source);
             }
             records.push(start..end);
             end = start;
         }
         if word(raw, 2) != end - directory {
-            return Err(AddTableError::Source);
+            return Err(PageError::Source);
         }
         Ok(Self {
             count,
@@ -74,19 +84,16 @@ impl Page {
         })
     }
 
-    pub fn append(&mut self, raw: &mut [u8], length: usize) -> Result<Range<usize>, AddTableError> {
-        let start = self
-            .start
-            .checked_sub(length)
-            .ok_or(AddTableError::Capacity)?;
+    pub fn append(&mut self, raw: &mut [u8], length: usize) -> Result<Range<usize>, PageError> {
+        let start = self.start.checked_sub(length).ok_or(PageError::Capacity)?;
         let count = self
             .count
             .checked_add(1)
             .filter(|count| *count <= MAX_SLOTS)
-            .ok_or(AddTableError::Capacity)?;
+            .ok_or(PageError::Capacity)?;
         let directory = HEADER_BYTES + count * SLOT_BYTES;
         if start < directory {
-            return Err(AddTableError::Capacity);
+            return Err(PageError::Capacity);
         }
         let range = start..self.start;
         raw[range.clone()].fill(0);
@@ -103,7 +110,7 @@ impl Page {
         length: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<(), AddTableError> {
+    ) -> Result<(), PageError> {
         check(budget, cancelled)?;
         budget
             .charge(Resource::Steps, (length + 3 * SLOT_BYTES) as u64)

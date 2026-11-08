@@ -33,6 +33,9 @@ const LONG_WIDTH: usize = size_of::<i32>();
 const WIDE_WIDTH: usize = size_of::<i64>();
 const CATALOG_PROPERTY_FIELD: usize = 14;
 const CATALOG_PROPERTY_VARIABLE: usize = 8;
+const EXTERNAL_PROPERTY_BYTES: usize = 3 * size_of::<u32>();
+const SINGLE_PROPERTY_FLAG: u32 = 0x4000_0000;
+const DATABASE_SYSTEM_FLAGS: u32 = 0x8000_0000;
 
 pub(super) struct DataPage<'a> {
     bytes: &'a mut [u8],
@@ -271,13 +274,82 @@ pub(super) fn catalog_with_properties(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
+    catalog_record(
+        record,
+        object,
+        false,
+        properties.map_or(0, |properties| properties.inline_length()),
+        |destination, budget, cancelled| {
+            if let Some(properties) = properties {
+                properties.write_inline(destination, budget, cancelled)?;
+            }
+            Ok(())
+        },
+        budget,
+        cancelled,
+    )
+}
+
+/// A database metadata role with one already qualified external property body.
+pub(super) fn database_properties_catalog(
+    record: &mut [u8],
+    id: u32,
+    parent: u32,
+    reference: u32,
+    length: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    let object = profile::CatalogObject {
+        id,
+        parent,
+        name: stored_text::Plan::ascii_literal("MSysDb"),
+        system: true,
+    };
+    let length = u32::try_from(length).map_err(|_| CreateDatabaseError::Layout)?;
+    if length >= SINGLE_PROPERTY_FLAG {
+        return Err(CreateDatabaseError::Layout);
+    }
+    catalog_record(
+        record,
+        &object,
+        true,
+        EXTERNAL_PROPERTY_BYTES,
+        |destination, budget, cancelled| {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, EXTERNAL_PROPERTY_BYTES as u64)
+                .map_err(InspectError::from)?;
+            put32(destination, 0, length | SINGLE_PROPERTY_FLAG)?;
+            put32(destination, size_of::<u32>(), reference)?;
+            put32(destination, 2 * size_of::<u32>(), 0)?;
+            Ok(())
+        },
+        budget,
+        cancelled,
+    )
+}
+
+fn catalog_record(
+    record: &mut [u8],
+    object: &profile::CatalogObject<'_>,
+    database: bool,
+    property_bytes: usize,
+    write_properties: impl FnOnce(
+        &mut [u8],
+        &mut ResourceBudget,
+        &dyn Fn() -> bool,
+    ) -> Result<(), CreateDatabaseError>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
     let profile::CatalogObject {
         id,
         parent,
         name,
         system,
     } = *object;
-    if record.len() != catalog_length_with_properties(name, properties)? {
+    if catalog_length(name).checked_add(property_bytes) != Some(record.len()) {
         return Err(CreateDatabaseError::Layout);
     }
     let fields = profile::Fields::new(&profile::CATALOG_FIELDS);
@@ -289,7 +361,13 @@ pub(super) fn catalog_with_properties(
         catalog_fixed_offset(profile::CATALOG_PARENT)?,
         parent,
     )?;
-    let object_type = if id >= profile::ROOT_ID { 3 } else { 1 };
+    let object_type = if database {
+        2
+    } else if id >= profile::ROOT_ID {
+        3
+    } else {
+        1
+    };
     put16(
         record,
         catalog_fixed_offset(profile::CATALOG_TYPE)?,
@@ -298,7 +376,13 @@ pub(super) fn catalog_with_properties(
     put32(
         record,
         catalog_fixed_offset(profile::CATALOG_FLAGS)?,
-        if system { profile::SYSTEM_FLAGS } else { 0 },
+        if database {
+            DATABASE_SYSTEM_FLAGS
+        } else if system {
+            profile::SYSTEM_FLAGS
+        } else {
+            0
+        },
     )?;
 
     let mut position = fixed_end;
@@ -309,11 +393,11 @@ pub(super) fn catalog_with_properties(
     )?;
     position += name.byte_len();
     let name_end = position;
-    if let Some(properties) = properties {
+    if property_bytes != 0 {
         let end = position
-            .checked_add(properties.inline_length())
+            .checked_add(property_bytes)
             .ok_or(CreateDatabaseError::Layout)?;
-        properties.write_inline(
+        write_properties(
             record
                 .get_mut(position..end)
                 .ok_or(CreateDatabaseError::Layout)?,
@@ -333,7 +417,7 @@ pub(super) fn catalog_with_properties(
     for slot in (0..fields.variable_count()).rev() {
         let start = if slot == 0 {
             fixed_end
-        } else if properties.is_some() && slot <= CATALOG_PROPERTY_VARIABLE {
+        } else if property_bytes != 0 && slot <= CATALOG_PROPERTY_VARIABLE {
             name_end
         } else {
             eod
@@ -352,9 +436,12 @@ pub(super) fn catalog_with_properties(
         profile::CATALOG_CREATED,
         profile::CATALOG_UPDATED,
     ] {
+        if database && matches!(field, profile::CATALOG_CREATED | profile::CATALOG_UPDATED) {
+            continue;
+        }
         record[position + field / u8::BITS as usize] |= 1 << (field % u8::BITS as usize);
     }
-    if properties.is_some() {
+    if property_bytes != 0 {
         record[position + CATALOG_PROPERTY_FIELD / u8::BITS as usize] |=
             1 << (CATALOG_PROPERTY_FIELD % u8::BITS as usize);
     }

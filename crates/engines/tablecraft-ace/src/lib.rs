@@ -16,11 +16,11 @@ pub use collation::{
     inspect_database_sort_order, is_french_legacy_like_unit, is_general_like_unit,
 };
 mod queries;
+#[cfg(feature = "journal")]
+pub use queries::{NativeQueryExpressionPlan, QueryExpressionError};
 pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
 };
-#[cfg(feature = "journal")]
-pub use queries::{NativeQueryExpressionPlan, QueryExpressionError};
 mod constraints;
 #[cfg(feature = "ace16-create")]
 mod creation;
@@ -33,8 +33,8 @@ pub use creation::{
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use creation::{
-    AddTableError, AddTablePlan, AddTableSourceCapabilities, add_table_source_available,
-    add_table_source_capabilities,
+    AddTableError, AddTablePlan, AddTableSourceCapabilities, DatabaseOptionsError,
+    NativeDatabaseOptionsPlan, add_table_source_available, add_table_source_capabilities,
 };
 mod encryption;
 mod error;

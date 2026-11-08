@@ -4,8 +4,12 @@ mod add_column;
 mod add_table;
 mod autonumber;
 mod build;
+#[cfg(feature = "journal")]
+mod catalog_page;
 mod column;
 mod database;
+#[cfg(feature = "journal")]
+mod database_options;
 mod defaults;
 mod definition;
 mod first_table;
@@ -30,6 +34,8 @@ pub use database::{
     CreatedDatabase, create_ace16_database, create_ace16_database_tables,
     create_ace16_int32_database, create_blank_ace16_database,
 };
+#[cfg(feature = "journal")]
+pub use database_options::{DatabaseOptionsError, NativeDatabaseOptionsPlan};
 pub use first_table::{
     FirstTableDefinition, FirstTableError, FirstTablePlan, first_table_source_available,
 };

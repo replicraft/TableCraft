@@ -1,9 +1,9 @@
 //! Native source geometry and ownership, without a remembered creator flag.
 use super::{
     AddTableError,
-    append::Page,
     geometry::{Geometry, MAX_TABLES, Role, SYSTEM_OBJECTS, SYSTEM_PAGES},
 };
+use crate::creation::catalog_page::Page;
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, PayloadPresence, check_table,
     create_blank_ace16_database,
@@ -19,7 +19,7 @@ const MAP_RECORD_BYTES: usize = 13;
 const MAP_HEADER_BYTES: usize = 5;
 const TABLES_ID: i32 = 0x0f00_0001;
 
-pub(super) struct Source {
+pub(in crate::creation) struct Source {
     pub catalog: Page,
     pub maps: Page,
     pub geometry: Geometry,
@@ -56,7 +56,7 @@ pub(super) fn capture(
     Ok(source)
 }
 
-pub(super) fn require_name(
+pub(in crate::creation) fn require_name(
     image: &NativeImage,
     proposed: &str,
     budget: &mut ResourceBudget,
@@ -99,7 +99,7 @@ pub(super) fn qualify(
     qualify_geometry(image, geometry, true, budget, cancelled)
 }
 
-pub(super) fn qualify_geometry(
+pub(in crate::creation) fn qualify_geometry(
     image: &NativeImage,
     geometry: Geometry,
     legacy: bool,
@@ -419,7 +419,7 @@ fn qualify_table(
 
 /// Derive roles from ordered native catalog/schema facts before selecting a
 /// construction profile. This is not a fallback from failed legacy admission.
-pub(super) fn derive_geometry(
+pub(in crate::creation) fn derive_geometry(
     image: &NativeImage,
     keyed: bool,
     budget: &mut ResourceBudget,

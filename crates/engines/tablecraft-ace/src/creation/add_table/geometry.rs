@@ -10,13 +10,13 @@ pub(super) const MAPPED_PAGES: usize = MAP_BITMAP_BYTES * u8::BITS as usize;
 pub(super) const MAX_TABLES: usize = (MAPPED_PAGES - SYSTEM_PAGES) / 2;
 
 #[derive(Clone, Copy)]
-pub(super) struct PrimaryRole {
+pub(in crate::creation) struct PrimaryRole {
     pub root: usize,
     pub map: usize,
 }
 
 #[derive(Clone, Copy)]
-pub(super) struct Role {
+pub(in crate::creation) struct Role {
     pub definition: usize,
     pub data: usize,
     pub primary: Option<PrimaryRole>,
@@ -72,7 +72,7 @@ impl Role {
 }
 
 #[derive(Clone, Copy)]
-pub(super) struct Geometry {
+pub(in crate::creation) struct Geometry {
     pub tables: usize,
     pub before_pages: usize,
     pub after_pages: usize,

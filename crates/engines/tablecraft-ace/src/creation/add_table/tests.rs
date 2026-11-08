@@ -1,8 +1,9 @@
 //! Whole independently authored AFTER and bounded append/source refusals.
+use crate::creation::catalog_page::Page;
 mod legacy_source_targets;
 mod mixed;
 mod repeated;
-use super::{AddTableError, AddTablePlan, append::Page, audit, source};
+use super::{AddTableError, AddTablePlan, audit, source};
 use crate::{CreateColumn, FirstTableDefinition, NativeImage, read_table};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::{
@@ -172,7 +173,7 @@ fn append_capacity_refusal_is_atomic_and_existing_directory_offsets_do_not_move(
     let original = page.clone();
     assert!(matches!(
         layout.append(&mut page, 4096),
-        Err(AddTableError::Capacity)
+        Err(crate::creation::catalog_page::PageError::Capacity)
     ));
     assert_eq!(page, original);
     assert_eq!(layout.count, 8);
