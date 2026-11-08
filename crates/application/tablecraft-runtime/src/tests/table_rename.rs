@@ -4,8 +4,12 @@ use crate::{
     Command, Error, Response, ReviewedTableRename, SaveFailureKind, SaveOutcome, SaveSchemaChange,
     SaveStartFailure, SaveWorker, TableRenameReview,
 };
+use tablecraft_core::values::Value;
 use tablecraft_testkit::{
-    fixtures::access::canonical_catalog_names::rename_pair,
+    fixtures::access::{
+        canonical_catalog_names::rename_pair, canonical_indexed_rename,
+        canonical_ordinary_indexed::Case,
+    },
     support::access::retained_target::assert_retained_target_observation,
 };
 
@@ -35,8 +39,33 @@ fn review(
 
 #[test]
 fn reviewed_rename_saves_the_independent_image_and_reopens_without_record_counts() {
-    for header in [5, 6] {
-        let pair = rename_pair(header, "Items", "Renamed Ω", true);
+    for (header, indexed) in [
+        (5, None),
+        (6, None),
+        (5, Some(Case::UniqueManual)),
+        (6, Some(Case::CounterPrimary)),
+        (5, Some(Case::AliasHistory)),
+        (6, Some(Case::RetainedTree)),
+    ] {
+        let mut pair = rename_pair(header, "Items", "Renamed Ω", true);
+        if let Some(case) = indexed {
+            let source =
+                canonical_indexed_rename::pair(header, case, &pair.old_name, &pair.new_name);
+            pair.before = source.before;
+            pair.after = source.after;
+            pair.rows = source
+                .rows
+                .into_iter()
+                .map(|row| {
+                    row.into_iter()
+                        .map(|value| match value {
+                            Value::Int32(value) => value,
+                            other => panic!("expected ordinary Int32 fixture cell: {other:?}"),
+                        })
+                        .collect()
+                })
+                .collect();
+        }
         let (directory, path, worker, revision) = opened(&pair.before);
         let (review, capability) = review(&worker, revision, &pair.old_name, &pair.new_name);
         assert!(review.changed);
