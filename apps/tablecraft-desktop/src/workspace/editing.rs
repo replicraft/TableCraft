@@ -1,6 +1,7 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
 mod inserting;
+mod number_column;
 #[cfg(test)]
 mod pasting;
 mod query_action;
@@ -26,6 +27,7 @@ use tablecraft_ui::{
 pub(super) struct Editing {
     worker: SaveWorker,
     query_definition: Option<query_definition::QueryDefinitionHost>,
+    number_column: Option<number_column::NumberColumnHost>,
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
@@ -52,6 +54,7 @@ enum SaveOwner {
     Delete,
     TableCreation,
     TableRename,
+    NumberColumn,
     QueryAction,
     QueryDefinition,
 }
@@ -71,6 +74,7 @@ impl Editing {
         Self {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             query_definition: None,
+            number_column: None,
             review: None,
             insert_review: None,
             delete_review: None,
@@ -85,7 +89,10 @@ impl Editing {
     }
 
     pub(super) fn has_save(&self) -> bool {
-        self.save.is_some() || self.worker.is_busy() || self.query_definition.is_some()
+        self.save.is_some()
+            || self.worker.is_busy()
+            || self.query_definition.is_some()
+            || self.number_column.is_some()
     }
 
     pub(super) fn clear_refresh(&mut self) {
@@ -262,6 +269,10 @@ impl Desktop {
             self.query_definition_save_report(report);
             return;
         }
+        if matches!(save.owner, SaveOwner::NumberColumn) {
+            self.number_column_save_report(report);
+            return;
+        }
         if matches!(save.owner, SaveOwner::TableRename) {
             self.table_rename_save_report(report);
             return;
@@ -289,7 +300,7 @@ impl Desktop {
                 self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename => {}
+            SaveOwner::TableRename | SaveOwner::NumberColumn => {}
             SaveOwner::QueryDefinition => {}
         }
     }
@@ -306,6 +317,7 @@ impl Desktop {
     }
 
     pub(super) fn cancel_save(&mut self, id: u64) {
+        self.note_number_column_cancellation(id);
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
             self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
@@ -313,6 +325,23 @@ impl Desktop {
     }
 
     pub(super) fn resolve_save(&mut self, id: u64, recover: bool) {
+        if let Some(identity) = self
+            .editing
+            .number_column
+            .as_ref()
+            .and_then(|host| host.identity)
+            .filter(|identity| identity.save_id == id)
+        {
+            self.number_column_save_command(
+                identity,
+                if recover {
+                    tablecraft_ui::NumberColumnSaveCommand::Recover
+                } else {
+                    tablecraft_ui::NumberColumnSaveCommand::Release
+                },
+            );
+            return;
+        }
         if self.editing.query_definition.is_some()
             && !self.can_resolve_query_definition_save(id, recover)
         {
@@ -351,6 +380,7 @@ impl Desktop {
                     SaveOwner::QueryDefinition => {
                         self.query_definition_resolution_started(next);
                     }
+                    SaveOwner::NumberColumn => {}
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -359,6 +389,16 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if let Some(identity) = self
+            .editing
+            .number_column
+            .as_ref()
+            .and_then(|host| host.identity)
+            .filter(|identity| identity.save_id == id)
+        {
+            self.acknowledge_number_column(identity);
+            return;
+        }
         if self.editing.query_definition.is_some() {
             self.acknowledge_query_definition(id);
             return;
@@ -432,7 +472,7 @@ impl Desktop {
                 self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename => {}
+            SaveOwner::TableRename | SaveOwner::NumberColumn => {}
             SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {

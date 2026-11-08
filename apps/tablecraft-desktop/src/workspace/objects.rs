@@ -93,6 +93,7 @@ impl Desktop {
         }
         self.park_filter(filter);
         self.bind_active_filter();
+        self.inspect_number_column_availability();
         if let Some(open) = self.state.active_object_load() {
             self.load_object(open);
         }

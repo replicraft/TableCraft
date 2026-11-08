@@ -1,0 +1,132 @@
+//! Real headless saved-table widgets through Number review, actor and witness.
+use super::*;
+use crate::workspace::test_support::{self, finish_reads};
+use egui::{Key, accesskit::Role};
+use egui_kittest::kittest::Queryable;
+use std::time::{Duration, Instant};
+use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
+use tablecraft_ui::ObjectTarget;
+
+#[test]
+fn number_header_save_checks_after_and_preserves_tab_ids_order_and_scratch_sql() {
+    let before = raw::source(raw::Source::IdOnly);
+    let after = raw::append(&before, raw::Source::IdOnly, "Score");
+    let (_directory, path, _, mut harness) = test_support::opened(before);
+    harness.state_mut().state.number_column_available = true;
+    harness.state_mut().inspect_number_column_availability();
+    finish_reads(&mut harness);
+    let table = harness.state().state.active_object().unwrap();
+    let revision = table.target.document_revision;
+    assert!(harness.state().state.can_name_number_column(&table));
+    harness
+        .state_mut()
+        .state
+        .prepare_object_open(ObjectTarget {
+            document_revision: revision,
+            kind: ObjectKind::Sql,
+        })
+        .unwrap();
+    let exact_sql = "  SELECT 17 AS [Scratch]; -- keep exact user text\n";
+    assert!(
+        harness
+            .state_mut()
+            .state
+            .replace_query_sql(exact_sql.into())
+    );
+    harness.state_mut().activate_object(table.clone());
+    finish_reads(&mut harness);
+    let old_tabs = harness.state().state.object_tabs();
+    harness
+        .get_by_role_and_label(Role::Button, "Click to Add")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Number")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field name")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field name")
+        .type_text("Score");
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy || harness.state().editing.number_column.is_some() {
+        assert!(
+            Instant::now() < deadline,
+            "Number actor/witness did not finish"
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    finish_reads(&mut harness);
+    assert_eq!(std::fs::read(&path).unwrap(), after);
+    assert!(!journal_path(&path).exists());
+    assert!(!harness.state().state.number_column_open());
+    assert!(!harness.state().editing.has_save());
+    assert_eq!(harness.state().state.sql, exact_sql);
+    let fresh = harness.state().state.object_tabs();
+    assert_eq!(fresh.len(), old_tabs.len());
+    for (old, new) in old_tabs.iter().zip(&fresh) {
+        assert_eq!(old.id, new.id);
+        assert_eq!(old.target.kind, new.target.kind);
+        assert_ne!(old.target.document_revision, new.target.document_revision);
+    }
+    assert_eq!(harness.state().state.active_object().unwrap().id, table.id);
+    let page = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(page.columns.last().unwrap().name, "Score");
+    assert!(page.rows.is_empty());
+    assert_eq!(
+        page.source_revision,
+        Some(fresh[0].target.document_revision)
+    );
+}
+
+#[test]
+fn review_cancellation_latch_never_starts_actor_even_if_capability_finishes_first() {
+    let before = raw::source(raw::Source::IdOnly);
+    let (_directory, path, _, mut harness) = test_support::opened(before.clone());
+    harness.state_mut().state.number_column_available = true;
+    harness.state_mut().inspect_number_column_availability();
+    finish_reads(&mut harness);
+    let tab = harness.state().state.active_object().unwrap();
+    assert!(
+        harness
+            .state_mut()
+            .state
+            .begin_number_column_name(&tab, "Score".into())
+    );
+    let request = harness
+        .state()
+        .state
+        .number_column_review_request()
+        .unwrap();
+    harness.state_mut().save_number_column(request);
+    let id = harness
+        .state()
+        .editing
+        .number_column
+        .as_ref()
+        .unwrap()
+        .request_id;
+    harness.state_mut().cancel_number_column_review(id);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy {
+        assert!(Instant::now() < deadline);
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert!(harness.state().editing.number_column.is_none());
+    assert!(harness.state().editing.save.is_none());
+    assert_eq!(
+        harness.state().state.number_column_name().unwrap().1,
+        "Score"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert!(!journal_path(&path).exists());
+}

@@ -35,6 +35,16 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    NumberColumnAvailability {
+        request_id: u64,
+        tab: tablecraft_ui::ObjectTab,
+    },
+    NumberColumnReview {
+        request_id: u64,
+    },
+    NumberColumnReopen {
+        request_id: u64,
+    },
     QueryDefinitionReview {
         request_id: u64,
     },
@@ -423,10 +433,14 @@ impl Desktop {
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::DatabaseOptionsReviewed { .. })
-                | Ok(Response::AddColumnReviewed { .. })
-                | Ok(Response::NumberColumnReviewed { .. })
-                | Ok(Response::NumberColumnAvailability { .. }) => {
+                | Ok(Response::AddColumnReviewed { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
+                Ok(Response::NumberColumnReviewed { review, capability }) => {
+                    self.start_reviewed_number_column(generation, review, capability);
+                }
+                Ok(Response::NumberColumnAvailability { availability }) => {
+                    self.publish_number_column_availability(generation, availability);
                 }
                 Ok(Response::TableRenameReviewed { review, capability }) => {
                     self.start_reviewed_table_rename(generation, review, capability);
@@ -531,6 +545,15 @@ impl Desktop {
                             })
                             .collect(),
                     };
+                    if let PendingOperation::NumberColumnReopen { request_id } = self.pending {
+                        self.finish_number_column_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
                     if let PendingOperation::QueryDefinitionReopen { request_id } = self.pending {
                         self.finish_query_definition_reopen(
                             request_id,
@@ -650,6 +673,7 @@ impl Desktop {
                         _ => {
                             if self.state.set_table_data(data) {
                                 self.filter = None;
+                                self.inspect_number_column_availability();
                             }
                         }
                     }
@@ -686,6 +710,17 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::NumberColumnAvailability { .. } => {
+                        self.number_column_availability_failed(generation, error.to_string())
+                    }
+                    PendingOperation::NumberColumnReview { request_id } => {
+                        let id = *request_id;
+                        self.number_column_review_failed(id, error.to_string());
+                    }
+                    PendingOperation::NumberColumnReopen { request_id } => {
+                        let id = *request_id;
+                        self.number_column_reopen_failed(id, error.to_string());
+                    }
                     PendingOperation::TableRenameReview { request_id } => {
                         self.table_rename_review_failed(*request_id, error.to_string());
                     }
@@ -994,6 +1029,16 @@ impl eframe::App for Desktop {
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
                 Action::SavedQuerySqlClose { result } => {
                     self.finish_saved_query_sql_close(result, ui.ctx());
+                }
+                Action::ReviewNumberColumn { request } => self.save_number_column(request),
+                Action::RetryNumberColumnInspection { tab } => {
+                    self.retry_number_column_availability(tab)
+                }
+                Action::CancelNumberColumnReview { request_id } => {
+                    self.cancel_number_column_review(request_id)
+                }
+                Action::NumberColumnSave { identity, command } => {
+                    self.number_column_save_command(identity, command)
                 }
                 Action::ReviewSavedQuerySql { request } => {
                     self.save_query_definition(request);
