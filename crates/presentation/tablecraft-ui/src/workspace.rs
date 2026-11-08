@@ -45,12 +45,13 @@ pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
+pub use query::parameters::{ParameterInput, ParameterSpec};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
 pub use recovery::RecoveryOutcome;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use save_display::SaveCleanupNotice;
-pub use saved_query::{ParameterInput, ParameterSpec, SavedQuery, SavedQueryTarget};
+pub use saved_query::{SavedQuery, SavedQueryTarget};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 pub use table_draft::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
 pub use totals::{

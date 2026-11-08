@@ -10,6 +10,8 @@ use tablecraft_testkit::fixtures::access::saved_queries::{
 };
 use tablecraft_ui::{EditTarget, ObjectKind, ObjectTarget};
 
+const EXCESS_PARAMETER_STORAGE_BYTES: usize = 64 * 1024 * 1024;
+
 fn row(attribute: u8) -> Fragment<'static> {
     Fragment {
         object: Some(QUERY_ID),
@@ -161,4 +163,38 @@ fn stale_saved_actions_cannot_replace_a_new_open_or_dispatch_changed_inputs() {
     );
     assert_eq!(desktop.generation, generation);
     assert!(!desktop.state.busy);
+}
+
+#[test]
+fn excessive_empty_parameter_capacity_refuses_before_dispatch_and_preserves_saved_results() {
+    let (_directory, path, original, context, mut desktop) = opened();
+    let selected = target(&desktop);
+    desktop.inspect_saved_query(selected.clone());
+    finish(&mut desktop, &context);
+    desktop.run_saved_query(selected.clone(), Vec::new());
+    finish(&mut desktop, &context);
+    assert_eq!(desktop.state.selected_cell_text(), Some("2"));
+    let previous_cell = desktop.state.selected_cell_text().unwrap().as_ptr();
+    let previous_tab = desktop.state.active_object();
+    let generation = desktop.generation;
+    assert!(desktop.worker.poll().is_none());
+
+    let capacity = EXCESS_PARAMETER_STORAGE_BYTES / size_of::<ParameterInput>() + 1;
+    let parameters = Vec::<ParameterInput>::with_capacity(capacity);
+    assert!(parameters.is_empty());
+    assert!(parameters.capacity() * size_of::<ParameterInput>() > EXCESS_PARAMETER_STORAGE_BYTES);
+    assert!(desktop.state.can_run_saved_query(&selected, &parameters));
+    desktop.run_saved_query(selected.clone(), parameters);
+
+    assert_eq!(desktop.generation, generation);
+    assert!(!desktop.state.busy);
+    assert!(desktop.worker.poll().is_none());
+    assert_eq!(desktop.state.selected_saved_target(), Some(&selected));
+    assert_eq!(desktop.state.active_object(), previous_tab);
+    assert_eq!(desktop.state.selected_cell_text(), Some("2"));
+    assert_eq!(
+        desktop.state.selected_cell_text().unwrap().as_ptr(),
+        previous_cell
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
 }

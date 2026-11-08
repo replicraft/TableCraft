@@ -145,9 +145,9 @@ Beyond the implementation work, release accounting still includes:
   save/reopen, cancellation, corruption and recovery, with source/output hashes.
 - Connected preservation, constraint, macro, encryption, stale-revision and
   failure tests for every advertised write path. Read success does not qualify writes.
-- Correct retained-memory accounting for staged parameter prompts; the existing
-  saved prompt currently omits its cloned declarations/inputs from its retained
-  byte count and does not preflight their construction.
+- Connected scratch parameter acquisition and stale SQL/tab/document handling.
+  Shared saved-prompt staging and pending-input capacity accounting are now checked;
+  that does not connect the scratch prompt automatically.
 - Usable save/dirty-record/undo workflows, source-bound confirmations and errors,
   keyboard/focus/clipboard/IME/accessibility, large-data responsiveness,
   persistent Options, light/dark themes and all eight sectioned Fluent catalogs.

@@ -12,7 +12,7 @@ use session::{Entry, Session};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 const MAX_OBJECTS: usize = 16;
-const MAX_RETAINED_BYTES: usize = 64 * 1024 * 1024;
+pub(in crate::workspace) const MAX_RETAINED_BYTES: usize = 64 * 1024 * 1024;
 static NEXT_OBJECT_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]

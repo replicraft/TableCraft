@@ -16,6 +16,29 @@ The [shared runtime parameter service](../application/RUNTIME.md#scratch-query-p
 now provides inert declaration inspection and source-bound typed execution;
 that API alone does not connect a desktop prompt.
 
+## Shared parameter presentation
+
+`workspace::query::parameters` owns the renderer-neutral parameter DTOs, literal
+input admission, typed controls and staged prompt body. The existing saved-query
+consumer retains its own target, publication and original-input checks. Scratch
+prompt ownership and desktop routing remain the next integration step.
+
+Saved prompt declarations, original/draft inputs, target names and pending input
+vectors now count their allocated capacities toward the shared 64 MiB retained
+presentation allowance. Clone admission happens before construction, with an
+actual-capacity recheck. Editing includes the detached modal's memory and an
+independently admitted current-value candidate. Rejection retains the previous
+staged allocation; successful confirmation admits its action copies before
+changing committed inputs or clearing saved results. The desktop checks actual
+owned vector capacity before dispatching a worker request.
+
+Ordinary Unicode Undo/Redo is preserved. Under extreme pressure where a current
+value cannot be copied within the allowance, input is disabled for that frame
+and Cancel remains available. The allowance covers retained presentation and
+explicit staging copies, not all renderer caches or process memory. Existing
+1 MiB logical parameter-input admission remains separate. No query semantics,
+native write eligibility or saved-result success behavior is expanded.
+
 ## SQL edit witnesses
 
 Actual scratch editor changes advance a checked presentation-owned revision.

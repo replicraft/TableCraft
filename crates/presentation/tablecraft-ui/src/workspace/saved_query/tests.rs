@@ -1,5 +1,6 @@
 use super::*;
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
+use crate::workspace::query::parameters::MAX_INPUT_BYTES;
 use crate::{Database, SavedQuery};
 
 fn state() -> (State, SavedQueryTarget) {

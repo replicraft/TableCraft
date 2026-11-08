@@ -1,26 +1,25 @@
-//! Parameter acquisition stages literal inputs; only final confirmation may run.
-use super::{
-    ParameterInput, ParameterSpec, SavedQueryTarget, editor, input_admitted, inputs_admitted,
-};
-use crate::localization::tr;
+//! Parameter acquisition retains saved-query authority around shared controls.
+use super::SavedQueryTarget;
+use crate::workspace::objects::MAX_RETAINED_BYTES;
+use crate::workspace::query::parameters::prompt::{Outcome, PromptBody};
+use crate::workspace::query::parameters::{copy_inputs, copy_text, input_copy_bytes};
 use crate::workspace::{Action, State};
-use egui::{Id, Key, Modifiers, Popup};
-
-const PROMPT_WIDTH: f32 = 320.0;
-const MAX_PROMPT_BODY_HEIGHT: f32 = 180.0;
+use egui::Id;
 
 pub(super) struct Session {
     target: SavedQueryTarget,
-    declarations: Vec<ParameterSpec>,
-    original: Vec<ParameterInput>,
-    draft: Vec<ParameterInput>,
+    body: PromptBody,
     publication: u64,
-    index: usize,
-    focus_input: bool,
-    input_rejected: bool,
 }
 
 impl Session {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
+        self.target
+            .name
+            .capacity()
+            .checked_add(self.body.retained_bytes()?)
+    }
+
     fn current(&self, state: &State) -> bool {
         self.publication == state.focus_publication
             && state.saved_query_visible()
@@ -30,8 +29,8 @@ impl Session {
             && state.contents_request_id().is_none()
             && state.saved_query_binding(&self.target)
             && state.saved_query.target.as_ref() == Some(&self.target)
-            && state.saved_query.parameters.as_ref() == Some(&self.declarations)
-            && state.saved_query.inputs == self.original
+            && state.saved_query.parameters.as_ref() == Some(&self.body.declarations)
+            && state.saved_query.inputs == self.body.original
             && state.saved_query.pending.is_none()
     }
 }
@@ -63,18 +62,44 @@ impl State {
         }
         let declarations = self.saved_query.parameters.as_ref()?;
         if declarations.is_empty() {
-            return self.saved_query_run_action();
+            let action = self.saved_query_run_action();
+            if action.is_none() {
+                self.error = Some(self.localizer.text("objects-memory-limit"));
+            }
+            return action;
         }
-        self.saved_query.prompt = Some(Session {
-            target: self.saved_query.target.as_ref()?.clone(),
-            declarations: declarations.clone(),
-            original: self.saved_query.inputs.clone(),
-            draft: self.saved_query.inputs.clone(),
+        let target = self.saved_query.target.as_ref()?;
+        let projected = PromptBody::copy_bytes(declarations, &self.saved_query.inputs)?
+            .checked_add(target.name.len())?;
+        if self.object_bytes()?.checked_add(projected)? > MAX_RETAINED_BYTES {
+            self.error = Some(self.localizer.text("objects-memory-limit"));
+            return None;
+        }
+        let Some(body) = PromptBody::new(declarations, &self.saved_query.inputs) else {
+            self.error = Some(self.localizer.text("objects-memory-limit"));
+            return None;
+        };
+        let Some(name) = copy_text(&target.name) else {
+            self.error = Some(self.localizer.text("objects-memory-limit"));
+            return None;
+        };
+        let session = Session {
+            target: SavedQueryTarget {
+                document_revision: target.document_revision,
+                object_id: target.object_id,
+                name,
+            },
+            body,
             publication: self.focus_publication,
-            index: 0,
-            focus_input: true,
-            input_rejected: false,
-        });
+        };
+        if self
+            .object_bytes()?
+            .checked_add(session.retained_bytes()?)?
+            > MAX_RETAINED_BYTES
+        {
+            return None;
+        }
+        self.saved_query.prompt = Some(session);
         None
     }
 
@@ -89,107 +114,58 @@ impl State {
         if !session.current(self) {
             return;
         }
-        let popup_open = Popup::is_any_open(ctx);
-        let mut confirm = false;
-        let mut cancel =
-            !popup_open && ctx.input_mut(|input| input.consume_key(Modifiers::NONE, Key::Escape));
+        let available = self
+            .object_bytes()
+            .and_then(|bytes| bytes.checked_add(session.retained_bytes()?))
+            .and_then(|bytes| MAX_RETAINED_BYTES.checked_sub(bytes))
+            .unwrap_or(0);
         let id = Id::new((
             "saved_query_prompt",
             session.target.document_revision,
             session.target.object_id,
         ));
-        egui::Modal::new(id).show(ctx, |ui| {
-            ui.set_width(PROMPT_WIDTH);
-            ui.label(egui::RichText::new(tr(ui, "saved-query-prompt-title")).strong());
-            ui.separator();
-            let used_bytes = super::input_bytes(&session.draft).unwrap_or(usize::MAX);
-            let other_bytes = used_bytes.saturating_sub(session.draft[session.index].text.len());
-            let text_limit = super::MAX_INPUT_BYTES.saturating_sub(other_bytes);
-            let response = ui
-                .push_id(session.index, |ui| {
-                    editor::parameters(
-                        ui,
-                        std::slice::from_ref(&session.declarations[session.index]),
-                        &mut session.draft[session.index..=session.index],
-                        MAX_PROMPT_BODY_HEIGHT,
-                        session.focus_input,
-                        text_limit,
-                    )
-                })
-                .inner;
-            confirm |= response.submitted;
-            if response.rejected {
-                session.input_rejected = true;
-            } else if response.changed {
-                session.input_rejected = false;
-            }
-            session.focus_input = false;
-            if session.input_rejected || !super::inputs_within_limits(&session.draft) {
-                ui.small(tr(ui, "saved-query-input-limit"));
-            }
-            ui.small(tr(ui, "saved-query-prompt-validation"));
-            ui.separator();
-            let ok_label = tr(ui, "saved-query-prompt-ok");
-            let cancel_label = tr(ui, "saved-query-prompt-cancel");
-            let button_width = |label: &str| {
-                let text = egui::WidgetText::from(label).into_galley(
-                    ui,
-                    Some(egui::TextWrapMode::Extend),
-                    f32::INFINITY,
-                    egui::TextStyle::Button,
-                );
-                text.size().x + ui.spacing().button_padding.x * 2.0
-            };
-            let ok_width = button_width(&ok_label);
-            let cancel_width = button_width(&cancel_label);
-            let group_width = ok_width + cancel_width + ui.spacing().item_spacing.x;
-            let button_height = ui.spacing().interact_size.y;
-            ui.horizontal(|ui| {
-                ui.add_space((ui.available_width() - group_width).max(0.0));
-                let admitted = input_admitted(
-                    &session.declarations[session.index],
-                    &session.draft[session.index],
-                ) && !session.input_rejected
-                    && super::inputs_within_limits(&session.draft);
-                let ok = ui
-                    .add_enabled_ui(admitted, |ui| {
-                        ui.add_sized(
-                            egui::vec2(ok_width, button_height),
-                            egui::Button::new(ok_label).wrap_mode(egui::TextWrapMode::Extend),
-                        )
-                    })
-                    .inner;
-                confirm = admitted && (confirm || ok.clicked());
-                cancel |= ui
-                    .add_sized(
-                        egui::vec2(cancel_width, button_height),
-                        egui::Button::new(cancel_label).wrap_mode(egui::TextWrapMode::Extend),
-                    )
-                    .clicked();
-            });
-        });
-        if cancel || !session.current(self) {
+        let outcome = session.body.show(ctx, id, available);
+        if matches!(outcome, Outcome::Cancel) || !session.current(self) {
             return;
         }
-        if confirm {
-            if session.index + 1 < session.declarations.len() {
-                session.index += 1;
-                session.focus_input = true;
-            } else if inputs_admitted(&session.declarations, &session.draft) {
-                if self.saved_query.inputs != session.draft {
-                    self.saved_query.inputs = session.draft;
-                    self.saved_query.data = None;
-                    self.saved_query.selection.clear();
-                    self.saved_query.error = None;
-                    self.bump_focus_publication();
-                }
-                if let Some(action) = self.saved_query_run_action() {
-                    actions.push(action);
-                }
+        if matches!(outcome, Outcome::Confirmed) {
+            if let Some(action) = self.confirm_saved_prompt(&mut session) {
+                actions.push(action);
                 return;
             }
+            session.body.input_rejected = true;
         }
         self.saved_query.prompt = Some(session);
+    }
+
+    fn confirm_saved_prompt(&mut self, session: &mut Session) -> Option<Action> {
+        let copies =
+            input_copy_bytes(&session.body.draft)?.checked_add(session.target.name.len())?;
+        let base = self
+            .object_bytes()?
+            .checked_add(session.retained_bytes()?)?;
+        if base.checked_add(copies)? > MAX_RETAINED_BYTES {
+            return None;
+        }
+        let parameters = copy_inputs(&session.body.draft)?;
+        let target = SavedQueryTarget {
+            document_revision: session.target.document_revision,
+            object_id: session.target.object_id,
+            name: copy_text(&session.target.name)?,
+        };
+        let actual = crate::workspace::query::parameters::retained_inputs(&parameters)?
+            .checked_add(target.name.capacity())?;
+        if base.checked_add(actual)? > MAX_RETAINED_BYTES {
+            return None;
+        }
+        if self.saved_query.inputs != session.body.draft {
+            self.saved_query.inputs = std::mem::take(&mut session.body.draft);
+            self.saved_query.data = None;
+            self.saved_query.selection.clear();
+            self.saved_query.error = None;
+            self.bump_focus_publication();
+        }
+        Some(Action::RunSavedQuery { target, parameters })
     }
 }
 

@@ -3,11 +3,12 @@ mod editor;
 mod prompt;
 
 use super::objects::memory::{self, Counter};
+use super::query::parameters::{
+    MAX_PARAMETERS, ParameterInput, ParameterSpec, copy_inputs, copy_text, input_copy_bytes,
+    inputs_admitted, inputs_within_limits, retained_inputs,
+};
 use super::{Action, Data, DocumentView, State};
 use crate::datasheet::Selection;
-
-const MAX_PARAMETERS: usize = 256;
-const MAX_INPUT_BYTES: usize = 1_048_576;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SavedQueryTarget {
@@ -20,22 +21,6 @@ pub struct SavedQuery {
     pub object_id: u128,
     pub name: String,
     pub system: bool,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ParameterSpec {
-    pub name: String,
-    pub kind: String,
-    pub label: String,
-    pub nullable: bool,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ParameterInput {
-    pub name: String,
-    pub kind: String,
-    pub text: String,
-    pub is_null: bool,
 }
 
 struct Pending {
@@ -130,6 +115,16 @@ impl SavedQueryState {
                 count.string(name);
                 count.string(kind);
             }
+        }
+        if let Some(prompt) = &self.prompt {
+            count.add(prompt.retained_bytes()?);
+        }
+        if let Some(parameters) = self
+            .pending
+            .as_ref()
+            .and_then(|pending| pending.parameters.as_ref())
+        {
+            count.add(retained_inputs(parameters)?);
         }
         count.optional(&self.error);
         count.finish()
@@ -269,7 +264,8 @@ impl State {
         target: &SavedQueryTarget,
         parameters: &[ParameterInput],
     ) -> bool {
-        !self.busy
+        self.saved_parameter_copy_fits(parameters)
+            && !self.busy
             && self.saved_query_visible()
             && !self.backstage_visible()
             && !self.zoom_dialog_open()
@@ -381,15 +377,43 @@ impl State {
     }
 
     pub(super) fn saved_query_run_action(&self) -> Option<Action> {
-        self.saved_query_run_ready().then(|| Action::RunSavedQuery {
-            target: self
-                .saved_query
-                .target
-                .as_ref()
-                .expect("admitted saved query")
-                .clone(),
-            parameters: self.saved_query.inputs.clone(),
+        if !self.saved_query_run_ready() {
+            return None;
+        }
+        let target = self.saved_query.target.as_ref()?;
+        let copied_target = SavedQueryTarget {
+            document_revision: target.document_revision,
+            object_id: target.object_id,
+            name: copy_text(&target.name)?,
+        };
+        let parameters = copy_inputs(&self.saved_query.inputs)?;
+        let copied_bytes =
+            retained_inputs(&parameters)?.checked_add(copied_target.name.capacity())?;
+        if self.object_bytes()?.checked_add(copied_bytes)? > super::objects::MAX_RETAINED_BYTES {
+            return None;
+        }
+        Some(Action::RunSavedQuery {
+            target: copied_target,
+            parameters,
         })
+    }
+
+    /// Admission for the actual owned vector before the host dispatches a run.
+    #[allow(clippy::ptr_arg)] // Spare vector capacity is part of retained-memory admission.
+    pub fn can_retain_saved_query_parameters(&self, parameters: &Vec<ParameterInput>) -> bool {
+        self.object_bytes()
+            .and_then(|bytes| bytes.checked_add(retained_inputs(parameters)?))
+            .is_some_and(|bytes| bytes <= super::objects::MAX_RETAINED_BYTES)
+    }
+
+    fn saved_parameter_copy_fits(&self, parameters: &[ParameterInput]) -> bool {
+        self.object_bytes()
+            .and_then(|bytes| {
+                bytes
+                    .checked_add(input_copy_bytes(parameters)?)?
+                    .checked_add(self.saved_query.target.as_ref()?.name.len())
+            })
+            .is_some_and(|bytes| bytes <= super::objects::MAX_RETAINED_BYTES)
     }
 
     pub fn selected_saved_target(&self) -> Option<&SavedQueryTarget> {
@@ -401,37 +425,5 @@ impl State {
     }
 }
 
-fn inputs_within_limits(parameters: &[ParameterInput]) -> bool {
-    parameters.len() <= MAX_PARAMETERS
-        && input_bytes(parameters).is_some_and(|bytes| bytes <= MAX_INPUT_BYTES)
-}
-
-fn input_bytes(parameters: &[ParameterInput]) -> Option<usize> {
-    parameters.iter().try_fold(0usize, |bytes, parameter| {
-        bytes
-            .checked_add(parameter.name.len())?
-            .checked_add(parameter.kind.len())?
-            .checked_add(parameter.text.len())
-    })
-}
-
 #[cfg(test)]
 mod tests;
-
-fn inputs_admitted(specs: &[ParameterSpec], parameters: &[ParameterInput]) -> bool {
-    inputs_within_limits(parameters)
-        && specs.len() == parameters.len()
-        && specs
-            .iter()
-            .zip(parameters)
-            .all(|(spec, input)| input_admitted(spec, input))
-}
-
-fn input_admitted(spec: &ParameterSpec, input: &ParameterInput) -> bool {
-    spec.name == input.name
-        && (spec.kind == "value" || spec.kind == input.kind)
-        && (spec.nullable || !input.is_null)
-        && editor::INPUT_KINDS
-            .iter()
-            .any(|(kind, _)| *kind == input.kind)
-}

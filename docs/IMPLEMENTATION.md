@@ -1,5 +1,27 @@
 # Implementation status
 
+## Shared parameter prompt and memory admission — 7 November 2026
+
+Parameter models, typed controls and staged dialog body now have one shared UI
+owner, consumed by the working saved-query flow. Saved identity/publication and
+original-input checks remain with that flow. All prompt and pending-input heap
+capacities are counted; projected and actual clone admission, detached-session
+edit candidates and pre-dispatch vector checks close the audited quota gaps.
+Refusal preserves committed inputs/results and existing staged allocations.
+Final confirmation admits action copies before committing changed saved inputs.
+
+All 486 UI and 121 desktop tests pass, including 19 focused saved-query cases,
+three actual-widget memory cases, Unicode Undo/Redo and the real host's empty
+vector with excessive spare capacity. Strict affected-package lint, formatting,
+package boundaries and Windows x64/ARM64, Intel macOS and Linux x64/ARM64
+compilation pass. Initial compile/focused and corrected logs remain under ignored
+`.cache/gui-shared-parameter-prompt-*20261107.log`. These are headless macOS ARM64
+execution and nonnative compile checks, not native Access/platform parity.
+
+The [presentation record](ui/PRESENTATION_PREVIEW.md#shared-parameter-dialog--7-november-2026)
+records the offscreen review and extreme-quota editing limit. Scratch prompt
+wiring, action SQL and persisted schema CRUD remain unfinished.
+
 ## Checked scratch SQL edit witnesses — 7 November 2026
 
 Shared UI state now tracks actual SQL editor changes, QBE replacements and

@@ -1,5 +1,33 @@
 # Presentation preview
 
+## Shared parameter dialog — 7 November 2026
+
+The existing saved-parameters scene now consumes the shared parameter models,
+controls and staged prompt body. Its saved-target/publication/original-input
+witness remains separate. No scratch prompt, native query write or new backend
+action is activated by this extraction.
+
+The actual cached Microsoft parameter dialog was reopened: 233×123 pixels,
+application build/DPI unknown, SHA-256 unchanged from the
+[reference record](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026).
+One label/input and the OK/Cancel grouping remain the reference; VALUE carrier
+choices and explicit NULL are TableCraft profile extensions. Dark appearance and
+native interaction remain separate qualification limits.
+
+Four normal-host offscreen frames in ignored
+`.cache/ui-previews/shared-parameter-prompt-20261107/` cover English light and
+Russian dark at 1280×820, 1×; German dark at 900×580 logical points, 1.25×
+(1125×725 pixels); and Japanese light at 900×580, 2× (1800×1160 pixels).
+All four were rendered and inspected using macOS ARM64 with Windows input
+emulation. No native app windows were opened.
+
+Actual-widget tests retain input ordering, focus, popup behavior, button layout,
+logical size guards and Unicode Undo/Redo. Three memory cases cover opening,
+staging, refusal and Cancel release. If extreme retained-memory pressure prevents
+even copying the current input, editing is disabled for that frame and Cancel
+remains usable; idle alone does not report a rejected edit. This limit is explicit,
+not a native Access resource-policy qualification.
+
 ## Legacy DATE display residue — 7 November 2026
 
 `TABLECRAFT_PREVIEW_DATE_RESIDUE=seconds|fractional|raw` injects one independent

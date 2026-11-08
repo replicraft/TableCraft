@@ -42,7 +42,10 @@ impl Desktop {
         target: SavedQueryTarget,
         parameters: Vec<ParameterInput>,
     ) {
-        if self.editing.has_save() || !self.state.can_run_saved_query(&target, &parameters) {
+        if self.editing.has_save()
+            || !self.state.can_run_saved_query(&target, &parameters)
+            || !self.state.can_retain_saved_query_parameters(&parameters)
+        {
             return;
         }
 
