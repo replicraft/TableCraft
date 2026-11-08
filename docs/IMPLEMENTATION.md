@@ -24,16 +24,21 @@ cross-compilers. Native Windows/Access execution remains unqualified. [End-to-en
 time is noisy and overlapped packaging metadata work; the report makes no
 universal or isolated-crypto speedup claim.
 
-[Persisted table rename](access/writes/TABLE_RENAME.md) now connects the native
-plan and original recovery intent through shared offline services to navigation
-and desktop saves. Its unindexed, single-table, Name AutoCorrect OFF source
-profile does not admit current ordinary creator layouts. Broader creator/indexed
-qualification, explicit database options and remaining saved table/column CRUD
-are still required. An explicit retained-index rename planner is now checkpointed
-with 42 independent image pairs passing focused checks and a passing journal-only
-configuration check. It returns only an unpublished candidate and remains outside
-the existing journal/UI admission; frozen TCRN0001 stays unindexed. SDK and native
-Access comparison for this indexed extension remain unrun. No general CRUD completion is claimed. Web and the broader
+[Persisted table rename](access/writes/TABLE_RENAME.md) connects native plans,
+original recovery intents, shared offline services and Navigation Pane desktop
+saves. The retained single-Int32 user-index extension now has a separate
+TCRN0002/profile-2 intent, selected by runtime review; frozen TCRN0001 stays
+unindexed. Complete-image candidate checks pass across 42 independent image pairs,
+and the focused engine rename batch passes all 27 cases, including the new V2
+intent and recovery tests. The connected checks pass six adapter, five runtime
+and four headless desktop cases; the independent fitting-query testkit golden
+also passes. The earlier journal-only configuration check passes; SDK and native
+Access comparison for this indexed extension remain unrun.
+
+Current ordinary creator layouts still refuse: they retain missing/ON Name
+AutoCorrect, a different system catalog and optional field properties. Explicit
+database options, broader creator qualification and remaining saved table/column
+CRUD are required. No general CRUD completion is claimed. Web and the broader
 coordinated localization pass remain later delivery gates.
 
 ## Native library refactors — 8 November 2026

@@ -8,7 +8,8 @@ and timestamp behavior remain unqualified.
 
 Current GUI-created databases do not yet enter this profile: creators retain the
 missing/ON Name AutoCorrect default and seven original system roles; the usual
-indexed ID and optional field properties also require broader qualification.
+optional field properties also require broader qualification. Unchanged single-Int32
+user indexes are admitted by the versioned retained-index route below.
 This is not complete usable table CRUD for the creator baseline. Existing frozen
 construction/recovery profiles must not be silently changed to force admission.
 
@@ -92,12 +93,19 @@ Crossed version/profile pairs and unknown versions refuse without another decode
 or planner attempt. Indexed source admission still requires positive disabled
 Name AutoCorrect and all original closed-catalog restrictions.
 
-Five new focused intent tests and independent V2 wire controls are authored;
-their execution remains pending. They cover purpose binding, full-image fresh
+All 27 focused engine rename cases pass, including the five new intent tests
+and independent V2 wire controls. They cover purpose binding, full-image fresh
 requalification, pending/committed/torn recovery, legacy replay refusal on indexed
 sources, stale originals and altered journal AFTER images. Existing adapter
-family decoding uses the engine's checked request decoder; creating/reviewing
-indexed adapter/frontend saves is not connected by this engine checkpoint.
+family decoding uses the engine's checked request decoder. Runtime review now
+selects this V2 planner, connecting retained-index candidates to the same consuming
+adapter stage, save worker and desktop naming workflow. Adapter checks cover
+normal persistence, cold recovery and settled confirmation; runtime and headless
+desktop scenarios include indexed sources. The focused connected batch passes
+six adapter, five runtime and four headless desktop cases. The independent
+fitting-query testkit golden also passes in the same batch. This connection does
+not qualify ordinary creator layouts. Original build/test logs remain in ignored
+`.cache/indexed-rename-*-20261108.*` files. No native windows were launched.
 
 The planner changes the actual catalog Name carrier using its native column
 encoding. It adjusts the necessary variable offsets, DATA slot offsets and free

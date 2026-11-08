@@ -37,7 +37,7 @@ All cells describe current implementation, not the requested final state.
 | Read catalog, schema and rows | Bounded | Bounded, including qualified complex reads | Ordinary reads; advanced qualification incomplete | Actual stored-layout coverage; application evidence incomplete | Broad bounded implementation |
 | Create a database | Missing creator | Missing | Missing | Missing | Bounded scalar creator |
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
-| Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, unindexed, Name AutoCorrect OFF profile |
+| Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Missing |
 | Add/rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Missing |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
@@ -79,9 +79,11 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 The first [persisted table rename](../access/writes/TABLE_RENAME.md) slice now has
 native catalog mutation, original intent, fresh reconstruction, recovery, runtime
 review and a connected Navigation Pane workflow. Its source profile is narrow:
-current creators retain missing/ON Name AutoCorrect and ordinary indexed IDs, so
-they do not enter this admission yet. Next is explicit database-option handling
-and broader indexed/creator catalog qualification, followed by the rest of
+current creators retain missing/ON Name AutoCorrect and a different system catalog,
+so they do not enter this admission yet. The retained single-Int32 user-index route
+is now connected under a separate V2 intent; its focused engine, adapter, runtime
+and headless desktop acceptance checks pass. Next is explicit database-option handling and broader creator catalog
+qualification, followed by the rest of
 saved table/column CRUD. Neither parser nodes nor a “created by TableCraft” flag
 confer mutation authority.
 
