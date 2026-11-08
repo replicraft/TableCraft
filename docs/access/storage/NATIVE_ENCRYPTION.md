@@ -300,7 +300,7 @@ The pipeline uses the already-supported Agile AES, Binary RC4/MD5, CryptoAPI
 RC4/SHA-1, and standard/compatibility AES-ECB/SHA-1 codecs for their qualified
 operations, including the existing Jet route. It does not add cipher/profile
 eligibility. Agile envelope-only password changes need no page transform and
-retain a sequential copy. Credential verification, header construction, native
+use the same bounded I/O batches with zero codec scratch or worker transforms. Credential verification, header construction, native
 SID discovery/remasking and source validation remain coordinated serial work.
 
 Independent page transforms operate on disjoint zeroizing owned buffers with
@@ -340,8 +340,11 @@ tablecraft encryption change-password source.mdb --output changed.mdb --jobs 1
 The destination remains an unpublished host-owned temporary. A late failure can
 leave a prefix there; handled CLI failures discard that temporary. Only complete
 success reaches the unchanged synchronization/no-clobber publication. This
-implementation's large verification batch is pending; there is no new measured
-streaming speedup or native Access compatibility claim. Existing Agile integrity
+large verification batch passes, including the eight native parallel cases,
+eight CLI encryption cases, failure/cancellation checks and large-file round
+trips. The envelope-copy follow-up also passes those focused cases and strict
+engine/CLI lint. End-to-end measurements are being consolidated; no final
+streaming speedup or native Access compatibility claim is made here. Existing Agile integrity
 HMAC authentication remains unimplemented.
 
 ### Explicit parallel Agile removal

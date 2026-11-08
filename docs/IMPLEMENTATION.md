@@ -1,5 +1,35 @@
 # Implementation status
 
+## Adaptive encryption and persisted rename — 8 November 2026
+
+Native encryption copies now stream adaptive batches for every implemented
+cipher and operation, using automatic CPU parallelism and host RAM discovery.
+`--jobs` and `--memory-budget-mib` override the worker count and batch working set.
+The native 2 GiB source limit stays separate from the 64 MiB image API and
+cumulative work quotas. Envelope-only copies use batched I/O without crypto
+workers. [Encryption qualification](access/storage/NATIVE_ENCRYPTION.md) records
+current scope, memory-policy limits and outstanding native Access comparisons.
+
+The batched checks cover 1,324 native unit cases (260 existing ignored cases;
+one invalid password fixture corrected by a focused rerun), 136 Access adapter
+units, 184 runtime tests plus diagnostics, 138 desktop tests, nine testkit tests,
+511 UI tests and 110 CLI units. The affected CLI integrations pass after aligning
+stale journal report goldens and removing an obsolete sorted-TOP refusal. The
+copy follow-up passes eight native parallel cases, eight CLI encryption cases and
+strict engine/CLI lint without repeating the unchanged application suites.
+Packaging checks pass 19 cases. Windows/Linux engine and exact host memory-module
+cross-checks pass on x64 and ARM64; full CLI cross-builds need missing SQLite C
+cross-compilers. Native Windows/Access execution remains unqualified. End-to-end
+benchmark records are being consolidated separately.
+
+[Persisted table rename](access/writes/TABLE_RENAME.md) now connects the native
+plan and original recovery intent through shared offline services to navigation
+and desktop saves. Its unindexed, single-table, Name AutoCorrect OFF source
+profile does not admit current ordinary creator layouts. Broader creator/indexed
+qualification, explicit database options and remaining saved table/column CRUD
+are still required. No general CRUD completion is claimed. Web and the broader
+coordinated localization pass remain later delivery gates.
+
 ## Native library refactors — 8 November 2026
 
 Windows IO now uses the existing generated device-information structure and
@@ -10,9 +40,9 @@ not replace those contracts, so no extra wrapper dependency was added.
 Native/runtime immutable originals now share whole-owned `bytes::Bytes` storage
 through `NativeImageSource`. Full retained capacity/control admission, private
 capture purpose and fresh filesystem source proof remain explicit. AFTER buffers
-remain separate. Optional native Rayon powers explicit CLI Agile encryption
-removal with 2–16 workers under the existing 64 MiB captured-image envelope;
-default removal stays streaming and unsupported ciphers refuse without fallback.
+remain separate. The initial optional Rayon consumer selected explicit Agile removal with
+2–16 workers under a 64 MiB captured-image envelope. The adaptive streaming
+implementation above supersedes that first CLI selection.
 The normal desktop dependency tree does not include Rayon.
 
 The batched gates pass 1,302 native engine units (260 existing ignored cases),
@@ -35,8 +65,8 @@ samples, earlier noisy cohorts and the precise workload limitations.
 
 The accepted order remains library refactors, native read/write/query completion,
 an ownership/crate/dependency review, the browser host, then coordinated
-web/desktop localization. Persisted table rename is the next native CRUD slice;
-its partial intent/independent fixtures are not a working operation. Web and
+web/desktop localization. The restricted persisted rename slice above follows that milestone; broader
+creator-compatible table/column CRUD remains unfinished. Web and
 localization are not started by this milestone. See the
 [delivery and acceptance order](features/ACCESS_PARITY_ROADMAP.md#delivery-order-and-acceptance).
 

@@ -34,8 +34,12 @@ The CLI uses existing optional native Rayon support for automatic bounded
 streaming across all existing encryption operations/ciphers; one worker uses the
 same pipeline. Cumulative work and live buffers remain separate. Dynamic RAM
 estimates and a configured buffer cap are not exact process RSS or an allocator
-sandbox. The large verification batch and target/packaging qualification for
-this change are pending; no streaming speedup is claimed. See
+sandbox. The native batch, focused envelope-copy checks, strict affected-package lint
+and 19 CLI packaging tests pass. The engine and exact CLI memory-policy module
+compile for Windows/Linux x64 and ARM64. Full CLI cross-builds are blocked here
+by missing bundled-SQLite C cross-compilers; native execution on those targets
+is not claimed. Consolidated notices cover all 160 selected runtime components
+across the six release-target trees. No final streaming speedup is claimed. See
 [adaptive encryption streaming](../access/storage/NATIVE_ENCRYPTION.md#adaptive-parallel-streaming).
 
 ## Shared native snapshots and opt-in page decoding — 8 November 2026
