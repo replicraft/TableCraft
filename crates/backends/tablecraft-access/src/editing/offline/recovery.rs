@@ -6,7 +6,8 @@ use super::{
 use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    NativeAddTableIntent, NativeFirstTableIntent, qualify_native_add_table_recovery,
+    NativeAddColumnIntent, NativeAddTableIntent, NativeFirstTableIntent,
+    qualify_native_add_column_recovery, qualify_native_add_table_recovery,
     qualify_native_first_table_recovery,
 };
 use tablecraft_ace::{
@@ -60,6 +61,19 @@ impl OfflineWriteSession {
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)?;
             schema = intent.schema_change();
             match intent {
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::AddColumn(intent) => {
+                    let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_add_column_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::AddColumnIntent)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::TableRename(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -246,6 +260,18 @@ impl OfflineWriteSession {
             schema = intent.schema_change();
             let (mut target, mut journal) = pair.confirmation_storage().map_err(Cause::Pair)?;
             match intent {
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::AddColumn(intent) => {
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_add_column_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::AddColumnIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::TableRename(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -423,7 +449,8 @@ impl OfflineWriteSession {
         #[cfg(feature = "ace16-create")]
         let limit = limit
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
-            .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64);
+            .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64);
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

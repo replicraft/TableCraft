@@ -2,7 +2,10 @@ use super::{KnownOutcome, OfflineWriteSession, Receipt, SessionState};
 use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
-use tablecraft_ace::{AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError};
+use tablecraft_ace::{
+    AddColumnIntentError, AddTableError, AddTableIntentError, FirstTableError,
+    FirstTableIntentError,
+};
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameIntentError,
 };
@@ -54,6 +57,10 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// ADD-column framing, source qualification or exact reconstruction failed.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    AddColumnIntent(AddColumnIntentError),
     /// This retained capability does not permit the requested transition.
     #[error("offline session state does not permit this operation")]
     InvalidState,

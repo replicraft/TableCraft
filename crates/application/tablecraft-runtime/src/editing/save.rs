@@ -70,6 +70,7 @@ pub enum SaveCompletion {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveSchemaChange {
     TableRenamed,
+    ColumnAdded,
     FirstTableCreated { column_count: usize },
     TableAdded { column_count: usize },
 }

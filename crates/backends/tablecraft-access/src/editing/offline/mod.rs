@@ -2,6 +2,8 @@
 //! Hosts must exclude noncooperating writers and unresolved external journals.
 //! Native planners retain their own admission; shared-file coordination is separate.
 #[cfg(feature = "ace16-create")]
+mod add_column;
+#[cfg(feature = "ace16-create")]
 mod add_table;
 mod apply;
 mod delete;
@@ -21,6 +23,8 @@ mod update;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
+#[cfg(feature = "ace16-create")]
+pub use add_column::StagedAddColumn;
 #[cfg(feature = "ace16-create")]
 pub use add_table::StagedAddTable;
 pub use delete::StagedDelete;
@@ -74,6 +78,8 @@ pub enum KnownOutcome {
 /// Acknowledged schema change, separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SchemaChange {
+    /// One ordinary field was appended to a qualified existing empty table.
+    ColumnAdded,
     /// An existing table changed its catalog name without changing row identity.
     TableRenamed,
     /// A new empty table was appended while retaining existing database objects.

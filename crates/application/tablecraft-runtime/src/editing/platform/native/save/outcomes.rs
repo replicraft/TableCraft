@@ -12,7 +12,8 @@ use tablecraft_access::editing::offline::{
 };
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    AddTableError, AddTableIntentError, CreateDatabaseError, FirstTableError, FirstTableIntentError,
+    AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
+    FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameError,
@@ -109,6 +110,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         changed_rows: value.changed_rows(),
         schema_change: value.schema_change().map(|change| match change {
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
+            SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
             }
@@ -227,6 +229,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::AddTablePlanning(error) => add_table_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::AddTableIntent(error) => add_table_intent_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::AddColumnIntent(error) => add_column_intent_failure(error),
             _ => None,
         };
     }
@@ -257,6 +261,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<AddColumnIntentError>() {
+        return add_column_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<AddColumnError>() {
+        return add_column_failure(error);
     }
     if let Some(error) = error.downcast_ref::<JournalError>() {
         return journal_failure(error);
@@ -362,6 +374,28 @@ fn add_table_intent_failure(error: &AddTableIntentError) -> Option<SaveFailureKi
         | AddTableIntentError::UnsupportedVersion
         | AddTableIntentError::UnsupportedProfile
         | AddTableIntentError::BeforeMismatch => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn add_column_failure(error: &AddColumnError) -> Option<SaveFailureKind> {
+    match error {
+        AddColumnError::Inspect(error)
+        | AddColumnError::Declaration(CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn add_column_intent_failure(error: &AddColumnIntentError) -> Option<SaveFailureKind> {
+    match error {
+        AddColumnIntentError::Inspect(error) => inspection_failure(error),
+        AddColumnIntentError::Binding(error) => intent_failure(error),
+        AddColumnIntentError::Column(error) => add_column_failure(error),
+        AddColumnIntentError::Proof(error) => qualification_failure(error),
+        _ => None,
     }
 }
 
