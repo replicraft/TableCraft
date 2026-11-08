@@ -1,5 +1,5 @@
 //! One bounded lease-free preparation path, with distinct native action plans.
-use super::QueryActionTarget;
+use crate::editing::query_action::QueryActionTarget;
 use crate::{
     Error, InspectedQuery, ParameterInput,
     controls::{SCOPE, action_query_budget, action_review_budget, check, comparison_budget},

@@ -1,16 +1,10 @@
 //! Lease-free SQL DELETE review owns the actual native plan, never UI authority.
+use super::platform;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     query::parameters,
 };
 use std::path::Path;
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "query_delete/native.rs"]
-mod platform;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "query_delete/unsupported.rs"]
-mod platform;
 
 /// Complete reviewed counts and display facts, not permission to write.
 pub struct QueryDeleteReview {
@@ -24,7 +18,7 @@ pub struct QueryDeleteReview {
 /// Runtime-issued source-bound DELETE, consumed by the nonreplaceable save worker.
 /// Its native plan and invalidation token cannot be constructed by a host.
 pub struct ReviewedQueryDelete {
-    pub(super) state: Box<platform::State>,
+    pub(super) state: Box<platform::query_delete::State>,
 }
 
 impl ReviewedQueryDelete {
@@ -51,6 +45,6 @@ impl Document {
         self.require_query_inspection(target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
-        platform::review(self, target, inputs, &mut output, cancelled)
+        platform::query_delete::review(self, target, inputs, &mut output, cancelled)
     }
 }

@@ -1,5 +1,5 @@
 //! Unsupported hosts retain target facts without native edit authority.
-use super::EditTarget;
+use crate::editing::EditTarget;
 use std::path::PathBuf;
 
 pub(in crate::editing) struct ReviewedState {

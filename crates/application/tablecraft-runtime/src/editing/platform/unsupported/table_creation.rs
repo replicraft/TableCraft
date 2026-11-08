@@ -1,5 +1,5 @@
 //! Unsupported hosts retain reopen facts without table-creation authority.
-use super::CreatedTableReopen;
+use crate::editing::CreatedTableReopen;
 use crate::{Error, Response, document::Document, editing::EditError};
 use std::sync::Arc;
 use tablecraft_builders::table::TableDraftSnapshot;

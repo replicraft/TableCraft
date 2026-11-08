@@ -1,18 +1,10 @@
 //! Source-bound table creation review; no file lease is held for presentation.
-use super::SaveSchemaChange;
+use super::{SaveSchemaChange, platform};
 use bytes::Bytes;
 use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-mod native;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "table_creation/unsupported.rs"]
-mod native;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-pub(crate) use native::TableCreationProfile;
 
 /// Complete expected content for a fresh snapshot after an acknowledged save.
 /// This grants no mutation, retry, file cleanup or physical identity authority.
@@ -59,7 +51,7 @@ impl CreatedTableReopen {
 /// Issued only after complete source and native declaration admission.
 /// The consuming worker reconstructs the same operation against its held file.
 pub struct ReviewedTableCreation {
-    pub(super) state: Box<native::State>,
+    pub(super) state: Box<platform::table_creation::State>,
 }
 
 impl ReviewedTableCreation {

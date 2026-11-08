@@ -18,16 +18,16 @@ use self::{
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
 };
-use super::{
-    SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
-};
 #[cfg(feature = "ace16-create")]
 use crate::editing::ReviewedTableCreation;
+use crate::editing::save::{
+    SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
+};
 use crate::{
     controls::action_recovery_budget,
     editing::{
         ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-        ReviewedQueryUpdate, query_action::native::Plan,
+        ReviewedQueryUpdate, platform::query_action::Plan,
     },
 };
 use std::{

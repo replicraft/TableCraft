@@ -1,5 +1,5 @@
 //! Native editing state and document lifetime invalidation.
-use super::{EditTarget, InsertTarget};
+use crate::editing::{EditTarget, InsertTarget};
 use bytes::Bytes;
 use std::{
     path::PathBuf,

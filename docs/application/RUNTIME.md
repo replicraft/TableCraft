@@ -665,13 +665,18 @@ continue to use actual schema/native values, independently of the hint tag.
 
 ## Reviewed SQL UPDATE actions
 
-The platform predicate is applied at the module boundary: common review facts,
-capability getters and inspected-source checks live in the typed
-`editing/query_update.rs`, `editing/query_delete.rs` and `editing/query_insert.rs`
-services. Native preparation is shared in `editing/query_action/native.rs`; each operation retains its own
-sealed plan and explicit unsupported-host response. This removes repeated per-import/per-field guards without
-expanding native save support beyond macOS, Linux and Windows. A FreeBSD library
-compile checks the unsupported branch; it does not qualify FreeBSD native editing.
+One platform selection in `editing/mod.rs` chooses
+`editing/platform/native/` on macOS, Linux and Windows or
+`editing/platform/unsupported/` elsewhere. Each branch keeps its implementation
+sliced by feature; common review facts, capability getters and inspected-source
+checks remain in the typed `editing/query_update.rs`, `editing/query_delete.rs`
+and `editing/query_insert.rs` services. Shared native preparation lives in
+`editing/platform/native/query_action.rs`; each operation retains its own sealed
+plan. Consumers import the selected implementation owner directly, without
+compatibility forwarding modules. Unsupported services retain explicit refusals
+and cannot issue native save authority. This consolidates repeated editing guards
+without expanding filesystem support. A FreeBSD library compile checks the
+unsupported branch; it does not qualify FreeBSD native editing.
 
 With `offline-edit`, `ReviewQueryUpdate` accepts an opaque `InspectedQuery` from
 this exact open document and explicit literal `ParameterInput` envelopes. It
@@ -771,7 +776,7 @@ cannot replace the current decision. UI facts are not native save authority.
 
 `SaveWorker::start_query_delete` consumes only the DELETE capability through the
 same nonreplaceable save owner as other edits. Native save orchestration is
-shared in `editing/save/native/apply_query_action.rs`, with distinct typed UPDATE,
+shared in `editing/platform/native/save/apply_query_action.rs`, with distinct typed UPDATE,
 DELETE and INSERT plans and staging methods. It checks source validity, opens the target
 exclusively and invokes
 `stage_reviewed_delete_with_budgets` against that retained descriptor. Fresh

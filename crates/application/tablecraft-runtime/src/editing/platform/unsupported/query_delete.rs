@@ -9,7 +9,7 @@ pub(in crate::editing) struct State {
     pub(in crate::editing) target: QueryActionTarget,
 }
 
-pub(super) fn review(
+pub(in crate::editing) fn review(
     _document: &mut Document,
     _target: &InspectedQuery,
     _inputs: &[ParameterInput],

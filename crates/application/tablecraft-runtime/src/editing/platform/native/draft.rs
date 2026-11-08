@@ -1,6 +1,7 @@
 //! Source-bound preparation and ordinary planning without a file lease.
-use super::{EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit, input};
+use super::input;
 use super::{ids::issue_id, state::ReviewedState};
+use crate::editing::{EditDraft, EditError, EditInput, EditReview, EditTarget, ReviewedEdit};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},

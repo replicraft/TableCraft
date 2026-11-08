@@ -8,9 +8,9 @@ use std::path::{Path, PathBuf};
 /// Hosts must establish the previous operation's outcome separately. Reopening
 /// this witness never begins insertion or reuses the old consuming review.
 pub struct InsertRetryWitness {
-    pub(super) path: PathBuf,
-    pub(super) original: Bytes,
-    pub(super) target: InsertTarget,
+    pub(in crate::editing) path: PathBuf,
+    pub(in crate::editing) original: Bytes,
+    pub(in crate::editing) target: InsertTarget,
 }
 
 impl InsertRetryWitness {

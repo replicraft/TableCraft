@@ -1,13 +1,4 @@
 //! Nonreplaceable save outcomes. Presentation generations cannot suppress them.
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-mod native;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-pub use native::SaveWorker;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-mod unsupported;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-pub use unsupported::SaveWorker;
-
 use super::ReviewedEdit;
 use std::fmt;
 

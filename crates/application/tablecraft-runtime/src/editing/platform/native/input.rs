@@ -1,5 +1,5 @@
 //! Exact field-directed input conversions, without SQL interpolation.
-use super::{EditError, EditInput};
+use crate::editing::{EditError, EditInput};
 use crate::scalar_input::MAX_INPUT_BYTES;
 use crate::{Error, display::Presentation};
 use tablecraft_core::values::Value;

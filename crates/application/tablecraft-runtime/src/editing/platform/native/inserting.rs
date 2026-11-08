@@ -1,6 +1,8 @@
 //! Native insertion review and its source-bound private capability.
-use super::InsertRetryWitness;
-use super::{InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedInsert};
+use crate::editing::InsertRetryWitness;
+use crate::editing::{
+    InsertDraft, InsertField, InsertInput, InsertReview, InsertTarget, ReviewedInsert,
+};
 use crate::scalar_input::InputHint;
 use crate::{
     Error, Response,
@@ -70,7 +72,7 @@ impl Document {
                 auto_number: feature.auto_number(),
             });
         }
-        let id = crate::editing::ids::issue_id()?;
+        let id = crate::editing::platform::ids::issue_id()?;
         let retained = copy_target(target, &mut output)?;
         let target = copy_target(target, &mut output)?;
         self.edits.insert_draft = Some((id, retained));
@@ -135,7 +137,7 @@ impl Document {
         };
         Ok(Response::InsertReviewed {
             review: InsertReview {
-                id: crate::editing::ids::issue_id()?,
+                id: crate::editing::platform::ids::issue_id()?,
                 draft_id,
                 target: review_target,
                 inputs,

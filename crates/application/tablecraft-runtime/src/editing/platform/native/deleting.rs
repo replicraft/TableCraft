@@ -1,5 +1,5 @@
 //! Native deletion review and its source-bound private capability.
-use super::{DeleteReview, DeleteTarget, ReviewedDelete};
+use crate::editing::{DeleteReview, DeleteTarget, ReviewedDelete};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget},
@@ -22,7 +22,7 @@ use tablecraft_db::DeletableTable;
 pub(in crate::editing) struct State {
     pub(in crate::editing) path: PathBuf,
     pub(in crate::editing) target: DeleteTarget,
-    pub(super) refresh_ordinal: u32,
+    pub(in crate::editing) refresh_ordinal: u32,
     pub(in crate::editing) original: Bytes,
     pub(in crate::editing) plan: RecoverableNativeDeletePlan,
     pub(in crate::editing) valid: Arc<AtomicBool>,
@@ -116,7 +116,7 @@ impl Document {
 
         Ok(Response::DeleteReviewed {
             review: DeleteReview {
-                id: crate::editing::ids::issue_id()?,
+                id: crate::editing::platform::ids::issue_id()?,
                 target,
                 columns,
                 row,

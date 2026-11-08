@@ -1,50 +1,39 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 mod deleting;
+mod inserting;
 mod query_action;
 mod query_delete;
 mod query_insert;
 mod query_update;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "state/native.rs"]
-pub(crate) mod state;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "state/unsupported.rs"]
-pub(crate) mod state;
-pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
-pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
-pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
+mod replacing;
+mod save;
 #[cfg(feature = "ace16-create")]
 mod table_creation;
-#[cfg(all(
-    feature = "ace16-create",
-    any(target_os = "macos", target_os = "linux", windows)
-))]
-pub(crate) use table_creation::TableCreationProfile;
-#[cfg(feature = "ace16-create")]
-pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-mod draft;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-mod ids;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-mod input;
-mod inserting;
-mod replacing;
-pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
-pub use replacing::ReplaceError;
-mod save;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-mod unsupported;
 
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
+#[path = "platform/native/mod.rs"]
+pub(crate) mod platform;
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
+#[path = "platform/unsupported/mod.rs"]
+pub(crate) mod platform;
+
+pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, ReviewedInsert,
 };
+pub use platform::save::SaveWorker;
+pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
+pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
+pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
+pub use replacing::ReplaceError;
 pub use save::{
     SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveRetirementGuarantee,
-    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
+    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure,
 };
+#[cfg(feature = "ace16-create")]
+pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
 
 use crate::{Cell, scalar_input::InputHint};
 use std::{
@@ -88,7 +77,7 @@ pub struct EditReview {
 /// A real normal native plan. Only a successful source-bound review can issue it.
 /// It is consumed by SaveWorker, never fabricated from a presentation DTO.
 pub struct ReviewedEdit {
-    state: Box<state::ReviewedState>,
+    state: Box<platform::state::ReviewedState>,
 }
 
 /// Reserved durable sibling used by the desktop host and restart guard.

@@ -6,8 +6,7 @@ use super::{
 use crate::{
     controls::{SCOPE, action_persistence_budget, action_proof_budget, budget},
     editing::{
-        SaveFailureKind, SaveOutcome,
-        query_action::{QueryActionTarget, native::Plan},
+        SaveFailureKind, SaveOutcome, platform::query_action::Plan, query_action::QueryActionTarget,
     },
 };
 use std::{

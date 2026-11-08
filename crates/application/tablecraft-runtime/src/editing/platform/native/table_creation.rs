@@ -1,12 +1,12 @@
 mod declaration;
 
-use super::{CreatedTableReopen, ReviewedTableCreation};
 use crate::editing::SaveSchemaChange;
+use crate::editing::{CreatedTableReopen, ReviewedTableCreation};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
     document::Document,
-    editing::{EditError, ids::issue_id},
+    editing::{EditError, platform::ids::issue_id},
 };
 use bytes::Bytes;
 use std::sync::{Arc, atomic::AtomicBool};

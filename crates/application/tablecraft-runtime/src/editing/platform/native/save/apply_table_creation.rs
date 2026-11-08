@@ -5,7 +5,10 @@ use super::{
 };
 use crate::{
     controls::{SCOPE, budget},
-    editing::{ReviewedTableCreation, SaveFailureKind, SaveOutcome, TableCreationProfile},
+    editing::{
+        ReviewedTableCreation, SaveFailureKind, SaveOutcome,
+        platform::table_creation::TableCreationProfile,
+    },
 };
 use std::{
     path::PathBuf,

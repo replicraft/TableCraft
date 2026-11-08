@@ -1,5 +1,22 @@
 # Implementation status
 
+## Shared editing platform boundary — 8 November 2026
+
+Runtime editing now selects native or explicitly unsupported implementations once
+in `editing/mod.rs`. Native save, state, draft, row, action-query and table-creation
+services remain feature slices under `editing/platform/native/`; unsupported
+services live under the corresponding sibling. Common review facts and capability
+accessors stay independent of that selection. Consumers import the actual owner,
+with no forwarding modules retained solely for old paths.
+
+This is an ownership refactor, not broader filesystem support. macOS, Linux and
+Windows retain the existing native implementation; other targets retain explicit
+refusals. The selected gates pass 179 runtime tests, its diagnostic integration
+and 134 desktop tests. Strict runtime/desktop lint, minimal and individual-feature
+builds, Windows/Linux runtime compilation and strict FreeBSD unsupported-branch
+lint pass. No native windows were launched. Native filesystem behavior on other
+platforms is not established by compilation.
+
 ## GUI-reviewed SQL INSERT VALUES — 8 November 2026
 
 Scratch Run now routes qualified single-record local INSERT VALUES through typed

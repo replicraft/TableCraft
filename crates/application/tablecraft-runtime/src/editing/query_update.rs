@@ -1,16 +1,10 @@
 //! Lease-free SQL UPDATE review owns the actual native plan, never UI authority.
+use super::platform;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     query::parameters,
 };
 use std::path::Path;
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "query_update/native.rs"]
-mod platform;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "query_update/unsupported.rs"]
-mod platform;
 
 /// Complete reviewed counts and display facts, not permission to write.
 pub struct QueryUpdateReview {
@@ -24,7 +18,7 @@ pub struct QueryUpdateReview {
 /// Runtime-issued source-bound UPDATE, consumed by the nonreplaceable save worker.
 /// Its native plan and invalidation token cannot be constructed by a host.
 pub struct ReviewedQueryUpdate {
-    pub(super) state: Box<platform::State>,
+    pub(super) state: Box<platform::query_update::State>,
 }
 
 impl ReviewedQueryUpdate {
@@ -51,6 +45,6 @@ impl Document {
         self.require_query_inspection(target, cancelled)?;
         let mut output = Presentation::new(cancelled);
         parameters::validate_input_limits(inputs, &mut output)?;
-        platform::review(self, target, inputs, &mut output, cancelled)
+        platform::query_update::review(self, target, inputs, &mut output, cancelled)
     }
 }

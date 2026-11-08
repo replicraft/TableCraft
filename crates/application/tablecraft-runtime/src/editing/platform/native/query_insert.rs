@@ -1,5 +1,5 @@
-//! Native UPDATE review retains its distinct sealed candidate.
-use super::{QueryUpdateReview, ReviewedQueryUpdate};
+//! Native INSERT review retains its distinct sealed candidate.
+use crate::editing::{QueryInsertReview, ReviewedQueryInsert};
 use crate::{
     Error, InspectedQuery, ParameterInput, Response,
     controls::check,
@@ -7,44 +7,49 @@ use crate::{
     document::Document,
     editing::{
         EditError,
-        ids::issue_id,
-        query_action::{
-            QueryActionTarget,
-            native::{self, Kind, Plan},
-        },
+        platform::ids::issue_id,
+        platform::query_action::{self, Kind, Plan},
+        query_action::QueryActionTarget,
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::RecoverableNativeEditPlan;
-use tablecraft_query::UpdatePlan;
+use tablecraft_access::editing::journal::NativeJournalInsertPlan;
+use tablecraft_expressions::functions::dates::clock::Clock;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) target: QueryActionTarget,
-    pub(in crate::editing) plan: UpdatePlan<RecoverableNativeEditPlan>,
+    pub(in crate::editing) plan: NativeJournalInsertPlan,
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
-pub(super) fn review(
+pub(in crate::editing) fn review(
     document: &mut Document,
     target: &InspectedQuery,
     inputs: &[ParameterInput],
+    clock: &dyn Clock,
     output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
-    let reviewed = native::review(document, target, inputs, output, cancelled, Kind::Update)?;
-    let Plan::Update(plan) = reviewed.plan else {
+    let reviewed = query_action::review(
+        document,
+        target,
+        inputs,
+        output,
+        cancelled,
+        Kind::Insert(clock),
+    )?;
+    let Plan::Insert(plan) = reviewed.plan else {
         return Err(EditError::Unavailable.into());
     };
 
-    let review = QueryUpdateReview {
+    let review = QueryInsertReview {
         id: issue_id()?,
         document_revision: reviewed.target.document_revision,
         table: output.text(&reviewed.target.table)?,
-        matched_rows: plan.matched_rows(),
-        changed_rows: plan.backend().changed_rows(),
+        inserted_rows: plan.inserted_rows(),
     };
 
-    let capability = ReviewedQueryUpdate {
+    let capability = ReviewedQueryInsert {
         state: Box::new(State {
             target: reviewed.target,
             plan,
@@ -53,5 +58,5 @@ pub(super) fn review(
     };
 
     check(cancelled)?;
-    Ok(Response::QueryUpdateReviewed { review, capability })
+    Ok(Response::QueryInsertReviewed { review, capability })
 }

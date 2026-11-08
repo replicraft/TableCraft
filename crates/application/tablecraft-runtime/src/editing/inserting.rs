@@ -1,16 +1,9 @@
 //! One reviewed row of original presence-bearing native INSERT intent.
 mod retry;
-use super::EditInput;
+use super::{EditInput, platform};
 use crate::scalar_input::InputHint;
 pub use retry::{InsertRetryEvidence, InsertRetryWitness};
 use std::{path::Path, sync::Arc};
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "inserting/native.rs"]
-mod platform;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "inserting/unsupported.rs"]
-mod platform;
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct InsertTarget {
@@ -50,7 +43,7 @@ pub struct InsertReview {
 }
 
 pub struct ReviewedInsert {
-    pub(super) state: Box<platform::State>,
+    pub(super) state: Box<platform::inserting::State>,
 }
 
 impl ReviewedInsert {

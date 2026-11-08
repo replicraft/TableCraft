@@ -1,7 +1,7 @@
 //! Unsupported hosts return every unconsumed capability without starting work.
-use super::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::ReviewedTableCreation;
+use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
     ReviewedQueryUpdate,

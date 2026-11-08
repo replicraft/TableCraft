@@ -1,5 +1,5 @@
-use super::ReplaceError;
-use crate::editing::{EditError, EditInput, EditTarget, input};
+use crate::editing::replacing::ReplaceError;
+use crate::editing::{EditError, EditInput, EditTarget, platform::input};
 use crate::{
     Cell, Error, FilterHandle, FindDirection, FindError, FindPosition, FindRequest, FindScope,
     FindSpan, MAX_FIND_PATTERN_BYTES, Response,

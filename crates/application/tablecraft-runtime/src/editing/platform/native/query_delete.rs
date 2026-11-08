@@ -1,5 +1,5 @@
 //! Native DELETE review retains its distinct sealed candidate.
-use super::{QueryDeleteReview, ReviewedQueryDelete};
+use crate::editing::{QueryDeleteReview, ReviewedQueryDelete};
 use crate::{
     Error, InspectedQuery, ParameterInput, Response,
     controls::check,
@@ -7,11 +7,9 @@ use crate::{
     document::Document,
     editing::{
         EditError,
-        ids::issue_id,
-        query_action::{
-            QueryActionTarget,
-            native::{self, Kind, Plan},
-        },
+        platform::ids::issue_id,
+        platform::query_action::{self, Kind, Plan},
+        query_action::QueryActionTarget,
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
@@ -24,14 +22,14 @@ pub(in crate::editing) struct State {
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
-pub(super) fn review(
+pub(in crate::editing) fn review(
     document: &mut Document,
     target: &InspectedQuery,
     inputs: &[ParameterInput],
     output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
-    let reviewed = native::review(document, target, inputs, output, cancelled, Kind::Delete)?;
+    let reviewed = query_action::review(document, target, inputs, output, cancelled, Kind::Delete)?;
     let Plan::Delete(plan) = reviewed.plan else {
         return Err(EditError::Unavailable.into());
     };

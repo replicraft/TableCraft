@@ -1,13 +1,7 @@
 //! Source-bound single-row deletion review without an offline lease.
+use super::platform;
 use crate::{Cell, Column};
 use std::path::Path;
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "deleting/native.rs"]
-mod platform;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "deleting/unsupported.rs"]
-mod platform;
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct DeleteTarget {
@@ -25,7 +19,7 @@ pub struct DeleteReview {
 }
 
 pub struct ReviewedDelete {
-    pub(super) state: Box<platform::State>,
+    pub(super) state: Box<platform::deleting::State>,
 }
 
 impl ReviewedDelete {
