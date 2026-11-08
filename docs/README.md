@@ -5,6 +5,8 @@ Start with the [compatibility matrix](COMPATIBILITY.md),
 Subsystem documents distinguish working behavior, explicit limits and planned work.
 The current [product priority](decisions/0003_ACCESS_BEHAVIORAL_PARITY.md) is faithful
 native Access behavior; SQLite and native-project implementation are paused.
+The [current scope accounting](features/ACCESS_PARITY_ROADMAP.md) tracks Jet 4
+and ACE 12–16 CRUD/query work, desktop v0.1.0 gates and full application parity.
 
 | Area | Contents |
 | --- | --- |

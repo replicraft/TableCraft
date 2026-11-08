@@ -10,6 +10,12 @@ without claiming the full [ACE 16 compatibility target](../ROADMAP.md). Existing
 restricted offline writes remain separately qualified capabilities, not general
 Access editing.
 
+The user's 7 November expanded target is full Jet 4 and ACE 12/14/15/16 CRUD
+and Access queries. The [scope accounting](../features/ACCESS_PARITY_ROADMAP.md)
+separates that unfinished implementation from this existing preview checklist.
+If the release promises full CRUD/query, those operation/profile acceptance gates
+must also pass; finishing packaging alone cannot satisfy the expanded target.
+
 ## Remaining gates
 
 - [x] **Implement and headlessly verify Ribbon focus navigation.** Verify F10 entry, tab arrows,

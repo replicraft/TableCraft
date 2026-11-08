@@ -7,9 +7,11 @@ retaining those plans for a future explicit decision to resume them.
 ## Immediate objective
 
 TableCraft targets faithful cross-platform Microsoft Access behavior on native
-Access files. ACE 16 remains primary; existing MDB and older ACE coverage remains
-subject to the documented compatibility profiles. Current support and independent
-engineering evidence do not establish complete Access parity.
+Access files. On 7 November 2026 the user expanded the native CRUD/query target
+to Jet 4 and ACE 12, 14, 15 and 16. Each requires its own qualification; ACE 16
+remains the modern application reference. See the
+[current scope accounting](../features/ACCESS_PARITY_ROADMAP.md). Current support
+and independent engineering evidence do not establish complete Access parity.
 
 SQLite, `.tcraft`, `.tcraftproj/`, native-project Python automation, project
 conversion and native-project modernization are paused. They are outside the

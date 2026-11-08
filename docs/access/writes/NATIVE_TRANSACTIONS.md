@@ -77,7 +77,11 @@ table checks through captured transactions. Cancellation, memory allowance and
 busy-open failures release acquired resources; a compile-fail test prevents use
 as a writer. The registered fixture is copied before filesystem experiments.
 
-The implemented writer admits only its bounded offline Jet 4 fixed Int32 profile.
-ACE/data macros, allocation/index mutation, broad application preservation and
-native shared-file/power-loss qualification remain separate gates. Read-only
-snapshots and generic OS locks do not establish those guarantees.
+Implemented writes now include the bounded offline Jet 4 fixed Int32 route and
+the separately qualified [normal ACE 16 routes](NATIVE_WRITES.md), including
+original-intent recovery for admitted row and schema-creation operations. They
+do not establish general transactions, arbitrary application-preserving DDL,
+complete required-event behavior, native shared-file coordination or power-loss
+qualification. Read-only snapshots and generic OS locks do not establish those
+guarantees. The [current cross-profile target](../../features/ACCESS_PARITY_ROADMAP.md)
+tracks the remaining work.

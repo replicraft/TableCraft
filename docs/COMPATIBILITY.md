@@ -10,8 +10,7 @@ current behavior and evidence.
 
 | Tier | Formats | Direction |
 | --- | --- | --- |
-| 1 — Primary | ACE 16 | Full native compatibility is the long-term goal; new implementation and qualification focus here. |
-| 2 — Secondary | Jet 4; ACE 12, 14 and 15 | Maintain working profiles and expand qualified support without displacing ACE 16 work. |
+| 1 — Native CRUD/query targets | Jet 4; ACE 12, 14, 15 and 16 | Full database/table/column/row CRUD and Access query support, independently qualified for each target. Current implementation remains partial. |
 | 3 — Legacy | Jet 3 | Planned native reads and queries, starting from the existing header recognition. |
 | Experimental | Jet 1.0/1.1 and Jet 2 | Optional bounded read-only feasibility research, beginning with original fixtures and reliable detection. |
 
@@ -20,6 +19,9 @@ release deadlines or permanent write exclusions. Writes require separate
 preservation, validation, macro, transaction and recovery evidence for each
 profile. Read-only scope is the starting boundary of the Jet 1/2 experiment,
 not a claim that the wider compatibility goal has been met.
+The [current scope accounting](features/ACCESS_PARITY_ROADMAP.md) supersedes the
+earlier ACE-16-only implementation priority. Full Access application parity is
+larger than CRUD/query support and retains the documented VBA execution gap.
 
 ## Current native support
 

@@ -1,6 +1,21 @@
 # Compatibility-driven roadmap
 
-## Current product priority
+## Current target — 7 November 2026
+
+Target full native CRUD and Access query support for **Jet 4 and ACE 12, 14,
+15 and 16**, each with independent qualification. This supersedes the earlier
+ACE-16-first-only sequencing below. Database/table/column/row lifecycle, action
+queries, native saved-query authoring and DDL are active work alongside the GUI;
+unsaved drafts and read-only SQL Run do not complete that target.
+
+The [current CRUD/query, v0.1.0 and application-parity accounting](features/ACCESS_PARITY_ROADMAP.md)
+owns the current matrix, remaining implementation, ordered workstreams and
+release/comparison gates. The [desktop checklist](releases/DESKTOP_0_1_0_CHECKLIST.md)
+retains concrete packaging/platform gates; it is not evidence of full CRUD.
+SQLite/native projects and VBA execution remain deferred. Historical results
+and bounded feature evidence below retain their original scope.
+
+## Existing implementation evidence
 
 [Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now passes complete-image, recovery, retained-session and CLI acceptance for
@@ -1011,17 +1026,15 @@ require [native syntax evidence](query/NAMED_CROSSTABS.md#inline-transform-is-no
 optional Fluent catalog support. Omitted runtime state remains deferred; reference
 message data does not qualify native Access error-code/localization behavior.
 
-## Primary target: 100% ACE 16 compatibility
+## Native compatibility target
 
-ACE 16 is the primary implementation and compatibility-testing target. The
-long-term goal is 100% compatibility, not a permanently restricted feature subset.
-Drive native engine, query and interoperability decisions from ACE 16 behavior.
-Immediate read/query priorities are ACE 16, ACE 2007/ACE 12 and Jet 4.
-The registered example is ACE 2007; its successful bounded reads remain part of
-regression coverage. Jet 1/2/3 and ACE 14/15 remain secondary priorities. Preserve existing working
-coverage and regression checks; expand those formats only when it directly
-supports ACE 16 or the user explicitly changes priorities. Further SQLite
-expansion remains paused while ACE 16 compatibility is the focus.
+Jet 4 and ACE 12/14/15/16 are first-class full CRUD/query targets following the
+7 November reprioritization. The long-term goal is full compatibility, not
+permanently restricted feature subsets. ACE 16 remains the modern application
+reference; every older target needs actual format/application evidence rather
+than inherited ACE 16 permission. The registered ACE 2007 example remains part
+of regression coverage. Jet 1/2/3 remain secondary/deferred, and SQLite expansion
+remains paused. See the [current accounting](features/ACCESS_PARITY_ROADMAP.md).
 
 The goal covers native database reads/writes, scalar and advanced field types,
 text/collation and expression/query semantics, schema/relationships/constraints,
@@ -1093,9 +1106,9 @@ and Jet 4 reads and queries, with SQLite expansion still paused.
 
 The immediate priority is usable native writes, as requested on 29 October 2026:
 end-to-end INSERT/UPDATE/DELETE, mixed-schema preservation, validation and required
-macros, followed by durable native save/recovery. ACE 16 is the primary target.
-Reliable local reads and queries for **both ACE 16 `.accdb` and Jet 4 `.mdb`**
-remain required foundations. Preserve their working coverage and fix regressions
+macros, followed by durable native save/recovery. The 7 November expansion makes
+Jet 4 and ACE 12/14/15/16 first-class CRUD/query targets. Their reliable local
+reads and queries remain required foundations. Preserve working coverage and fix regressions
 while extending writes; the remaining qualification gaps below are still open.
 
 The [distribution read scope](features/ACCESS_DISTRIBUTION.md#required-read-scope)
@@ -1920,8 +1933,9 @@ generated fields, normal saves and native Access qualification remain unfinished
 
 ## Ordered implementation path to the UI
 
-Apply each unfinished native milestone below to ACE 16 first. Existing Jet 4 and
-ACE 12 implementations are reusable foundations, not substitutes for ACE 16
+This earlier sequence records the backend foundation rather than the new
+cross-profile delivery order. Existing Jet 4 and
+ACE 12 implementations are reusable foundations, not substitutes for independent
 qualification. The SQLite read-only
 foundation was implemented early; that does not complete the preceding milestones
 or change the next native task. Further SQLite/native-project work requires
@@ -1950,7 +1964,7 @@ Native saves still require the relevant preservation/constraint/recovery evidenc
 
 | Order | Direction | Scope |
 | --- | --- | --- |
-| 1 | Native ACE 16 compatibility | Primary 100% target: reading, writing, indexes, transactions, unknown-object and existing VBA preservation; other Jet/ACE formats secondary |
+| 1 | Native Jet 4 and ACE 12–16 CRUD/query | Full per-profile target: reading, writing, schema, queries, indexes, transactions, unknown-object and existing VBA preservation; current subsets remain incomplete |
 | 2 | Microsoft Access collaboration | Native shared-file locking, concurrent writes, durability and recovery; actual mixed-client tests |
 | 3 | Access query engine | Native tables, Access SQL, relationships, expression semantics and editable results |
 | 4 | Custom Office-style desktop UI | Ribbon, navigation pane, datasheets and visual query builder; accessibility from the first custom controls |
@@ -1967,10 +1981,10 @@ and [wizards](features/APP_TEMPLATES_WIZARDS.md). They are requirements, not com
 
 ## Native format expansion
 
-Retain Jet 4/ACE 12 as the current bounded read baseline while focusing new work
-on ACE 16. Qualify its observed layouts and features first. ACE 14/15 and Jet 3
-expansion are secondary and do not precede ACE 16 work merely because their
-format generations are older.
+Deliver Jet 4 and ACE 12/14/15/16 CRUD/query as first-class workstreams. Reuse
+shared mechanisms while qualifying each actual layout and supported feature set;
+do not wait for ACE 16 perfection before developing the other requested targets.
+Jet 3 remains deferred rather than part of this expanded CRUD commitment.
 Acquire original minimal fixtures with recorded provenance and compare catalog,
 scalar, text and index behavior before enabling each profile. Access engine
 releases do not map one-to-one to file layouts; the
@@ -1978,7 +1992,7 @@ releases do not map one-to-one to file layouts; the
 distinction and current limitations.
 
 Jet 1.0/1.1 and Jet 2 are deferred optional read-only feasibility studies; they
-must not divert implementation from ACE 16.
+must not divert implementation from the active Jet 4/ACE CRUD/query target.
 Establish fixtures, layout references and a comparison environment first; retain
 them as deferred research if reliable extraction requires substantial work. This does
 not gate the main engine, safe writes for qualified profiles or the UI.
@@ -2053,7 +2067,8 @@ and CSV-only proposals are superseded. Direct Office file handling and explicit
 system-default application opening avoid dependencies on installed Office apps.
 Command search, full control/property catalogs, attachment conversion and
 per-backend security remain explicit application requirements. These additions
-do not reorder the ACE 16 milestones or enable new connectors.
+do not enable new connectors without working consumers. Current cross-profile
+ordering follows the [CRUD/query accounting](features/ACCESS_PARITY_ROADMAP.md).
 
 ### Currency conversion progress
 

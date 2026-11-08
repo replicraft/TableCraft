@@ -5,6 +5,7 @@ Feature contracts and planned application services; see implementation status fo
 [Documentation index](../README.md)
 
 - [Advanced Access field behavior](ACCESS_ADVANCED_FIELDS.md)
+- [Native CRUD, full queries, v0.1.0 and application-parity roadmap](ACCESS_PARITY_ROADMAP.md)
 - [Access application startup and session state](ACCESS_APP_STARTUP.md)
 - [Access formats, distribution and signatures](ACCESS_DISTRIBUTION.md)
 - [Database-defined Access ribbons](ACCESS_RIBBON_COMPAT.md)

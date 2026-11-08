@@ -28,9 +28,11 @@ backend actions from them. Synthetic-host flags must not hide Ribbon controls
 in the normal app. Keep private
 reference captures private and distinguish visual approximation from verified
 interaction and database behavior.
-Current UI work prioritizes screenshot-guided polish, light/dark themes and
-sectioned Fluent catalogs with synthetic data; do not expand database functionality
-as part of that work. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md).
+Current UI work includes native table/column/row CRUD and the full Access query
+workflow, backed by shared runtime services, alongside screenshot-guided polish,
+light/dark themes and sectioned Fluent catalogs. The user expanded this scope on
+7 November 2026. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md)
+and the [CRUD/query and release accounting](docs/features/ACCESS_PARITY_ROADMAP.md).
 The user returned verification to headless mode on 6 November 2026, after a brief
 native graphical review. Use headless interaction tests and offscreen rendering;
 do not launch, activate, manipulate or close native app windows until the user
@@ -39,12 +41,14 @@ historical evidence, distinct from Windows/Access parity.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
-Focus implementation and compatibility testing on ACE 16. The long-term target
-is 100% ACE 16 compatibility, not a permanently limited subset. Prioritize ACE 16
-fixtures, native Access comparisons, reads, writes, constraints, preservation and
-recovery before expanding other formats or SQLite. Jet 1/2/3/4 and ACE 12/14/15
-are secondary: preserve existing working coverage, but pursue additional support
-only when it directly helps ACE 16 or the user reprioritizes it.
+Jet 4 and ACE 12, 14, 15 and 16 are first-class targets for full native CRUD and
+Access query support following the user's 7 November 2026 reprioritization.
+Deliver each operation through engine, adapter, runtime and GUI with independent
+per-profile admission and evidence; ACE 16 evidence does not qualify older files.
+ACE 16 remains the reference for existing implementation and modern application
+behavior, not a reason to defer the other requested CRUD/query targets. Preserve
+the full compatibility goal rather than declaring bounded write subsets complete.
+Jet 1/2/3 remain secondary/deferred; SQLite and native projects remain paused.
 
 Follow [ROADMAP.md](docs/ROADMAP.md) for acceptance scope. Keep current support
 separate from the target; header recognition and independent-reader comparisons

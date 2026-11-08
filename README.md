@@ -5,7 +5,8 @@ faithful native MDB/ACCDB behavior and familiar Access workflows. The CLI suppor
 bounded browsing and queries; the desktop UI and general native editing are
 still in development.
 
-Current work focuses on Microsoft Access compatibility, with ACE 16 primary.
+Current work targets full native CRUD and Access queries for Jet 4 and
+ACE 12, 14, 15 and 16; implementation is still partial.
 SQLite and `.tcraft` projects are paused, including Python automation and project
 conversion. The [product direction](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
 sets the target for Access workflows, defaults, restrictions and documented quirks.
@@ -14,11 +15,11 @@ sets the target for Access workflows, defaults, restrictions and documented quir
 
 | Format | Current support | Planned tier |
 | --- | --- | --- |
-| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries; restricted journaled writes | **Tier 1 — primary:** full native compatibility |
-| Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; qualified offline Int32 updates | **Tier 2 — secondary:** maintain and expand qualified support |
-| ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 2 |
-| ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 2 |
-| ACE 15 `.accdb` · Access 2013 | Not separately qualified; support follows the actual stored profile | Tier 2 |
+| ACE 16 `.accdb` · Access 2016 and later | Bounded reads and queries; restricted journaled writes | **Tier 1:** full native CRUD and queries |
+| Jet 4 `.mdb` · Access 2000–2003 | Bounded reads and queries; qualified offline Int32 updates | Tier 1 |
+| ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 1 |
+| ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 1 |
+| ACE 15 `.accdb` · Access 2013 | Not separately qualified; support follows the actual stored profile | Tier 1 |
 | Jet 3 `.mdb` · Access 95/97 | Header recognition | **Tier 3 — legacy:** planned reads and queries |
 | Jet 1/2 `.mdb` · Access 1/2 | Not implemented | **Experimental:** optional read-only research |
 
