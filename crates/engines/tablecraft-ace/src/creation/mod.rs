@@ -27,7 +27,10 @@ pub use add_column::{AddColumnCandidate, AddColumnError};
 #[cfg(feature = "journal")]
 pub use add_column::{CreatedAddColumnCandidate, CreatedAddColumnError};
 #[cfg(feature = "journal")]
-pub use add_column::{CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError};
+pub use add_column::{
+    CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
+    CreatedDefaultZeroColumnRequired,
+};
 #[cfg(feature = "journal")]
 pub use add_table::{
     AddTableError, AddTablePlan, AddTableSourceCapabilities, add_table_source_available,

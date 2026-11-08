@@ -18,6 +18,7 @@ const LVAL_OWNER: usize = u32::from_le_bytes(*b"LVAL") as usize;
 
 pub(super) fn properties(
     columns: &[CreateColumn<'_>],
+    default_first: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, Error> {
@@ -28,6 +29,11 @@ pub(super) fn properties(
         cancelled,
     )?
     .ok_or(Error::Preservation)?;
+    let prepared = if default_first {
+        prepared.with_default_first()
+    } else {
+        prepared
+    };
     let length = prepared.inline_length();
     budget
         .charge_allocation(length as u64, 1)

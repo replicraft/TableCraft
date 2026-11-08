@@ -5,7 +5,10 @@ mod common;
 mod created;
 
 #[cfg(feature = "journal")]
-pub use created::{CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError};
+pub use created::{
+    CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
+    CreatedDefaultZeroColumnRequired,
+};
 
 mod preservation;
 mod source;

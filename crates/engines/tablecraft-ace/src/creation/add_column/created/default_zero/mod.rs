@@ -15,6 +15,16 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 use thiserror::Error;
 
+/// Exact persisted Required declaration for the newly appended nullable field.
+/// Absence and an explicit false property are distinct native metadata.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CreatedDefaultZeroColumnRequired {
+    /// Do not introduce a Required property.
+    Absent,
+    /// Persist Required as the native Boolean false property.
+    StoredFalse,
+}
+
 /// Refusal from the explicit first external-property candidate profile.
 #[derive(Debug, Error)]
 pub enum CreatedDefaultZeroAddColumnError {
@@ -41,6 +51,7 @@ pub enum CreatedDefaultZeroAddColumnError {
 /// Candidate only: no intent, journal, adapter or GUI permission is supplied.
 pub struct CreatedDefaultZeroAddColumnCandidate {
     image: AddColumnCandidate,
+    required: CreatedDefaultZeroColumnRequired,
 }
 
 impl NativeImage {
@@ -48,8 +59,8 @@ impl NativeImage {
     ///
     /// Requires the complete canonical empty generated-primary creator image,
     /// zero timestamps, one through fifteen source fields, and either absent
-    /// properties or only constant zero defaults. Appends one represented EOF
-    /// LVAL page and preserves catalog root identity through checked same-page
+    /// properties or only constant zero defaults and explicit Required false.
+    /// Appends one represented EOF LVAL page and preserves catalog root identity through checked same-page
     /// forwarding when necessary. Existing external properties, broader property
     /// dictionaries, native histories and repeated external-property ADD refuse.
     /// The complete target property body must prefer one external row (65 through
@@ -59,6 +70,7 @@ impl NativeImage {
         self,
         table: &str,
         column: &str,
+        required: CreatedDefaultZeroColumnRequired,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError> {
@@ -70,7 +82,7 @@ impl NativeImage {
         let mut columns = definition.borrowed_columns(budget, cancelled)?;
         for field in &columns {
             check(budget, cancelled)?;
-            if field.required().is_some()
+            if field.required() == Some(true)
                 || field.allow_zero_length().is_some()
                 || field.description().is_some()
                 || field
@@ -86,8 +98,16 @@ impl NativeImage {
         columns
             .try_reserve_exact(1)
             .map_err(|_| InspectError::Allocation)?;
+
+        let default_first = !columns.iter().any(|field| field.required().is_some());
         let zero = Value::Int32(0);
-        columns.push(CreateColumn::new(column, ScalarType::Int32).with_default_literal(&zero)?);
+        let mut appended =
+            CreateColumn::new(column, ScalarType::Int32).with_default_literal(&zero)?;
+        if required == CreatedDefaultZeroColumnRequired::StoredFalse {
+            appended = appended.with_required(false);
+        }
+        columns.push(appended);
+
         let rebuilt =
             create_ace16_database(checked.schema().name(), &columns, &[], budget, cancelled)?;
         let intermediate = common::copy_definition(
@@ -100,7 +120,7 @@ impl NativeImage {
         // Existing profile's complete TD/index complement check applies before
         // the separate catalog/LVAL edit. Its source and wire remain unchanged.
         super::preservation::verify(&self, &intermediate, &checked, column, budget, cancelled)?;
-        let body = build::properties(&columns, budget, cancelled)?;
+        let body = build::properties(&columns, default_first, budget, cancelled)?;
         let (after, change) =
             build::candidate(&self, &checked, intermediate, body, budget, cancelled)?;
         verify::candidate(&self, &after, &checked, column, &change, budget, cancelled)?;
@@ -110,6 +130,7 @@ impl NativeImage {
         drop(columns);
         check(budget, cancelled)?;
         Ok(CreatedDefaultZeroAddColumnCandidate {
+            required,
             image: AddColumnCandidate {
                 before: self,
                 after,
@@ -122,6 +143,11 @@ impl NativeImage {
 }
 
 impl CreatedDefaultZeroAddColumnCandidate {
+    /// Exact requested Required-property presence, retained for original intent.
+    pub const fn required_property(&self) -> CreatedDefaultZeroColumnRequired {
+        self.required
+    }
+
     /// Complete unchanged captured original.
     pub fn before_bytes(&self) -> &[u8] {
         self.image.before_bytes()

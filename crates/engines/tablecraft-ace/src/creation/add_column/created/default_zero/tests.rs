@@ -1,5 +1,5 @@
 //! Independent SDK full-image pins precede candidate and source-admission checks.
-use super::CreatedDefaultZeroAddColumnError as Error;
+use super::{CreatedDefaultZeroAddColumnError as Error, CreatedDefaultZeroColumnRequired};
 use crate::{CreateColumn, NativeImage, create_ace16_database, inspect_table_properties};
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
@@ -43,6 +43,7 @@ fn qualify(case: raw::Source, table: &str, column: &str, before_hash: &str, afte
         .prepare_created_add_default_zero_int32_column_candidate(
             table,
             column,
+            CreatedDefaultZeroColumnRequired::Absent,
             &mut budget(),
             &|| false,
         )
@@ -121,6 +122,7 @@ fn existing_external_property_source_and_native_timestamp_refuse() {
             .prepare_created_add_default_zero_int32_column_candidate(
                 "Table1",
                 "Extra",
+                CreatedDefaultZeroColumnRequired::Absent,
                 &mut budget(),
                 &|| false,
             )
@@ -136,6 +138,7 @@ fn existing_external_property_source_and_native_timestamp_refuse() {
             .prepare_created_add_default_zero_int32_column_candidate(
                 "Table1",
                 "Score",
+                CreatedDefaultZeroColumnRequired::Absent,
                 &mut budget(),
                 &|| false,
             )
@@ -160,6 +163,7 @@ fn unqualified_property_dictionary_is_not_reordered_or_guessed() {
         image(before.as_bytes()).prepare_created_add_default_zero_int32_column_candidate(
             "Table1",
             "Extra",
+            CreatedDefaultZeroColumnRequired::Absent,
             &mut budget(),
             &|| false,
         ),
@@ -175,6 +179,7 @@ fn proposed_name_validation_and_cancellation_do_not_publish_candidate() {
             .prepare_created_add_default_zero_int32_column_candidate(
                 "Table1",
                 "ID",
+                CreatedDefaultZeroColumnRequired::Absent,
                 &mut budget(),
                 &|| false,
             )
@@ -185,6 +190,7 @@ fn proposed_name_validation_and_cancellation_do_not_publish_candidate() {
             .prepare_created_add_default_zero_int32_column_candidate(
                 "Table1",
                 "Score",
+                CreatedDefaultZeroColumnRequired::Absent,
                 &mut budget(),
                 &|| true,
             )
@@ -195,6 +201,7 @@ fn proposed_name_validation_and_cancellation_do_not_publish_candidate() {
             .prepare_created_add_default_zero_int32_column_candidate(
                 "Table1",
                 "Score",
+                CreatedDefaultZeroColumnRequired::Absent,
                 &mut ResourceBudget::new(0, 0, 0),
                 &|| false,
             )
@@ -205,3 +212,6 @@ fn proposed_name_validation_and_cancellation_do_not_publish_candidate() {
         "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13"
     );
 }
+
+#[path = "required_tests.rs"]
+mod required_tests;

@@ -33,6 +33,7 @@ pub(super) struct Prepared<'a> {
     allow_empty: bool,
     default_value: bool,
     description: bool,
+    default_first: bool,
 }
 
 fn add(length: usize, extra: usize) -> Result<usize, CreateDatabaseError> {
@@ -140,6 +141,7 @@ pub(super) fn capture<'a>(
         allow_empty,
         default_value,
         description,
+        default_first: false,
     }))
 }
 
@@ -220,6 +222,13 @@ impl Writer<'_, '_> {
 }
 
 impl Prepared<'_> {
+    /// Preserve the independently observed ADD ordering when no Required
+    /// dictionary entry existed. Ordinary constructive creation keeps its order.
+    pub(super) fn with_default_first(mut self) -> Self {
+        self.default_first = true;
+        self
+    }
+
     pub fn inline_length(&self) -> usize {
         INLINE_HEADER + self.length
     }
@@ -267,13 +276,16 @@ impl Prepared<'_> {
             BLOCK_HEADER + required_length + empty_length + default_length + description_length,
         )?;
         writer.put(&NAME_LIST.to_le_bytes())?;
+        if self.default_first && self.default_value {
+            writer.name(DEFAULT_VALUE, default_length)?;
+        }
         if self.required {
             writer.name(REQUIRED, required_length)?;
         }
         if self.allow_empty {
             writer.name(ALLOW_EMPTY, empty_length)?;
         }
-        if self.default_value {
+        if !self.default_first && self.default_value {
             writer.name(DEFAULT_VALUE, default_length)?;
         }
         if self.description {
@@ -314,15 +326,23 @@ impl Prepared<'_> {
             writer.put(&COLUMN_VALUES.to_le_bytes())?;
             writer.long(group_name)?;
             writer.name(name, label)?;
+            let default_prefix = usize::from(self.default_first && self.default_value);
+            if self.default_first
+                && let Some(literal) = &literal
+            {
+                writer.default(0, literal)?;
+            }
             if let Some(value) = required {
-                writer.boolean(0, value)?;
+                writer.boolean(default_prefix, value)?;
             }
             if let Some(value) = empty {
-                writer.boolean(usize::from(self.required), value)?;
+                writer.boolean(default_prefix + usize::from(self.required), value)?;
             }
-            if let Some(literal) = literal {
+            if !self.default_first
+                && let Some(literal) = &literal
+            {
                 let index = usize::from(self.required) + usize::from(self.allow_empty);
-                writer.default(index, &literal)?;
+                writer.default(index, literal)?;
             }
             if let Some(text) = description {
                 let index = usize::from(self.required)
