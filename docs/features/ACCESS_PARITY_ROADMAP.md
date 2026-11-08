@@ -1,13 +1,15 @@
 # Native CRUD, queries and Access parity
 
-Scope accounting, 7 November 2026. This records the user's expanded target,
+Scope accounting, updated 8 November 2026. This records the user's expanded target,
 the inspected implementation and the remaining work; it is not a compatibility
 announcement or a record of newly passing native tests.
 
 ## Target and completion rules
 
-Jet 4 and ACE 12, 14, 15 and 16 are first-class targets for full native database,
-table, column and row CRUD and Access query support. This supersedes the earlier
+Access 97–2019 is the target baseline: Jet 3 (Access 97), Jet 4 and ACE 12, 14,
+15 and 16 are first-class targets for full native database, table, column and row
+CRUD and Access query support. Access 97 writes are explicitly included; current
+Jet 3 header recognition supplies neither reading nor writing. This supersedes the earlier
 policy of expanding older formats only when they help ACE 16. ACE 16 remains the
 modern application reference. Features must follow each target's actual
 capabilities: older formats must not receive incompatible newer field types.
@@ -41,6 +43,10 @@ All cells describe current implementation, not the requested final state.
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
 
+Jet 3 currently recognizes headers only. Native catalog/row/text/index decoding,
+creation, all writes and their recovery/query qualification remain unimplemented.
+The existing matrix above describes Jet 4/ACE evidence, not Jet 3 coverage.
+
 Current normal ACE writes admit unencoded subversion-zero ACE 2016/2019 layouts.
 Broadening that format match alone would not supply older-profile writers.
 Encrypted reads and encryption-copy transformations do not supply encrypted
@@ -58,7 +64,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 
 | Workstream | Work that still needs implementation or broader qualification |
 | --- | --- |
-| Profile coverage | Original Jet 4/ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
+| Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
 | Saved table lifecycle | Reviewed rename/drop, catalog record replacement, namespace/collision rules, dependency handling, native object identity and allocation retirement. |
 | Saved column lifecycle | Add/rename/change/drop; existing-row migration, field numbers/null masks/variable offsets, defaults, indexes, properties and dependency updates. Empty-table rewrites must preserve native history and unknown metadata too. |

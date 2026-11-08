@@ -10,9 +10,12 @@ current behavior and evidence.
 
 | Tier | Formats | Direction |
 | --- | --- | --- |
-| 1 — Native CRUD/query targets | Jet 4; ACE 12, 14, 15 and 16 | Full database/table/column/row CRUD and Access query support, independently qualified for each target. Current implementation remains partial. |
-| 3 — Legacy | Jet 3 | Planned native reads and queries, starting from the existing header recognition. |
+| 1 — Native CRUD/query targets | Jet 3 (Access 97), Jet 4; ACE 12, 14, 15 and 16 | Full database/table/column/row CRUD and Access query support, independently qualified for each target. Current implementation remains partial. |
 | Experimental | Jet 1.0/1.1 and Jet 2 | Optional bounded read-only feasibility research, beginning with original fixtures and reliable detection. |
+
+The target baseline is Access 97–2019, including Access 97 writing. Existing
+later-layout coverage remains retained; this is not an application-version test
+based only on file magic. Access 95 is not independently qualified.
 
 These tiers describe priorities and targets, not completed compatibility,
 release deadlines or permanent write exclusions. Writes require separate

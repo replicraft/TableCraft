@@ -41,14 +41,16 @@ historical evidence, distinct from Windows/Access parity.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
-Jet 4 and ACE 12, 14, 15 and 16 are first-class targets for full native CRUD and
-Access query support following the user's 7 November 2026 reprioritization.
+Access 97–2019 is the requested full native CRUD/query baseline: Jet 3
+(Access 97), Jet 4 and ACE 12, 14, 15 and 16 are first-class targets following
+the user's 7–8 November 2026 reprioritization. Access 97 writing is an explicit
+target, not supplied by current Jet 3 header recognition.
 Deliver each operation through engine, adapter, runtime and GUI with independent
 per-profile admission and evidence; ACE 16 evidence does not qualify older files.
 ACE 16 remains the reference for existing implementation and modern application
 behavior, not a reason to defer the other requested CRUD/query targets. Preserve
 the full compatibility goal rather than declaring bounded write subsets complete.
-Jet 1/2/3 remain secondary/deferred; SQLite and native projects remain paused.
+Jet 1/2 remain secondary/deferred; SQLite and native projects remain paused.
 
 Follow [ROADMAP.md](docs/ROADMAP.md) for acceptance scope. Keep current support
 separate from the target; header recognition and independent-reader comparisons

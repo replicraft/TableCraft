@@ -1,9 +1,10 @@
 # Compatibility-driven roadmap
 
-## Current target — 7 November 2026
+## Current target — 8 November 2026
 
-Target full native CRUD and Access query support for **Jet 4 and ACE 12, 14,
-15 and 16**, each with independent qualification. This supersedes the earlier
+Target full native CRUD and Access query support for **Access 97–2019: Jet 3/4
+and ACE 12, 14, 15 and 16**, each with independent qualification. Access 97 writing
+is included; current Jet 3 support is header recognition only. This supersedes the earlier
 ACE-16-first-only sequencing below. Database/table/column/row lifecycle, action
 queries, native saved-query authoring and DDL are active work alongside the GUI;
 unsaved drafts and read-only SQL Run do not complete that target.
@@ -1028,12 +1029,12 @@ message data does not qualify native Access error-code/localization behavior.
 
 ## Native compatibility target
 
-Jet 4 and ACE 12/14/15/16 are first-class full CRUD/query targets following the
+Jet 3 (Access 97), Jet 4 and ACE 12/14/15/16 are first-class full CRUD/query targets following the
 7 November reprioritization. The long-term goal is full compatibility, not
 permanently restricted feature subsets. ACE 16 remains the modern application
 reference; every older target needs actual format/application evidence rather
 than inherited ACE 16 permission. The registered ACE 2007 example remains part
-of regression coverage. Jet 1/2/3 remain secondary/deferred, and SQLite expansion
+of regression coverage. Jet 1/2 remain secondary/deferred, and SQLite expansion
 remains paused. See the [current accounting](features/ACCESS_PARITY_ROADMAP.md).
 
 The goal covers native database reads/writes, scalar and advanced field types,
@@ -1107,7 +1108,7 @@ and Jet 4 reads and queries, with SQLite expansion still paused.
 The immediate priority is usable native writes, as requested on 29 October 2026:
 end-to-end INSERT/UPDATE/DELETE, mixed-schema preservation, validation and required
 macros, followed by durable native save/recovery. The 7 November expansion makes
-Jet 4 and ACE 12/14/15/16 first-class CRUD/query targets. Their reliable local
+Jet 3 (Access 97), Jet 4 and ACE 12/14/15/16 first-class CRUD/query targets. Their reliable local
 reads and queries remain required foundations. Preserve working coverage and fix regressions
 while extending writes; the remaining qualification gaps below are still open.
 
@@ -1981,10 +1982,14 @@ and [wizards](features/APP_TEMPLATES_WIZARDS.md). They are requirements, not com
 
 ## Native format expansion
 
-Deliver Jet 4 and ACE 12/14/15/16 CRUD/query as first-class workstreams. Reuse
+Deliver Access 97–2019 CRUD/query (Jet 3/4 and ACE 12/14/15/16) as first-class
+workstreams. Reuse
 shared mechanisms while qualifying each actual layout and supported feature set;
 do not wait for ACE 16 perfection before developing the other requested targets.
-Jet 3 remains deferred rather than part of this expanded CRUD commitment.
+Jet 3 now joins the full target for Access 97, including writing. It needs its own
+legacy catalog, code-page, row/index and recovery implementation; shared ACE
+mechanisms do not establish that support. This expands the target without making
+complete historical-format implementation a prerequisite to developing the UI.
 Acquire original minimal fixtures with recorded provenance and compare catalog,
 scalar, text and index behavior before enabling each profile. Access engine
 releases do not map one-to-one to file layouts; the

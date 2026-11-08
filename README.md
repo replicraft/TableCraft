@@ -5,8 +5,8 @@ faithful native MDB/ACCDB behavior and familiar Access workflows. The CLI suppor
 bounded browsing and queries; the desktop UI and general native editing are
 still in development.
 
-Current work targets full native CRUD and Access queries for Jet 4 and
-ACE 12, 14, 15 and 16; implementation is still partial.
+Current work targets full native CRUD and Access queries for Access 97–2019:
+Jet 3/4 and ACE 12, 14, 15 and 16. Implementation is still partial.
 SQLite and `.tcraft` projects are paused, including Python automation and project
 conversion. The [product direction](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md)
 sets the target for Access workflows, defaults, restrictions and documented quirks.
@@ -20,7 +20,7 @@ sets the target for Access workflows, defaults, restrictions and documented quir
 | ACE 12 `.accdb` · Access 2007 | Bounded reads and queries | Tier 1 |
 | ACE 14 `.accdb` · Access 2010 | Bounded ordinary table reads; advanced variants need qualification | Tier 1 |
 | ACE 15 `.accdb` · Access 2013 | Not separately qualified; support follows the actual stored profile | Tier 1 |
-| Jet 3 `.mdb` · Access 95/97 | Header recognition | **Tier 3 — legacy:** planned reads and queries |
+| Jet 3 `.mdb` · Access 97 | Header recognition | Tier 1; reads, writes and queries planned |
 | Jet 1/2 `.mdb` · Access 1/2 | Not implemented | **Experimental:** optional read-only research |
 
 Tiers describe planned priorities, not completed compatibility. ACE 16's long-term

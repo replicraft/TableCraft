@@ -140,7 +140,7 @@ catalog, fields, indexes, encryption or application objects.
 | ACE 14 (Access 2010) | Bounded ordinary table reads; qualified Agile fixture inventory/rows/query checks are independent evidence; advanced field/index variants need separate qualification |
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
 | ACE 16 (Access 2016 and later releases) | Bounded 2016/2019-family reads and separately qualified restricted journaled writes/creation work; general CRUD and native Access qualification remain incomplete |
-| Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading planned |
+| Jet 3 (Access 95/97) | Header recognized; legacy catalog, text/code-page, row and index reading unimplemented. Access 97 full CRUD/query is now a target; writes require separate implementation and qualification. Access 95 is not independently qualified. |
 | Jet 1.0/1.1 (Access 1.0/1.1) | Optional read-only feasibility study; detection and extraction unqualified, no implemented support |
 | Jet 2 (Access 2.0) | Optional read-only feasibility study; recognition and data extraction unimplemented; writes are outside the initial study |
 
