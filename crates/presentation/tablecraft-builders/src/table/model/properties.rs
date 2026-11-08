@@ -62,6 +62,10 @@ pub(super) struct FieldProperties {
 }
 
 impl FieldProperties {
+    pub(super) fn cached_number_size(&self) -> DraftNumberSize {
+        self.number_size
+    }
+
     pub(super) fn new(kind: DraftFieldType) -> Self {
         let ordinary = kind != DraftFieldType::AutoNumberIncrement;
         Self {
@@ -195,7 +199,7 @@ impl TableDraft {
             .iter()
             .position(|field| field.id == id)
             .ok_or(TableDraftError::MissingField)?;
-        if self.fields[position].primary {
+        if self.fields[position].protected {
             return Err(TableDraftError::ProtectedField);
         }
         Ok(position)

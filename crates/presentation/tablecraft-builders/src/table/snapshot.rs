@@ -12,6 +12,7 @@ pub struct SnapshotField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    protected: bool,
     description: Option<String>,
     short_text_units: Option<u16>,
     number_size: Option<DraftNumberSize>,
@@ -36,6 +37,10 @@ impl SnapshotField {
 
     pub fn is_primary(&self) -> bool {
         self.primary
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.protected
     }
 
     pub fn description(&self) -> Option<&str> {
@@ -131,6 +136,7 @@ impl TableDraft {
                 name: copy_text(field.name())?,
                 kind: field.kind(),
                 primary: field.is_primary(),
+                protected: field.is_protected(),
                 description: field.description().map(copy_text).transpose()?,
                 short_text_units: field.short_text_units(),
                 number_size: field.number_size(),

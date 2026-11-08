@@ -1,4 +1,5 @@
 mod description;
+mod primary;
 mod properties;
 
 pub use properties::{DraftDefaultMode, DraftNumberSize};
@@ -25,6 +26,7 @@ pub struct DraftField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    protected: bool,
     description: Option<String>,
     properties: FieldProperties,
 }
@@ -46,6 +48,10 @@ impl DraftField {
         self.primary
     }
 
+    pub fn is_protected(&self) -> bool {
+        self.protected
+    }
+
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
@@ -56,6 +62,7 @@ pub struct TableDraft {
     revision: u64,
     next_field: u64,
     modified: bool,
+    design: bool,
 }
 
 impl TableDraft {
@@ -66,13 +73,30 @@ impl TableDraft {
                 name: "ID".into(),
                 kind: DraftFieldType::AutoNumberIncrement,
                 primary: true,
+                protected: true,
                 description: None,
                 properties: FieldProperties::new(DraftFieldType::AutoNumberIncrement),
             }],
             revision: 0,
             next_field: 2,
             modified: false,
+            design: false,
         }
+    }
+
+    /// Fresh manual Design starts with no invented ID or primary declaration.
+    pub fn design() -> Self {
+        Self {
+            fields: Vec::new(),
+            revision: 0,
+            next_field: 1,
+            modified: false,
+            design: true,
+        }
+    }
+
+    pub fn is_design(&self) -> bool {
+        self.design
     }
 
     pub fn fields(&self) -> &[DraftField] {
@@ -134,6 +158,7 @@ impl TableDraft {
             name,
             kind,
             primary: false,
+            protected: false,
             description: None,
             properties: FieldProperties::new(kind),
         });
@@ -151,7 +176,7 @@ impl TableDraft {
             .iter()
             .position(|field| field.id == id)
             .ok_or(TableDraftError::MissingField)?;
-        if self.fields[position].primary {
+        if self.fields[position].protected {
             return Err(TableDraftError::ProtectedField);
         }
         let revision = self.revision.checked_add(1).ok_or(TableDraftError::Limit)?;
@@ -176,7 +201,7 @@ impl TableDraft {
             .iter()
             .position(|field| field.id == id)
             .ok_or(TableDraftError::MissingField)?;
-        if self.fields[position].primary {
+        if self.fields[position].protected {
             return Err(TableDraftError::ProtectedField);
         }
         match kind {
@@ -190,6 +215,9 @@ impl TableDraft {
         }
         if self.fields[position].kind == kind {
             return Ok(());
+        }
+        if self.fields[position].primary && !self.fields[position].supports_primary_type(kind) {
+            return Err(TableDraftError::InvalidPrimaryKey);
         }
         let revision = self.revision.checked_add(1).ok_or(TableDraftError::Limit)?;
 
@@ -205,7 +233,7 @@ impl TableDraft {
             .iter()
             .position(|field| field.id == id)
             .ok_or(TableDraftError::MissingField)?;
-        if self.fields[position].primary {
+        if self.fields[position].protected {
             return Err(TableDraftError::ProtectedField);
         }
         if !valid_name(name)

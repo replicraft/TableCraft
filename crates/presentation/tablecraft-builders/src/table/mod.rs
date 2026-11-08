@@ -35,6 +35,8 @@ pub enum TableDraftError {
     ProtectedField,
     #[error("the draft property is invalid for this field declaration")]
     InvalidProperty,
+    #[error("the field cannot be the primary key in this draft profile")]
+    InvalidPrimaryKey,
     #[error("the table draft exceeds the bounded authoring profile")]
     Limit,
     #[error("the table draft allocation failed")]

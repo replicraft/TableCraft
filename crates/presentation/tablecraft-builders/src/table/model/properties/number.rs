@@ -36,6 +36,9 @@ impl TableDraft {
         if self.fields[position].kind != DraftFieldType::Number {
             return Err(TableDraftError::InvalidProperty);
         }
+        if self.fields[position].primary && size != DraftNumberSize::LongInteger {
+            return Err(TableDraftError::InvalidPrimaryKey);
+        }
         if self.fields[position].properties.number_size == size {
             return Ok(());
         }
