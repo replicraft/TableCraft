@@ -4,7 +4,12 @@ use crate::{
     Command, Error, QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, Response,
     SavedQueryTarget, Worker,
 };
-use tablecraft_testkit::fixtures::access::saved_queries::fitting_select::storage_pair;
+use tablecraft_testkit::fixtures::access::saved_queries::{
+    Fragment, QUERY_ID, database_with_query_flags, fitting_select::storage_pair,
+};
+
+const FIXTURE_PAGE_BYTES: usize = 4096;
+const USER_DATA_PAGE: usize = 12;
 
 fn inspect(worker: &Worker, target: &SavedQueryTarget) -> QuerySqlDraft {
     let Response::QuerySqlDraft { draft } = request(
@@ -195,8 +200,52 @@ fn nonprofile_reconstructed_queries_have_no_editable_sql_or_capability() {
     let (_directory, path, worker, target) = opened(&before);
     let draft = inspect(&worker, &target);
     assert_eq!(draft.eligibility, QuerySqlEligibility::Unavailable);
-    assert!(draft.sql.is_none());
+    assert_eq!(draft.sql.as_deref(), Some("SELECT 42 AS [Answes];"));
     assert_eq!(std::fs::read(&path).unwrap(), before);
+}
+
+#[test]
+fn readable_table_query_sql_is_visible_without_scanning_rows_or_qualifying_writes() {
+    let mut before = database_with_query_flags(
+        &[
+            Fragment {
+                object: Some(QUERY_ID),
+                attribute: Some(5),
+                order: Some(&[0, 0, 0, 1]),
+                name1: Some("Items"),
+                ..Default::default()
+            },
+            Fragment {
+                object: Some(QUERY_ID),
+                attribute: Some(6),
+                order: Some(&[0, 0, 0, 1]),
+                expression: Some("Id"),
+                ..Default::default()
+            },
+        ],
+        0,
+    );
+    // This independently authored fixture's user DATA page is unreadable. The
+    // SQL view must reconstruct only the stored query, without running it.
+    before[USER_DATA_PAGE * FIXTURE_PAGE_BYTES] = 0;
+    let (directory, path, worker, target) = opened(&before);
+    let draft = inspect(&worker, &target);
+    let original = draft.sql.unwrap();
+    assert_eq!(original, "SELECT [Id] FROM [Items];");
+    assert_eq!(draft.eligibility, QuerySqlEligibility::Unavailable);
+    assert!(matches!(
+        request(
+            &worker,
+            Command::ReviewQuerySql {
+                target,
+                original_sql: original,
+                proposed_sql: "SELECT 43 AS Answer;".into(),
+            }
+        ),
+        Err(Error::QuerySqlEdit(QuerySqlEditError::Unsupported))
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
 }
 
 #[test]

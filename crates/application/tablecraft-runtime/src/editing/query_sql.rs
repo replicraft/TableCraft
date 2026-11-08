@@ -1,4 +1,6 @@
 //! Inert native definition drafts and owned SQL qualification for existing queries.
+mod display;
+
 use crate::{
     Error, QueryExpressionReview, Response, SavedQueryTarget,
     controls::{SCOPE, budget, check},
@@ -6,6 +8,8 @@ use crate::{
     document::Document,
 };
 use tablecraft_access::{NativeSource, SavedRead};
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
+use tablecraft_ace::{NativeImage, QueryExpressionError, RecoverableQueryExpressionError};
 use tablecraft_sql::{
     ParseLimits, parse_query,
     query::{Query, ReadBody, Statement},
@@ -13,7 +17,6 @@ use tablecraft_sql::{
 };
 use thiserror::Error;
 
-const MAX_CONSTANT_SQL_BYTES: usize = 64;
 const MAX_LITERAL_BYTES: usize = 10;
 
 /// A read-only eligibility observation, never authority to mutate or execute.
@@ -25,10 +28,11 @@ pub enum QuerySqlEligibility {
     Unavailable,
 }
 
-/// Source-bound canonical SQL for the current narrow profile, without save authority.
+/// Source-bound reconstructed SQL, with separate native write eligibility.
 pub struct QuerySqlDraft {
     pub target: SavedQueryTarget,
-    /// Present only after exact native literal and physical source qualification.
+    /// Canonical readable syntax, independent of physical write qualification.
+    /// This is not an original stored SQL byte stream or an editing capability.
     pub sql: Option<String>,
     pub eligibility: QuerySqlEligibility,
 }
@@ -58,26 +62,18 @@ impl Document {
         let saved = self.read_query_sql_target(target, cancelled)?;
         let query = saved.query();
         let mut output = Presentation::new(cancelled);
-        let (sql, eligibility) = if let Some(value) = constant_literal(query) {
+        let sql = display::query(query, &mut output)?;
+        let eligibility = if let Some(value) = constant_literal(query) {
             let literal = literal_text(value, &mut output)?;
-            let eligibility = qualify_source(self, target, &literal, cancelled)?;
-            let sql = if eligibility == QuerySqlEligibility::QualifiedConstantSelect {
-                // Native qualification established that formatting does not
-                // normalize an opaque or noncanonical stored expression.
-                output.allocation(1, MAX_CONSTANT_SQL_BYTES)?;
-                Some(query.to_string())
-            } else {
-                None
-            };
-            (sql, eligibility)
+            qualify_source(self, target, &literal, cancelled)?
         } else {
-            (None, QuerySqlEligibility::Unavailable)
+            QuerySqlEligibility::Unavailable
         };
         check(cancelled)?;
         Ok(Response::QuerySqlDraft {
             draft: QuerySqlDraft {
                 target: copy_target(target, &mut output)?,
-                sql,
+                sql: Some(sql),
                 eligibility,
             },
         })
@@ -213,8 +209,6 @@ fn qualify_source(
     literal: &str,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<QuerySqlEligibility, Error> {
-    use tablecraft_ace::{NativeImage, QueryExpressionError, RecoverableQueryExpressionError};
-
     if !document.source.editable_native() {
         return Ok(QuerySqlEligibility::Unavailable);
     }

@@ -4,6 +4,30 @@ use egui::{Event, Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
 
 #[test]
+fn readable_sql_remains_visible_when_native_writing_is_unavailable() {
+    let (mut state, target) = inspected_state(true);
+    let pending = state.begin_saved_query_sql_inspection(target, 21).unwrap();
+    let sql = "SELECT [Id] FROM [Items];";
+    assert!(state.set_saved_query_sql_inspection(
+        21,
+        &pending,
+        Some(sql.into()),
+        SavedQuerySqlEligibility::Unavailable,
+    ));
+    assert!(!state.set_saved_query_sql_text("SELECT 43 AS [Answer];".into()));
+    let mut harness = harness(state);
+    harness.run_steps(2);
+    let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
+    assert_eq!(editor.value().as_deref(), Some(sql));
+    assert!(editor.accesskit_node().is_disabled());
+    assert!(!harness.state().0.can_save_active_object());
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    assert!(harness.state().1.is_empty());
+    assert!(!harness.state().0.saved_query_sql_dirty());
+}
+
+#[test]
 fn inert_sql_is_visible_but_host_opt_in_is_required_for_editing_and_save() {
     let (state, _) = inspected_state(false);
     let mut harness = harness(state);
