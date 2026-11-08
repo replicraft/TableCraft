@@ -6,6 +6,55 @@ and crash/power-loss durability are separate evidence. No native app windows
 were opened during this audit. SQLite functionality was checked without
 expanding its paused scope; VBA execution remains deferred.
 
+## Current conclusion
+
+The reviewed implementation has Windows, macOS and Linux routes rather than a
+Unix-only creation/save path. The six-target source and compilation audit is
+complete within the recorded exclusions below. This is not yet an assurance that
+every workflow works on all six native environments: Windows/Linux execution,
+installation and physical durability remain release qualification work.
+
+The source review includes repeated table creation and its consuming save/reopen
+route. Shared services pass native paths as `Path`/`PathBuf`; codecs retain
+explicit byte order. The common adapter lifecycle delegates file ownership,
+publication and journal retirement to IO's platform implementation. Ordinary
+temporary-file helpers do not replace those guarantees. No additional platform
+fallback or file-format admission was introduced during this refresh.
+
+The release-critical native checks still needed are:
+
+- Run the configured native CI jobs, including the Windows CLI/SQLite build that
+  cannot be completed with this machine's missing MSVC C SDK.
+- Exercise create, reviewed update/insert/delete, repeated table addition,
+  interrupted-save recovery, destination refusal and retained-journal release on
+  Windows local NTFS and Linux.
+- Exercise installed file-open events, Unicode paths, dialogs, clipboard,
+  accessibility, Windows/Linux window controls and display scaling on each OS.
+- Qualify minimum supported OS/runtime libraries and distribution installation;
+  the tracked release workflow currently publishes CLI archives only.
+
+These are separate from the deferred native Microsoft Access comparisons and
+power-loss testing. Detailed findings and historical batches follow; their
+counts describe the trees tested at those checkpoints.
+
+The latest headless refresh passes all 434 shared-UI tests and 111 desktop
+tests, strict all-target/all-feature lint for both packages, and Windows x64 and
+ARM64 all-target/all-feature checks for runtime and desktop. This includes the
+current Navigation Pane and bundled-font working changes. The initial UI batch
+passed 432 tests and exposed two test-selector failures: an empty-list assertion
+used a mandatory-match query, and the new Queries heading made a global modal
+button lookup ambiguous. The corrected selectors retain the same behavioral
+assertions; the full rerun passes. Failed and accepted logs remain separate under
+ignored `.cache/platform-refresh-*20261107.log` paths.
+
+Repository checks also pass: 82 top-level Python tests, 55 local packaging/tooling
+tests, all 882 formatter roots, all 20 dependency boundaries and 7,947 local
+documentation targets. The local packaging test count includes preserved
+user-owned notice working files and does not establish tracked desktop release
+coverage. The earlier complete six-target workspace checks below retain their
+recorded scope; this refresh does not rerun the complete backend regression suite
+or execute Windows/Linux programs.
+
 ## Findings and corrections
 
 | Finding | Correction |

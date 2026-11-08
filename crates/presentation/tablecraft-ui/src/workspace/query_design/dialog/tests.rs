@@ -23,12 +23,13 @@ fn unsupported_source_tabs_stay_disabled_and_close_keeps_the_existing_design() {
     harness.run();
 
     for label in ["Queries", "Both"] {
-        assert!(
-            harness
-                .get_by_role_and_label(Role::Button, label)
-                .accesskit_node()
-                .is_disabled()
-        );
+        // The Navigation Pane also has a Queries button. The source-kind tabs
+        // are selectable controls; target that contract inside the modal.
+        let source_tab = harness
+            .get_all_by_role_and_label(Role::Button, label)
+            .find(|node| node.accesskit_node().toggled().is_some())
+            .expect("selectable source-kind tab");
+        assert!(source_tab.accesskit_node().is_disabled());
     }
     assert!(harness.state().1.is_empty());
     assert_eq!(harness.state().0.query_design_draft(), Some(&original));
