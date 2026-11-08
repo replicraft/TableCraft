@@ -5,6 +5,7 @@ mod deleting;
 mod inserting;
 mod query_action;
 mod query_delete;
+mod query_expression;
 mod query_insert;
 mod query_update;
 mod replacing;
@@ -29,6 +30,7 @@ pub use inserting::{
 };
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
+pub use query_expression::{QueryExpressionReopen, QueryExpressionReview, ReviewedQueryExpression};
 pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 pub use replacing::ReplaceError;

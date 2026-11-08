@@ -3,14 +3,29 @@ use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::{ReviewedAddColumn, ReviewedTableCreation};
 use crate::editing::{
-    ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-    ReviewedQueryUpdate, ReviewedTableRename,
+    ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
+    ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
 };
 use std::path::PathBuf;
 
 pub struct SaveWorker;
 
 impl SaveWorker {
+    pub const fn supports_query_expression() -> bool {
+        false
+    }
+
+    pub fn start_query_expression(
+        &self,
+        reviewed: ReviewedQueryExpression,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryExpression>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
     #[cfg(feature = "ace16-create")]
     pub const fn supports_add_column() -> bool {
         false

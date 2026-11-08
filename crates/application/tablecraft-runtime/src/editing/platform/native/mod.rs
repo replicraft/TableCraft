@@ -8,6 +8,7 @@ pub(in crate::editing) mod input;
 pub(in crate::editing) mod inserting;
 pub(in crate::editing) mod query_action;
 pub(in crate::editing) mod query_delete;
+pub(in crate::editing) mod query_expression;
 pub(in crate::editing) mod query_insert;
 pub(in crate::editing) mod query_update;
 pub(in crate::editing) mod replacing;

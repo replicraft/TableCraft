@@ -5,6 +5,7 @@ mod apply_add_column;
 mod apply_delete;
 mod apply_insert;
 mod apply_query_action;
+mod apply_query_expression;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
 mod apply_table_rename;
@@ -20,6 +21,7 @@ use self::{
     apply_delete::apply_delete,
     apply_insert::apply_insert,
     apply_query_action::apply_query_action,
+    apply_query_expression::apply_query_expression,
     apply_table_rename::apply_table_rename,
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
@@ -32,8 +34,9 @@ use crate::editing::{ReviewedAddColumn, ReviewedTableCreation};
 use crate::{
     controls::action_recovery_budget,
     editing::{
-        ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-        ReviewedQueryUpdate, ReviewedTableRename, platform::query_action::Plan,
+        ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
+        ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
+        platform::query_action::Plan,
     },
 };
 use std::{
@@ -47,6 +50,7 @@ use std::{
 use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
+    ApplyQueryExpression(ReviewedQueryExpression, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyAddColumn(ReviewedAddColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
@@ -97,6 +101,10 @@ pub struct SaveWorker {
 }
 
 impl SaveWorker {
+    pub const fn supports_query_expression() -> bool {
+        true
+    }
+
     #[cfg(feature = "ace16-create")]
     pub const fn supports_add_column() -> bool {
         true
@@ -147,7 +155,8 @@ impl SaveWorker {
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyAddColumn(..) => SaveOperation::Apply,
-                    Task::Apply(..)
+                    Task::ApplyQueryExpression(..)
+                    | Task::Apply(..)
                     | Task::ApplyTableRename(..)
                     | Task::ApplyInsert(..)
                     | Task::ApplyDelete(..)
@@ -166,6 +175,9 @@ impl SaveWorker {
                     tracing::debug_span!("application save task", operation = operation_name);
                 let _entered = span.enter();
                 let outcome = match task {
+                    Task::ApplyQueryExpression(reviewed, bundle) => {
+                        apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
+                    }
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyAddColumn(reviewed, bundle) => {
                         apply_add_column(reviewed, bundle, &mut retained, &cancelled)
@@ -323,6 +335,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryInsert)
+    }
+
+    /// Consume one document-owned existing-query review without SQL replay.
+    pub fn start_query_expression(
+        &self,
+        reviewed: ReviewedQueryExpression,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryExpression>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryExpression)
     }
 
     /// Consume the current source-qualified ADD-column review once.

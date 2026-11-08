@@ -22,7 +22,7 @@ fn column(expression: &str) -> Fragment<'_> {
     }
 }
 
-fn opened(bytes: &[u8]) -> (tempfile::TempDir, PathBuf, Worker, SavedQueryTarget) {
+pub(super) fn opened(bytes: &[u8]) -> (tempfile::TempDir, PathBuf, Worker, SavedQueryTarget) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("saved.accdb");
     std::fs::write(&path, bytes).unwrap();

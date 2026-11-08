@@ -4,8 +4,8 @@ On 8 November 2026, an original Jackcess 5.0.4 fixture retained one native SELEC
 while its stored projection changed from `42` to `43`. The complete independent
 raw AFTER image equals the complete SDK-produced AFTER image. This establishes
 an expression-only byte oracle. The engine now has an unpublished candidate
-planner for the closed profile below; **no runtime, CLI or GUI QueryDef save route
-is supplied by this checkpoint**.
+planner for the closed profile below; **no CLI or GUI QueryDef save route is supplied by this
+checkpoint**.
 Native Microsoft Access save/reopen remains unrun.
 
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
@@ -87,8 +87,8 @@ reconstructs the complete candidate through the same strict planner. The same
 retained checked V1 journal is qualified against both complete rebuilt images
 before recovery or settled confirmation. Generic prepare/commit/rollback require
 caller-owned exclusive offline resources and durable journal namespaces; no
-runtime, CLI or GUI query-save consumer is implemented. The shared offline
-adapter below now composes the retained filesystem lifecycle.
+CLI or GUI query-save consumer is implemented. The shared offline adapter and
+runtime services below compose the retained filesystem lifecycle.
 
 The initial source profile is unencoded ACE 16 code 5/subversion zero with one
 saved query and five fragments, the observed `Answer` alias, and a source-free
@@ -137,11 +137,34 @@ counts or table-schema change. Rollback and Original-image confirmation report n
 query change; committed/confirmed Replacement can retain the acknowledged fact.
 The shared apply path selects mutually exclusive row, schema or query facts.
 
-Five focused adapter cases are authored for apply/no-op, source drift and
-independent quotas/cancellation, retained/cold/settled outcomes, closed decoder
-selection and rejected patched AFTER. At this checkpoint those adapter cases are
-**unrun**. Runtime query review/save, scratch SQL lowering, generic query creation,
-GUI Save/Save As and broader native profiles remain later work.
+Five focused adapter cases pass for apply/no-op, source drift and independent
+quotas/cancellation, retained/cold/settled outcomes, closed decoder selection and
+rejected patched AFTER. Scratch SQL lowering, generic query creation, GUI
+Save/Save As and broader native profiles remain later work.
+
+## Runtime reviewed existing-query service
+
+The runtime's explicit `ReviewQueryLiteralExpression` request binds the exact
+`SavedQueryTarget` document revision, scoped object ID and catalog name before
+issuing a lease-free `ReviewedQueryExpression`. Its review contains the original
+and replacement literals; unsupported source/SQL shapes remain engine refusals.
+The consuming SaveWorker task uses the shared offline adapter under separate
+native/proof/persistence budgets. Busy or stale starts return the capability;
+accepted tasks retain terminal outcomes and actual resource owners until explicit
+acknowledgment or recovery/release.
+
+A runtime-issued `QueryExpressionReopen` retains the complete expected AFTER,
+original query identity and path. Explicit `OpenQueryExpressionSaved` only opens
+matching fresh bytes; it cannot save or replay the request. Saved-query execution
+remains a separate explicit command. Unsupported platforms issue no capability
+and return unconsumed starts with `UnsupportedPlatform`.
+
+Five runtime cases are authored for complete changed/no-op images, unlocked
+review, busy report retention, source drift, document/target invalidation,
+guarded reopen, and wrong-object/unsupported-expression refusal. These newly
+connected runtime cases are **unrun** at this checkpoint. The desktop only
+handles unsolicited review responses as unavailable; no GUI command dispatch or
+SQL-editor persistence is enabled by this service.
 
 ## Required proof before a normal native save
 

@@ -40,8 +40,9 @@ pub use editing::{
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
-    InsertTarget, QueryDeleteReview, QueryInsertReview, QueryUpdateReview, ReplaceError,
-    ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
+    InsertTarget, QueryDeleteReview, QueryExpressionReopen, QueryExpressionReview,
+    QueryInsertReview, QueryUpdateReview, ReplaceError, ReviewedDelete, ReviewedEdit,
+    ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression, ReviewedQueryInsert,
     ReviewedQueryUpdate, ReviewedTableRename, SaveCleanupDisposition, SaveCompletion, SaveFailure,
     SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveQueryChange,
     SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
@@ -86,6 +87,12 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    QueryExpression(#[from] tablecraft_ace::RecoverableQueryExpressionError),
+    #[cfg(feature = "offline-edit")]
+    #[error("saved query contents changed before reopening")]
+    QueryExpressionSourceChanged,
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     TableRename(#[from] tablecraft_ace::RecoverableTableRenameError),
@@ -210,6 +217,16 @@ pub enum Command {
         document_revision: u64,
         table: String,
         new_name: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    ReviewQueryLiteralExpression {
+        target: SavedQueryTarget,
+        expected: String,
+        replacement: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    OpenQueryExpressionSaved {
+        witness: Arc<QueryExpressionReopen>,
     },
     #[cfg(feature = "offline-edit")]
     OpenTableRenamed {
@@ -402,6 +419,11 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(feature = "offline-edit")]
+    QueryExpressionReviewed {
+        review: QueryExpressionReview,
+        capability: ReviewedQueryExpression,
+    },
     #[cfg(feature = "offline-edit")]
     TableRenameReviewed {
         review: TableRenameReview,

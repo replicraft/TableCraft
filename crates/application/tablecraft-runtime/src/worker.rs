@@ -53,6 +53,26 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .review_table_rename(*document_revision, table, new_name, cancelled),
             #[cfg(feature = "offline-edit")]
+            Command::ReviewQueryLiteralExpression {
+                target,
+                expected,
+                replacement,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_query_literal_expression(target, expected, replacement, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::OpenQueryExpressionSaved { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_query_expression_saved(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(feature = "offline-edit")]
             Command::OpenTableRenamed { witness } => {
                 document = None;
                 document_revision = document_revision
@@ -371,6 +391,10 @@ impl Worker {
                 let operation = match &request.command {
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewTableRename { .. } => "review_table_rename",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReviewQueryLiteralExpression { .. } => "review_query_expression",
+                    #[cfg(feature = "offline-edit")]
+                    Command::OpenQueryExpressionSaved { .. } => "open_query_expression_saved",
                     #[cfg(feature = "offline-edit")]
                     Command::OpenTableRenamed { .. } => "open_table_renamed",
                     #[cfg(feature = "offline-edit")]
