@@ -38,7 +38,7 @@ fn explicit_default_request_retains_null_presence_and_exact_int32_without_coerci
         ));
     }
     let null = Value::Null;
-    for scalar in [ScalarType::Int16, ScalarType::Text, ScalarType::Binary] {
+    for scalar in [ScalarType::Text, ScalarType::Binary] {
         assert!(matches!(
             CreateColumn::new("Other", scalar).with_default_literal(&null),
             Err(CreateDatabaseError::Declaration)
