@@ -55,6 +55,25 @@ pub struct CreatedDefaultZeroAddColumnCandidate {
 }
 
 impl NativeImage {
+    /// Inspect the complete source profile for an explicit Number declaration.
+    ///
+    /// This name-independent check constructs no candidate or write capability.
+    /// It repeats the same canonical image and property checks used by planning;
+    /// an actual review must still qualify its source and proposed field afresh.
+    pub fn check_created_default_zero_add_column_source(
+        &self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), CreatedDefaultZeroAddColumnError> {
+        let _span = tracing::debug_span!("native.default_zero_add_column.check_source").entered();
+        let (_, definition) = super::source::capture(self, table, budget, cancelled)?;
+        let columns = definition.borrowed_columns(budget, cancelled)?;
+        source_properties(&columns, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(())
+    }
+
     /// Add a nullable ordinary LONG with explicit constant DefaultValue 0.
     ///
     /// Requires the complete canonical empty generated-primary creator image,
@@ -80,18 +99,7 @@ impl NativeImage {
         super::super::super::request::name(column, budget, cancelled)?;
         let (checked, definition) = super::source::capture(&self, table, budget, cancelled)?;
         let mut columns = definition.borrowed_columns(budget, cancelled)?;
-        for field in &columns {
-            check(budget, cancelled)?;
-            if field.required() == Some(true)
-                || field.allow_zero_length().is_some()
-                || field.description().is_some()
-                || field
-                    .default_literal()
-                    .is_some_and(|value| value != &Value::Int32(0))
-            {
-                return Err(CreatedDefaultZeroAddColumnError::Source);
-            }
-        }
+        let default_first = source_properties(&columns, budget, cancelled)?;
         budget
             .charge_allocation(1, size_of::<CreateColumn<'_>>() as u64)
             .map_err(InspectError::from)?;
@@ -99,7 +107,6 @@ impl NativeImage {
             .try_reserve_exact(1)
             .map_err(|_| InspectError::Allocation)?;
 
-        let default_first = !columns.iter().any(|field| field.required().is_some());
         let zero = Value::Int32(0);
         let mut appended =
             CreateColumn::new(column, ScalarType::Int32).with_default_literal(&zero)?;
@@ -172,4 +179,27 @@ impl CreatedDefaultZeroAddColumnCandidate {
     pub const fn column_count(&self) -> usize {
         self.image.column_count()
     }
+}
+
+/// Retain exact source policy presence and determine the existing dictionary order.
+fn source_properties(
+    columns: &[CreateColumn<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, CreatedDefaultZeroAddColumnError> {
+    let mut default_first = true;
+    for field in columns {
+        check(budget, cancelled)?;
+        if field.required() == Some(true)
+            || field.allow_zero_length().is_some()
+            || field.description().is_some()
+            || field
+                .default_literal()
+                .is_some_and(|value| value != &Value::Int32(0))
+        {
+            return Err(CreatedDefaultZeroAddColumnError::Source);
+        }
+        default_first &= field.required().is_none();
+    }
+    Ok(default_first)
 }

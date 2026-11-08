@@ -52,6 +52,9 @@ fn qualify(case: raw::Source, table: &str, column: &str, before_hash: &str, afte
         assert_eq!(required(&after, table, "Score"), old_required);
     }
     assert_eq!(required(&after, table, column), Some(false));
+    image(&before)
+        .check_created_default_zero_add_column_source(table, &mut budget(), &|| false)
+        .unwrap();
     let candidate = image(&before)
         .prepare_created_add_default_zero_int32_column_candidate(
             table,
@@ -146,6 +149,14 @@ fn canonical_existing_required_true_refuses_instead_of_becoming_nullable_false()
     image(&before)
         .prepare_created_add_int32_column_candidate("Table1", "Other", &mut budget(), &|| false)
         .unwrap();
+    assert!(matches!(
+        image(&before).check_created_default_zero_add_column_source(
+            "Table1",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(crate::CreatedDefaultZeroAddColumnError::Source)
+    ));
     assert!(matches!(
         image(&before).prepare_created_add_default_zero_int32_column_candidate(
             "Table1",
