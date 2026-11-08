@@ -337,12 +337,16 @@ impl State {
         {
             return None;
         }
-        let session = self.query_design.session.as_mut()?;
+        let session = self.query_design.session.as_ref()?;
         let completion = match &session.pending.as_ref()?.kind {
             PendingKind::Build { draft, completion } if *draft == built.draft => Some(*completion),
             PendingKind::Import { sql } if *sql == self.sql => None,
             _ => return None,
         };
+        if !self.replace_query_sql(built.sql) {
+            return None;
+        }
+        let session = self.query_design.session.as_mut()?;
         session.pending = None;
         session.error = None;
         session.draft = built.draft;
@@ -353,7 +357,6 @@ impl State {
             Some(QueryDesignCompletion::ShowSql) => Mode::Sql,
             Some(QueryDesignCompletion::Run) => Mode::Results,
         };
-        self.sql = built.sql;
         if session.mode == Mode::Design {
             self.ribbon_tab = super::ribbon::Tab::QueryDesign;
         }

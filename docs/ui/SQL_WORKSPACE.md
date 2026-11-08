@@ -16,6 +16,25 @@ The [shared runtime parameter service](../application/RUNTIME.md#scratch-query-p
 now provides inert declaration inspection and source-bound typed execution;
 that API alone does not connect a desktop prompt.
 
+## SQL edit witnesses
+
+Actual scratch editor changes advance a checked presentation-owned revision.
+QBE SQL replacements and workspace-layout restoration use the same owner;
+identical replacement text is a no-op. The global scratch draft keeps its current
+ownership across tabs. A future inspection/prompt consumer can compare exact SQL
+and revision, together with its captured tab/document/publication identity, to
+reject A→B→A edits. The runtime's issued target independently binds source identity.
+Direct host assignment to the public draft still requires the exact-text check;
+hosts that need edit history must use `replace_query_sql`.
+
+Revision exhaustion refuses new captures/runs and disables further editor input
+without wrapping, replacing text or dropping prior results. QBE and layout
+replacement refuse before publishing their replacement state.
+
+This witness does not change submitted execution results: an older completed Run
+can still publish its captured SQL and be labelled Previous after draft editing.
+It does not connect a parameter prompt or authorize execution on its own.
+
 ## Result ownership
 
 Before dispatch, shared UI state captures the submitted text under its retained

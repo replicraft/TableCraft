@@ -198,9 +198,12 @@ impl State {
             self.error = Some(self.localizer.text("objects-memory-limit"));
             return false;
         }
+        if !self.replace_query_sql(layout.scratch_sql) {
+            self.error = Some(self.localizer.text("objects-open-refused"));
+            return false;
+        }
         self.clear_object_slots();
         self.objects = restored;
-        self.sql = layout.scratch_sql;
         if let Some(active) = active {
             return self.activate_object(&active);
         }

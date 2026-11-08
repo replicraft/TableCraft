@@ -333,6 +333,7 @@ pub struct State {
     pub query_data: Option<Data>,
     query_result: ResultOrigin,
     query_pending: Option<PendingSql>,
+    query_sql_revision: u64,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,

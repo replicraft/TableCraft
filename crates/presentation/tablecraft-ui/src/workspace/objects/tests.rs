@@ -332,3 +332,36 @@ fn isolated_publishers_do_not_invent_objects_and_managed_publications_cannot_ret
     assert_eq!(managed.data.as_ref().unwrap().rows[0][0].text, "owned page");
     assert!(managed.query_data.is_none());
 }
+
+#[test]
+fn layout_sql_restore_advances_revision_or_refuses_before_replacing_the_workspace() {
+    for exhausted in [false, true] {
+        let mut state = state();
+        state
+            .prepare_object_open(ObjectTarget {
+                document_revision: 7,
+                kind: ObjectKind::Sql,
+            })
+            .unwrap();
+        assert!(state.replace_query_sql("SELECT 1".into()));
+        let layout = state.capture_workspace_layout();
+        assert!(state.replace_query_sql("SELECT 2".into()));
+        let active = state.active_object();
+        if exhausted {
+            state.query_sql_revision = u64::MAX;
+        }
+        let revision = state.query_sql_revision();
+        let restored = state.restore_workspace_layout(layout, ObjectKind::Sql);
+        if exhausted {
+            assert!(!restored);
+            assert_eq!(state.sql, "SELECT 2");
+            assert_eq!(state.active_object(), active);
+            assert_eq!(state.query_sql_revision, u64::MAX);
+        } else {
+            assert!(restored);
+            assert_eq!(state.sql, "SELECT 1");
+            assert_eq!(state.query_sql_revision(), revision.map(|value| value + 1));
+            assert_ne!(state.active_object(), active);
+        }
+    }
+}

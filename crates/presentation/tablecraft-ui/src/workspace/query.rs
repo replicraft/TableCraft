@@ -81,8 +81,10 @@ impl State {
                         egui::scroll_area::ScrollBarVisibility::VisibleWhenNeeded,
                     )
                     .show(ui, |ui| {
+                        let editable = self.query_sql_revision().is_some();
                         let sql = ui
-                            .add(
+                            .add_enabled(
+                                editable,
                                 TextEdit::multiline(&mut self.sql)
                                     .code_editor()
                                     .desired_rows(5)
@@ -90,6 +92,9 @@ impl State {
                                     .hint_text(tr(ui, "query-placeholder")),
                             )
                             .labelled_by(sql_label.id);
+                        if sql.changed() {
+                            self.record_query_sql_edit();
+                        }
                         crate::theme::input_border(ui, &sql);
                         focus::register(ui, Pane::Document, &sql, true);
                     });

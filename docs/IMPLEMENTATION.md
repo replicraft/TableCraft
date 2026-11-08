@@ -1,5 +1,23 @@
 # Implementation status
 
+## Checked scratch SQL edit witnesses — 7 November 2026
+
+Shared UI state now tracks actual SQL editor changes, QBE replacements and
+workspace-layout restoration with one checked edit revision. Exact-text plus
+revision checks can reject A→B→A inspection/prompt witnesses while tab/document
+identity remains separately required. Exhaustion refuses new admission without
+wrapping or replacing draft/results. Existing submitted-result publication still
+retains and labels an older execution after draft edits.
+
+Six focused cases cover actual editor ABA, same-frame typing/Run, direct-text
+checks, exhaustion, QBE replacement and atomic layout restoration. All 482 UI,
+160 runtime and 120 desktop tests pass in the selected batch, along with 99
+minimal runtime tests, strict affected-package lint and five nonnative target
+compilation checks. Formatting, 20 dependency boundaries, 30 policy tests and
+local documentation links pass. These changes add no visible prompt; no native
+app windows were opened. Logs use ignored
+`.cache/gui-scratch-parameters-*20261107.log`.
+
 ## Source-bound scratch parameter service — 7 November 2026
 
 Runtime now exposes inert scratch SQL declaration inspection and explicitly

@@ -34,8 +34,46 @@ impl State {
         })
     }
 
+    /// Checked edit witness for scratch inspection and parameter acquisition.
+    /// Executed-result provenance retains its separate submitted-SQL contract.
+    pub fn query_sql_revision(&self) -> Option<u64> {
+        self.query_sql_revision
+            .checked_add(1)
+            .map(|_| self.query_sql_revision)
+    }
+
+    /// A text witness is current only for a source-bound scratch object.
+    /// Callers additionally retain their exact tab/document/publication identity.
+    pub fn query_sql_witness_current(&self, revision: u64, sql: &str) -> bool {
+        self.query_sql_revision() == Some(revision)
+            && self.source_bound_sql_object().is_some()
+            && self.sql == sql
+    }
+
+    /// Replace the global scratch draft without changing prior result ownership.
+    /// Identical text is a no-op; exhausted revisions refuse before mutation.
+    pub fn replace_query_sql(&mut self, sql: String) -> bool {
+        if self.sql == sql {
+            return true;
+        }
+        let Some(revision) = self.query_sql_revision.checked_add(1) else {
+            return false;
+        };
+        self.sql = sql;
+        self.query_sql_revision = revision;
+        true
+    }
+
+    pub(super) fn record_query_sql_edit(&mut self) -> bool {
+        let Some(revision) = self.query_sql_revision.checked_add(1) else {
+            return false;
+        };
+        self.query_sql_revision = revision;
+        true
+    }
+
     fn reserve_query_sql(&mut self, bytes: usize, copies: usize) -> Option<String> {
-        if self.source_bound_sql_object().is_none() {
+        if self.source_bound_sql_object().is_none() || self.query_sql_revision().is_none() {
             self.error = Some(self.localizer.text("objects-open-refused"));
             return None;
         }
@@ -71,7 +109,7 @@ impl State {
             self.error = Some(self.localizer.text("objects-open-refused"));
             return false;
         };
-        if !self.admit_object_bytes(Some(sql.capacity())) {
+        if self.query_sql_revision().is_none() || !self.admit_object_bytes(Some(sql.capacity())) {
             return false;
         }
         self.query_pending = Some(PendingSql {

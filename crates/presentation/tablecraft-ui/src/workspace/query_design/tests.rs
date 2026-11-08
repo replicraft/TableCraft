@@ -397,3 +397,37 @@ fn actual_grid_edits_keep_later_or_rows_and_reject_oversized_paste_whole() {
         Some(harness.state().localizer.text("qbe-limit").as_str())
     );
 }
+
+#[test]
+fn design_sql_replacement_advances_scratch_revision_and_exhaustion_preserves_both_drafts() {
+    for exhausted in [false, true] {
+        let mut state = state();
+        let original_sql = state.sql.clone();
+        let original_draft = state.query_design_draft().unwrap().clone();
+        let request = state.query_design_request().unwrap();
+        assert!(state.begin_query_design_build(
+            request,
+            original_draft.clone(),
+            QueryDesignCompletion::ShowSql,
+            1,
+        ));
+        if exhausted {
+            state.query_sql_revision = u64::MAX;
+        }
+        let revision = state.query_sql_revision();
+        let mut proposed = built(&state);
+        proposed.sql.push(';');
+        let proposed_sql = proposed.sql.clone();
+        let completed = state.set_query_design_built(1, proposed, metadata());
+        if exhausted {
+            assert_eq!(completed, None);
+            assert_eq!(state.sql, original_sql);
+            assert_eq!(state.query_design_draft(), Some(&original_draft));
+            assert_eq!(state.query_sql_revision, u64::MAX);
+        } else {
+            assert_eq!(completed, Some(QueryDesignCompletion::ShowSql));
+            assert_eq!(state.sql, proposed_sql);
+            assert_eq!(state.query_sql_revision(), revision.map(|value| value + 1));
+        }
+    }
+}
