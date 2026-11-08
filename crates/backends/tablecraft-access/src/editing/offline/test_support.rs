@@ -1,6 +1,8 @@
-//! Adapter-private receipt and held-lease assertions shared by schema save tests.
+//! Adapter-private receipt and held-lease assertions shared by native save tests.
 use super::Receipt;
-use std::{fs, path::Path};
+#[cfg(any(unix, feature = "ace16-create"))]
+use std::fs;
+use std::path::Path;
 use tablecraft_io::journal::filesystem_contracts::{CleanupDisposition, RetirementGuarantee};
 #[cfg(windows)]
 use tablecraft_io::{IoError, SharedFile};
@@ -37,6 +39,7 @@ pub(super) fn assert_completion(receipt: &Receipt) {
     }
 }
 
+#[cfg(feature = "ace16-create")]
 pub(super) fn assert_terminal_entries(directory: &Path, retired_count: usize) {
     #[cfg(unix)]
     let expected = {

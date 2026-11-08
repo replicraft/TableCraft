@@ -1,5 +1,21 @@
 # Implementation status
 
+## Reviewed UPDATE offline staging — 8 November 2026
+
+The Access adapter now consumes a sealed SQL UPDATE review, captures the retained
+exclusive descriptor and requalifies the complete operation before staging it
+through the existing journal/save/recovery lifecycle. SQL is not replayed, original
+matched counts are retained and failures preserve the session and prior receipts.
+Five focused adapter cases and the existing fault case pass; broader gates pass
+105 adapter, 15 offline-session and 160 runtime tests. Strict lint, minimal-feature
+and five cross-target production builds pass; Windows x64 offline-session tests
+also compile under strict lint. No native Windows/Access execution is implied.
+See [reviewed UPDATE staging](access/writes/REVIEWED_UPDATES.md).
+Runtime consuming action reviews and GUI warnings/execution remain next. They
+need explicit image-proof and persistence allowances without enlarging ordinary
+query/native work limits; the current single-budget bridge does not supply those
+independent host pools automatically.
+
 ## Fresh native UPDATE requalification — 8 November 2026
 
 Normal recoverable UPDATE plans can now consume a fresh native image and prove

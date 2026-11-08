@@ -11,6 +11,7 @@ mod first_table;
 mod insert;
 mod plan;
 mod recovery;
+mod reviewed_update;
 mod table;
 mod update;
 
@@ -433,9 +434,5 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
         .map_err(InspectError::from)
 }
 
-#[cfg(all(
-    test,
-    feature = "ace16-create",
-    any(target_os = "macos", target_os = "linux", windows)
-))]
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod test_support;

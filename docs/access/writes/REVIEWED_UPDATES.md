@@ -40,6 +40,30 @@ and image/count mismatch failures. Requalification creates no journal and writes
 no target. Its consumed candidate is discarded on failure; any separately owned
 filesystem resource remains the caller's responsibility.
 
+## Retained offline session boundary
+
+`OfflineWriteSession::stage_reviewed_update` consumes the complete sealed query
+`UpdatePlan<RecoverableNativeEditPlan>`, preserving its matched count. It captures
+fresh bytes from the session's retained exclusive descriptor, requires the whole
+reviewed BEFORE, then performs native requalification. It does not replay SQL or
+create a journal. Explicit apply uses the existing staged-update journal, receipt
+and recovery lifecycle.
+
+Every failure returns the same session and its retained receipts. A failed capture
+leaves the session requiring explicit refresh; a completed capture restores Ready
+before subsequent qualification. Stale bytes are a typed source-change failure.
+Hosts must obtain confirmation before acquiring the session's exclusive lease.
+
+Five portable adapter cases pass: multirow SQL staging/save/reopen with an
+independent complete AFTER; no-op/empty admission; protected-tail source changes;
+cancellation/resource failure and explicit refresh; and prior-receipt retention.
+The existing post-write fault case exercises both ordinary and reviewed staging
+with fresh sessions, retaining its cancellation, lock, recovery and retry checks.
+The broader adapter gate passed 105 unit tests and 15 offline-session integration
+tests. Runtime's existing 160 tests also passed without integration changes.
+Windows x64 strict lint compiled the offline-session library/tests; it did not
+execute them. These checks do not yet establish a connected runtime/GUI SQL action.
+
 ## Verification — 8 November 2026
 
 Nine focused native tests pass, covering all ten current mutation profiles and

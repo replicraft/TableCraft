@@ -2,87 +2,119 @@ use super::{budget, model, session, write_original};
 use std::{
     cell::{Cell, RefCell},
     fs::{self, File, OpenOptions},
+    io::Cursor,
     os::unix::fs::FileExt,
 };
-use tablecraft_access::editing::offline::{Cause, KnownOutcome, Phase};
+use tablecraft_access::editing::{
+    offline::{Cause, KnownOutcome, Phase},
+    sql,
+};
+use tablecraft_ace::NativeImage;
 use tablecraft_io::{
     IoError, SharedFile,
     journal::{JournalError, RecoveryOutcome, filesystem::PairState},
 };
+use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
 
 const SCORE_OFFSET: u64 = 12 * 4096 + 4091;
 
 #[test]
 fn interrupted_commit_recovers_the_same_retained_pair_without_unlocking() {
-    let root = tempfile::tempdir().unwrap();
-    let database = write_original(root.path());
-    let observer = File::open(&database).unwrap();
-    let retained = session(&database, &mut budget());
-    let query = parse_query(
-        "UPDATE Items SET Score=12 WHERE Id=1",
-        ParseLimits::default(),
-    )
-    .unwrap();
-    let staged = retained
-        .plan_update(query.query(), &mut budget(), None, &|| false)
+    for reviewed_mode in [false, true] {
+        let root = tempfile::tempdir().unwrap();
+        let database = write_original(root.path());
+        let observer = File::open(&database).unwrap();
+        let query = parse_query(
+            "UPDATE Items SET Score=12 WHERE Id=1",
+            ParseLimits::default(),
+        )
         .unwrap();
-    let observed_replacement = Cell::new(false);
-    let observer_failure = RefCell::new(None);
-    let cancelled = || {
-        let mut bytes = [0; 4];
-        if let Err(error) = observer.read_exact_at(&mut bytes, SCORE_OFFSET) {
-            *observer_failure.borrow_mut() = Some(error);
-            return true;
+        let reviewed = if reviewed_mode {
+            let image = NativeImage::capture(
+                &mut Cursor::new(model::original()),
+                CatalogScope::new(1),
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            Some(
+                sql::plan_recoverable_batch_update(
+                    image,
+                    query.query(),
+                    &mut budget(),
+                    None,
+                    &|| false,
+                )
+                .unwrap(),
+            )
+        } else {
+            None
+        };
+        let retained = session(&database, &mut budget());
+        let staged = if let Some(reviewed) = reviewed {
+            retained.stage_reviewed_update(reviewed, &mut budget(), &|| false)
+        } else {
+            retained.plan_update(query.query(), &mut budget(), None, &|| false)
         }
-        if bytes == 12_i32.to_le_bytes() {
-            observed_replacement.set(true);
-            return true;
-        }
-        false
-    };
-    let bundle = root.path().join("active");
-    let failure = staged
-        .apply(&bundle, &mut budget(), &cancelled)
-        .err()
-        .expect("commit must observe cancellation after writing the target");
-    assert!(observer_failure.borrow().is_none());
-    assert!(observed_replacement.get());
-    assert_eq!(failure.phase(), Phase::Commit);
-    assert!(!failure.invalid_input());
-    assert!(matches!(failure.cause(), Cause::Commit(_)));
-    assert_eq!(failure.current_outcome(), None);
-    assert_eq!(failure.pair_state(), Some(PairState::RecoveryRequired));
-    assert_eq!(fs::read(&database).unwrap(), model::with_score(12));
-    assert!(matches!(
-        SharedFile::open(&database),
-        Err(IoError::LockBusy)
-    ));
+        .unwrap();
+        let observed_replacement = Cell::new(false);
+        let observer_failure = RefCell::new(None);
+        let cancelled = || {
+            let mut bytes = [0; 4];
+            if let Err(error) = observer.read_exact_at(&mut bytes, SCORE_OFFSET) {
+                *observer_failure.borrow_mut() = Some(error);
+                return true;
+            }
+            if bytes == 12_i32.to_le_bytes() {
+                observed_replacement.set(true);
+                return true;
+            }
+            false
+        };
+        let bundle = root.path().join("active");
+        let failure = staged
+            .apply(&bundle, &mut budget(), &cancelled)
+            .err()
+            .expect("commit must observe cancellation after writing the target");
+        assert!(observer_failure.borrow().is_none());
+        assert!(observed_replacement.get());
+        assert_eq!(failure.phase(), Phase::Commit);
+        assert!(!failure.invalid_input());
+        assert!(matches!(failure.cause(), Cause::Commit(_)));
+        assert_eq!(failure.current_outcome(), None);
+        assert_eq!(failure.pair_state(), Some(PairState::RecoveryRequired));
+        assert_eq!(fs::read(&database).unwrap(), model::with_score(12));
+        assert!(matches!(
+            SharedFile::open(&database),
+            Err(IoError::LockBusy)
+        ));
 
-    let (retained, receipt) = failure
-        .into_session()
-        .recover_pending(&mut budget(), &|| false)
+        let (retained, receipt) = failure
+            .into_session()
+            .recover_pending(&mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(receipt.outcome(), Some(RecoveryOutcome::RolledBack));
+        assert_eq!(fs::read(&database).unwrap(), model::original());
+        assert!(!bundle.exists());
+        assert!(matches!(
+            SharedFile::open(&database),
+            Err(IoError::LockBusy)
+        ));
+        let query = parse_query(
+            "UPDATE Items SET Score=17 WHERE Id=1",
+            ParseLimits::default(),
+        )
         .unwrap();
-    assert_eq!(receipt.outcome(), Some(RecoveryOutcome::RolledBack));
-    assert_eq!(fs::read(&database).unwrap(), model::original());
-    assert!(!bundle.exists());
-    assert!(matches!(
-        SharedFile::open(&database),
-        Err(IoError::LockBusy)
-    ));
-    let query = parse_query(
-        "UPDATE Items SET Score=17 WHERE Id=1",
-        ParseLimits::default(),
-    )
-    .unwrap();
-    let staged = retained
-        .plan_update(query.query(), &mut budget(), None, &|| false)
-        .unwrap();
-    let (retained, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
-    assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
-    assert_eq!(fs::read(&database).unwrap(), model::with_score(17));
-    retained.release().unwrap();
-    SharedFile::open(&database).unwrap().close().unwrap();
+        let staged = retained
+            .plan_update(query.query(), &mut budget(), None, &|| false)
+            .unwrap();
+        let (retained, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
+        assert_eq!(receipt.outcome(), Some(RecoveryOutcome::Committed));
+        assert_eq!(fs::read(&database).unwrap(), model::with_score(17));
+        retained.release().unwrap();
+        SharedFile::open(&database).unwrap().close().unwrap();
+    }
 }
 
 #[test]

@@ -110,7 +110,7 @@ pub enum Cause {
     /// A commit attempt failed and requires explicit qualified recovery.
     #[error(transparent)]
     Commit(CommitError),
-    /// Normal native replanning did not qualify the checked journal.
+    /// Normal native replanning did not qualify a reviewed plan or checked journal.
     #[error(transparent)]
     Qualification(NativeRecoveryQualificationError),
     /// Checked journal inspection, recovery or confirmation failed.
