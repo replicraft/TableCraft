@@ -13,6 +13,7 @@ default = []
 journal = ["tablecraft-io/journal", "dep:sha2"]
 ace16-write-preview = []
 ace16-create = []
+parallel-encryption = ["dep:rayon"]
 
 [lints]
 workspace = true
@@ -43,6 +44,9 @@ sha2 = { workspace = true, optional = true }
 uuid.workspace = true
 jiff.workspace = true
 
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+rayon = { workspace = true, optional = true }
+
 [dev-dependencies]
 tablecraft-testkit = { workspace = true, features = ["ace-support"] }
 # Independent fixture encoders and digest goldens stay outside production.
@@ -53,6 +57,12 @@ clap.workspace = true
 csv.workspace = true
 proptest.workspace = true
 smallvec.workspace = true
+rayon.workspace = true
+
+[[bench]]
+name = "encryption_pages"
+harness = false
+required-features = ["ace16-create"]
 
 [[bench]]
 name = "image_capture"

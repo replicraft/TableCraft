@@ -88,6 +88,25 @@ pub fn rewrite_encryption<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<EncryptionCopy, InspectError> {
+    rewrite_with_pages(source, operation, budget, cancelled, decode_pages)
+}
+
+pub(super) fn rewrite_with_pages<R, F>(
+    source: &mut R,
+    operation: EncryptionRewrite<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    transform: F,
+) -> Result<EncryptionCopy, InspectError>
+where
+    R: Read + Seek,
+    F: FnOnce(
+        &PageDecoder,
+        &mut [u8],
+        &mut ResourceBudget,
+        &dyn Fn() -> bool,
+    ) -> Result<(), InspectError>,
+{
     if let EncryptionRewrite::Add {
         password,
         new_password,
@@ -152,16 +171,10 @@ pub fn rewrite_encryption<R: Read + Seek>(
         check(budget, cancelled)?;
         return Ok(EncryptionCopy { bytes });
     }
-    for (number, page) in bytes
-        .as_chunks_mut::<PAGE_BYTES>()
-        .0
-        .iter_mut()
-        .enumerate()
-        .skip(1)
-    {
-        if let Some(decoder) = &decoder {
-            decoder.decode_page(number as u32, page, budget, cancelled)?;
-        } else {
+    if let Some(decoder) = &decoder {
+        transform(decoder, &mut bytes, budget, cancelled)?;
+    } else {
+        for _ in 1..header.page_count() {
             check(budget, cancelled)?;
         }
     }
@@ -209,6 +222,24 @@ pub fn rewrite_encryption<R: Read + Seek>(
     }
     check(budget, cancelled)?;
     Ok(EncryptionCopy { bytes })
+}
+
+fn decode_pages(
+    decoder: &PageDecoder,
+    bytes: &mut [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    for (number, page) in bytes
+        .as_chunks_mut::<PAGE_BYTES>()
+        .0
+        .iter_mut()
+        .enumerate()
+        .skip(1)
+    {
+        decoder.decode_page(number as u32, page, budget, cancelled)?;
+    }
+    Ok(())
 }
 
 pub(super) fn capture<R: Read + Seek>(

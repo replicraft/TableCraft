@@ -1,9 +1,15 @@
 use super::Error;
+#[cfg(not(target_family = "wasm"))]
+use rayon::ThreadPoolBuilder;
 use std::{io::IsTerminal, path::Path};
+#[cfg(not(target_family = "wasm"))]
+use tablecraft_ace::rewrite_encryption_parallel;
 use tablecraft_ace::{
     EncryptionRewrite, InspectError, check_encryption_add, check_encryption_rewrite,
     rewrite_encryption_to,
 };
+#[cfg(not(target_family = "wasm"))]
+use tablecraft_core::limits::Resource;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::SharedFile;
 use zeroize::Zeroizing;
@@ -25,6 +31,7 @@ pub(super) fn run(
     password: Option<&str>,
     operation: Operation,
     new_password: Option<Zeroizing<String>>,
+    jobs: u8,
 ) -> Result<String, Error> {
     let _span = tracing::debug_span!("cli.encryption.copy").entered();
     if output.try_exists().map_err(|e| Error::Copy(e.kind()))? {
@@ -93,14 +100,24 @@ pub(super) fn run(
         .unwrap_or_else(|| Path::new("."));
     let mut temporary =
         tempfile::NamedTempFile::new_in(parent).map_err(|e| Error::Copy(e.kind()))?;
-    rewrite_encryption_to(
-        &mut source,
-        temporary.as_file_mut(),
-        rewrite,
-        &mut budget,
-        &|| false,
-    )
-    .map_err(Error::Read)?;
+    if jobs > 1 {
+        parallel_remove(
+            &mut source,
+            temporary.as_file_mut(),
+            rewrite,
+            jobs,
+            &mut budget,
+        )?;
+    } else {
+        rewrite_encryption_to(
+            &mut source,
+            temporary.as_file_mut(),
+            rewrite,
+            &mut budget,
+            &|| false,
+        )
+        .map_err(Error::Read)?;
+    }
     temporary
         .as_file()
         .sync_all()
@@ -114,6 +131,38 @@ pub(super) fn run(
         Operation::Remove => "Database encryption removed\n",
     }
     .to_owned())
+}
+
+#[cfg(not(target_family = "wasm"))]
+fn parallel_remove(
+    source: &mut SharedFile,
+    target: &mut std::fs::File,
+    rewrite: EncryptionRewrite<'_>,
+    jobs: u8,
+    budget: &mut ResourceBudget,
+) -> Result<(), Error> {
+    let pool = ThreadPoolBuilder::new()
+        .num_threads(usize::from(jobs))
+        .build()
+        .map_err(|_| Error::Read(InspectError::Allocation))?;
+    let copy = rewrite_encryption_parallel(source, rewrite, &pool, budget, &|| false)
+        .map_err(Error::Read)?;
+    budget
+        .charge(Resource::Bytes, copy.as_bytes().len() as u64)
+        .map_err(|error| Error::Read(error.into()))?;
+    tablecraft_io::write_exact_at(target, 0, copy.as_bytes(), budget, &|| false)
+        .map_err(|error| Error::Read(error.into()))
+}
+
+#[cfg(target_family = "wasm")]
+fn parallel_remove(
+    _: &mut SharedFile,
+    _: &mut std::fs::File,
+    _: EncryptionRewrite<'_>,
+    _: u8,
+    _: &mut ResourceBudget,
+) -> Result<(), Error> {
+    Err(Error::Read(InspectError::UnsupportedEncryption))
 }
 
 fn prompt(label: &str) -> Result<Zeroizing<String>, Error> {

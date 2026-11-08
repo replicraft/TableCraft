@@ -4,6 +4,10 @@ mod agile;
 pub use add::check_encryption_add;
 pub(crate) mod legacy;
 mod native_header;
+#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+mod parallel;
+#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+pub use parallel::rewrite_encryption_parallel;
 mod rewrite;
 mod streaming;
 use crate::{FileFormat, InspectError, inspect_header};

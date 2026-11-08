@@ -13,7 +13,7 @@ use std::io::{Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use zeroize::Zeroizing;
 
-const AES_BLOCK_BYTES: usize = 16;
+pub(super) const AES_BLOCK_BYTES: usize = 16;
 const MAX_HASH_BYTES: usize = 64;
 const MAX_KEY_BYTES: usize = 32;
 const MAX_SPIN_COUNT: u32 = 10_000_000;

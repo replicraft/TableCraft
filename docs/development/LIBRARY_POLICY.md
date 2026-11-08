@@ -129,7 +129,7 @@ without introducing an additional general decimal arithmetic library.
 
 | Library and reference | Intended use and TableCraft boundary |
 | --- | --- |
-| [rayon](https://docs.rs/rayon/latest/rayon/) | CPU-parallel query/validation work over suitable inputs. Keep backend transaction/thread-affinity rules and operation bounds explicit. |
+| [rayon](https://docs.rs/rayon/latest/rayon/) | Adopted behind the native engine’s optional `parallel-encryption` feature for explicit CLI Agile removal with `--jobs 2..16`; default 1 stays serial. Prepay page work, retain zeroizing failure disposal and serial qualification/publication, and refuse unsupported profiles without fallback. Desktop/default engine/WASM builds do not enable this path. Query parallelism remains future work. |
 | [tokio](https://docs.rs/tokio/latest/tokio/) | Tokio sync is adopted for optional SQLite worker admission; broader orchestration/I/O/networking remains future scope. Keep blocking work off executor threads. |
 | [fst](https://docs.rs/fst/latest/fst/) | Adopted for the ACE engine's immutable derived General LIKE element dictionary. Broader search dictionaries/prefix indexes remain prospective; native Access index storage remains separate. |
 | [reqwest](https://docs.rs/reqwest/latest/reqwest/) | HTTP clients in features that require HTTP. Specify timeouts, response-size limits and target-appropriate TLS/features. |

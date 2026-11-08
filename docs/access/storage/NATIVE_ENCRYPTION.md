@@ -279,13 +279,42 @@ from normal edit plans and journals. This image API retains its **64 MiB image
 cap**. `rewrite_encryption_to` instead transforms pages into an empty, unpublished
 host-owned destination within the **2 GiB native read-source ceiling** and the
 caller's cumulative allowance. It retains zeroizing page buffers and budgeted,
-sorted SID patches rather than a complete image. The CLI uses this page path;
+sorted SID patches rather than a complete image. The CLI defaults to this page path;
 its existing 512 MiB cumulative byte allowance can refuse a copy before the native
 file ceiling. The allowance includes page reads/writes, metadata and crypto work;
 final cancellation prevents success. Owned
 image/key/SID buffers use zeroization. No macros, VBA, expressions or external
 providers are executed. Source stability/offline access remains a host contract;
 this is not shared-file locking, cross-client coordination or a recovery journal.
+
+### Explicit parallel Agile removal
+
+`tablecraft encryption remove source.accdb --output unlocked.accdb --jobs 4`
+selects the optional native Rayon removal path. `--jobs` accepts 1 through 16;
+its default of 1 retains the existing serial streaming path. Values 2 through 16
+construct an explicit CLI-owned worker pool and capture a complete image under
+the **64 MiB** limit, independently of the larger streaming source ceiling and
+cumulative allowances.
+
+Only qualified Agile AES removal is admitted in parallel. Other cipher families,
+add-encryption and change-password retain their existing serial APIs; selecting
+parallel removal for an unsupported source refuses without retrying serially.
+The engine's `parallel-encryption` feature is optional, with no default engine,
+desktop or WASM Rayon dependency. The native CLI is its working consumer.
+
+Password verification, header changes and native SID remasking stay serial.
+Only disjoint owned database pages decode concurrently. Work and per-page status
+storage are prepaid from the cumulative caller budget before callbacks; workers
+use bounded local allowances and cancellation safe for concurrent invocation.
+Failures are checked in original page order. All pages and native rewrite checks
+must succeed before returning the copy; a failed partial candidate is zeroized
+and discarded. This does not authenticate the Agile integrity HMAC or establish
+new native profile qualification.
+
+Fresh publication is unchanged: the host writes the complete successful copy to
+its unpublished temporary, synchronizes it and uses no-clobber publication. A
+parallel prefix is never a successful output. This opt-in path makes no measured
+speedup claim.
 
 Removal decrypts data pages and clears the native key, date-masked password field
 and (for Office) the entire `0x299..0xe00` encryption-info region. Changing a Jet

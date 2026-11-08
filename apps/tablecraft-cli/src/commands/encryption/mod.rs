@@ -28,6 +28,10 @@ pub(crate) enum Command {
         path: std::path::PathBuf,
         #[arg(long, value_name = "FILE")]
         output: std::path::PathBuf,
+        /// Decode Agile AES pages with this many workers; 1 retains streaming.
+        /// Parallel removal captures at most 64 MiB and refuses other ciphers.
+        #[arg(long, default_value_t = 1, value_parser = clap::value_parser!(u8).range(1..=16))]
+        jobs: u8,
     },
     /// Change the database password into a fresh output, retaining its cipher scheme.
     ChangePassword {
@@ -47,9 +51,14 @@ impl Command {
         password: Option<&str>,
     ) -> Result<String, Error> {
         match self {
-            Self::Remove { path, output } => {
-                copying::run(&path, &output, password, copying::Operation::Remove, None)
-            }
+            Self::Remove { path, output, jobs } => copying::run(
+                &path,
+                &output,
+                password,
+                copying::Operation::Remove,
+                None,
+                jobs,
+            ),
             Self::ChangePassword {
                 path,
                 output,
@@ -60,6 +69,7 @@ impl Command {
                 password,
                 copying::Operation::ChangePassword,
                 new_password.map(zeroize::Zeroizing::new),
+                1,
             ),
             Self::Add {
                 path,
@@ -71,6 +81,7 @@ impl Command {
                 password,
                 copying::Operation::Add,
                 new_password.map(zeroize::Zeroizing::new),
+                1,
             ),
             Self::Inspect { path } => {
                 let mut source = crate::native::open_raw(&path, &mut crate::native::budget())

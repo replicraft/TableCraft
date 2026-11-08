@@ -480,3 +480,96 @@ fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
     );
     assert_eq!(query.stdout, b"Total\n38\n");
 }
+
+#[cfg(not(target_family = "wasm"))]
+#[test]
+fn parallel_agile_removal_matches_streaming_and_preserves_fresh_output_guards() {
+    let directory = tempfile::tempdir().unwrap();
+    let encrypted = fixture::encrypted_image(&plain(), 5, "public password");
+    let input = directory.path().join("encrypted.accdb");
+    fs::write(&input, &encrypted).unwrap();
+    let serial = directory.path().join("serial.accdb");
+    let parallel = directory.path().join("parallel.accdb");
+    for (output, jobs) in [(&serial, "1"), (&parallel, "4")] {
+        let result = CLI.run(&[
+            "encryption",
+            "remove",
+            input.to_str().unwrap(),
+            "--output",
+            output.to_str().unwrap(),
+            "--jobs",
+            jobs,
+            "-p",
+            "public password",
+        ]);
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert_eq!(result.stdout, b"Database encryption removed\n");
+    }
+    let expected = fs::read(&serial).unwrap();
+    assert_eq!(fs::read(&parallel).unwrap(), expected);
+    assert_eq!(fs::read(&input).unwrap(), encrypted);
+
+    let repeat = CLI.run(&[
+        "encryption",
+        "remove",
+        input.to_str().unwrap(),
+        "--output",
+        parallel.to_str().unwrap(),
+        "--jobs",
+        "2",
+        "-p",
+        "public password",
+    ]);
+    assert_eq!(repeat.status.code(), Some(2));
+    assert_eq!(fs::read(&parallel).unwrap(), expected);
+
+    let refused = directory.path().join("wrong-password.accdb");
+    let result = CLI.run(&[
+        "encryption",
+        "remove",
+        input.to_str().unwrap(),
+        "--output",
+        refused.to_str().unwrap(),
+        "--jobs",
+        "2",
+        "-p",
+        "wrong",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(!refused.exists());
+    assert_eq!(fs::read(&input).unwrap(), encrypted);
+}
+
+#[test]
+fn parallel_jobs_are_bounded_and_available_only_for_removal() {
+    for jobs in ["0", "17"] {
+        let result = CLI.run(&[
+            "encryption",
+            "remove",
+            "unused.accdb",
+            "--output",
+            "unused-output.accdb",
+            "--jobs",
+            jobs,
+        ]);
+        assert_eq!(result.status.code(), Some(2));
+        assert!(String::from_utf8_lossy(&result.stderr).contains("invalid value"));
+    }
+    let result = CLI.run(&[
+        "encryption",
+        "add",
+        "unused.accdb",
+        "--output",
+        "unused-output.accdb",
+        "--jobs",
+        "2",
+        "--new-password",
+        "public password",
+    ]);
+    assert_eq!(result.status.code(), Some(2));
+    assert!(String::from_utf8_lossy(&result.stderr).contains("unexpected argument"));
+}

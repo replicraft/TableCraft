@@ -38,6 +38,10 @@ tablecraft-access = { workspace = true, features = ["ace16-write-preview", "jour
 tablecraft-sqlite.workspace = true
 uuid.workspace = true
 
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+rayon.workspace = true
+tablecraft-ace = { workspace = true, features = ["parallel-encryption"] }
+
 [dev-dependencies]
 tablecraft-testkit = { workspace = true, features = ["cli-support", "formats-fixtures"] }
 flate2.workspace = true

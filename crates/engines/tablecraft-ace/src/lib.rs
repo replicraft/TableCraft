@@ -58,6 +58,8 @@ pub use constraints::{
     ConstraintReport, ConstraintViolation, FieldCheck, RelationshipCheck, RelationshipCheckStatus,
     RuleCheckStatus, check_table_constraints,
 };
+#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+pub use encryption::rewrite_encryption_parallel;
 pub use encryption::{
     AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, EncryptionCopy,
     EncryptionInspection, EncryptionRewrite, OfficeEncryptionFamily, OfficeEncryptionInfo,

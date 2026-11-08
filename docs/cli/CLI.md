@@ -230,6 +230,21 @@ tablecraft query update 'UPDATE Items SET Score=Score+7 WHERE Id=2' \
   --database offline.mdb --output updated.mdb
 ```
 
+`encryption remove` defaults to `--jobs 1`, retaining serial streaming for all
+qualified cipher families. Explicit `--jobs 2` through `--jobs 16` selects native
+Rayon decoding for qualified Agile AES sources only, with a complete **64 MiB**
+image capture. For example:
+
+```sh
+tablecraft encryption remove example.accdb --output unlocked.accdb --jobs 4
+```
+
+An unsupported parallel cipher/profile refuses without a serial fallback. Add
+and change-password remain serial. The complete copy must succeed before the
+same synchronized temporary/no-clobber publication; parallelism publishes no
+partial prefix. See [parallel removal](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal)
+for shared-budget, cancellation and feature boundaries.
+
 Encryption rewrites and qualified Jet 4 fixed Int32 UPDATEs use fresh outputs;
 existing files are not overwritten. Encryption failure behavior is described in
 its owning guide. Jet 4 UPDATE uses a complete synced temporary and no-clobber

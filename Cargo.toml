@@ -55,6 +55,9 @@ tracing-subscriber = { version = "0.3.20", default-features = false, features = 
 thiserror = "2"
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 
+# Bounded native CPU parallelism; browser hosts do not inherit worker pools.
+rayon = { version = "1.12", default-features = false }
+
 # Checked decimal calculations (domain wrappers retain Access bounds)
 rust_decimal = { version = "1.43", default-features = false, features = ["std"] }
 

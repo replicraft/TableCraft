@@ -1,6 +1,6 @@
 # Adopted dependency and licensing baseline
 
-## Shared native snapshots — 8 November 2026
+## Shared native snapshots and opt-in page decoding — 8 November 2026
 
 The engine now consumes the existing `bytes` 1.12.1 selection as well as runtime.
 `NativeImageSource::from_vec` transfers a complete owned vector without copying
@@ -11,6 +11,33 @@ allowance before header/catalog traversal. Original BEFORE payloads can be share
 AFTER vectors, metadata and proof work remain separately accounted. Fresh native
 save/recovery source capture is unchanged; cached bytes do not grant authority.
 See [image ownership](../access/NATIVE_READING.md#shared-immutable-native-image-ownership).
+
+`tablecraft-ace/parallel-encryption` optionally consumes Rayon on native targets.
+The native CLI enables that feature for explicit `encryption remove --jobs 2`
+through `--jobs 16`; default `--jobs 1` retains serial streaming. Parallel removal
+admits only qualified Agile AES sources under complete 64 MiB capture, with
+prepaid page work, zeroizing failure disposal and serial native validation/fresh
+publication. Unsupported sources refuse without serial fallback. The engine's
+default build, desktop selection and WASM target do not acquire Rayon through
+this feature. Query evaluation and transaction ordering remain serial.
+
+Four registry packages enter the lockfile for this working consumer. Published
+manifests and local locked sources declare:
+
+| Package | Version | License | Declared MSRV |
+| --- | --- | --- | --- |
+| rayon | 1.12.0 | MIT OR Apache-2.0 | 1.80 |
+| rayon-core | 1.13.0 | MIT OR Apache-2.0 | 1.80 |
+| crossbeam-deque | 0.8.8 | MIT OR Apache-2.0 | 1.61 |
+| crossbeam-epoch | 0.9.21 | MIT OR Apache-2.0 | 1.61 |
+
+Rayon also reuses locked `either` 1.19.0 (MIT OR Apache-2.0, MSRV 1.63) and
+`crossbeam-utils` 0.8.23 (MIT OR Apache-2.0, MSRV 1.60). Workspace defaults disable
+Rayon's default features; no optional Rayon feature is enabled. Thread pools are
+host-owned and explicitly sized. Upstream allocation/scheduling and unsafe
+internals are not replaced by query/native quotas; this is not an independent
+unsafe-code audit or exact process-memory ceiling. No speedup claim is made here.
+See [parallel removal](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal).
 
 ## Windows filesystem cleanup — 8 November 2026
 
