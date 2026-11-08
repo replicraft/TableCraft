@@ -1,5 +1,25 @@
 # Presentation preview
 
+## Existing-field activation in Design — 7 November 2026
+
+`TABLECRAFT_PREVIEW_TABLE_COMMAND=design-existing-pending` authors a committed
+Name field and a still-pending Score name through the actual inline controls.
+`design-existing-selected` then clicks Name's actual row selector, asserts one
+schema-revision advance, and observes its restored Field Size of 255. These
+commands use the existing table-ready scenes and synthetic source facts; they
+do not open a database or grant additional native write permissions.
+
+Four normal-host offscreen frames in ignored
+`.cache/ui-previews/design-activation-20261107/` were rendered and inspected on
+macOS ARM64 with Windows input emulation: English dark pending and light selected
+at 1280×820, 1×; Japanese light pending and German dark selected at 900×580
+logical points, 1.25× (1125×725 pixels). Type cells retain their chevrons while
+validation is pending; the chosen existing field regains its separate properties
+pane after commit. The retained Windows/VirtualBox Design capture was reopened
+for this work at 1920×1165, unknown DPI. It supplies the grid/pane arrangement,
+not exact pending-input validation timing or dark styling. No native windows
+were opened and no native Access interaction claim follows from these frames.
+
 ## Inline Table Design fields — 7 November 2026
 
 The real blank Design row replaces the Design-only Add field gallery.

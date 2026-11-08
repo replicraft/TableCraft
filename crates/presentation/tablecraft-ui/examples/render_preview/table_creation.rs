@@ -89,6 +89,36 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
     }
 
     add_design_field(harness, "design-type-short-text", "Name");
+    if matches!(mode, "design-existing-pending" | "design-existing-selected") {
+        let revision = harness.state().state().table_draft_revision().unwrap();
+        harness
+            .get_by_role_and_label(
+                Role::TextInput,
+                &localizer.text("table-draft-design-new-name"),
+            )
+            .type_text("Score");
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        assert_eq!(
+            harness.state().state().table_draft_revision(),
+            Some(revision)
+        );
+        if mode == "design-existing-selected" {
+            harness.get_by_role_and_label(Role::Button, "Name").click();
+            harness.run_steps(LAYOUT_SETTLE_STEPS);
+            assert_eq!(
+                harness.state().state().table_draft_revision(),
+                Some(revision + 1)
+            );
+            assert_eq!(
+                harness
+                    .get_by_role_and_label(Role::TextInput, &localizer.text("design-field-size"))
+                    .value()
+                    .as_deref(),
+                Some("255")
+            );
+        }
+        return;
+    }
     if mode == "design-key" {
         add_design_field(harness, "design-type-number", "ActualKey");
         harness

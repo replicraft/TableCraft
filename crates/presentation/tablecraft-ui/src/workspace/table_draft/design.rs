@@ -1,4 +1,5 @@
 //! Editable initial declarations share the same unsaved model as Datasheet view.
+mod activation;
 pub(in crate::workspace::table_draft) mod description;
 pub(super) mod new_field;
 pub(in crate::workspace::table_draft) mod properties;
@@ -37,6 +38,7 @@ pub(in crate::workspace) struct Design {
     pub(super) requested: Option<bool>,
     selected: Option<DraftFieldId>,
     lookup: bool,
+    pending_focus: Option<(DraftFieldId, activation::Target)>,
 }
 
 impl Design {
@@ -140,7 +142,10 @@ impl State {
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
-        if editor.save_blocked || editor.rename.is_some() || editor.properties.field_rejected(field)
+        if editor.save_blocked
+            || editor.rename.is_some()
+            || editor.new_field.pending()
+            || editor.properties.field_rejected(field)
         {
             return false;
         }
@@ -236,8 +241,9 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         .max_size(properties_limit)
         .show(ui, |ui| properties::show(ui, editor));
 
+    let defer_existing = editor.new_field.editing() || editor.rename.is_some();
+    let mut activation_request = None;
     let mut new_field_commit = false;
-    let mut rename_field = None;
     let mut rename_outcome = None;
     let grid_rect = ui.available_rect_before_wrap().intersect(ui.clip_rect());
     ui.scope_builder(
@@ -337,9 +343,11 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     ));
                                 }
                                 if response.clicked() {
-                                    response.request_focus();
-                                    editor.new_field.deactivate();
-                                    editor.design.selected = Some(field.id());
+                                    activation_request = Some(activation::Request {
+                                        field: field.id(),
+                                        target: activation::Target::Selector,
+                                        response,
+                                    });
                                 }
                             });
                             row.col(|ui| {
@@ -367,10 +375,11 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                         )
                                     });
                                     if response.clicked() {
-                                        response.request_focus();
-                                        editor.new_field.deactivate();
-                                        editor.design.selected = Some(field.id());
-                                        rename_field = Some((field.id(), field.name().to_owned()));
+                                        activation_request = Some(activation::Request {
+                                            field: field.id(),
+                                            target: activation::Target::Name,
+                                            response: response.clone(),
+                                        });
                                     }
                                     if field.is_protected() {
                                         response.on_disabled_hover_text(tr(
@@ -383,6 +392,26 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                             row.col(|ui| {
                                 crate::datasheet::grid_cell(ui, false);
                                 ui.add_enabled_ui(!field.is_protected(), |ui| {
+                                    let label = message(
+                                        ui,
+                                        "table-draft-design-type",
+                                        &[("field", field.name().into())],
+                                    );
+                                    if defer_existing {
+                                        let response = activation::type_proxy(
+                                            ui,
+                                            &tr(ui, type_key(field.kind())),
+                                            &label,
+                                        );
+                                        if response.clicked() {
+                                            activation_request = Some(activation::Request {
+                                                field: field.id(),
+                                                target: activation::Target::Type,
+                                                response,
+                                            });
+                                        }
+                                        return;
+                                    }
                                     let response =
                                         egui::ComboBox::from_id_salt(("draft_type", field.id()))
                                             .selected_text(tr(ui, type_key(field.kind())))
@@ -400,11 +429,6 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                                 }
                                             })
                                             .response;
-                                    let label = message(
-                                        ui,
-                                        "table-draft-design-type",
-                                        &[("field", field.name().into())],
-                                    );
                                     response.widget_info(|| {
                                         WidgetInfo::labeled(
                                             WidgetType::ComboBox,
@@ -412,6 +436,27 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                             &label,
                                         )
                                     });
+                                    if response.enabled()
+                                        && editor.design.pending_focus
+                                            == Some((field.id(), activation::Target::Type))
+                                    {
+                                        egui::Popup::open_id(
+                                            ui.ctx(),
+                                            // egui 0.36.2 derives its popup from the current button
+                                            // response with this salt. No prior-frame ID is replayed.
+                                            response.id.with("popup"),
+                                        );
+                                        response.request_focus();
+                                        editor.design.pending_focus = None;
+                                        ui.ctx().request_repaint();
+                                    }
+                                    if response.clicked() {
+                                        activation_request = Some(activation::Request {
+                                            field: field.id(),
+                                            target: activation::Target::Selector,
+                                            response: response.clone(),
+                                        });
+                                    }
                                     response.on_disabled_hover_text(tr(
                                         ui,
                                         "table-draft-design-protected",
@@ -420,14 +465,43 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                             });
                             row.col(|ui| {
                                 crate::datasheet::grid_cell(ui, false);
-                                let available = editor.properties.raw_edit_available();
-                                let changed = ui
-                                    .add_enabled_ui(available, |ui| {
-                                        editor.descriptions.show(ui, field)
-                                    })
-                                    .inner;
-                                if changed && !editor.properties.record_raw_edit() {
-                                    editor.descriptions.reject(field.id());
+                                if defer_existing {
+                                    let response = editor.descriptions.show_inert(ui, field);
+                                    if response.clicked() {
+                                        activation_request = Some(activation::Request {
+                                            field: field.id(),
+                                            target: activation::Target::Description,
+                                            response,
+                                        });
+                                    }
+                                } else {
+                                    let available = editor.properties.raw_edit_available();
+                                    let focus = ui.is_enabled()
+                                        && available
+                                        && editor.design.pending_focus
+                                            == Some((field.id(), activation::Target::Description));
+                                    let output = ui
+                                        .add_enabled_ui(available, |ui| {
+                                            editor.descriptions.show(ui, field, focus)
+                                        })
+                                        .inner;
+                                    if focus {
+                                        editor.design.pending_focus = None;
+                                    }
+                                    if let Some(output) = output {
+                                        if output.response.clicked()
+                                            || (!focus && output.response.gained_focus())
+                                        {
+                                            activation_request = Some(activation::Request {
+                                                field: field.id(),
+                                                target: activation::Target::Selector,
+                                                response: output.response,
+                                            });
+                                        }
+                                        if output.changed && !editor.properties.record_raw_edit() {
+                                            editor.descriptions.reject(field.id());
+                                        }
+                                    }
                                 }
                             });
                         });
@@ -483,20 +557,22 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
             ));
         },
     );
-    if let Some((field, name)) = rename_field {
-        editor.rename = Some(rename::Rename::new(field, name));
-    }
     match rename_outcome {
-        Some(rename::Outcome::Commit) => {
+        Some(rename::Outcome::Commit) if activation_request.is_none() => {
             editor.commit_rename();
         }
+        Some(rename::Outcome::Commit) => {}
         Some(rename::Outcome::Cancel) => {
             editor.rename = None;
             editor.error = false;
         }
         None => {}
     }
-    if new_field_commit {
+    if let Some(request) = activation_request {
+        if !activation::apply(editor, request) {
+            event = None;
+        }
+    } else if new_field_commit {
         editor.commit_new_field();
     }
     editor.descriptions.commit(&mut editor.draft);

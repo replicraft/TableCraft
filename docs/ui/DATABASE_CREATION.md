@@ -250,6 +250,15 @@ name/type changes, rejected attempts and cancellation invalidate captured Save,
 Delete Field and discard witnesses. No view switch or confirmation bypasses the
 same revision checks, native review or consuming Save path.
 
+Selecting an existing row or its Name, Type or Description first resolves the
+pending new declaration after that frame's input has been consumed. A valid
+declaration is added once before restoring the requested existing field and its
+properties/editor. Invalid input remains in the new row for correction; it does
+not open the existing type menu or change another field's description. The
+pending row's type and exact record inputs survive refusal. Type dropdowns retain
+their normal open/close behavior after activation. This validation/focus timing
+is the current TableCraft interaction contract, pending native comparison.
+
 A selected ordinary Number field with Long Integer Field Size, Large Number or
 Currency can be chosen as the one manual primary key through the Primary Key
 Ribbon command. The selection retains its actual ordered field position; the

@@ -11,6 +11,11 @@ pub(in crate::workspace::table_draft) struct Editors {
     allocation_rejected: bool,
 }
 
+pub(super) struct EditResponse {
+    pub(super) changed: bool,
+    pub(super) response: egui::Response,
+}
+
 struct Entry {
     field: DraftFieldId,
     text: String,
@@ -46,14 +51,40 @@ impl Editors {
         true
     }
 
-    pub(super) fn show(&mut self, ui: &mut Ui, field: &DraftField) -> bool {
-        let Some(entry) = self
+    pub(super) fn show_inert(&self, ui: &mut Ui, field: &DraftField) -> egui::Response {
+        let mut text = self
+            .entries
+            .iter()
+            .find(|entry| entry.field == field.id())
+            .map_or("", |entry| entry.text.as_str());
+        let output = egui::TextEdit::multiline(&mut text)
+            .id(ui.make_persistent_id(("draft_field_description", field.id())))
+            .interactive(false)
+            .desired_rows(1)
+            .desired_width(ui.available_width())
+            .margin(egui::Margin::symmetric(2, 1))
+            .show(ui);
+        let response = output.response.response;
+        let label = message(
+            ui,
+            "table-draft-design-description",
+            &[("field", field.name().into())],
+        );
+        ui.ctx()
+            .accesskit_node_builder(response.id, |node| node.set_label(label));
+        response.interact(egui::Sense::CLICK)
+    }
+
+    pub(super) fn show(
+        &mut self,
+        ui: &mut Ui,
+        field: &DraftField,
+        focus: bool,
+    ) -> Option<EditResponse> {
+        let entry = self
             .entries
             .iter_mut()
-            .find(|entry| entry.field == field.id())
-        else {
-            return false;
-        };
+            .find(|entry| entry.field == field.id())?;
         let id = ui.make_persistent_id(("draft_field_description", field.id()));
         let original = entry.text.clone();
         let rejected = crate::text_input::reject_events_with_limits(
@@ -76,10 +107,13 @@ impl Editors {
             .desired_width(ui.available_width())
             .margin(egui::Margin::symmetric(2, 1))
             .show(ui);
-        let response = output.response.response;
+        let mut response = output.response.response;
         ui.ctx().accesskit_node_builder(response.id, |node| {
             node.set_label(label);
         });
+        if focus {
+            response.request_focus();
+        }
         crate::theme::input_border(ui, &response);
         let changed = rejected || response.changed();
         if rejected
@@ -94,9 +128,9 @@ impl Editors {
             entry.pending = true;
         }
         if entry.rejected {
-            response.on_hover_text(tr(ui, "table-draft-description-invalid"));
+            response = response.on_hover_text(tr(ui, "table-draft-description-invalid"));
         }
-        changed
+        Some(EditResponse { changed, response })
     }
 
     pub(super) fn reject(&mut self, field: DraftFieldId) {

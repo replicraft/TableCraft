@@ -1,5 +1,27 @@
 # Implementation status
 
+## Design field activation — 7 November 2026
+
+Selecting an existing field now resolves the inline pending declaration before
+moving to its Name, Type, Description or properties. Valid input commits once
+and restores the requested field; invalid input stays in the new row without
+changing another declaration or opening its menu. Same-frame final characters
+are retained, including input starting from an empty focused name. Description
+and type controls retain their accessible roles, and live dropdowns keep their
+normal open/close behavior. These changes remain in shared UI, with no additional
+desktop or native-engine editing logic.
+
+All 469 shared-UI and 119 desktop tests pass, including five focused activation
+tests. Strict affected-package all-target/all-feature lint and Windows x64/ARM64,
+Intel macOS and Linux x64/ARM64 compilation pass; native macOS ARM64 is covered
+by execution and lint. Formatting, dependency and documentation guards pass.
+The initial four tests all reproduced the
+previous missing activation behavior; their failed log is retained separately
+from the corrected run under ignored `.cache/gui-design-activation-*20261107.log`
+paths. Four offscreen frames were inspected across both themes and compact
+translated layouts; see [the presentation record](ui/PRESENTATION_PREVIEW.md#existing-field-activation-in-design--7-november-2026).
+Native Access validation/focus timing remains unqualified.
+
 ## Inline Table Design fields — 7 November 2026
 
 Table Design now accepts a field name and type directly in its first blank row.

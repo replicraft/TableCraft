@@ -124,10 +124,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         "design-key" => "-design-key",
         "design-new-row" => "-design-new-row",
         "design-type-menu" => "-design-type-menu",
+        "design-existing-pending" => "-design-existing-pending",
+        "design-existing-selected" => "-design-existing-selected",
         "design-keyless-prompt" => "-design-keyless-prompt",
         "design-keyless-only-prompt" => "-design-keyless-only-prompt",
         _ => {
-            return Err(io::Error::other("table command must be none, create, save-name, create-design, design-key, design-new-row, design-type-menu, design-keyless-prompt or design-keyless-only-prompt").into());
+            return Err(io::Error::other("table command must be none, create, save-name, create-design, design-key, design-new-row, design-type-menu, design-existing-pending, design-existing-selected, design-keyless-prompt or design-keyless-only-prompt").into());
         }
     };
     if !table_suffix.is_empty()
@@ -278,6 +280,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                     | "design-key"
                     | "design-new-row"
                     | "design-type-menu"
+                    | "design-existing-pending"
+                    | "design-existing-selected"
                     | "design-keyless-prompt"
                     | "design-keyless-only-prompt"
             ) {

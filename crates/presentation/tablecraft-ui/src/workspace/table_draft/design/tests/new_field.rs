@@ -10,7 +10,7 @@ use egui_kittest::{
 };
 use tablecraft_builders::table::DraftFieldType;
 
-fn enter_name(harness: &mut Harness<'_, (State, Vec<Action>)>, name: &str) {
+pub(super) fn enter_name(harness: &mut Harness<'_, (State, Vec<Action>)>, name: &str) {
     let label = harness
         .state()
         .0
@@ -27,7 +27,7 @@ fn enter_name(harness: &mut Harness<'_, (State, Vec<Action>)>, name: &str) {
     harness.run_steps(2);
 }
 
-fn choose_type(harness: &mut Harness<'_, (State, Vec<Action>)>, key: &str) {
+pub(super) fn choose_type(harness: &mut Harness<'_, (State, Vec<Action>)>, key: &str) {
     let label = harness
         .state()
         .0

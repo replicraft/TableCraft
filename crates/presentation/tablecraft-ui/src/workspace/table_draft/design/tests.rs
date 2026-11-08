@@ -1,3 +1,4 @@
+mod activation;
 mod description;
 mod new_field;
 
