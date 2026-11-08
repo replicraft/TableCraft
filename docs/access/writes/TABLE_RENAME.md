@@ -6,10 +6,11 @@ operation, not general schema editing or dependency repair. The local batched
 acceptance checks pass within this profile; native Microsoft Access save/reopen
 and timestamp behavior remain unqualified.
 
-Current GUI-created databases do not yet enter this profile: creators retain the
-missing/ON Name AutoCorrect default and seven original system roles; the usual
-optional field properties also require broader qualification. Unchanged single-Int32
-user indexes are admitted by the versioned retained-index route below.
+Current GUI-created databases require a separate explicit option save before
+entering creator V3: construction retains missing Name AutoCorrect metadata and
+seven original system roles. Safe constructor field properties and unchanged
+Int32 primary indexes now qualify under that new source language. Broader field
+programs and dependencies still refuse; creator defaults stay unchanged.
 This is not complete usable table CRUD for the creator baseline. Existing frozen
 construction/recovery profiles must not be silently changed to force admission.
 
@@ -168,12 +169,19 @@ Shared ownership proof covers all real DATA/INDEX/TDEF/map/LVAL roles; all
 unmodified index and external-property bytes remain protected.
 
 [Eight independent literal AFTER images reopen through the SDK reader](../../testing/ACE16_CREATOR_RENAME_SOURCES.md).
-The native complete-image comparisons, V3 wire/recovery and frozen-profile
-regressions are authored but remain unrun at this checkpoint. This adds no
-adapter/runtime/GUI selection yet. Creator defaults stay unchanged, the explicit
-OFF operation remains separate, and V1/V2 retain their original inline admission
-and exact reconstruction. Multiple tables, add-table composition and native
-Microsoft Access save/timestamp behavior remain unqualified.
+All 35 focused engine rename tests pass, including 54 independently authored V3
+complete-image pairs, nine explicit-OFF compositions and 36 V3 recovery states.
+The source selector, V3 wire/recovery and frozen V1/V2 regressions pass in that
+batch. Four runtime rename tests also pass with explicit-OFF creator sources;
+the runtime selects the engine-owned source purpose and the existing desktop
+rename workflow consumes the result. The separate explicit option GUI command
+remains unavailable. Creator defaults stay unchanged and V1/V2 retain their
+original inline admission and exact reconstruction. Multiple tables, add-table
+composition and native Microsoft Access save/timestamp behavior remain
+unqualified. The [completed 72-test batch](../../testing/results/sql-creator-focused-2026-11-08.json)
+also records six passing long-value regression tests. These results precede the
+new runtime option service and expected-image helper checkpoint; they do not
+qualify its unrun tests or newly extracted consumer rewires.
 
 ## Persistence and retained recovery
 

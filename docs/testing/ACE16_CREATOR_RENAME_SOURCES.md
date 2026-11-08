@@ -24,19 +24,21 @@ files and classes stay ignored. No new third-party source or database is copied.
 
 This is independent read compatibility for literal images. It is not an SDK
 rename/save observation or Microsoft Access interaction, save/reopen, dependency
-repair, NameMap behavior or DateUpdate timing evidence. Comparison against the
-native V3 planner and original-intent recovery remains pending the coordinated
-batch at this checkpoint.
+repair, NameMap behavior or DateUpdate timing evidence. The separate native V3
+planner and original-intent comparisons now pass in the
+[completed focused batch](results/sql-creator-focused-2026-11-08.json): 35 engine
+rename tests, including 54 complete-image pairs, nine explicit-OFF compositions
+and 36 V3 recovery states. Four runtime rename tests pass, with creator sources included in positive
+save/reopen coverage; six long-value regression cases pass too. This is local headless evidence.
 
 The independent Rust `canonical_creator_rename` fixture adds keyless/manual/
 generated empty and populated carriers plus safe constructor metadata: literal
-DefaultValue zero, Required/AllowZeroLength and inert Description. Proposed tests
+DefaultValue zero, Required/AllowZeroLength and inert Description. Passing tests
 compare complete images and preserved property bytes, then exercise refusal of
 programs/references, wrong property carriers, unknown fields, malformed external
-ownership and enabled settings. Those authored cases are not passing evidence
-until run. They also compare the explicit option candidate with the independently
-authored source before invoking rename, so the intended composition is checked
-rather than inferred from a source label.
+ownership and nonzero settings. They also compare the explicit option candidate
+with the independently authored source before invoking rename, so the intended
+composition is checked rather than inferred from a source label.
 
 V3 is a distinct source-bound operation: user catalog slot 7, appended MSysDb
 slot 8, exact catalog LvProp map cells 16/17 and one exclusive EOF body. Earlier

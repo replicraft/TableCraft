@@ -10,7 +10,9 @@ planner. Its source SHA-256 is `7c746dad3919a0252587d6c94accc52cd94c6c591a8f46aa
 The separate [Python literal model and SDK observations](ACE16_CREATOR_RENAME_SOURCES.md)
 pin eight complete images over two SDK-written sources; all eight read-only SDK
 opens pass with exact names, OFF metadata and original table/index counts.
-Native V3 fixture comparisons and recovery tests remain unrun at this checkpoint.
+The [completed 72-test focused batch](results/sql-creator-focused-2026-11-08.json)
+passes all 35 engine rename tests, including 54 V3 complete images, nine option
+compositions and 36 V3 recovery states; four runtime rename cases pass too.
 Microsoft Access rename/save behavior remains unqualified. No third-party fixture
 or source is copied.
 

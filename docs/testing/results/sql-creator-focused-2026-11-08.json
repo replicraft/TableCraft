@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "status": "PASS",
+  "scope": "Completed SQL/creator focused batch before the new runtime database-options service, expected-image helper and Name AutoCorrect observer checkpoint. No new options service/observer or helper regression tests are claimed by this record.",
+  "summary_path": ".cache/sql-creator-focused-summary-20261108.json",
+  "summary_sha256": "6548aeaef625bf58e25552c3ab17b78e4d3ae840f88b60fe84eb8e7b2eef4d71",
+  "total_passed": 72,
+  "total_failed": 0,
+  "total_ignored": 0,
+  "runs": [
+    {
+      "package": "tablecraft_sql",
+      "filter": "parser::integer_projection::tests",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_sql-parser-integer_projection-tests-20261108.log",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "ee0fff6ead16a491e08da25e72dc40705f45a2ad0a12dd7755a4aae3d6afbab5"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::query_sql::",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_runtime-tests-query_sql--20261108.log",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "037d9fafd9f4e96d423e78b72c3f29ae2b16a30fef01f41f32635caa04757bda"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::query_expression::",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_runtime-tests-query_expression--20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "bf02d55c8ee2ed6812befe0b38afb3dd5d4ae2a80a4cd0a1d2b5b6485e45e998"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::add_column::",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_runtime-tests-add_column--20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "dcb7ce17d181c78739719409853cdf8745f8635b68d851501f5d75c333f2a14e"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::add_column::tests",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_ace-transaction-intent-add_column-tests-20261108.log",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "6a0ce4cb63f6574bf94bac5998f258086d34199f41e54a346f05b70604a19fac"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "rename_table",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_ace-rename_table-20261108.log",
+      "passed": 35,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "c4b8ba07ea4845c96b2a441d26f17a18872464feff10597dc0ee06e2878396fb"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::long_value::tests",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_ace-table-long_value-tests-20261108.log",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "d3795d60be1a0b1f638891d2be4b66cab2017a0593e0d3e9af8d15311980b525"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::table_rename::",
+      "exit_code": 0,
+      "log": ".cache/sql-creator-focused-tablecraft_runtime-tests-table_rename--20261108.log",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "26c987c344b7a54d3f514a202da987f8a47df76159e4baee1841eb6f9c23b68a"
+    }
+  ],
+  "boundaries": [
+    "Headless local tests only; not Microsoft Access save/reopen or another platform qualification.",
+    "35 engine rename tests include 54 independent V3 image pairs, nine explicit-OFF source compositions and 36 V3 recovery states.",
+    "Four runtime rename tests include explicit-OFF creator sources.",
+    "The newly authored runtime database-options five tests and native observer two tests remain unrun."
+  ]
+}
