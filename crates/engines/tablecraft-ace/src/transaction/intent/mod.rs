@@ -70,3 +70,10 @@ pub use add_table::{
     AddTableIntentError, NativeAddTableIntent, PreparedAddTable, QualifiedAddTableRecovery,
     qualify_native_add_table_recovery,
 };
+
+mod rename_table;
+pub use rename_table::{
+    NativeTableRenameIntent, PreparedTableRename, QualifiedTableRenameRecovery,
+    RecoverableNativeTableRenamePlan, RecoverableTableRenameError, TableRenameIntentError,
+    qualify_native_table_rename_recovery,
+};

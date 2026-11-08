@@ -70,6 +70,8 @@ pub use mutation::{
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
+#[cfg(feature = "journal")]
+pub use mutation::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use mutation::{RowDelete, TableRowDeletes};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};

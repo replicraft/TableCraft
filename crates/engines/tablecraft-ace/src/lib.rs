@@ -258,3 +258,13 @@ pub use transaction::{
     AddTableIntentError, NativeAddTableIntent, PreparedAddTable, QualifiedAddTableRecovery,
     qualify_native_add_table_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeTableRenameIntent, PreparedTableRename, QualifiedTableRenameRecovery,
+    RecoverableNativeTableRenamePlan, RecoverableTableRenameError, TableRenameIntentError,
+    qualify_native_table_rename_recovery,
+};
+
+#[cfg(feature = "journal")]
+pub use table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};

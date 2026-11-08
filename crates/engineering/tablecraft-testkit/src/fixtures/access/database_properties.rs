@@ -38,16 +38,80 @@ pub fn database(properties: Option<&[u8]>) -> Vec<u8> {
 
 /// Independently framed property entries; duplicates remain available to tests.
 pub fn query_modes(entries: &[(u8, u8, &[u8])]) -> Vec<u8> {
+    default_map(
+        &["ANSI Query Mode"],
+        entries
+            .iter()
+            .map(|&(flags, kind, value)| (0, flags, kind, value)),
+    )
+}
+
+/// Explicit database Name AutoCorrect settings; absent values mean enabled.
+/// Both entries are independent LONG/DDL zero values in the unnamed default map.
+pub fn name_auto_correct_disabled() -> Vec<u8> {
+    name_auto_correct_values(&[(1, 4, &0_i32.to_le_bytes()), (1, 4, &0_i32.to_le_bytes())])
+}
+
+/// Original normal-MR2 database values, in Track/Perform dictionary order.
+/// This supports malformed/unknown settings without producing a decoder oracle.
+/// LvProp uses narrow value framing; LvExtra's Wide-MR2 framing is distinct.
+pub fn name_auto_correct_values(entries: &[(u8, u8, &[u8])]) -> Vec<u8> {
+    assert!(entries.len() <= 2);
+    default_map(
+        &["Track Name AutoCorrect Info", "Perform Name AutoCorrect"],
+        entries
+            .iter()
+            .enumerate()
+            .map(|(index, &(flags, kind, value))| {
+                (u16::try_from(index).unwrap(), flags, kind, value)
+            }),
+    )
+}
+
+fn default_map<'a>(
+    names: &[&str],
+    entries: impl IntoIterator<Item = (u16, u8, u8, &'a [u8])>,
+) -> Vec<u8> {
+    // Literal normal-MR2 empty map name: four-byte length plus two-byte name.
     let mut body = vec![6, 0, 0, 0, 0, 0];
-    for (flags, kind, value) in entries {
+    for (index, flags, kind, value) in entries {
         body.extend_from_slice(&u16::try_from(value.len() + 8).unwrap().to_le_bytes());
-        body.extend_from_slice(&[*flags, *kind]);
-        body.extend_from_slice(&0_u16.to_le_bytes());
+        body.extend_from_slice(&[flags, kind]);
+        body.extend_from_slice(&index.to_le_bytes());
         body.extend_from_slice(&u16::try_from(value.len()).unwrap().to_le_bytes());
         body.extend_from_slice(value);
     }
     wide_properties::bag(&[
-        wide_properties::names(&["ANSI Query Mode"]),
+        wide_properties::names(names),
         wide_properties::block(0, &body),
     ])
+}
+
+/// Literal native17 MSysDb under the canonical Databases container.
+/// The system role has no table definition; its inline LvProp remains inert data.
+pub fn native17_database_record(properties: &[u8]) -> Vec<u8> {
+    let mut row = vec![0; 32];
+    put16(&mut row, 0, 17);
+    put32(&mut row, 2, 0x0f00_0004);
+    put32(&mut row, 6, 0x0f00_0002);
+    put16(&mut row, 10, 2);
+    put32(&mut row, 28, 0x8000_0000);
+    row.extend("MSysDb".encode_utf16().flat_map(u16::to_le_bytes));
+    let name_end = u16::try_from(row.len()).unwrap();
+    row.extend((0x8000_0000 | u32::try_from(properties.len()).unwrap()).to_le_bytes());
+    row.extend([0; 8]);
+    row.extend(properties);
+    let end = u16::try_from(row.len()).unwrap();
+    row.extend(end.to_le_bytes());
+    for slot in (0..11).rev() {
+        let start = match slot {
+            0 => 32,
+            1..=8 => name_end,
+            _ => end,
+        };
+        row.extend(start.to_le_bytes());
+    }
+    row.extend(11_u16.to_le_bytes());
+    row.extend([0xbf, 0x40, 0]);
+    row
 }

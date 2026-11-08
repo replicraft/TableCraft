@@ -1,7 +1,8 @@
 #[cfg(feature = "ace16-create")]
 use crate::{AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError};
 use crate::{
-    EditError, InspectError, NativeImage, NativeInt32EditIntent, NativeIntentError, header::check,
+    EditError, InspectError, NativeImage, NativeInt32EditIntent, NativeIntentError,
+    TableRenameError, TableRenameIntentError, header::check,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -41,6 +42,12 @@ pub enum NativeRecoveryQualificationError {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddTable(#[from] AddTableError),
+    /// The original table-rename request failed closed framing or source binding.
+    #[error(transparent)]
+    TableRenameIntent(#[from] TableRenameIntentError),
+    /// Original catalog, namespace or proposed table name failed qualification.
+    #[error(transparent)]
+    Rename(#[from] TableRenameError),
     /// A complete image or change count differs from the independently rebuilt plan.
     #[error("complete images differ from the qualified original native edit")]
     ImageMismatch,

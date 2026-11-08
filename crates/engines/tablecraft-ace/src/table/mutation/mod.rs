@@ -59,9 +59,13 @@ mod record_protection;
 mod record_roots;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod record_serialization;
+#[cfg(feature = "journal")]
+mod rename_table;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod requests;
 mod rows;
+#[cfg(feature = "journal")]
+pub use rename_table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod mixed_fitted_tests;
