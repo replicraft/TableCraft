@@ -16,3 +16,9 @@ navigation-sql-query-help = SQL-Abfrageeditor öffnen oder aktivieren. Dabei wir
 
 navigation-collapse-pane = Navigationsbereich minimieren
 navigation-expand-pane = Navigationsbereich erweitern
+
+navigation-rename = Umbenennen
+navigation-rename-table = Tabelle umbenennen
+navigation-rename-name = Neuer Name
+navigation-rename-reviewing = Tabellenumbenennung wird geprüft…
+navigation-rename-unavailable = Vor dem Umbenennen einer unterstützten lokalen Benutzertabelle alle Objektregister schließen.

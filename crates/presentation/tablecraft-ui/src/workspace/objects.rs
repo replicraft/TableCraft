@@ -387,6 +387,7 @@ impl State {
             && self.contents_request_id().is_none()
             && !self.parameter_prompt_open()
             && !self.query_action_dialog_open()
+            && !self.table_rename_open()
             && !self.find_window_open()
             && !self.zoom_dialog_open()
             && !self.table_filter_pending()

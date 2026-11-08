@@ -44,6 +44,7 @@ pub use find::{
 pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
+pub use navigation::rename::TableRenameRequest;
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
 pub use query::parameters::{ParameterInput, ParameterSpec};
@@ -98,6 +99,16 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    /// Cancel an issued table-rename review before a save is accepted.
+    CancelTableRenameReview {
+        /// Exact naming request whose review should be cancelled.
+        request_id: u64,
+    },
+    /// Review and save the user's explicit closed-table naming request.
+    RenameTable {
+        /// Original source revision and exact old/new catalog spellings.
+        request: TableRenameRequest,
+    },
     ApplyQueryAction {
         review_id: u64,
     },
@@ -348,6 +359,9 @@ pub struct State {
     query_sql_revision: u64,
     query_parameters: Option<query::parameters::scratch::Session>,
     query_action: Option<query::actions::review::Session>,
+    table_rename: Option<navigation::rename::Rename>,
+    /// Host can review and persist native table renames; false for synthetic hosts.
+    pub table_rename_available: bool,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -672,6 +686,7 @@ impl State {
             && !self.busy
             && !self.table_draft_field_delete_open()
             && !self.query_action_dialog_open()
+            && !self.table_rename_open()
     }
 
     fn query_ready(&self) -> bool {
@@ -684,6 +699,7 @@ impl State {
             && !self.busy
             && self.query_parameters.is_none()
             && !self.query_action_dialog_open()
+            && !self.table_rename_open()
             && !self.sql.trim().is_empty()
     }
 
@@ -726,6 +742,7 @@ impl State {
             || self.edit_dialog_open()
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
+            || self.table_rename_open()
             || self.zoom_dialog_open();
         self.prepare_ribbon_display(ui, modal_open);
         self.begin_ribbon_keyboard(ui, modal_open);
@@ -783,6 +800,7 @@ impl State {
         let modal_open = modal_open
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
+            || self.table_rename_open()
             || self.zoom_dialog_open();
         self.begin_pane_focus(ui, modal_open || self.find_window_open());
         ui.add_enabled_ui(!modal_open, |ui| {
@@ -809,6 +827,7 @@ impl State {
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.scratch_parameter_dialog(ui.ctx(), &mut actions);
         self.query_action_dialog(ui.ctx(), &mut actions);
+        self.table_rename_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
@@ -818,6 +837,7 @@ impl State {
         self.recovery_dialog(ui.ctx(), &mut actions);
         if !self.parameter_prompt_open()
             && !self.query_action_dialog_open()
+            && !self.table_rename_open()
             && !self.zoom_dialog_open()
             && !self.find_window_open()
             && self.table_draft_save.is_none()

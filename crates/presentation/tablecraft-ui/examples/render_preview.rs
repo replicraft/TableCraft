@@ -9,6 +9,8 @@ mod initial_properties;
 mod navigation;
 #[path = "render_preview/table_creation.rs"]
 mod table_creation;
+#[path = "render_preview/table_rename.rs"]
+mod table_rename;
 
 use egui_kittest::{Harness, kittest::Queryable};
 use image::ImageFormat;
@@ -91,6 +93,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         ""
     };
+    let table_rename = match setting("TABLECRAFT_PREVIEW_TABLE_RENAME", "false")?.as_str() {
+        "false" => false,
+        "true" => true,
+        _ => return Err(io::Error::other("table-rename setting must be true or false").into()),
+    };
+    if table_rename && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("table-rename rendering requires the datasheet scene").into());
+    }
+    let rename_suffix = if table_rename { "-table-rename" } else { "" };
     let initial_edit = setting("TABLECRAFT_PREVIEW_INITIAL_EDIT", "none")?;
     let initial_suffix = match initial_edit.as_str() {
         "none" => "",
@@ -194,7 +205,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(field_gallery)
         + usize::from(!table_suffix.is_empty())
         + usize::from(date_residue != "none")
-        + usize::from(!initial_suffix.is_empty());
+        + usize::from(!initial_suffix.is_empty())
+        + usize::from(table_rename);
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -323,9 +335,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if date_residue != "none" {
             date_residue::reveal(&mut harness);
         }
+        if table_rename {
+            table_rename::open(&mut harness);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

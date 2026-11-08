@@ -37,7 +37,8 @@ All cells describe current implementation, not the requested final state.
 | Read catalog, schema and rows | Bounded | Bounded, including qualified complex reads | Ordinary reads; advanced qualification incomplete | Actual stored-layout coverage; application evidence incomplete | Broad bounded implementation |
 | Create a database | Missing creator | Missing | Missing | Missing | Bounded scalar creator |
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
-| Rename/drop a saved table | Missing | Missing | Missing | Missing | Missing |
+| Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, unindexed, Name AutoCorrect OFF profile |
+| Drop a saved table | Missing | Missing | Missing | Missing | Missing |
 | Add/rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Missing |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
@@ -66,7 +67,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | --- | --- |
 | Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
-| Saved table lifecycle | Reviewed rename/drop, catalog record replacement, namespace/collision rules, dependency handling, native object identity and allocation retirement. |
+| Saved table lifecycle | Broaden restricted rename to ordinary creator/indexed/multiple-table layouts and Name AutoCorrect behavior; implement DROP with dependency handling, identity preservation and allocation retirement. |
 | Saved column lifecycle | Add/rename/change/drop; existing-row migration, field numbers/null masks/variable offsets, defaults, indexes, properties and dependency updates. Empty-table rewrites must preserve native history and unknown metadata too. |
 | Rows and storage | General scalar and supported advanced-field CRUD, all admitted key families/combinations, DATA/INDEX/LVAL growth and contraction, allocation-map growth, page reuse and reclamation. Remove fitting-only/short-ledger restrictions through real storage work. |
 | Defaults and identity | Omitted versus NULL versus supplied values, complete supported defaults, Increment/Random generation, reseeding/history and composition with constraints/indexes/allocation. |
@@ -75,12 +76,14 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | Transactions and collaboration | Multi-operation transactions, atomic action queries, user transaction semantics, conflict detection, Access-compatible shared-file locking and mixed-client coordination; retain original-intent recovery and terminal resource ownership. |
 | Preservation | Keep VBA, forms/reports, queries, macros, linked-table metadata and unknown payloads intact through unrelated edits; distinguish preservation from executing or editing those objects. |
 
-The first persisted-schema slice should be table rename on freshly qualified
-sources, followed by the rest of table/column CRUD. Even that needs a genuine
-catalog mutation plan, original intent, fresh reconstruction, dependency checks,
-runtime review and reopen. A Navigation Pane rename with no persisted native
-operation would not satisfy it. Neither parser nodes nor a “created by TableCraft”
-flag confer mutation authority.
+The first [persisted table rename](../access/writes/TABLE_RENAME.md) slice now has
+native catalog mutation, original intent, fresh reconstruction, recovery, runtime
+review and a connected Navigation Pane workflow. Its source profile is narrow:
+current creators retain missing/ON Name AutoCorrect and ordinary indexed IDs, so
+they do not enter this admission yet. Next is explicit database-option handling
+and broader indexed/creator catalog qualification, followed by the rest of
+saved table/column CRUD. Neither parser nodes nor a “created by TableCraft” flag
+confer mutation authority.
 
 ## Queries: current capability and missing work
 

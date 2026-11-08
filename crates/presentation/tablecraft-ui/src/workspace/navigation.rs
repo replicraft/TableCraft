@@ -1,6 +1,7 @@
 //! Object navigation emits page intents without owning a database source.
 pub(super) mod activation;
 mod group;
+pub(super) mod rename;
 mod row;
 
 use super::focus::{self, Pane};
@@ -28,6 +29,7 @@ impl State {
         }
         let mut clicks = std::mem::take(&mut self.navigation_clicks);
         let mut selected_object = None;
+        let mut rename_target = None;
         let mut collapse_navigation = false;
         let enter_pressed =
             ui.input(|input| input.key_pressed(egui::Key::Enter) && input.modifiers.is_none());
@@ -132,7 +134,34 @@ impl State {
                                                 &response,
                                                 selected,
                                             );
+                                            if response.has_focus()
+                                                && ui.input(|input| {
+                                                    input.key_pressed(egui::Key::F2)
+                                                        && input.modifiers.is_none()
+                                                })
+                                                && self.can_rename_table(&target)
+                                            {
+                                                rename_target = Some(target.clone());
+                                            }
                                             response.context_menu(|ui| {
+                                                if ui
+                                                    .add_enabled(
+                                                        self.can_rename_table(&target),
+                                                        egui::Button::new(tr(
+                                                            ui,
+                                                            "navigation-rename",
+                                                        )),
+                                                    )
+                                                    .on_disabled_hover_text(tr(
+                                                        ui,
+                                                        "navigation-rename-unavailable",
+                                                    ))
+                                                    .clicked()
+                                                {
+                                                    rename_target = Some(target.clone());
+                                                    ui.close();
+                                                }
+
                                                 if ui
                                                     .add_enabled(
                                                         self.can_open_object(&target),
@@ -250,6 +279,10 @@ impl State {
             });
         clicks.finish(ui);
         self.navigation_clicks = clicks;
+        if let Some(target) = rename_target {
+            self.begin_table_rename(target);
+        }
+
         if collapse_navigation {
             self.toggle_navigation();
         }

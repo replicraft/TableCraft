@@ -1,5 +1,41 @@
 # Candidate Access fixtures
 
+## Independent persisted-table rename fixtures — 8 November 2026
+
+The shared raw `canonical_catalog_names::rename_pair` recipe independently builds
+complete BEFORE/AFTER images for headers 5/6, one ordinary empty/populated table,
+explicit Name AutoCorrect OFF and literal catalog Name changes. Names include
+UTF-16 boundaries, non-BMP text, a leading BOM, case changes and exact no-ops.
+Vacated bytes on shrink, table definitions, row identities and stored data remain
+explicit parts of the oracle. No production mutation, row serializer or property
+decoder constructs the expected replacement.
+
+`database_properties` shares independently literal **normal MR2** default-map
+framing between its existing query-mode fixtures and these new LONG/DDL zero
+settings. LvExtra's Wide-MR2 value framing is deliberately separate. A public
+property-inspection test checks the actual database map and both named values;
+raw builder invariants alone do not establish valid decoding.
+
+The independent `retired_variable_source` control keeps seventeen visible fields
+while storing eighteen columns and twelve variable slots, with an opaque payload
+in the unbound slot. Ordinary catalog/property inspection remains readable;
+rename must reject it. Other focused raw controls exercise valid opaque LvExtra,
+foreign free-map claims, unknown definition tails and flagged storage aliases.
+These are synthetic structural controls, not Access-produced application fixtures.
+No third-party database, source or new upstream notice is added.
+
+The direct recipe source hashes below identify this captured implementation;
+they are not generated database hashes. Existing raw-builder dependencies remain
+pinned by the same repository revision.
+
+| Recipe | SHA-256 |
+| --- | --- |
+| [canonical_catalog_names.rs](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_catalog_names.rs) | `55874e3506c8998244dc21c4ec0a29d6173a51a7dd5f247d834962280b3bf94f` |
+| [database_properties.rs](../../crates/engineering/tablecraft-testkit/src/fixtures/access/database_properties.rs) | `6c6bb0486b42bf0f56bd2bb446978287bf5f516b68c05a9745aa27848e47acbc` |
+
+Native Microsoft Access comparison remains unrun; see the [rename contract](../access/writes/TABLE_RENAME.md).
+
+
 ## Description creation: independent-reader observations
 
 The [Description checker](ace16_table_addition/ReadDescriptions.java) reads three

@@ -6,6 +6,7 @@ mod pasting;
 mod query_action;
 pub(super) mod recovery;
 pub(super) mod table_creation;
+pub(super) mod table_rename;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
 use inserting::retry::{InsertRetryContext, RetainedInsertRetry};
@@ -48,6 +49,7 @@ enum SaveOwner {
     Insert,
     Delete,
     TableCreation,
+    TableRename,
     QueryAction,
 }
 
@@ -252,6 +254,10 @@ impl Desktop {
         if let Some(retry) = &mut save.insert_retry {
             retry.evidence.observe(report);
         }
+        if matches!(save.owner, SaveOwner::TableRename) {
+            self.table_rename_save_report(report);
+            return;
+        }
         if matches!(save.owner, SaveOwner::TableCreation) {
             self.table_creation_save_report(report);
             return;
@@ -275,6 +281,7 @@ impl Desktop {
                 self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
+            SaveOwner::TableRename => {}
         }
     }
 
@@ -299,6 +306,8 @@ impl Desktop {
         if save.id != id
             || matches!(save.owner, SaveOwner::QueryAction)
                 && !self.state.can_resolve_query_action_save(id, recover)
+            || matches!(save.owner, SaveOwner::TableRename)
+                && !self.state.can_resolve_table_rename_save(id, recover)
         {
             return;
         }
@@ -318,6 +327,9 @@ impl Desktop {
                     SaveOwner::QueryAction => {
                         self.state.begin_query_action_resolution(id, next);
                     }
+                    SaveOwner::TableRename => {
+                        self.state.begin_table_rename_resolution(id, next);
+                    }
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -326,6 +338,16 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if self
+            .editing
+            .save
+            .as_ref()
+            .is_some_and(|save| matches!(save.owner, SaveOwner::TableRename))
+        {
+            self.acknowledge_table_rename(id);
+            return;
+        }
+
         let Some(save) = self.editing.save.as_ref().filter(|save| save.id == id) else {
             return;
         };
@@ -385,6 +407,7 @@ impl Desktop {
                 self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
+            SaveOwner::TableRename => {}
         }
         if refresh_after_ack {
             self.select_file(save.path);

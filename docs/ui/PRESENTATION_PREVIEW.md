@@ -1,5 +1,17 @@
 # Presentation preview
 
+## Persisted table naming — 8 November 2026
+
+The [restricted rename workflow](../access/writes/TABLE_RENAME.md) has three
+headless navigation cases and four connected desktop cases. An explicit
+`TABLECRAFT_PREVIEW_TABLE_RENAME=true` renderer variant shows the naming editor
+with closed object tabs; it never submits a native operation and adds no scene ID.
+Two normal-host frames were inspected at 1× on macOS ARM64 with Windows input
+emulation: en-US/light 1280 × 820 and en-US/dark 900 × 580. These are retained in
+ignored `.cache/ui-previews/table-rename-20261108-final/`. The field spans the
+available width and selects the existing name. No rename-specific Access capture
+exists; the modal is an adaptation, not a native interaction or pixel-parity claim.
+
 ## Reviewed INSERT SELECT append — 8 November 2026
 
 The existing three INSERT scene IDs now use a plausible synthetic SELECT append

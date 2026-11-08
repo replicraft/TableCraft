@@ -235,6 +235,15 @@ impl Preview {
                     self.state.set_schema(fixtures::schema(&table));
                 }
             }
+            Action::CancelTableRenameReview { request_id } => {
+                self.state.cancel_table_rename_review(request_id);
+            }
+            Action::RenameTable { request } => {
+                self.state.fail_table_rename(
+                    request.id,
+                    self.state.localizer.text("navigation-rename-unavailable"),
+                );
+            }
             Action::ApplyQueryAction { review_id } => self.mock_apply_query_action(review_id),
             Action::CancelQueryActionReview { request_id } => {
                 self.mock_cancel_query_action_review(request_id);

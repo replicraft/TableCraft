@@ -16,3 +16,9 @@ navigation-sql-query-help = Открыть или активировать ре�
 
 navigation-collapse-pane = Свернуть область навигации
 navigation-expand-pane = Развернуть область навигации
+
+navigation-rename = Переименовать
+navigation-rename-table = Переименовать таблицу
+navigation-rename-name = Новое имя
+navigation-rename-reviewing = Проверка переименования таблицы…
+navigation-rename-unavailable = Перед переименованием поддерживаемой локальной таблицы закройте все вкладки объектов.

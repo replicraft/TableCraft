@@ -16,3 +16,9 @@ navigation-sql-query-help = Abra ou ative o editor de consultas SQL. Isso não e
 
 navigation-collapse-pane = Recolher painel de navegação
 navigation-expand-pane = Expandir painel de navegação
+
+navigation-rename = Renomear
+navigation-rename-table = Renomear tabela
+navigation-rename-name = Novo nome
+navigation-rename-reviewing = Revisando a renomeação da tabela…
+navigation-rename-unavailable = Feche todas as abas de objetos antes de renomear uma tabela local compatível.

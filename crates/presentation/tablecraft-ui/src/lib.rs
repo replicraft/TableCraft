@@ -31,8 +31,8 @@ pub use workspace::{
     QueryActionReview, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
     RecoveryOutcome, ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice,
     SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
-    TableDraftSaveCompletion, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData,
-    TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
+    TableDraftSaveCompletion, TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec,
+    TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

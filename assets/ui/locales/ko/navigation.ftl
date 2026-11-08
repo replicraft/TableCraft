@@ -16,3 +16,9 @@ navigation-sql-query-help = SQL 쿼리 편집기를 열거나 활성화합니다
 
 navigation-collapse-pane = 탐색 창 축소
 navigation-expand-pane = 탐색 창 확장
+
+navigation-rename = 이름 바꾸기
+navigation-rename-table = 테이블 이름 바꾸기
+navigation-rename-name = 새 이름
+navigation-rename-reviewing = 테이블 이름 변경 검토 중…
+navigation-rename-unavailable = 지원되는 로컬 사용자 테이블의 이름을 바꾸기 전에 모든 개체 탭을 닫으세요.

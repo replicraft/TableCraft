@@ -20,6 +20,7 @@ use crate::file_dialog::{FileDialog, SelectedFile};
 use creating::Creating;
 use editing::Editing;
 use editing::table_creation::TableCreationHost;
+use editing::table_rename::TableRenameHost;
 use std::path::PathBuf;
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
@@ -34,6 +35,12 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    TableRenameReview {
+        request_id: u64,
+    },
+    RenamedTableReopen {
+        request_id: u64,
+    },
     QueryActionReview {
         request_id: u64,
     },
@@ -158,6 +165,7 @@ pub(super) struct Desktop {
     creating: Creating,
     deferred_draft_action: Option<DeferredDraftAction>,
     table_creation: Option<TableCreationHost>,
+    table_rename: Option<TableRenameHost>,
     resume_after_table_creation: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
@@ -192,6 +200,7 @@ impl Desktop {
             creating,
             deferred_draft_action: None,
             table_creation: None,
+            table_rename: None,
             resume_after_table_creation: false,
             close_after_first_record: None,
             editing,
@@ -205,6 +214,7 @@ impl Desktop {
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
+        app.state.table_rename_available = SaveWorker::supports_table_rename();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
@@ -392,6 +402,9 @@ impl Desktop {
                 continue;
             }
             match result {
+                Ok(Response::TableRenameReviewed { review, capability }) => {
+                    self.start_reviewed_table_rename(generation, review, capability);
+                }
                 Ok(Response::TableCreationReviewed { capability }) => {
                     self.start_reviewed_table_creation(generation, capability);
                 }
@@ -492,6 +505,15 @@ impl Desktop {
                             })
                             .collect(),
                     };
+                    if let PendingOperation::RenamedTableReopen { request_id } = self.pending {
+                        self.finish_table_rename_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
                     if let PendingOperation::CreatedTableReopen { request_id } = self.pending {
                         self.finish_table_creation_reopen(
                             request_id,
@@ -629,6 +651,13 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::TableRenameReview { request_id } => {
+                        self.table_rename_review_failed(*request_id, error.to_string());
+                    }
+                    PendingOperation::RenamedTableReopen { .. } => {
+                        self.fail_table_rename_reopen(&error);
+                    }
+
                     PendingOperation::QueryActionReview { request_id } => {
                         let request_id = *request_id;
                         self.fail_query_action_review(request_id, error.to_string());
@@ -799,6 +828,10 @@ impl eframe::App for Desktop {
                 } => self.resolve_reserved_recovery(operation_id, recover),
                 Action::AcknowledgeRecovery { operation_id } => {
                     self.acknowledge_reserved_recovery(operation_id)
+                }
+                Action::RenameTable { request } => self.rename_table(request),
+                Action::CancelTableRenameReview { request_id } => {
+                    self.cancel_table_rename_review(request_id)
                 }
                 Action::SaveTableDraft { request } => self.save_table_creation(request),
                 Action::CancelTableDraftSave { id } => self.cancel_table_creation_save(id),

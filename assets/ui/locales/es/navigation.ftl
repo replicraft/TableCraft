@@ -16,3 +16,9 @@ navigation-sql-query-help = Abra o active el editor de consultas SQL. No se ejec
 
 navigation-collapse-pane = Contraer panel de navegación
 navigation-expand-pane = Expandir panel de navegación
+
+navigation-rename = Cambiar nombre
+navigation-rename-table = Cambiar nombre de tabla
+navigation-rename-name = Nuevo nombre
+navigation-rename-reviewing = Revisando el cambio de nombre…
+navigation-rename-unavailable = Cierra todas las pestañas de objetos antes de cambiar el nombre de una tabla local compatible.

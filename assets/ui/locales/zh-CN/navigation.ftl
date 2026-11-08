@@ -16,3 +16,9 @@ navigation-sql-query-help = 打开或激活 SQL 查询编辑器。不会运行�
 
 navigation-collapse-pane = 折叠导航窗格
 navigation-expand-pane = 展开导航窗格
+
+navigation-rename = 重命名
+navigation-rename-table = 重命名表
+navigation-rename-name = 新名称
+navigation-rename-reviewing = 正在审核表重命名…
+navigation-rename-unavailable = 重命名受支持的本地用户表之前，请关闭所有对象选项卡。
