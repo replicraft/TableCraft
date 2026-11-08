@@ -1,7 +1,9 @@
 //! Unsupported hosts return every unconsumed capability without starting work.
 use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
-use crate::editing::{ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedTableCreation};
+use crate::editing::{
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn, ReviewedTableCreation,
+};
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
     ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
@@ -41,6 +43,11 @@ impl SaveWorker {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),
         })
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_number_column() -> bool {
+        false
     }
 
     #[cfg(feature = "ace16-create")]
@@ -129,6 +136,18 @@ impl SaveWorker {
         reviewed: ReviewedTableCreation,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub fn start_number_column(
+        &self,
+        reviewed: ReviewedNumberColumn,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedNumberColumn>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

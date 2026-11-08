@@ -8,6 +8,8 @@ pub(in crate::editing) mod draft;
 pub(in crate::editing) mod ids;
 pub(in crate::editing) mod input;
 pub(in crate::editing) mod inserting;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod number_column;
 pub(in crate::editing) mod query_action;
 pub(in crate::editing) mod query_delete;
 pub(in crate::editing) mod query_expression;

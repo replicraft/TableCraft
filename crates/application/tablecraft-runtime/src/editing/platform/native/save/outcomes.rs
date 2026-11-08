@@ -1,4 +1,7 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
+#[cfg(feature = "ace16-create")]
+mod number_column;
+
 use super::RetainedOwner;
 use crate::editing::save::{
     SaveCleanupDisposition, SaveCompletion, SaveDatabaseOptionsChange, SaveFailure,
@@ -13,8 +16,8 @@ use tablecraft_access::editing::offline::{
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
-    CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError, FirstTableError,
-    FirstTableIntentError,
+    CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
+    DefaultZeroAddColumnIntentError, FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -242,6 +245,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::AddTableIntent(error) => add_table_intent_failure(error),
             #[cfg(feature = "ace16-create")]
+            Cause::DefaultZeroAddColumnIntent(error) => number_column::intent(error),
+            #[cfg(feature = "ace16-create")]
             Cause::AddColumnIntent(error) => add_column_intent_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::DatabaseOptionsIntent(error) => database_options_intent_failure(error),
@@ -287,6 +292,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<DefaultZeroAddColumnIntentError>() {
+        return number_column::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::CreatedDefaultZeroAddColumnError>() {
+        return number_column::candidate(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddColumnIntentError>() {

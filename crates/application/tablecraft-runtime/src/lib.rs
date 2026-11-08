@@ -34,7 +34,8 @@ pub use creation::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
     AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
-    DatabaseOptionsReview, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedTableCreation,
+    DatabaseOptionsReview, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -79,7 +80,9 @@ pub use worker::Worker;
 use std::path::PathBuf;
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use tablecraft_ace::{AddColumnIntentError, AddTableError, FirstTableError};
+use tablecraft_ace::{
+    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError, FirstTableError,
+};
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
 };
@@ -117,6 +120,9 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     AddColumn(#[from] AddColumnIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    DefaultZeroAddColumn(#[from] DefaultZeroAddColumnIntentError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved column contents changed before reopening")]
     AddedColumnSourceChanged,
@@ -266,6 +272,12 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
         witness: Arc<InsertRetryWitness>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewAddNumberColumn {
+        document_revision: u64,
+        table: String,
+        column: String,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewAddInt32Column {
@@ -472,6 +484,11 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    NumberColumnReviewed {
+        review: AddColumnReview,
+        capability: ReviewedNumberColumn,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     AddColumnReviewed {

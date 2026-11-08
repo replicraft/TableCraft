@@ -5,6 +5,8 @@ mod add_column;
 mod database_options;
 mod deleting;
 mod inserting;
+#[cfg(feature = "ace16-create")]
+mod number_column;
 mod query_action;
 mod query_delete;
 mod query_expression;
@@ -33,6 +35,8 @@ pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, ReviewedInsert,
 };
+#[cfg(feature = "ace16-create")]
+pub use number_column::ReviewedNumberColumn;
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{

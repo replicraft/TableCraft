@@ -31,6 +31,12 @@ mod formatting;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod inserting;
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod number_column;
 mod query_context;
 #[cfg(all(
     feature = "offline-edit",
