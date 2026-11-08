@@ -168,7 +168,7 @@ impl Editors {
         let field = self.entries[position].field;
         if !draft.fields().iter().any(|candidate| {
             candidate.id() == field
-                && !candidate.is_primary()
+                && !candidate.is_protected()
                 && candidate.kind() == DraftFieldType::ShortText
         }) {
             return false;
@@ -275,7 +275,7 @@ impl Editors {
         if !draft
             .fields()
             .iter()
-            .any(|candidate| candidate.id() == field && !candidate.is_primary())
+            .any(|candidate| candidate.id() == field && !candidate.is_protected())
         {
             return false;
         }

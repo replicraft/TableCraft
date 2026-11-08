@@ -49,8 +49,8 @@ impl State {
             if native.name != original.name()
                 || Some(native.input_hint) != hint(original)
                 || native.auto_number != generated
-                || original.is_primary() != generated
-                || generated != (position == 0)
+                || original.is_protected() != generated
+                || generated && (!original.is_primary() || position != 0)
                 || generated && (!matches!(input, InsertInput::Omitted) || !raw.is_empty())
                 || matches!(input, InsertInput::Value(value) if &value.text != raw)
             {

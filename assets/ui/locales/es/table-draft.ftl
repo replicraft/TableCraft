@@ -90,3 +90,7 @@ table-draft-number-guid-default = Los valores predeterminados literales de Id. d
 
 table-draft-design-description = Descripción de { $field }
 table-draft-description-invalid = La descripción del campo es demasiado larga.
+
+table-draft-no-key-title = Sin clave principal
+table-draft-no-key-question = No se ha definido una clave principal. ¿Crear una clave principal de Autonumeración?
+table-draft-no-key-failed = No se pudo agregar la clave principal. Conserve el diseño actual o libere un campo.

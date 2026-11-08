@@ -116,9 +116,11 @@ Datasheet draft when the opened source is the exact canonical ACE 16 blank.
 A rolled-back first-table operation can therefore return to that workflow after
 recovery acknowledgement; recovery itself never starts table authoring.
 
-The runtime compares the complete immutable captured source against the canonical
-blank under the read operation's budget and cancellation checks. It publishes an
-advisory availability fact bound to the opened document revision. The shared UI
+The runtime checks the complete immutable captured source against either the
+canonical blank or the qualified populated append lineage under the read
+operation's budget and cancellation checks. It publishes an advisory availability
+fact bound to the opened document revision. A separate fact permits fresh manual
+Table Design only for the canonical blank. The shared UI
 accepts that fact only for the matching revision and also requires the existing
 Save capability and no conflicting draft, modal or operation.
 Selecting the command changes only local draft state. It neither acquires a
@@ -127,7 +129,8 @@ and declarations; Save freshly rechecks the retained target before mutation.
 
 A readable noncanonical blank remains unavailable for creation. This does not
 restrict opening or reading it. The same command also supports the explicitly
-qualified populated source below. Table Design remains disabled. Microsoft's
+qualified populated source below. Fresh manual Table Design has the separate
+canonical-blank scope described below. Microsoft's
 [Create a table and add fields](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
 documents Create > Table in an existing database, opening a new Datasheet. That
 workflow differs from Create > Table Design, which opens a fresh Design view.
@@ -206,13 +209,60 @@ not a full-workspace cross-target refresh, native Windows/Linux execution or
 Access comparison. The [current implementation record](../IMPLEMENTATION.md#repeated-table-creation--7-november-2026)
 separates the initial failed fixture case and corrected passing batch.
 
-Fresh Table Design has its own key-selection workflow. Microsoft's
-[Table Designer procedure](https://support.microsoft.com/en-us/access/training/video-build-tables-with-the-table-designer)
-starts with a field the user defines, then an explicit Primary Key choice. Saving
-without a key asks whether to create one. The working Datasheet-to-Design switch
-retains the ID already created by Datasheet; it does not implement that fresh
-Design workflow. Enabling Create > Table Design requires the actual editable
-key/no-key behavior rather than opening another protected-ID draft.
+### Fresh manual Table Design
+
+Create > Table Design now opens an empty unsaved Design draft for the exact
+canonical ACE 16 blank. It does not create the Datasheet draft's protected ID or
+invent an initial field. The user enters a field name and type in the upper grid.
+The working Datasheet-to-Design switch remains distinct: it retains whatever
+fields and generated ID its existing draft already has.
+
+A selected ordinary Number field with Long Integer Field Size, Large Number or
+Currency can be chosen as the one manual primary key through the Primary Key
+Ribbon command. The selection retains its actual ordered field position; the
+command toggles that key off when invoked again. A manual key is not a protected
+field: it remains renameable/editable, subject to supported key-type admission.
+Changing key selection does not change a field's Required property. The primary
+index independently requires unique, non-NULL keys even when the ordinary field
+property is explicitly Required=No. Composite keys, Text/GUID/other key families
+and imported persisted-key alteration remain unavailable.
+
+After naming a manual draft with no selected key, Save presents Yes, No and
+Cancel. Yes explicitly adds a generated Increment primary at the front. No saves
+the actual keyless schema without adding a hidden ID or index. Cancel preserves
+the draft and entered name without a native action or file change. The decision
+is bound to the same document, schema, raw record and property revisions as the
+Save request; stale decisions cannot authorize changed content. Adding the ID
+prepares the new field/input identity before mutation. Existing fields keep their
+stable identities and exact raw record text/modes, independent of the inserted
+column's position.
+
+The current automatic-ID name policy chooses the first unused case-insensitive
+`ID`, `ID1`, `ID2`, and so on within the existing field limit; it does not overwrite
+or rename an existing user field. This collision policy and placement remain
+provisional pending native Access comparison. A capacity/allocation refusal leaves
+the draft intact instead of partially adding a field.
+
+Microsoft's [Table Designer procedure](https://support.microsoft.com/en-us/access/training/video-build-tables-with-the-table-designer)
+starts with user-defined fields and an explicit Primary Key choice. Its
+[key procedure](https://support.microsoft.com/en-us/access/add-or-change-a-table-s-primary-key-in-access)
+describes the save-without-key question and automatic ID choice; the
+[table creation contract](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
+also documents saving without a key when No is chosen. Microsoft's
+[Index.Primary contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/index-primary-property-dao)
+sets the primary index's Unique and Required facts, distinct from ordinary field
+property metadata. These references govern the workflow without enabling VBA.
+The retained Design capture shows an existing AutoNumber table; it does not show
+fresh Design or the no-key prompt, so exact prompt appearance remains an
+adaptation rather than captured visual parity.
+
+A manual/keyless snapshot uses the closed TCNT6 first-table intent and the same
+source-bound review, V2 journal and guarded reopen lifecycle. Manual Design stays
+unavailable for populated files: current TCAT1–4 reject TCNT6, and mixed manual or
+keyless append layouts remain separate work. This feature supplies no imported
+ALTER, arbitrary DDL, persisted type conversion or unrestricted Access designer.
+Historical verification records below retain their original scopes; this section
+adds no new passing-test or native-platform claim.
 
 This route uses the existing macOS/Linux and Windows Save implementations and
 retains their platform limits described above. Windows cross-compilation and
@@ -336,10 +386,11 @@ persisted conversion semantics through this draft surface.
 
 The editable Design view belongs to the same initial, unsaved table as Datasheet
 view. Ordinary field names and the six supported declaration types can be
-changed there; the initial AutoNumber primary key remains protected. The lower
-General pane edits Field Size, Required, Allow Zero Length and Default Value,
-plus Precision and Scale for a Number field whose size is Decimal. Description, Caption, validation
-rules/messages and Lookup authoring remain unavailable. The pane describes the
+changed there. The Datasheet-generated AutoNumber ID remains protected; manual
+key selection is separate from field protection. The upper Description column
+retains inert optional text. The lower General pane edits Field Size, Required,
+Allow Zero Length and Default Value, plus Precision and Scale for Decimal.
+Caption, validation rules/messages and Lookup authoring remain unavailable. The pane describes the
 current draft declaration, not an observation of already stored metadata.
 Existing persisted-table Design view remains read only.
 
@@ -484,10 +535,11 @@ with its field when switching modes or types; another field cannot inherit it.
 
 ## Saving the initial table
 
-The shared Save prompt accepts an exact table name and submits
-the current immutable draft snapshot. Its supported schema is the initial ID
-AutoNumber primary key plus the explicit field declarations and defaults listed
-above, within the sixteen-field ceiling. No records are authored by this operation.
+The shared Save prompt accepts an exact table name and submits the current
+immutable draft snapshot. A Datasheet-origin schema retains its initial generated
+ID; a canonical-blank manual Design can retain one supported manual key or an
+explicit no-key decision. The declarations/defaults above and sixteen-field
+ceiling remain in force. No records are authored by this operation.
 The UI keeps the draft distinct from the persisted database while review and
 saving run; neither accepting the name nor closing the prompt proves a save.
 
@@ -505,15 +557,18 @@ native commitment and does not claim durable Windows deletion. See
 [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
 [second-table persistence](../access/writes/ADD_TABLE_PERSISTENCE.md).
 
-Definitions with any present Description use closed `TCNT0005` intents, including
-present-empty descriptions. Added-table actions use `TCAT0003` for the ten-page
+Manual/keyless definitions use closed `TCNT0006`, preserving the actual optional
+key position and no generated fields. Description remains optional in that
+profile. Generated definitions with any present Description use `TCNT0005`,
+including present-empty descriptions. Added-table actions use `TCAT0003` for the ten-page
 source partition or `TCAT0004` for the repeated thirteen-through-sixty-one-page
 partition, each with a `TCNT0005` declaration template. Legacy `TCAT0001/2`
 continue admitting only their original `TCNT0001–4` templates and original
 resource ceilings. Description does not change source geometry or save authority.
 
-Without Description, definitions with a default on Byte, Integer, Single, Double, Decimal or GUID
-use closed `TCNT0004` intents, including an explicit NULL default on those target
+For generated definitions without Description, a default on Byte, Integer,
+Single, Double, Decimal or GUID selects `TCNT0004`, including an explicit NULL
+default on those target
 families. Otherwise explicit Required or Allow Zero Length policies select
 `TCNT0003`, retaining presence independently from true/false. Policy-free
 legacy-family default-bearing definitions retain `TCNT0002`; policy-free

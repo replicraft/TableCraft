@@ -1,5 +1,6 @@
 //! Exact declaration requests and retained outcomes for first-table persistence.
 mod dialog;
+mod primary;
 
 use super::{CloseIntent, State};
 use crate::workspace::objects::memory::Counter;
@@ -55,6 +56,7 @@ pub struct TableDraftSaveCompletion {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Phase {
     Naming,
+    ChoosingKey,
     Issued,
     Pending,
     Retained,
@@ -96,6 +98,7 @@ impl State {
             && self.active_object().is_some_and(|tab| {
                 self.table_draft_editor(&tab).is_some_and(|editor| {
                     !editor.save_blocked
+                        && !editor.draft.fields().is_empty()
                         && !editor.properties.rejected()
                         && !editor.descriptions.rejected()
                 })
@@ -135,7 +138,8 @@ impl State {
         let Some(editor) = self.table_draft_editor_mut(&tab) else {
             return false;
         };
-        if editor.save_blocked
+        if editor.draft.fields().is_empty()
+            || editor.save_blocked
             || !editor.commit_rename()
             || !editor.record.synchronize(&editor.draft)
             || editor.record.has_rejected_input()
@@ -169,9 +173,9 @@ impl State {
     }
 
     pub fn table_draft_save_pending(&self) -> bool {
-        self.table_draft_save
-            .as_ref()
-            .is_some_and(|save| save.phase != Phase::Naming)
+        self.table_draft_save.as_ref().is_some_and(|save| {
+            matches!(save.phase, Phase::Issued | Phase::Pending | Phase::Retained)
+        })
     }
 
     /// Consume the issued witness before the host starts reviewing or writing.
@@ -316,12 +320,14 @@ impl State {
         match &self.table_draft_close {
             Some(CloseIntent::Tab(tab)) => self.table_draft_editor(tab).is_some_and(|editor| {
                 !editor.save_blocked
+                    && !editor.draft.fields().is_empty()
                     && !editor.properties.rejected()
                     && !editor.descriptions.rejected()
             }),
             Some(CloseIntent::All) => self.object_tabs().iter().any(|tab| {
                 self.table_draft_editor(tab).is_some_and(|editor| {
                     !editor.save_blocked
+                        && !editor.draft.fields().is_empty()
                         && !editor.properties.rejected()
                         && !editor.descriptions.rejected()
                 })

@@ -401,3 +401,127 @@ fn a_parked_drafts_popup_does_not_transfer_to_the_next_draft_with_reused_field_i
     );
     assert!(harness.state().1.is_empty());
 }
+
+fn manual_primary_harness() -> (Harness<'static, (State, Vec<Action>)>, DraftFieldId) {
+    let mut harness = harness();
+    let state = &mut harness.state_mut().0;
+    state.table_draft = Some(super::super::Editor::design("Table1".into()));
+    for kind in [DraftFieldType::ShortText, DraftFieldType::Number] {
+        assert!(state.add_table_draft_field(kind));
+        assert!(state.table_draft.as_mut().unwrap().commit_rename());
+    }
+    let editor = state.table_draft.as_mut().unwrap();
+    let key = editor.draft.fields()[1].id();
+    editor.draft.rename_field(key, "ManualKey").unwrap();
+    editor.draft.set_primary_key(Some(key)).unwrap();
+    set_input(state, key, "0007", false);
+    (harness, key)
+}
+
+#[test]
+fn datasheet_manual_primary_delete_is_disabled_but_rename_remains_available() {
+    let (mut harness, key) = manual_primary_harness();
+    assert!(harness.state_mut().0.show_table_draft_datasheet());
+    harness.run_steps(3);
+    let state = &mut harness.state_mut().0;
+    let schema_revision = state.table_draft_revision();
+    let record_revision = state.table_draft.as_ref().unwrap().record_revision();
+    assert!(!state.request_table_draft_field_delete(key));
+    assert!(!state.table_draft_field_delete_open());
+    assert_eq!(state.table_draft_revision(), schema_revision);
+    assert_eq!(
+        state.table_draft.as_ref().unwrap().record_revision(),
+        record_revision
+    );
+
+    harness
+        .get_by_role_and_label(Role::ColumnHeader, "ManualKey")
+        .click_secondary();
+    harness.run_steps(2);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Delete Field")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Rename Field")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn design_primary_delete_cancel_and_stale_view_preserve_raw_input_before_exact_removal() {
+    let (mut harness, key) = manual_primary_harness();
+    let state = &mut harness.state_mut().0;
+    let original_fields = state.table_draft.as_ref().unwrap().draft.fields().len();
+    let schema_revision = state.table_draft_revision();
+    let record_revision = state.table_draft.as_ref().unwrap().record_revision();
+    let property_revision = state.table_draft.as_ref().unwrap().property_revision();
+    assert!(state.request_table_draft_field_delete(key));
+    assert!(state.cancel_table_draft_field_delete());
+    assert!(state.request_table_draft_field_delete(key));
+
+    // Exercise confirmation's own view check independently of the modal's
+    // normal object-switch guard, without changing any captured revision.
+    state.table_draft.as_mut().unwrap().design.active = false;
+    assert!(!state.confirm_table_draft_field_delete());
+    let editor = state.table_draft.as_ref().unwrap();
+    assert_eq!(state.table_draft_revision(), schema_revision);
+    assert_eq!(editor.record_revision(), record_revision);
+    assert_eq!(editor.property_revision(), property_revision);
+    let snapshot = editor.draft.snapshot("Items").unwrap();
+    assert_eq!(editor.record.raw_texts(&snapshot).unwrap(), ["", "0007"]);
+    assert!(editor.draft.fields()[1].is_primary());
+
+    state.table_draft.as_mut().unwrap().design.active = true;
+    assert!(state.request_table_draft_field_delete(key));
+    assert!(state.confirm_table_draft_field_delete());
+    let editor = state.table_draft.as_ref().unwrap();
+    assert_eq!(editor.draft.fields().len(), original_fields - 1);
+    assert!(!editor.draft.fields()[0].is_primary());
+    let snapshot = editor.draft.snapshot("Items").unwrap();
+    assert_eq!(editor.record.raw_texts(&snapshot).unwrap(), [""]);
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn removing_manual_key_enables_datasheet_delete_but_generated_key_stays_protected() {
+    let (mut harness, key) = manual_primary_harness();
+    let state = &mut harness.state_mut().0;
+    state
+        .table_draft
+        .as_mut()
+        .unwrap()
+        .draft
+        .set_primary_key(None)
+        .unwrap();
+    assert!(state.show_table_draft_datasheet());
+    assert!(state.request_table_draft_field_delete(key));
+    assert!(state.confirm_table_draft_field_delete());
+    assert!(harness.state().1.is_empty());
+
+    let mut generated = self::harness();
+    let key = ids(&generated)[0];
+    for design in [false, true] {
+        generated
+            .state_mut()
+            .0
+            .table_draft
+            .as_mut()
+            .unwrap()
+            .design
+            .active = design;
+        assert!(
+            !generated
+                .state_mut()
+                .0
+                .request_table_draft_field_delete(key)
+        );
+        assert!(!generated.state().0.table_draft_field_delete_open());
+    }
+    assert!(generated.state().1.is_empty());
+}

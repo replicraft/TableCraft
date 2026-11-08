@@ -6,6 +6,7 @@ use crate::workspace::{
     Action, Database, InitialRecord, InsertInput, InsertTarget, ObjectKind, ObjectTarget, State,
 };
 use egui::{Context, Id, Modal};
+use tablecraft_builders::table::DraftFieldType;
 
 const MAX_FAILURE_BYTES: usize = 4096;
 const MODAL_OUTER_MARGIN: f32 = 48.0;
@@ -99,9 +100,29 @@ impl State {
             || name != record.snapshot.table_name()
             || record.inputs.len() != record.snapshot.fields().len()
             || record.raw_text.len() != record.inputs.len()
-            || !matches!(record.inputs.first(), Some(InsertInput::Omitted))
+            || record.inputs.is_empty()
         {
             return Err(record);
+        }
+        for (position, ((field, input), raw)) in record
+            .snapshot
+            .fields()
+            .iter()
+            .zip(&record.inputs)
+            .zip(&record.raw_text)
+            .enumerate()
+        {
+            let generated = field.kind() == DraftFieldType::AutoNumberIncrement;
+            if field.is_protected() != generated
+                || generated
+                    && (!field.is_primary()
+                        || position != 0
+                        || !matches!(input, InsertInput::Omitted)
+                        || !raw.is_empty())
+                || matches!(input, InsertInput::Value(value) if &value.text != raw)
+            {
+                return Err(record);
+            }
         }
         Ok(Continuation {
             target: InsertTarget {

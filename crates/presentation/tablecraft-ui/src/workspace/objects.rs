@@ -654,7 +654,22 @@ impl State {
         let Some(name) = names::suggested_table_name(self.database.as_ref().unwrap()) else {
             return false;
         };
-        let editor = super::table_draft::Editor::initial(name);
+        self.open_table_draft(super::table_draft::Editor::initial(name), false)
+    }
+
+    /// Create a manual Design draft only from the host-qualified source fact.
+    pub fn open_table_design_draft(&mut self) -> bool {
+        if !self.can_create_table_design() {
+            return false;
+        }
+        self.synchronize_objects();
+        let Some(name) = self.database.as_ref().and_then(names::suggested_table_name) else {
+            return false;
+        };
+        self.open_table_draft(super::table_draft::Editor::design(name), true)
+    }
+
+    fn open_table_draft(&mut self, editor: super::table_draft::Editor, design: bool) -> bool {
         let additional = editor.retained_bytes() + size_of::<Entry>() + size_of::<Session>();
         if self
             .object_bytes()
@@ -690,6 +705,11 @@ impl State {
         });
         self.objects.active = Some(id);
         self.objects.navigation = None;
+        self.view = if design {
+            super::DocumentView::Design
+        } else {
+            super::DocumentView::Table
+        };
         self.finish_object_activation();
         true
     }

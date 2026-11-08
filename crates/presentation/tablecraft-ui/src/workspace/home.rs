@@ -13,14 +13,20 @@ impl State {
         }
         let t = self.localizer.clone();
         let mut create_table = false;
+        let mut create_design = false;
         if ribbon::tab(
             ui,
             &t,
             self.ribbon_tab,
             self.can_create_table(),
             &mut create_table,
+            self.can_create_table_design(),
+            &mut create_design,
         ) {
             if create_table && self.can_create_table() && !self.open_initial_table_draft() {
+                self.error = Some(t.text("objects-open-refused"));
+            }
+            if create_design && self.can_create_table_design() && !self.open_table_design_draft() {
                 self.error = Some(t.text("objects-open-refused"));
             }
             return;
@@ -30,7 +36,17 @@ impl State {
                 self.view_menu(ui, actions);
             });
             if self.ribbon_tab == ribbon::Tab::TableDesign {
-                ribbon::design(ui, &t);
+                let mut primary_clicked = false;
+                ribbon::design(
+                    ui,
+                    &t,
+                    self.can_toggle_table_draft_primary_key(),
+                    self.table_draft_primary_key_selected(),
+                    &mut primary_clicked,
+                );
+                if primary_clicked {
+                    self.toggle_table_draft_primary_key();
+                }
                 return;
             }
             ribbon::group_with_launcher(ui, &t.text("ribbon-clipboard"), true, |ui| {

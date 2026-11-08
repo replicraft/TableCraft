@@ -84,7 +84,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     editor.error |= active.rejected;
                                     return;
                                 }
-                                if !field.is_primary() {
+                                if !field.is_protected() {
                                     match super::header::show(ui, field, editor.rename.is_none()) {
                                         Some(super::header::Command::Rename) => {
                                             rename = Some((field.id(), field.name().into()));

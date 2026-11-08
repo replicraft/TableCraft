@@ -42,7 +42,7 @@ fn issue(state: &mut State, name: &str) -> TableSaveRequest {
     let mut save = state.table_draft_save.take().unwrap();
     save.name = name.into();
     let mut actions = Vec::new();
-    state.issue_table_save(&mut save, &mut actions);
+    state.issue_table_save(&mut save, &mut actions, false);
     state.table_draft_save = Some(save);
     let Action::SaveTableDraft { request } = actions.pop().unwrap() else {
         panic!("one consuming declaration request")

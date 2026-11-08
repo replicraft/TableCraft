@@ -6,6 +6,7 @@ pub(super) mod field_delete;
 mod gallery;
 mod grid;
 mod header;
+mod manual;
 mod record;
 mod rename;
 pub(super) mod save;
@@ -41,9 +42,17 @@ pub(super) enum CloseIntent {
 
 impl Editor {
     pub(super) fn initial(save_name: String) -> Self {
+        Self::new(save_name, TableDraft::initial(), false)
+    }
+
+    pub(super) fn design(save_name: String) -> Self {
+        Self::new(save_name, TableDraft::design(), true)
+    }
+
+    fn new(save_name: String, draft: TableDraft, design: bool) -> Self {
         Self {
-            draft: TableDraft::initial(),
-            design: design::Design::default(),
+            draft,
+            design: design::Design::new(design),
             record: record::RowDraft::new(),
             properties: Editors::default(),
             descriptions: design::description::Editors::default(),

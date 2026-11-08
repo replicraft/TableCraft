@@ -632,6 +632,8 @@ impl Preview {
                     let revision = self.state.database.as_ref().unwrap().document_revision;
                     self.state.table_save_available = true;
                     self.state.set_table_creation_available(revision, true);
+                    self.state
+                        .set_table_design_available(revision, scene == Scene::FirstTableReady);
                     self.state.ribbon_tab = Tab::Create;
                 } else {
                     assert!(

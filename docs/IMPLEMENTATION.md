@@ -1,5 +1,41 @@
 # Implementation status
 
+## Manual Table Design — 7 November 2026
+
+Create → Table Design now starts with no fields in a qualified canonical blank
+ACE 16 database. Users can author ordinary fields and a single supported manual
+Int32, Int64 or Currency primary at its actual position. Saving without a key
+asks Yes/No/Cancel: Yes adds a protected Increment ID, No saves a genuinely
+keyless schema, and Cancel retains the exact draft. Raw pending record input
+stays attached to stable field identities through the decision. Primary Key
+shows its actual pressed state; Datasheet refuses deleting a primary field while
+Design permits an unprotected manual primary.
+
+Shared builders own schema mutation, runtime owns consuming native reviews and
+the existing SaveWorker performs publication. The desktop only forwards
+capabilities and outcomes. Manual/keyless first tables use closed TCNT6 intents;
+old first-table and append grammars remain closed. This milestone does not
+implement populated-database manual append, composite/text keys or stored ALTER.
+
+The accepted batch passes 35 builder, 151 runtime and 454 shared-UI tests. The
+connected desktop manual/keyless/automatic-ID journey passes native schema save,
+a separately reviewed first insertion, and fresh-host reopen; the full desktop
+suite subsequently passes 116 tests including the separate locale correction.
+Native first-table and intent filters pass 13 and 17 tests, eight append-intent
+refusals pass, and two new cold recovery cases pass. Strict affected-package lint,
+creation-only checks and the documented cross-target builds also pass. These are
+local headless checks, not native Windows/Linux or Microsoft Access parity.
+
+Five normal-host offscreen frames were inspected against the retained actual
+Design capture; the empty Design and primary-key prompt have no matching native
+capture and remain visual adaptations. See the
+[presentation record](ui/PRESENTATION_PREVIEW.md#manual-table-design--7-november-2026).
+Eight independently read candidates retain their original hashes; scope and
+producer pins are in the [result](testing/results/ace16-manual-design-independent-reader-2026-11-07.json).
+Failed exploratory selectors, old generated-only continuation assumptions,
+accessibility assertions, prompt paint and lint runs remain separately retained
+in ignored logs; the accepted runs do not erase those failures.
+
 ## Regional discovery and platform audit refresh — 7 November 2026
 
 A parallel storage, host and release audit found the desktop was using preferred

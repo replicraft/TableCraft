@@ -126,10 +126,25 @@ pub(in crate::workspace) fn home(ui: &mut Ui, t: &Localizer, families: &[String]
     });
 }
 
-pub(in crate::workspace) fn design(ui: &mut Ui, t: &Localizer) {
+pub(in crate::workspace) fn design(
+    ui: &mut Ui,
+    t: &Localizer,
+    primary_available: bool,
+    primary_selected: bool,
+    primary_clicked: &mut bool,
+) {
     group(ui, &t.text("ribbon-tools"), |ui| {
         ui.horizontal(|ui| {
-            unavailable(ui, t, Icon::Key, "ribbon-primary-key", CommandSize::Large);
+            *primary_clicked |= super::command_toggle(
+                ui,
+                Icon::Key,
+                &t.text("ribbon-primary-key"),
+                primary_available,
+                primary_selected,
+                CommandSize::Large,
+            )
+            .on_disabled_hover_text(t.text("ribbon-unavailable"))
+            .clicked();
             unavailable(ui, t, Icon::Builder, "ribbon-builder", CommandSize::Large);
             unavailable(
                 ui,
@@ -222,6 +237,8 @@ pub(in crate::workspace) fn tab(
     tab: Tab,
     first_table_available: bool,
     first_table_clicked: &mut bool,
+    design_available: bool,
+    design_clicked: &mut bool,
 ) -> bool {
     let groups: &[(&str, &[(Icon, &str)])] = match tab {
         Tab::Create => &[
@@ -433,7 +450,19 @@ pub(in crate::workspace) fn tab(
                     for column in commands[large_count..].chunks(3) {
                         ui.vertical(|ui| {
                             for (icon, key) in column {
-                                unavailable(ui, t, *icon, key, CommandSize::Small);
+                                if tab == Tab::Create && *key == "ribbon-table-design" {
+                                    *design_clicked |= command(
+                                        ui,
+                                        *icon,
+                                        &t.text(key),
+                                        design_available,
+                                        CommandSize::Small,
+                                    )
+                                    .on_disabled_hover_text(t.text("ribbon-unavailable"))
+                                    .clicked();
+                                } else {
+                                    unavailable(ui, t, *icon, key, CommandSize::Small);
+                                }
                             }
                         });
                     }

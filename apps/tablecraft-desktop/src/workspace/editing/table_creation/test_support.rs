@@ -116,7 +116,12 @@ pub(super) fn wait_for_bound_record(harness: &mut Harness<'_, Desktop>, table: &
     while !harness.state().state.inline_insert_active() || harness.state().state.busy {
         assert!(
             Instant::now() < deadline,
-            "first record did not bind after schema save"
+            "first record did not bind after schema save: {:?}; visible messages: {:?}",
+            harness.state().state.error,
+            harness
+                .get_all_by_role(Role::Label)
+                .filter_map(|node| node.value())
+                .collect::<Vec<_>>()
         );
         harness.run_steps(1);
         std::thread::yield_now();

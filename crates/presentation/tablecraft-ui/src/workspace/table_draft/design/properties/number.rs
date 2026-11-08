@@ -22,6 +22,7 @@ pub(super) fn show(
     editor: &mut Editor,
     position: usize,
     size: DraftNumberSize,
+    primary: bool,
     sheet: &mut Sheet,
 ) {
     let value_width = sheet.value_width();
@@ -38,7 +39,11 @@ pub(super) fn show(
         .show_ui(ui, |ui| {
             for (candidate, key) in SIZES {
                 if ui
-                    .selectable_label(candidate == size, tr(ui, key))
+                    .add_enabled(
+                        !primary || candidate == DraftNumberSize::LongInteger,
+                        egui::Button::new(tr(ui, key)).selected(candidate == size),
+                    )
+                    .on_disabled_hover_text(tr(ui, "ribbon-unavailable"))
                     .clicked()
                 {
                     next = Some(candidate);

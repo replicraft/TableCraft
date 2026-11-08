@@ -90,3 +90,7 @@ table-draft-number-guid-default = Literale Standardwerte für Replikations-ID si
 
 table-draft-design-description = Beschreibung für { $field }
 table-draft-description-invalid = Die Feldbeschreibung ist zu lang.
+
+table-draft-no-key-title = Kein Primärschlüssel
+table-draft-no-key-question = Es ist kein Primärschlüssel definiert. Einen AutoWert-Primärschlüssel erstellen?
+table-draft-no-key-failed = Der Primärschlüssel konnte nicht hinzugefügt werden. Behalten Sie den Entwurf oder entfernen Sie ein Feld.

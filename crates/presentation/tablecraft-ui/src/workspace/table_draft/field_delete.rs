@@ -42,12 +42,11 @@ impl State {
         if editor.save_blocked || editor.rename.is_some() {
             return false;
         }
-        let Some(declaration) = editor
-            .draft
-            .fields()
-            .iter()
-            .find(|declaration| declaration.id() == field && !declaration.is_primary())
-        else {
+        let Some(declaration) = editor.draft.fields().iter().find(|declaration| {
+            declaration.id() == field
+                && !declaration.is_protected()
+                && (editor.design.active || !declaration.is_primary())
+        }) else {
             return false;
         };
         if editor.record.removal(field).is_none() || editor.properties.removal(field).is_none() {
@@ -97,7 +96,8 @@ impl State {
             || editor.property_revision() != confirmation.property_revision
             || !editor.draft.fields().iter().any(|field| {
                 field.id() == confirmation.field
-                    && !field.is_primary()
+                    && !field.is_protected()
+                    && (editor.design.active || !field.is_primary())
                     && field.name() == confirmation.name
             })
         {

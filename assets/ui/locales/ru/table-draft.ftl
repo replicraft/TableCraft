@@ -90,3 +90,7 @@ table-draft-number-guid-default = Литеральные значения по �
 
 table-draft-design-description = Описание поля { $field }
 table-draft-description-invalid = Описание поля слишком длинное.
+
+table-draft-no-key-title = Нет первичного ключа
+table-draft-no-key-question = Первичный ключ не определён. Создать первичный ключ типа «Счётчик»?
+table-draft-no-key-failed = Не удалось добавить первичный ключ. Сохраните текущую структуру или освободите место для поля.

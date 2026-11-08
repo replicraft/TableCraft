@@ -439,3 +439,32 @@ fn declaration_type_changes_keep_raw_modes_and_allocation_instead_of_resetting_i
         assert_eq!(row.entries[1].text, "0007 Ω original");
     }
 }
+
+#[test]
+fn generated_primary_preflight_preserves_raw_allocations_and_refuses_exhausted_revision() {
+    let mut draft = TableDraft::design();
+    let field = draft.add_field(DraftFieldType::ShortText).unwrap();
+    let mut record = RowDraft::new();
+    assert!(record.synchronize(&draft));
+    assert!(record.set_input(field, value("  exact 日本語  ")));
+    let pointer = record.entries[0].text.as_ptr();
+    let original = record.revision;
+    record.revision = u64::MAX;
+    assert!(record.prepare_generated_primary(&draft).is_none());
+    assert_eq!(record.entries.len(), 1);
+    assert_eq!(record.entries[0].text.as_ptr(), pointer);
+    record.revision = original;
+    let revision = record.prepare_generated_primary(&draft).unwrap();
+    let generated = draft.add_incrementing_primary_key().unwrap();
+    record.prepend_generated_primary(generated, revision);
+    assert_eq!(record.entries[1].text.as_ptr(), pointer);
+    let snapshot = draft.snapshot("Items").unwrap();
+    assert_eq!(
+        record.inputs(&snapshot).unwrap(),
+        vec![InsertInput::Omitted, value("  exact 日本語  ")]
+    );
+    assert_eq!(
+        record.raw_texts(&snapshot).unwrap(),
+        vec![String::new(), "  exact 日本語  ".into()]
+    );
+}

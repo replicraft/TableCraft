@@ -16,6 +16,10 @@ impl State {
         let Some(mut save) = self.table_draft_save.take() else {
             return;
         };
+        if save.phase == Phase::ChoosingKey {
+            self.table_draft_key_dialog(context, save, actions);
+            return;
+        }
         let naming = save.phase == Phase::Naming;
         let mut confirm = false;
         let mut cancel = false;
@@ -171,12 +175,17 @@ impl State {
                 actions.push(Action::CancelTableDraftSave { id });
             }
         } else if confirm {
-            self.issue_table_save(&mut save, actions);
+            self.issue_table_save(&mut save, actions, false);
         }
         self.table_draft_save = Some(save);
     }
 
-    fn issue_table_save(&mut self, save: &mut SaveDialog, actions: &mut Vec<Action>) {
+    pub(super) fn issue_table_save(
+        &mut self,
+        save: &mut SaveDialog,
+        actions: &mut Vec<Action>,
+        allow_keyless: bool,
+    ) {
         if save.phase != Phase::Naming || !self.table_save_available || !self.save_binding(save) {
             save.error = Some(self.localizer.text("table-draft-save-stale"));
             return;
@@ -192,6 +201,15 @@ impl State {
                 return;
             }
         };
+        if editor.draft.is_design()
+            && !snapshot.fields().iter().any(|field| field.is_primary())
+            && !allow_keyless
+        {
+            save.phase = Phase::ChoosingKey;
+            save.focus_name = true;
+            save.error = None;
+            return;
+        }
         let Ok(previous) =
             NEXT_SAVE_REQUEST
                 .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))

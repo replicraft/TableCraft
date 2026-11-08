@@ -41,6 +41,37 @@ impl RowDraft {
         Self::default()
     }
 
+    /// Reserve the new generated cell before its builder declaration changes.
+    /// Existing raw Strings are moved, never cloned or reinterpreted.
+    pub(super) fn prepare_generated_primary(&mut self, draft: &TableDraft) -> Option<u64> {
+        if self.entries.len() != draft.fields().len()
+            || !self
+                .entries
+                .iter()
+                .zip(draft.fields())
+                .all(|(entry, field)| entry.id == field.id() && entry.kind == field.kind())
+        {
+            return None;
+        }
+        let revision = self.revision.checked_add(1)?;
+        self.entries.try_reserve_exact(1).ok()?;
+        Some(revision)
+    }
+
+    pub(super) fn prepend_generated_primary(&mut self, field: DraftFieldId, revision: u64) {
+        self.entries.insert(
+            0,
+            Entry {
+                id: field,
+                kind: DraftFieldType::AutoNumberIncrement,
+                choice: Choice::Omitted,
+                text: String::new(),
+                rejected: false,
+            },
+        );
+        self.revision = revision;
+    }
+
     /// Synchronize only declarations. Adding a field never supplies a row value.
     pub(super) fn synchronize(&mut self, draft: &TableDraft) -> bool {
         if self.entries.len() == draft.fields().len()

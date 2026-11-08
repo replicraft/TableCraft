@@ -171,7 +171,19 @@ pub(super) fn command(
     enabled: bool,
     size: CommandSize,
 ) -> Response {
-    command_inner(ui, icon, label, enabled, size, None)
+    command_inner(ui, icon, label, enabled, size, None, None)
+}
+
+/// A selected command describes a local presentation/model choice, not a menu.
+pub(super) fn command_toggle(
+    ui: &mut Ui,
+    icon: Icon,
+    label: &str,
+    enabled: bool,
+    selected: bool,
+    size: CommandSize,
+) -> Response {
+    command_inner(ui, icon, label, enabled, size, None, Some(selected))
 }
 
 /// Only real popup consumers use this affordance; it creates no menu or action.
@@ -210,7 +222,7 @@ fn menu_with_arrow(
     size: CommandSize,
     placement: MenuArrow,
 ) -> Response {
-    let response = command_inner(ui, icon, label, enabled, size, Some(placement));
+    let response = command_inner(ui, icon, label, enabled, size, Some(placement), None);
     let popup = egui::Popup::default_response_id(&response);
     if !response.enabled() {
         egui::Popup::close_id(ui.ctx(), popup);
@@ -230,6 +242,7 @@ fn command_inner(
     enabled: bool,
     size: CommandSize,
     menu: Option<MenuArrow>,
+    selected: Option<bool>,
 ) -> Response {
     ui.add_enabled_ui(enabled, |ui| {
         if !ui.is_enabled() {
@@ -295,6 +308,15 @@ fn command_inner(
             response.scroll_to_me(None);
         }
 
+        if selected == Some(true) {
+            ui.painter().rect_filled(rect, 2.0, colors.grid_header);
+            ui.painter().rect_stroke(
+                rect,
+                2.0,
+                egui::Stroke::new(1.0, colors.grid_line),
+                egui::StrokeKind::Inside,
+            );
+        }
         if ui.is_enabled() && (response.hovered() || response.has_focus()) {
             let visuals = ui.style().interact(&response);
             ui.painter().rect_filled(rect, 2.0, visuals.weak_bg_fill);
@@ -371,7 +393,12 @@ fn command_inner(
                 egui::Stroke::NONE,
             ));
         }
-        response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label));
+        response.widget_info(|| match selected {
+            Some(selected) => {
+                WidgetInfo::selected(WidgetType::Button, ui.is_enabled(), selected, label)
+            }
+            None => WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label),
+        });
         let unavailable_help = crate::localization::tr(ui, "ribbon-unavailable");
         if !response.enabled() {
             // Unavailable controls have no callable or focusable command contract,

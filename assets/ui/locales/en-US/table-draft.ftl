@@ -90,3 +90,7 @@ table-draft-number-guid-default = Literal defaults for Replication ID are not av
 
 table-draft-design-description = Description for { $field }
 table-draft-description-invalid = The field description is too long.
+
+table-draft-no-key-title = No primary key
+table-draft-no-key-question = No primary key is defined. Create an AutoNumber primary key?
+table-draft-no-key-failed = The primary key could not be added. Keep the current design or free a field slot.

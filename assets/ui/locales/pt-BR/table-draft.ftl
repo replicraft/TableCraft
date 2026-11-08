@@ -90,3 +90,7 @@ table-draft-number-guid-default = Valores padrão literais para ID de replicaç�
 
 table-draft-design-description = Descrição de { $field }
 table-draft-description-invalid = A descrição do campo é muito longa.
+
+table-draft-no-key-title = Sem chave primária
+table-draft-no-key-question = Nenhuma chave primária foi definida. Criar uma chave primária de Numeração Automática?
+table-draft-no-key-failed = Não foi possível adicionar a chave primária. Mantenha o design atual ou remova um campo.

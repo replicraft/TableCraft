@@ -88,7 +88,7 @@ impl Editors {
         let field = self.entries[position].field;
         if !draft.fields().iter().any(|candidate| {
             candidate.id() == field
-                && !candidate.is_primary()
+                && !candidate.is_protected()
                 && candidate.decimal_constraints().is_some()
         }) {
             return false;

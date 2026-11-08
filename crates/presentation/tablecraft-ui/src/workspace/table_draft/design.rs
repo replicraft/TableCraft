@@ -9,7 +9,9 @@ use crate::localization::{message, tr};
 use crate::workspace::{DocumentView, ObjectKind, State, ribbon::Icon};
 use egui::{Ui, WidgetInfo, WidgetType};
 use egui_extras::{Column, TableBuilder};
-use tablecraft_builders::table::{DraftFieldId, DraftFieldType, MAX_DRAFT_FIELDS};
+use tablecraft_builders::table::{
+    DraftField, DraftFieldId, DraftFieldType, MAX_DRAFT_FIELDS, TableDraft,
+};
 
 const ROW_HEIGHT: f32 = 22.0;
 const SELECTOR_WIDTH: f32 = 22.0;
@@ -42,6 +44,23 @@ pub(in crate::workspace) struct Design {
     pub(super) requested: Option<bool>,
     selected: Option<DraftFieldId>,
     lookup: bool,
+}
+
+impl Design {
+    pub(super) fn new(active: bool) -> Self {
+        Self {
+            active,
+            ..Self::default()
+        }
+    }
+
+    pub(super) fn selected_field<'a>(&self, draft: &'a TableDraft) -> Option<&'a DraftField> {
+        draft
+            .fields()
+            .iter()
+            .find(|field| Some(field.id()) == self.selected)
+            .or_else(|| draft.fields().first())
+    }
 }
 
 impl State {
@@ -136,7 +155,7 @@ impl State {
         else {
             return false;
         };
-        if current.is_primary() || kind == DraftFieldType::AutoNumberIncrement {
+        if current.is_protected() || kind == DraftFieldType::AutoNumberIncrement {
             return false;
         }
         if current.kind() == kind {
@@ -332,7 +351,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     editor.error |= rename.rejected;
                                 } else {
                                     let response = ui.add_enabled(
-                                        !field.is_primary() && editor.rename.is_none(),
+                                        !field.is_protected() && editor.rename.is_none(),
                                         egui::Button::new(field.name()).frame(false).truncate(),
                                     );
                                     let label = message(
@@ -351,7 +370,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                         editor.design.selected = Some(field.id());
                                         rename_field = Some((field.id(), field.name().to_owned()));
                                     }
-                                    if field.is_primary() {
+                                    if field.is_protected() {
                                         response.on_disabled_hover_text(tr(
                                             ui,
                                             "table-draft-design-protected",
@@ -361,7 +380,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                             });
                             row.col(|ui| {
                                 crate::datasheet::grid_cell(ui, false);
-                                ui.add_enabled_ui(!field.is_primary(), |ui| {
+                                ui.add_enabled_ui(!field.is_protected(), |ui| {
                                     let response =
                                         egui::ComboBox::from_id_salt(("draft_type", field.id()))
                                             .selected_text(tr(ui, type_key(field.kind())))
@@ -369,10 +388,17 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                             .show_ui(ui, |ui| {
                                                 for (kind, key) in TYPES {
                                                     if ui
-                                                        .selectable_label(
-                                                            kind == field.kind(),
-                                                            tr(ui, key),
+                                                        .add_enabled(
+                                                            !field.is_primary()
+                                                                || field
+                                                                    .supports_primary_type(kind),
+                                                            egui::Button::new(tr(ui, key))
+                                                                .selected(kind == field.kind()),
                                                         )
+                                                        .on_disabled_hover_text(tr(
+                                                            ui,
+                                                            "ribbon-unavailable",
+                                                        ))
                                                         .clicked()
                                                     {
                                                         editor.design.selected = Some(field.id());

@@ -160,6 +160,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
         .unwrap();
     let field_id = field.id();
     let kind = field.kind();
+    let protected = field.is_protected();
     let primary = field.is_primary();
     let number_size = field.number_size();
     let required = field.required();
@@ -208,7 +209,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                     }
                     sheet.end_row(ui);
                 } else if let Some(size) = number_size {
-                    number::show(ui, editor, position, size, &mut sheet);
+                    number::show(ui, editor, position, size, primary, &mut sheet);
                 } else if matches!(
                     kind,
                     DraftFieldType::AutoNumberIncrement | DraftFieldType::LargeInteger
@@ -230,7 +231,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                     "required",
                     "design-required",
                     required,
-                    !primary,
+                    !protected,
                     value_width,
                 ) {
                     editor
@@ -245,7 +246,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         "allow_zero_length",
                         "design-allow-zero-length",
                         zero_length,
-                        !primary,
+                        !protected,
                         value_width,
                     ) {
                         editor
@@ -255,7 +256,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                     sheet.end_row(ui);
                 }
                 sheet.label(ui, "design-default-value", true);
-                ui.add_enabled_ui(!primary, |ui| {
+                ui.add_enabled_ui(!protected, |ui| {
                     let response = egui::ComboBox::from_id_salt("default_mode")
                         .width(value_width)
                         .selected_text(tr(ui, mode.key()))
@@ -315,7 +316,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         MAX_DRAFT_DEFAULT_BYTES,
                     );
                     let input = ui.add_enabled(
-                        !primary,
+                        !protected,
                         egui::TextEdit::multiline(&mut literal)
                             .desired_rows(1)
                             .id(id)

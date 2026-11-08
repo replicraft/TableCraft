@@ -1,5 +1,40 @@
 # Presentation preview
 
+## Manual Table Design — 7 November 2026
+
+`TABLECRAFT_PREVIEW_TABLE_COMMAND=create-design`, `design-key` and
+`design-keyless-prompt` drive the real shared Create/Design widgets in the
+`first-table-ready` scene. They assert an initially empty schema, an actual
+second-field manual primary with its key marker and pressed Ribbon command, or
+the explicit Yes/No/Cancel decision after table naming. The prompt must have a
+painted title inside its clip rectangle; accessibility nodes alone are not
+accepted as rendering evidence. No database save or runtime service is invoked.
+
+Five normal-host frames under ignored
+`.cache/ui-previews/manual-design-final-20261107/` were rendered windowlessly on
+macOS ARM64 with Windows input emulation and inspected: English light empty
+Design, English dark manual key and English light no-key prompt at 1280×820 and
+1×; German light manual key and Korean dark prompt at 900×580 logical points,
+1.25× (1125×725 pixels). Both translated prompts show all decision buttons;
+compact Ribbon controls remain horizontally scrollable. The English prompt was
+then regenerated and inspected after a wording correction under
+`.cache/ui-previews/manual-design-final-text-20261107/`. The synthetic field
+names Name and ActualKey are sample data, not untranslated interface labels.
+
+The actual private Windows/VirtualBox Design capture at 1920×1165 was reopened;
+its DPI is unknown. It shows an existing AutoNumber table with the separate
+upper field grid and lower property sheet, not fresh empty Design or the no-key
+prompt. Those surfaces and dark styling remain adaptations. The current Add
+field gallery also differs from native inline blank-row authoring; this working
+milestone does not claim complete Design-grid interaction parity.
+
+The original `.cache/ui-previews/manual-design-20261107/` prompt frames painted
+only the modal backdrop despite accessible controls. They remain failed evidence.
+The corrected renderer waits through the modal placement/sizing pass and checks
+actual paint before capture. Separate headless tests verify choices, keyboard
+focus, stale witnesses, record identity and native save/reopen; images alone do
+not establish those behaviors or native Access compatibility.
+
 ## Description authoring — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=design-description` drives the existing draft

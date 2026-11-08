@@ -56,12 +56,17 @@ pub(super) fn show(ui: &mut Ui, field: &DraftField, editable: bool) -> Option<Co
             egui::StrokeKind::Inside,
         );
     }
-    let command = context_menu(ui, &response, editable);
+    let command = context_menu(ui, &response, editable, !field.is_primary());
     response.on_hover_text(options);
     command
 }
 
-fn context_menu(ui: &mut Ui, response: &Response, editable: bool) -> Option<Command> {
+fn context_menu(
+    ui: &mut Ui,
+    response: &Response,
+    editable: bool,
+    delete_allowed: bool,
+) -> Option<Command> {
     let popup_id = Popup::default_response_id(response);
     let origin_id = response.id.with("field_context_keyboard");
     let was_open = Popup::is_id_open(ui.ctx(), popup_id);
@@ -107,7 +112,15 @@ fn context_menu(ui: &mut Ui, response: &Response, editable: bool) -> Option<Comm
             command = Some(Command::Rename);
             ui.close();
         }
-        if ui.button(tr(ui, "table-draft-delete-field")).clicked() {
+        // This header belongs to Datasheet view. A manual key must first be
+        // removed in Design view; its other field commands remain available.
+        if ui
+            .add_enabled(
+                delete_allowed,
+                egui::Button::new(tr(ui, "table-draft-delete-field")),
+            )
+            .clicked()
+        {
             command = Some(Command::Delete);
             ui.close();
         }

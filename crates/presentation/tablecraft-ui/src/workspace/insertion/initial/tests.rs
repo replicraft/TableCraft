@@ -246,3 +246,76 @@ fn number_size_handoff_requires_its_exact_native_input_hint_without_changing_raw
         assert_eq!(entries[2].text, "0007 raw unchanged");
     }
 }
+
+fn manual_fixture(primary: bool) -> (State, InitialRecord) {
+    let mut declaration = TableDraft::design();
+    declaration.add_field(DraftFieldType::ShortText).unwrap();
+    let key = declaration.add_field(DraftFieldType::Number).unwrap();
+    if primary {
+        declaration.set_primary_key(Some(key)).unwrap();
+    }
+    let snapshot = declaration.snapshot("Empty table").unwrap();
+    let fields = snapshot
+        .fields()
+        .iter()
+        .zip([InputHint::Text, InputHint::Int32])
+        .map(|(field, input_hint)| InsertField {
+            name: field.name().into(),
+            input_hint,
+            nullable: true,
+            auto_number: false,
+        })
+        .collect();
+    let (state, _) = state_with_fields(fields);
+    (
+        state,
+        InitialRecord {
+            snapshot,
+            inputs: vec![value("  Ada 日本語  ", false), value("0007", false)],
+            raw_text: vec!["  Ada 日本語  ".into(), "0007".into()],
+        },
+    )
+}
+
+#[test]
+fn manual_keyless_and_nonfirst_primary_continue_exact_original_inputs_without_generation() {
+    for primary in [false, true] {
+        let (mut state, record) = manual_fixture(primary);
+        assert_eq!(record.snapshot.fields()[1].is_primary(), primary);
+        assert!(!record.snapshot.fields()[1].is_protected());
+        assert!(state.seed_initial_insert(20, &record));
+        assert_eq!(entries(&state), record.inputs);
+        assert!(state.seed_initial_insert(20, &record));
+        assert_eq!(entries(&state), record.inputs);
+        assert!(matches!(
+            &state.insertion,
+            Some(Dialog::Draft {
+                pending: None,
+                review: None,
+                ..
+            })
+        ));
+        assert!(state.data.as_ref().unwrap().rows.is_empty());
+    }
+}
+
+#[test]
+fn manual_primary_continuation_refuses_wrong_native_generation_or_type_without_input_effects() {
+    for primary in [false, true] {
+        for wrong in 0..3 {
+            let (mut state, record) = manual_fixture(primary);
+            let Some(Dialog::Draft { draft, .. }) = &mut state.insertion else {
+                panic!("native draft");
+            };
+            match wrong {
+                0 => draft.fields[0].auto_number = true,
+                1 => draft.fields[1].auto_number = true,
+                _ => draft.fields[1].input_hint = InputHint::Int64,
+            }
+            let before = entries(&state);
+            assert!(!state.seed_initial_insert(20, &record));
+            assert_eq!(entries(&state), before);
+            assert!(state.data.as_ref().unwrap().rows.is_empty());
+        }
+    }
+}

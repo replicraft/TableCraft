@@ -214,3 +214,71 @@ fn stale_database_disables_retry_without_loading_or_starting_another_source() {
     );
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn manual_first_field_presence_prepares_exact_continuation_without_generated_assumptions() {
+    for primary in [false, true] {
+        for input in [
+            InsertInput::Omitted,
+            InsertInput::Value(EditInput {
+                text: "  Ada 日本語  ".into(),
+                is_null: false,
+            }),
+            InsertInput::Value(EditInput {
+                text: "hidden NULL text".into(),
+                is_null: true,
+            }),
+        ] {
+            let mut declaration = TableDraft::design();
+            declaration.add_field(DraftFieldType::ShortText).unwrap();
+            let key = declaration.add_field(DraftFieldType::Number).unwrap();
+            if primary {
+                declaration.set_primary_key(Some(key)).unwrap();
+            }
+            let snapshot = declaration.snapshot("Empty table").unwrap();
+            let fields = snapshot
+                .fields()
+                .iter()
+                .zip([InputHint::Text, InputHint::Int32])
+                .map(|(field, input_hint)| InsertField {
+                    name: field.name().into(),
+                    input_hint,
+                    nullable: true,
+                    auto_number: false,
+                })
+                .collect();
+            let (state, target) = state_with_fields(fields);
+            let raw = match &input {
+                InsertInput::Omitted => "hidden omitted text".into(),
+                InsertInput::Value(value) => value.text.clone(),
+            };
+            let original = vec![
+                input,
+                InsertInput::Value(EditInput {
+                    text: "0007".into(),
+                    is_null: false,
+                }),
+            ];
+            let retained = state
+                .prepare_initial_record(
+                    &ObjectTarget {
+                        document_revision: target.document_revision,
+                        kind: ObjectKind::Table { name: target.table },
+                    },
+                    InitialRecord {
+                        snapshot,
+                        inputs: original.clone(),
+                        raw_text: vec![raw.clone(), "0007".into()],
+                    },
+                )
+                .ok()
+                .expect("manual first-field presence is not generated input");
+            let Seed::Initial(record) = retained.source else {
+                panic!("initial record");
+            };
+            assert_eq!(record.inputs, original);
+            assert_eq!(record.raw_text[0], raw);
+            assert_eq!(record.raw_text[1], "0007");
+        }
+    }
+}
