@@ -1,5 +1,24 @@
 # Implementation status
 
+## Legacy DATE presentation at whole seconds — 7 November 2026
+
+Ordinary date/time display no longer shows the preceding second or minute when a
+whole-second DATE decodes with binary residue. The formatter uses Jiff's checked
+whole-second candidate only if Core re-encodes it to exactly the original bits.
+Raw selection runs first; Fractional, Extended, genuine fractions and checked
+boundary failures preserve their previous presentation. Storage, query semantics
+and edit input are unchanged; general native Access fractional rounding is still
+unqualified.
+
+All eleven display, 476 shared-UI and 120 desktop tests pass, with independent
+bit goldens for seconds, minute/hour/day boundaries, negative OLE values/aliases,
+genuine fractions and civil endpoints. Strict affected-package lint, Windows
+x64/ARM64, Intel macOS and Linux x64/ARM64 compilation pass. The new display-to-Core
+dependency is explicitly guarded; all 30 dependency-policy tests, formatting and
+documentation checks pass. Logs use ignored `.cache/gui-date-display-*20261107.log`.
+Four final offscreen frames exercise the actual datasheet and its column resize;
+see [the presentation record](ui/PRESENTATION_PREVIEW.md#legacy-date-display-residue--7-november-2026).
+
 ## Shared runtime query providers — 7 November 2026
 
 Explicit scratch and saved queries now share runtime-owned lazy clock, per-Run

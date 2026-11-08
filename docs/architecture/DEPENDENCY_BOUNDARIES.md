@@ -16,8 +16,10 @@ contracts, and CLI composes these libraries. The allowlist is slightly broader
 than today's graph for already accepted directions; it is not a feature claim.
 
 `tablecraft-display` under `crates/presentation/` owns renderer-neutral regional
-formatting, options and validated scalar presentation facts. It has no workspace,
-GUI, platform-window or database dependencies. Runtime, UI and desktop import
+formatting, options and validated scalar presentation facts. It consumes Core's
+validated DATE constructor for exact-bit whole-second presentation checks rather
+than duplicating Automation encoding. It has no workspace state, GUI,
+platform-window, database-service or native-engine dependencies. Runtime, UI and desktop import
 this owner directly; neither runtime nor UI re-exports its types as compatibility
 aliases. The guard rejects GUI/window registry dependencies in display, including
 optional, target-specific and test/build declarations.

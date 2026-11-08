@@ -1,5 +1,29 @@
 # Presentation preview
 
+## Legacy DATE display residue — 7 November 2026
+
+`TABLECRAFT_PREVIEW_DATE_RESIDUE=seconds|fractional|raw` injects one independent
+DATE bit golden and its faithfully decoded calendar into the existing Datasheet
+scene's Registered cell. The fixture is resource-free; the flag does not hide
+controls or grant a backend action. The renderer selects the corresponding actual
+display preference and drags the real column divider to reveal the complete value.
+It asserts that the column grows instead of painting a separate demonstration.
+
+Four normal-host final frames in ignored
+`.cache/ui-previews/date-residue-final-20261107/` cover English light seconds and
+Raw, English dark Fractional and German dark seconds at 1280×820, 1× on macOS
+ARM64 with Windows input emulation. The earlier frames under
+`.cache/ui-previews/date-residue-20261107/` retain the default narrow column and
+could not show the complete Raw/Fractional output; they are not complete visual
+evidence for those values. No native application windows were opened.
+
+The actual private Windows/VirtualBox Home/Datasheet capture was reopened at
+1920×1141, unknown DPI. It shows date/time cells but does not establish binary
+residue or arbitrary fractional rounding. The correction is the
+[exact-bit display contract](DISPLAY_PREFERENCES.md#legacy-date-values-at-whole-seconds),
+not a native Access rounding-parity claim. Raw/Fractional and stored bits remain
+separately checked by independent goldens.
+
 ## Design draft-field deletion — 7 November 2026
 
 `TABLECRAFT_PREVIEW_TABLE_COMMAND=design-delete-ready` authors two declarations

@@ -14,6 +14,7 @@ use icu_locale::LocaleExpander;
 use icu_locale_core::Locale;
 use jiff::civil::DateTime;
 use std::collections::HashMap;
+use tablecraft_core::values::LegacyDateTime;
 use writeable::Writeable;
 
 const CURRENCY_SCALE: i16 = -4;
@@ -230,24 +231,28 @@ impl Engine {
         representation: DateRepresentation,
         native_format: NativeFormat,
     ) -> String {
-        let general_date = matches!(
-            native_format,
-            NativeFormat::Unspecified | NativeFormat::GeneralDate
-        );
-        // Access General Date omits absent components. This is native typed
-        // DATE behavior, not a guess based on the field name or rendered text.
-        let no_time = calendar.time() == jiff::civil::Time::midnight();
-        let no_date = calendar.date() == ACCESS_TIME_ONLY_DATE;
-        let date_only = (general_date && no_time)
-            || matches!(
+        let component_shape = |calendar: DateTime| {
+            let general_date = matches!(
                 native_format,
-                NativeFormat::ShortDate | NativeFormat::MediumDate | NativeFormat::LongDate
+                NativeFormat::Unspecified | NativeFormat::GeneralDate
             );
-        let time_only = (general_date && no_date && !no_time)
-            || matches!(
-                native_format,
-                NativeFormat::ShortTime | NativeFormat::MediumTime | NativeFormat::LongTime
-            );
+            // General Date omits absent components. Classification follows the
+            // same calendar that will be displayed, never the field's name.
+            let no_time = calendar.time() == jiff::civil::Time::midnight();
+            let no_date = calendar.date() == ACCESS_TIME_ONLY_DATE;
+            let date_only = (general_date && no_time)
+                || matches!(
+                    native_format,
+                    NativeFormat::ShortDate | NativeFormat::MediumDate | NativeFormat::LongDate
+                );
+            let time_only = (general_date && no_date && !no_time)
+                || matches!(
+                    native_format,
+                    NativeFormat::ShortTime | NativeFormat::MediumTime | NativeFormat::LongTime
+                );
+            (date_only, time_only)
+        };
+        let (date_only, time_only) = component_shape(calendar);
         let raw = (!time_only && self.options.date == DateFormat::Raw)
             || (!date_only && self.options.time == TimeFormat::Raw)
             || (native_format == NativeFormat::Unsupported
@@ -256,6 +261,12 @@ impl Engine {
         if raw {
             return raw_date(calendar, representation);
         }
+        let calendar = if self.options.time == TimeFormat::Fractional {
+            calendar
+        } else {
+            canonical_whole_second(calendar, representation)
+        };
+        let (date_only, time_only) = component_shape(calendar);
         let date = if time_only {
             None
         } else {
@@ -377,6 +388,23 @@ impl Engine {
                 .write_to_string()
                 .into_owned(),
         }
+    }
+}
+
+// Whole-second legacy DATE values can decode just below their civil second.
+// Accept a display candidate only when the owning DATE constructor reproduces every
+// original bit. Real fractions, aliases and failed boundary rounding retain the
+// original calendar. This is neither a tolerance nor a stored-value conversion.
+fn canonical_whole_second(calendar: DateTime, representation: DateRepresentation) -> DateTime {
+    let DateRepresentation::LegacyBits(bits) = representation else {
+        return calendar;
+    };
+    let Ok(candidate) = calendar.round(jiff::Unit::Second) else {
+        return calendar;
+    };
+    match LegacyDateTime::from_calendar(candidate) {
+        Ok(encoded) if encoded.to_bits() == bits => candidate,
+        _ => calendar,
     }
 }
 

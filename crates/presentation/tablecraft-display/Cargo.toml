@@ -11,6 +11,7 @@ publish = false
 workspace = true
 
 [dependencies]
+tablecraft-core.workspace = true
 jiff.workspace = true
 icu_datetime.workspace = true
 icu_calendar.workspace = true

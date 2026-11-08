@@ -1,5 +1,15 @@
 # Adopted dependency and licensing baseline
 
+## Legacy DATE presentation semantics — 7 November 2026
+
+Display now directly consumes the existing `tablecraft-core` value owner for
+`LegacyDateTime::from_calendar`, checking exact original bits before presenting
+a whole-second candidate. Jiff supplies checked civil rounding. No duplicate
+Automation-date encoder, epsilon rule, native engine or GUI dependency is added.
+The dependency guard permits this one foundation edge while continuing to refuse
+backend, host and GUI dependencies, including renamed/optional/target edges.
+Cargo.lock records the local dependency; no registry package/version is added.
+
 ## Runtime query providers — 7 November 2026
 
 The runtime now consumes the existing Jiff dependency's `tz-system`,

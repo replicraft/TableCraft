@@ -1,4 +1,6 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
+#[path = "render_preview/date_residue.rs"]
+mod date_residue;
 #[path = "render_preview/initial_numbers.rs"]
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
@@ -116,6 +118,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err(io::Error::other("initial editing requires initial-table-draft").into());
     }
     let table_command = setting("TABLECRAFT_PREVIEW_TABLE_COMMAND", "none")?;
+    let date_residue = setting("TABLECRAFT_PREVIEW_DATE_RESIDUE", "none")?;
+    if !matches!(
+        date_residue.as_str(),
+        "none" | "seconds" | "fractional" | "raw"
+    ) {
+        return Err(
+            io::Error::other("date residue must be none, seconds, fractional or raw").into(),
+        );
+    }
+    if date_residue != "none" && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("date residue requires the datasheet scene").into());
+    }
+    let date_suffix = if date_residue == "none" {
+        String::new()
+    } else {
+        format!("-date-residue-{date_residue}")
+    };
     let table_suffix = match table_command.as_str() {
         "none" => "",
         "create" => "-create-table",
@@ -174,6 +193,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(font_search.is_some())
         + usize::from(field_gallery)
         + usize::from(!table_suffix.is_empty())
+        + usize::from(date_residue != "none")
         + usize::from(!initial_suffix.is_empty());
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
@@ -223,6 +243,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Retain synthetic data and the resource-free host while exercising
         // normal presentation gates explicitly.
         harness.state_mut().state_mut().mock_preview = host == "synthetic";
+        if date_residue != "none" {
+            date_residue::apply(harness.state_mut(), &date_residue);
+        }
         // Layout captures should not acquire a tooltip from the harness cursor.
         // Interaction tests choose their pointer position explicitly.
         harness.remove_cursor();
@@ -297,9 +320,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if navigation_collapsed {
             navigation::collapse(&mut harness);
         }
+        if date_residue != "none" {
+            date_residue::reveal(&mut harness);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

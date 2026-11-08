@@ -51,6 +51,27 @@ a display convention, not an inferred financial unit or an exchange conversion.
 Explicit currency choices are available. Native formatting support remains
 bounded; arbitrary Access custom-format programs are not claimed.
 
+## Legacy DATE values at whole seconds
+
+A legacy DATE's binary double can decode just below the civil second it encodes.
+For example, `0x40e69fb1a6666666` encodes 7 November 2026 at 13:14:15, while the
+nanosecond projection is 13:14:14.999999749. Ordinary second/minute display now
+uses the nearest whole-second candidate only when Core's owning DATE constructor
+reproduces **every original bit** from that candidate. No tolerance or generic
+fractional-second rounding is introduced. The stored value, query result and edit
+literal remain unchanged.
+
+Raw is selected before this display correction. Explicit Fractional and Date/Time
+Extended retain their original components; genuine fractional legacy values and
+failed civil-boundary conversions keep their prior behavior. Negative day-zero
+aliases are not silently canonicalized. This handles representation residue;
+complete native Access fractional/tie formatting remains unqualified.
+
+Microsoft documents one-second resolution for
+[SystemTimeToVariantTime](https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-systemtimetovarianttime),
+but that alone does not establish a general rounding policy for arbitrary stored
+fractions. The exact-bit rule preserves that distinction.
+
 Raw preserves diagnostic storage representation: legacy DATE bits, extended
 civil date/time precision, or the four-place Currency amount. A Raw date or time
 choice exposes the full stored date/time representation. Copy uses the current

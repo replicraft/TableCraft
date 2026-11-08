@@ -32,7 +32,7 @@ ALLOWED = {
                           "tablecraft-formats", "tablecraft-testkit"},
     "tablecraft-sqlite": {"tablecraft-core", "tablecraft-schema", "tablecraft-db",
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
-    "tablecraft-display": set(),
+    "tablecraft-display": {"tablecraft-core"},
     "tablecraft-builders": {"tablecraft-sql", "tablecraft-schema"},
     "tablecraft-ui": {"tablecraft-display", "tablecraft-builders", "tablecraft-schema"},
     "tablecraft-runtime": {"tablecraft-access", "tablecraft-ace", "tablecraft-core",

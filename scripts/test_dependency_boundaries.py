@@ -138,8 +138,18 @@ class BoundaryTests(unittest.TestCase):
                         for error in violations(data)
                     ))
 
-    def test_display_formatter_has_no_workspace_or_gui_dependencies(self):
-        for target in ["tablecraft-ui", "tablecraft-runtime", "tablecraft-core",
+    def test_display_can_consume_core_value_semantics(self):
+        data, _, _ = self.desktop_workspace()
+        display = next(
+            candidate for candidate in data["packages"]
+            if candidate["name"] == "tablecraft-display"
+        )
+        display["dependencies"].append({"name": "tablecraft-core"})
+        self.assertEqual(violations(data), [])
+
+    def test_display_formatter_has_no_backend_host_or_gui_dependencies(self):
+        for target in ["tablecraft-ui", "tablecraft-runtime", "tablecraft-access",
+                       "tablecraft-ace", "tablecraft-query", "tablecraft-db",
                        "egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"]:
             for kind in [None, "dev", "build"]:
                 with self.subTest(target=target, kind=kind):

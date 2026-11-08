@@ -2,6 +2,8 @@ use super::engine::{Engine, raw_date};
 use super::*;
 use jiff::civil::date;
 
+mod legacy_seconds;
+
 fn options(locale: &str) -> Options {
     Options {
         system_locale: Some(locale.to_owned()),
