@@ -1,9 +1,8 @@
 //! The first persisted schema uses the retained native target and V2 journal.
 use super::plan::MutationPlan;
-use super::table::require_original;
-use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, SessionState};
+use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange};
 use std::path::Path;
-use tablecraft_ace::{FirstTableDefinition, FirstTablePlan, NativeImage};
+use tablecraft_ace::{FirstTableDefinition, FirstTablePlan};
 use tablecraft_core::limits::ResourceBudget;
 
 /// Source-bound schema operation; its row counts are deliberately absent.
@@ -45,26 +44,13 @@ impl OfflineWriteSession {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedFirstTable, Failure> {
         let _span = tracing::debug_span!("access.offline.plan_first_table").entered();
-        let result = (|| {
-            self.require_ready()?;
-            let slot = self.slot_mut()?;
-            slot.current = None;
-            slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
-                slot.target.as_mut().ok_or(Cause::InvalidState)?,
-                slot.scope,
-                budget,
-                cancelled,
-            )
-            .map_err(Cause::Native)?;
-            slot.state = SessionState::Ready;
-            if let Some(expected) = expected {
-                require_original(image.as_bytes(), expected, budget, cancelled)?;
-            }
-            image
-                .plan_first_table(definition, budget, cancelled)
-                .map_err(Cause::FirstTablePlanning)
-        })();
+        let result = self
+            .capture_schema_source(expected, budget, cancelled)
+            .and_then(|image| {
+                image
+                    .plan_first_table(definition, budget, cancelled)
+                    .map_err(Cause::FirstTablePlanning)
+            });
 
         match result {
             Ok(plan) => Ok(StagedFirstTable {

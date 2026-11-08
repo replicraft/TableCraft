@@ -11,7 +11,9 @@ use tablecraft_access::editing::offline::{
     SchemaChange, SessionState, VerifiedImage,
 };
 #[cfg(feature = "ace16-create")]
-use tablecraft_ace::{CreateDatabaseError, FirstTableError, FirstTableIntentError};
+use tablecraft_ace::{
+    AddTableError, AddTableIntentError, CreateDatabaseError, FirstTableError, FirstTableIntentError,
+};
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
 };
@@ -107,6 +109,9 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         schema_change: value.schema_change().map(|change| match change {
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
+            }
+            SchemaChange::TableAdded { column_count } => {
+                SaveSchemaChange::TableAdded { column_count }
             }
         }),
         retirement: value.retirement().map(|retirement| match retirement {
@@ -215,6 +220,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::FirstTablePlanning(error) => first_table_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::FirstTableIntent(error) => first_table_intent_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::AddTablePlanning(error) => add_table_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::AddTableIntent(error) => add_table_intent_failure(error),
             _ => None,
         };
     }
@@ -231,6 +240,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FirstTableIntentError>() {
         return first_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<AddTableError>() {
+        return add_table_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
+        return add_table_intent_failure(error);
     }
     if let Some(error) = error.downcast_ref::<JournalError>() {
         return journal_failure(error);
@@ -267,6 +284,10 @@ fn qualification_failure(error: &NativeRecoveryQualificationError) -> Option<Sav
         NativeRecoveryQualificationError::FirstTableIntent(error) => {
             first_table_intent_failure(error)
         }
+        #[cfg(feature = "ace16-create")]
+        NativeRecoveryQualificationError::AddTable(error) => add_table_failure(error),
+        #[cfg(feature = "ace16-create")]
+        NativeRecoveryQualificationError::AddTableIntent(error) => add_table_intent_failure(error),
         _ => None,
     }
 }
@@ -289,6 +310,32 @@ fn first_table_intent_failure(error: &FirstTableIntentError) -> Option<SaveFailu
         }
         FirstTableIntentError::Binding(error) => intent_failure(error),
         _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn add_table_failure(error: &AddTableError) -> Option<SaveFailureKind> {
+    match error {
+        AddTableError::Inspect(error)
+        | AddTableError::Create(CreateDatabaseError::Inspect(error)) => inspection_failure(error),
+        AddTableError::Create(_)
+        | AddTableError::Source
+        | AddTableError::DuplicateName
+        | AddTableError::Capacity
+        | AddTableError::Preservation => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn add_table_intent_failure(error: &AddTableIntentError) -> Option<SaveFailureKind> {
+    match error {
+        AddTableIntentError::Inspect(error) => inspection_failure(error),
+        AddTableIntentError::Binding(error) => intent_failure(error),
+        AddTableIntentError::Declaration(error) => first_table_intent_failure(error),
+        AddTableIntentError::InvalidRecord
+        | AddTableIntentError::UnsupportedVersion
+        | AddTableIntentError::UnsupportedProfile
+        | AddTableIntentError::BeforeMismatch => None,
     }
 }
 

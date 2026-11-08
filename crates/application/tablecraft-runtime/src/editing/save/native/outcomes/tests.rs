@@ -7,11 +7,14 @@ use tablecraft_io::journal::{
     filesystem::{OfflineJournalPair, OfflineTarget},
     prepare_expected,
 };
+use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 
 type Inspection = fn() -> InspectError;
 type WrappedInspection = fn(InspectError) -> Cause;
 type WrappedJournal = fn(JournalError) -> Cause;
 type InspectionSample = (&'static str, Inspection, Option<SaveFailureKind>);
+#[cfg(feature = "ace16-create")]
+type SchemaInspection<E> = (&'static str, fn(InspectError) -> E);
 
 fn limit() -> LimitError {
     LimitError {
@@ -44,6 +47,38 @@ fn inspections() -> [InspectionSample; 5] {
         ),
         ("malformed", || InspectError::Malformed, None),
     ]
+}
+
+#[cfg(feature = "ace16-create")]
+fn assert_schema_inspection_layers<E: StdError + 'static>(
+    wrappers: &[SchemaInspection<E>],
+    cause: fn(E) -> Cause,
+    recovery: fn(E) -> NativeRecoveryQualificationError,
+) {
+    for (layer, wrap) in wrappers {
+        for (sample, inspection, expected) in inspections() {
+            assert_eq!(
+                resource_failure(&wrap(inspection())),
+                expected,
+                "direct {layer}: {sample}"
+            );
+            assert_eq!(
+                resource_failure(&cause(wrap(inspection()))),
+                expected,
+                "cause {layer}: {sample}"
+            );
+            assert_eq!(
+                resource_failure(&recovery(wrap(inspection()))),
+                expected,
+                "recovery {layer}: {sample}"
+            );
+            assert_eq!(
+                resource_failure(&Cause::Qualification(recovery(wrap(inspection())))),
+                expected,
+                "recovery cause {layer}: {sample}"
+            );
+        }
+    }
 }
 
 #[test]
@@ -157,6 +192,76 @@ fn first_table_planning_intent_and_recovery_keep_typed_terminal_facts() {
     }
 }
 
+#[cfg(feature = "ace16-create")]
+#[test]
+fn add_table_planning_and_nested_intents_preserve_typed_terminal_facts_at_each_public_layer() {
+    assert_schema_inspection_layers(
+        &[
+            ("planning inspection", AddTableError::Inspect),
+            ("planning creation", |error| {
+                AddTableError::Create(CreateDatabaseError::Inspect(error))
+            }),
+        ],
+        Cause::AddTablePlanning,
+        NativeRecoveryQualificationError::AddTable,
+    );
+    assert_schema_inspection_layers(
+        &[
+            ("intent inspection", AddTableIntentError::Inspect),
+            ("intent binding", |error| {
+                AddTableIntentError::Binding(NativeIntentError::Inspect(error))
+            }),
+            ("intent binding request", |error| {
+                AddTableIntentError::Binding(NativeIntentError::Request(EditError::Inspect(error)))
+            }),
+            ("declaration inspection", |error| {
+                AddTableIntentError::Declaration(FirstTableIntentError::Inspect(error))
+            }),
+            ("declaration creation", |error| {
+                AddTableIntentError::Declaration(FirstTableIntentError::Create(
+                    CreateDatabaseError::Inspect(error),
+                ))
+            }),
+            ("declaration binding", |error| {
+                AddTableIntentError::Declaration(FirstTableIntentError::Binding(
+                    NativeIntentError::Inspect(error),
+                ))
+            }),
+            ("declaration binding request", |error| {
+                AddTableIntentError::Declaration(FirstTableIntentError::Binding(
+                    NativeIntentError::Request(EditError::Inspect(error)),
+                ))
+            }),
+        ],
+        Cause::AddTableIntent,
+        NativeRecoveryQualificationError::AddTableIntent,
+    );
+}
+
+#[cfg(feature = "ace16-create")]
+#[test]
+fn add_table_profile_capacity_and_integrity_refusals_keep_their_phase_classification() {
+    for error in [
+        AddTableError::Source,
+        AddTableError::DuplicateName,
+        AddTableError::Capacity,
+        AddTableError::Preservation,
+        AddTableError::Create(CreateDatabaseError::Declaration),
+    ] {
+        assert_eq!(resource_failure(&error), None);
+    }
+    for error in [
+        AddTableIntentError::InvalidRecord,
+        AddTableIntentError::UnsupportedVersion,
+        AddTableIntentError::UnsupportedProfile,
+        AddTableIntentError::BeforeMismatch,
+        AddTableIntentError::Declaration(FirstTableIntentError::InvalidRecord),
+        AddTableIntentError::Binding(NativeIntentError::BeforeMismatch),
+    ] {
+        assert_eq!(resource_failure(&error), None);
+    }
+}
+
 #[test]
 fn journal_prepare_and_recovery_classification_does_not_lose_cancel_or_allocation() {
     let wrappers: [(&str, WrappedJournal); 2] =
@@ -219,8 +324,9 @@ fn interrupted_commit(root: &Path, cancelled: bool) -> CommitError {
         };
         prepared.commit(&mut work, &|| cancelled).unwrap_err()
     };
-    assert_eq!(fs::read(&path).unwrap(), b"old");
+    assert_retained_target_observation(&path, b"old");
     pair.release().unwrap();
+    assert_eq!(fs::read(&path).unwrap(), b"old");
     error
 }
 

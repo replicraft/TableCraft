@@ -79,6 +79,7 @@ pub enum SaveCompletion {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveSchemaChange {
     FirstTableCreated { column_count: usize },
+    TableAdded { column_count: usize },
 }
 
 /// Acknowledged namespace retirement, separate from the native data result.

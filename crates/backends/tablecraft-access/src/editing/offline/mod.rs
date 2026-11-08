@@ -1,6 +1,8 @@
 //! Explicit offline normal edits over one retained exclusive target descriptor.
 //! Hosts must exclude noncooperating writers and unresolved external journals.
 //! Native planners retain their own admission; shared-file coordination is separate.
+#[cfg(feature = "ace16-create")]
+mod add_table;
 mod apply;
 mod delete;
 mod error;
@@ -15,6 +17,8 @@ mod update;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod tests;
 
+#[cfg(feature = "ace16-create")]
+pub use add_table::StagedAddTable;
 pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
 #[cfg(feature = "ace16-create")]
@@ -65,6 +69,11 @@ pub enum KnownOutcome {
 /// Acknowledged schema change, separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SchemaChange {
+    /// A new empty table was appended while retaining existing database objects.
+    TableAdded {
+        /// Number of explicitly declared fields in the added table.
+        column_count: usize,
+    },
     /// The first ordinary table was committed to the original canonical blank.
     FirstTableCreated {
         /// Number of explicitly authored scalar fields, including the ID key.
@@ -247,6 +256,31 @@ impl OfflineWriteSession {
             .map(OfflineJournalPair::namespace_state)
     }
 
+    #[cfg(feature = "ace16-create")]
+    fn capture_schema_source(
+        &mut self,
+        expected: Option<&[u8]>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeImage, Cause> {
+        self.require_ready()?;
+        let slot = self.slot_mut()?;
+        slot.current = None;
+        slot.state = SessionState::RefreshRequired;
+        let image = NativeImage::capture(
+            slot.target.as_mut().ok_or(Cause::InvalidState)?,
+            slot.scope,
+            budget,
+            cancelled,
+        )
+        .map_err(Cause::Native)?;
+        slot.state = SessionState::Ready;
+        if let Some(expected) = expected {
+            table::require_original(image.as_bytes(), expected, budget, cancelled)?;
+        }
+        Ok(image)
+    }
+
     fn require_ready(&self) -> Result<(), Cause> {
         let slot = self.slot()?;
         if slot.state != SessionState::Ready
@@ -398,3 +432,10 @@ fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<()
         .charge(Resource::Steps, 1)
         .map_err(InspectError::from)
 }
+
+#[cfg(all(
+    test,
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod test_support;

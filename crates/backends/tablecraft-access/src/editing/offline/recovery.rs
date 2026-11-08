@@ -4,6 +4,11 @@ use super::{
     SessionState, VerifiedImage,
 };
 use std::path::Path;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{
+    NativeAddTableIntent, NativeFirstTableIntent, qualify_native_add_table_recovery,
+    qualify_native_first_table_recovery,
+};
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
     NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent, NativeUpdateProfile,
@@ -12,8 +17,6 @@ use tablecraft_ace::{
     qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
     qualify_native_omitted_insert_recovery, qualify_native_update_recovery,
 };
-#[cfg(feature = "ace16-create")]
-use tablecraft_ace::{NativeFirstTableIntent, qualify_native_first_table_recovery};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
     RecoveryOutcome, filesystem::OfflineJournalPair, inspect_image, inspect_v1, inspect_v2,
@@ -63,6 +66,20 @@ impl OfflineWriteSession {
                     let checked =
                         inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
                     let qualified = qualify_native_first_table_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::AddTable(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_add_table_recovery(
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::Qualification)?;
@@ -228,6 +245,18 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::AddTable(intent) => {
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_add_table_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::CompleteInsert(intent) => {
                     let checked =
                         inspect_image(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -367,7 +396,9 @@ impl OfflineWriteSession {
             .max(NativeEofInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeCompleteInsertIntent::MAX_ENCODED_BYTES) as u64;
         #[cfg(feature = "ace16-create")]
-        let limit = limit.max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64);
+        let limit = limit
+            .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64);
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

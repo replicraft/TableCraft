@@ -2,7 +2,7 @@
 use super::{Cause, SchemaChange};
 use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
-use tablecraft_ace::{FirstTablePlan, NativeFirstTableIntent};
+use tablecraft_ace::{AddTablePlan, FirstTablePlan, NativeAddTableIntent, NativeFirstTableIntent};
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
     NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
@@ -17,6 +17,8 @@ pub(super) enum MutationPlan {
     Insert(NativeJournalInsertPlan),
     #[cfg(feature = "ace16-create")]
     FirstTable(FirstTablePlan),
+    #[cfg(feature = "ace16-create")]
+    AddTable(AddTablePlan),
 }
 
 impl MutationPlan {
@@ -39,6 +41,10 @@ impl MutationPlan {
             Self::FirstTable(plan) => plan
                 .encode_intent(budget, cancelled)
                 .map_err(Cause::FirstTableIntent),
+            #[cfg(feature = "ace16-create")]
+            Self::AddTable(plan) => plan
+                .encode_intent(budget, cancelled)
+                .map_err(Cause::AddTableIntent),
         }
     }
 
@@ -57,6 +63,13 @@ impl MutationPlan {
             Self::Insert(plan) => plan.prepare_insert(target, journal, budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::FirstTable(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
+            #[cfg(feature = "ace16-create")]
+            Self::AddTable(plan) => {
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
                     .map_err(Cause::Prepare)?;
@@ -82,6 +95,8 @@ pub(super) enum MutationIntent {
     ClockInsert(NativeClockInsertIntent),
     #[cfg(feature = "ace16-create")]
     FirstTable(NativeFirstTableIntent),
+    #[cfg(feature = "ace16-create")]
+    AddTable(NativeAddTableIntent),
 }
 
 impl MutationIntent {
@@ -89,6 +104,10 @@ impl MutationIntent {
         match self {
             #[cfg(feature = "ace16-create")]
             Self::FirstTable(intent) => Some(SchemaChange::FirstTableCreated {
+                column_count: intent.column_count(),
+            }),
+            #[cfg(feature = "ace16-create")]
+            Self::AddTable(intent) => Some(SchemaChange::TableAdded {
                 column_count: intent.column_count(),
             }),
             _ => None,
@@ -102,6 +121,13 @@ impl MutationIntent {
     ) -> Result<Self, Cause> {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAT") {
+            return NativeAddTableIntent::decode(raw, budget, cancelled)
+                .map(Self::AddTable)
+                .map_err(Cause::AddTableIntent);
+        }
+
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCNT") {
             return NativeFirstTableIntent::decode(raw, budget, cancelled)
