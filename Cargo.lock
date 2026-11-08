@@ -4306,15 +4306,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sys-locale"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8eab9a99a024a169fe8a903cf9d4a3b3601109bcc13bd9e3c6fff259138626c4"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "tablecraft-access"
 version = "0.1.0"
 dependencies = [
@@ -4465,8 +4456,8 @@ dependencies = [
  "egui",
  "egui_kittest",
  "fontique",
+ "objc2-foundation 0.3.2",
  "rfd",
- "sys-locale",
  "tablecraft-builders",
  "tablecraft-display",
  "tablecraft-runtime",
@@ -4475,6 +4466,7 @@ dependencies = [
  "tempfile",
  "tracing",
  "tracing-subscriber",
+ "windows-sys 0.61.2",
  "zeroize",
 ]
 

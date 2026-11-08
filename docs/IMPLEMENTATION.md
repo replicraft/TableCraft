@@ -1,5 +1,23 @@
 # Implementation status
 
+## Regional discovery and platform audit refresh — 7 November 2026
+
+A parallel storage, host and release audit found the desktop was using preferred
+UI languages as the System formatting locale. Live and mock hosts now use native
+regional discovery on Windows/macOS and explicit Unix time-category precedence.
+The unused sys-locale consumer is removed; target-scoped consumers use already
+locked platform bindings. Four focused tests cover discovery precedence and
+unavailable identifiers. Translation choice and query collation are unchanged.
+Separate Unix monetary locales and custom OS formatting patterns remain explicit
+limitations; this is not complete regional-settings parity.
+
+All 116 desktop tests and strict all-target/all-feature desktop lint pass.
+The preceding affected-package batch passes 139 I/O, 151 runtime and 454 shared-UI
+tests, with six-target compilation coverage recorded in the
+[renewed audit](testing/CROSS_PLATFORM_AUDIT.md#manual-design-working-tree-refresh).
+Native Windows/Linux execution, desktop installation and physical durability
+remain separate qualification work. No native application windows were opened.
+
 ## Native field-description authoring — 7 November 2026
 
 The initial/new table's Design grid now edits Description for ordinary fields

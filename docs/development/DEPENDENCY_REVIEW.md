@@ -324,7 +324,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [bytemuck 1.25.2](https://docs.rs/crate/bytemuck/1.25.2) | Zlib OR Apache-2.0 OR MIT | Keep; ACE raw byte vectors | By-value casts of fixed byte arrays into wide byte vectors, with all patterns valid and no alignment/endian assumption. Semantic constructors and stored carriers remain separate. |
 | [fst 0.4.7](https://docs.rs/crate/fst/0.4.7) | Unlicense/MIT | Adopted; ACE derived General LIKE element lookup | Immutable compiled single-unit weight sets, not native Jet/ACE index storage. Original regeneration tooling, fixed hashes, exhaustive membership checks and FST/BTree/sorted-vector benchmarks accompany adoption. Broader application search remains future work. |
 | [reqwest 0.13.5](https://docs.rs/crate/reqwest/0.13.5) | MIT OR Apache-2.0 | Use with HTTP feature; connectors/services | Explicit TLS/backend/target selection, timeouts and bounded response/decompression behavior; keep network runtime out of synchronous CLI/engine. |
-| [sys-locale 0.3.2](https://docs.rs/crate/sys-locale/0.3.2) | MIT OR Apache-2.0 | Use with host localization; platform | Language preferences only, honoring explicit settings. No implicit SQL collation/date parsing change or guaranteed translation availability. |
+| [sys-locale 0.3.2](https://docs.rs/crate/sys-locale/0.3.2) | MIT OR Apache-2.0 | Use with host localization; platform | Not adopted; preferred UI-language discovery candidate only, removed from regional display. Honor explicit settings. No implicit SQL collation/date parsing change or guaranteed translation availability. |
 | [fluent-bundle 0.16.0](https://docs.rs/crate/fluent-bundle/0.16.0) | Apache-2.0 OR MIT | Adopted optionally for numbered query error messages | Flat bounded caller-selected catalogs; [contract](../expressions/ERROR_MESSAGES.md) and [locked closure](DEPENDENCIES.md#localized-error-messages). UI localization remains future work. |
 | [pollster 1.0.1](https://docs.rs/crate/pollster/1.0.1) | Apache-2.0/MIT | Use for small compatible bootstrap; Synchronous host initialization | Only futures that can progress under this executor; not a substitute for Tokio I/O runtime or a blocking call in the UI/async hot path. |
 
@@ -594,9 +594,11 @@ as a native Access oracle or importing HSQLDB semantics into TableCraft.
 
 ## Regional UI display consumers — 5 November 2026
 
-Adopted sys-locale 0.3.2 for desktop startup regional identifiers, independent of
-explicit Fluent language selection. Its working consumer is the desktop host;
-there is no reason to scaffold a platform crate. Jiff remains the civil calendar
+Desktop regional discovery now uses safe macOS `objc2-foundation` 0.3.2
+`NSLocale.currentLocale`, Windows `windows-sys` 0.61.2 `GetUserDefaultLocaleName`,
+and Unix `LC_ALL` → `LC_TIME` → `LANG`. The earlier sys-locale adoption was
+removed on 7 November: preferred UI languages are not regional settings.
+Fluent selection stays independent; no platform crate is scaffolded. Jiff remains the civil calendar
 carrier. ICU4X 2.3 Gregorian date/time field sets and ICU experimental 0.6 currency
 formatting supply regional order, symbols and currency minor units from exact
 scaled integers. These are shared-UI presentation choices, not query/native
@@ -614,7 +616,9 @@ system regional overrides. Registry/default-feature and license details are in
 Primary implementation references: [ICU4X](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
 [currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html),
 [ISO relationship API](https://docs.rs/iso_currency/0.7.1/iso_currency/enum.Currency.html)
-and [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/).
+and [Windows regional locale](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserdefaultlocalename).
+The existing unified System locale cannot express a differing Unix LC_MONETARY;
+custom OS patterns and unhandled locale modifiers also remain unsupported.
 
 
 ## Typed clipboard transport review — 5 November 2026

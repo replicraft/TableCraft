@@ -136,7 +136,7 @@ without introducing an additional general decimal arithmetic library.
 | [tokio-rusqlite](https://docs.rs/tokio-rusqlite/latest/tokio_rusqlite/) | Adopted behind tablecraft-sqlite/async for worker-owned read snapshots with bounded admission and cancellation. Writes and browser storage require separate work. |
 | [unicode-normalization](https://docs.rs/unicode-normalization/latest/unicode_normalization/) | Adopted for qualified character composition/decomposition in explicit Japanese StrConv width conversion. Derived search/display normalization remains prospective. Preserve stored text; normalization does not implement Access collation. |
 | [moka](https://docs.rs/moka/latest/moka/) | Derived-data caching with capacity policy and source-generation invalidation. Its best-effort eviction is not a strict memory quota or native cache-coherence protocol. |
-| [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/) | Desktop startup discovers a preferred BCP 47 regional locale for the shared UI display policy. UI language remains explicitly selected. Discovery supplies no formatting data and does not change SQL or Access/database collation. No platform crate is scaffolded. |
+| [sys-locale](https://docs.rs/sys-locale/0.3.2/sys_locale/) | Preferred UI-language discovery candidate only. Removed from desktop regional formatting because preferred UI languages do not establish regional settings. No current consumer. |
 | [fluent-rs](https://github.com/projectfluent/fluent-rs) | Fluent localization, selecting the needed crates (for example fluent-bundle) when localized messages/UI exist. Keep message IDs separate from stable machine error codes. |
 | [pollster](https://docs.rs/pollster/latest/pollster/) | Small synchronous bootstrap boundaries that must await suitable async initialization. It does not replace a required Tokio I/O runtime or belong inside an async/UI hot path. |
 
@@ -211,18 +211,25 @@ plugin and binding candidate; the rules above are the concise selection directio
 
 ## Host locale discovery
 
-`sys-locale` 0.3.2 is now consumed by the desktop host at live/mock startup,
-using `get_locale()` to supply a preferred BCP 47 regional identifier to the
-shared UI. Fluent language selection remains independent and explicit. Missing
-or invalid discovery falls back visibly to en-US regional data; it does not
-change database evaluation. No empty platform crate is introduced.
+Desktop live/mock startup uses a host-owned regional boundary: safe
+`objc2-foundation` 0.3.2 `NSLocale.currentLocale` on macOS, the existing
+`windows-sys` 0.61.2 `GetUserDefaultLocaleName` API on Windows, and nonempty
+`LC_ALL` → `LC_TIME` → `LANG` elsewhere on Unix. `sys-locale` was removed:
+its preferred UI-language APIs do not provide this regional contract. Fluent
+language selection remains independent and explicit. Windows FFI has one
+module-scoped unsafe allowance and a checked, stack-owned UTF-16 buffer.
+Missing/invalid identifiers retain the existing visible formatting fallback;
+selected C/POSIX or unsupported modifiers do not fall through to another locale.
+No new platform crate is introduced.
 
 Shared UI formatting uses Jiff civil values and ICU4X CLDR date/time and currency
 data. Separate date/time choices and explicit currency display conventions never
 change SQL comparisons, native carriers, edit inputs or database LCID metadata.
 System means regional CLDR defaults, not exact reproduction of custom operating-
 system date/time overrides. The CLI retains its invariant output and ISO input.
-Browser discovery would require the upstream `js` feature and is not enabled.
+The single System locale currently uses Unix's time category for currency too;
+a differing `LC_MONETARY` and custom OS pattern overrides remain unsupported.
+Browser regional discovery is not implemented.
 
 `iso_currency` provides the ISO country/currency relationship, separate from
 CLDR symbols and fraction digits. Regions with multiple regular currencies do
@@ -230,8 +237,8 @@ not silently choose the first entry: System retains exact raw Currency text
 until a user chooses a display currency. Native Currency itself has no unit.
 Recognized native Euro formatting can supply the stored display convention.
 
-References: upstream [preferred locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html),
-[platform/features](https://docs.rs/crate/sys-locale/0.3.2/source/README.md),
+References: [Windows regional locale](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserdefaultlocalename),
+[POSIX locale environment](https://www.sourceware.org/glibc/manual/latest/html_node/Standard-Environment.html),
 [date formatter](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
 [currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html)
 and [ISO currency mapping](https://docs.rs/iso_currency/0.7.1/iso_currency/enum.Currency.html).

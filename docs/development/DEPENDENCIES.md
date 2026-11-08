@@ -1014,7 +1014,7 @@ feature trees matched before/after migration. See the
 for inheritance and additive features.
 
 `sys-locale` was a future-use candidate at this migration; its later desktop
-regional display adoption is recorded below.
+regional display adoption and replacement are recorded below.
 
 ## Structured tracing
 
@@ -1722,7 +1722,9 @@ About credits describe the repository-owned Apache-2.0 artwork.
 
 The shared UI consumes Jiff civil DateTime facts, ICU4X date/time and exact decimal
 currency formatting, and ISO country/currency relationships. The desktop host
-alone consumes sys-locale at live/mock startup. The runtime publishes inert typed
+alone discovers regional identifiers at live/mock startup. The initial
+sys-locale consumer was replaced on 7 November because it queries preferred UI
+languages rather than regional settings. The runtime publishes inert typed
 facts and qualified stored Format hints; it does not infer a locale or format
 regional text. Desktop view-model conversion mirrors those facts without parsing
 rendered strings. CLI and query execution retain their existing policies.
@@ -1738,7 +1740,8 @@ rendered strings. CLI and query execution retain their existing policies.
 | icu_locale_core | existing 2.3.0 | Unicode-3.0 | Validated regional identifiers |
 | iso_currency | 0.7.1 | MIT | Regular ISO currency candidates for the selected region |
 | writeable | existing workspace selection | Unicode-3.0 | Formatter output |
-| sys-locale | 0.3.2 | MIT OR Apache-2.0 | Desktop host preferred regional identifier |
+| objc2-foundation | existing locked 0.3.2 | MIT | macOS desktop safe NSLocale.currentLocale/NSString, std + NSLocale + NSString features only |
+| windows-sys | existing workspace 0.61.2 | MIT OR Apache-2.0 | Windows desktop GetUserDefaultLocaleName and SDK locale-name capacity; Win32_Globalization + Win32_System_SystemServices features |
 
 Workspace declarations disable registry default features. UI enables compiled
 ICU data through the shared declarations; static Gregorian YMD/time field sets
@@ -1756,16 +1759,22 @@ Unknown symbols use the upstream ISO-code fallback, preserving currency identity
 bundled ISO data (upstream documents its Wikipedia-derived source). This mapping
 is a versioned display default, not a claim about the unit of native Currency or
 an exchange-rate service. Superseded/fund/special entries are excluded; ambiguous
-regions require an explicit choice. sys-locale provides identifiers only; custom
-OS regional format overrides are not queried. There is no network or exchange-rate
-lookup in this consumer. Explicit Raw retains four Currency decimals, legacy
+regions require an explicit choice. macOS uses the current NSLocale identifier;
+Windows uses the user's regional locale name through one reviewed scoped-unsafe
+UTF-16 boundary. Unix chooses nonempty LC_ALL, LC_TIME, then LANG, excluding UI
+language variables. No shell command or process locale mutation is used. Empty
+variables skip; selected C/POSIX, non-Unicode or unsupported modifiers remain
+unavailable without trying a lower priority. The shared formatter still has
+one System locale, so differing LC_MONETARY and custom OS patterns are not
+queried. There is no network or exchange-rate lookup in this consumer. Explicit Raw retains four Currency decimals, legacy
 DATE bits or all seven Extended Date/Time fraction digits; Copy uses display text.
 
 Sources: [ICU4X date/time](https://docs.rs/icu_datetime/2.3.0/icu_datetime/),
 [exact currency formatter](https://docs.rs/icu_experimental/0.6.0/icu_experimental/dimension/currency/formatter/struct.CurrencyFormatter.html),
 [ISO mapping](https://docs.rs/iso_currency/0.7.1/iso_currency/),
-[sys-locale API](https://docs.rs/sys-locale/0.3.2/sys_locale/fn.get_locale.html)
-and [platform/features](https://docs.rs/crate/sys-locale/0.3.2/source/README.md).
+[Windows regional locale](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserdefaultlocalename),
+[NSLocale API](https://docs.rs/objc2-foundation/0.3.2/objc2_foundation/struct.NSLocale.html)
+and [locale environment](https://www.sourceware.org/glibc/manual/latest/html_node/Standard-Environment.html).
 
 
 ## Headless desktop insertion acceptance

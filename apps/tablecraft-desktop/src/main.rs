@@ -3,6 +3,7 @@ mod diagnostics;
 mod file_dialog;
 mod font_inventory;
 mod mock;
+mod regional;
 mod view_models;
 mod workspace;
 

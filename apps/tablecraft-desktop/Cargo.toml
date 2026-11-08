@@ -11,8 +11,12 @@ publish = false
 name = "tablecraft-desktop"
 path = "src/main.rs"
 
-[lints]
-workspace = true
+# Only the reviewed Windows regional-locale boundary permits scoped FFI.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = "warn"
 
 [dependencies]
 tablecraft-builders.workspace = true
@@ -25,7 +29,6 @@ fontique = { workspace = true, features = ["system", "fontconfig-dlopen"] }
 clap.workspace = true
 zeroize = { workspace = true, features = ["alloc"] }
 tablecraft-runtime = { workspace = true, features = ["offline-edit", "ace16-create"] }
-sys-locale.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 
@@ -33,3 +36,9 @@ tracing-subscriber.workspace = true
 egui_kittest.workspace = true
 tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support"] }
 tempfile.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-foundation = { workspace = true, features = ["std", "NSLocale", "NSString"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true, features = ["Win32_Globalization", "Win32_System_SystemServices"] }

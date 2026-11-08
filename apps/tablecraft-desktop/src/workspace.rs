@@ -200,7 +200,7 @@ impl Desktop {
         app.state.find_available = true;
         app.state.find_formatted_available = true;
         app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux", windows));
-        app.state.formatting.system_locale = sys_locale::get_locale();
+        app.state.formatting.system_locale = crate::regional::locale();
         if let Some(path) = path {
             app.select_file(path);
             app.open();

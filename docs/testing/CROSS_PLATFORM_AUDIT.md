@@ -37,7 +37,7 @@ These are separate from the deferred native Microsoft Access comparisons and
 power-loss testing. Detailed findings and historical batches follow; their
 counts describe the trees tested at those checkpoints.
 
-The latest headless refresh passes all 434 shared-UI tests and 111 desktop
+An earlier headless refresh passed all 434 shared-UI tests and 111 desktop
 tests, strict all-target/all-feature lint for both packages, and Windows x64 and
 ARM64 all-target/all-feature checks for runtime and desktop. This includes the
 current Navigation Pane and bundled-font working changes. The initial UI batch
@@ -417,3 +417,90 @@ unqualified locally. No new unsupported-platform fallback was introduced.
 Completed target-specific incremental caches were removed between phases to
 control local disk pressure. Incremental compilation remained enabled; native
 host caches, dependencies, binaries, fixtures and logs were retained.
+
+## Manual Design working-tree refresh
+
+A further three-way source review covered native I/O, locking, creation and
+journal publication; application/runtime/CLI/UI host integration; and tracked
+CI, release, packaging and association tooling. It includes the pending manual
+first-table definitions and TCNT6 recovery grammar. Those byte-oriented changes
+continue through the existing platform-owned save path; they do not introduce a
+Unix-only writer. Existing pending feature changes and user-owned desktop notice
+files were preserved.
+
+Fresh local checks distinguish current affected-package coverage from the
+historical complete-workspace results above:
+
+| Check | Result and boundary |
+| --- | --- |
+| macOS ARM64 execution | 139 I/O, 151 runtime and 454 shared-UI tests pass; desktop grows from 112 to 116 passing tests with the locale correction |
+| Strict lint | ACE, Access, builders, runtime, UI and desktop: all targets/features pass |
+| Windows x64 and ARM64 | Runtime, UI and desktop: all targets/features compile; target programs were not run |
+| Intel macOS, Linux x64 and ARM64 | Runtime, UI and desktop: all targets/features compile; target programs were not run |
+| Creation-only feature profiles | Native first-table tests and runtime library compilation pass |
+| Tracked packaging and associations | 32 archive/package tests and eight association tests pass |
+| Repository tooling | 82 Python tests pass; both workflows pass actionlint; CLI release contract validates version 0.1.0 |
+| Repository structure | 882 formatter roots, 20 dependency boundaries and 7,957 local documentation targets pass before this record was added |
+
+The execution and lint logs are retained under ignored
+`.cache/gui-manual-design-final-*20261107.log` paths. Fresh I/O and
+Intel-macOS/Linux compilation and repository-test logs use
+`.cache/platform-final-refresh-*20261107.log`. Source review found no new storage
+or packaging portability defect, so those areas did not receive speculative
+changes. The host locale finding and its correction are recorded below.
+
+### Regional-locale correction
+
+The host review found one concrete display bug: `sys-locale` discovers preferred
+UI languages, which do not necessarily identify regional formatting settings.
+The desktop used that result for System locale dates, times and currency.
+Live and synthetic hosts now call one host-owned regional discovery boundary:
+
+- Windows reads `GetUserDefaultLocaleName` through a bounded UTF-16 buffer and a
+  single documented FFI boundary. This is distinct from preferred UI languages.
+- macOS uses the safe `NSLocale.currentLocale` wrapper from the already locked
+  Foundation binding; no native windows or shell commands are involved.
+- Linux uses the first nonempty `LC_ALL`, `LC_TIME`, then `LANG` setting. It does
+  not consult `LANGUAGE` or `LC_MESSAGES`, mutate process-global locale state, or
+  fall through after an explicitly selected but unavailable locale.
+
+Identifier normalization preserves the existing visible unavailable-locale
+fallback. C/POSIX and unsupported script/calendar modifiers remain unresolved.
+The existing shared display API still has one regional locale: distinct Unix
+`LC_MONETARY` settings and OS custom date/time patterns are not implemented.
+This correction does not claim full category-specific regional parity and does
+not alter translation choice, stored values, query collation or edit syntax.
+Four injected-input tests cover category precedence, empty settings, explicit
+unavailable selections, normalization and non-Unicode Unix environment values.
+
+The unused `sys-locale` dependency is removed. Existing locked
+`objc2-foundation` and `windows-sys` packages gain target-scoped desktop consumers;
+no registry package or version is added. Unsafe code remains denied throughout
+the desktop except its reviewed Windows locale module. The native storage FFI
+boundary is unchanged.
+
+Fresh correction checks use ignored `.cache/platform-regional-*20261107.log`
+paths; desktop strict all-target/all-feature lint and all 116 tests pass. The
+corrected desktop also passes all-target/all-feature compilation for Windows
+x64/ARM64, Intel macOS and Linux x64/ARM64. Native macOS ARM64 is covered by
+strict lint and execution. The broader pre-correction results above retain their
+own scope.
+
+Contracts: [Windows regional locale](https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserdefaultlocalename),
+[Unix category precedence](https://www.sourceware.org/glibc/manual/latest/html_node/Standard-Environment.html).
+
+### Native acceptance still required
+
+Cross-compilation does not qualify Windows sharing/ACL behavior, local-NTFS
+publication and retained-journal release, Linux directory barriers, interrupted
+save recovery or physical power-loss durability. Native CI is configured for all
+six OS/architecture pairs; this local audit did not start or observe those remote
+jobs. The Windows CLI/SQLite cross-build still needs an MSVC C SDK, as recorded
+above. No SQLite functionality was expanded.
+
+The tracked release workflow produces CLI archives. Desktop installation,
+Finder/file-open event delivery, installed file associations, Windows/Linux
+window-manager behavior, portal dialogs, clipboard, native accessibility,
+minimum OS/runtime-library qualification, signing and notarization remain
+separate release checks. Association metadata tests do not install a handler.
+No native application windows were opened, and no release or push was performed.

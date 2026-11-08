@@ -137,7 +137,7 @@ icu_decimal = { version = "2.3.0", default-features = false, features = ["compil
 icu_experimental = { version = "0.6.0", default-features = false, features = ["compiled_data"] }
 icu_locale = { version = "2.3.0", default-features = false, features = ["compiled_data"] }
 iso_currency = { version = "0.7.1", default-features = false }
-sys-locale = { version = "0.3.2", default-features = false }
+objc2-foundation = { version = "0.3.2", default-features = false }
 
 
 # SQL syntax

@@ -17,9 +17,19 @@ An unresolved regional engine does not invent a currency code.
 
 Options separates Date format, Time format and Currency. Each starts with System
 locale. The desktop discovers the regional locale independently of the selected
-translation language. ICU4X/CLDR supplies regional patterns and currency formatting;
+translation language: macOS uses `NSLocale.currentLocale`, Windows uses
+`GetUserDefaultLocaleName`, and other Unix hosts use the first nonempty `LC_ALL`,
+`LC_TIME`, then `LANG`. UI-language variables (`LANGUAGE`/`LC_MESSAGES`) do not
+select regional formatting. Empty variables are skipped; selected C/POSIX,
+non-Unicode values and unsupported `@` modifiers remain unresolved, without
+falling through to a lower-priority locale. ICU4X/CLDR supplies regional patterns
+and currency formatting;
 Jiff supplies validated civil date/time components. OS-specific custom regional
-pattern overrides are not imported. An unavailable locale is visibly identified
+pattern overrides are not imported. The formatter currently shares one System
+locale between dates, times and currency; on Unix it uses the time category.
+A differing `LC_MONETARY` is not imported, so mixed-category regional settings
+require an explicit currency choice. This is not full OS regional-settings parity.
+An unavailable locale is visibly identified
 and uses the documented fallback rather than changing SQL behavior.
 
 Date choices include regional, ISO, day/month/year, month/day/year, short, long
