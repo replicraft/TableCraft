@@ -187,8 +187,11 @@ the SAME accepted `QueryExpressionReopen` and complete its fresh full-image chec
 before resolving visible SQL or publishing a new document revision. An explicitly
 unchanged semantic review can separately use its full BEFORE-equal-AFTER witness;
 it must not invent a journal commit or treat a failed original outcome as that
-review. Three focused outcome-facts tests are authored but unrun at this
-checkpoint. This library extraction does not enable GUI editing.
+review. Three focused outcome-facts tests now pass in the
+[saved-query lifecycle gate](results/query-save-lifecycle-2026-11-08.json), alongside
+nine shared status cases and two bounded review-report cases. This library
+extraction does not enable GUI editing; the separate desktop integration remains
+unfinished at this checkpoint.
 
 ## Required proof before a normal native save
 

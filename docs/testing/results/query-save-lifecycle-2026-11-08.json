@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-08",
+  "scope": "Saved-query completion facts, status ownership and bounded failure reports",
+  "platform": "macOS arm64",
+  "native_windows": false,
+  "status": "14 focused service and shared-UI cases pass; desktop Save integration not yet activated",
+  "gates": [
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::query_expression::outcome::tests",
+      "exit_code": 0,
+      "log": ".cache/query-save-status-tablecraft_runtime-editing-query_expression-outcome-tests-20261108.log",
+      "sha256": "ed0b68bf17d4444b658d095a3ff925868b4e666cda039ba84b5b7482a1cea595",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "tests": [
+        "editing::query_expression::outcome::tests::retained_failure_never_reopens_or_bypasses_its_recovery_owner",
+        "editing::query_expression::outcome::tests::released_current_original_precedes_history_without_inventing_a_receipt",
+        "editing::query_expression::outcome::tests::only_separate_query_replacement_facts_admit_an_acknowledged_after_read"
+      ]
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "workspace::saved_query_save::tests",
+      "exit_code": 0,
+      "log": ".cache/query-save-status-tablecraft_ui-workspace-saved_query_save-tests-20261108.log",
+      "sha256": "43ff809c1f9a55b8fa7a407377639b7ef4ea61b3a96b2a6683570e662167d23d",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "tests": [
+        "workspace::saved_query_save::tests::retained_native_resolution_changes_only_the_accepted_actor_id_and_rejects_stale_events",
+        "workspace::saved_query_save::tests::native_terminal_fact_and_full_text_survive_view_publication_and_failed_read_reopen",
+        "workspace::saved_query_save::tests::unchanged_review_has_no_native_save_id_receipt_or_recovery_commands",
+        "workspace::saved_query_save::tests::terminal_and_read_failure_affordances_survive_report_admission_failure",
+        "workspace::saved_query_save::tests::preparation_owns_the_exact_review_before_binding_a_real_actor_id",
+        "workspace::saved_query_save::tests::failed_actor_start_and_failed_preadmission_preserve_the_original_dirty_review",
+        "workspace::saved_query_save::tests::unchanged_reopen_failure_dialog_exposes_only_read_retry_or_return",
+        "workspace::saved_query_save::tests::unchanged_read_reopen_escape_requests_cancellation_without_native_save_identity",
+        "workspace::saved_query_save::tests::native_status_dialog_emits_exact_cancel_identity_without_a_cell_edit_dialog"
+      ]
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "workspace::saved_query::sql::tests::memory_failure",
+      "exit_code": 0,
+      "log": ".cache/query-save-status-tablecraft_ui-workspace-saved_query-sql-tests-memory_failure-20261108.log",
+      "sha256": "326a675f9f17dd87876a715b3fe80a6ce0e662f8e200800374818ba46f70ce9c",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "tests": [
+        "workspace::saved_query::sql::tests::memory_failure::accepted_review_can_return_to_its_dirty_draft_when_the_report_cannot_fit",
+        "workspace::saved_query::sql::tests::memory_failure::oversized_failure_report_releases_only_the_matching_review_without_losing_text"
+      ]
+    }
+  ],
+  "limits": [
+    "These tests do not qualify the pending atomic draft transfer or the undeclared desktop controller.",
+    "No Windows or Microsoft Access execution is claimed.",
+    "An outcome fact is never authority to reopen: the same accepted full-image witness remains mandatory.",
+    "Formatting-only review uses an explicit unchanged-review identity, never a fabricated native save ID or receipt."
+  ]
+}
