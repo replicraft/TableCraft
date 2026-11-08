@@ -1,10 +1,13 @@
 //! Closed TCQE0002 framing; every entry is validated before owned allocation.
 use super::{
     Identity, MAX_EDITS, MAX_EXPRESSION_BYTES, MAX_NAME_BYTES, NativeQueryExpressionEditsIntent,
-    QueryExpressionEditIntent, QueryExpressionEditsIntentError as Error, binding, copy_text,
+    OwnedQueryFragmentExpressionEdit, QueryExpressionEditsIntentError as Error, binding, copy_text,
     validate_edit, validate_name,
 };
-use crate::{InspectError, QueryAttribute, format::page::PAGE_BYTES, header::check};
+use crate::{
+    InspectError, QueryAttribute, QueryFragmentExpressionEdit, format::page::PAGE_BYTES,
+    header::check,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCQE0002";
@@ -112,7 +115,10 @@ pub(super) fn encode(
     let entries_length = intent
         .edits
         .iter()
-        .map(|edit| ENTRY_HEADER_BYTES + edit.expected.len() + edit.replacement.len())
+        .map(|edit| {
+            let edit = edit.as_request();
+            ENTRY_HEADER_BYTES + edit.expected.len() + edit.replacement.len()
+        })
         .sum::<usize>();
     let length = HEADER_BYTES + intent.query.len() + entries_length;
     if length > MAX_RECORD_BYTES {
@@ -142,6 +148,7 @@ pub(super) fn encode(
     output.extend_from_slice(intent.query.as_bytes());
     for edit in &intent.edits {
         check(budget, cancelled)?;
+        let edit = edit.as_request();
         output.push(edit.attribute.code());
         output.push(0);
         output.extend_from_slice(&(edit.expected.len() as u16).to_le_bytes());
@@ -228,7 +235,10 @@ pub(super) fn decode(
         return Err(Error::InvalidRecord);
     }
 
-    budget.charge_allocation(count as u64, size_of::<QueryExpressionEditIntent>() as u64)?;
+    budget.charge_allocation(
+        count as u64,
+        size_of::<OwnedQueryFragmentExpressionEdit>() as u64,
+    )?;
     let mut edits = Vec::new();
     edits
         .try_reserve_exact(count)
@@ -236,12 +246,15 @@ pub(super) fn decode(
     cursor = entries_start;
     for _ in 0..count {
         let (current, end) = entry(input, cursor, budget, cancelled)?;
-        edits.push(QueryExpressionEditIntent {
+        let request = QueryFragmentExpressionEdit {
             attribute: current.attribute,
             order: current.order,
-            expected: copy_text(current.expected, budget, cancelled)?,
-            replacement: copy_text(current.replacement, budget, cancelled)?,
-        });
+            expected: current.expected,
+            replacement: current.replacement,
+        };
+        edits.push(OwnedQueryFragmentExpressionEdit::copy_from_request(
+            &request, budget, cancelled,
+        )?);
         cursor = end;
     }
     let intent = NativeQueryExpressionEditsIntent {

@@ -56,7 +56,30 @@ pub struct OwnedQueryFragmentExpressionEdit {
 }
 
 impl OwnedQueryFragmentExpressionEdit {
-    /// Borrow the sealed original semantic request without cloning its text.
+    /// Copy checked semantic data only; no source or mutation authority is gained.
+    pub(crate) fn copy_from_request(
+        request: &QueryFragmentExpressionEdit<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        check(budget, cancelled)?;
+        if !matches!(
+            request.attribute,
+            QueryAttribute::Column | QueryAttribute::Where
+        ) || request.expected.is_empty()
+            || request.replacement.is_empty()
+        {
+            return Err(InspectError::Unsupported);
+        }
+        Ok(Self {
+            attribute: request.attribute,
+            order: request.order,
+            expected: copy_text(request.expected, budget, cancelled)?,
+            replacement: copy_text(request.replacement, budget, cancelled)?,
+        })
+    }
+
+    /// Borrow semantic request data without cloning; this grants no native authority.
     pub fn as_request(&self) -> QueryFragmentExpressionEdit<'_> {
         QueryFragmentExpressionEdit {
             attribute: self.attribute,
@@ -145,13 +168,9 @@ impl NativeImage {
             .try_reserve_exact(edits.len())
             .map_err(|_| InspectError::Allocation)?;
         for edit in edits {
-            check(budget, cancelled)?;
-            owned.push(OwnedQueryFragmentExpressionEdit {
-                attribute: edit.attribute,
-                order: edit.order,
-                expected: copy_text(edit.expected, budget, cancelled)?,
-                replacement: copy_text(edit.replacement, budget, cancelled)?,
-            });
+            owned.push(OwnedQueryFragmentExpressionEdit::copy_from_request(
+                edit, budget, cancelled,
+            )?);
         }
 
         Ok(NativeQueryExpressionEditsPlan {

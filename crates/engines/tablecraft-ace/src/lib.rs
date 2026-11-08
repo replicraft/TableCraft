@@ -187,9 +187,8 @@ pub use transaction::{
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeQueryExpressionEditsIntent, PreparedQueryExpressionEdits,
-    QualifiedQueryExpressionEditsRecovery, QueryExpressionEditIntent,
-    QueryExpressionEditsIntentError, RecoverableNativeQueryExpressionEditsPlan,
-    qualify_native_query_expression_edits_recovery,
+    QualifiedQueryExpressionEditsRecovery, QueryExpressionEditsIntentError,
+    RecoverableNativeQueryExpressionEditsPlan, qualify_native_query_expression_edits_recovery,
 };
 #[cfg(feature = "journal")]
 pub use transaction::{

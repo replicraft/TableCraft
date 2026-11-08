@@ -106,9 +106,8 @@ pub use default_zero_add_column::{
 mod query_expression_v2;
 pub use query_expression_v2::{
     NativeQueryExpressionEditsIntent, PreparedQueryExpressionEdits,
-    QualifiedQueryExpressionEditsRecovery, QueryExpressionEditIntent,
-    QueryExpressionEditsIntentError, RecoverableNativeQueryExpressionEditsPlan,
-    qualify_native_query_expression_edits_recovery,
+    QualifiedQueryExpressionEditsRecovery, QueryExpressionEditsIntentError,
+    RecoverableNativeQueryExpressionEditsPlan, qualify_native_query_expression_edits_recovery,
 };
 
 mod query_expression;

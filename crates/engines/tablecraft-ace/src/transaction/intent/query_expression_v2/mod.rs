@@ -8,8 +8,8 @@ mod tests;
 use super::{NativeIntentError, binding};
 use crate::{
     InspectError, NativeImage, NativeQueryExpressionEditsPlan, NativeRecoveryQualificationError,
-    QueryAttribute, QueryExpressionEditsError, QueryFragmentExpressionEdit, header::check,
-    read_saved_query_definition,
+    OwnedQueryFragmentExpressionEdit, QueryAttribute, QueryExpressionEditsError,
+    QueryFragmentExpressionEdit, header::check, read_saved_query_definition,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
@@ -76,31 +76,11 @@ struct Identity {
     catalog_slot: u8,
 }
 
-/// One original native expression key and exact inert original/proposed text.
-pub struct QueryExpressionEditIntent {
-    attribute: QueryAttribute,
-    order: [u8; size_of::<u32>()],
-    expected: String,
-    replacement: String,
-}
-
-impl QueryExpressionEditIntent {
-    /// Borrow the semantic native request, never a physical ROW or final bytes.
-    pub fn as_request(&self) -> QueryFragmentExpressionEdit<'_> {
-        QueryFragmentExpressionEdit {
-            attribute: self.attribute,
-            order: self.order,
-            expected: &self.expected,
-            replacement: &self.replacement,
-        }
-    }
-}
-
 /// Decoded original requests are data, not mutation or journal authority.
 pub struct NativeQueryExpressionEditsIntent {
     identity: Identity,
     query: String,
-    edits: Vec<QueryExpressionEditIntent>,
+    edits: Vec<OwnedQueryFragmentExpressionEdit>,
     before_length: u64,
     before_binding: [u8; 32],
 }
@@ -123,7 +103,7 @@ impl NativeQueryExpressionEditsIntent {
         let identity = read_identity(plan, budget, cancelled)?;
         budget.charge_allocation(
             plan.edits().len() as u64,
-            size_of::<QueryExpressionEditIntent>() as u64,
+            size_of::<OwnedQueryFragmentExpressionEdit>() as u64,
         )?;
         let mut edits = Vec::new();
         edits
@@ -133,12 +113,9 @@ impl NativeQueryExpressionEditsIntent {
             check(budget, cancelled)?;
             let request = edit.as_request();
             validate_edit(request.attribute, request.expected, request.replacement)?;
-            edits.push(QueryExpressionEditIntent {
-                attribute: request.attribute,
-                order: request.order,
-                expected: copy_text(request.expected, budget, cancelled)?,
-                replacement: copy_text(request.replacement, budget, cancelled)?,
-            });
+            edits.push(OwnedQueryFragmentExpressionEdit::copy_from_request(
+                &request, budget, cancelled,
+            )?);
         }
 
         let intent = Self {
@@ -163,7 +140,7 @@ impl NativeQueryExpressionEditsIntent {
     }
 
     /// Requests in original explicit placement order, not sorted physical order.
-    pub fn edits(&self) -> &[QueryExpressionEditIntent] {
+    pub fn edits(&self) -> &[OwnedQueryFragmentExpressionEdit] {
         &self.edits
     }
 
@@ -213,12 +190,13 @@ impl NativeQueryExpressionEditsIntent {
         }
         for (index, edit) in self.edits.iter().enumerate() {
             check(budget, cancelled)?;
-            validate_edit(edit.attribute, &edit.expected, &edit.replacement)?;
+            let edit = edit.as_request();
+            validate_edit(edit.attribute, edit.expected, edit.replacement)?;
             budget.charge(Resource::Steps, index as u64)?;
-            if self.edits[..index]
-                .iter()
-                .any(|prior| prior.attribute == edit.attribute && prior.order == edit.order)
-            {
+            if self.edits[..index].iter().any(|prior| {
+                let prior = prior.as_request();
+                prior.attribute == edit.attribute && prior.order == edit.order
+            }) {
                 return Err(QueryExpressionEditsIntentError::InvalidRecord);
             }
         }
@@ -261,6 +239,7 @@ impl NativeQueryExpressionEditsIntent {
         }
         for (edit, captured) in self.edits.iter().zip(plan.edits()) {
             check(budget, cancelled)?;
+            let edit = edit.as_request();
             let request = captured.as_request();
             if edit.attribute != request.attribute
                 || edit.order != request.order

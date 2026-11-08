@@ -194,7 +194,17 @@ fn source_identity_and_ordered_request_tampering_cannot_requalify() {
         Err(QueryExpressionEditsIntentError::IdentityMismatch)
     ));
     let mut altered = plan(&before);
-    altered.intent.edits[0].replacement = "8000".to_owned();
+    let original = altered.intent.edits[0].as_request();
+    let replacement = QueryFragmentExpressionEdit {
+        attribute: original.attribute,
+        order: original.order,
+        expected: original.expected,
+        replacement: "8000",
+    };
+    let replacement =
+        OwnedQueryFragmentExpressionEdit::copy_from_request(&replacement, &mut budget(), &|| false)
+            .unwrap();
+    altered.intent.edits[0] = replacement;
     assert!(matches!(
         altered.requalify_with_budgets(image(&before), &mut budget(), &mut budget(), &|| false),
         Err(QueryExpressionEditsIntentError::Proof(
