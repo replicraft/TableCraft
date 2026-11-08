@@ -16,7 +16,7 @@ impl State {
         if self.can_save_table_draft() {
             return self.queue_table_draft_save();
         }
-        if !self.can_review_saved_query_sql() {
+        if !self.can_edit_saved_query_sql() || self.saved_query_sql_pending() {
             return false;
         }
         let Some(tab) = self.active_object() else {
@@ -32,7 +32,9 @@ impl State {
     }
 
     pub(in crate::workspace) fn consume_active_save_shortcut(&mut self, context: &egui::Context) {
-        if self.can_save_active_object()
+        let saved_sql_editor_ready =
+            self.can_edit_saved_query_sql() && !self.saved_query_sql_pending();
+        if (self.can_save_active_object() || saved_sql_editor_ready)
             && context.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::S))
         {
             self.queue_active_save();

@@ -278,6 +278,8 @@ impl Preview {
                     self.state.error = Some(self.state.localizer.text("query-mock-error"));
                 }
             }
+            Action::ReviewSavedQuerySql { request } => self.refuse_saved_sql_save(request),
+            Action::SavedQuerySqlClose { result } => self.finish_saved_sql_close(result),
             Action::InspectSavedQuery { target } => self.inspect_saved(target),
             Action::RunSavedQuery { target, parameters } => {
                 if self.state.can_run_saved_query(&target, &parameters) {

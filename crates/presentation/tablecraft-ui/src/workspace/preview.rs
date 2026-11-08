@@ -16,6 +16,7 @@ mod queries;
 mod query_actions;
 mod query_design;
 mod restart;
+mod saved_sql;
 mod schema;
 mod totals;
 

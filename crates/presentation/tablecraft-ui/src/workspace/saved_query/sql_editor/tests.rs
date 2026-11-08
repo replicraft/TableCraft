@@ -1,7 +1,7 @@
 use crate::workspace::active_save::tests::{harness, inspected_state};
 use crate::workspace::{Action, SavedQuerySqlEligibility};
 use egui::{Event, Key, Modifiers, accesskit::Role};
-use egui_kittest::kittest::Queryable;
+use egui_kittest::kittest::{NodeT, Queryable};
 
 #[test]
 fn inert_sql_is_visible_but_host_opt_in_is_required_for_editing_and_save() {
@@ -68,8 +68,8 @@ fn qat_save_emits_exact_owned_text_and_disables_run_for_the_dirty_definition() {
 
 #[test]
 fn shortcut_captures_an_editor_update_from_the_same_frame_after_widgets() {
-    let (mut state, target) = inspected_state(true);
-    assert!(state.set_saved_query_sql_text("SELECT 43 AS [Answer];".into()));
+    let (state, target) = inspected_state(true);
+    assert!(!state.can_save_active_object());
     let mut harness = harness(state);
     harness.run_steps(2);
     harness
