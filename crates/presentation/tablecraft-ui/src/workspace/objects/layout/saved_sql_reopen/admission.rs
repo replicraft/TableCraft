@@ -1,6 +1,6 @@
 //! Capacity bounds cover actual transferred carriers, not obsolete row caches.
 use super::super::Preference;
-use super::catalog;
+use super::super::catalog;
 use crate::workspace::{
     State,
     objects::{

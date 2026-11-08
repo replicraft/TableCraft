@@ -1,9 +1,9 @@
 //! Atomic UI publication after an explicitly host-proven query-only replacement.
 mod admission;
-mod boundary;
 mod capture;
-mod catalog;
 mod publication;
+
+use super::{boundary, catalog};
 
 use crate::workspace::{
     State,

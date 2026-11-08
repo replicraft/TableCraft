@@ -1,5 +1,6 @@
 //! Collect all typed source/destination slots before the infallible move.
-use super::{boundary, capture::Prepared, catalog};
+use super::super::{boundary, catalog};
+use super::capture::Prepared;
 use crate::workspace::ObjectKind;
 use crate::{
     Database,

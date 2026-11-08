@@ -1,5 +1,5 @@
 //! Prepare all owned metadata, then collect typed transfer slots before any take.
-use super::{super::restoration, catalog};
+use super::super::{catalog, restoration};
 use crate::workspace::{
     State,
     objects::{MAX_RETAINED_BYTES, ObjectKind, ObjectTarget, Objects, session::Session},
