@@ -15,6 +15,8 @@ pub(super) enum CompletionFacts {
     },
     Schema(Option<SchemaChange>),
     Query(Option<QueryChange>),
+    #[cfg(feature = "ace16-create")]
+    DatabaseOptions(super::DatabaseOptionsChange),
 }
 
 pub(super) fn apply(
@@ -26,10 +28,12 @@ pub(super) fn apply(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(OfflineWriteSession, Receipt), Failure> {
     let _span = tracing::debug_span!("access.offline.apply").entered();
-    let (matched, changed, schema, query) = match facts {
-        CompletionFacts::Rows { matched, changed } => (matched, changed, None, None),
-        CompletionFacts::Schema(schema) => (None, None, schema, None),
-        CompletionFacts::Query(query) => (None, None, None, query),
+    let (matched, changed, schema, query, database_options) = match facts {
+        CompletionFacts::Rows { matched, changed } => (matched, changed, None, None, None),
+        CompletionFacts::Schema(schema) => (None, None, schema, None, None),
+        CompletionFacts::Query(query) => (None, None, None, query, None),
+        #[cfg(feature = "ace16-create")]
+        CompletionFacts::DatabaseOptions(options) => (None, None, None, None, Some(options)),
     };
     let intent = match plan.encode_intent(budget, cancelled) {
         Ok(intent) => intent,
@@ -82,6 +86,7 @@ pub(super) fn apply(
             changed,
             schema,
             query,
+            database_options,
         },
         RecoveryOutcome::Committed,
         false,

@@ -43,11 +43,11 @@ pub use editing::{
     InsertTarget, QueryDeleteReview, QueryExpressionReopen, QueryExpressionReview,
     QueryInsertReview, QueryUpdateReview, ReplaceError, ReviewedDelete, ReviewedEdit,
     ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression, ReviewedQueryInsert,
-    ReviewedQueryUpdate, ReviewedTableRename, SaveCleanupDisposition, SaveCompletion, SaveFailure,
-    SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveQueryChange,
-    SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
-    SaveStartError, SaveStartFailure, SaveWorker, TableRenameReopen, TableRenameReview,
-    journal_path,
+    ReviewedQueryUpdate, ReviewedTableRename, SaveCleanupDisposition, SaveCompletion,
+    SaveDatabaseOptionsChange, SaveFailure, SaveFailureKind, SaveKnownOutcome, SaveOperation,
+    SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt, SaveReport, SaveRetirementGuarantee,
+    SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
+    TableRenameReopen, TableRenameReview, journal_path,
 };
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,

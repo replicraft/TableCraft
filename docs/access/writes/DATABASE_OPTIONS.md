@@ -71,10 +71,27 @@ options batch. The shared memory storage models protocol behavior, not physical
 filesystem durability. Initial failure, diagnostic and corrected logs remain in
 ignored cache records. Existing TCAT/TCNT/TCAC/TCRN languages are unchanged.
 
-No adapter/runtime/GUI option save, Access comparison or Windows execution is
-supplied by this checkpoint. Existing add-table source admission still assumes
-the original seven-role ledger. Rename V1/V2 still requires its existing inline
-OFF source grammar, so this external option candidate does not yet establish
+The Access adapter now stages reviewed explicit OFF requests through
+`stage_reviewed_disable_name_auto_correct_with_budgets`. It freshly captures the
+same retained exclusive target, checks the complete reviewed original and uses
+the consuming native requalification capability under separate allowances.
+Abandoning staging retains that target without creating a journal. Explicit
+apply uses the existing resizable pair lifecycle without replacing the file.
+Cold/retained recovery and write-free settled confirmation decode only TCDO and
+reconstruct the same native request through its exact checked V2 session.
+
+The allocation-free receipt has a separate
+`DatabaseOptionsChange::NameAutoCorrectDisabled` marker for acknowledged commits
+or verified Replacement images. Original images and rollback retain no such
+marker. Matched/changed rows and table-schema/query changes remain absent.
+Existing cancellation, setup, recovery/finalization and release failures retain
+the same owner and terminal outcomes. Six focused adapter tests are authored;
+their execution remains pending.
+
+No runtime/GUI option command, Access comparison or Windows execution is supplied
+by this checkpoint. Existing add-table source admission still assumes the
+original seven-role ledger. Rename V1/V2 still requires its existing inline OFF
+source grammar, so this external option candidate does not yet establish
 creator-compatible rename or general CRUD composition. Those operations need
 explicit new source/profile qualification and original-intent recovery rather
 than relaxed historical guards.

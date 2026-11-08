@@ -6,6 +6,8 @@ mod add_column;
 #[cfg(feature = "ace16-create")]
 mod add_table;
 mod apply;
+#[cfg(feature = "ace16-create")]
+mod database_options;
 mod delete;
 mod error;
 #[cfg(feature = "ace16-create")]
@@ -28,6 +30,8 @@ mod tests;
 pub use add_column::StagedAddColumn;
 #[cfg(feature = "ace16-create")]
 pub use add_table::StagedAddTable;
+#[cfg(feature = "ace16-create")]
+pub use database_options::StagedDatabaseOptions;
 pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
 #[cfg(feature = "ace16-create")]
@@ -103,6 +107,13 @@ pub enum QueryChange {
     ExpressionSaved,
 }
 
+/// Acknowledged database settings, separate from rows, queries and table schema.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DatabaseOptionsChange {
+    /// Both Track and Perform Name AutoCorrect were explicitly stored as disabled.
+    NameAutoCorrectDisabled,
+}
+
 /// Allocation-free completion data. It is not stdout or a native-save grant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Receipt {
@@ -112,6 +123,7 @@ pub struct Receipt {
     changed: Option<usize>,
     schema: Option<SchemaChange>,
     query: Option<QueryChange>,
+    database_options: Option<DatabaseOptionsChange>,
     retirement: Option<RetirementGuarantee>,
     cleanup: Option<CleanupDisposition>,
 }
@@ -148,6 +160,12 @@ impl Receipt {
     /// return None; record counts and table-schema changes remain separate facts.
     pub const fn query_change(self) -> Option<QueryChange> {
         self.query
+    }
+
+    /// A committed explicit database-option change. Rollback and Original-image
+    /// confirmation return None; no table-schema or affected-row fact is inferred.
+    pub const fn database_options_change(self) -> Option<DatabaseOptionsChange> {
+        self.database_options
     }
 
     /// Acknowledged namespace retirement mechanism, independent of native outcome.

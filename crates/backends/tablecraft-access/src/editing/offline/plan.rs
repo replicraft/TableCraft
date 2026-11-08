@@ -4,7 +4,8 @@ use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeFirstTableIntent, RecoverableAddColumnPlan,
+    NativeDatabaseOptionsIntent, NativeFirstTableIntent, RecoverableAddColumnPlan,
+    RecoverableNativeDatabaseOptionsPlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -17,6 +18,8 @@ use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 pub(super) enum MutationPlan {
+    #[cfg(feature = "ace16-create")]
+    DatabaseOptions(RecoverableNativeDatabaseOptionsPlan),
     QueryExpression(RecoverableNativeQueryExpressionPlan),
     #[cfg(feature = "ace16-create")]
     AddColumn(RecoverableAddColumnPlan),
@@ -37,6 +40,11 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            #[cfg(feature = "ace16-create")]
+            Self::DatabaseOptions(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::DatabaseOptionsIntent),
             Self::QueryExpression(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -78,6 +86,13 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
         let prepared = match self {
+            #[cfg(feature = "ace16-create")]
+            Self::DatabaseOptions(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
             Self::QueryExpression(plan) => {
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
@@ -127,6 +142,8 @@ impl MutationPlan {
 }
 
 pub(super) enum MutationIntent {
+    #[cfg(feature = "ace16-create")]
+    DatabaseOptions(NativeDatabaseOptionsIntent),
     QueryExpression(NativeQueryExpressionIntent),
     #[cfg(feature = "ace16-create")]
     AddColumn(NativeAddColumnIntent),
@@ -145,6 +162,14 @@ pub(super) enum MutationIntent {
 }
 
 impl MutationIntent {
+    pub(super) fn database_options_change(&self) -> Option<super::DatabaseOptionsChange> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::DatabaseOptions(_) => Some(super::DatabaseOptionsChange::NameAutoCorrectDisabled),
+            _ => None,
+        }
+    }
+
     pub(super) fn schema_change(&self) -> Option<SchemaChange> {
         match self {
             #[cfg(feature = "ace16-create")]
@@ -180,6 +205,12 @@ impl MutationIntent {
     ) -> Result<Self, Cause> {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCDO") {
+            return NativeDatabaseOptionsIntent::decode(raw, budget, cancelled)
+                .map(Self::DatabaseOptions)
+                .map_err(Cause::DatabaseOptionsIntent);
+        }
         if raw.starts_with(b"TCQE") {
             return NativeQueryExpressionIntent::decode(raw, budget, cancelled)
                 .map(Self::QueryExpression)

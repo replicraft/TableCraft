@@ -3,8 +3,8 @@ use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, AddTableIntentError, FirstTableError,
-    FirstTableIntentError,
+    AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
+    FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError, QueryExpressionIntentError,
@@ -58,6 +58,10 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Explicit option intent, source admission or complete reconstruction failed.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    DatabaseOptionsIntent(DatabaseOptionsIntentError),
     /// ADD-column framing, source qualification or exact reconstruction failed.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]

@@ -6,8 +6,8 @@ use super::{
 use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    NativeAddColumnIntent, NativeAddTableIntent, NativeFirstTableIntent,
-    qualify_native_add_column_recovery, qualify_native_add_table_recovery,
+    NativeAddColumnIntent, NativeAddTableIntent, NativeDatabaseOptionsIntent,
+    NativeFirstTableIntent, qualify_native_add_column_recovery, qualify_native_add_table_recovery,
     qualify_native_first_table_recovery,
 };
 use tablecraft_ace::{
@@ -50,6 +50,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.recover_pending").entered();
         let mut schema = None;
         let mut query = None;
+        let mut database_options = None;
         let result = (|| {
             let slot = self.slot_mut()?;
             if slot.current.is_some() || slot.state != SessionState::RetainedJournal {
@@ -62,7 +63,12 @@ impl OfflineWriteSession {
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)?;
             schema = intent.schema_change();
             query = intent.query_change();
+            database_options = intent.database_options_change();
             match intent {
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::DatabaseOptions(intent) => {
+                    super::database_options::recover(pair, intent, slot.scope, budget, cancelled)
+                }
                 MutationIntent::QueryExpression(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -250,6 +256,11 @@ impl OfflineWriteSession {
                     } else {
                         None
                     },
+                    database_options: if outcome == RecoveryOutcome::Committed {
+                        database_options
+                    } else {
+                        None
+                    },
                 },
                 outcome,
                 false,
@@ -273,14 +284,28 @@ impl OfflineWriteSession {
         }
         let mut schema = None;
         let mut query = None;
+        let mut database_options = None;
         let result = (|| {
             let slot = self.slot_mut()?;
             let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)?;
             schema = intent.schema_change();
             query = intent.query_change();
+            database_options = intent.database_options_change();
             let (mut target, mut journal) = pair.confirmation_storage().map_err(Cause::Pair)?;
             match intent {
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::DatabaseOptions(intent) => {
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = tablecraft_ace::qualify_native_database_options_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::DatabaseOptionsIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::QueryExpression(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -455,6 +480,11 @@ impl OfflineWriteSession {
                         } else {
                             None
                         },
+                        database_options: if image == VerifiedImage::Replacement {
+                            database_options
+                        } else {
+                            None
+                        },
                     },
                     outcome,
                     true,
@@ -487,7 +517,8 @@ impl OfflineWriteSession {
         let limit = limit
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
-            .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64);
+            .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64);
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

@@ -35,9 +35,10 @@ pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 pub use replacing::ReplaceError;
 pub use save::{
-    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
-    SaveOperation, SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt, SaveReport,
-    SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure,
+    SaveCleanupDisposition, SaveCompletion, SaveDatabaseOptionsChange, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveQueryChange,
+    SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
+    SaveStartError, SaveStartFailure,
 };
 #[cfg(feature = "ace16-create")]
 pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};

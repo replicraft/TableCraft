@@ -81,6 +81,12 @@ pub enum SaveQueryChange {
     ExpressionSaved,
 }
 
+/// Database settings facts, separate from query/schema changes and row counts.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SaveDatabaseOptionsChange {
+    NameAutoCorrectDisabled,
+}
+
 /// Acknowledged namespace retirement, separate from the native data result.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveRetirementGuarantee {
@@ -103,6 +109,7 @@ pub struct SaveReceipt {
     pub changed_rows: Option<usize>,
     pub schema_change: Option<SaveSchemaChange>,
     pub query_change: Option<SaveQueryChange>,
+    pub database_options_change: Option<SaveDatabaseOptionsChange>,
     pub retirement: Option<SaveRetirementGuarantee>,
     pub cleanup: Option<SaveCleanupDisposition>,
 }

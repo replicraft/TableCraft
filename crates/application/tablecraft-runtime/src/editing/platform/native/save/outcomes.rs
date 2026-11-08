@@ -1,19 +1,19 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
 use super::RetainedOwner;
 use crate::editing::save::{
-    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
-    SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt, SaveRetirementGuarantee,
-    SaveSchemaChange, SaveSessionState,
+    SaveCleanupDisposition, SaveCompletion, SaveDatabaseOptionsChange, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt,
+    SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
 };
 use std::error::Error as StdError;
 use tablecraft_access::editing::offline::{
-    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, OpenError, Phase,
-    QueryChange, Receipt, SchemaChange, SessionState, VerifiedImage,
+    Cause, CompletionKind, DatabaseOptionsChange, Failure, KnownOutcome, OfflineWriteSession,
+    OpenError, Phase, QueryChange, Receipt, SchemaChange, SessionState, VerifiedImage,
 };
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
-    FirstTableError, FirstTableIntentError,
+    DatabaseOptionsError, DatabaseOptionsIntentError, FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -121,6 +121,11 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         }),
         query_change: value.query_change().map(|change| match change {
             QueryChange::ExpressionSaved => SaveQueryChange::ExpressionSaved,
+        }),
+        database_options_change: value.database_options_change().map(|change| match change {
+            DatabaseOptionsChange::NameAutoCorrectDisabled => {
+                SaveDatabaseOptionsChange::NameAutoCorrectDisabled
+            }
         }),
         retirement: value.retirement().map(|retirement| match retirement {
             RetirementGuarantee::CapturedParentBarrier => {
@@ -237,6 +242,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::AddTableIntent(error) => add_table_intent_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::AddColumnIntent(error) => add_column_intent_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::DatabaseOptionsIntent(error) => database_options_intent_failure(error),
             _ => None,
         };
     }
@@ -287,6 +294,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddColumnError>() {
         return add_column_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<DatabaseOptionsIntentError>() {
+        return database_options_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<DatabaseOptionsError>() {
+        return database_options_failure(error);
     }
     if let Some(error) = error.downcast_ref::<JournalError>() {
         return journal_failure(error);
@@ -449,6 +464,28 @@ fn add_column_intent_failure(error: &AddColumnIntentError) -> Option<SaveFailure
         AddColumnIntentError::Binding(error) => intent_failure(error),
         AddColumnIntentError::Column(error) => add_column_failure(error),
         AddColumnIntentError::Proof(error) => qualification_failure(error),
+        _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn database_options_failure(error: &DatabaseOptionsError) -> Option<SaveFailureKind> {
+    match error {
+        DatabaseOptionsError::Inspect(error)
+        | DatabaseOptionsError::Create(CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+fn database_options_intent_failure(error: &DatabaseOptionsIntentError) -> Option<SaveFailureKind> {
+    match error {
+        DatabaseOptionsIntentError::Inspect(error) => inspection_failure(error),
+        DatabaseOptionsIntentError::Binding(error) => intent_failure(error),
+        DatabaseOptionsIntentError::Options(error) => database_options_failure(error),
+        DatabaseOptionsIntentError::Proof(error) => qualification_failure(error),
         _ => None,
     }
 }
