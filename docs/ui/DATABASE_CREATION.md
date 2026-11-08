@@ -317,6 +317,30 @@ headless checks do not establish actual Windows execution or native Access
 behavior. The new explicit-open acceptance checks are separate from the
 historical test counts below; native Access comparison remains pending.
 
+## Adding a column to an existing saved table
+
+The native saved-table datasheet still ends with a disabled Click to Add header.
+It is outside the stored fields and cannot select, sort, copy or create a cell.
+The editable gallery described above belongs to unsaved table drafts; it does
+not enable schema changes on an existing table.
+
+The shared runtime has a source-qualified operation for adding a nullable Long
+Integer field with **no default** to a qualified empty ACE 16 table. It is not
+connected to an existing-table naming or save controller. This differs from the
+Number gallery's initial Long Integer declaration with typed default zero.
+A default is persisted field metadata used for new records; painting zero in a
+blank cell cannot substitute for it, and adding a field must not insert a row.
+
+The retained [independent SDK observations](../testing/results/add-column-created-sdk-source-2026-11-08.json)
+show that adding the new zero default also changes catalog/allocation storage
+and adds a property LVAL page. The current definition-only operation cannot make
+that change. Ordinary Number creation therefore remains disabled until its
+property/allocation proof, resizable journal recovery and complete host workflow
+are qualified; see [saved-column limits](../access/writes/ADD_COLUMN.md#existing-table-ui-boundary).
+Populated tables and other Jet/ACE profiles remain separate targets. The retained
+images show the Click to Add header, without establishing this saved-column
+menu, naming, default-property or Save interaction.
+
 ## Click to Add reference boundaries
 
 Microsoft documents explicit Click to Add choices for

@@ -89,10 +89,10 @@ failure.
 The shared runtime selects one declared constructor from actual native index
 metadata. Selection does not grant admission: the selected source proof remains
 complete, and unsupported layouts refuse. This metadata selection is not used
-to reinterpret retained requests during recovery. Three new V2 wire/recovery
-cases and an expanded runtime save/reopen case are authored for the next batch;
-execution remains pending. This is not general populated-table alteration or
-GUI default authoring.
+to reinterpret retained requests during recovery. Three new `TCAC0002`
+wire/recovery cases and the expanded runtime save/reopen case pass in the
+coordinated local batch. This is not general populated-table alteration or GUI
+default authoring.
 
 ## Independent generated-primary SDK observations
 
@@ -112,3 +112,27 @@ complete property-storage/allocation preservation and recovery proof. Existing
 default-zero preservation does not authorize inventing a new field default or
 enabling the ordinary GUI Number-field workflow. All observed SDK dates are
 `1899-12-30T00:00`; this does not qualify native Access timestamp changes.
+
+## Existing-table UI boundary
+
+Saved native datasheets keep Click to Add disabled. The runtime review, consuming
+save worker and whole-content reopen are implemented, but the desktop has no
+existing-column naming/save controller. The current primitive's absent default
+must remain distinct from the [Number gallery's typed-zero declaration](../../ui/DATABASE_CREATION.md#adding-a-column-to-an-existing-saved-table).
+It cannot enable ordinary Number creation by displaying a provisional zero or
+borrowing the unsaved-table gallery's enabled choices.
+
+The retained explicit-zero SDK target grows from 40,960 to 45,056 bytes, changes
+existing pages 3, 4 and 7, and adds property LVAL page 10. Besides a new complete
+property/allocation-preserving target proof, this requires resizable journal
+preparation and matching original-request recovery: the current fixed V1
+`prepare_expected` rejects unequal image lengths. Generic checked resizable V2
+support already exists, but is not an add-column qualification. Frozen
+`TCAC0001`/`TCAC0002` requests continue to mean their original no-default operations.
+
+A complete user-facing slice still needs qualified source eligibility, exact
+new-field declaration/name review, a dedicated schema-save owner, acknowledged
+`ColumnAdded` receipt and guarded reopen. A separate insert must establish omitted
+zero-default behavior while preserving explicit NULL and supplied values. Current
+empty-source, field-count and file-profile limits remain; SDK byte comparisons
+and zero dates do not establish native Access save timing or timestamp parity.
