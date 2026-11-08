@@ -1,7 +1,14 @@
 //! Source-qualified empty-table column candidates, without normal save authority.
 mod build;
+mod common;
+#[cfg(feature = "journal")]
+mod created;
+
 mod preservation;
 mod source;
+
+#[cfg(feature = "journal")]
+pub use created::{CreatedAddColumnCandidate, CreatedAddColumnError};
 
 use super::{CreateDatabaseError, request};
 use crate::{InspectError, NativeImage, header::check};

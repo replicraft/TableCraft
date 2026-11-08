@@ -1,14 +1,12 @@
 //! Actual canonical source roles, without literal user names or creator flags.
 use super::super::{create_ace16_int32_database, profile};
-use super::AddColumnError;
+use super::{AddColumnError, common};
 use crate::{
     FileFormat, InspectError, NativeImage, TableCheck, TableSchema, check_table, format::layout,
     header::check,
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
-
-const COMPARE_CHUNK_BYTES: usize = 16 * 1024;
 
 pub(super) fn names<'a>(
     schema: &'a TableSchema,
@@ -59,21 +57,8 @@ pub(super) fn capture(
     let original = create_ace16_int32_database(schema.name(), &names, &[], budget, cancelled)?;
     // Full structural equality closes catalog/program/allocation and inactive
     // tails. It uses decoded names, never a source hash or remembered creator.
-    if image.as_bytes().len() != original.as_bytes().len() {
+    if !common::equal_image(image.as_bytes(), original.as_bytes(), budget, cancelled)? {
         return Err(AddColumnError::Source);
-    }
-    for (actual, expected) in image
-        .as_bytes()
-        .chunks(COMPARE_CHUNK_BYTES)
-        .zip(original.as_bytes().chunks(COMPARE_CHUNK_BYTES))
-    {
-        check(budget, cancelled)?;
-        budget
-            .charge(Resource::Steps, actual.len() as u64)
-            .map_err(InspectError::from)?;
-        if actual != expected {
-            return Err(AddColumnError::Source);
-        }
     }
     Ok(checked)
 }

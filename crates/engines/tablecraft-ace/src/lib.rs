@@ -33,8 +33,9 @@ pub use creation::{
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use creation::{
-    AddTableError, AddTablePlan, AddTableSourceCapabilities, DatabaseOptionsError,
-    NativeDatabaseOptionsPlan, add_table_source_available, add_table_source_capabilities,
+    AddTableError, AddTablePlan, AddTableSourceCapabilities, CreatedAddColumnCandidate,
+    CreatedAddColumnError, DatabaseOptionsError, NativeDatabaseOptionsPlan,
+    add_table_source_available, add_table_source_capabilities,
 };
 mod encryption;
 mod error;
