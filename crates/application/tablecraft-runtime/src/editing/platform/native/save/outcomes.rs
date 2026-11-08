@@ -464,13 +464,10 @@ fn add_column_intent_failure(error: &AddColumnIntentError) -> Option<SaveFailure
         AddColumnIntentError::Inspect(error) => inspection_failure(error),
         AddColumnIntentError::Binding(error) => intent_failure(error),
         AddColumnIntentError::Column(error) => add_column_failure(error),
-        AddColumnIntentError::CreatedColumn(error) => match error {
+        AddColumnIntentError::CreatedColumn(
             CreatedAddColumnError::Inspect(error)
-            | CreatedAddColumnError::Declaration(CreateDatabaseError::Inspect(error)) => {
-                inspection_failure(error)
-            }
-            _ => None,
-        },
+            | CreatedAddColumnError::Declaration(CreateDatabaseError::Inspect(error)),
+        ) => inspection_failure(error),
         AddColumnIntentError::Proof(error) => qualification_failure(error),
         _ => None,
     }

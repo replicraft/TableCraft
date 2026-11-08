@@ -24,7 +24,7 @@ impl State {
                 return None;
             }
             match &entry.session {
-                Some(Session::Saved { state, .. }) => Some(state),
+                Some(Session::Saved { state, .. }) => Some(state.as_ref()),
                 _ => None,
             }
         })
@@ -42,7 +42,7 @@ impl State {
                 return None;
             }
             match &mut entry.session {
-                Some(Session::Saved { state, .. }) => Some(state),
+                Some(Session::Saved { state, .. }) => Some(state.as_mut()),
                 _ => None,
             }
         })
