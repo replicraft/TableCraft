@@ -1,0 +1,520 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Qualified saved-query GUI Save, recovery, witnessed reopen and atomic draft transfer",
+  "status": "PASS for selected macOS headless gates; broader QueryDef and native Access qualification remain incomplete",
+  "verification_head": "0c14ffef2dd484b27b3745e0339d321507fa7183",
+  "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "native_windows": false,
+  "logical_checks": 113,
+  "workflow_checks": 109,
+  "localization_checks": 4,
+  "counting": "Select the latest run for each filter. Exclude standalone memory cases already covered by saved-query tests. A renamed opening test is the same logical case. Prior runs retain 157 raw executions including repeated checks.",
+  "runs": [
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::query_expression::outcome::tests",
+      "exit_code": 0,
+      "log": ".cache/query-save-status-tablecraft_runtime-editing-query_expression-outcome-tests-20261108.log",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "ed0b68bf17d4444b658d095a3ff925868b4e666cda039ba84b5b7482a1cea595",
+      "tests": [
+        "editing::query_expression::outcome::tests::retained_failure_never_reopens_or_bypasses_its_recovery_owner",
+        "editing::query_expression::outcome::tests::released_current_original_precedes_history_without_inventing_a_receipt",
+        "editing::query_expression::outcome::tests::only_separate_query_replacement_facts_admit_an_acknowledged_after_read"
+      ]
+    },
+    {
+      "filter": "workspace::saved_query_save::tests",
+      "exit_code": 0,
+      "log": ".cache/query-read-cancel-workspace-saved_query_save-tests-20261108.log",
+      "package": "tablecraft_ui",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "8e9de44c1b5b302f0a7663a46197a53b05e779e1394659df3404809fc5da8b71",
+      "tests": [
+        "workspace::saved_query_save::tests::unchanged_review_has_no_native_save_id_receipt_or_recovery_commands",
+        "workspace::saved_query_save::tests::native_terminal_fact_and_full_text_survive_view_publication_and_failed_read_reopen",
+        "workspace::saved_query_save::tests::retained_native_resolution_changes_only_the_accepted_actor_id_and_rejects_stale_events",
+        "workspace::saved_query_save::tests::preparation_owns_the_exact_review_before_binding_a_real_actor_id",
+        "workspace::saved_query_save::tests::failed_actor_start_and_failed_preadmission_preserve_the_original_dirty_review",
+        "workspace::saved_query_save::tests::terminal_and_read_failure_affordances_survive_report_admission_failure",
+        "workspace::saved_query_save::tests::unchanged_reopen_failure_dialog_exposes_only_read_retry_or_return",
+        "workspace::saved_query_save::tests::native_status_dialog_emits_exact_cancel_identity_without_a_cell_edit_dialog",
+        "workspace::saved_query_save::tests::unchanged_read_reopen_escape_requests_cancellation_without_native_save_identity"
+      ]
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "workspace::objects::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-final-tablecraft_ui-workspace-objects--20261108.log",
+      "passed": 21,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "a8515f63e6bea6017220dc64753da0847a1ef9062c828b2940f630eaf3e0892a",
+      "tests": [
+        "workspace::objects::layout::saved_sql_reopen::tests::other_dirty_review_authority_invalidates_without_changing_its_text_revision",
+        "workspace::objects::layout::saved_sql_reopen::tests::wrong_catalog_or_review_refuses_without_touching_the_current_publication",
+        "workspace::objects::layout::saved_sql_reopen::tests::parked_saved_owner_can_resolve_while_clean_table_stays_active",
+        "workspace::objects::layout::saved_sql_reopen::tests::all_dirty_sql_text_errors_tabs_and_scratch_survive_only_target_baseline_resolves",
+        "workspace::objects::layout::saved_sql_reopen::tests::parameter_preferences_and_submitted_spelling_survive_fresh_metadata_reload",
+        "workspace::objects::layout::saved_sql_reopen::tests::foreign_draft_in_another_owner_refuses_without_taking_either_buffer",
+        "workspace::objects::layout::saved_sql_reopen::tests::stale_review_cannot_move_a_newer_user_buffer",
+        "workspace::objects::layout::saved_sql_reopen::tests::large_spare_capacity_moves_without_duplicating_the_raw_draft",
+        "workspace::objects::layout::saved_sql_reopen::tests::injected_prepublication_slot_refusal_preserves_all_original_buffers",
+        "workspace::objects::names::tests::lowest_unused_suggestion_respects_tables_queries_and_ascii_case_without_normalizing_names",
+        "workspace::objects::layout::saved_sql_reopen::tests::large_old_row_cache_does_not_impose_a_half_quota_on_small_transfer",
+        "workspace::objects::layout::saved_sql_reopen::tests::wrong_non_saved_destination_slot_refuses_before_any_owned_take",
+        "workspace::objects::tests::restored_layout_keeps_preferences_but_requires_fresh_rows_and_parameter_declarations",
+        "workspace::objects::tests::saved_parameters_results_and_scratch_sql_have_independent_owners",
+        "workspace::objects::tests::tab_and_full_capacity_limits_refuse_without_eviction_or_replacing_the_current_page",
+        "workspace::objects::tests::layout_sql_restore_advances_revision_or_refuses_before_replacing_the_workspace",
+        "workspace::objects::tests::isolated_publishers_do_not_invent_objects_and_managed_publications_cannot_retarget",
+        "workspace::objects::tests::switching_objects_moves_rows_and_rejects_closed_instance_ids",
+        "workspace::objects::tests::sql_result_origin_parks_with_its_rows_and_never_restores_as_workspace_preferences",
+        "workspace::objects::shortcuts::tests::busy_modal_and_save_owners_consume_close_without_window_or_object_fallback",
+        "workspace::objects::shortcuts::tests::object_chords_emit_exact_instances_without_deleting_sql_or_replacing_pane_shortcuts"
+      ]
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "workspace::saved_query::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-tablecraft_ui-workspace-saved_query--20261108.log",
+      "passed": 45,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "67d4a00b2a315635dc83ea893d40d0d82694816583875f4217253f0431ca828f",
+      "tests": [
+        "workspace::saved_query::prompt::tests::memory::refused_prompt_preserves_result_storage_input_ownership_target_and_queued_actions",
+        "workspace::saved_query::sql::close::tests::direct_and_bulk_close_cannot_bypass_confirmation_and_memory_is_counted",
+        "workspace::saved_query::sql::close::tests::dirty_tab_close_opens_confirmation_and_cancel_preserves_exact_text",
+        "workspace::saved_query::sql::close::tests::explicit_discard_clears_only_the_bound_query_then_close_can_finish",
+        "workspace::saved_query::sql::close::tests::parked_query_save_activates_its_exact_owner_and_retains_draft",
+        "workspace::saved_query::sql::close::tests::readonly_host_eligibility_disables_save_but_allows_explicit_discard",
+        "workspace::saved_query::sql::close::tests::save_returns_original_and_proposed_without_clearing_dirty_state",
+        "workspace::saved_query::sql::close::tests::stale_save_and_discard_leave_newer_text_and_confirmation_intact",
+        "workspace::saved_query::sql::lifecycle::tests::only_exact_accepted_review_resolves_to_the_submitted_text_baseline",
+        "workspace::saved_query::sql::lifecycle::tests::release_and_fail_preserve_exact_dirty_text_baseline_and_revision",
+        "workspace::saved_query::sql::lifecycle::tests::stale_target_changed_text_and_unaccepted_phase_cannot_resolve_or_release",
+        "workspace::saved_query::sql::lifecycle::tests::terminal_callbacks_find_parked_owner_and_refresh_retained_memory",
+        "workspace::saved_query::sql::tests::changed_original_on_reinspection_keeps_dirty_text_and_disables_eligibility",
+        "workspace::saved_query::sql::tests::exact_user_text_is_dirty_and_edit_invalidates_inspection_reply",
+        "workspace::saved_query::sql::tests::explicit_discard_is_bound_to_actual_object_and_text_revision",
+        "workspace::saved_query::sql::tests::failed_and_stale_reviews_keep_text_and_cannot_match_a_newer_aba_revision",
+        "workspace::saved_query::prompt::tests::memory::near_quota_prompt_refuses_an_otherwise_bounded_edit_and_cancel_recovers_headroom",
+        "workspace::saved_query::sql::tests::host_inspection_is_readonly_fact_and_exact_object_identity_is_required",
+        "workspace::saved_query::sql::tests::memory_failure::accepted_review_can_return_to_its_dirty_draft_when_the_report_cannot_fit",
+        "workspace::saved_query::sql::tests::memory_counts_spare_capacities_in_all_owned_strings_and_pending_snapshot",
+        "workspace::saved_query::sql::tests::memory_failure::oversized_failure_report_releases_only_the_matching_review_without_losing_text",
+        "workspace::saved_query::sql::tests::mutation_guards::parked_dirty_sql_blocks_cell_edits_until_the_exact_draft_is_discarded",
+        "workspace::saved_query::sql::tests::ordinary_parameter_reinspection_keeps_sql_text_and_dirty_revision",
+        "workspace::saved_query::sql::tests::parked_saved_session_retains_draft_dirty_revision_and_pending_copies",
+        "workspace::saved_query::prompt::tests::memory::prompt_heap_is_charged_while_open_and_cancel_releases_it_without_publishing_inputs",
+        "workspace::saved_query::prompt::tests::final_confirmation_commits_once_and_retains_changed_input_result_invalidation",
+        "workspace::saved_query::prompt::tests::pointer_focus_and_oversized_paste_in_one_frame_cannot_bypass_parameter_guard",
+        "workspace::saved_query::prompt::tests::oversized_parameter_events_preserve_the_literal_and_require_a_real_correction",
+        "workspace::saved_query::tests::inspected_parameters_require_explicit_value_type_and_preserve_sql_result_slot",
+        "workspace::saved_query::prompt::tests::parameter_undo_restores_longer_unicode_text_and_redo_keeps_committed_results_untouched",
+        "workspace::saved_query::sql_editor::tests::saved_sql_layout_uses_a_bounded_viewport_and_keeps_text_unchanged",
+        "workspace::saved_query::sql_editor::tests::inert_sql_is_visible_but_host_opt_in_is_required_for_editing_and_save",
+        "workspace::saved_query::sql_editor::tests::qat_save_emits_exact_owned_text_and_disables_run_for_the_dirty_definition",
+        "workspace::saved_query::tests::source_object_request_and_input_binding_reject_stale_results_and_errors",
+        "workspace::saved_query::tests::typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_text",
+        "workspace::saved_query::tests::wrong_saved_result_envelopes_preserve_previous_results_and_allow_a_new_run",
+        "workspace::saved_query::sql_editor::tests::unqualified_sources_have_no_editor_and_no_save_dispatch",
+        "workspace::saved_query::sql_editor::tests::shortcut_captures_an_editor_update_from_the_same_frame_after_widgets",
+        "workspace::saved_query::tests::long_failure_keeps_saved_controls_results_inputs_and_existing_navigation_focus",
+        "workspace::saved_query::tests::replaced_saved_result_surrenders_old_grid_focus_and_shortcuts_follow_visible_query",
+        "workspace::saved_query::tests::object_selection_requires_explicit_open_and_run_emits_exact_typed_parameters",
+        "workspace::saved_query::tests::sequential_parameter_controls_retain_exact_prompt_labels_and_cancel_discards_staging",
+        "workspace::saved_query::prompt::tests::painted_confirmation_group_aligns_with_the_value_field_without_reversing_button_order",
+        "workspace::saved_query::prompt::tests::saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_editor_limits",
+        "workspace::saved_query::prompt::tests::cancelling_staged_input_retains_committed_inputs_results_and_source_identity"
+      ]
+    },
+    {
+      "package": "tablecraft_desktop",
+      "filter": "workspace::editing::query_definition::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-final-tablecraft_desktop-workspace-editing-query_definition--20261108.log",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "57947027335cc8940e4818aa34c302b55c52ad5c6269aab2f194a815c1c8b916",
+      "tests": [
+        "workspace::editing::query_definition::tests::cancelling_unlocked_review_preserves_exact_text_and_creates_no_save_owner",
+        "workspace::editing::query_definition::tests::guards::stale_close_save_cannot_retag_an_existing_accepted_sql_lifecycle",
+        "workspace::editing::query_definition::tests::stale_target_release_preserves_dirty_original_and_proposed_text_without_retry",
+        "workspace::editing::query_definition::tests::guards::unchanged_review_witness_failure_never_invents_saved_or_original_facts",
+        "workspace::editing::query_definition::tests::formatting_only_save_requires_fresh_witness_and_never_starts_native_persistence",
+        "workspace::editing::query_definition::tests::exact_sql_stays_dirty_until_acknowledged_full_witness_reopen_and_revision_rebind",
+        "workspace::editing::query_definition::tests::failed_witness_reopen_keeps_saved_terminal_facts_and_all_dirty_text",
+        "workspace::editing::query_definition::tests::interaction::editor_save_shortcut_modal_acknowledgement_and_witnessed_run_use_actual_host_dispatch",
+        "workspace::editing::query_definition::tests::workspace::witnessed_query_save_preserves_other_tab_identities_and_exact_scratch_sql"
+      ]
+    },
+    {
+      "package": "tablecraft_desktop",
+      "filter": "workspace::saved::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-final-tablecraft_desktop-workspace-saved--20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "b61fcdc12d32f4bc895221110d5f70492c11b0d68bfc977a3b3a87bdba0c434e",
+      "tests": [
+        "workspace::saved::sql::tests::stale::late_inspection_cannot_replace_newer_exact_user_text_or_aba_revision",
+        "workspace::saved::sql::tests::stale::wrong_runtime_identity_or_request_id_never_publishes_inspection_sql",
+        "workspace::saved::sql::tests::stale::late_reply_for_parked_dirty_owner_cannot_touch_current_saved_query",
+        "workspace::saved::tests::inspect_then_run_preserves_the_sql_slot_and_publishes_noneditable_saved_results",
+        "workspace::saved::tests::excessive_empty_parameter_capacity_refuses_before_dispatch_and_preserves_saved_results",
+        "workspace::saved::tests::stale_saved_actions_cannot_replace_a_new_open_or_dispatch_changed_inputs",
+        "workspace::saved::sql::tests::opening_saved_query_inspects_sql_without_executing_or_changing_bytes"
+      ]
+    },
+    {
+      "package": "tablecraft_desktop",
+      "filter": "workspace::table_drafts::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-table_drafts--20261108.log",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "0480b3cbb032a50ce8daff27b98b470001c8d85ef39294221769bf0d67963b6a",
+      "tests": [
+        "workspace::table_drafts::tests::ordinary_blank_open_does_not_invent_an_initial_table_draft",
+        "workspace::table_drafts::tests::window_close_waits_for_explicit_discard_and_cancel_retains_the_draft",
+        "workspace::table_drafts::tests::deferred_open_preserves_the_exact_request_and_cancel_keeps_the_draft"
+      ]
+    },
+    {
+      "package": "tablecraft_desktop",
+      "filter": "workspace::objects::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-objects--20261108.log",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "129d6e972d9322c0c3487b8e890eee2aa8ab348807147d26615b53d2c16c9c53",
+      "tests": [
+        "workspace::objects::tests::cancelled_unloaded_table_retries_its_own_read_and_keeps_the_other_object",
+        "workspace::objects::tests::failed_object_retry_never_falls_back_and_stale_or_loaded_empty_tabs_do_not_retry",
+        "workspace::objects::tests::old_object_actions_cannot_replace_a_new_source_with_the_same_table_names",
+        "workspace::objects::tests::scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_tabs",
+        "workspace::objects::tests::failed_lazy_filter_restore_retries_the_definition_instead_of_plain_page",
+        "workspace::objects::tests::saved_tabs_inspect_inertly_and_keep_separate_committed_parameters_and_results",
+        "workspace::objects::tests::save_owner_vetoes_other_tabs_and_reopen_revokes_old_object_and_row_rights",
+        "workspace::objects::tests::table_tabs_keep_independent_pages_selections_and_native_view_definitions"
+      ]
+    },
+    {
+      "package": "tablecraft_desktop",
+      "filter": "workspace::editing::table_rename::",
+      "exit_code": 0,
+      "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-editing-table_rename--20261108.log",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "841244bc3c8b99931448c18aa1fce0998ec2ed38759dac85e1a1e63ab50f62de",
+      "tests": [
+        "workspace::editing::table_rename::tests::unchanged_name_is_reviewed_but_does_not_start_a_save_or_open_table",
+        "workspace::editing::table_rename::tests::released_commit_retains_known_result_when_reserved_journal_blocks_reopen",
+        "workspace::editing::table_rename::tests::closed_navigation_rename_saves_once_and_reselects_without_reopening_table",
+        "workspace::editing::table_rename::tests::released_known_replacement_reopens_but_current_original_takes_precedence"
+      ]
+    },
+    {
+      "filter": "localization::",
+      "exit_code": 0,
+      "log": ".cache/query-read-cancel-localization--20261108.log",
+      "package": "tablecraft_ui",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "ee225a96a00b5a9b3b63e9236c372f2c016e2d75079f11940753ffaa888fe09a",
+      "tests": [
+        "localization::tests::cloned_localizers_support_concurrent_formatting_without_changing_literal_arguments",
+        "localization::tests::exceptional_english_fallback_and_format_failures_are_diagnosed_without_payloads",
+        "localization::tests::explicit_locale_selection_uses_native_names_and_japanese_alias",
+        "localization::tests::every_section_has_complete_keys_variables_and_successful_translations"
+      ]
+    }
+  ],
+  "earlier_checkpoint": {
+    "schema": 1,
+    "date": "2026-11-08",
+    "scope": "Initial connected saved SQL controller and atomic rebind headless batch, before the subsequent stale-close guard and ReturnToDraft historical-warning/cleanup correction.",
+    "status": "PASS",
+    "summary_path": ".cache/query-save-rebind-summary-20261108.json",
+    "summary_sha256": "596b4373d66b2f236e6e2347a7edbd408ac204b6e868ec7bc9aea8f728caf4ed",
+    "passed": 93,
+    "failed": 0,
+    "ignored": 0,
+    "runs": [
+      {
+        "package": "tablecraft_ui",
+        "filter": "workspace::objects::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_ui-workspace-objects--20261108.log",
+        "passed": 19,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "dc104e8f2b023780c2d21f96c0a66aa9e350171606e86cf53097f8d4957b6dfc"
+      },
+      {
+        "package": "tablecraft_ui",
+        "filter": "workspace::saved_query::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_ui-workspace-saved_query--20261108.log",
+        "passed": 45,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "67d4a00b2a315635dc83ea893d40d0d82694816583875f4217253f0431ca828f"
+      },
+      {
+        "package": "tablecraft_desktop",
+        "filter": "workspace::editing::query_definition::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-editing-query_definition--20261108.log",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "30fb79e95df869a58bfd68f4a226da9fbc36a11706d2223022e0a0a451254ae9"
+      },
+      {
+        "package": "tablecraft_desktop",
+        "filter": "workspace::saved::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-saved--20261108.log",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "774c64b1aa5acfa3c636a8a1d7d30b7035c0af00901280c535c6134672ca0c0d"
+      },
+      {
+        "package": "tablecraft_desktop",
+        "filter": "workspace::table_drafts::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-table_drafts--20261108.log",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "0480b3cbb032a50ce8daff27b98b470001c8d85ef39294221769bf0d67963b6a"
+      },
+      {
+        "package": "tablecraft_desktop",
+        "filter": "workspace::objects::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-objects--20261108.log",
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "129d6e972d9322c0c3487b8e890eee2aa8ab348807147d26615b53d2c16c9c53"
+      },
+      {
+        "package": "tablecraft_desktop",
+        "filter": "workspace::editing::table_rename::",
+        "exit_code": 0,
+        "log": ".cache/query-save-rebind-tablecraft_desktop-workspace-editing-table_rename--20261108.log",
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "841244bc3c8b99931448c18aa1fce0998ec2ed38759dac85e1a1e63ab50f62de"
+      }
+    ],
+    "limits": [
+      "The two new guard/no-op-failure tests and strengthened warning/cleanup case are pending a focused rerun.",
+      "Retained cleanup presentation includes an explicitly substituted terminal envelope; it does not establish retained-artifact filesystem behavior.",
+      "No Microsoft Access save/reopen, timestamp/event parity or Windows execution comparison is inferred."
+    ]
+  },
+  "strict_lint": {
+    "status": "passed",
+    "log": ".cache/query-save-rebind-lint-final-20261108.log",
+    "sha256": "c60808b9d42b191865e35c25551d310c1bb5142899a5c500c04f576023e1add1",
+    "scope": "ACE/runtime/UI libraries and desktop executable, all features, warnings denied"
+  },
+  "offscreen": {
+    "status": "Eight cases rendered and visually inspected; read-cancellation wording corrected and Japanese case rendered and inspected again",
+    "renderer": "Existing egui_kittest WGPU offscreen renderer; GPU adapter identity not captured",
+    "input_conventions": "Windows emulation",
+    "native_authority": false,
+    "cases": [
+      {
+        "mode": "save-pending",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          820
+        ],
+        "scale": 1,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/en-US-light-saved-query-sql-save-pending.png",
+        "pixels": [
+          1280,
+          820
+        ],
+        "sha256": "a9f2aeba9cdc32b1cf769ff39af114bf0e666521b12aa1cd81577fb0d86c66e0"
+      },
+      {
+        "mode": "save-terminal",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          900,
+          580
+        ],
+        "scale": 1.25,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/en-US-dark-saved-query-sql-save-terminal@1.25x.png",
+        "pixels": [
+          1125,
+          725
+        ],
+        "sha256": "e3d2e7973fc2aef02565ff8153540a1720cc42a9571dd38ce4705b87a01659a2"
+      },
+      {
+        "mode": "save-retained",
+        "locale": "de",
+        "theme": "dark",
+        "logical_size": [
+          900,
+          580
+        ],
+        "scale": 1.25,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/de-dark-saved-query-sql-save-retained@1.25x.png",
+        "pixels": [
+          1125,
+          725
+        ],
+        "sha256": "77f60ec1c77ee80c35d08def0e53a120033b6a1776af73c164fdd7d5949c990d"
+      },
+      {
+        "mode": "save-diagnosis",
+        "locale": "ja",
+        "theme": "light",
+        "logical_size": [
+          1100,
+          720
+        ],
+        "scale": 1,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/ja-light-saved-query-sql-save-diagnosis.png",
+        "pixels": [
+          1100,
+          720
+        ],
+        "sha256": "691315263319671bc3b452a7bd78fbe919d7a13ed171c575fb1e24ff7e9a21e6"
+      },
+      {
+        "mode": "save-reopen-failed",
+        "locale": "de",
+        "theme": "light",
+        "logical_size": [
+          1100,
+          720
+        ],
+        "scale": 1,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/de-light-saved-query-sql-save-reopen-failed.png",
+        "pixels": [
+          1100,
+          720
+        ],
+        "sha256": "85433195afad94401011f9e348ec5cc54b0ebc5447c53d270f33119d5947fe44"
+      },
+      {
+        "mode": "unchanged-reopening",
+        "locale": "ru",
+        "theme": "dark",
+        "logical_size": [
+          900,
+          580
+        ],
+        "scale": 1.25,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/ru-dark-saved-query-sql-unchanged-reopening@1.25x.png",
+        "pixels": [
+          1125,
+          725
+        ],
+        "sha256": "daffece1b2398bf28feb2ea9558e4f7fbeb136433e2993dfc39e6aaecd10e0a7"
+      },
+      {
+        "mode": "unchanged-reopen-failed",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          820
+        ],
+        "scale": 1,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/en-US-light-saved-query-sql-unchanged-reopen-failed.png",
+        "pixels": [
+          1280,
+          820
+        ],
+        "sha256": "7f89fcdfaa1899b56083fe507cfb1924afd1d3a6991079a506701aadd7ba731f"
+      },
+      {
+        "mode": "unchanged-cancelled",
+        "locale": "ja",
+        "theme": "dark",
+        "logical_size": [
+          900,
+          580
+        ],
+        "scale": 1.25,
+        "image": ".cache/ui-previews/saved-query-sql-status-20261108/ja-dark-saved-query-sql-unchanged-cancelled@1.25x.png",
+        "pixels": [
+          1125,
+          725
+        ],
+        "sha256": "2afe5a3ac7cefd808fcaeeee24c27516e96875762f9a09da5e8315741440d7af"
+      }
+    ],
+    "review": [
+      "Primary reviewed German failed-reopen, Russian unchanged read, English unchanged-read failure and Japanese cancellation. Delegate reviewed English pending/terminal, German retained recovery and Japanese diagnosis.",
+      "All modal content and localized controls fit at the recorded viewport and scale. Background commands remain disabled; narrow Ribbon layouts use their existing horizontal scroll.",
+      "The unchanged-read cancellation initially reused native-save waiting text. It now uses read-specific copy in all eight catalogs; the revised Japanese image was reopened and its text fits.",
+      "No corresponding Access status capture exists. These are synthetic presentation adaptations, not native save or Access interaction evidence."
+    ]
+  },
+  "earlier_findings": [
+    {
+      "kind": "strict lint",
+      "log": ".cache/query-save-rebind-lint-20261108.log",
+      "finding": "Two style diagnostics in admission guards; corrected strict gate passes."
+    },
+    {
+      "kind": "example build/formatter",
+      "log": ".cache/query-save-status-visual-build-20261108.log",
+      "finding": "Nested example module needed an explicit path; corrected build and formatter pass."
+    }
+  ],
+  "limits": [
+    "Native writer admits one unencoded ACE16 code5/subversion0 saved query with five fragments and an Answer Int32 literal of unchanged UTF16 payload length. General QueryDef CRUD remains unfinished.",
+    "Other dirty-query transfer has shared-UI proof; it does not qualify multi-query native writes under the current engine source profile.",
+    "A substituted terminal cleanup envelope tests presentation only, not retained-artifact filesystem behavior.",
+    "Microsoft Access save/reopen, timestamps/events and Windows execution remain unqualified."
+  ],
+  "checks": {
+    "rustfmt": {
+      "status": "passed",
+      "log": ".cache/query-save-rebind-format-current-20261108.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    },
+    "documentation_links": {
+      "status": "passed",
+      "log": ".cache/query-save-rebind-links-current-20261108.log",
+      "sha256": "f361129fe29ece845dae23d3b6139d45387131e599f8d20dc190c6747fef8f64"
+    },
+    "dependency_boundaries": {
+      "status": "passed",
+      "log": ".cache/query-save-rebind-boundaries-20261108.log",
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a"
+    }
+  }
+}

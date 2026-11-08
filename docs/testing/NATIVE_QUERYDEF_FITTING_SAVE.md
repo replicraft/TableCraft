@@ -3,9 +3,9 @@
 On 8 November 2026, an original Jackcess 5.0.4 fixture retained one native SELECT
 while its stored projection changed from `42` to `43`. The complete independent
 raw AFTER image equals the complete SDK-produced AFTER image. This establishes
-an expression-only byte oracle. The engine now has an unpublished candidate
-planner for the closed profile below; **no CLI or GUI QueryDef save route is supplied by this
-checkpoint**.
+an expression-only byte oracle. The engine planner, original recovery intent,
+runtime and qualified desktop Save route below build on that closed profile.
+There is no CLI QueryDef save command.
 Native Microsoft Access save/reopen remains unrun.
 
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
@@ -87,8 +87,8 @@ reconstructs the complete candidate through the same strict planner. The same
 retained checked V1 journal is qualified against both complete rebuilt images
 before recovery or settled confirmation. Generic prepare/commit/rollback require
 caller-owned exclusive offline resources and durable journal namespaces; no
-CLI or GUI query-save consumer is implemented. The shared offline adapter and
-runtime services below compose the retained filesystem lifecycle.
+CLI query-save consumer is implemented. The qualified desktop uses the shared
+offline adapter and runtime services below for the retained filesystem lifecycle.
 
 The initial source profile is unencoded ACE 16 code 5/subversion zero with one
 saved query and five fragments, the observed `Answer` alias, and a source-free
@@ -139,8 +139,9 @@ The shared apply path selects mutually exclusive row, schema or query facts.
 
 Five focused adapter cases pass for apply/no-op, source drift and independent
 quotas/cancellation, retained/cold/settled outcomes, closed decoder selection and
-rejected patched AFTER. Scratch SQL lowering, generic query creation, GUI
-Save/Save As and broader native profiles remain later work.
+rejected patched AFTER. Generic query creation, Save As and broader native
+profiles remain later work; the qualified desktop Save uses the complete-SQL
+review and witnessed publication described below.
 
 ## Runtime reviewed existing-query service
 
@@ -159,12 +160,13 @@ matching fresh bytes; it cannot save or replay the request. Saved-query executio
 remains a separate explicit command. Unsupported platforms issue no capability
 and return unconsumed starts with `UnsupportedPlatform`.
 
-Five runtime cases are authored for complete changed/no-op images, unlocked
-review, busy report retention, source drift, document/target invalidation,
-guarded reopen, and wrong-object/unsupported-expression refusal. These newly
-connected runtime cases are **unrun** at this checkpoint. The desktop only
-handles unsolicited review responses as unavailable; no GUI command dispatch or
-SQL-editor persistence is enabled by this service.
+The five runtime cases pass in the completed SQL/creator batch: complete
+changed/no-op images, unlocked review, busy retention, source drift,
+document/target invalidation, guarded reopen and unsupported-expression refusal.
+The subsequent [initial connected save/rebind batch](results/query-save-rebind-2026-11-08.json)
+passes seven real desktop controller cases. The [application contract](../application/SAVED_QUERY_EDITING.md)
+keeps the exact SQL/witness lifecycle, parked-draft transfer, presentation limits
+and subsequent focused corrections distinct from this SDK reference.
 
 ## Runtime outcome-facts checkpoint
 
@@ -190,8 +192,8 @@ it must not invent a journal commit or treat a failed original outcome as that
 review. Three focused outcome-facts tests now pass in the
 [saved-query lifecycle gate](results/query-save-lifecycle-2026-11-08.json), alongside
 nine shared status cases and two bounded review-report cases. This library
-extraction does not enable GUI editing; the separate desktop integration remains
-unfinished at this checkpoint.
+extraction alone did not enable GUI editing. The subsequent qualified desktop
+integration is covered by the [current application contract](../application/SAVED_QUERY_EDITING.md).
 
 ## Required proof before a normal native save
 
@@ -224,7 +226,7 @@ comparison; ACE owns storage qualification. Saving must retain declared
 parameters, query-callable expression syntax and definition ownership without
 binding parameter values, scanning sources or changing external/named/domain
 namespaces. The constant-only reference does not qualify those broader shapes.
-Normal Save/Save As, new QueryDef creation and cross-profile qualification
+General Save/Save As, new QueryDef creation and cross-profile qualification
 remain separate implementation work. Creating a query in an existing SDK source
 also inserts catalog/fragment records and maintains three native indexes; the
 one-byte save observation does not remove that requirement. The current

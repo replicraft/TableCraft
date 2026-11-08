@@ -56,6 +56,54 @@ The editor, unsaved notice and close confirmation remain TableCraft adaptations.
 These frames establish neither native Access save interaction nor pixel parity;
 no native app windows were opened.
 
+### Save-status variants — 8 November 2026
+
+The same `TABLECRAFT_PREVIEW_SAVED_SQL` setting additionally accepts eight
+query-status modes. They use the shared typed state hooks and the actual dedicated
+status modal, with illustrative identities and localized mock reports. No native
+review, SaveWorker, database, journal or real read witness exists in this renderer.
+The eight status cases below were rendered and visually inspected on macOS
+14.7.2 ARM64, using the existing WGPU offscreen renderer and Windows input
+emulation. The [save lifecycle record](../testing/results/query-save-rebind-2026-11-08.json)
+pins actual images, sizes and scales. GPU adapter identity was not captured.
+The earlier seven editor/close captures remain separate evidence.
+
+`save-pending` shows cancellation during an illustrated native save;
+`save-terminal` shows its acknowledgement control. `save-retained` enables
+Recover/Release, while `save-diagnosis` exposes neither unavailable operation.
+`save-reopen-failed` keeps the illustrated saved kind beside the read failure and
+Retry/Return controls. `unchanged-reopening`, `unchanged-reopen-failed` and
+`unchanged-cancelled` illustrate the separate read-only unchanged-review identity,
+including cancellation and retry/return without a native save ID or Saved receipt.
+These modes retain the existing scene, host, locale, theme, size, scale and
+exclusive-workflow environment contract and the `-sql-MODE` filename suffix.
+
+| Rendered mode | Locale/theme | Logical size | Scale |
+| --- | --- | --- | --- |
+| save-pending | en-US/light | 1280 × 820 | 1× |
+| save-terminal | en-US/dark | 900 × 580 | 1.25× |
+| save-retained | de/dark | 900 × 580 | 1.25× |
+| save-diagnosis | ja/light | 1100 × 720 | 1× |
+| save-reopen-failed | de/light | 1100 × 720 | 1× |
+| unchanged-reopening | ru/dark | 900 × 580 | 1.25× |
+| unchanged-reopen-failed | en-US/light | 1280 × 820 | 1× |
+| unchanged-cancelled | ja/dark | 900 × 580 | 1.25× |
+
+For example, replace `TABLECRAFT_PREVIEW_SAVED_SQL=dirty` in the command above
+with `save-retained`, and choose the desired locale/theme/size/scale. Pending
+spinners use bounded frame settling. The passing helper checks exact SQL,
+target/draft/request/review/operation identity, stale identity refusal, modal
+bounds and label painting, available controls and disabled background editing.
+All reviewed text and controls fit. Narrow localized Ribbons retain horizontal
+scrolling. The unchanged-read cancellation initially reused save-result waiting
+text; all catalogs now use read-specific wording, and the Japanese cancellation
+frame was rendered and inspected again after that correction.
+These remain explicit offscreen adaptations: there is no corresponding Access
+SQL-editor, query-close or save-status capture. The
+[current save contract](DESKTOP.md#saving-an-existing-query-definition--8-november-2026)
+separately describes the real reviewed save, acknowledgement, whole-file witness,
+atomic preservation of other SQL drafts and formatting-only read-proof path.
+
 ## Persisted table naming — 8 November 2026
 
 The [restricted rename workflow](../access/writes/TABLE_RENAME.md) has three

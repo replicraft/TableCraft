@@ -9,15 +9,17 @@ its prompt make no changes; recovery requires an explicit action.
 Opening a saved query now follows parameter inspection with inert runtime SQL
 inspection. The current native writer can qualify an existing constant SELECT;
 other definitions remain unavailable for SQL editing. Inspection neither runs the
-query nor issues a write capability. The desktop keeps SQL editing disabled while
-the consuming save/recovery/reopen workflow is being connected.
+query nor issues a write capability. Supported native hosts now enable the
+[qualified Save workflow](#saving-an-existing-query-definition--8-november-2026)
+after the source passes native qualification.
 
 Shared presentation state retains exact original and proposed SQL per object,
 including parked tabs. Close decisions bind to the actual object and text revision;
 stale callbacks cannot discard or resolve a newer draft. Open, Create and window
 close retain their requested transition while each dirty object is confirmed.
-Unrelated mutations are blocked while saved SQL is dirty because the current
-workspace preference restore does not retain those drafts across a source change.
+Unrelated mutations remain blocked while saved SQL is dirty. A successful
+query-only witnessed replacement uses its dedicated atomic transfer to preserve
+all query drafts across the new document revision.
 
 The saved SQL editor and its close prompt are visual adaptations: no retained
 Access capture exists for those surfaces. The
@@ -959,6 +961,59 @@ supply the name/type behavior; the retained Access captures continue to govern
 workspace density, grouping and selection. Action/pass-through/unsupported query
 declarations remain visible and report errors, without provider or VBA execution.
 See the [runtime boundaries](../application/RUNTIME.md#native-saved-queries-and-declared-parameters).
+
+### Saving an existing query definition — 8 November 2026
+
+Inert SQL inspection now supplies a source-bound editor for the qualified native
+constant SELECT profile. Quick Access Save and Ctrl/Cmd+S capture the current
+widget text, document revision, query ID/name and draft revision together. Dirty
+SQL disables Run; Save and reopen never execute the query. Scratch SQL and saved
+queries retain separate targets and drafts.
+
+The writer currently admits only a canonical nonnegative Int32 literal in a
+source-free `SELECT <literal> AS Answer`, with the replacement occupying the same
+native expression span. The ACE 16 source must pass the engine's complete
+metadata, storage-ownership and preservation checks, including the current
+requirement that the database contain exactly one query. Query table sources,
+parameters, other aliases/clauses, compiled caches, other file profiles and broader saved
+query shapes do not gain write support from read or parser support. Leading-zero,
+parenthesized, signed, decimal, exponent and radix spellings cannot be silently
+normalized into this writer. This is not general QueryDef creation, deletion,
+renaming or SQL-definition editing; see the
+[native fitting-expression boundary](../testing/NATIVE_QUERYDEF_FITTING_SAVE.md).
+
+A complete original/proposed SQL review precedes the consuming save worker.
+Status remains query-owned through cancellation, retained recovery and tab/view
+changes. A terminal receipt alone does not mark the visible SQL saved. After
+acknowledgement of a known replacement, the host must reopen the entire expected
+file image and publish a fresh catalog through an atomic draft rebind. The exact
+submitted text becomes the selected query's baseline only then. Other raw saved
+query and scratch SQL drafts are retained under the fresh document revision;
+stale pending reviews and result handles do not become fresh authority. Unrelated
+unsaved table drafts block this save workflow.
+
+A formatting-only edit whose admitted expression is unchanged skips the save
+worker and journal entirely. It still requires the complete unchanged-image read
+proof and the same atomic publication before clearing the dirty state. There is
+no fabricated native save ID or commit receipt. Submitted formatting remains a
+presentation draft/baseline; this branch does not rewrite native query storage.
+
+The dedicated status surface offers recovery or resource release only when the
+retained actor reports those capabilities. Save cancellation remains a request
+until its actual outcome is known. A failed or cancelled witnessed read keeps
+the draft and any known persisted outcome visible, with explicit read-only retry
+or **Return to SQL draft**. Returning preserves dirty text and the save/read
+warning, releases the presentation review and cancels a deferred close; it does
+not roll back a committed file, mark the SQL saved or retry a write. Memory-limit
+fallbacks retain terminal kind and recovery controls without requiring another
+report-string allocation. No runtime or native capability is created by the UI
+status DTOs.
+
+The SQL editor, close confirmation and save-status modal have no corresponding
+retained Access capture. Their [offscreen presentation record](PRESENTATION_PREVIEW.md#saved-query-sql-editor-and-close-states--8-november-2026)
+distinguishes the seven editor/close renders from eight completed status variants. These
+surfaces remain adaptations; native Windows/Access save interaction, timestamps
+and general QueryDef CRUD are not qualified by the headless workflow.
 
 The following macOS observations predate the staged modal presentation. The
 native preview was exercised against an independently built raw ACE-shaped

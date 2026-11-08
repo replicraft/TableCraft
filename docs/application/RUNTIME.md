@@ -1639,3 +1639,15 @@ The [completed prior 72-test SQL/creator batch](../testing/results/sql-creator-f
 passes the earlier query, column and creator rename services. It predates the
 option service and shared expected-image copy extraction; those new tests and
 rewired-consumer regressions are not included in its passing count.
+
+## Guarded saved-query SQL edits
+
+The [saved-query editing contract](SAVED_QUERY_EDITING.md) defines complete SQL
+review, consuming save/status ownership, semantic no-op witness reads and atomic
+new-revision publication retaining other active/parked drafts. Query facts remain
+separate from row/schema/settings outcomes. Only acknowledged known AFTER or an
+explicitly unchanged review followed by the same successful full-image witness
+can resolve exact visible text. Failed/original outcomes preserve dirty drafts;
+Open/Create/close and unrelated writes cannot bypass them. This bounded existing
+constant SELECT route does not establish general QueryDef creation/Save As,
+Access 97–2019 write parity or native Microsoft Access save behavior.

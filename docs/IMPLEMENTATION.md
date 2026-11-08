@@ -7,15 +7,19 @@ it. Shared UI retains exact object-owned drafts, including parked tabs, and
 binds close decisions and review callbacks to the actual text revision. QAT and
 keyboard Save capture text after the current frame's editor changes. Dirty SQL
 disables the saved query's Run command; deferred Open/Create/window-close
-transitions preserve drafts until explicit confirmation. Production SQL editing
-remains disabled while its consuming save/recovery/reopen controller is connected.
+transitions preserve drafts until explicit confirmation. Supported native hosts
+now enable the qualified constant-SELECT Save route. A successful native save
+requires acknowledgement and a fresh full-image witness before atomic publication
+clears the selected draft. Other drafts and tab identities survive; stale row
+results and review authority invalidate. Formatting-only saves use a read proof
+without a journal or invented save receipt. General QueryDef CRUD remains unfinished.
 
 The explicit runtime Name AutoCorrect OFF service now owns review, save and
 full-image guarded reopen. Native metadata distinguishes an absent declaration,
 explicit OFF and other stored values without guessing an enabled default. The
 desktop has not enabled this option's UI.
 
-The [focused workflow record](testing/results/saved-sql-options-workflows-2026-11-08.json)
+The earlier [focused workflow record](testing/results/saved-sql-options-workflows-2026-11-08.json)
 records 105 passing tests across native metadata, runtime options/reopen services,
 saved-query presentation, object sessions and headless desktop workflows. Strict
 affected-library/desktop lint passes after correcting session allocation and
@@ -23,6 +27,16 @@ error-pattern findings. Initial compile, UI-test and lint failures remain
 separate from passing corrected gates. These are macOS/headless checks, not
 Microsoft Access or Windows execution, general QueryDef CRUD, or full native
 compatibility qualification.
+
+The subsequent [saved-query lifecycle record](testing/results/query-save-rebind-2026-11-08.json)
+retains 113 current logical checks: 109 workflow cases plus four localization
+checks. Nine desktop cases include actual editor/Save/report/reopen/Run dispatch,
+formatting-only verification, stale source/close events and failed refreshes.
+Eleven shared ownership cases include other dirty drafts, capacity-preserving
+buffer moves and refusal before publication. Strict affected-package lint passes.
+Eight light/dark localized save-status frames were rendered and inspected
+offscreen; the read-cancellation wording follow-up was rendered again. These
+surfaces remain adaptations without corresponding Access captures.
 
 ## Adaptive encryption and persisted rename — 8 November 2026
 
