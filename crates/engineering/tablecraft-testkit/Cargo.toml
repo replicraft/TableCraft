@@ -10,6 +10,7 @@ description = "Independent fixtures and feature-gated shared test support"
 
 [features]
 default = []
+journal-support = ["dep:tablecraft-io", "tablecraft-io/journal"]
 formats-fixtures = ["dep:flate2"]
 ace-support = ["dep:tablecraft-ace", "dep:tablecraft-model"]
 query-support = [

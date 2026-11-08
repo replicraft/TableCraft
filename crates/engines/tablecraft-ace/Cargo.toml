@@ -48,7 +48,7 @@ jiff.workspace = true
 rayon = { workspace = true, optional = true }
 
 [dev-dependencies]
-tablecraft-testkit = { workspace = true, features = ["ace-support"] }
+tablecraft-testkit = { workspace = true, features = ["ace-support", "journal-support"] }
 # Independent fixture encoders and digest goldens stay outside production.
 aes.workspace = true
 cbc.workspace = true

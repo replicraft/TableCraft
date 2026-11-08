@@ -2,20 +2,15 @@
 use super::*;
 use crate::{NativeImage, NativeRecoveryQualificationError, TableRenameError};
 use sha2::{Digest, Sha256};
-use std::{
-    cell::Cell,
-    io::{self, Cursor, Read, Seek, SeekFrom, Write},
-};
+use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::Resource;
-use tablecraft_io::{
-    IoError,
-    journal::{self, DurableStorage, RecoveryOutcome, V1State, inspect_v1},
-};
+use tablecraft_io::journal::{self, DurableStorage, RecoveryOutcome, V1State, inspect_v1};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::canonical_catalog_names::{RenamePair, rename_pair};
 use tablecraft_testkit::fixtures::access::{
     canonical_indexed_rename, canonical_ordinary_indexed::Case as IndexedCase,
 };
+use tablecraft_testkit::support::io::journal::MemoryStorage as Storage;
 
 const SCOPE: CatalogScope = CatalogScope::new(783);
 const BYTES: u64 = 64 * 1024 * 1024;
@@ -247,55 +242,6 @@ fn proof_and_native_pools_are_independent_and_terminal_cancellation_refuses() {
                 ))
             ))
         ));
-    }
-}
-
-// Local storage glue observes exactly this schema journal boundary. Complete raw
-// image construction remains in the shared independent fixture owner above.
-struct Storage {
-    bytes: Cursor<Vec<u8>>,
-    writes: usize,
-}
-
-impl Storage {
-    fn new(bytes: Vec<u8>) -> Self {
-        Self {
-            bytes: Cursor::new(bytes),
-            writes: 0,
-        }
-    }
-}
-
-impl Read for Storage {
-    fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
-        self.bytes.read(output)
-    }
-}
-
-impl Seek for Storage {
-    fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
-        self.bytes.seek(position)
-    }
-}
-
-impl Write for Storage {
-    fn write(&mut self, input: &[u8]) -> io::Result<usize> {
-        self.writes += 1;
-        self.bytes.write(input)
-    }
-
-    fn flush(&mut self) -> io::Result<()> {
-        panic!("flush must not replace the test storage barrier")
-    }
-}
-
-impl DurableStorage for Storage {
-    fn storage_len(&mut self) -> Result<u64, IoError> {
-        Ok(self.bytes.get_ref().len() as u64)
-    }
-
-    fn sync_storage(&mut self) -> Result<(), IoError> {
-        Ok(())
     }
 }
 

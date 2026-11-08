@@ -10,3 +10,6 @@ pub mod ace;
 pub mod cli;
 #[cfg(feature = "query-support")]
 pub mod query;
+
+#[cfg(feature = "journal-support")]
+pub mod io;
