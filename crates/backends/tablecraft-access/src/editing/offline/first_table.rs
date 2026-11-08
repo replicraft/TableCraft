@@ -93,8 +93,7 @@ impl StagedFirstTable {
         super::apply::apply(
             self.session,
             MutationPlan::FirstTable(self.plan),
-            (None, None),
-            Some(schema),
+            super::apply::CompletionFacts::Schema(Some(schema)),
             bundle,
             budget,
             cancelled,

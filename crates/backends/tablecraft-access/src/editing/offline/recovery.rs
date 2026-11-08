@@ -16,8 +16,8 @@ use tablecraft_ace::{
     NativeUpdateProfile, qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
     qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
     qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
-    qualify_native_omitted_insert_recovery, qualify_native_table_rename_recovery,
-    qualify_native_update_recovery,
+    qualify_native_omitted_insert_recovery, qualify_native_query_expression_recovery,
+    qualify_native_table_rename_recovery, qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
@@ -49,6 +49,7 @@ impl OfflineWriteSession {
     ) -> Result<(Self, Receipt), Failure> {
         let _span = tracing::debug_span!("access.offline.recover_pending").entered();
         let mut schema = None;
+        let mut query = None;
         let result = (|| {
             let slot = self.slot_mut()?;
             if slot.current.is_some() || slot.state != SessionState::RetainedJournal {
@@ -60,7 +61,20 @@ impl OfflineWriteSession {
             }
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)?;
             schema = intent.schema_change();
+            query = intent.query_change();
             match intent {
+                MutationIntent::QueryExpression(intent) => {
+                    let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_query_expression_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::QueryExpressionQualification)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::AddColumn(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
@@ -231,6 +245,11 @@ impl OfflineWriteSession {
                     } else {
                         None
                     },
+                    query: if outcome == RecoveryOutcome::Committed {
+                        query
+                    } else {
+                        None
+                    },
                 },
                 outcome,
                 false,
@@ -253,13 +272,26 @@ impl OfflineWriteSession {
             return Err(self.fail(Phase::Setup, cause));
         }
         let mut schema = None;
+        let mut query = None;
         let result = (|| {
             let slot = self.slot_mut()?;
             let pair = slot.pair.as_mut().ok_or(Cause::InvalidState)?;
             let intent = MutationIntent::decode(pair.intent_bytes(), budget, cancelled)?;
             schema = intent.schema_change();
+            query = intent.query_change();
             let (mut target, mut journal) = pair.confirmation_storage().map_err(Cause::Pair)?;
             match intent {
+                MutationIntent::QueryExpression(intent) => {
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_query_expression_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::QueryExpressionQualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::AddColumn(intent) => {
                     let checked =
@@ -415,6 +447,11 @@ impl OfflineWriteSession {
                         changed: None,
                         schema: if image == VerifiedImage::Replacement {
                             schema
+                        } else {
+                            None
+                        },
+                        query: if image == VerifiedImage::Replacement {
+                            query
                         } else {
                             None
                         },

@@ -83,8 +83,7 @@ impl StagedAddColumn {
         super::apply::apply(
             self.session,
             MutationPlan::AddColumn(self.plan),
-            (None, None),
-            Some(SchemaChange::ColumnAdded),
+            super::apply::CompletionFacts::Schema(Some(SchemaChange::ColumnAdded)),
             bundle,
             budget,
             cancelled,

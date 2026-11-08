@@ -153,6 +153,7 @@ fn confirmed_images_keep_observation_only_diagnostics_after_cleanup_failure() {
                     matched: None,
                     changed: None,
                     schema: None,
+                    query: None,
                 },
                 outcome,
                 true,
@@ -200,6 +201,7 @@ fn provisional_native_receipt_does_not_claim_namespace_completion() {
         matched: Some(1),
         changed: Some(1),
         schema: None,
+        query: None,
         retirement: None,
         cleanup: None,
     };

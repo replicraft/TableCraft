@@ -1,24 +1,36 @@
 //! Shared retained lifecycle; action-specific plans supply honest optional counts.
 use super::plan::MutationPlan;
 use super::{
-    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, Receipt,
+    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, Phase, QueryChange, Receipt,
     SchemaChange, SessionState,
 };
 use std::path::Path;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 
+pub(super) enum CompletionFacts {
+    Rows {
+        matched: Option<usize>,
+        changed: Option<usize>,
+    },
+    Schema(Option<SchemaChange>),
+    Query(Option<QueryChange>),
+}
+
 pub(super) fn apply(
     mut session: OfflineWriteSession,
     plan: MutationPlan,
-    counts: (Option<usize>, Option<usize>),
-    schema: Option<SchemaChange>,
+    facts: CompletionFacts,
     bundle: &Path,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(OfflineWriteSession, Receipt), Failure> {
     let _span = tracing::debug_span!("access.offline.apply").entered();
-    let (matched, changed) = counts;
+    let (matched, changed, schema, query) = match facts {
+        CompletionFacts::Rows { matched, changed } => (matched, changed, None, None),
+        CompletionFacts::Schema(schema) => (None, None, schema, None),
+        CompletionFacts::Query(query) => (None, None, None, query),
+    };
     let intent = match plan.encode_intent(budget, cancelled) {
         Ok(intent) => intent,
         Err(cause) => return Err(session.fail(Phase::Intent, cause)),
@@ -69,6 +81,7 @@ pub(super) fn apply(
             matched,
             changed,
             schema,
+            query,
         },
         RecoveryOutcome::Committed,
         false,

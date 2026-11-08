@@ -4,8 +4,8 @@ On 8 November 2026, an original Jackcess 5.0.4 fixture retained one native SELEC
 while its stored projection changed from `42` to `43`. The complete independent
 raw AFTER image equals the complete SDK-produced AFTER image. This establishes
 an expression-only byte oracle. The engine now has an unpublished candidate
-planner for the closed profile below; **no adapter, runtime, CLI or GUI QueryDef
-save route is supplied by this evidence or engine checkpoint**.
+planner for the closed profile below; **no runtime, CLI or GUI QueryDef save route
+is supplied by this checkpoint**.
 Native Microsoft Access save/reopen remains unrun.
 
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
@@ -87,7 +87,8 @@ reconstructs the complete candidate through the same strict planner. The same
 retained checked V1 journal is qualified against both complete rebuilt images
 before recovery or settled confirmation. Generic prepare/commit/rollback require
 caller-owned exclusive offline resources and durable journal namespaces; no
-filesystem publication, adapter, runtime, CLI or GUI consumer is implemented.
+runtime, CLI or GUI query-save consumer is implemented. The shared offline
+adapter below now composes the retained filesystem lifecycle.
 
 The initial source profile is unencoded ACE 16 code 5/subversion zero with one
 saved query and five fragments, the observed `Answer` alias, and a source-free
@@ -114,9 +115,33 @@ An explicit ignored SDK test pins the reference BEFORE/AFTER hashes. Seven
 original-intent cases additionally cover independent wire bytes, malformed
 records before allocation, cross-action refusal, stale/tampered requests,
 separate quotas/cancellation, pending/committed/torn-marker recovery and rejected
-patched AFTER images without target writes. At this checkpoint these newly
-authored Rust cases are **unrun**; formatter and source review do not establish
-a passing candidate, persistence route or broader source eligibility.
+patched AFTER images without target writes. The focused engine gate passes five
+candidate cases, seven original-intent cases and the explicit hash-pinned SDK
+BEFORE/AFTER comparison. These results do not qualify Microsoft Access saves or
+broader source eligibility.
+
+## Shared offline adapter checkpoint
+
+`OfflineWriteSession::stage_reviewed_query_expression_with_budgets` accepts the
+engine's reviewed original-request plan, captures fresh bytes on its retained
+exclusive target and reconstructs under separate native/proof pools. Hosts finish
+review/confirmation before acquiring that lease. Staging creates no journal;
+consuming apply encodes TCQE and uses the same retained target/pair lifecycle.
+Failures keep that owner and its original phase/outcome information.
+
+The adapter dispatches TCQE before decoding other actions and never retries a
+failed query decoder as a row or schema action. Active, cold and settled recovery
+use the same checked V1 session after complete native reconstruction. Completion
+uses a distinct `QueryChange::ExpressionSaved` fact, with no matched/changed row
+counts or table-schema change. Rollback and Original-image confirmation report no
+query change; committed/confirmed Replacement can retain the acknowledged fact.
+The shared apply path selects mutually exclusive row, schema or query facts.
+
+Five focused adapter cases are authored for apply/no-op, source drift and
+independent quotas/cancellation, retained/cold/settled outcomes, closed decoder
+selection and rejected patched AFTER. At this checkpoint those adapter cases are
+**unrun**. Runtime query review/save, scratch SQL lowering, generic query creation,
+GUI Save/Save As and broader native profiles remain later work.
 
 ## Required proof before a normal native save
 

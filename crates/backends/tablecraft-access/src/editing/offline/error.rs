@@ -7,7 +7,8 @@ use tablecraft_ace::{
     FirstTableIntentError,
 };
 use tablecraft_ace::{
-    InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameIntentError,
+    InspectError, NativeIntentError, NativeRecoveryQualificationError, QueryExpressionIntentError,
+    QueryExpressionRecoveryError, TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -101,6 +102,12 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddTableIntent(AddTableIntentError),
+    /// Closed existing-query request encoding failed without another decoder retry.
+    #[error(transparent)]
+    QueryExpressionIntent(QueryExpressionIntentError),
+    /// Fresh original query definition, identity or complete image did not qualify.
+    #[error(transparent)]
+    QueryExpressionQualification(QueryExpressionRecoveryError),
     /// Table-rename intent framing or encoding failed without decoder fallback.
     #[error(transparent)]
     TableRenameIntent(TableRenameIntentError),

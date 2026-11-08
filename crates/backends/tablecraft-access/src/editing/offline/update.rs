@@ -159,8 +159,10 @@ impl StagedUpdate {
         super::apply::apply(
             self.session,
             self.plan,
-            (Some(self.matched), Some(self.changed)),
-            None,
+            super::apply::CompletionFacts::Rows {
+                matched: Some(self.matched),
+                changed: Some(self.changed),
+            },
             bundle,
             budget,
             cancelled,

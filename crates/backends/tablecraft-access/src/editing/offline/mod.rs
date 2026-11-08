@@ -12,6 +12,7 @@ mod error;
 mod first_table;
 mod insert;
 mod plan;
+mod query_expression;
 mod recovery;
 mod rename;
 mod reviewed_delete;
@@ -32,6 +33,7 @@ pub use error::{Cause, Failure, OpenError, Phase};
 #[cfg(feature = "ace16-create")]
 pub use first_table::StagedFirstTable;
 pub use insert::{OfflineTableInserter, StagedInsert};
+pub use query_expression::StagedQueryExpression;
 pub use rename::StagedTableRename;
 pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;
@@ -94,6 +96,13 @@ pub enum SchemaChange {
     },
 }
 
+/// Acknowledged query-definition change, separate from table schema and rows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QueryChange {
+    /// An existing query's qualified literal expression was saved without renaming.
+    ExpressionSaved,
+}
+
 /// Allocation-free completion data. It is not stdout or a native-save grant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Receipt {
@@ -102,6 +111,7 @@ pub struct Receipt {
     matched: Option<usize>,
     changed: Option<usize>,
     schema: Option<SchemaChange>,
+    query: Option<QueryChange>,
     retirement: Option<RetirementGuarantee>,
     cleanup: Option<CleanupDisposition>,
 }
@@ -132,6 +142,12 @@ impl Receipt {
     /// confirmation return None; a recovered/confirmed replacement can retain it.
     pub const fn schema_change(self) -> Option<SchemaChange> {
         self.schema
+    }
+
+    /// A committed query-definition change. Original-image confirmation and rollback
+    /// return None; record counts and table-schema changes remain separate facts.
+    pub const fn query_change(self) -> Option<QueryChange> {
+        self.query
     }
 
     /// Acknowledged namespace retirement mechanism, independent of native outcome.

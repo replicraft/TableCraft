@@ -93,8 +93,7 @@ impl StagedAddTable {
         super::apply::apply(
             self.session,
             MutationPlan::AddTable(self.plan),
-            (None, None),
-            Some(schema),
+            super::apply::CompletionFacts::Schema(Some(schema)),
             bundle,
             budget,
             cancelled,

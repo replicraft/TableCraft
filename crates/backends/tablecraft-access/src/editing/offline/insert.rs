@@ -54,8 +54,10 @@ impl StagedInsert {
         super::apply::apply(
             self.session,
             MutationPlan::Insert(self.plan),
-            (None, Some(inserted)),
-            None,
+            super::apply::CompletionFacts::Rows {
+                matched: None,
+                changed: Some(inserted),
+            },
             bundle,
             budget,
             cancelled,

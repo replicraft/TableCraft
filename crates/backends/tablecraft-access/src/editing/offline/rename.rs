@@ -95,8 +95,7 @@ impl StagedTableRename {
         super::apply::apply(
             self.session,
             MutationPlan::TableRename(self.plan),
-            (None, None),
-            schema,
+            super::apply::CompletionFacts::Schema(schema),
             bundle,
             budget,
             cancelled,
