@@ -5,7 +5,7 @@ use tablecraft_core::values::Value;
 use tablecraft_db::Snapshot;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
-    QueryError, UpdateComparisonOptions, UpdateError, plan_batch_update_with_comparison,
+    QueryError, UpdateError, UpdateOptions, plan_batch_update_with_comparison,
     source::{CollationResolver, TextCollationId},
 };
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
@@ -14,7 +14,7 @@ use tablecraft_sql::{ParseLimits, parse_query};
 const FOLD: TextCollationId = TextCollationId::from_host(11);
 const ORDINAL: TextCollationId = TextCollationId::from_host(12);
 
-struct Comparer(bool);
+pub(super) struct Comparer(bool);
 
 impl Collation for Comparer {
     fn compare(&self, left: &str, right: &str) -> Result<Ordering, EvalError> {
@@ -30,7 +30,7 @@ impl Collation for Comparer {
 }
 
 static FOLD_COMPARER: Comparer = Comparer(true);
-static DEFAULT_COMPARER: Comparer = Comparer(false);
+pub(super) static DEFAULT_COMPARER: Comparer = Comparer(false);
 
 #[derive(Default)]
 struct Resolver {
@@ -111,7 +111,8 @@ fn field_resolver_governs_where_and_eager_set_lineage_instead_of_database_defaul
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateComparisonOptions {
+        UpdateOptions {
+            parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
             text_collations: &policies,
@@ -126,6 +127,43 @@ fn field_resolver_governs_where_and_eager_set_lineage_instead_of_database_defaul
     assert!(
         resolver.calls.get() >= 3,
         "WHERE and SET resolve actual field policy"
+    );
+}
+
+#[test]
+fn typed_text_parameters_preserve_the_stored_field_policy_in_where_and_set() {
+    let (editor, calls) = editor();
+    let resolver = Resolver::default();
+    let policies = [None, Some(FOLD), Some(ORDINAL), None];
+    let query = parse_query(
+        "PARAMETERS needle TEXT; UPDATE Items SET Score=IIf(needle=Name,77,0) WHERE Name=needle",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let parameters = [("needle", Value::Text("ALPHA".into()))];
+
+    let result = plan_batch_update_with_comparison(
+        editor,
+        query.query(),
+        &mut budget(),
+        &mut budget(),
+        UpdateOptions {
+            parameters: Some(&parameters),
+            collation: Some(&DEFAULT_COMPARER),
+            collation_resolver: Some(&resolver),
+            text_collations: &policies,
+        },
+        &|| false,
+    )
+    .unwrap();
+
+    assert_eq!(result.matched_rows(), 1);
+    let expected: Recorded = vec![("Score".into(), vec![(0, Value::Int32(77))])];
+    assert_eq!(result.into_backend(), expected);
+    assert_eq!(calls.get(), 1);
+    assert!(
+        resolver.calls.get() >= 3,
+        "both comparison orders retain the field's policy instead of the default"
     );
 }
 
@@ -156,7 +194,8 @@ fn conflicting_or_unknown_field_policies_refuse_before_the_consuming_backend_fin
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateComparisonOptions {
+            UpdateOptions {
+                parameters: None,
                 collation: Some(&DEFAULT_COMPARER),
                 collation_resolver: Some(&resolver),
                 text_collations: &policies,
@@ -181,7 +220,8 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateComparisonOptions {
+            UpdateOptions {
+                parameters: None,
                 text_collations: &policies,
                 ..Default::default()
             },
@@ -210,7 +250,8 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateComparisonOptions {
+        UpdateOptions {
+            parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
             text_collations: &policies,

@@ -396,3 +396,6 @@ fn split_batch_preserves_original_snapshot_and_one_consuming_finish() {
 
 #[path = "editing_columns/comparison.rs"]
 mod comparison;
+
+#[path = "editing_columns/parameters.rs"]
+mod parameters;

@@ -132,7 +132,8 @@ pub(super) fn bind_call(
 /// Reject every accidental retrieval/runtime node, even when not selected at runtime.
 pub(super) fn admitted(expression: &Expr) -> bool {
     match expression {
-        Expr::Literal(_)
+        Expr::Parameter(_)
+        | Expr::Literal(_)
         | Expr::NumericLiteral(_)
         | Expr::DateLiteral(..)
         | Expr::Field { depth: 0, .. } => true,

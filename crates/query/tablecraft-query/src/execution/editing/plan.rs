@@ -8,16 +8,22 @@ use crate::{
     profile::MAX_BIND_BYTES,
     source::{CollationResolver, TextCollationId, TextPolicy, validate_text_collations},
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
 use tablecraft_expressions::{comparison::Collation, logic::Truth, numeric::OperandDeclaration};
 use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
 
-/// Explicit comparison providers and field provenance for one frozen UPDATE.
+/// Explicit typed inputs, comparison providers and field provenance for one frozen UPDATE.
 /// Policy identities remain opaque; this layer never chooses native comparers.
 #[derive(Default)]
-pub struct UpdateComparisonOptions<'a> {
+pub struct UpdateOptions<'a> {
+    /// Exact typed inputs for all declarations. None preserves legacy refusal.
+    /// Values are literal carriers, never SQL fragments or expressions.
+    pub parameters: Option<&'a [(&'a str, Value)]>,
     /// Explicit comparison for expressions without a stored field policy.
     pub collation: Option<&'a dyn Collation>,
     /// Resolve field identities in the source's stable policy namespace.
@@ -78,7 +84,7 @@ pub fn plan_update<E: EditableTable>(
         query,
         false,
         budget,
-        UpdateComparisonOptions {
+        UpdateOptions {
             collation,
             ..Default::default()
         },
@@ -113,7 +119,7 @@ pub fn plan_batch_update<E: EditableBatch>(
         query,
         true,
         budget,
-        UpdateComparisonOptions {
+        UpdateOptions {
             collation,
             ..Default::default()
         },
@@ -140,7 +146,7 @@ pub fn plan_batch_update_with_budgets<E: EditableBatch>(
         query,
         true,
         query_budget,
-        UpdateComparisonOptions {
+        UpdateOptions {
             collation,
             ..Default::default()
         },
@@ -157,7 +163,7 @@ pub fn plan_batch_update_with_comparison<E: EditableBatch>(
     query: &Query,
     query_budget: &mut ResourceBudget,
     backend_budget: &mut ResourceBudget,
-    comparison: UpdateComparisonOptions<'_>,
+    comparison: UpdateOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.batch_plan").entered();
@@ -213,7 +219,7 @@ fn prepare<E: EditableTable>(
     query: &Query,
     multiple: bool,
     budget: &mut ResourceBudget,
-    comparison: UpdateComparisonOptions<'_>,
+    comparison: UpdateOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedUpdate, QueryError> {
     check(budget, cancelled)?;
@@ -240,10 +246,17 @@ fn prepare<E: EditableTable>(
         text_collations: comparison.text_collations,
     };
     let BoundUpdate {
+        parameters,
         assignments,
         filter,
     } = if multiple {
-        bind_batch_update(query, &source, budget, cancelled)?
+        bind_batch_update(
+            query,
+            &source,
+            budget,
+            comparison.parameters.is_some(),
+            cancelled,
+        )?
     } else {
         bind_update(query, &source)?
     };
@@ -297,7 +310,7 @@ fn prepare<E: EditableTable>(
         },
         budget,
     };
-    runtime.tick()?;
+    runtime.bind_parameters(&parameters, comparison.parameters.unwrap_or(&[]), true)?;
 
     let mut matched_rows = 0_usize;
     for (ordinal, row) in snapshot.rows().iter().enumerate() {

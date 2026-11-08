@@ -78,7 +78,7 @@ filesystem resource remains the caller's responsibility.
 
 ## Stored field comparison policies
 
-The optional query `UpdateComparisonOptions` and
+The optional query `UpdateOptions` and
 `plan_batch_update_with_comparison` route preserve field text identities through
 the binder and complete original-row cells, supplying the existing resolver to
 WHERE and SET evaluation. Existing shared-pool and split-pool APIs retain their
@@ -97,6 +97,22 @@ Eager conditional branches retain the existing shared query policy rules: IIf
 merges both result-branch policies. This change does not redefine mixed-policy
 expressions, qualify additional native sort orders or provide missing wildcard,
 clock, random or application contexts.
+
+## Typed query-layer UPDATE parameters
+
+`UpdateOptions.parameters` explicitly admits a complete set of typed literal
+bindings to the neutral batch planner. `None` preserves the existing refusal of
+parameter declarations; `Some` requires every declaration exactly once, with no
+extra inputs. Names follow the query schema comparison policy. Declared carriers,
+text/decimal constraints, finite numbers and scalar/Variant provenance use the
+same validation as retrieval. Parameter text is never parsed as SQL.
+
+Binding and parameter validation precede row evaluation. Every WHERE and SET
+expression still uses the original row, and the backend finish occurs only after
+all rows succeed. Parameter comparison and text validation consume query work
+and observe cancellation. This library capability does not yet enable action
+parameters in the native adapter, runtime review command or desktop prompt flow;
+those consumers continue to refuse them until their source-bound handoff is wired.
 
 ## Retained offline session boundary
 

@@ -1,4 +1,4 @@
-use super::{Binder, resolve};
+use super::{Binder, Parameter, resolve};
 use crate::{QueryError, Source, plan::Expr};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_sql::{
@@ -6,37 +6,50 @@ use tablecraft_sql::{
     select::TableSource,
 };
 
+// Copy, constructor validation, schema-policy validation and scope preparation.
+const PARAMETER_NAME_PASSES: usize = 4;
+
 pub(crate) struct BoundAssignment {
     pub column: usize,
     pub value: Expr,
 }
 
 pub(crate) struct BoundUpdate {
+    pub parameters: Vec<Parameter>,
     pub assignments: Vec<BoundAssignment>,
     pub filter: Option<Expr>,
 }
 
 pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(query, source, false, None, &|| false)
+    bind_assignments(query, source, false, false, None, &|| false)
 }
 
 pub(crate) fn bind_batch_update(
     query: &Query,
     source: &dyn Source,
     budget: &mut ResourceBudget,
+    allow_parameters: bool,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(query, source, true, Some(budget), cancelled)
+    bind_assignments(
+        query,
+        source,
+        true,
+        allow_parameters,
+        Some(budget),
+        cancelled,
+    )
 }
 
 fn bind_assignments(
     query: &Query,
     source: &dyn Source,
     multiple: bool,
+    allow_parameters: bool,
     mut budget: Option<&mut ResourceBudget>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
-    if !query.parameters.is_empty() {
+    if !allow_parameters && !query.parameters.is_empty() {
         return Err(QueryError::Unsupported);
     }
 
@@ -48,6 +61,37 @@ fn bind_assignments(
     };
     if update.assignments.is_empty() || (!multiple && update.assignments.len() != 1) {
         return Err(QueryError::Unsupported);
+    }
+
+    if allow_parameters && !query.parameters.is_empty() {
+        if query.parameters.len() > crate::profile::MAX_PARAMETERS {
+            return Err(QueryError::StructureLimit);
+        }
+        let mut preceding_name_bytes = 0_usize;
+        for (position, declaration) in query.parameters.iter().enumerate() {
+            if cancelled() {
+                return Err(QueryError::Cancelled);
+            }
+            let name_bytes = declaration.name.as_str().len();
+            if name_bytes > crate::profile::SOURCE_SCHEMA_POLICY.max_name_bytes {
+                return Err(QueryError::StructureLimit);
+            }
+            // Prepay declaration validation and every prior-name duplicate
+            // comparison. Retained binder bytes remain covered by MAX_BIND_BYTES.
+            let work = name_bytes
+                .checked_mul(position + PARAMETER_NAME_PASSES)
+                .and_then(|work| work.checked_add(preceding_name_bytes))
+                .and_then(|work| work.checked_add(declaration.data_type.name.len()))
+                .and_then(|work| work.checked_add(declaration.data_type.arguments.len()))
+                .and_then(|work| work.checked_add(1))
+                .ok_or(QueryError::StructureLimit)?;
+            if let Some(budget) = budget.as_deref_mut() {
+                budget.charge(Resource::Steps, work as u64)?;
+            }
+            preceding_name_bytes = preceding_name_bytes
+                .checked_add(name_bytes)
+                .ok_or(QueryError::StructureLimit)?;
+        }
     }
 
     let mut binder = Binder {
@@ -77,6 +121,9 @@ fn bind_assignments(
         policy_visits: 0,
         bytes: 0,
     };
+    binder.parameters = binder.bind_parameters(&query.parameters)?;
+    binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
+
     let relation = binder.relation(
         table,
         &[],
@@ -136,6 +183,7 @@ fn bind_assignments(
     }
 
     Ok(BoundUpdate {
+        parameters: binder.parameters,
         assignments,
         filter,
     })

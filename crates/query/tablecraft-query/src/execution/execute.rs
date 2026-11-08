@@ -1,5 +1,4 @@
 use super::cell::{CellQueryResult, into_scalar};
-use super::context::ParameterValue;
 use super::{ExecutionOptions, ExpressionQueryResult, QueryResult, Runtime};
 use crate::discovery::DiscoveryState;
 use crate::{PreparedQuery, QueryError, Source, plan::PreparedBody};
@@ -195,37 +194,7 @@ impl PreparedQuery {
             budget,
         };
         runtime.tick()?;
-        if context.strict_parameters && parameters.len() != self.parameters.len() {
-            return Err(QueryError::Parameter);
-        }
-        runtime.budget.charge_allocation(
-            self.parameters.len() as u64,
-            std::mem::size_of::<ParameterValue<'_>>() as u64,
-        )?;
-        runtime
-            .parameters
-            .try_reserve_exact(self.parameters.len())
-            .map_err(|_| QueryError::Allocation)?;
-        for declared in &self.parameters {
-            let mut matches = parameters.iter().filter(|(name, _)| {
-                crate::profile::SOURCE_SCHEMA_POLICY
-                    .names
-                    .equals(name, declared.name.as_str())
-            });
-            let (_, value) = matches.next().ok_or(QueryError::Parameter)?;
-            if matches.next().is_some()
-                || !declared.data_type.accepts(value)
-                || matches!(value, Value::Text(text) if text.len() > options.text_limit())
-                || matches!(value, Value::Single(value) if !value.to_float().is_finite())
-                || matches!(value, Value::Double(value) if !value.to_float().is_finite())
-            {
-                return Err(QueryError::Parameter);
-            }
-            runtime.parameters.push(ParameterValue {
-                value,
-                declaration: declared.data_type.declaration(),
-            });
-        }
+        runtime.bind_parameters(&self.parameters, parameters, context.strict_parameters)?;
         runtime.register_external_sources(&self.external_sources)?;
         Ok(runtime)
     }

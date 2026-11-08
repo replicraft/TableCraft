@@ -25,7 +25,7 @@ use tablecraft_db::EditableTable;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_query::{QueryError, UpdateError, UpdatePlan};
 #[cfg(feature = "journal")]
-use tablecraft_query::{UpdateComparisonOptions, source::CollationResolver};
+use tablecraft_query::{UpdateOptions, source::CollationResolver};
 use tablecraft_sql::{
     query::{Query, Statement},
     select::TableSource,
@@ -190,7 +190,8 @@ pub fn plan_recoverable_batch_update_with_comparison(
     let schema = comparison::schema(&image, table, native, cancelled)?;
     let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
     let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;
-    let comparison = UpdateComparisonOptions {
+    let comparison = UpdateOptions {
+        parameters: None,
         collation: Some(collation),
         collation_resolver: Some(resolver),
         text_collations: &policies,
