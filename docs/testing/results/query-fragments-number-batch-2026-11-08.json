@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Topology-preserving native SELECT fragment candidates and Number availability/refusal workflows",
+  "test_head": "1a4abc93a5bca92ebfcfa757abdbc80af8f78274",
+  "normal_checks": 70,
+  "explicit_sdk_checks": 2,
+  "status": "PASS selected macOS headless cases; no native Access or normal broader QueryDef Save admission",
+  "runs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "queries::expression_edit::tests",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-queries-expression_edit-tests-20261108.log",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 1,
+      "log_sha256": "28fd212910ead39721f5e4579ba308a37b5b9580bd5991872000e0684e80ff5e"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::mutation::query_expression_edit::binding::tests",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-table-mutation-query_expression_edit-binding-tests-20261108.log",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 1,
+      "log_sha256": "5b9b27d630c75eee404ec8c87ab5eedba5a218dacc03e3035d4f8d1f7eccb77b"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "queries::fitting::tests",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-queries-fitting-tests-20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 1,
+      "log_sha256": "e7d38a1086568a8e9a776355a2181daed7ebc85b26cd460537a8eb96d1166810"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::query_expression::tests",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-transaction-intent-query_expression-tests-20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "a58d4af2612ed5962a4aad101dc79b03b48da383fbfcd136d7ba46f0db0e5596"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::add_column::",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-creation-add_column--20261108.log",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "e85a084321f2b8258f85ecb095e2681e3d1ddf61448250996047c93f462e2281"
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "editing::offline::add_column::",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_access-editing-offline-add_column--20261108.log",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "0dfbe2073acd87d0cf6b8bba0d8f1fa72380c32bd639a0a975fe63d3deaf4aa8"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::number_column::",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_runtime-tests-number_column--20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "44b78bf4f52dfcf4d0b6de60ec3f5489dce7f943fbf5bfe41bc79280052c951b"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::number_column::availability::tests",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_runtime-editing-platform-number_column-availability-tests-20261108.log",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "06b7f46e670f73a2764a2b3067e0320f58832ae429d9cd13f56dbe47a850654b"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::query_sql::",
+      "explicit_ignored": false,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_runtime-tests-query_sql--20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "52c948cf0ba7746b3a1c59823f7d85d2d020a02e9d647e8991d22be5b19389fc"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "queries::expression_edit::tests::sdk_complete_images",
+      "explicit_ignored": true,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-queries-expression_edit-tests-sdk_complete_images-20261108.log",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "2e3a0d7ade9a35c5b0f5f0ac1bc23be68a4edd47788d8b4a0bedf9102a8faf2b"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::mutation::query_expression_edit::binding::tests::sdk_roots",
+      "explicit_ignored": true,
+      "exit_code": 0,
+      "log": ".cache/query-fragments-number-tablecraft_ace-table-mutation-query_expression_edit-binding-tests-sdk_roots-20261108.log",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "e2c85e6df2e953d8010bee38df46641b8a754d040b352781b776b7f043824649"
+    }
+  ],
+  "build": {
+    "initial": {
+      "exit": 101,
+      "log": ".cache/query-fragments-number-batch-build-20261108.log",
+      "reason": "Ten public documentation omissions; corrected 848e75c6"
+    },
+    "second": {
+      "exit": 101,
+      "log": ".cache/query-fragments-number-corrected-build-20261108.log",
+      "reason": "Two digest Array LowerHex test errors; corrected 1a4abc93 with shared testkit byte formatting"
+    },
+    "passing": {
+      "exit": 0,
+      "log": ".cache/query-fragments-number-verified-build-20261108.log",
+      "selection": "ACE/access/runtime/UI libraries and desktop test binary, all features offline locked"
+    }
+  },
+  "lint": {
+    "initial_exit": 101,
+    "initial_log": ".cache/query-fragments-number-clippy-20261108.log",
+    "finding": "needless_range_loop; corrected 99bf409e retaining explicit request order",
+    "corrected_exit": 0,
+    "corrected_log": ".cache/query-fragments-number-corrected-clippy-20261108.log",
+    "selection": "Five affected packages, libraries and desktop binary, all features -D warnings",
+    "note": "Corrected loop compiled by lint; unit/SDK executions above predate this mechanical loop change. Next coherent batch will test the connected GUI/intent changes."
+  },
+  "static_extraction": {
+    "original_source_sha256": "494d6d3a041f51d1f7211f2eb2b18c453e2da5c71af44efbca82c6f150a7dcfa",
+    "snapshot_verified_against_committed_source": true,
+    "inverse_validation_tokens": true,
+    "physical_ownership_suffix_byte_identical": true,
+    "original_five_row_policy_unchanged": true
+  },
+  "limits": [
+    "Candidate only: TCQE0002 persistence/adapter/runtime full SQL Save remains pending.",
+    "Edited native Memo bodies must prefer inline storage; no cross-page placement.",
+    "No new fragment topology, compiled/cache/property history or older profile qualification.",
+    "Number naming GUI and composed add-column-then-insert case remain pending the next batch.",
+    "Ignored SDK cases were explicitly executed against first-party generated local sources, not counted as ordinary CI passes."
+  ]
+}

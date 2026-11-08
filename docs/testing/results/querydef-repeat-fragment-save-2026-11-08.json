@@ -1,0 +1,715 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Inert SDK repeated-root and same-page expression updates; native candidate follow-up is separate, TCQE0002 normal Save pending, native Access not run.",
+  "recipe": "docs/testing/querydef_existing_save/ExistingQueryRepeatFixture.java",
+  "model": "docs/testing/querydef_existing_save/repeat_model.py",
+  "dependencies": [
+    "docs/testing/querydef_existing_save/model.py"
+  ],
+  "original_source_sha256": "33e0e41c2152f4e7e5aadb18e0978b4f224ee225d8042dc08d70528f37cbca05",
+  "original_source_unchanged": true,
+  "cases": [
+    {
+      "case": "repeat-grow",
+      "before_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-before.accdb",
+      "before_sha256": "33e0e41c2152f4e7e5aadb18e0978b4f224ee225d8042dc08d70528f37cbca05",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow.accdb",
+      "after_sha256": "9c8570f86bdf1687410bc5a670773549d5e1c4c5ae75f336527051ba37099a7b",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow-literal.accdb",
+      "literal_model_sha256": "9c8570f86bdf1687410bc5a670773549d5e1c4c5ae75f336527051ba37099a7b",
+      "edits": [
+        [
+          -2147476548,
+          6,
+          1,
+          "42",
+          "1000"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 54,
+      "changed_pages": [
+        95
+      ],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 0,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            42
+          ],
+          "physical_flags": 0,
+          "physical_span": [
+            390872,
+            390930
+          ],
+          "expression_span": [
+            390901,
+            390917
+          ],
+          "expression_field_hex": "04000080000000000000000034003200",
+          "used_data_end": 45,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390780,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390829
+          ],
+          "expression_field_hex": "0800008000000000000000003100300030003000",
+          "used_data_end": 49,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200080000800000000000000000310030003000300031001d001d0011000d0004002f"
+        }
+      ],
+      "retired_hidden_rows_after": [],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    },
+    {
+      "case": "repeat-shrink",
+      "before_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow.accdb",
+      "before_sha256": "9c8570f86bdf1687410bc5a670773549d5e1c4c5ae75f336527051ba37099a7b",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-shrink.accdb",
+      "after_sha256": "c6f06698c520fb52d3e96426f900f9586b92c1c97ad9472dc1aa02e277ff8bae",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-shrink-literal.accdb",
+      "literal_model_sha256": "c6f06698c520fb52d3e96426f900f9586b92c1c97ad9472dc1aa02e277ff8bae",
+      "edits": [
+        [
+          -2147476548,
+          6,
+          1,
+          "1000",
+          "7"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 6,
+      "changed_pages": [
+        95
+      ],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390780,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390829
+          ],
+          "expression_field_hex": "0800008000000000000000003100300030003000",
+          "used_data_end": 49,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200080000800000000000000000310030003000300031001d001d0011000d0004002f"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390780,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390823
+          ],
+          "expression_field_hex": "0200008000000000000000003700",
+          "used_data_end": 43,
+          "padding_hex": "000000000000",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e00730077006500720002000080000000000000000037000000000000002b001d001d0011000d0004002f"
+        }
+      ],
+      "retired_hidden_rows_after": [],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    },
+    {
+      "case": "repeat-grow-again",
+      "before_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-shrink.accdb",
+      "before_sha256": "c6f06698c520fb52d3e96426f900f9586b92c1c97ad9472dc1aa02e277ff8bae",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow-again.accdb",
+      "after_sha256": "bdc88830640664cf212ffbe024cb98851835c70b938ffd205295399a7e4df0da",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow-again-literal.accdb",
+      "literal_model_sha256": "bdc88830640664cf212ffbe024cb98851835c70b938ffd205295399a7e4df0da",
+      "edits": [
+        [
+          -2147476548,
+          6,
+          1,
+          "7",
+          "1000000"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 34,
+      "changed_pages": [
+        95
+      ],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390780,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390823
+          ],
+          "expression_field_hex": "0200008000000000000000003700",
+          "used_data_end": 43,
+          "padding_hex": "000000000000",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e00730077006500720002000080000000000000000037000000000000002b001d001d0011000d0004002f"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            45
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390712,
+            390780
+          ],
+          "expression_span": [
+            390741,
+            390767
+          ],
+          "expression_field_hex": "0e00008000000000000000003100300030003000300030003000",
+          "used_data_end": 55,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e0073007700650072000e0000800000000000000000310030003000300030003000300037001d001d0011000d0004002f"
+        }
+      ],
+      "retired_hidden_rows_after": [
+        [
+          95,
+          44
+        ]
+      ],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    },
+    {
+      "case": "repeat-noop",
+      "before_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-grow-again.accdb",
+      "before_sha256": "bdc88830640664cf212ffbe024cb98851835c70b938ffd205295399a7e4df0da",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-noop.accdb",
+      "after_sha256": "bdc88830640664cf212ffbe024cb98851835c70b938ffd205295399a7e4df0da",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/repeat-noop-literal.accdb",
+      "literal_model_sha256": "bdc88830640664cf212ffbe024cb98851835c70b938ffd205295399a7e4df0da",
+      "edits": [
+        [
+          -2147476548,
+          6,
+          1,
+          "1000000",
+          "1000000"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 0,
+      "changed_pages": [],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            45
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390712,
+            390780
+          ],
+          "expression_span": [
+            390741,
+            390767
+          ],
+          "expression_field_hex": "0e00008000000000000000003100300030003000300030003000",
+          "used_data_end": 55,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e0073007700650072000e0000800000000000000000310030003000300030003000300037001d001d0011000d0004002f"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            42
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            390872,
+            390930
+          ],
+          "physical_row": [
+            95,
+            45
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390712,
+            390780
+          ],
+          "expression_span": [
+            390741,
+            390767
+          ],
+          "expression_field_hex": "0e00008000000000000000003100300030003000300030003000",
+          "used_data_end": 55,
+          "padding_hex": "",
+          "physical_record_hex": "0800bc1b0080060000000000000000000141006e0073007700650072000e0000800000000000000000310030003000300030003000300037001d001d0011000d0004002f"
+        }
+      ],
+      "retired_hidden_rows_after": [
+        [
+          95,
+          44
+        ]
+      ],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    },
+    {
+      "case": "two-projections",
+      "before_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-before.accdb",
+      "before_sha256": "33e0e41c2152f4e7e5aadb18e0978b4f224ee225d8042dc08d70528f37cbca05",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/two-projections.accdb",
+      "after_sha256": "90db6ebaa3ef3eece0b819e6a11ac5fb91bd9b2c3dd94141d11bc944780bc968",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/two-projections-literal.accdb",
+      "literal_model_sha256": "90db6ebaa3ef3eece0b819e6a11ac5fb91bd9b2c3dd94141d11bc944780bc968",
+      "edits": [
+        [
+          -2147476546,
+          6,
+          96,
+          "95",
+          "1000"
+        ],
+        [
+          -2147476546,
+          6,
+          95,
+          "94",
+          "7000"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 111,
+      "changed_pages": [
+        95
+      ],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            31
+          ],
+          "root_flags": 0,
+          "root_span": [
+            391296,
+            391356
+          ],
+          "physical_row": [
+            95,
+            31
+          ],
+          "physical_flags": 0,
+          "physical_span": [
+            391296,
+            391356
+          ],
+          "expression_span": [
+            391327,
+            391343
+          ],
+          "expression_field_hex": "04000080000000000000000039003500",
+          "used_data_end": 47,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008006000000000000000000604f00740068006500720039003500040000800000000000000000390035002f001f001f0011000d0004002f"
+        },
+        {
+          "logical_row": [
+            95,
+            30
+          ],
+          "root_flags": 0,
+          "root_span": [
+            391356,
+            391416
+          ],
+          "physical_row": [
+            95,
+            30
+          ],
+          "physical_flags": 0,
+          "physical_span": [
+            391356,
+            391416
+          ],
+          "expression_span": [
+            391387,
+            391403
+          ],
+          "expression_field_hex": "04000080000000000000000039003400",
+          "used_data_end": 47,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b0080060000000000000000005f4f00740068006500720039003400040000800000000000000000390034002f001f001f0011000d0004002f"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            31
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            391296,
+            391356
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390778,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390829
+          ],
+          "expression_field_hex": "0800008000000000000000003100300030003000",
+          "used_data_end": 51,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008006000000000000000000604f00740068006500720039003500080000800000000000000000310030003000300033001f001f0011000d0004002f"
+        },
+        {
+          "logical_row": [
+            95,
+            30
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            391356,
+            391416
+          ],
+          "physical_row": [
+            95,
+            45
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390714,
+            390778
+          ],
+          "expression_span": [
+            390745,
+            390765
+          ],
+          "expression_field_hex": "0800008000000000000000003700300030003000",
+          "used_data_end": 51,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b0080060000000000000000005f4f00740068006500720039003400080000800000000000000000370030003000300033001f001f0011000d0004002f"
+        }
+      ],
+      "retired_hidden_rows_after": [],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    },
+    {
+      "case": "projection-where",
+      "before_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-before.accdb",
+      "before_sha256": "33e0e41c2152f4e7e5aadb18e0978b4f224ee225d8042dc08d70528f37cbca05",
+      "after_path": ".cache/querydef-repeat-save-sdk-20261108/files/projection-where.accdb",
+      "after_sha256": "3c437023d5b6d57bc3436e04a8dccba499f8fa77f57250acb4baa3f32c6bab6b",
+      "literal_model_path": ".cache/querydef-repeat-save-sdk-20261108/files/projection-where-literal.accdb",
+      "literal_model_sha256": "3c437023d5b6d57bc3436e04a8dccba499f8fa77f57250acb4baa3f32c6bab6b",
+      "edits": [
+        [
+          -2147476546,
+          6,
+          96,
+          "95",
+          "1000"
+        ],
+        [
+          -2147476546,
+          8,
+          1,
+          "[p].[ID] >= 2",
+          "[p].[ID] >= 1000"
+        ]
+      ],
+      "before_bytes": 393216,
+      "after_bytes": 393216,
+      "complete_model_matches": true,
+      "first_model_differences": [],
+      "changed_bytes": 120,
+      "changed_pages": [
+        95
+      ],
+      "before_carriers": [
+        {
+          "logical_row": [
+            95,
+            31
+          ],
+          "root_flags": 0,
+          "root_span": [
+            391296,
+            391356
+          ],
+          "physical_row": [
+            95,
+            31
+          ],
+          "physical_flags": 0,
+          "physical_span": [
+            391296,
+            391356
+          ],
+          "expression_span": [
+            391327,
+            391343
+          ],
+          "expression_field_hex": "04000080000000000000000039003500",
+          "used_data_end": 47,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008006000000000000000000604f00740068006500720039003500040000800000000000000000390035002f001f001f0011000d0004002f"
+        },
+        {
+          "logical_row": [
+            95,
+            32
+          ],
+          "root_flags": 0,
+          "root_span": [
+            391228,
+            391296
+          ],
+          "physical_row": [
+            95,
+            32
+          ],
+          "physical_flags": 0,
+          "physical_span": [
+            391228,
+            391296
+          ],
+          "expression_span": [
+            391245,
+            391283
+          ],
+          "expression_field_hex": "1a00008000000000000000005b0070005d002e005b00490044005d0020003e003d0020003200",
+          "used_data_end": 55,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008008000000000000000000011a00008000000000000000005b0070005d002e005b00490044005d0020003e003d002000320037001100110011000d00040027"
+        }
+      ],
+      "after_carriers": [
+        {
+          "logical_row": [
+            95,
+            31
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            391296,
+            391356
+          ],
+          "physical_row": [
+            95,
+            44
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390778,
+            390842
+          ],
+          "expression_span": [
+            390809,
+            390829
+          ],
+          "expression_field_hex": "0800008000000000000000003100300030003000",
+          "used_data_end": 51,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008006000000000000000000604f00740068006500720039003500080000800000000000000000310030003000300033001f001f0011000d0004002f"
+        },
+        {
+          "logical_row": [
+            95,
+            32
+          ],
+          "root_flags": 16384,
+          "root_span": [
+            391228,
+            391296
+          ],
+          "physical_row": [
+            95,
+            45
+          ],
+          "physical_flags": 32768,
+          "physical_span": [
+            390704,
+            390778
+          ],
+          "expression_span": [
+            390721,
+            390765
+          ],
+          "expression_field_hex": "2000008000000000000000005b0070005d002e005b00490044005d0020003e003d0020003100300030003000",
+          "used_data_end": 61,
+          "padding_hex": "",
+          "physical_record_hex": "0800be1b008008000000000000000000012000008000000000000000005b0070005d002e005b00490044005d0020003e003d00200031003000300030003d001100110011000d00040027"
+        }
+      ],
+      "retired_hidden_rows_after": [],
+      "unselected_original_records_unchanged": true,
+      "sdk_index_memberships_unchanged": true,
+      "index_signature_pages_unchanged": true
+    }
+  ],
+  "recipe_sha256": "ff0f91f3874d32f3abf7290f9c7ad888f2685604ec87c5bd2ecb9fae4bc0ec80",
+  "model_sha256": "a5e131fc322f64667ab7e5637407d7976ece241d0f52fddcb1e68018f355496c",
+  "raw_framing_sha256": "2a15add89dea24331d2fd40c727f15262add420b018f2c5d5f56b4295e17bd48",
+  "sdk_sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+  "sdk_observations_sha256": "04f557aa7d3174dcb22c12c363875af2cac415473f1de9432fb321b5f7ed7ecc",
+  "sdk_stderr": "",
+  "execution": {
+    "javac_exit": 0,
+    "java_exit": 0,
+    "independent_model_exit": 0,
+    "cargo_at_sdk_observation": "Not run; later native follow-up is recorded separately"
+  },
+  "boundaries": [
+    "No Microsoft Access application or active database content executed.",
+    "Only first-party metadata recipe over copies and previously reviewed Jackcess5.0.4 used.",
+    "Six original evidence cases and all original BEFORE files unchanged.",
+    "Retired hidden records are retained bytes, not live logical members. Complete ownership still requires actual native role and alias proof.",
+    "TCQE0002 persistence and shared runtime full SQL save admission are not supplied by this SDK observation."
+  ],
+  "model_revision_history": {
+    "initial_model_path": ".cache/querydef-repeat-save-sdk-20261108/model-history/initial-repeat-model.py",
+    "initial_model_sha256": "014a5140447b4ff793dca07c966d2a526e3173f6f933162185a9bc1d7a689c13",
+    "initial_raw_observations_path": ".cache/querydef-repeat-save-sdk-20261108/model-history/initial-observations.json",
+    "initial_raw_observations_sha256": "61e1279392513a6709dfae85cd68c88027cd46916e6c0427a8de3581c4e7b74f",
+    "change": "Recorded model path made repository-relative; raw model rerun only, no SDK mutation rerun or native output change."
+  },
+  "native_follow_up": "docs/testing/results/query-fragments-number-batch-2026-11-08.json"
+}

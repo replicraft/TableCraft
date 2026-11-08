@@ -11191,3 +11191,24 @@ record before its independently corrected SDK ordering model. The
 [65-case batch](results/number-column-runtime-batch-2026-11-08.json) separates
 passing native/runtime checks from pending GUI and native Access qualification.
 Generated databases, classes and SDK binaries remain local and untracked.
+
+
+## Repeated and multi-fragment SELECT edits — 8 November 2026
+
+The original [repeat recipe](querydef_existing_save/ExistingQueryRepeatFixture.java)
+and [independent raw model](querydef_existing_save/repeat_model.py) extend the
+previous six-case reference without changing its files or original sources.
+The [six new observations](results/querydef-repeat-fragment-save-2026-11-08.json)
+pin every complete image and helper/model/SDK hash. These use the same reviewed
+Apache-2.0 Jackcess 5.0.4 artifact; no third-party source or database is imported.
+The initial model/report hashes remain recorded after making its model path
+repository-relative; only the raw model reran, with unchanged full image results.
+
+The native testkit `query_expression_edits` owner independently authors normal
+CI inputs and complete expected bytes, including repeated forwarded roots and
+two edits on one page in reverse native order. A high-byte catalog-ID alias case
+checks actual normalized schema resolution. The [follow-up batch](results/query-fragments-number-batch-2026-11-08.json)
+retains nine normal candidate/binding cases and two separately executed ignored
+SDK cases within its broader gates. Native Access execution, broader SQL Save,
+compiled caches, external edited bodies and older formats remain unqualified.
+Generated SDK database/class/JAR bytes remain local and untracked.

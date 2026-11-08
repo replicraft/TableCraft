@@ -10,6 +10,8 @@
 - [Creator external-OFF rename source evidence](ACE16_CREATOR_RENAME_SOURCES.md)
 - [Existing QueryDef fitting-expression reference](NATIVE_QUERYDEF_FITTING_SAVE.md)
 - [Multi-query expression growth/shrink reference and proposed Save V2](querydef_existing_save/README.md)
+- [Repeated logical-root and same-page expression observations](querydef_existing_save/REPEATED_WRITES.md)
+- [Native fragment and Number availability batch](results/query-fragments-number-batch-2026-11-08.json)
 - [Adaptive encryption copy measurements](ADAPTIVE_ENCRYPTION_BENCHMARKS.md)
 - [Native snapshot and parallel decryption measurements](NATIVE_LIBRARY_REFACTORS.md)
 - [Cross-platform audit and native CI scope](CROSS_PLATFORM_AUDIT.md)
