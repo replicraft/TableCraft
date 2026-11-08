@@ -1,34 +1,25 @@
 //! Selected query payload storage and complete native role exclusion.
 use super::{EditError, WriteBlocker, lval_ownership::Inventory, map_authority};
 use crate::{
-    IndexCheckStatus, InspectError, NativeImage, NativeObjectOrigin, NativeTableStorage,
-    QueryExpressionError,
+    IndexCheckStatus, InspectError, NativeImage, NativeObjectOrigin, QueryExpressionError,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         bytes::u32_at,
-        data_type, definition,
+        definition,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_count, row_range},
-        row::{MASK_BITS, OFFSET_MASK},
+        row::OFFSET_MASK,
     },
-    header::check,
-    inspect_table_schema,
     table::{indexes::check_table_retained, record_layout},
 };
 use std::ops::Range;
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
-use tablecraft_model::ObjectKind;
 
 const INLINE_HEADER_BYTES: usize = 3 * size_of::<u32>();
 const INLINE_TAG: u32 = 0x8000_0000;
-const CATALOG_COLUMNS: usize = 17;
 const QUERY_COLUMNS: usize = 8;
 const QUERY_VARIABLES: usize = 4;
 const QUERY_ROWS: u32 = 5;
-const NATIVE_QUERY_TYPE: i16 = 5;
-const NATIVE_CONTAINER_TYPE: i16 = 3;
-const SYSTEM_COLUMN_FLAG: u8 = 0x10;
-const SYSTEM_OBJECT_FLAGS: u32 = 0x8000_0002;
 
 pub(crate) fn qualify(
     image: &NativeImage,
@@ -37,131 +28,22 @@ pub(crate) fn qualify(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Range<usize>, QueryExpressionError> {
-    check(budget, cancelled)?;
+    let qualified = super::query_expression_source::capture(
+        image,
+        origin,
+        |schema| schema.declared_rows() == QUERY_ROWS,
+        budget,
+        cancelled,
+    )
+    .map_err(|error| match error {
+        super::query_expression_source::SourceError::Inspect(error) => {
+            QueryExpressionError::Inspect(error)
+        }
+        super::query_expression_source::SourceError::Source => QueryExpressionError::Source,
+    })?;
+    let schema = qualified.queries;
+    let _catalog = qualified.catalog;
     let scope = image.catalog().catalog().scope();
-    let tables = image
-        .catalog()
-        .catalog()
-        .lookup("Tables", Some(ObjectKind::Container), None)
-        .map_err(InspectError::from)?
-        .ok_or(QueryExpressionError::Source)?;
-    let parent = image
-        .catalog()
-        .origins()
-        .iter()
-        .find(|candidate| candidate.object_id() == tables.id())
-        .ok_or(QueryExpressionError::Source)?;
-    if origin.type_code() != NATIVE_QUERY_TYPE
-        || origin.parent_id() != parent.native_id()
-        || parent.type_code() != NATIVE_CONTAINER_TYPE
-        || !parent.is_system()
-        || parent.flags() & !SYSTEM_OBJECT_FLAGS != 0
-    {
-        return Err(QueryExpressionError::Source);
-    }
-    let catalog =
-        inspect_table_schema(&mut image.reader(), scope, "MSysObjects", budget, cancelled)?;
-    if catalog.columns().len() != CATALOG_COLUMNS || catalog.layout.max_columns != CATALOG_COLUMNS {
-        return Err(QueryExpressionError::Source);
-    }
-    {
-        let mut source = image.reader();
-        let mut reader = Reader {
-            source: &mut source,
-            header: image.catalog().header(),
-            budget,
-            cancelled,
-            reads: 0,
-        };
-        let page = reader.page(origin.page())?;
-        let (flags, start, end) = row_range(&page, usize::from(origin.slot()))?;
-        if flags & !OFFSET_MASK != 0
-            || page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
-            || u32_at(&page, OWNER_OFFSET)? != catalog.definition_page()
-        {
-            return Err(QueryExpressionError::Source);
-        }
-        let row = &page[start..end];
-        let framing = record_layout::parse(row, &catalog, reader.budget)?;
-        if framing.count != CATALOG_COLUMNS
-            || framing.offsets.len() != catalog.layout.variable_slots + 1
-        {
-            return Err(QueryExpressionError::Source);
-        }
-        // Required carrier names must be represented, not inferred absent from
-        // a shortened/unknown catalog schema. All variable payloads except Name
-        // refuse, including present-empty caches, properties and owner data.
-        for (name, kind, fixed) in [
-            ("Id", data_type::INT32, true),
-            ("ParentId", data_type::INT32, true),
-            ("Name", data_type::SHORT_TEXT, false),
-            ("Type", data_type::INT16, true),
-            ("DateCreate", data_type::DATE_TIME, true),
-            ("DateUpdate", data_type::DATE_TIME, true),
-            ("Owner", data_type::SHORT_BINARY, false),
-            ("Flags", data_type::INT32, true),
-            ("Database", data_type::LONG_TEXT, false),
-            ("Connect", data_type::LONG_TEXT, false),
-            ("ForeignName", data_type::SHORT_TEXT, false),
-            ("RmtInfoShort", data_type::SHORT_BINARY, false),
-            ("RmtInfoLong", data_type::OLE, false),
-            ("Lv", data_type::OLE, false),
-            ("LvProp", data_type::OLE, false),
-            ("LvModule", data_type::OLE, false),
-            ("LvExtra", data_type::OLE, false),
-        ] {
-            reader.tick()?;
-            if !catalog.columns().iter().any(|column| {
-                column.name() == name && column.native_type() == kind && column.fixed() == fixed
-            }) {
-                return Err(QueryExpressionError::Source);
-            }
-        }
-        for column in catalog.columns() {
-            reader.tick()?;
-            let field = &column.field;
-            if !field.fixed
-                && !field.name.eq_ignore_ascii_case("Name")
-                && row[framing.mask_start + field.number / MASK_BITS]
-                    & (1 << (field.number % MASK_BITS))
-                    != 0
-            {
-                return Err(QueryExpressionError::Source);
-            }
-        }
-    }
-    let schema =
-        inspect_table_schema(&mut image.reader(), scope, "MSysQueries", budget, cancelled)?;
-    if schema.columns().len() != QUERY_COLUMNS
-        || schema.layout.max_columns != QUERY_COLUMNS
-        || schema.layout.variable_slots != QUERY_VARIABLES
-        || schema.declared_rows() != QUERY_ROWS
-    {
-        return Err(QueryExpressionError::Source);
-    }
-    for table in [&catalog, &schema] {
-        let origin = image
-            .catalog()
-            .origins()
-            .iter()
-            .find(|origin| origin.object_id() == table.object_id())
-            .ok_or(QueryExpressionError::Source)?;
-        if !origin.is_system()
-            || origin.flags() & !SYSTEM_OBJECT_FLAGS != 0
-            || origin.parent_id() != parent.native_id()
-            || origin.table_storage() != Some(NativeTableStorage::Local)
-            || u32::try_from(origin.native_id()).ok() != Some(table.definition_page())
-        {
-            return Err(QueryExpressionError::Source);
-        }
-    }
-    for column in schema.columns() {
-        check(budget, cancelled)?;
-        let flags = if column.fixed() { 3 } else { 2 };
-        if column.flags() & !SYSTEM_COLUMN_FLAG != flags || column.extended_flags() != 0 {
-            return Err(QueryExpressionError::Source);
-        }
-    }
     let expression = schema
         .columns()
         .iter()

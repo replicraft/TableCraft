@@ -192,3 +192,5 @@ pub(in crate::table) mod map_changes;
 
 #[cfg(feature = "journal")]
 pub(crate) mod query_expression;
+#[cfg(feature = "journal")]
+mod query_expression_source;
