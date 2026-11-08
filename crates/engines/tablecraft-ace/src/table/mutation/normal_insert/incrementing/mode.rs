@@ -27,6 +27,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const LOCAL_INDEX_KIND_MAX: u8 = 1;
 const MEMO_PROPERTY: u8 = 12;
 const DDL_PROPERTY: u8 = 1;
+const MAX_DESCRIPTION_UNITS: usize = 255;
 const RANDOM_DEFAULT: &str = "GenUniqueID()";
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -234,8 +235,8 @@ pub(super) fn capture(
     Ok(counter)
 }
 
-// Only checked constants and Boolean field policies on ordinary companions
-// preserve Increment mode. The independent final source audit enforces these
+// Checked constants and Boolean policies on ordinary companions, plus bounded
+// inert Description metadata on any field, preserve Increment mode. The final source audit enforces these
 // policies on complete stored rows, including independently expanded omissions.
 fn companion_declarations(
     schema: &TableSchema,
@@ -276,14 +277,14 @@ fn companion_declarations(
             if !column.name().eq_ignore_ascii_case(group.name()) {
                 continue;
             }
-            if position == generated || selected.replace(column).is_some() {
+            if selected.replace((position, column)).is_some() {
                 return Ok(false);
             }
         }
-        let Some(column) = selected else {
+        let Some((position, column)) = selected else {
             return Ok(false);
         };
-        let mut names = [false; 3];
+        let mut names = [false; 4];
         for property in group.properties() {
             check(budget, cancelled)?;
             budget
@@ -292,7 +293,25 @@ fn companion_declarations(
             if property.flags() != DDL_PROPERTY {
                 return Ok(false);
             }
-            let selected = if property.name().eq_ignore_ascii_case("DefaultValue") {
+            let description = property.name().eq_ignore_ascii_case("Description");
+            if position == generated && !description {
+                return Ok(false);
+            }
+            let selected = if description {
+                if property.native_type() != SHORT_TEXT {
+                    return Ok(false);
+                }
+                let text = property.text()?;
+                budget
+                    .charge(Resource::Steps, text.len() as u64)
+                    .map_err(InspectError::from)?;
+                if text.encode_utf16().take(MAX_DESCRIPTION_UNITS + 1).count()
+                    > MAX_DESCRIPTION_UNITS
+                {
+                    return Ok(false);
+                }
+                3
+            } else if property.name().eq_ignore_ascii_case("DefaultValue") {
                 if property.native_type() != MEMO_PROPERTY
                     || declaration::capture(column, properties, budget, cancelled)?.is_none()
                 {
@@ -325,3 +344,6 @@ fn companion_declarations(
     check(budget, cancelled)?;
     Ok(true)
 }
+
+#[cfg(test)]
+mod description_tests;

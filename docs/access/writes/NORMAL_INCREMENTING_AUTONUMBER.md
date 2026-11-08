@@ -16,8 +16,8 @@ also retains present manual Int32 ascending secondary leaves. Logical aliases
 must agree on each physical owner, with exactly one actual primary declaration.
 
 Complete Source, property, constraint and record checks precede planning. Native
-AutoIncrement flags and complete inspected generated-field property absence
-select Increment in this qualified profile. Closed ordinary-companion groups
+AutoIncrement flags and complete inspected generated-field property absence or
+the qualified inert Description declaration select Increment in this profile. Closed ordinary-companion groups
 can contain a checked constant DefaultValue, explicit Boolean Required and, for
 Short Text, explicit Boolean AllowZeroLength. Every admitted property retains its
 qualified native carrier and DDL flag. Duplicate groups or properties, unsupported
@@ -25,6 +25,15 @@ scopes, generated-field policies and unknown declarations refuse. The stored
 `GenUniqueID()` declaration selects Random
 and refuses; unknown or malformed declarations do not fall back to Increment.
 LAST alone, a column name, omission or a primary index never establishes mode.
+
+Description may occur once per field, including the generated field, with DDL
+flag 1, native Text type 10 and at most 255 UTF-16 units. Empty text is still a
+present declaration. It contributes no generated value, default or validation
+expression. A generated-field group may contain only that Description;
+Required/AllowZeroLength/default policies remain refused there. Wrong carriers,
+flags, duplicate/empty groups and broader metadata remain outside this admission.
+The final source, constraint and preservation checks still run, and Random plus
+Description does not become Increment.
 
 Original requests must omit the actual generated field. Ordinary companions may
 be supplied with exact runtime carriers or omitted. A present checked constant
