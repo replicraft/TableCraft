@@ -1,5 +1,22 @@
 # Implementation status
 
+## Readable saved SQL and column candidate checkpoint — 8 November 2026
+
+Supported saved-query models now expose canonical SQL independently of write
+eligibility. Read-only SQL supports selection and Copy, wraps long lines and
+rejects mutation/Save. Ordinary qualified query saves automatically acknowledge
+the exact successful receipt, then retain the full-image witness and atomic
+rebind before clearing dirty text. Exceptional outcomes remain explicit.
+
+The separate native default-zero column candidate passes both independent full
+SDK AFTER pins. It does not yet enable a journaled save or GUI column creation;
+the UI's additional explicit Required(false) declaration still needs qualification.
+The [combined batch record](testing/results/gui-query-column-batch-2026-11-08.json)
+retains 60 passing focused checks, strict affected-package lint and two inspected
+light/dark offscreen frames. The earlier stale runtime assertion failure is
+retained separately from its passing corrected rerun. No native Access or Windows
+execution is claimed.
+
 ## Saved SQL presentation and explicit database options — 8 November 2026
 
 The desktop now inspects qualified saved SQL through runtime without executing

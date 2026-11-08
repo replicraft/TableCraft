@@ -8,6 +8,10 @@ runtime and qualified desktop Save route below build on that closed profile.
 There is no CLI QueryDef save command.
 Native Microsoft Access save/reopen remains unrun.
 
+The later [multi-query growth/shrink reference](querydef_existing_save/README.md)
+adds six independent SDK byte oracles for a proposed versioned expansion. It
+does not widen the current planner or TCQE0001 replay language.
+
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
 retains hashes, raw field/record spans, exact native fragments, independent
 rendering and explicit TableCraft execution. The original

@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Readable saved SQL, automatic qualified query-save completion and explicit-default-zero native column candidates",
+  "verification_head": "a578538aa498a4ac50e34379c83f9271eb78724d",
+  "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+  "status": "PASS for selected macOS headless checks; broader query and column Save remain incomplete",
+  "logical_checks": 60,
+  "runs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::add_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_ace-creation-add_column--20261108.log",
+      "passed": 18,
+      "failed": 0,
+      "log_sha256": "d7a99c6a7b3c49d90fcbdb7e808f6683025e98392c7d1c9510cbbb1e567fb88b"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::add_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_ace-transaction-intent-add_column--20261108.log",
+      "passed": 9,
+      "failed": 0,
+      "log_sha256": "b481b7d7c18436510dcd03dcf3e3daac7896f23a5e7bc8def875c6ec49a0520b"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::query_sql::display::tests",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_runtime-editing-query_sql-display-tests-20261108.log",
+      "passed": 3,
+      "failed": 0,
+      "log_sha256": "b15a7fc2ff29b9348bab4bcea1c3fb6d23c53964f236c65048d904327ac049ae"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::query_sql::",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_runtime-tests-query_sql--20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "log_sha256": "a56335a98353a47c53a5cdf6ec9494b017b1bf3047266b7fd95b988f51a6420e"
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "workspace::saved_query::sql_editor::tests",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_ui-workspace-saved_query-sql_editor-tests-20261108.log",
+      "passed": 8,
+      "failed": 0,
+      "log_sha256": "5eddf6d655d58792558b8c1b7d1820e123d9c733be156b786b5adeba6ccd45f0"
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "localization::",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft_ui-localization--20261108.log",
+      "passed": 4,
+      "failed": 0,
+      "log_sha256": "180467478bc035205629f5fcb5d4cfc67bf768035b29fb7bf85bc2c6a239d7d2"
+    },
+    {
+      "package": "tablecraft-desktop",
+      "filter": "workspace::editing::query_definition::",
+      "exit_code": 0,
+      "log": ".cache/gui-default-zero-batch-tablecraft-desktop-workspace-editing-query_definition--20261108.log",
+      "passed": 11,
+      "failed": 0,
+      "log_sha256": "fdb6d4a10ae0688b36440d5add8bee15d3fdfee709164cf6ec58cffb61e0cc57"
+    }
+  ],
+  "build": "PASS: ACE/runtime/UI libraries and desktop binary tests, all features, offline locked",
+  "lint": "PASS: strict ACE/runtime/UI libraries and desktop binary, all features",
+  "initial_failure": {
+    "record": ".cache/query-view-autoack-summary-20261108.json",
+    "description": "Runtime noncanonical stored literal test retained obsolete expectation that readable SQL was absent; corrected to canonical read-only SQL while native write qualification still refuses. Corrected seven-case filter passes."
+  },
+  "offscreen": {
+    "native_windows_opened": false,
+    "frames": [
+      {
+        "path": ".cache/ui-previews/saved-query-readonly-source-20261108/de-dark-saved-query-sql-read-only-source@1.25x.png",
+        "sha256": "d74acce46d91af204ca4bc4fcd6244400ddbfad9807664ad3942b1e2673ef38b"
+      },
+      {
+        "path": ".cache/ui-previews/saved-query-readonly-source-20261108/en-US-light-saved-query-sql-read-only-source.png",
+        "sha256": "5f60ff36931060f854ea457ce34c85560f785c691091da1b6d75b7ece51f992c"
+      }
+    ],
+    "source_reference": "No retained corresponding Access SQL editor capture; visual adaptation only. Existing Ribbon chrome unchanged.",
+    "review": "Both frames inspected: wrapped SQL remains visible, localized read-only explanation and Run/Inspect controls fit; compact dark frame uses vertical editor scroll and existing horizontal Ribbon overflow."
+  },
+  "limits": [
+    "Native Microsoft Access and Windows execution not performed.",
+    "Readable canonical SQL does not qualify editing. Native writer remains frozen same-width constant SELECT profile.",
+    "Default-zero column candidate has no normal journal/runtime/GUI activation.",
+    "Actual UI Number includes explicit Required(false); this additional declaration awaits qualification."
+  ]
+}

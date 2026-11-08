@@ -1,0 +1,670 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Inert SDK metadata saves on fresh local2/3-query sources; not a TableCraft writer or Microsoft Access save comparison.",
+  "recipe": {
+    "path": "docs/testing/querydef_existing_save/ExistingQuerySaveFixture.java",
+    "sha256": "9425abbc0d6434a09d19af2a30473342409a2adb590a71c52611671170b7f29e",
+    "executed_path": ".cache/querydef-existing-save-sdk-20261108/recipe/ExistingQuerySaveFixture.java"
+  },
+  "model": {
+    "path": "docs/testing/querydef_existing_save/model.py",
+    "sha256": "2a15add89dea24331d2fd40c727f15262add420b018f2c5d5f56b4295e17bd48",
+    "executed_path": ".cache/querydef-existing-save-sdk-20261108/recipe/observe.py"
+  },
+  "sdk": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "sdk_stdout": {
+    "path": ".cache/querydef-existing-save-sdk-20261108/sdk-observations.tsv",
+    "sha256": "e4a989d54c5403934be73bbe321025cd51a907b5df643c2bdc10060935924ae8"
+  },
+  "sdk_where_stdout": {
+    "path": ".cache/querydef-existing-save-sdk-20261108/sdk-where-observations.tsv",
+    "sha256": "7f15b3b2125fa72d217a75eee5e1645d8133ee1062b07e6e70460f03def4e6f4"
+  },
+  "sdk_stderr": "",
+  "sdk_where_stderr": "",
+  "first_run": {
+    "report": ".cache/querydef-existing-save-sdk-20261108/first-run/observations.json",
+    "sha256": "ee69432a7702a8a66d1c195a3be1abc297b0982d8c539a5949ec71cc7b589bd7"
+  },
+  "originals_unchanged_since_first_run": true,
+  "cases": [
+    {
+      "case": "shared-page",
+      "before_path": ".cache/querydef-existing-save-sdk-20261108/files/shared-page-before.accdb",
+      "before_sha256": "bd49f29359ecb1e6022904cc1fae74776c9826f95a1cf63a0c0065a34c1ebac7",
+      "before_bytes": 389120,
+      "query_count": 2,
+      "fragment_count": 10,
+      "query_definition_page": 4,
+      "query_data_pages": [
+        94
+      ],
+      "index_signature_pages": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91
+      ],
+      "before_carrier": {
+        "logical_row": [
+          94,
+          8
+        ],
+        "root_flags": 0,
+        "root_span": [
+          388794,
+          388852
+        ],
+        "physical_row": [
+          94,
+          8
+        ],
+        "physical_flags": 0,
+        "physical_span": [
+          388794,
+          388852
+        ],
+        "expression_span": [
+          388823,
+          388839
+        ],
+        "expression_field_hex": "04000080000000000000000034003200",
+        "used_data_end": 45,
+        "padding_hex": "",
+        "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+      },
+      "variants": [
+        {
+          "mode": "grow",
+          "selected_native_id": -2147476548,
+          "selected_attribute": 6,
+          "original_expression": "42",
+          "replacement_expression": "1000",
+          "before_carrier": {
+            "logical_row": [
+              94,
+              8
+            ],
+            "root_flags": 0,
+            "root_span": [
+              388794,
+              388852
+            ],
+            "physical_row": [
+              94,
+              8
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              388794,
+              388852
+            ],
+            "expression_span": [
+              388823,
+              388839
+            ],
+            "expression_field_hex": "04000080000000000000000034003200",
+            "used_data_end": 45,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/shared-page-grow.accdb",
+          "after_sha256": "a084a2449b00086325c58cdf92f75869509b60532c1609579c60d11e136568ea",
+          "after_bytes": 389120,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/shared-page-grow-literal.accdb",
+          "literal_model_sha256": "a084a2449b00086325c58cdf92f75869509b60532c1609579c60d11e136568ea",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 54,
+          "changed_pages": [
+            94
+          ],
+          "carrier": {
+            "logical_row": [
+              94,
+              8
+            ],
+            "root_flags": 16384,
+            "root_span": [
+              388794,
+              388852
+            ],
+            "physical_row": [
+              94,
+              10
+            ],
+            "physical_flags": 32768,
+            "physical_span": [
+              388702,
+              388764
+            ],
+            "expression_span": [
+              388731,
+              388751
+            ],
+            "expression_field_hex": "0800008000000000000000003100300030003000",
+            "used_data_end": 49,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200080000800000000000000000310030003000300031001d001d0011000d0004002f"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        },
+        {
+          "mode": "shrink",
+          "selected_native_id": -2147476548,
+          "selected_attribute": 6,
+          "original_expression": "42",
+          "replacement_expression": "7",
+          "before_carrier": {
+            "logical_row": [
+              94,
+              8
+            ],
+            "root_flags": 0,
+            "root_span": [
+              388794,
+              388852
+            ],
+            "physical_row": [
+              94,
+              8
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              388794,
+              388852
+            ],
+            "expression_span": [
+              388823,
+              388839
+            ],
+            "expression_field_hex": "04000080000000000000000034003200",
+            "used_data_end": 45,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/shared-page-shrink.accdb",
+          "after_sha256": "acf4a019b11d8e48f57bb7a09bac90c81afe1db0dd2b3dc5defee623bc7ad6a4",
+          "after_bytes": 389120,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/shared-page-shrink-literal.accdb",
+          "literal_model_sha256": "acf4a019b11d8e48f57bb7a09bac90c81afe1db0dd2b3dc5defee623bc7ad6a4",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 4,
+          "changed_pages": [
+            94
+          ],
+          "carrier": {
+            "logical_row": [
+              94,
+              8
+            ],
+            "root_flags": 0,
+            "root_span": [
+              388794,
+              388852
+            ],
+            "physical_row": [
+              94,
+              8
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              388794,
+              388852
+            ],
+            "expression_span": [
+              388823,
+              388837
+            ],
+            "expression_field_hex": "0200008000000000000000003700",
+            "used_data_end": 43,
+            "padding_hex": "0000",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200020000800000000000000000370000002b001d001d0011000d0004002f"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        }
+      ]
+    },
+    {
+      "case": "multi-page",
+      "before_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-before.accdb",
+      "before_sha256": "33e0e41c2152f4e7e5aadb18e0978b4f224ee225d8042dc08d70528f37cbca05",
+      "before_bytes": 393216,
+      "query_count": 3,
+      "fragment_count": 112,
+      "query_definition_page": 4,
+      "query_data_pages": [
+        94,
+        95
+      ],
+      "index_signature_pages": [
+        7,
+        8,
+        10,
+        12,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        43,
+        44,
+        45,
+        50,
+        51,
+        52,
+        56,
+        60,
+        61,
+        65,
+        66,
+        72,
+        73,
+        91
+      ],
+      "before_carrier": {
+        "logical_row": [
+          95,
+          42
+        ],
+        "root_flags": 0,
+        "root_span": [
+          390872,
+          390930
+        ],
+        "physical_row": [
+          95,
+          42
+        ],
+        "physical_flags": 0,
+        "physical_span": [
+          390872,
+          390930
+        ],
+        "expression_span": [
+          390901,
+          390917
+        ],
+        "expression_field_hex": "04000080000000000000000034003200",
+        "used_data_end": 45,
+        "padding_hex": "",
+        "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+      },
+      "variants": [
+        {
+          "mode": "grow",
+          "selected_native_id": -2147476548,
+          "selected_attribute": 6,
+          "original_expression": "42",
+          "replacement_expression": "1000",
+          "before_carrier": {
+            "logical_row": [
+              95,
+              42
+            ],
+            "root_flags": 0,
+            "root_span": [
+              390872,
+              390930
+            ],
+            "physical_row": [
+              95,
+              42
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              390872,
+              390930
+            ],
+            "expression_span": [
+              390901,
+              390917
+            ],
+            "expression_field_hex": "04000080000000000000000034003200",
+            "used_data_end": 45,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-grow.accdb",
+          "after_sha256": "9c8570f86bdf1687410bc5a670773549d5e1c4c5ae75f336527051ba37099a7b",
+          "after_bytes": 393216,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-grow-literal.accdb",
+          "literal_model_sha256": "9c8570f86bdf1687410bc5a670773549d5e1c4c5ae75f336527051ba37099a7b",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 54,
+          "changed_pages": [
+            95
+          ],
+          "carrier": {
+            "logical_row": [
+              95,
+              42
+            ],
+            "root_flags": 16384,
+            "root_span": [
+              390872,
+              390930
+            ],
+            "physical_row": [
+              95,
+              44
+            ],
+            "physical_flags": 32768,
+            "physical_span": [
+              390780,
+              390842
+            ],
+            "expression_span": [
+              390809,
+              390829
+            ],
+            "expression_field_hex": "0800008000000000000000003100300030003000",
+            "used_data_end": 49,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200080000800000000000000000310030003000300031001d001d0011000d0004002f"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        },
+        {
+          "mode": "shrink",
+          "selected_native_id": -2147476548,
+          "selected_attribute": 6,
+          "original_expression": "42",
+          "replacement_expression": "7",
+          "before_carrier": {
+            "logical_row": [
+              95,
+              42
+            ],
+            "root_flags": 0,
+            "root_span": [
+              390872,
+              390930
+            ],
+            "physical_row": [
+              95,
+              42
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              390872,
+              390930
+            ],
+            "expression_span": [
+              390901,
+              390917
+            ],
+            "expression_field_hex": "04000080000000000000000034003200",
+            "used_data_end": 45,
+            "padding_hex": "",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-shrink.accdb",
+          "after_sha256": "202af2c53876b76343b9cea6296071be852dca9868500f72ecd6fcebf50c4937",
+          "after_bytes": 393216,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-shrink-literal.accdb",
+          "literal_model_sha256": "202af2c53876b76343b9cea6296071be852dca9868500f72ecd6fcebf50c4937",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 4,
+          "changed_pages": [
+            95
+          ],
+          "carrier": {
+            "logical_row": [
+              95,
+              42
+            ],
+            "root_flags": 0,
+            "root_span": [
+              390872,
+              390930
+            ],
+            "physical_row": [
+              95,
+              42
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              390872,
+              390930
+            ],
+            "expression_span": [
+              390901,
+              390915
+            ],
+            "expression_field_hex": "0200008000000000000000003700",
+            "used_data_end": 43,
+            "padding_hex": "0000",
+            "physical_record_hex": "0800bc1b0080060000000000000000000141006e007300770065007200020000800000000000000000370000002b001d001d0011000d0004002f"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        },
+        {
+          "mode": "where-grow",
+          "selected_native_id": -2147476546,
+          "selected_attribute": 8,
+          "original_expression": "[p].[ID] >= 2",
+          "replacement_expression": "[p].[ID] >= 1000",
+          "before_carrier": {
+            "logical_row": [
+              95,
+              32
+            ],
+            "root_flags": 0,
+            "root_span": [
+              391228,
+              391296
+            ],
+            "physical_row": [
+              95,
+              32
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              391228,
+              391296
+            ],
+            "expression_span": [
+              391245,
+              391283
+            ],
+            "expression_field_hex": "1a00008000000000000000005b0070005d002e005b00490044005d0020003e003d0020003200",
+            "used_data_end": 55,
+            "padding_hex": "",
+            "physical_record_hex": "0800be1b008008000000000000000000011a00008000000000000000005b0070005d002e005b00490044005d0020003e003d002000320037001100110011000d00040027"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-where-grow.accdb",
+          "after_sha256": "ad60213ecf27484d0db8cdc3afa112aaf5561f7e9dfdc160b5b5d45a257cb80d",
+          "after_bytes": 393216,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-where-grow-literal.accdb",
+          "literal_model_sha256": "ad60213ecf27484d0db8cdc3afa112aaf5561f7e9dfdc160b5b5d45a257cb80d",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 65,
+          "changed_pages": [
+            95
+          ],
+          "carrier": {
+            "logical_row": [
+              95,
+              32
+            ],
+            "root_flags": 16384,
+            "root_span": [
+              391228,
+              391296
+            ],
+            "physical_row": [
+              95,
+              44
+            ],
+            "physical_flags": 32768,
+            "physical_span": [
+              390768,
+              390842
+            ],
+            "expression_span": [
+              390785,
+              390829
+            ],
+            "expression_field_hex": "2000008000000000000000005b0070005d002e005b00490044005d0020003e003d0020003100300030003000",
+            "used_data_end": 61,
+            "padding_hex": "",
+            "physical_record_hex": "0800be1b008008000000000000000000012000008000000000000000005b0070005d002e005b00490044005d0020003e003d00200031003000300030003d001100110011000d00040027"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        },
+        {
+          "mode": "where-shrink",
+          "selected_native_id": -2147476546,
+          "selected_attribute": 8,
+          "original_expression": "[p].[ID] >= 2",
+          "replacement_expression": "[p].[ID]>0",
+          "before_carrier": {
+            "logical_row": [
+              95,
+              32
+            ],
+            "root_flags": 0,
+            "root_span": [
+              391228,
+              391296
+            ],
+            "physical_row": [
+              95,
+              32
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              391228,
+              391296
+            ],
+            "expression_span": [
+              391245,
+              391283
+            ],
+            "expression_field_hex": "1a00008000000000000000005b0070005d002e005b00490044005d0020003e003d0020003200",
+            "used_data_end": 55,
+            "padding_hex": "",
+            "physical_record_hex": "0800be1b008008000000000000000000011a00008000000000000000005b0070005d002e005b00490044005d0020003e003d002000320037001100110011000d00040027"
+          },
+          "after_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-where-shrink.accdb",
+          "after_sha256": "1b35760c04143b98a51eacf99e899dc5b94a63410259b9557e52c20ce76a862d",
+          "after_bytes": 393216,
+          "literal_model_path": ".cache/querydef-existing-save-sdk-20261108/files/multi-page-where-shrink-literal.accdb",
+          "literal_model_sha256": "1b35760c04143b98a51eacf99e899dc5b94a63410259b9557e52c20ce76a862d",
+          "complete_model_matches": true,
+          "model_differences": 0,
+          "first_model_differences": [],
+          "changed_bytes": 7,
+          "changed_pages": [
+            95
+          ],
+          "carrier": {
+            "logical_row": [
+              95,
+              32
+            ],
+            "root_flags": 0,
+            "root_span": [
+              391228,
+              391296
+            ],
+            "physical_row": [
+              95,
+              32
+            ],
+            "physical_flags": 0,
+            "physical_span": [
+              391228,
+              391296
+            ],
+            "expression_span": [
+              391245,
+              391277
+            ],
+            "expression_field_hex": "1400008000000000000000005b0070005d002e005b00490044005d003e003000",
+            "used_data_end": 49,
+            "padding_hex": "000000000000",
+            "physical_record_hex": "0800be1b008008000000000000000000011400008000000000000000005b0070005d002e005b00490044005d003e00300000000000000031001100110011000d00040027"
+          },
+          "unselected_raw_records_unchanged": true,
+          "all_index_signature_pages_unchanged": true,
+          "sdk_ordered_index_membership_unchanged": true
+        }
+      ]
+    }
+  ],
+  "status": "SDK_SIX_SUCCESSFUL_INERT_METADATA_UPDATES_AND_SIX_COMPLETE_INDEPENDENT_IMAGE_MATCHES",
+  "generation_runs": [
+    {
+      "kind": "two_fresh_sources_and_four_constant_edits",
+      "recipe": ".cache/querydef-existing-save-sdk-20261108/first-run/recipe/ExistingQuerySaveFixture.java",
+      "recipe_sha256": "7c64e5d082fcf2fcafb1dd63014954870a7e499484b93ecfe4a20dee65734e95",
+      "javac_exit": 0,
+      "java_exit": 0,
+      "stdout": ".cache/querydef-existing-save-sdk-20261108/sdk-observations.tsv",
+      "stdout_sha256": "e4a989d54c5403934be73bbe321025cd51a907b5df643c2bdc10060935924ae8"
+    },
+    {
+      "kind": "two_where_edits_on_fresh_copies_of_unchanged_three_query_original",
+      "recipe": "docs/testing/querydef_existing_save/ExistingQuerySaveFixture.java",
+      "recipe_sha256": "9425abbc0d6434a09d19af2a30473342409a2adb590a71c52611671170b7f29e",
+      "javac_exit": 0,
+      "java_exit": 0,
+      "stdout": ".cache/querydef-existing-save-sdk-20261108/sdk-where-observations.tsv",
+      "stdout_sha256": "7f15b3b2125fa72d217a75eee5e1645d8133ee1062b07e6e70460f03def4e6f4"
+    }
+  ],
+  "boundaries": [
+    "All data/query metadata is repository-authored through reviewed local Jackcess5.0.4; full generated database bytes remain private/ignored.",
+    "Database expression evaluation disabled; no SELECT, macro, VBA, UDF, provider or Microsoft Access application executed.",
+    "The selected query catalog variable payloads were authored absent; this is not compiled-cache invalidation or Access-created query-property qualification.",
+    "Current engine/request admission remains unchanged. The legacy TCQE0001 equal-length/one-query language is not expanded by this evidence.",
+    "INDEX-signature page hashes and SDK ordered key/ROW fingerprints are observations; they do not replace complete engine ownership/retained-index qualification.",
+    "No native Microsoft Access save/reopen/events/DateUpdate comparison, older-file profile or frontend write admission is established."
+  ]
+}

@@ -964,8 +964,13 @@ See the [runtime boundaries](../application/RUNTIME.md#native-saved-queries-and-
 
 ### Saving an existing query definition — 8 November 2026
 
-Inert SQL inspection now supplies a source-bound editor for the qualified native
-constant SELECT profile. Quick Access Save and Ctrl/Cmd+S capture the current
+Inert SQL inspection now displays reconstructed SQL for supported readable query
+models, independently of native write eligibility. Unavailable writers use an
+immutable, focusable buffer: selection and Copy work, input cannot change the
+definition, and Save remains unavailable. Long lines wrap within the editor;
+vertical scrolling retains the complete text. The displayed SQL is canonical
+reconstruction, not a raw stored SQL string. The source-bound editable profile
+remains the qualified native constant SELECT. Quick Access Save and Ctrl/Cmd+S capture the current
 widget text, document revision, query ID/name and draft revision together. Dirty
 SQL disables Run; Save and reopen never execute the query. Scratch SQL and saved
 queries retain separate targets and drafts.
@@ -984,7 +989,10 @@ renaming or SQL-definition editing; see the
 
 A complete original/proposed SQL review precedes the consuming save worker.
 Status remains query-owned through cancellation, retained recovery and tab/view
-changes. A terminal receipt alone does not mark the visible SQL saved. After
+changes. A terminal receipt alone does not mark the visible SQL saved. An ordinary Apply
+with the exact successful query receipt and no cancellation request is acknowledged
+internally, without requiring a success Close. Recovery, confirmation, release,
+failures and late-cancellation outcomes retain explicit acknowledgement. After
 acknowledgement of a known replacement, the host must reopen the entire expected
 file image and publish a fresh catalog through an atomic draft rebind. The exact
 submitted text becomes the selected query's baseline only then. Other raw saved

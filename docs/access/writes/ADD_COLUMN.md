@@ -106,12 +106,87 @@ The raw fixture owns original bytes independently of the production serializer.
 
 Explicitly declaring default zero on the new field is a different SDK operation:
 it changes catalog and allocation pages and grows the file by one property LVAL
-page. It is outside both current source-qualified candidate target declarations.
-A future target-property operation needs an explicit original declaration and
-complete property-storage/allocation preservation and recovery proof. Existing
+page. It is outside both existing no-default candidate target declarations. The
+separate default-zero candidate below passes its focused byte-preservation checks;
+normal persistence still needs an explicit original request and matching
+resizable journal/recovery qualification. Existing
 default-zero preservation does not authorize inventing a new field default or
 enabling the ordinary GUI Number-field workflow. All observed SDK dates are
 `1899-12-30T00:00`; this does not qualify native Access timestamp changes.
+
+## Separate explicit-default-zero candidate checkpoint
+
+The authored `prepare_created_add_default_zero_int32_column_candidate` is a
+separate candidate-only operation, with its own opaque candidate/error types.
+The native candidate slice is connected. All six focused Rust cases pass in the
+coordinated batch, including both full SDK AFTER-image pins. Seven existing
+created-source cases, five keyless candidate cases and nine frozen-intent cases
+also pass. These checks supply no original intent, journal/recovery route, runtime save capability or enabled GUI
+command. Existing `TCAC0001`/`TCAC0002` admission and
+wire meanings remain unchanged.
+
+Its authored source proof requires the complete canonical empty header-5
+creator image, a first LONG Increment primary, one through fifteen source fields
+and zero native dates. Properties must be absent or consist only of constant
+zero defaults. Existing external property storage, other dictionaries, extra
+objects, populated rows, unknown history and nonzero dates refuse. The complete
+target MR2 body must prefer one external LVAL row (65 through 4,076 bytes);
+shorter inline and chained targets remain outside this checkpoint.
+
+The [new SDK record](../../testing/results/add-column-default-zero-sdk-source-2026-11-08.json)
+qualifies two distinct independent observations. Adding `Score` with explicit
+DefaultValue `0` to `Table1(ID)` grows its 73-byte catalog root into an 85-byte
+hidden target, retaining logical root slot 7 through a forwarding pointer to
+hidden slot 8. Its logical catalog row count remains unchanged. Adding `Extra`
+with the same default to `Items(Id, Score DefaultValue0)` instead keeps the
+151-byte physical record, replaces its inline property descriptor and zeroes the
+reclaimed inline body. Both grow from 40,960 to 45,056 bytes, change existing
+pages 3, 4 and 7, and append LVAL page 10. Only the selected LvProp owned/candidate
+map cells gain page-10 membership; the global free map remains exact.
+
+The candidate composes existing declaration/MR2 encoding, variable-record
+replacement, represented allocation and audited stable-root placement; it does
+not introduce an ordinary system-catalog UPDATE permission. Independent raw
+fixtures retain literal record/map/LVAL construction without production codecs.
+The separately authored Python literal AFTER reconstruction matches both entire
+SDK AFTER images byte for byte. The six Rust cases cover those full image pins,
+old no-default behavior and refusal/cancellation/resource boundaries, but have
+not been compiled or executed at this checkpoint. No native Microsoft Access
+comparison or timestamp/event parity is inferred from the SDK observations.
+
+### Reproduce the independent SDK operations
+
+The maintained [first-column helper](../../testing/CreatedFirstDefaultColumnOracle.java)
+is the executed original first-party probe source, promoted unchanged; the
+[existing-inline helper](../../testing/CreatedTableColumnOracle.java) keeps its
+frozen recipe. Both use the reviewed Jackcess 5.0.4 JAR, Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+See [fixture provenance](../../testing/FIXTURES.md#explicit-default-zero-saved-column-add-reference--8-november-2026).
+
+Set `JACKCESS_JAR` to that reviewed artifact, `ORACLE_CLASSES` to a local generated
+class directory, and `ID_BEFORE`/`INLINE_BEFORE` to the hash-pinned original inputs
+in the SDK record. The independently authored sources are
+`canonical_created_default_zero::source(Source::IdOnly)` and
+`source(Source::ExistingZero)` in the testkit fixture owner. Set `ID_AFTER` and
+`INLINE_AFTER` to fresh output filenames that do not exist. Run from the repository
+root in a POSIX shell:
+
+```sh
+mkdir -p "$ORACLE_CLASSES"
+javac -cp "$JACKCESS_JAR" -d "$ORACLE_CLASSES" \
+  docs/testing/CreatedFirstDefaultColumnOracle.java \
+  docs/testing/CreatedTableColumnOracle.java
+java -cp "$JACKCESS_JAR:$ORACLE_CLASSES" CreatedFirstDefaultColumnOracle \
+  "$ID_BEFORE" "$ID_AFTER" Table1 Score --default-zero
+java -cp "$JACKCESS_JAR:$ORACLE_CLASSES" CreatedTableColumnOracle \
+  "$INLINE_BEFORE" "$INLINE_AFTER" Items Extra --default-zero
+```
+
+Each helper copies its original, disables expression evaluation, calls public
+SDK ADD, reopens read-only, prints complete BEFORE/AFTER SHA-256 and checks that
+the original remains byte exact. Database, JAR and generated class bytes remain
+local and untracked. These commands replay SDK evidence; they do not execute the
+new native candidate or establish normal save/recovery qualification.
 
 ## Existing-table UI boundary
 

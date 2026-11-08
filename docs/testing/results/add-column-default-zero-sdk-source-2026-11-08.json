@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Independent Jackcess 5.0.4 ADD nullable LONG with explicit constant DefaultValue0 on two canonical empty generated-primary source classes; candidate-only work, no native Microsoft Access comparison",
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "license": "Apache-2.0"
+  },
+  "reproduction": {
+    "source": "docs/testing/CreatedTableColumnOracle.java",
+    "sha256": "b605fff68c9bac57b1b070ae519fb55cafe1c5701dd0fb1615737103033c68a9",
+    "operation": "ColumnBuilder(column, DataType.LONG).putProperty(\"DefaultValue\", DataType.MEMO, \"0\").addToTable(table)",
+    "first_column_probe": "Maintained first-party ID-only helper promoted unchanged from the executed probe; frozen CreatedTableColumnOracle recipe unchanged",
+    "first_column_probe_sha256": "621f8394fd0c81d8337a8914fc677b59ea2a9b2a522b1af9597caa0abdbf57a4",
+    "fresh_copy_required": true,
+    "first_column_table": "Table1",
+    "first_column_name": "Score",
+    "existing_default_table": "Items",
+    "existing_default_new_column": "Extra",
+    "first_column_source": "docs/testing/CreatedFirstDefaultColumnOracle.java",
+    "first_column_source_sha256": "621f8394fd0c81d8337a8914fc677b59ea2a9b2a522b1af9597caa0abdbf57a4",
+    "provenance_document": "docs/testing/FIXTURES.md#explicit-default-zero-saved-column-add-reference--8-november-2026",
+    "candidate_contract": "docs/access/writes/ADD_COLUMN.md#separate-explicit-default-zero-candidate-checkpoint",
+    "compile_command": "javac -cp \"$JACKCESS_JAR\" -d \"$ORACLE_CLASSES\" docs/testing/CreatedFirstDefaultColumnOracle.java docs/testing/CreatedTableColumnOracle.java",
+    "first_column_command": "java -cp \"$JACKCESS_JAR:$ORACLE_CLASSES\" CreatedFirstDefaultColumnOracle \"$ID_BEFORE\" \"$ID_AFTER\" Table1 Score --default-zero",
+    "existing_default_command": "java -cp \"$JACKCESS_JAR:$ORACLE_CLASSES\" CreatedTableColumnOracle \"$INLINE_BEFORE\" \"$INLINE_AFTER\" Items Extra --default-zero",
+    "input_contract": "Original files must match their recorded complete BEFORE hashes; fresh output paths must not exist. Raw source functions: canonical_created_default_zero::source(Source::IdOnly/ExistingZero). Database bytes remain local and untracked."
+  },
+  "observations": [
+    {
+      "case": "id-only-first-number",
+      "table": "Table1",
+      "source_provenance": "Owned canonical creator image; independently reauthored raw fixture, no third-party database redistributed",
+      "before_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "after_sha256": "d60f5ced66fdc200d62b24c7fcca4cb555731d670e8f29bd6ebb95f100509c88",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "source_original_checked_unchanged": true,
+      "sdk_fresh_read_only_reopen": true,
+      "expression_evaluation": false,
+      "rows": 0,
+      "indexes": 1,
+      "native_creation_and_update_dates": "Zero native days (1899-12-30); preserved, not current Access timestamp/event evidence",
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_page": 10,
+      "catalog": {
+        "logical_definition_row_count_unchanged": true,
+        "before_physical_slots": 8,
+        "after_physical_slots": 9,
+        "before_free_bytes": 3414,
+        "after_free_bytes": 3327,
+        "logical_root_slot": 7,
+        "logical_root_start": 3444,
+        "original_root_bytes": 73,
+        "root_word_before": "0xd74",
+        "root_word_after": "0x4d74",
+        "forwarding": true,
+        "new_hidden_slot": 8,
+        "after_property_record_start": 3359,
+        "after_property_record_bytes": 85,
+        "before_property_payload_bytes": 0,
+        "after_property_descriptor_hex": "44000040000a000000000000",
+        "after_lvprop_present": true
+      },
+      "allocation": {
+        "property_column_number": 14,
+        "owned_slot": 16,
+        "candidate_slot": 17,
+        "map_changes": [
+          {
+            "absolute_offset": 16156,
+            "before": 0,
+            "after": 4
+          },
+          {
+            "absolute_offset": 16169,
+            "before": 0,
+            "after": 4
+          }
+        ],
+        "global_free_map_unchanged": true,
+        "new_lval_owner": "LVAL",
+        "new_lval_slots": 1,
+        "new_lval_body_bytes": 68,
+        "new_lval_body_sha256": "aa2730da287dc09f792ec7fc3135fd3da8a947b2dfc454e9946de139f811cdf1"
+      },
+      "independent_raw_full_after": "PASS: separately authored literal Python composition equals complete SDK AFTER; corresponding Rust raw fixture/test connected and PASS"
+    },
+    {
+      "case": "existing-inline-default-zero",
+      "table": "Items",
+      "source_provenance": "Owned canonical creator image; independently reauthored raw fixture, no third-party database redistributed",
+      "before_sha256": "6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808",
+      "after_sha256": "1f3bb5bd37de1978587a233cc98da7a71b5f7262619180f1a2b548534f825bef",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "source_original_checked_unchanged": true,
+      "sdk_fresh_read_only_reopen": true,
+      "expression_evaluation": false,
+      "rows": 0,
+      "indexes": 1,
+      "native_creation_and_update_dates": "Zero native days (1899-12-30); preserved, not current Access timestamp/event evidence",
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_page": 10,
+      "catalog": {
+        "logical_definition_row_count_unchanged": true,
+        "before_physical_slots": 8,
+        "after_physical_slots": 8,
+        "before_free_bytes": 3336,
+        "after_free_bytes": 3336,
+        "logical_root_slot": 7,
+        "logical_root_start": 3366,
+        "original_root_bytes": 151,
+        "root_word_before": "0xd26",
+        "root_word_after": "0xd26",
+        "forwarding": false,
+        "new_hidden_slot": null,
+        "after_property_record_start": 3366,
+        "after_property_record_bytes": 151,
+        "before_property_payload_bytes": 80,
+        "after_property_descriptor_hex": "64000040000a000000000000",
+        "after_lvprop_present": true
+      },
+      "allocation": {
+        "property_column_number": 14,
+        "owned_slot": 16,
+        "candidate_slot": 17,
+        "map_changes": [
+          {
+            "absolute_offset": 16156,
+            "before": 0,
+            "after": 4
+          },
+          {
+            "absolute_offset": 16169,
+            "before": 0,
+            "after": 4
+          }
+        ],
+        "global_free_map_unchanged": true,
+        "new_lval_owner": "LVAL",
+        "new_lval_slots": 1,
+        "new_lval_body_bytes": 100,
+        "new_lval_body_sha256": "a84bb12aca0f7a0ebcfb6dda8391f99d9e10cd231145f58d6d2b720fec431f06"
+      },
+      "independent_raw_full_after": "PASS: separately authored literal Python composition equals complete SDK AFTER; corresponding Rust raw fixture/test connected and PASS"
+    }
+  ],
+  "source_limits": [
+    "Header5 ACE2016 only; exact complete canonical single empty generated-primary creator image",
+    "One through fifteen source declarations in existing constructive scalar profile",
+    "Absent properties or constant-zero DefaultValue entries only; broader dictionaries not inferred",
+    "No existing external property LVAL, extra objects, row history, populated rows, unknown tails or nonzero timestamps",
+    "Only a property body whose native preferred storage is single LVAL (65 through 4076 bytes); shorter-inline and chained targets remain refused",
+    "TCAC0001/0002 no-default intent languages unchanged; no new intent, journal recovery, runtime save or GUI permission"
+  ],
+  "verification": {
+    "sdk_execution": "PASS",
+    "fresh_read_only_sdk_reopen": "PASS",
+    "unchanged_originals": "PASS",
+    "independent_literal_python_complete_after_comparison": "PASS both cases, zero byte differences",
+    "rust_candidate_tests": "PASS: six focused cases, including both complete SDK AFTER pins; twelve existing candidate and nine frozen-intent cases also pass on macOS",
+    "native_microsoft_access_open_or_save": "Not run",
+    "normal_journal_or_recovery": "Not implemented for this new candidate"
+  }
+}
