@@ -311,3 +311,60 @@ This audit dispatches no workflow and publishes no artifacts. The local Windows
 CLI/SQLite C-SDK exclusion, desktop release preparation, minimum-OS/runtime-library
 qualification, installed file associations, window controls, dialogs, clipboard
 and screen-reader behavior retain their previously documented evidence limits.
+
+## Pending table-creation changes: renewed audit
+
+The renewed source review includes the pending append-table engine, original
+intent and recovery route, Access offline service, runtime review/save ownership,
+and desktop Create → Table flow. Three parallel reviews covered native storage,
+host integration, and tracked CI/release/association tooling. No additional
+portability defect was found. This is a scoped source-review finding, not proof
+that every application behavior works on another operating system.
+
+The append-table codecs retain explicit little-endian fields and checked widths.
+The save path uses the existing platform-specific journal and publication owners;
+it does not introduce a Unix-only filesystem route. Windows held-target tests
+observe the retained handle and check path contents after release. Unix inode and
+symlink assertions remain explicitly platform-specific. Runtime and presentation
+names do not replace native paths or determine query collation.
+
+The publication review also checked the locked `tempfile` API against its
+[upstream contract](https://docs.rs/tempfile/3.27.0/tempfile/struct.NamedTempFile.html#method.persist).
+`persist` does not synchronize file contents or the containing directory, and
+`persist_noclobber` does not guarantee atomic completion on every platform.
+Ordinary temporary-file consumers can use that crate; required database
+publication still needs its captured-parent identity, platform barriers and typed
+uncertain outcomes. Windows retains its local-NTFS and retired-journal limits.
+
+Fresh verification logs use the ignored `.cache/platform-final-*-20261107.log`
+prefix. Results below distinguish current-tree checks from the historical
+batches above. No native app windows, remote CI jobs or releases were started.
+
+| Current working-tree check | Result / scope |
+| --- | --- |
+| Strict workspace lint | All 20 packages, all targets/features, pass on macOS ARM64 |
+| Intel macOS / Linux x64 / Linux ARM64 cross-builds | Complete workspace, all targets/features, passes on each target |
+| Windows x64 / ARM64 cross-builds | All targets/features pass for 18 packages; CLI/SQLite retain the local MSVC C-SDK exclusion |
+| Isolated runtime features | Strict library lint passes without optional features, with creation alone, editing alone, and both together |
+| Selected headless execution | 925 tests pass: IO 139, Access 99, runtime 149, desktop 111 and shared UI 427 |
+| Repository and local packaging/tooling tests | 82 and 55 tests pass respectively |
+| Formatting / dependency boundaries | All 882 formatter roots and all 20 package boundaries pass |
+| Documentation links | 7,928 local targets pass |
+
+The selected execution includes actual reviewed schema creation, row insertion,
+second-table creation, fresh reopen and synthetic presentation scenarios. It is
+not a full-workspace regression run or native Windows/Linux execution. Review
+also corrected an unnecessary clone in a pending adapter test; strict lint passes
+without suppressing the diagnostic. Existing user-owned desktop packaging and
+notice working files were preserved.
+
+The Windows checks exclude CLI/SQLite because the local cross-compilation
+environment lacks the MSVC C SDK needed by bundled SQLite. Linux checks use the
+retained local Zig C wrappers and writable cache. These checks do not run target
+executables. Native Windows/Linux sharing, ACLs, journal retirement, dialogs,
+window controls, installed associations and crash/power-loss behavior remain
+unqualified locally. No new unsupported-platform fallback was introduced.
+
+Completed target-specific incremental caches were removed between phases to
+control local disk pressure. Incremental compilation remained enabled; native
+host caches, dependencies, binaries, fixtures and logs were retained.
