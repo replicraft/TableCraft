@@ -61,16 +61,26 @@ It retains the closed single-table catalog, explicit disabled Name AutoCorrect
 and unindexed system-table requirements. The retained reader must check complete
 key/row populations and physical owned membership; shared member-role proof
 excludes INDEX/DATA/TDEF/map/LVAL aliases, and all index map storage and members
-must be globally allocated. Generated primary keys, physical logical aliases,
+must be globally allocated. Generated primary keys, logical aliases of one tree,
 retained trees and inactive tails remain unchanged by the catalog rename.
 Original INDEX write-stamp bytes are preserved too; the zero-stamp restriction
 for rewriting an INDEX page does not apply to this catalog-only mutation.
 
 This explicit planner has no journal or frontend save path. The original
 `plan_table_rename`, recoverable planner and frozen `TCRN0001` reconstruction
-remain unindexed. Independent raw indexed BEFORE/AFTER cases and refusal checks
-are authored; their focused execution is pending the current batched validation
-gate. No ordinary-creator admission or native Access comparison is claimed.
+remain unindexed. Four focused tests pass, including 42 complete independent
+BEFORE/AFTER pairs across both stored headers, and key/membership/dependency,
+cancellation, budget and frozen-profile refusals. The shared ownership filter
+passes one active case; three historical pinned-original cases remain ignored.
+The journal-only, no-default-features engine check also passes, exercising its
+alternate LVAL inventory implementation.
+
+The first 22-test rename batch passed 21 cases and exposed an incorrect refusal
+expectation for the unchanged INDEX write stamp. Reclassifying it as explicit
+opaque-byte preservation passes the four affected tests; the other 18 unchanged
+rename/intent cases were not repeated. This is focused engine evidence, not a
+whole-workspace gate. Indexed SDK getter observations, native Access comparisons,
+and the new code's strict lint remain unrun. Ordinary creators still refuse.
 
 The planner changes the actual catalog Name carrier using its native column
 encoding. It adjusts the necessary variable offsets, DATA slot offsets and free

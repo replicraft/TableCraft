@@ -30,9 +30,10 @@ and desktop saves. Its unindexed, single-table, Name AutoCorrect OFF source
 profile does not admit current ordinary creator layouts. Broader creator/indexed
 qualification, explicit database options and remaining saved table/column CRUD
 are still required. An explicit retained-index rename planner is now checkpointed
-with independent fixtures, but compilation/qualification is pending. It remains
-unpublished and outside the existing journal/UI admission; frozen TCRN0001 stays
-unindexed. No general CRUD completion is claimed. Web and the broader
+with 42 independent image pairs passing focused checks and a passing journal-only
+configuration check. It returns only an unpublished candidate and remains outside
+the existing journal/UI admission; frozen TCRN0001 stays unindexed. SDK and native
+Access comparison for this indexed extension remain unrun. No general CRUD completion is claimed. Web and the broader
 coordinated localization pass remain later delivery gates.
 
 ## Native library refactors — 8 November 2026
