@@ -80,3 +80,12 @@ datasheet-number-inspecting = 数値型フィールドを追加できるか確�
 datasheet-number-reviewing = 新しい数値型フィールドを確認しています…
 datasheet-number-reopening = 保存したテーブルを開き直しています…
 datasheet-number-retry-inspection = フィールドの追加可否を再確認
+
+# Saved Number field close confirmation
+datasheet-number-close-title = フィールドの変更を保存しますか？
+datasheet-number-close-question = テーブル「{ $table }」に新しいフィールド「{ $column }」を保存しますか？
+datasheet-number-close-stale = フィールド名またはテーブルが変更されました。この確認画面を閉じて、もう一度お試しください。
+datasheet-number-close-unavailable = 現在、このフィールドを保存できません。
+datasheet-number-close-save = 保存
+datasheet-number-close-discard = 保存しない
+datasheet-number-close-cancel = キャンセル

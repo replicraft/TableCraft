@@ -3,10 +3,13 @@
 //! The host owns source inspection, consuming reviews, worker resources and the
 //! complete AFTER witness. The datasheet renders this name separately from its
 //! stored columns; merely naming a field must not invent a schema or a record.
+mod close;
 mod dialog;
 pub(crate) mod header;
 mod state;
 mod status;
+
+pub use close::{NumberColumnCloseDecision, NumberColumnCloseResult};
 
 pub(super) use status::Status;
 pub use status::{NumberColumnSaveCommand, NumberColumnSaveIdentity, PreparedNumberColumnSave};
@@ -68,6 +71,7 @@ pub(super) struct Inspection {
 pub(super) struct Model {
     inspections: Vec<Inspection>,
     draft: Option<Draft>,
+    close: Option<close::Confirmation>,
 }
 
 impl Model {
@@ -373,6 +377,9 @@ impl Model {
             bytes = bytes
                 .checked_add(table_name(&draft.tab)?.capacity())?
                 .checked_add(draft.column.capacity())?;
+        }
+        if let Some(close) = &self.close {
+            bytes = bytes.checked_add(close.heap_bytes()?)?;
         }
         Some(bytes)
     }

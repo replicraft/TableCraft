@@ -377,6 +377,7 @@ impl State {
 
     fn number_column_context(&self, tab: &ObjectTab) -> bool {
         self.number_column_available
+            && !self.number_column_close_open()
             && self.object_switch_ready_without_number_column()
             && self.view == DocumentView::Table
             && self.number_column_binding(tab)

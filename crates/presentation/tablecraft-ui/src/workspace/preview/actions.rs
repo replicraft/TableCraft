@@ -48,6 +48,19 @@ impl Preview {
             return;
         }
         match action {
+            Action::NumberColumnClose { result } => {
+                match result.decision {
+                    crate::NumberColumnCloseDecision::Discard => {
+                        self.state.close_object(&result.tab);
+                    }
+                    crate::NumberColumnCloseDecision::Cancel => {}
+                    crate::NumberColumnCloseDecision::Save => {
+                        // No native capability, worker or witness exists here.
+                        // Keep the field name dirty instead of fabricating save.
+                        self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                    }
+                }
+            }
             Action::ReviewNumberColumn { .. } | Action::RetryNumberColumnInspection { .. } => {
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
             }

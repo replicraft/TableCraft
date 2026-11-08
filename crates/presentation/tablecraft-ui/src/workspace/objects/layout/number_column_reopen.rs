@@ -88,6 +88,7 @@ impl State {
             && !self.has_modified_saved_query_sql()
             && self.table_draft.is_none()
             && !self.saved_query_sql_close_open()
+            && !self.number_column_close_open()
             && self.saved_query_sql_save_status().is_none()
             && self.table_draft_close.is_none()
             && !self.zoom_dialog_open()

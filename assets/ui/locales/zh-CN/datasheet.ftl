@@ -80,3 +80,12 @@ datasheet-number-inspecting = 正在检查能否添加数字字段…
 datasheet-number-reviewing = 正在检查新的数字字段…
 datasheet-number-reopening = 正在重新打开已保存的表…
 datasheet-number-retry-inspection = 重新检查字段添加条件
+
+# Saved Number field close confirmation
+datasheet-number-close-title = 是否保存字段更改？
+datasheet-number-close-question = 是否将新字段“{ $column }”保存到表“{ $table }”？
+datasheet-number-close-stale = 字段名称或表已更改。请关闭此提示后重试。
+datasheet-number-close-unavailable = 当前无法保存此字段。
+datasheet-number-close-save = 保存
+datasheet-number-close-discard = 不保存
+datasheet-number-close-cancel = 取消

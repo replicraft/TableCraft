@@ -80,3 +80,12 @@ datasheet-number-inspecting = 숫자 필드를 추가할 수 있는지 확인하
 datasheet-number-reviewing = 새 숫자 필드를 검토하는 중…
 datasheet-number-reopening = 저장된 테이블을 다시 여는 중…
 datasheet-number-retry-inspection = 필드 추가 가능 여부 다시 확인
+
+# Saved Number field close confirmation
+datasheet-number-close-title = 필드 변경 내용을 저장하시겠습니까?
+datasheet-number-close-question = 테이블 ‘{ $table }’에 새 필드 ‘{ $column }’을(를) 저장하시겠습니까?
+datasheet-number-close-stale = 필드 이름이나 테이블이 변경되었습니다. 이 창을 닫고 다시 시도하세요.
+datasheet-number-close-unavailable = 지금은 이 필드를 저장할 수 없습니다.
+datasheet-number-close-save = 저장
+datasheet-number-close-discard = 저장 안 함
+datasheet-number-close-cancel = 취소

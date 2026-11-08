@@ -80,3 +80,12 @@ datasheet-number-inspecting = Проверяется возможность до
 datasheet-number-reviewing = Проверяется новое числовое поле…
 datasheet-number-reopening = Сохранённая таблица открывается повторно…
 datasheet-number-retry-inspection = Повторить проверку возможности добавления поля
+
+# Saved Number field close confirmation
+datasheet-number-close-title = Сохранить изменения поля?
+datasheet-number-close-question = Сохранить новое поле «{ $column }» в таблице «{ $table }»?
+datasheet-number-close-stale = Имя поля или таблица изменились. Закройте это окно и повторите попытку.
+datasheet-number-close-unavailable = Сейчас это поле сохранить нельзя.
+datasheet-number-close-save = Сохранить
+datasheet-number-close-discard = Не сохранять
+datasheet-number-close-cancel = Отмена

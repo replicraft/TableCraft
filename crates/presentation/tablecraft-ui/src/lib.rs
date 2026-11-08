@@ -38,6 +38,7 @@ pub use workspace::{
     TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
     TotalsField, TotalsTarget, WorkspaceLayout,
 };
+pub use workspace::{NumberColumnCloseDecision, NumberColumnCloseResult};
 
 #[cfg(test)]
 mod tests {

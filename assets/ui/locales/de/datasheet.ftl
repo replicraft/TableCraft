@@ -80,3 +80,12 @@ datasheet-number-inspecting = Die Möglichkeit zum Hinzufügen eines Zahlenfelds
 datasheet-number-reviewing = Das neue Zahlenfeld wird geprüft…
 datasheet-number-reopening = Die gespeicherte Tabelle wird erneut geöffnet…
 datasheet-number-retry-inspection = Feldprüfung wiederholen
+
+# Saved Number field close confirmation
+datasheet-number-close-title = Feldänderungen speichern?
+datasheet-number-close-question = Das neue Feld „{ $column }“ in der Tabelle „{ $table }“ speichern?
+datasheet-number-close-stale = Der Feldname oder die Tabelle wurde geändert. Schließen Sie diese Abfrage und versuchen Sie es erneut.
+datasheet-number-close-unavailable = Dieses Feld kann momentan nicht gespeichert werden.
+datasheet-number-close-save = Speichern
+datasheet-number-close-discard = Nicht speichern
+datasheet-number-close-cancel = Abbrechen

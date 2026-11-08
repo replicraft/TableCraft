@@ -80,3 +80,12 @@ datasheet-number-inspecting = Checking whether a Number field can be added…
 datasheet-number-reviewing = Reviewing the new Number field…
 datasheet-number-reopening = Reopening the saved table…
 datasheet-number-retry-inspection = Retry field eligibility check
+
+# Saved Number field close confirmation
+datasheet-number-close-title = Save field changes?
+datasheet-number-close-question = Save the new field “{ $column }” in table “{ $table }”?
+datasheet-number-close-stale = The field name or table changed. Close this prompt and try again.
+datasheet-number-close-unavailable = This field cannot be saved right now.
+datasheet-number-close-save = Save
+datasheet-number-close-discard = Don't Save
+datasheet-number-close-cancel = Cancel

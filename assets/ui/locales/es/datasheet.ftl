@@ -80,3 +80,12 @@ datasheet-number-inspecting = Comprobando si se puede agregar un campo Número�
 datasheet-number-reviewing = Revisando el nuevo campo Número…
 datasheet-number-reopening = Volviendo a abrir la tabla guardada…
 datasheet-number-retry-inspection = Reintentar la comprobación del campo
+
+# Saved Number field close confirmation
+datasheet-number-close-title = ¿Guardar los cambios del campo?
+datasheet-number-close-question = ¿Guardar el nuevo campo «{ $column }» en la tabla «{ $table }»?
+datasheet-number-close-stale = El nombre del campo o la tabla ha cambiado. Cierre este diálogo e inténtelo de nuevo.
+datasheet-number-close-unavailable = Este campo no se puede guardar ahora.
+datasheet-number-close-save = Guardar
+datasheet-number-close-discard = No guardar
+datasheet-number-close-cancel = Cancelar

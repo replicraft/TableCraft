@@ -16,7 +16,13 @@ impl State {
         // Consume known chords even when blocked so toolkit/native defaults
         // cannot delete text or close the application behind a modal/save.
         let shortcut = keyboard::consume_object_shortcut(ui.ctx())?;
-        if !ui.is_enabled() || !self.object_switch_ready() || Popup::is_any_open(ui.ctx()) {
+        let naming_transition = self
+            .active_object()
+            .is_some_and(|tab| self.can_request_number_column_transition(&tab));
+        if !ui.is_enabled()
+            || (!self.object_switch_ready() && !naming_transition)
+            || Popup::is_any_open(ui.ctx())
+        {
             return None;
         }
         let active = self.active_object()?;
@@ -66,12 +72,16 @@ impl State {
             return;
         }
         if pending.close {
-            if self.can_close_object(&pending.target) {
+            if self.can_close_object(&pending.target)
+                || self.can_request_number_column_transition(&pending.target)
+            {
                 actions.push(Action::CloseObject {
                     tab: pending.target,
                 });
             }
-        } else if self.can_activate_object(&pending.target) {
+        } else if self.can_activate_object(&pending.target)
+            || self.can_request_number_column_transition(&pending.target)
+        {
             actions.push(Action::ActivateObject {
                 tab: pending.target,
             });

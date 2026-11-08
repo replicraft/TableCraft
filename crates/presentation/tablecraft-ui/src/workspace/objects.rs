@@ -2,6 +2,7 @@
 mod layout;
 pub(super) mod memory;
 mod names;
+mod number_column_close;
 mod ownership;
 mod saved_sql;
 mod saved_sql_close;
@@ -183,6 +184,15 @@ impl State {
         if !self.can_activate_object(tab) {
             return false;
         }
+        self.activate_object_after_admission(tab)
+    }
+
+    /// Shared mechanics only: callers must already prove exact owner binding,
+    /// modal policy and retained-memory admission. No native authority is issued.
+    pub(in crate::workspace) fn activate_object_after_admission(
+        &mut self,
+        tab: &ObjectTab,
+    ) -> bool {
         if self.objects.active == Some(tab.id) {
             return true;
         }
@@ -323,6 +333,9 @@ impl State {
     }
 
     pub fn can_close_object(&self, tab: &ObjectTab) -> bool {
+        if self.can_request_number_column_close(tab) {
+            return true;
+        }
         self.object_switch_ready()
             && self.object_binding(&tab.target)
             && self.objects.entries.iter().any(|entry| entry.tab == *tab)
@@ -330,6 +343,13 @@ impl State {
 
     pub fn close_object(&mut self, tab: &ObjectTab) -> bool {
         if !self.can_close_object(tab) {
+            return false;
+        }
+        if self
+            .number_column_name()
+            .is_some_and(|(owner, _, _)| owner == tab)
+        {
+            self.request_number_column_close(tab);
             return false;
         }
         if self.saved_query_sql_revision_for(tab).is_some() {
@@ -354,7 +374,11 @@ impl State {
     }
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
-        if self.saved_query_sql_revision_for(tab).is_some() {
+        if self
+            .number_column_name()
+            .is_some_and(|(owner, _, _)| owner == tab)
+            || self.saved_query_sql_revision_for(tab).is_some()
+        {
             return false;
         }
         let Some(index) = self
@@ -387,7 +411,9 @@ impl State {
     }
 
     pub(super) fn object_switch_ready(&self) -> bool {
-        !self.number_column_open() && self.object_switch_ready_without_number_column()
+        !self.number_column_open()
+            && !self.number_column_close_open()
+            && self.object_switch_ready_without_number_column()
     }
 
     pub(super) fn object_switch_ready_without_number_column(&self) -> bool {

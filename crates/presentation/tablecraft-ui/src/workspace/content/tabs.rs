@@ -89,8 +89,10 @@ impl State {
                                     object.target.document_revision,
                                     object.id,
                                 ));
-                                let can_close = self.can_close_object(&object);
-                                let can_activate = self.can_activate_object(&object);
+                                let can_close = self.can_close_object(&object)
+                                    || self.can_request_number_column_transition(&object);
+                                let can_activate = self.can_activate_object(&object)
+                                    || self.can_request_number_column_transition(&object);
                                 let (response, close) = ui
                                     .add_enabled_ui(can_activate, |ui| {
                                         tab(ui, id, &title, icon, selected, true, can_close)

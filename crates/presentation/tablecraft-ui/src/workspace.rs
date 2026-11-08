@@ -48,6 +48,7 @@ pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
 pub use navigation::rename::TableRenameRequest;
+pub use number_column::{NumberColumnCloseDecision, NumberColumnCloseResult};
 pub use number_column::{
     NumberColumnInspectionError, NumberColumnRequest, NumberColumnSaveCommand,
     NumberColumnSaveIdentity, PreparedNumberColumnSave,
@@ -112,6 +113,9 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    NumberColumnClose {
+        result: NumberColumnCloseResult,
+    },
     ReviewNumberColumn {
         request: NumberColumnRequest,
     },
@@ -780,7 +784,8 @@ impl State {
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_active_save_shortcut(ui.ctx());
-        let modal_open = self.number_column_modal_open()
+        let modal_open = self.number_column_close_open()
+            || self.number_column_modal_open()
             || self.saved_query_sql_save_open()
             || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
@@ -884,6 +889,7 @@ impl State {
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
+        self.number_column_close_dialog(ui.ctx(), &mut actions);
         self.number_column_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
