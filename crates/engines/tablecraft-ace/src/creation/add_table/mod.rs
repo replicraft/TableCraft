@@ -89,6 +89,10 @@ impl AddTablePlan {
         self.definition.column_count()
     }
 
+    pub(crate) fn definition(&self) -> &FirstTableDefinition {
+        &self.definition
+    }
+
     /// Discard the candidate while retaining its original owned declaration.
     pub fn into_definition(self) -> FirstTableDefinition {
         self.definition

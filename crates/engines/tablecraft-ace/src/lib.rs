@@ -247,3 +247,9 @@ pub use transaction::{
     FirstTableIntentError, NativeFirstTableIntent, PreparedFirstTable, QualifiedFirstTableRecovery,
     qualify_native_first_table_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    AddTableIntentError, NativeAddTableIntent, PreparedAddTable, QualifiedAddTableRecovery,
+    qualify_native_add_table_recovery,
+};

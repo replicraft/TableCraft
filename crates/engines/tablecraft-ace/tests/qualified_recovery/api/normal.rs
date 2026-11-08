@@ -888,3 +888,7 @@ mod first_table;
 #[cfg(feature = "ace16-create")]
 #[path = "normal/initial_insert.rs"]
 mod initial_insert;
+
+#[cfg(feature = "ace16-create")]
+#[path = "normal/add_table.rs"]
+mod add_table;

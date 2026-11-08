@@ -160,3 +160,9 @@ pub use intent::{
     FirstTableIntentError, NativeFirstTableIntent, PreparedFirstTable, QualifiedFirstTableRecovery,
     qualify_native_first_table_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    AddTableIntentError, NativeAddTableIntent, PreparedAddTable, QualifiedAddTableRecovery,
+    qualify_native_add_table_recovery,
+};

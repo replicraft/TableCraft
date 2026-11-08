@@ -126,6 +126,26 @@ pub(super) fn encode(
     if before.len() as u64 != CANONICAL_BEFORE_BYTES {
         return Err(FirstTableIntentError::BeforeMismatch);
     }
+    encode_definition(definition, Some(before), budget, cancelled)
+}
+
+/// Encode the pinned declaration template without claiming a supplied source.
+/// Its fixed canonical header remains template data, not an AddTable binding.
+pub(super) fn encode_template(
+    definition: &FirstTableDefinition,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, FirstTableIntentError> {
+    check(budget, cancelled)?;
+    encode_definition(definition, None, budget, cancelled)
+}
+
+fn encode_definition(
+    definition: &FirstTableDefinition,
+    before: Option<&[u8]>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, FirstTableIntentError> {
     let columns = definition.borrowed_columns(budget, cancelled)?;
     let has_defaults = columns
         .iter()
@@ -162,13 +182,18 @@ pub(super) fn encode(
     if total > MAX_RECORD_BYTES {
         return Err(FirstTableIntentError::InvalidRecord);
     }
-    let binding = binding::digest(before, budget, cancelled)?;
-    budget
-        .charge(Resource::Steps, BINDING_BYTES as u64)
-        .map_err(InspectError::from)?;
-    if binding != CANONICAL_BEFORE_BINDING {
-        return Err(FirstTableIntentError::BeforeMismatch);
-    }
+    let binding = if let Some(before) = before {
+        let binding = binding::digest(before, budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, BINDING_BYTES as u64)
+            .map_err(InspectError::from)?;
+        if binding != CANONICAL_BEFORE_BINDING {
+            return Err(FirstTableIntentError::BeforeMismatch);
+        }
+        binding
+    } else {
+        CANONICAL_BEFORE_BINDING
+    };
     budget
         .charge_allocation(total as u64, 1)
         .map_err(InspectError::from)?;
@@ -200,7 +225,7 @@ pub(super) fn encode(
     raw[..MAGIC.len()].copy_from_slice(magic);
     raw[TOTAL_AT..PROFILE_AT].copy_from_slice(&(total as u32).to_le_bytes());
     raw[PROFILE_AT..FLAGS_AT].copy_from_slice(&profile.to_le_bytes());
-    raw[BEFORE_AT..BINDING_AT].copy_from_slice(&(before.len() as u64).to_le_bytes());
+    raw[BEFORE_AT..BINDING_AT].copy_from_slice(&CANONICAL_BEFORE_BYTES.to_le_bytes());
     raw[BINDING_AT..TABLE_LENGTH_AT].copy_from_slice(&binding);
     raw[TABLE_LENGTH_AT..PRIMARY_LENGTH_AT]
         .copy_from_slice(&(definition.table().len() as u16).to_le_bytes());

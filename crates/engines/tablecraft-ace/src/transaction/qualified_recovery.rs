@@ -1,8 +1,8 @@
+#[cfg(feature = "ace16-create")]
+use crate::{AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError};
 use crate::{
     EditError, InspectError, NativeImage, NativeInt32EditIntent, NativeIntentError, header::check,
 };
-#[cfg(feature = "ace16-create")]
-use crate::{FirstTableError, FirstTableIntentError};
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{CheckedV1, DurableStorage, JournalError, RecoveryOutcome, V1State};
@@ -33,6 +33,14 @@ pub enum NativeRecoveryQualificationError {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FirstTable(#[from] FirstTableError),
+    /// The original add-table request failed closed framing or full-source binding.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    AddTableIntent(#[from] AddTableIntentError),
+    /// Original populated source or proposed table failed the append operation.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    AddTable(#[from] AddTableError),
     /// A complete journal image differs from the independently rebuilt plan.
     #[error("journal images differ from the qualified original native edit")]
     ImageMismatch,
