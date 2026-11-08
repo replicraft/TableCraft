@@ -121,15 +121,17 @@ separate candidate-only operation, with its own opaque candidate/error types.
 The native candidate slice is connected. All six focused Rust cases pass in the
 coordinated batch, including both full SDK AFTER-image pins. Seven existing
 created-source cases, five keyless candidate cases and nine frozen-intent cases
-also pass. These checks supply no original intent, journal/recovery route, runtime save capability or enabled GUI
-command. Existing `TCAC0001`/`TCAC0002` admission and
+also pass. The candidate itself supplies no original intent or save authority.
+The separate Number route below now supplies native intent, journal/recovery
+and runtime services; GUI controls remain disabled. Existing `TCAC0001`/`TCAC0002` admission and
 wire meanings remain unchanged.
 
 Its authored source proof requires the complete canonical empty header-5
 creator image, a first LONG Increment primary, one through fifteen source fields
 and zero native dates. Properties must be absent or consist only of constant
-zero defaults. Existing external property storage, other dictionaries, extra
-objects, populated rows, unknown history and nonzero dates refuse. The complete
+zero defaults and explicit Required false. Existing external property storage,
+other dictionaries, extra objects, populated rows, unknown history and nonzero
+dates refuse. The complete
 target MR2 body must prefer one external LVAL row (65 through 4,076 bytes);
 shorter inline and chained targets remain outside this checkpoint.
 
@@ -211,3 +213,39 @@ new-field declaration/name review, a dedicated schema-save owner, acknowledged
 zero-default behavior while preserving explicit NULL and supplied values. Current
 empty-source, field-count and file-profile limits remain; SDK byte comparisons
 and zero dates do not establish native Access save timing or timestamp parity.
+
+## Exact Number declaration and persistence
+
+The typed `CreatedDefaultZeroColumnRequired` declaration keeps absent Required
+metadata distinct from stored Boolean false. The Number service explicitly
+requests `StoredFalse` together with an Int32 zero default. Three independent
+[SDK observations](../../testing/results/add-column-number-sdk-source-2026-11-08.json)
+cover an ID-only source, an existing default-only source and a source with
+Required false plus default zero. Complete candidate images match all three.
+The property writer retains dictionary order: newly introduced Required follows
+an existing DefaultValue entry, while an existing Required-first dictionary
+remains in that order. Ordinary constructive creation keeps its original order.
+
+`TCAC0003` binds the exact declaration, original image length/digest and bounded
+names. Its native plan reconstructs the entire candidate before a checked
+resizable V2 journal; cold and settled recovery decode that exact language before
+reconstruction. Frozen TCAC0001/0002 remain separate no-default languages.
+The Access adapter preserves the retained exclusive owner, original lengths,
+explicit cancellation, separate normal native/proof pools and schema-only
+ColumnAdded receipts. Recovery spends its original cumulative caller allowance.
+
+Runtime exposes `ReviewAddNumberColumn`, a consuming `ReviewedNumberColumn`,
+`SaveWorker::start_number_column` and the existing complete-image guarded
+`OpenColumnAdded` read. Review holds no write lease. Actual native review/save
+rechecks the source and requested declaration; a terminal receipt alone cannot
+publish a refreshed document. The [batch record](../../testing/results/number-column-runtime-batch-2026-11-08.json)
+retains 65 passing checks and strict affected-package lint. The actual GUI draft
+producer, not only hand-authored declarations, matches both source classes.
+
+Saved-datasheet naming and save controls remain disabled pending their dedicated
+host/shared-UI lifecycle. The later name-independent native source check grants
+no write capability; its availability consumers and additional failure tests
+are pending a subsequent batch. Required true, broader properties, populated
+sources, external source properties and native Access timestamps remain outside
+this profile. SDK comparisons and macOS checks do not qualify Microsoft Access
+or Windows execution.

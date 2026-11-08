@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Explicit Required(false) plus typed Int32 zero Number declaration with independent SDK, candidate and runtime producer checks",
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "license": "Apache-2.0",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862"
+  },
+  "helper": {
+    "source": "docs/testing/CreatedNumberColumnOracle.java",
+    "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+    "executed_source_byte_identical": true,
+    "properties": [
+      "Required BOOLEAN false",
+      "DefaultValue MEMO UTF16 0"
+    ],
+    "fresh_copy": true,
+    "expression_evaluation": false,
+    "read_only_reopen": true,
+    "original_bytes_unchanged": true
+  },
+  "observations": [
+    {
+      "case": "id-only",
+      "before_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "raw_after_sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "sdk_after_sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+      "complete_match": true,
+      "differences": [],
+      "body_bytes": 95,
+      "body_sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+      "body_hex": "4d5232003200000080001800440065006600610075006c007400560061006c0075006500100052006500710075006900720065006400290000000100100000000a00530063006f00720065000a00010c000002003000090001010100010000",
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_lval_page": 10,
+      "source_and_after_rows": 0,
+      "source_and_after_indexes": 1,
+      "required_new_column": "Stored native BOOLEAN false; not inferred from nullable flags",
+      "default_new_column": "Stored native MEMO UTF16 literal0; not a displayed or supplied row value",
+      "dates": "Zero native days (1899-12-30), unchanged; no Access timestamp/event parity"
+    },
+    {
+      "case": "gui-number-inline",
+      "before_sha256": "9bb835b86e8e0789728834ae8871ab9b51d647c69bea89a091d15fd14cd8a90e",
+      "raw_after_sha256": "b314c02b5f67c8deebb564f7e4deae5cd5a5e28e1f67f3122b1cb8d14507c3a4",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "sdk_after_sha256": "b314c02b5f67c8deebb564f7e4deae5cd5a5e28e1f67f3122b1cb8d14507c3a4",
+      "complete_match": true,
+      "differences": [],
+      "body_bytes": 136,
+      "body_sha256": "c88e2e35fda822b259a3688dd11e14917c9bd726a2481abb37dceaee6b357c21",
+      "body_hex": "4d5232003200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c0075006500290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000290000000100100000000a00450078007400720061000900010100000100000a00010c010002003000",
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_lval_page": 10,
+      "source_and_after_rows": 0,
+      "source_and_after_indexes": 1,
+      "required_new_column": "Stored native BOOLEAN false; not inferred from nullable flags",
+      "default_new_column": "Stored native MEMO UTF16 literal0; not a displayed or supplied row value",
+      "dates": "Zero native days (1899-12-30), unchanged; no Access timestamp/event parity"
+    },
+    {
+      "case": "existing-default-only",
+      "before_sha256": "6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808",
+      "raw_after_sha256": "05dcae27ffd63cba552e47740c60649d46bb265730b6b202a384e69ebb249072",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "sdk_after_sha256": "05dcae27ffd63cba552e47740c60649d46bb265730b6b202a384e69ebb249072",
+      "complete_match": true,
+      "differences": [],
+      "body_bytes": 127,
+      "body_sha256": "5a74c094c4fc3f7186a81db7b6510f72ee425ae0226f6211093f28930bc95c97",
+      "body_hex": "4d5232003200000080001800440065006600610075006c007400560061006c0075006500100052006500710075006900720065006400200000000100100000000a00530063006f00720065000a00010c000002003000290000000100100000000a00450078007400720061000a00010c000002003000090001010100010000",
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_lval_page": 10,
+      "source_and_after_rows": 0,
+      "source_and_after_indexes": 1,
+      "required_new_column": "Stored native BOOLEAN false; not inferred from nullable flags",
+      "default_new_column": "Stored native MEMO UTF16 literal0; not a displayed or supplied row value",
+      "dates": "Zero native days (1899-12-30), unchanged; no Access timestamp/event parity"
+    }
+  ],
+  "ordering": {
+    "id-only": "DefaultValue then Required; group follows same dictionary order",
+    "gui-number-inline": "Existing Required then DefaultValue preserved; old/new group order same",
+    "existing-default-only": "DefaultValue then appended Required; old Score still has Required absent"
+  },
+  "producer_qualification": {
+    "id-only": "Owned initial creator source; exact raw pin b52d1248",
+    "gui-number-inline": "Independent raw constructed source matching GUI declaration shape; engine-constructor equality and actual runtime TableDraft review/save equality tests PASS"
+  },
+  "limits": [
+    "No Microsoft Access execution or timestamp parity; all source/AFTER native dates remain zero",
+    "No native Number intent/save/GUI activation from SDK observation alone",
+    "Initial first-case Required-first full raw comparison failed; corrected Default-first exact match retained alongside failed private evidence"
+  ],
+  "new_rust_files": [
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_created_number.rs",
+    "crates/engines/tablecraft-ace/src/creation/add_column/created/default_zero/required_tests.rs",
+    "crates/application/tablecraft-runtime/src/editing/platform/native/table_creation/tests/number_source.rs"
+  ],
+  "reproduction": {
+    "working_directory": "repository root; POSIX shell",
+    "input_contract": "ID_BEFORE, GUI_BEFORE and DEFAULT_BEFORE are locally exported original sources matching the complete BEFORE hashes. Every AFTER variable names a fresh nonexistent output. Database, JAR and generated class bytes remain local/untracked.",
+    "raw_source_owner": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_created_number.rs",
+    "raw_source_functions": [
+      "source(Source::IdOnly)",
+      "source(Source::GuiRequiredZero)",
+      "source(Source::DefaultOnly)"
+    ],
+    "compile_command": "javac -cp \"$JACKCESS_JAR\" -d \"$ORACLE_CLASSES\" docs/testing/CreatedNumberColumnOracle.java",
+    "first_number_command": "java -cp \"$JACKCESS_JAR:$ORACLE_CLASSES\" CreatedNumberColumnOracle \"$ID_BEFORE\" \"$ID_AFTER\" Table1 Score --default-zero",
+    "existing_gui_number_command": "java -cp \"$JACKCESS_JAR:$ORACLE_CLASSES\" CreatedNumberColumnOracle \"$GUI_BEFORE\" \"$GUI_AFTER\" Table1 Extra --default-zero",
+    "existing_default_only_command": "java -cp \"$JACKCESS_JAR:$ORACLE_CLASSES\" CreatedNumberColumnOracle \"$DEFAULT_BEFORE\" \"$DEFAULT_AFTER\" Items Extra --default-zero",
+    "required_environment": [
+      "JACKCESS_JAR: reviewed artifact with recorded SHA-256",
+      "ORACLE_CLASSES: existing local generated-class output directory",
+      "ID_BEFORE/ID_AFTER, GUI_BEFORE/GUI_AFTER, DEFAULT_BEFORE/DEFAULT_AFTER: hash-pinned originals/fresh output names"
+    ],
+    "provenance_document": "docs/testing/FIXTURES.md",
+    "candidate_contract": "docs/access/writes/ADD_COLUMN.md",
+    "promotion": "Maintained helper is byte-identical to executed original first-party Number probe; Apache-2.0 repository code, no third-party database/code copied"
+  },
+  "verification": {
+    "sdk_fresh_copy_add_and_inert_reopen": "PASS all three cases",
+    "original_sources_unchanged": "PASS all three cases",
+    "independent_literal_python_whole_after": "PASS all three cases, zero byte differences",
+    "rust_candidate_required_cases": "PASS five cases, including all three full SDK AFTER pins and constructive source equality",
+    "runtime_gui_declaration_producer": "PASS one actual draft/save/reopen case with two distinct original source classes",
+    "native_microsoft_access_comparison": "Not run",
+    "new_number_journal_adapter_runtime_gui_save": "Not qualified by SDK or unrun candidate/producer checks",
+    "runtime_and_native_batch": "number-column-runtime-batch-2026-11-08.json: 65 selected passing checks, strict affected-package lint"
+  }
+}

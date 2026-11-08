@@ -15,6 +15,7 @@
 - [Cross-platform audit and native CI scope](CROSS_PLATFORM_AUDIT.md)
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Default-zero saved-column SDK source and candidate checkpoint](results/add-column-default-zero-sdk-source-2026-11-08.json)
+- [Exact Number declaration and runtime persistence checks](results/number-column-runtime-batch-2026-11-08.json)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
 - [Append-table independent-reader observations](results/ace16-add-table-independent-reader-2026-11-07.json)

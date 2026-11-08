@@ -11170,3 +11170,24 @@ candidate cases and nine frozen-intent cases. The
 keep observed SDK behavior separate from native admission, journal/recovery,
 GUI availability and native Microsoft Access save/timestamp comparison. Database
 bytes, JARs and generated classes remain local and untracked.
+
+
+## Exact Number declaration reference — 8 November 2026
+
+[CreatedNumberColumnOracle.java](CreatedNumberColumnOracle.java), original
+repository code, has SHA-256
+`c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886`.
+It uses the previously reviewed Jackcess 5.0.4 artifact and Apache-2.0 provenance
+recorded above. No third-party fixture or new dependency is imported.
+
+The [three-case record](results/add-column-number-sdk-source-2026-11-08.json)
+contains complete source/AFTER hashes, property bodies, ordering observations,
+fresh read-only SDK reopen and original preservation checks. The original raw
+`canonical_created_number` testkit fixture uses no production codecs. All three
+complete native candidates equal the independent SDK AFTERs. A separate runtime
+test compares actual TableDraft creation/save/reopen with both original source
+classes. The first Required-first raw composition mismatch is retained in the
+record before its independently corrected SDK ordering model. The
+[65-case batch](results/number-column-runtime-batch-2026-11-08.json) separates
+passing native/runtime checks from pending GUI and native Access qualification.
+Generated databases, classes and SDK binaries remain local and untracked.

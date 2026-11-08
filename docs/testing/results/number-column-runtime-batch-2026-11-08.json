@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Explicit Number column declaration, original-intent V2 persistence, offline recovery and runtime save/reopen",
+  "verification_head": "a8c0346d9b33eb91b45b2cf86bb39fd0a88457f3",
+  "status": "PASS for selected macOS headless gates; visible saved-column GUI workflow remains disabled",
+  "logical_checks": 65,
+  "runs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::add_column::",
+      "exit_code": 0,
+      "log": ".cache/native-number-batch-tablecraft_ace-creation-add_column--20261108.log",
+      "passed": 23,
+      "failed": 0,
+      "log_sha256": "665ab2074a12b663dceccf8b59b13fa3a69e663a6c80336e30eac9a5f6534250"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::property_tests::",
+      "exit_code": 0,
+      "log": ".cache/native-number-batch-tablecraft_ace-creation-property_tests--20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "log_sha256": "802837c503d971e28a11e9d8219969c249328accf93f9917bce2d856cbb0ed1d"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::add_column::",
+      "exit_code": 0,
+      "log": ".cache/native-number-batch-tablecraft_ace-transaction-intent-add_column--20261108.log",
+      "passed": 9,
+      "failed": 0,
+      "log_sha256": "80ce166bfccb3cb36625fd8b6d826de2cf65c6aa7c6c3cb0704cc8e442c11f5d"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::default_zero_add_column::",
+      "exit_code": 0,
+      "log": ".cache/native-number-batch-tablecraft_ace-transaction-intent-default_zero_add_column--20261108.log",
+      "passed": 8,
+      "failed": 0,
+      "log_sha256": "0cee16f96c99f5de5bccea8656e14e86ebc91823cb0d886c7772151d140f15ab"
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "editing::offline::add_column::",
+      "exit_code": 0,
+      "log": ".cache/native-number-batch-tablecraft_access-editing-offline-add_column--20261108.log",
+      "passed": 8,
+      "failed": 0,
+      "log_sha256": "07b92a4a643aab409ac5af6f64a0166f540c063decad9f3fcbbabb9623d91d07"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::number_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-batch-tablecraft_runtime-tests-number_column--20261108.log",
+      "passed": 4,
+      "failed": 0,
+      "log_sha256": "3412f73303c0abd0961f52130c741431f1c54c9af89721f865e2cf20111370c5"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::native::save::outcomes::number_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-batch-tablecraft_runtime-editing-platform-native-save-outcomes-number_column--20261108.log",
+      "passed": 0,
+      "failed": 0,
+      "log_sha256": "e00fa75323b387f2c9442e95191889fbaf573fc3823d29febd385ff95287a24a"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::native::table_creation::tests::number_source::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-batch-tablecraft_runtime-editing-platform-native-table_creation-tests-number_source--20261108.log",
+      "passed": 0,
+      "failed": 0,
+      "log_sha256": "e00fa75323b387f2c9442e95191889fbaf573fc3823d29febd385ff95287a24a"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::add_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-batch-tablecraft_runtime-tests-add_column--20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "log_sha256": "b4e5706c6c6054e5b97051ab4216686bac913f6952028cd3dadd56e94f008d91"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::save::outcomes::number_column::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-corrected-editing-platform-save-outcomes-number_column--20261108.log",
+      "passed": 2,
+      "failed": 0,
+      "log_sha256": "9f2c15fc7967ed5a4e11b2ef71d435164f133f4c8efc7b0e5bf3a7287d8c130f"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::table_creation::tests::number_source::",
+      "exit_code": 0,
+      "log": ".cache/gui-number-corrected-editing-platform-table_creation-tests-number_source--20261108.log",
+      "passed": 1,
+      "failed": 0,
+      "log_sha256": "54f94abcd766a4c3dde20a83900ef32683303c928ba776d74155e1cd78ae4aa1"
+    }
+  ],
+  "zero_match_filters": "Two initial runtime filters incorrectly included the physical native directory in the logical module path and matched zero tests. They count as zero; corrected filters executed the two outcome cases and actual producer case. Both attempts are retained.",
+  "build": "PASS: ACE/access/runtime/UI libraries and desktop test binary, all features, offline locked",
+  "lint": "PASS: same five packages, libraries and desktop binary, all features, -D warnings",
+  "proof": "Three complete SDK AFTER images match independent raw fixtures and native candidates; actual TableDraft creation/save matches both initial source classes.",
+  "boundaries": [
+    "Windows and native Microsoft Access execution not performed.",
+    "GUI Number naming/save controls remain disabled.",
+    "Only canonical empty ACE16 generated-primary sources and qualified property dictionaries are admitted.",
+    "Name-independent eligibility and three later failure tests were added after this gate; they are pending the next batch."
+  ]
+}
