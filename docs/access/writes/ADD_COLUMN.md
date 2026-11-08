@@ -60,5 +60,9 @@ dispatches only the closed TCAC family during cold and settled recovery. A
 committed `SchemaChange::ColumnAdded` has no matched/changed row counts.
 
 See the [focused batch record](../../testing/results/schema-save-workflows-2026-11-08.json).
-Native Windows and Microsoft Access save/reopen behavior, timestamp parity,
-runtime reviews and GUI column editing are not qualified by this checkpoint.
+Native Windows and Microsoft Access save/reopen behavior, timestamp parity and
+GUI column editing are not qualified by this checkpoint. Five additional runtime
+checks now pass: consuming review/save, full-schema reopen, stale revisions and
+capabilities, source drift and whole-content reopen witness validation. The native
+and unsupported host services share the typed contract; this gate executes on
+macOS only.

@@ -114,7 +114,7 @@
     "filter": "creation::database_options::tests",
     "reason": "Full Header equality included derived page_count despite deliberate EOF append",
     "fix_commit": "604c8567",
-    "rerun": "pending"
+    "rerun": "Header correction compiled; positive still fails at a second independently identified raw-slot verification guard"
   },
   "limitations": [
     "No new GUI column or query-save commands enabled by this batch",
@@ -123,5 +123,62 @@
     "No native Windows or Microsoft Access execution",
     "This is a focused batch, not a complete workspace gate"
   ],
-  "initial_compile_failure": "Query test SHA output LowerHex mismatch and unused rename import, fixed42eb457b; failed logs retained"
+  "initial_compile_failure": "Query test SHA output LowerHex mismatch and unused rename import, fixed42eb457b; failed logs retained",
+  "application_followup": {
+    "source_checkpoint": "7d2344b8",
+    "cases": [
+      {
+        "package": "tablecraft_ace",
+        "filter": "creation::database_options::tests",
+        "exit_code": 101,
+        "log": ".cache/schema-application-focused-tablecraft_ace-creation-database_options-tests-20261108.log",
+        "passed": 2,
+        "failed": 1,
+        "ignored": 0,
+        "log_sha256": "f2dddcec2b3d2c575fce9c9cd9d43c160cbba546d39e0276784b32ded40f0480"
+      },
+      {
+        "package": "tablecraft_ace",
+        "filter": "transaction::intent::database_options::tests",
+        "exit_code": 101,
+        "log": ".cache/schema-application-focused-tablecraft_ace-transaction-intent-database_options-tests-20261108.log",
+        "passed": 1,
+        "failed": 5,
+        "ignored": 0,
+        "log_sha256": "af349fef15cf439e02d17b674adfbf94eae09519e2ee22f038a872850fdad91e"
+      },
+      {
+        "package": "tablecraft_access",
+        "filter": "editing::offline::query_expression::tests",
+        "exit_code": 0,
+        "log": ".cache/schema-application-focused-tablecraft_access-editing-offline-query_expression-tests-20261108.log",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "141a91048115ebd4f0b7c687a168325327c0a29d4eff68f23474c594fa419c9f"
+      },
+      {
+        "package": "tablecraft_runtime",
+        "filter": "tests::add_column",
+        "exit_code": 0,
+        "log": ".cache/schema-application-focused-tablecraft_runtime-tests-add_column-20261108.log",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "732ded3a45ec1d87249ff26ff46faa8043fe4ce19d338095fa2452d7e764d8ec"
+      },
+      {
+        "package": "tablecraft_runtime",
+        "filter": "editing::platform::save::outcomes::tests",
+        "exit_code": 0,
+        "log": ".cache/schema-application-focused-tablecraft_runtime-editing-platform-save-outcomes-tests-20261108.log",
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0,
+        "log_sha256": "6998f2cf2bf198811bce513691d16b5bb0708053f94accdfb6e3f3cfdb4f4797"
+      }
+    ],
+    "remaining_options_failure": "LVAL verification treated raw slot word as isolated flags; clean correction and rerun pending",
+    "strict_lint": "Two UTF16 constant-chunk lints fixed93a72a0f; rerun pending"
+  }
 }
