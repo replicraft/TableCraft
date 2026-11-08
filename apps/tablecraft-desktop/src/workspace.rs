@@ -8,6 +8,7 @@ mod navigation;
 mod objects;
 mod opening;
 mod query_design;
+mod query_parameters;
 mod replacing;
 mod saved;
 mod table_drafts;
@@ -46,6 +47,9 @@ enum PendingOperation {
         request_id: u64,
     },
     Query {
+        request_id: u64,
+    },
+    QueryInspection {
         request_id: u64,
     },
     QueryDesignDescribe {
@@ -158,6 +162,7 @@ pub(super) struct Desktop {
     recovery_reopen: Option<editing::recovery::RecoveryReopen>,
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
+    query_parameters: Option<query_parameters::Inspected>,
     startup_visibility_pending: bool,
 }
 
@@ -191,6 +196,7 @@ impl Desktop {
             recovery_reopen: None,
             filter: None,
             objects: objects::Sessions::default(),
+            query_parameters: None,
             startup_visibility_pending: true,
         };
         app.state.file_picker_available = true;
@@ -254,6 +260,7 @@ impl Desktop {
             Command::Open { path, .. } => Some(path.clone()),
             _ => None,
         };
+        self.clear_query_parameters();
         self.generation = self.worker.request(command);
         self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
@@ -407,10 +414,8 @@ impl Desktop {
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
                 }
-                Ok(Response::QueryParameters { .. }) => {
-                    // Scratch inspection is a shared service; this host has not
-                    // dispatched a parameter prompt request yet.
-                    self.state.error = Some(tablecraft_runtime::Error::ParameterInput.to_string());
+                Ok(Response::QueryParameters { target, parameters }) => {
+                    self.publish_query_parameters(generation, target, parameters);
                 }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
@@ -608,6 +613,13 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::QueryInspection { request_id } => {
+                        let request_id = *request_id;
+                        self.query_parameters = None;
+                        if self.state.fail_query_parameter_inspection(request_id) {
+                            self.state.error = Some(error.to_string());
+                        }
+                    }
                     PendingOperation::TableCreationReview { request_id } => {
                         let request_id = *request_id;
                         self.table_creation_review_failed(request_id, error.to_string());
@@ -695,6 +707,7 @@ impl Desktop {
 
 impl eframe::App for Desktop {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        self.release_stale_query_parameters();
         // A hidden startup frame can run logic without painting. Request the
         // initial window once, leaving later user hide/minimize choices alone.
         if std::mem::take(&mut self.startup_visibility_pending) {
@@ -739,6 +752,7 @@ impl eframe::App for Desktop {
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         let actions = self.state.show(ui);
+        self.release_stale_query_parameters();
         // A manual edit ends the native selection binding, even if the user
         // later types the same lossy display string again.
         if self
@@ -877,19 +891,12 @@ impl eframe::App for Desktop {
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }
-                Action::Query => {
-                    let scratch = self
-                        .state
-                        .active_object()
-                        .is_some_and(|tab| tab.target.kind == ObjectKind::Sql);
-                    if scratch
-                        && !self.state.busy
-                        && !self.state.backstage_visible()
-                        && !self.state.sql.trim().is_empty()
-                        && let Some(sql) = self.state.capture_query_draft()
-                    {
-                        self.submit(Command::Query { sql });
-                    }
+                Action::Query => self.inspect_query_parameters(),
+                Action::RunParameterizedQuery {
+                    inspection_id,
+                    parameters,
+                } => {
+                    self.run_parameterized_query(inspection_id, parameters);
                 }
                 Action::ReviewDelete { target } => self.review_delete(target),
                 Action::ApplyDelete { review_id } => self.apply_delete(review_id),
@@ -931,6 +938,7 @@ impl eframe::App for Desktop {
                         self.worker.cancel();
                         self.state.busy = false;
                         self.state.clear_query_run();
+                        self.clear_query_parameters();
                         match &self.pending {
                             PendingOperation::ReplaceFind { request_id } => {
                                 self.state.fail_replace_find(

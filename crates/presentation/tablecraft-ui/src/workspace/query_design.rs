@@ -113,7 +113,7 @@ impl State {
             && !self.deletion_dialog_open()
             && !self.field_filter_dialog_open()
             && !self.zoom_dialog_open()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.contents_request_id().is_none()
             && self.query_design_request_id().is_none()
     }

@@ -100,6 +100,8 @@ pub enum Scene {
     About,
     QueryRunning,
     QueryError,
+    ScratchInspecting,
+    ScratchParameters,
     SavedInspecting,
     SavedRunning,
     SavedError,
@@ -127,7 +129,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 96] = [
+    pub const ALL: [Self; 98] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -200,6 +202,8 @@ impl Scene {
         Self::About,
         Self::QueryRunning,
         Self::QueryError,
+        Self::ScratchInspecting,
+        Self::ScratchParameters,
         Self::SavedInspecting,
         Self::SavedRunning,
         Self::SavedError,
@@ -233,6 +237,7 @@ impl Scene {
             Self::Loading
                 | Self::ObjectLoading
                 | Self::QueryRunning
+                | Self::ScratchInspecting
                 | Self::SavedInspecting
                 | Self::SavedRunning
                 | Self::CollectionLoading
@@ -325,6 +330,8 @@ impl Scene {
             Self::About => "about",
             Self::QueryRunning => "query-running",
             Self::QueryError => "query-error",
+            Self::ScratchInspecting => "scratch-inspecting",
+            Self::ScratchParameters => "scratch-parameters",
             Self::SavedInspecting => "saved-inspecting",
             Self::SavedRunning => "saved-running",
             Self::SavedError => "saved-error",
@@ -553,6 +560,8 @@ impl Preview {
             }
             Scene::QueryRunning => self.prepare_query_running(),
             Scene::QueryError => self.prepare_query_error(),
+            Scene::ScratchInspecting => self.prepare_scratch_parameters(true),
+            Scene::ScratchParameters => self.prepare_scratch_parameters(false),
             Scene::SavedInspecting => self.prepare_saved_inspecting(),
             Scene::SavedRunning => self.prepare_saved_running(),
             Scene::SavedError => self.prepare_saved_error(),

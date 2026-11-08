@@ -59,6 +59,16 @@ impl State {
                 RichText::new(tr(ui, "query-help")).color(crate::theme::palette(ui.ctx()).muted),
             );
             self.query_result_status(ui);
+            if self.query_parameters_inspecting() {
+                ui.horizontal(|ui| {
+                    ui.spinner();
+                    ui.label(tr(ui, "query-parameters-working"));
+                    if ui.button(tr(ui, "query-parameters-cancel")).clicked() {
+                        self.clear_query_parameter_acquisition();
+                        actions.push(Action::Cancel);
+                    }
+                });
+            }
             let editor_height = if self.error.is_some() {
                 let reserved = ui.spacing().interact_size.y
                     + ui.spacing().item_spacing.y * 3.0
@@ -115,4 +125,4 @@ impl State {
 }
 
 #[cfg(test)]
-mod tests;
+pub(in crate::workspace::query) mod tests;

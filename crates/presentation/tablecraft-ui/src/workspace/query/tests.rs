@@ -6,7 +6,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 
-fn state() -> State {
+pub(in crate::workspace::query) fn state() -> State {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {
@@ -32,7 +32,7 @@ fn state() -> State {
     state
 }
 
-fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
+pub(in crate::workspace::query) fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
     Harness::builder()
         .with_size(egui::vec2(900.0, 580.0))
         .build_ui_state(
@@ -41,7 +41,7 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
         )
 }
 
-fn result(text: &str) -> crate::Data {
+pub(in crate::workspace::query) fn result(text: &str) -> crate::Data {
     crate::Data {
         source_revision: None,
         row_ordinals: None,

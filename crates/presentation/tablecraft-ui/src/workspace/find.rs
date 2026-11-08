@@ -178,7 +178,7 @@ impl State {
             && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && !self.table_filter_pending()
             && self.find_source().is_some()
     }
@@ -312,7 +312,7 @@ impl State {
             && !self.table_filter_pending()
             && !self.zoom_dialog_open()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.current_find_request().as_ref() == Some(request)
             && self.find.as_ref().is_some_and(|session| {
                 session.pending.as_ref().is_some_and(|pending| {

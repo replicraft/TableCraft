@@ -171,7 +171,7 @@ impl State {
                         && !self.busy
                         && !self.edit_dialog_open()
                         && self.contents_request_id().is_none()
-                        && !self.saved_query_prompt_open()
+                        && !self.parameter_prompt_open()
                 });
                 let refresh = page.map(|data| Action::Page {
                     table: data.table.clone(),

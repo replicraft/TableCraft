@@ -167,3 +167,28 @@ fn saved_inspection_and_unselected_variant_prompts_never_admit_a_run_implicitly(
     }
     assert_eq!(preview.state.localizer.diagnostics(), Default::default());
 }
+
+#[test]
+fn scratch_preview_animation_and_cancel_preserve_previous_read_only_results() {
+    for scene in [Scene::ScratchInspecting, Scene::ScratchParameters] {
+        let mut preview = Preview::new(scene);
+        let pending = scene == Scene::ScratchInspecting;
+        assert_eq!(scene.is_animated(), pending);
+        assert_eq!(preview.state.busy, pending);
+        assert!(preview.state.query_results_previous());
+        let data = preview.state.query_data.as_ref().unwrap();
+        let before = identity(data);
+        let rows = data.rows.as_ptr();
+        assert!(data.source_revision.is_none());
+        assert!(data.row_ordinals.is_none());
+        assert!(data.edit_target(0, 0).is_none());
+
+        preview.dispatch(Action::Cancel);
+        assert!(!preview.state.busy);
+        assert!(preview.state.query_parameters.is_none());
+        let data = preview.state.query_data.as_ref().unwrap();
+        assert_eq!(identity(data), before);
+        assert_eq!(data.rows.as_ptr(), rows);
+        assert_eq!(preview.state.localizer.diagnostics(), Default::default());
+    }
+}

@@ -243,6 +243,19 @@ impl Preview {
                         Some(self.state.localizer.text("settings-mock-sql-disabled"));
                 }
             }
+            Action::RunParameterizedQuery {
+                inspection_id,
+                parameters,
+            } => {
+                if self.state.can_run_parameterized_query(
+                    inspection_id,
+                    &self.state.sql,
+                    &parameters,
+                ) {
+                    self.state.clear_query_parameter_acquisition();
+                    self.state.error = Some(self.state.localizer.text("query-mock-error"));
+                }
+            }
             Action::InspectSavedQuery { target } => self.inspect_saved(target),
             Action::RunSavedQuery { target, parameters } => {
                 if self.state.can_run_saved_query(&target, &parameters) {
@@ -396,6 +409,7 @@ impl Preview {
                 }
             }
             Action::Cancel => {
+                self.state.clear_query_parameter_acquisition();
                 self.state.interrupt_saved_query();
                 self.state.busy = false;
                 self.state.error = Some(self.state.localizer.text("settings-mock-cancelled"));

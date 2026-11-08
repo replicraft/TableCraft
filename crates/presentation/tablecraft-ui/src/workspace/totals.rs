@@ -164,7 +164,7 @@ impl State {
             && !self.edit_dialog_open()
             && !self.zoom_dialog_open()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && !self.backstage_visible()
             && !self.table_filter_pending()
     }

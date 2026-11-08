@@ -1,5 +1,38 @@
 # Presentation preview
 
+## Scratch parameter acquisition — 8 November 2026
+
+`scratch-inspecting` and `scratch-parameters` use the real shared acquisition
+state and controls with fixed synthetic SQL/declarations and prior results.
+No database, query evaluator or runtime capability is supplied by these scenes.
+Synthetic confirmation reports the existing mock-only error instead of executing
+SQL. Inspection Cancel releases staging while retaining the prior read-only data.
+Normal and synthetic hosts render the complete existing Ribbon.
+
+Six normal-host frames in ignored
+`.cache/ui-previews/scratch-parameters-20261108/` were rendered and inspected using
+macOS ARM64 with Windows input emulation. Acquisition covers English light and
+Russian dark at 1280×820, 1×; German dark at 900×580 logical points, 1.25×
+(1125×725 pixels); Japanese light at 900×580, 2× (1800×1160 pixels).
+Inspection covers the corresponding English light/German dark sizes and scales.
+The prior result, input labels, NULL control and OK/Cancel group remain visible;
+inspection shows its own localized status and Cancel action.
+
+The actual cached Microsoft parameter dialog was reopened at 233×123 pixels,
+unknown application build/DPI, with the unchanged hash in the
+[reference record](VISUAL_REFERENCES.md#published-dialog-references--5-november-2026).
+It supports the compact label/input/OK/Cancel layout. Explicit NULL/type choices
+are TableCraft profile extensions. The inspection status and SQL editor backdrop
+have no corresponding retained Access capture; they remain adaptations. Dark
+appearance and interaction are not native Access qualification.
+
+The first offscreen inspection attempt did not settle because the new spinner
+scene lacked its animation tag. Its failed log remains as
+`en-US-light-scratch-inspecting-initial-animation-missing.log`; the corrected
+renderer uses existing fixed-frame stepping. A focused scene/Cancel regression,
+renderer build and strict lint pass after that correction. No native app windows
+were opened.
+
 ## Shared parameter dialog — 7 November 2026
 
 The existing saved-parameters scene now consumes the shared parameter models,

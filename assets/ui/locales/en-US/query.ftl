@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL query
-query-help = Run a supported SELECT against the opened snapshot.
+query-help = Run a supported read query against the open database.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Run query
 query-empty = Run a query to see its results.
@@ -15,3 +15,7 @@ query-mock-error = Synthetic query error. Previous sample results remain visible
 query-results-current = Results match this SQL draft.
 query-results-previous = Previous results. Run this SQL draft to update them.
 query-results-unknown = Displayed results are not associated with this SQL draft.
+
+query-parameters-working = Reading query parameters…
+query-parameters-cancel = Cancel
+query-parameters-invalid = The parameter response does not match this SQL draft.

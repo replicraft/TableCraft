@@ -109,7 +109,7 @@ impl State {
             || self.backstage_visible()
             || self.edit_dialog_open()
             || self.contents_request_id().is_some()
-            || self.saved_query_prompt_open()
+            || self.parameter_prompt_open()
             || self.zoom_dialog_open()
         {
             return false;

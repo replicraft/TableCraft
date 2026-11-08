@@ -1247,9 +1247,13 @@ Scratch and saved queries share the actual declaration/input owner at
 256 parameters and 1 MiB of cumulative names/kinds/text. VALUE requires a chosen
 concrete kind; SQL-looking text stays literal, and NULL remains a separate flag.
 Input validation finishes before native source construction or context use.
-This service does not execute action SQL, persist query definitions or activate
-a GUI prompt. The desktop still uses its existing parameterless Run route until
-the shared prompt and request ownership are connected.
+The desktop's explicit scratch Run now uses this service to acquire declared
+parameters through shared UI staging, then execute the exact retained target.
+Parameterless SQL continues from the same explicit Run after inert inspection.
+Desktop owns DTO/request routing and the runtime target's lifetime; query parsing,
+parameter conversion and execution remain in runtime/query services. This does
+not execute action SQL or persist query definitions. See the
+[scratch workspace contract](../ui/SQL_WORKSPACE.md#declared-scratch-parameters).
 
 ## Native saved queries and declared parameters
 

@@ -227,7 +227,7 @@ impl State {
             && self.insertion.is_none()
             && self.deletion.is_none()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.insert_source_current(target)
     }
 

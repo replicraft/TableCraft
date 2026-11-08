@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL クエリ
-query-help = 開いているスナップショットに対して、対応する SELECT を実行します。
+query-help = 開いているデータベースで、対応する読み取りクエリを実行します。
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = クエリの実行
 query-empty = クエリを実行すると結果が表示されます。
@@ -15,3 +15,7 @@ query-mock-error = クエリ エラーのシミュレーションです。前回
 query-results-current = 結果はこの SQL 下書きに対応しています。
 query-results-previous = 以前の結果です。この SQL 下書きを実行して更新してください。
 query-results-unknown = 表示中の結果はこの SQL 下書きに関連付けられていません。
+
+query-parameters-working = クエリのパラメーターを読み込んでいます…
+query-parameters-cancel = キャンセル
+query-parameters-invalid = パラメーターの応答がこの SQL 下書きと一致しません。

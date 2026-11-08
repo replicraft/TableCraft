@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = Consulta SQL
-query-help = Ejecuta un SELECT compatible sobre la instantánea abierta.
+query-help = Ejecuta una consulta de lectura compatible en la base de datos abierta.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Ejecutar consulta
 query-empty = Ejecuta una consulta para ver sus resultados.
@@ -15,3 +15,7 @@ query-mock-error = Error de consulta simulado. Los resultados de ejemplo anterio
 query-results-current = Los resultados corresponden a este borrador SQL.
 query-results-previous = Resultados anteriores. Ejecute este borrador SQL para actualizarlos.
 query-results-unknown = Los resultados mostrados no están asociados a este borrador SQL.
+
+query-parameters-working = Leyendo los parámetros de la consulta…
+query-parameters-cancel = Cancelar
+query-parameters-invalid = La respuesta de parámetros no corresponde a este borrador SQL.

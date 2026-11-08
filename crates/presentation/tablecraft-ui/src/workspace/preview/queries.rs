@@ -3,7 +3,54 @@ use super::{Preview, fixtures};
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{ParameterInput, ParameterSpec, SavedQueryTarget};
 
+const SCRATCH_SQL: &str = "PARAMETERS [City filter] TEXT(64), [Minimum balance] CURRENCY; \
+    SELECT * FROM [Customers] WHERE [City] = [City filter] AND [Balance] >= [Minimum balance]";
+
 impl Preview {
+    pub(super) fn prepare_scratch_parameters(&mut self, inspecting: bool) {
+        self.mock_open_object(ObjectTarget {
+            document_revision: fixtures::REVISION,
+            kind: ObjectKind::Sql,
+        });
+        assert!(self.state.replace_query_sql(SCRATCH_SQL.into()));
+        assert!(
+            self.state
+                .set_query_data(Some(fixtures::SQL.into()), fixtures::query())
+        );
+
+        let sql = self
+            .state
+            .capture_query_draft()
+            .expect("bounded synthetic SQL");
+        let request = self.request();
+        assert!(self.state.begin_query_parameter_inspection(request, sql));
+        if inspecting {
+            self.state.busy = true;
+            return;
+        }
+
+        let declarations = vec![
+            ParameterSpec {
+                name: "City filter".into(),
+                kind: "text".into(),
+                label: "TEXT(64)".into(),
+                nullable: true,
+            },
+            ParameterSpec {
+                name: "Minimum balance".into(),
+                kind: "currency".into(),
+                label: "CURRENCY".into(),
+                nullable: true,
+            },
+        ];
+        assert!(
+            self.state
+                .set_query_parameter_details(request, SCRATCH_SQL, declarations)
+                .is_none()
+        );
+        assert!(self.state.scratch_parameter_prompt_open());
+    }
+
     pub(super) fn prepare_query_running(&mut self) {
         self.mock_open_object(ObjectTarget {
             document_revision: fixtures::REVISION,

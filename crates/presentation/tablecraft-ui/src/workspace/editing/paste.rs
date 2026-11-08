@@ -16,7 +16,7 @@ impl State {
     pub fn can_paste_cell(&self, target: &EditTarget) -> bool {
         !self.busy
             && !self.edit_dialog_open()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && !self.find_window_open()
             && !self.table_filter_pending()
             && self.can_edit_cell(target)

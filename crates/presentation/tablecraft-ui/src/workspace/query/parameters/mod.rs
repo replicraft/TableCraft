@@ -1,6 +1,7 @@
 //! Shared literal parameter presentation; SQL evaluation remains in runtime.
 pub(in crate::workspace) mod editor;
 pub(in crate::workspace) mod prompt;
+pub(in crate::workspace) mod scratch;
 
 pub(in crate::workspace) const MAX_PARAMETERS: usize = 256;
 pub(in crate::workspace) const MAX_INPUT_BYTES: usize = 1_048_576;

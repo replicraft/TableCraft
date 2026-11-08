@@ -260,7 +260,7 @@ impl State {
                 && !self.find_window_open()
                 && !self.zoom_dialog_open()
                 && self.contents_request_id().is_none()
-                && !self.saved_query_prompt_open()
+                && !self.parameter_prompt_open()
                 && !self.backstage_visible()
                 && self.paste_request.is_none()
                 && self.ribbon_paste.is_none();

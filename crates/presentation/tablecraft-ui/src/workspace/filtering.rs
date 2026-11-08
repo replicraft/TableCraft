@@ -177,7 +177,7 @@ impl State {
             && !self.zoom_dialog_open()
             && !self.edit_dialog_open()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.table_filter.pending.is_none()
     }
 
@@ -434,7 +434,7 @@ impl State {
             || self.zoom_dialog_open()
             || self.edit_dialog_open()
             || self.contents_request_id().is_some()
-            || self.saved_query_prompt_open()
+            || self.parameter_prompt_open()
             || self.table_filter.pending.is_some()
         {
             return false;
@@ -470,7 +470,7 @@ impl State {
             && !self.zoom_dialog_open()
             && (!self.edit_dialog_open() || self.field_reply_current(request_id))
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && source_current
     }
 

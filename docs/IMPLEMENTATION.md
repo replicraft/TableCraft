@@ -1,5 +1,38 @@
 # Implementation status
 
+## Connected scratch SQL parameter prompts — 8 November 2026
+
+Desktop Run now inspects declared scratch parameters through the runtime's
+immutable query target, presents the shared staged dialog and executes only after
+final confirmation. Parameterless queries continue from the same Run intent.
+Desktop retains the runtime capability and routes DTOs; it parses no SQL and
+performs no parameter conversion. Exact SQL/tab/document/edit/publication
+witnesses, modal admission and late-callback guards preserve accepted staging and
+previous complete results. Cancel releases both UI staging and runtime ownership.
+
+Nine focused UI and six connected desktop cases pass. The connected positive
+journey covers Jet 4, the tracked ACE 2007 example and canonical ACE 2016 bytes,
+including typed Unicode/Decimal/NULL results and unchanged originals. Negative
+cases cover Cancel before evaluation, declaration errors and correction, SQL ABA,
+source/tab lifecycle, duplicate callbacks and a stale Run intent during a prompt.
+
+The full batch passed 495 UI and 127 desktop tests, strict affected-package lint,
+formatting, package boundaries and Windows x64/ARM64, Intel macOS and Linux
+x64/ARM64 compilation. The final preview-animation correction then passed its
+four-case focused group (including one additional UI regression), renderer build
+and strict lint. Thus all 496 UI cases are covered across the batch/follow-up;
+this is not a second full-suite run. Logs remain under ignored
+`.cache/gui-scratch-prompt-*20261107.log` and `*20261108.log`.
+
+All eight sectioned query catalogs contain the inspection/cancel/invalid-response
+messages. Two resource-free preview scenes cover inspection and acquisition;
+the 98-scene/eight-language/two-theme matrix remains headless. Six offscreen
+frames were rendered and inspected; see the
+[presentation record](ui/PRESENTATION_PREVIEW.md#scratch-parameter-acquisition--8-november-2026).
+These checks do not establish native Access or non-macOS execution parity.
+Implicit parameter discovery, action SQL, saved-definition editing and persisted
+schema CRUD remain open in the [parity accounting](features/ACCESS_PARITY_ROADMAP.md).
+
 ## Shared parameter prompt and memory admission — 7 November 2026
 
 Parameter models, typed controls and staged dialog body now have one shared UI

@@ -127,7 +127,7 @@ impl State {
             && !self.zoom_dialog_open()
             && !self.table_filter_pending()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.found_receipt_current()
             && self.find.as_ref().is_some_and(|session| {
                 session.replacement.pending.as_ref().is_some_and(|pending| {

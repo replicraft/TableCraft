@@ -59,6 +59,7 @@ impl State {
         let Some(revision) = self.query_sql_revision.checked_add(1) else {
             return false;
         };
+        self.clear_query_parameter_acquisition();
         self.sql = sql;
         self.query_sql_revision = revision;
         true
@@ -68,6 +69,7 @@ impl State {
         let Some(revision) = self.query_sql_revision.checked_add(1) else {
             return false;
         };
+        self.clear_query_parameter_acquisition();
         self.query_sql_revision = revision;
         true
     }
@@ -149,6 +151,7 @@ impl State {
                     sql != &self.sql
                         || self.busy
                         || self.query_pending.is_some()
+                        || self.query_parameters.is_some()
                         || self.error.is_some()
                         || (matches!(self.query_result, ResultOrigin::Design(_))
                             && self.query_design_results_previous())

@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL-Abfrage
-query-help = Führt ein unterstütztes SELECT für die geöffnete Momentaufnahme aus.
+query-help = Eine unterstützte Leseabfrage in der geöffneten Datenbank ausführen.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Abfrage ausführen
 query-empty = Führen Sie eine Abfrage aus, um ihre Ergebnisse anzuzeigen.
@@ -15,3 +15,7 @@ query-mock-error = Simulierter Abfragefehler. Die bisherigen Beispieldaten bleib
 query-results-current = Die Ergebnisse entsprechen diesem SQL-Entwurf.
 query-results-previous = Vorherige Ergebnisse. Führen Sie diesen SQL-Entwurf aus, um sie zu aktualisieren.
 query-results-unknown = Die angezeigten Ergebnisse sind diesem SQL-Entwurf nicht zugeordnet.
+
+query-parameters-working = Abfrageparameter werden gelesen…
+query-parameters-cancel = Abbrechen
+query-parameters-invalid = Die Parameterantwort passt nicht zu diesem SQL-Entwurf.

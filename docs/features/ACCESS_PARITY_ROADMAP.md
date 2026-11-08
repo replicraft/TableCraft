@@ -97,7 +97,7 @@ See [parser scope](../query/SQL_PARSER.md),
 | Query workstream | Required completion |
 | --- | --- |
 | Runtime context | Shared runtime scratch/saved execution now supplies a lazy local clock, per-Run Basic random state, unsecured session metadata and English reference messages. Numeric/date/week/code-page/casing and omitted-year policies still need explicit host contracts; native timing/RNG/session semantics remain unqualified. |
-| Parameters and sources | Scratch declaration inspection and typed execution now share the runtime parameter service; scratch GUI prompts still need connection. Saved prompts already exist; deliberate linked/external/collection source bindings and permission/namespace ownership. Stored paths must not open targets implicitly. |
+| Parameters and sources | Declared scratch and saved parameters now use shared runtime execution and staged GUI prompts. Remaining work includes native implicit-parameter discovery, broader named-query parameter scope, and deliberate linked/external/collection source bindings with permission/namespace ownership. Stored paths must not open targets implicitly. |
 | Retrieval semantics | Full supported joins/subqueries, grouping/HAVING/TOP, UNION and pivot behavior, declared types, Variant/coercion/NULL/Error semantics, sort orders/LCIDs and database policy precedence. Finish the documented partial profiles rather than adding unrelated modern SQL. |
 | Action queries | Shared reviewed UPDATE, append/INSERT and DELETE, parameters, assignments, INSERT SELECT, qualified join/subquery targets, affected counts, warnings, validation, atomicity and recovery. Reuse the same native services as datasheet edits. |
 | Make-table and DDL | SELECT INTO/make-table and CREATE/ALTER/DROP TABLE/INDEX through real native schema/index owners, including dependencies and source-preserving failure. |
@@ -145,9 +145,9 @@ Beyond the implementation work, release accounting still includes:
   save/reopen, cancellation, corruption and recovery, with source/output hashes.
 - Connected preservation, constraint, macro, encryption, stale-revision and
   failure tests for every advertised write path. Read success does not qualify writes.
-- Connected scratch parameter acquisition and stale SQL/tab/document handling.
-  Shared saved-prompt staging and pending-input capacity accounting are now checked;
-  that does not connect the scratch prompt automatically.
+- Native parameter-discovery and broader named/external source workflows beyond
+  the connected declared scratch/saved prompts. Existing stale scope, Cancel,
+  retained-memory and previous-result protections must compose with them.
 - Usable save/dirty-record/undo workflows, source-bound confirmations and errors,
   keyboard/focus/clipboard/IME/accessibility, large-data responsiveness,
   persistent Options, light/dark themes and all eight sectioned Fluent catalogs.

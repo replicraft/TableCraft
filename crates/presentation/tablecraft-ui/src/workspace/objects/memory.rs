@@ -196,6 +196,9 @@ impl State {
         if let Some(pending) = &self.query_pending {
             count.string(&pending.sql);
         }
+        if let Some(parameters) = &self.query_parameters {
+            count.add(parameters.retained_bytes()?);
+        }
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.table_filter.retained_bytes()?);
         count.add(self.totals.retained_bytes()?);

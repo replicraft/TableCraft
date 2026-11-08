@@ -61,7 +61,7 @@ impl State {
                         let open_available = !self.busy
                             && !self.insertion_dialog_open()
                             && !self.edit_dialog_open()
-                            && !self.saved_query_prompt_open();
+                            && !self.parameter_prompt_open();
                         if quick_access::show(
                             ui,
                             &t,

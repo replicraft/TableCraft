@@ -195,7 +195,7 @@ impl State {
             && !self.backstage_visible()
             && !self.zoom_dialog_open()
             && self.contents_request_id().is_none()
-            && !self.saved_query_prompt_open()
+            && !self.parameter_prompt_open()
             && self.edit.is_none()
             && !self.insertion_dialog_open()
             && !self.deletion_dialog_open()

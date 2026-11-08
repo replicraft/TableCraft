@@ -20,7 +20,7 @@ impl State {
         if self.edit_dialog_open()
             || self.zoom_dialog_open()
             || self.contents_request_id().is_some()
-            || self.saved_query_prompt_open()
+            || self.parameter_prompt_open()
         {
             if let Some(request_id) = self.close_find() {
                 actions.push(Action::CancelFind { request_id });

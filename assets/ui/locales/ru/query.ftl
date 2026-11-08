@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = Запрос SQL
-query-help = Выполнить поддерживаемый SELECT для открытого снимка.
+query-help = Выполните поддерживаемый запрос чтения к открытой базе данных.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Выполнить запрос
 query-empty = Выполните запрос для просмотра результатов.
@@ -15,3 +15,7 @@ query-mock-error = Смоделированная ошибка запроса. �
 query-results-current = Результаты соответствуют этому черновику SQL.
 query-results-previous = Предыдущие результаты. Выполните этот черновик SQL, чтобы обновить их.
 query-results-unknown = Показанные результаты не связаны с этим черновиком SQL.
+
+query-parameters-working = Чтение параметров запроса…
+query-parameters-cancel = Отмена
+query-parameters-invalid = Ответ с параметрами не соответствует этому черновику SQL.
