@@ -12,17 +12,40 @@ use crate::{
 use std::{cell::RefCell, sync::Arc};
 use tablecraft_access::NativeSource;
 use tablecraft_expressions::functions::dates::clock::Clock;
-use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_sql::{ParseLimits, parse_query, query::Statement};
 
 // Charge strong/weak reference counters in addition to the retained target.
 // This accounting does not model allocator-specific metadata.
 const ARC_COUNTERS: usize = 2;
+
+/// Syntax-only dispatch class for an inspected query. This grants no binding,
+/// native write, source discovery or execution authority.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QueryOperation {
+    Read,
+    Update,
+    Unsupported,
+}
+
+impl QueryOperation {
+    fn classify(statement: &Statement) -> Self {
+        match statement {
+            Statement::Read(_) | Statement::Crosstab(_) => Self::Read,
+            Statement::Update(_) => Self::Update,
+            Statement::Definition(_)
+            | Statement::MakeTable(_)
+            | Statement::Insert(_)
+            | Statement::Delete(_) => Self::Unsupported,
+        }
+    }
+}
 
 /// Inert SQL captured by runtime inspection. Fields have no public constructors
 /// or mutation access. This grants no permission to mutate a database or bypass
 /// execution admission. Debug/Serde are omitted to avoid implicit SQL logging.
 pub struct InspectedQuery {
     sql: String,
+    operation: QueryOperation,
     document_revision: u64,
     source: Arc<()>,
 }
@@ -34,6 +57,11 @@ impl InspectedQuery {
 
     pub fn document_revision(&self) -> u64 {
         self.document_revision
+    }
+
+    /// The actual parsed statement family, independent of later admission.
+    pub const fn operation(&self) -> QueryOperation {
+        self.operation
     }
 }
 
@@ -77,6 +105,7 @@ impl Document {
         )?;
         let target = Arc::new(InspectedQuery {
             sql: output.text(sql)?,
+            operation: QueryOperation::classify(&parsed.query().statement),
             document_revision,
             source: Arc::clone(&self.filter_source),
         });

@@ -53,7 +53,7 @@ pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
     FindTarget, MAX_FIND_PATTERN_BYTES,
 };
-pub use query::inspection::InspectedQuery;
+pub use query::inspection::{InspectedQuery, QueryOperation};
 pub use query::parameters::{
     MAX_QUERY_INPUT_BYTES, MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
 };

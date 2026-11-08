@@ -1313,6 +1313,15 @@ input conversion, then uses the ordinary shared query executor and context.
 A same-numbered revision from another worker is insufficient. Reopening a
 source invalidates its earlier target.
 
+Inspection also retains `QueryOperation::{Read, Update, Unsupported}` from the
+actual parsed statement. SELECT/UNION and crosstab syntax classify as Read; UPDATE
+has its own class; other action/definition kinds remain Unsupported. Classification
+is inert metadata, not binding success or write permission. A string literal
+containing UPDATE stays a read query. Hosts must dispatch by this fact rather
+than parsing SQL themselves or retrying failed reads as writes. The connected
+classification test uses unreadable table DATA and a counting clock to verify
+that inspection scans no records, consults no clock and changes no bytes.
+
 Scratch and saved queries share the actual declaration/input owner at
 `query::parameters`: type constraints come from `tablecraft-query`, with at most
 256 parameters and 1 MiB of cumulative names/kinds/text. VALUE requires a chosen

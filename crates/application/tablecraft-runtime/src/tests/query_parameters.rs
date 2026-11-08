@@ -1,7 +1,8 @@
 //! Scratch parameter prompts bind immutable SQL to the actual open document.
 use super::{open, request};
 use crate::{
-    Cell, CellKind, Command, Error, InspectedQuery, ParameterInput, ParameterSpec, Response, Worker,
+    Cell, CellKind, Command, Error, InspectedQuery, ParameterInput, ParameterSpec, QueryOperation,
+    Response, Worker,
 };
 use std::sync::{
     Arc,
@@ -323,4 +324,55 @@ fn query_witness_refuses_reopen_and_other_worker_even_with_matching_revision() {
         Err(Error::StaleQuery)
     ));
     assert_eq!(clock.0.load(Ordering::Acquire), 0);
+}
+
+#[test]
+fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation() {
+    let mut original = mutation_fixture::database();
+    original[12 * 4096] = 0;
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("classification.mdb");
+    std::fs::write(&path, &original).unwrap();
+    let clock = Arc::new(CountingClock::default());
+    let worker = Worker::with_query_clock(|| {}, clock.clone());
+    let revision = opened(&worker, &path);
+
+    for (sql, operation) in [
+        ("SELECT Now() FROM Items", QueryOperation::Read),
+        (
+            "SELECT 'UPDATE Items SET Score=77' AS Note",
+            QueryOperation::Read,
+        ),
+        ("SELECT 1 UNION ALL SELECT 2", QueryOperation::Read),
+        (
+            "TRANSFORM Count(*) SELECT Id FROM Items GROUP BY Id PIVOT Score IN (10,20,30)",
+            QueryOperation::Read,
+        ),
+        (
+            "UPDATE Items SET Score=77 WHERE Id=1",
+            QueryOperation::Update,
+        ),
+        (
+            "INSERT INTO Items (Id,Score) VALUES (4,40)",
+            QueryOperation::Unsupported,
+        ),
+        ("DELETE FROM Items WHERE Id=1", QueryOperation::Unsupported),
+        (
+            "CREATE TABLE NewTable (Id LONG)",
+            QueryOperation::Unsupported,
+        ),
+        ("DROP TABLE Items", QueryOperation::Unsupported),
+        (
+            "SELECT Id INTO Copied FROM Items",
+            QueryOperation::Unsupported,
+        ),
+    ] {
+        let (target, parameters) = inspect(&worker, revision, sql);
+        assert_eq!(target.operation(), operation, "{sql}");
+        assert_eq!(target.sql(), sql);
+        assert_eq!(target.document_revision(), revision);
+        assert!(parameters.is_empty());
+        assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    }
+    assert_eq!(std::fs::read(path).unwrap(), original);
 }
