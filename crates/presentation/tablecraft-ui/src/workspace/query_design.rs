@@ -3,6 +3,7 @@ mod context_menu;
 mod dialog;
 mod grid;
 mod preferences;
+mod rebind_memory;
 mod render;
 mod retention;
 mod ribbon;

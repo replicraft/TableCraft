@@ -9,6 +9,7 @@ pub use sql::{
     SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
     SavedQuerySqlError, SavedQuerySqlRequest,
 };
+pub(in crate::workspace) use sql::{SqlResolution, copy_rebind_text};
 
 use super::objects::memory::{self, Counter};
 use super::query::parameters::{

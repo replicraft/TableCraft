@@ -1,6 +1,7 @@
 //! Full native-view totals are service results, never arithmetic over a UI page.
 mod controls;
 mod preferences;
+mod rebind_memory;
 
 pub(crate) use controls::Choice;
 pub(super) use preferences::TotalsPreferences;

@@ -1,12 +1,12 @@
 //! Source-free workspace preferences cannot restore old row or tab authority.
-use super::session::Entry;
-use super::{MAX_OBJECTS, NEXT_OBJECT_ID, ObjectKind, ObjectTab, ObjectTarget, Objects, Session};
-use crate::SavedQueryTarget;
-use crate::workspace::query_design::{Preferences as QueryDesignPreferences, QueryDesign};
+mod restoration;
+mod saved_sql_reopen;
+
+use super::{MAX_OBJECTS, ObjectKind, ObjectTarget, Session};
+use crate::workspace::query_design::Preferences as QueryDesignPreferences;
 use crate::workspace::saved_query::InputPreferences;
-use crate::workspace::totals::{Totals, TotalsPreferences};
+use crate::workspace::totals::TotalsPreferences;
 use crate::workspace::{DocumentView, State};
-use std::sync::atomic::Ordering;
 
 pub struct WorkspaceLayout {
     entries: Vec<Preference>,
@@ -116,68 +116,17 @@ impl State {
             self.error = Some(self.localizer.text("objects-restore-refused"));
             return false;
         }
-        let mut restored = Objects {
-            revision: Some(revision),
-            ..Objects::default()
-        };
-        if restored
-            .entries
-            .try_reserve_exact(layout.entries.len())
-            .is_err()
-        {
-            self.error = Some(self.localizer.text("objects-memory-limit"));
-            return false;
-        }
-        for preference in layout.entries {
-            let Ok(previous) =
-                NEXT_OBJECT_ID
-                    .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
-            else {
+        let restored = match restoration::prepare(layout.entries, revision, None) {
+            Ok(objects) => objects,
+            Err(restoration::PrepareError::Allocation) => {
+                self.error = Some(self.localizer.text("objects-memory-limit"));
+                return false;
+            }
+            Err(restoration::PrepareError::Identity) => {
                 self.error = Some(self.localizer.text("objects-restore-refused"));
                 return false;
-            };
-            let target = ObjectTarget {
-                document_revision: revision,
-                kind: preference.kind,
-            };
-            let mut session = Session::empty(&target.kind);
-            match &mut session {
-                Session::DraftTable { .. } => return false,
-                Session::Table { design, totals, .. } => {
-                    *design = preference.design;
-                    *totals = Totals::restore(preference.totals);
-                }
-                Session::Saved { state, .. } => {
-                    let ObjectKind::SavedQuery { object_id, name } = &target.kind else {
-                        unreachable!();
-                    };
-                    state.restore_preferences(
-                        SavedQueryTarget {
-                            document_revision: revision,
-                            object_id: *object_id,
-                            name: name.clone(),
-                        },
-                        preference.parameters,
-                    );
-                }
-                Session::Sql { design, .. } => {
-                    *design = preference
-                        .query_design
-                        .map(QueryDesign::from_preferences)
-                        .unwrap_or_default();
-                }
             }
-            let retained_bytes = session.retained_bytes();
-            restored.entries.push(Entry {
-                tab: ObjectTab {
-                    id: previous + 1,
-                    target,
-                },
-                session: Some(session),
-                offset: preference.offset,
-                retained_bytes,
-            });
-        }
+        };
         let active = restored
             .entries
             .iter()

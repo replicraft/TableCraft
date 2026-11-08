@@ -31,7 +31,7 @@ impl QueryDesign {
     }
 }
 
-fn count_draft(count: &mut Counter, draft: &QueryDesignDraft) {
+pub(super) fn count_draft(count: &mut Counter, draft: &QueryDesignDraft) {
     count.vector(&draft.sources);
     for source in &draft.sources {
         count.string(&source.table);

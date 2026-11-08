@@ -6,6 +6,9 @@ pub(in crate::workspace) use close::Confirmation;
 pub use close::{SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult};
 mod inspection;
 mod lifecycle;
+mod rebind;
+
+pub(in crate::workspace) use rebind::{SqlResolution, copy as copy_rebind_text};
 mod state;
 
 pub(in crate::workspace) use draft::Draft;
