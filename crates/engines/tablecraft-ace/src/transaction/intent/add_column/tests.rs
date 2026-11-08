@@ -238,3 +238,36 @@ fn settled_confirmation_never_repairs_and_proof_pool_is_independent() {
     );
     assert_eq!(target.writes, writes);
 }
+
+#[test]
+fn a_valid_journal_digest_does_not_authorize_a_substituted_after_image() {
+    let pair = canonical_add_column::source("Extra");
+    let mut substituted = pair.after.clone();
+    *substituted.last_mut().unwrap() ^= 1;
+    let mut target = MemoryStorage::new(pair.before.clone());
+    let mut journal = MemoryStorage::new(Vec::new());
+    drop(
+        tablecraft_io::journal::prepare_expected(
+            &mut target,
+            &mut journal,
+            &pair.before,
+            &substituted,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+    );
+    let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        qualify_native_add_column_recovery(
+            checked,
+            decode(&literal(&pair.before, "Extra")),
+            SCOPE,
+            &mut budget(),
+            &|| false,
+        ),
+        Err(AddColumnIntentError::ImageMismatch)
+    ));
+    assert_eq!(target.writes, 0);
+    assert!(target.bytes.get_ref() == &pair.before);
+}
