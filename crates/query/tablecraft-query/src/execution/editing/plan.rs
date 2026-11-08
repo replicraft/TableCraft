@@ -1,4 +1,4 @@
-use super::{UpdateError, assignment::update_value, source::SnapshotSource};
+use super::{UpdateError, assignment::update_value, source::UpdateSource};
 use crate::execution::cell::CellValue;
 use crate::{
     ExecutionOptions, QueryError,
@@ -6,12 +6,25 @@ use crate::{
     discovery::DiscoveryState,
     execution::{Environment, Runtime},
     profile::MAX_BIND_BYTES,
+    source::{CollationResolver, TextCollationId, TextPolicy, validate_text_collations},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
-use tablecraft_expressions::{comparison::Collation, logic::Truth};
+use tablecraft_expressions::{comparison::Collation, logic::Truth, numeric::OperandDeclaration};
 use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
+
+/// Explicit comparison providers and field provenance for one frozen UPDATE.
+/// Policy identities remain opaque; this layer never chooses native comparers.
+#[derive(Default)]
+pub struct UpdateComparisonOptions<'a> {
+    /// Explicit comparison for expressions without a stored field policy.
+    pub collation: Option<&'a dyn Collation>,
+    /// Resolve field identities in the source's stable policy namespace.
+    pub collation_resolver: Option<&'a dyn CollationResolver>,
+    /// Policies aligned with snapshot columns; empty retains policy-free behavior.
+    pub text_collations: &'a [Option<TextCollationId>],
+}
 
 /// A backend candidate after all matching-row expressions have succeeded.
 /// This is not a committed edit; persistence remains an explicit host action.
@@ -21,6 +34,11 @@ pub struct UpdatePlan<P> {
 }
 
 impl<P> UpdatePlan<P> {
+    /// Borrow the validated backend candidate without consuming its query counts.
+    pub const fn backend(&self) -> &P {
+        &self.backend
+    }
+
     /// Number of WHERE-matching rows, including assignments of unchanged values.
     pub const fn matched_rows(&self) -> usize {
         self.matched_rows
@@ -55,7 +73,17 @@ pub fn plan_update<E: EditableTable>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.plan").entered();
-    let prepared = prepare(&editor, query, false, budget, collation, cancelled)?;
+    let prepared = prepare(
+        &editor,
+        query,
+        false,
+        budget,
+        UpdateComparisonOptions {
+            collation,
+            ..Default::default()
+        },
+        cancelled,
+    )?;
     let [column] = prepared.columns.as_slice() else {
         return Err(QueryError::Unsupported.into());
     };
@@ -80,7 +108,17 @@ pub fn plan_batch_update<E: EditableBatch>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.batch_plan").entered();
-    let prepared = prepare(&editor, query, true, budget, collation, cancelled)?;
+    let prepared = prepare(
+        &editor,
+        query,
+        true,
+        budget,
+        UpdateComparisonOptions {
+            collation,
+            ..Default::default()
+        },
+        cancelled,
+    )?;
     let columns = prepared.borrowed_columns(budget, cancelled)?;
     finish_batch(editor, &prepared, &columns, budget, cancelled)
 }
@@ -97,7 +135,33 @@ pub fn plan_batch_update_with_budgets<E: EditableBatch>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.batch_plan").entered();
-    let prepared = prepare(&editor, query, true, query_budget, collation, cancelled)?;
+    let prepared = prepare(
+        &editor,
+        query,
+        true,
+        query_budget,
+        UpdateComparisonOptions {
+            collation,
+            ..Default::default()
+        },
+        cancelled,
+    )?;
+    let columns = prepared.borrowed_columns(query_budget, cancelled)?;
+    finish_batch(editor, &prepared, &columns, backend_budget, cancelled)
+}
+
+/// Plan using actual field policies for binding and every original-row cell.
+/// Query staging and native finish retain their separate cumulative allowances.
+pub fn plan_batch_update_with_comparison<E: EditableBatch>(
+    editor: E,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    comparison: UpdateComparisonOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
+    let _span = tracing::debug_span!("query.update.batch_plan").entered();
+    let prepared = prepare(&editor, query, true, query_budget, comparison, cancelled)?;
     let columns = prepared.borrowed_columns(query_budget, cancelled)?;
     finish_batch(editor, &prepared, &columns, backend_budget, cancelled)
 }
@@ -149,7 +213,7 @@ fn prepare<E: EditableTable>(
     query: &Query,
     multiple: bool,
     budget: &mut ResourceBudget,
-    collation: Option<&dyn Collation>,
+    comparison: UpdateComparisonOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedUpdate, QueryError> {
     check(budget, cancelled)?;
@@ -167,7 +231,14 @@ fn prepare<E: EditableTable>(
     // Its maximum retained allocation is prepaid to this cumulative edit pool.
     budget.charge(Resource::Bytes, MAX_BIND_BYTES as u64)?;
     let snapshot = editor.snapshot();
-    let source = SnapshotSource(snapshot);
+    if !comparison.text_collations.is_empty() {
+        budget.charge(Resource::Steps, comparison.text_collations.len() as u64)?;
+        validate_text_collations(snapshot.columns(), comparison.text_collations)?;
+    }
+    let source = UpdateSource {
+        snapshot,
+        text_collations: comparison.text_collations,
+    };
     let BoundUpdate {
         assignments,
         filter,
@@ -219,7 +290,8 @@ fn prepare<E: EditableTable>(
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
-            collation,
+            collation: comparison.collation,
+            collation_resolver: comparison.collation_resolver,
             cancelled: Some(cancelled),
             ..ExecutionOptions::default()
         },
@@ -232,8 +304,21 @@ fn prepare<E: EditableTable>(
         runtime.tick()?;
         runtime.budget.charge(Resource::Rows, 1)?;
         let mut expression_row = runtime.allocate_expression_row(row.len())?;
-        for value in row {
-            expression_row.push(CellValue::scalar(runtime.copy(value)?));
+        for (position, value) in row.iter().enumerate() {
+            let mut cell = CellValue::scalar(runtime.copy(value)?);
+            if comparison.collation_resolver.is_some() || !comparison.text_collations.is_empty() {
+                let policy = comparison
+                    .text_collations
+                    .get(position)
+                    .copied()
+                    .flatten()
+                    .map_or(TextPolicy::Default, TextPolicy::Column);
+                cell = cell
+                    .with_policy(policy)
+                    .with_complete_policy(true)
+                    .with_declaration(Some(OperandDeclaration::Scalar));
+            }
+            expression_row.push(cell);
         }
 
         let env = Environment {

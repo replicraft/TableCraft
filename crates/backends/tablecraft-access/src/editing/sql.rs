@@ -1,5 +1,7 @@
 //! Shared normal UPDATE planning; file ownership and publication stay with hosts.
 #[cfg(feature = "journal")]
+mod comparison;
+#[cfg(feature = "journal")]
 mod deleting;
 #[cfg(feature = "journal")]
 mod inserting;
@@ -18,8 +20,12 @@ use super::{NativeEditError, NativeEditor};
 use tablecraft_ace::RecoverableNativeEditPlan;
 use tablecraft_ace::{NativeEditPlan, NativeImage};
 use tablecraft_core::limits::ResourceBudget;
+#[cfg(feature = "journal")]
+use tablecraft_db::EditableTable;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_query::{QueryError, UpdateError, UpdatePlan};
+#[cfg(feature = "journal")]
+use tablecraft_query::{UpdateComparisonOptions, source::CollationResolver};
 use tablecraft_sql::{
     query::{Query, Statement},
     select::TableSource,
@@ -162,6 +168,40 @@ pub fn plan_recoverable_batch_update_with_budgets(
         query_budget,
         native,
         collation,
+        cancelled,
+    )?)
+}
+
+/// Plan one recoverable local UPDATE with actual native field text policies.
+/// Database/default and field comparison providers remain explicit. Native
+/// declaration capture and policy alignment consume `native`; query evaluation
+/// consumes `query_budget`. No field policy enters the neutral DB snapshot.
+#[cfg(feature = "journal")]
+pub fn plan_recoverable_batch_update_with_comparison(
+    image: NativeImage,
+    query: &Query,
+    native: &mut ResourceBudget,
+    query_budget: &mut ResourceBudget,
+    collation: &dyn Collation,
+    resolver: &dyn CollationResolver,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<RecoverableNativeEditPlan>, RecoverableError> {
+    let table = local_batch_update_table(query)?;
+    let schema = comparison::schema(&image, table, native, cancelled)?;
+    let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
+    let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;
+    let comparison = UpdateComparisonOptions {
+        collation: Some(collation),
+        collation_resolver: Some(resolver),
+        text_collations: &policies,
+    };
+
+    Ok(tablecraft_query::plan_batch_update_with_comparison(
+        editor,
+        query,
+        query_budget,
+        native,
+        comparison,
         cancelled,
     )?)
 }

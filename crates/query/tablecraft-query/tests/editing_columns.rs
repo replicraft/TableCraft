@@ -393,3 +393,6 @@ fn split_batch_preserves_original_snapshot_and_one_consuming_finish() {
     // Each original row is visited and then materialized as an expression row.
     assert_eq!(query_budget.remaining(Resource::Rows), 100_000 - 2 * 4);
 }
+
+#[path = "editing_columns/comparison.rs"]
+mod comparison;
