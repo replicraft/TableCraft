@@ -37,7 +37,10 @@ Rayon's default features; no optional Rayon feature is enabled. Thread pools are
 host-owned and explicitly sized. Upstream allocation/scheduling and unsafe
 internals are not replaced by query/native quotas; this is not an independent
 unsafe-code audit or exact process-memory ceiling. No speedup claim is made here.
-See [parallel removal](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal).
+The consolidated CLI `ThirdPartyLicenses.txt` includes all six Rayon closure
+components above, selecting their MIT alternative and deduplicating byte-identical
+upstream license texts (three additional texts). Desktop notice drafts are
+unchanged. See [parallel removal](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal).
 
 ## Windows filesystem cleanup — 8 November 2026
 
