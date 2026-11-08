@@ -22,16 +22,17 @@ pub use queries::{
 mod constraints;
 #[cfg(feature = "ace16-create")]
 mod creation;
+#[cfg(feature = "ace16-create")]
+pub use creation::{
+    AddColumnCandidate, AddColumnError, CreateColumn, CreateDatabaseError, CreateTable,
+    CreatedDatabase, FirstTableDefinition, FirstTableError, FirstTablePlan, create_ace16_database,
+    create_ace16_database_tables, create_ace16_int32_database, create_blank_ace16_database,
+    first_table_source_available,
+};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use creation::{
     AddTableError, AddTablePlan, AddTableSourceCapabilities, add_table_source_available,
     add_table_source_capabilities,
-};
-#[cfg(feature = "ace16-create")]
-pub use creation::{
-    CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, FirstTableDefinition,
-    FirstTableError, FirstTablePlan, create_ace16_database, create_ace16_database_tables,
-    create_ace16_int32_database, create_blank_ace16_database, first_table_source_available,
 };
 mod encryption;
 mod error;

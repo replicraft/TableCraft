@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Independent public-SDK ADD LONG column on canonical empty TableCraft-created source; no native Microsoft Access execution",
+  "source": {
+    "creator": "Existing compiled tablecraft create --table Items --column Id --column Score",
+    "bytes": 36864,
+    "sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+    "tablecraft_created": true,
+    "sdk_created": false
+  },
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "operation": "new ColumnBuilder(\"Extra\", DataType.LONG).addToTable(table)",
+    "oracle_source": "docs/testing/AddColumnOracle.java",
+    "oracle_source_sha256": "986dea5cf81425a79731d42e3bac4ec559c48d8206308a5a5441c32dc468d611"
+  },
+  "after": {
+    "bytes": 36864,
+    "sha256": "ab982f44da01bd3725cce7b8d55acc6e67827ef43906b75ba951201dcf875010",
+    "columns": [
+      "Id",
+      "Score",
+      "Extra"
+    ],
+    "native_types": [
+      "LONG",
+      "LONG",
+      "LONG"
+    ],
+    "rows": 0,
+    "indexes": 0
+  },
+  "preservation": {
+    "changed_pages": [
+      7
+    ],
+    "catalog_unchanged": true,
+    "created_and_updated_dates": "1899-12-30T00:00 retained by this SDK operation on the zero-date source",
+    "allocation_and_file_length_unchanged": true
+  },
+  "public_reader_after": {
+    "tablecraft_check_exit_code": 0,
+    "rows_checked": 0,
+    "indexes_checked": 0,
+    "indexes_not_checked": 0
+  },
+  "limits": [
+    "One empty canonical keyless ordinary Int32 table",
+    "No nonzero timestamp-source experiment or native timestamp update semantics qualified",
+    "No native Microsoft Access execution/save/reopen",
+    "Candidate implementation tests pending coordinated Cargo batch",
+    "No journal or GUI authority supplied by this SDK record"
+  ]
+}

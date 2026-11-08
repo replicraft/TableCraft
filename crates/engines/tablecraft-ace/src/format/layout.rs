@@ -9,9 +9,9 @@ use crate::limits::{MAX_COLUMNS, MAX_INDEXES};
 
 // Jet 4 / initial ACE table/column definition offsets; see docs/access/storage/NATIVE_TABLES.md.
 pub(crate) const RECORD_COUNT_OFFSET: usize = 16;
-const MAX_COLUMN_COUNT_OFFSET: usize = 41;
+pub(crate) const MAX_COLUMN_COUNT_OFFSET: usize = 41;
 const VARIABLE_SLOT_COUNT_OFFSET: usize = 43;
-const COLUMN_COUNT_OFFSET: usize = 45;
+pub(crate) const COLUMN_COUNT_OFFSET: usize = 45;
 pub(crate) const INDEX_COUNT_OFFSET: usize = 51;
 pub(crate) const LOGICAL_INDEX_COUNT_OFFSET: usize = 47;
 const OWNED_MAP_OFFSET: usize = 55;
@@ -19,7 +19,7 @@ const OWNED_MAP_OFFSET: usize = 55;
 pub(crate) const TABLE_FREE_MAP_OFFSET: usize = OWNED_MAP_OFFSET + size_of::<u32>();
 pub(crate) const COLUMN_BLOCK_OFFSET: usize = 63;
 pub(crate) const INDEX_ENTRY_BYTES: usize = 12;
-const COLUMN_ENTRY_BYTES: usize = 25;
+pub(crate) const COLUMN_ENTRY_BYTES: usize = 25;
 const COLUMN_TYPE_OFFSET: usize = 0;
 const COLUMN_NUMBER_OFFSET: usize = 5;
 const VARIABLE_INDEX_OFFSET: usize = 7;
