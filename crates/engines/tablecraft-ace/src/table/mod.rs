@@ -42,7 +42,7 @@ pub use complex::{
     VersionHistoryReader, inspect_version_history_declarations, read_version_history_column,
     read_version_history_column_with_limits,
 };
-mod mutation;
+pub(crate) mod mutation;
 mod schema;
 mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};

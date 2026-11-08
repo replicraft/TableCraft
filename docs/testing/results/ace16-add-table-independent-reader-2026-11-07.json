@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "host": "macOS ARM64",
+  "scope": "Independent read-only observations of repository-authored append-table fixture images; not native Access save/reopen, transactions or platform durability.",
+  "reader": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "program": {
+    "path": "docs/testing/ace16_table_addition/ReadAddition.java",
+    "bytes": 1845,
+    "sha256": "9ee1af190351a36a67eb383d32934dd96875e29da34c3c304d463e52fe6d8144"
+  },
+  "fixture_source": {
+    "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_add_table.rs",
+    "bytes": 5966,
+    "sha256": "728bf455417c3852485fdb58e46010b563c6e30fea79f1a16cd7f603b044227c"
+  },
+  "images": [
+    {
+      "path": ".cache/add-table-independent-20261107/before.accdb",
+      "bytes": 40960,
+      "sha256": "fc1ff4a87243a4302978702b4c1e048a4b1de4a7076ede29b0dfb67d488c178b"
+    },
+    {
+      "path": ".cache/add-table-independent-20261107/after.accdb",
+      "bytes": 53248,
+      "sha256": "92a8885c1e00057fa532ba4330169f69496538403c6725ec1855abec887a4bd0"
+    }
+  ],
+  "observations": {
+    "before": {
+      "format": "V2016",
+      "tables": [
+        "Items"
+      ],
+      "row": {
+        "Id": 1,
+        "Score": 17
+      },
+      "physical_row": "8:0"
+    },
+    "after": {
+      "format": "V2016",
+      "tables": [
+        "Items",
+        "More"
+      ],
+      "original_row": {
+        "Id": 1,
+        "Score": 17
+      },
+      "physical_row": "8:0",
+      "new_table_rows": 0,
+      "new_Id": "LONG AutoNumber",
+      "new_Name": "TEXT 20",
+      "primary_index_metadata_present": true
+    }
+  },
+  "raw_reports": {
+    "before.accdb.jackcess.log": "V2016 [VERSION_2016] [Items] original=Row[8:0][{Id=1,Score=17}]\n",
+    "after.accdb.jackcess.log": "V2016 [VERSION_2016] [Items, More] original=Row[8:0][{Id=1,Score=17}]\n"
+  },
+  "qualification_limits": [
+    "No Microsoft Access execution",
+    "No Windows/Linux filesystem execution",
+    "No independent journal or first-row insertion execution",
+    "Primary index declaration inspected; this checker does not perform indexed lookups"
+  ]
+}

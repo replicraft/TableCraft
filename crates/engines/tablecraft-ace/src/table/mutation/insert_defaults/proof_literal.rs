@@ -22,7 +22,7 @@ const PROPERTY_BYTES: usize = PROPERTY_UNITS * 4;
 const TOKEN_LIMIT: usize = 64;
 const DEPTH_LIMIT: usize = 16;
 
-pub(in crate::table::mutation) fn derive(
+pub(crate) fn derive(
     column: &NativeColumn,
     text: &str,
     reading: Option<ClockReading>,

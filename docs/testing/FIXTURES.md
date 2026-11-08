@@ -1,5 +1,29 @@
 # Candidate Access fixtures
 
+## Repository-authored append-table fixture
+
+`tablecraft-testkit::fixtures::access::canonical_add_table` independently builds
+a populated ten-page BEFORE and thirteen-page AFTER. It retains the original
+`Items` row, primary root and physical record offsets, plus nonzero user-definition,
+catalog-gap and map-gap sentinels. New `More` roles and records append without
+calling production creators, codecs or mutation plans. The source is original
+repository code; no third-party fixture or implementation is copied. Generated
+database bytes remain under ignored project-local cache.
+
+The BEFORE is 40,960 bytes with SHA-256
+`fc1ff4a87243a4302978702b4c1e048a4b1de4a7076ede29b0dfb67d488c178b`.
+The AFTER is 53,248 bytes with SHA-256
+`92a8885c1e00057fa532ba4330169f69496538403c6725ec1855abec887a4bd0`.
+The [read-only checker](ace16_table_addition/ReadAddition.java) uses the retained
+reviewed Jackcess 5.0.4 JAR, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+It observes V2016 format, the unchanged `Id=1, Score=17` row at `8:0`, both user
+tables after addition, and the empty new table's declared columns and primary
+index metadata. It does not perform indexed lookups, writes or recovery.
+The [result](results/ace16-add-table-independent-reader-2026-11-07.json) pins the
+fixture/checker/JAR hashes and records exact scope. These observations remain
+separate from native Access or Windows/Linux execution and journal qualification.
+
 ## Original DELETE and SET NULL inputs
 
 The repository-authored

@@ -27,6 +27,12 @@ pub struct NativeColumn {
     profile: ReadProfile,
 }
 impl NativeColumn {
+    /// Borrow this column's owned decoded physical declaration for native proofs.
+    #[cfg(all(feature = "ace16-create", feature = "journal"))]
+    pub(crate) fn physical_field(&self) -> &Field {
+        &self.field
+    }
+
     /// Whether this is the native OLE Object carrier, independent of scalar support.
     pub const fn is_ole_object(&self) -> bool {
         self.field.kind == data_type::OLE
@@ -176,6 +182,12 @@ pub struct TableSchema {
     pub(super) layout: Layout,
 }
 impl TableSchema {
+    /// Borrow decoded native physical facts for crate-owned operation proofs.
+    #[cfg(all(feature = "ace16-create", feature = "journal"))]
+    pub(crate) fn physical_layout(&self) -> &Layout {
+        &self.layout
+    }
+
     /// Compare the complete native schema metadata captured by these values.
     /// This includes catalog scope/name, definition, header and physical field layout.
     /// It does not compare record/index contents or property maps and cannot establish

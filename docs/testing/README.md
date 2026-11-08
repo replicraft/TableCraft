@@ -4,6 +4,7 @@
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)
 - [Shared test fixtures and support](TESTKIT.md)
+- [Append-table independent-reader observations](results/ace16-add-table-independent-reader-2026-11-07.json)
 - [Shared indexed GUID fixture extraction](results/shared-indexed-guid-fixtures-2026-11-03.json)
 - [Normal indexed GUID write acceptance](results/ace16-normal-indexed-guid-update-2026-11-03.json)
 - [Normal unindexed GUID write acceptance](results/ace16-normal-guid-fixed-update-2026-11-03.json)

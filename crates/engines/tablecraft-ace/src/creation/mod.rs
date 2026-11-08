@@ -1,4 +1,6 @@
 //! Bounded fresh ACE 16 database serialization, separate from edit authority.
+#[cfg(feature = "journal")]
+mod add_table;
 mod autonumber;
 mod build;
 mod column;
@@ -16,6 +18,8 @@ mod request;
 mod stored_text;
 mod variable;
 
+#[cfg(feature = "journal")]
+pub use add_table::{AddTableError, AddTablePlan, add_table_source_available};
 pub use column::CreateColumn;
 pub use database::{
     CreatedDatabase, create_ace16_database, create_ace16_database_tables,
