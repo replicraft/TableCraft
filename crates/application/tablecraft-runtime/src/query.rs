@@ -1,5 +1,7 @@
 //! Buffered query execution over the retained native source, without provider opens.
 pub(crate) mod context;
+pub(crate) mod inspection;
+pub(crate) mod parameters;
 
 use super::{
     Cell, Error, Response,

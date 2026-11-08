@@ -1,18 +1,39 @@
 //! The query owner resolves declarations; this boundary only accepts literal input.
-use super::{
-    MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
-};
 use crate::{Error, display::Presentation, scalar_input};
 use tablecraft_core::values::Value;
 use tablecraft_query::{ParameterType, resolve_parameter_type};
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::query::Query;
 
-pub(super) fn specs(
+/// Host input envelope; SQL/native declaration limits can be narrower.
+pub const MAX_QUERY_PARAMETERS: usize = 256;
+/// Cumulative UTF-8 bytes of input names, kinds and text, including NULL inputs.
+pub const MAX_QUERY_INPUT_BYTES: usize = 1024 * 1024;
+
+/// Declared prompt metadata. Inspection does not establish execution readiness.
+pub struct ParameterSpec {
+    pub name: String,
+    /// Stable input token, or value when a concrete carrier must be selected.
+    pub kind: String,
+    /// Original declaration rendered by the syntax owner.
+    pub label: String,
+    pub nullable: bool,
+}
+
+/// Explicit literal input, never SQL or an expression to evaluate.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ParameterInput {
+    pub name: String,
+    pub kind: String,
+    pub text: String,
+    pub is_null: bool,
+}
+
+pub(crate) fn specs(
     query: &Query,
     output: &mut Presentation<'_>,
 ) -> Result<Vec<ParameterSpec>, Error> {
-    if query.parameters.len() > MAX_SAVED_QUERY_PARAMETERS {
+    if query.parameters.len() > MAX_QUERY_PARAMETERS {
         return Err(Error::ParameterInput);
     }
     output.allocation(query.parameters.len(), size_of::<ParameterSpec>())?;
@@ -34,12 +55,12 @@ pub(super) fn specs(
     Ok(result)
 }
 
-pub(super) fn bindings<'a>(
+pub(crate) fn bindings<'a>(
     query: &'a Query,
     inputs: &[ParameterInput],
     output: &mut Presentation<'_>,
 ) -> Result<Vec<(&'a str, Value)>, Error> {
-    if inputs.len() > MAX_SAVED_QUERY_PARAMETERS || inputs.len() != query.parameters.len() {
+    if inputs.len() > MAX_QUERY_PARAMETERS || inputs.len() != query.parameters.len() {
         return Err(Error::ParameterInput);
     }
     output.allocation(inputs.len(), size_of::<(&str, Value)>())?;
@@ -113,11 +134,11 @@ fn selected_kind(token: &str) -> Option<ScalarType> {
     })
 }
 
-pub(super) fn validate_input_limits(
+pub(crate) fn validate_input_limits(
     inputs: &[ParameterInput],
     output: &mut Presentation<'_>,
 ) -> Result<(), Error> {
-    if inputs.len() > MAX_SAVED_QUERY_PARAMETERS {
+    if inputs.len() > MAX_QUERY_PARAMETERS {
         return Err(Error::ScalarInputLimit);
     }
     let mut bytes = 0_usize;
@@ -127,7 +148,7 @@ pub(super) fn validate_input_limits(
             bytes = bytes
                 .checked_add(text.len())
                 .ok_or(Error::ScalarInputLimit)?;
-            if bytes > MAX_SAVED_QUERY_INPUT_BYTES {
+            if bytes > MAX_QUERY_INPUT_BYTES {
                 return Err(Error::ScalarInputLimit);
             }
         }
@@ -167,7 +188,7 @@ mod tests {
         ));
         inputs[0].text = "ab".into();
         assert!(bindings(parsed.query(), &inputs, &mut Presentation::new(&|| false)).is_ok());
-        inputs[0].text = "x".repeat(MAX_SAVED_QUERY_INPUT_BYTES);
+        inputs[0].text = "x".repeat(MAX_QUERY_INPUT_BYTES);
         inputs[0].is_null = true;
         assert!(matches!(
             validate_input_limits(&inputs, &mut Presentation::new(&|| false)),

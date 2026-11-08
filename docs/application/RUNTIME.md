@@ -1227,6 +1227,30 @@ repeated occurrences, wrap/reverse navigation, typed NULL, captured EUR display,
 mandatory EOF validation and failure boundaries. These are headless implementation
 checks, not native Access or cross-platform GUI qualification.
 
+## Scratch query parameter service
+
+`InspectQuery` accepts a worker-local document revision and bounded SQL text.
+It parses syntax and resolves declared parameter specifications without opening a
+native query source, binding tables, scanning records or consulting the clock or
+random state. Inspection does not establish that the query can execute.
+
+The returned immutable `InspectedQuery` owns the exact SQL and retains private
+source identity as well as its document revision. It has no public constructor,
+mutation API or automatic Debug/Serde output. `RunQuery` accepts that issued
+target plus explicit literal inputs, rechecks both identity and revision before
+input conversion, then uses the ordinary shared query executor and context.
+A same-numbered revision from another worker is insufficient. Reopening a
+source invalidates its earlier target.
+
+Scratch and saved queries share the actual declaration/input owner at
+`query::parameters`: type constraints come from `tablecraft-query`, with at most
+256 parameters and 1 MiB of cumulative names/kinds/text. VALUE requires a chosen
+concrete kind; SQL-looking text stays literal, and NULL remains a separate flag.
+Input validation finishes before native source construction or context use.
+This service does not execute action SQL, persist query definitions or activate
+a GUI prompt. The desktop still uses its existing parameterless Run route until
+the shared prompt and request ownership are connected.
+
 ## Native saved queries and declared parameters
 
 Open now publishes table and saved-query declarations from one inert
@@ -1262,10 +1286,10 @@ reconstruction and subsequent execution/schema discovery. Query and display
 limits remain the existing controls below.
 
 Execution uses the existing SELECT/UNION/crosstab profile and schema-discovery
-service. No external source registry, stored connection, provider, clock, random
-state or VBA authority is added. Required unsupported policies remain explicit
-errors. Text comparison uses the stored policies described below; the host does
-not guess unsupported policies, a locale or LIKE mode. General Access query
+service and the [shared query context](#read-query-execution-context). No external
+source registry, stored connection or VBA authority is added. Required unsupported
+policies remain explicit errors. Text comparison uses the stored policies below;
+the host does not guess unsupported policies, a locale or LIKE mode. General Access query
 updateability remains separate work.
 
 Saved results are complete buffered query results with no native source revision,

@@ -12,6 +12,9 @@ sequence, unsecured CurrentUser metadata and an explicit English Error catalog.
 Those providers do not authorize writes, select database collation or turn
 display formatting into SQL conversion policy. Scratch parameter prompts,
 action-query execution and native saved-definition editing remain unfinished.
+The [shared runtime parameter service](../application/RUNTIME.md#scratch-query-parameter-service)
+now provides inert declaration inspection and source-bound typed execution;
+that API alone does not connect a desktop prompt.
 
 ## Result ownership
 

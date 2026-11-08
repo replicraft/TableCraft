@@ -1,5 +1,31 @@
 # Implementation status
 
+## Source-bound scratch parameter service — 7 November 2026
+
+Runtime now exposes inert scratch SQL declaration inspection and explicitly
+requested typed execution. Issued immutable targets retain exact SQL, document
+revision and private worker/document identity. Missing, duplicate, mismatched or
+invalid literals fail before native query construction or clock use. Scratch and
+saved execution consume one shared parameter owner; SQL-looking text and NULL
+remain distinct literal inputs.
+
+Four actual-worker cases pass, together with all 160 runtime tests and 99 tests
+with optional features disabled. They cover unreadable user records during
+inspection, typed constraints/corrections, immutable SQL and same-revision
+cross-worker/reopen refusal. Current Text length uses the existing shared
+Unicode-scalar contract; these tests do not establish native character-count
+parity. Initial and corrected focused logs remain under ignored
+`.cache/gui-scratch-parameters-*20261107.log`.
+
+Strict affected-package lint, isolated creation/editing feature builds and
+Windows x64/ARM64, Intel macOS and Linux x64/ARM64 compilation pass. This is
+compilation evidence, not native execution on those platforms.
+
+The desktop still dispatches its existing parameterless Run route. This service
+does not supply a connected scratch prompt, action-query execution or native
+saved-definition editing. See the [runtime contract](application/RUNTIME.md#scratch-query-parameter-service)
+and [expanded parity accounting](features/ACCESS_PARITY_ROADMAP.md).
+
 ## Legacy DATE presentation at whole seconds — 7 November 2026
 
 Ordinary date/time display no longer shows the preceding second or minute when a

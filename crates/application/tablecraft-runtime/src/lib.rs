@@ -52,11 +52,12 @@ pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
     FindTarget, MAX_FIND_PATTERN_BYTES,
 };
-pub use query_design::QueryDesignTarget;
-pub use saved::{
-    MAX_SAVED_QUERY_INPUT_BYTES, MAX_SAVED_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
-    SavedQuery, SavedQueryTarget,
+pub use query::inspection::InspectedQuery;
+pub use query::parameters::{
+    MAX_QUERY_INPUT_BYTES, MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
 };
+pub use query_design::QueryDesignTarget;
+pub use saved::{SavedQuery, SavedQueryTarget};
 pub use scalar_input::InputHint;
 pub use schema::{Field, FieldProperty, FieldPropertyValue};
 pub use totals::{
@@ -66,7 +67,6 @@ pub use totals::{
 pub use worker::Worker;
 
 use std::path::PathBuf;
-#[cfg(any(feature = "ace16-create", feature = "offline-edit"))]
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{AddTableError, FirstTableError};
@@ -126,7 +126,9 @@ pub enum Error {
     ScalarInputLimit,
     #[error("saved query target belongs to another document or object")]
     StaleSavedQuery,
-    #[error("saved query parameter inputs do not match their declarations")]
+    #[error("query inspection belongs to another document snapshot")]
+    StaleQuery,
+    #[error("query parameter inputs do not match their declarations")]
     ParameterInput,
     #[error(transparent)]
     Saved(#[from] tablecraft_access::NativeSavedReadError),
@@ -304,6 +306,14 @@ pub enum Command {
     Query {
         sql: String,
     },
+    InspectQuery {
+        document_revision: u64,
+        sql: String,
+    },
+    RunQuery {
+        target: Arc<InspectedQuery>,
+        parameters: Vec<ParameterInput>,
+    },
     InspectSavedQuery {
         target: SavedQueryTarget,
     },
@@ -346,6 +356,10 @@ pub enum Response {
     TotalsDescription(TotalsDescription),
     Totals(TotalsData),
     FieldFilterDescription(FieldFilterDescription),
+    QueryParameters {
+        target: Arc<InspectedQuery>,
+        parameters: Vec<ParameterSpec>,
+    },
     SavedQuery {
         target: SavedQueryTarget,
         parameters: Vec<ParameterSpec>,

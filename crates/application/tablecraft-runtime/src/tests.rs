@@ -21,6 +21,7 @@ mod formatting;
 mod inserting;
 mod query_context;
 mod query_design;
+mod query_parameters;
 mod repaint;
 #[cfg(all(
     feature = "offline-edit",

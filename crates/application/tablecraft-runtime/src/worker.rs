@@ -250,6 +250,18 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .find_next(request, cancelled),
+            Command::InspectQuery {
+                document_revision,
+                sql,
+            } => document.as_ref().ok_or(Error::NoDatabase)?.inspect_query(
+                *document_revision,
+                sql,
+                cancelled,
+            ),
+            Command::RunQuery { target, parameters } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .run_query(target, parameters, clock.as_ref(), cancelled),
             Command::InspectSavedQuery { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -341,6 +353,8 @@ impl Worker {
                     Command::Describe { .. } => "describe",
                     Command::InspectCollection { .. } => "inspect_collection",
                     Command::Query { .. } => "query",
+                    Command::InspectQuery { .. } => "inspect_query",
+                    Command::RunQuery { .. } => "run_query",
                     Command::InspectSavedQuery { .. } => "inspect_saved_query",
                     Command::RunSavedQuery { .. } => "run_saved_query",
                 };

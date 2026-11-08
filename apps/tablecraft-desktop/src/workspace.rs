@@ -407,6 +407,11 @@ impl Desktop {
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
                 }
+                Ok(Response::QueryParameters { .. }) => {
+                    // Scratch inspection is a shared service; this host has not
+                    // dispatched a parameter prompt request yet.
+                    self.state.error = Some(tablecraft_runtime::Error::ParameterInput.to_string());
+                }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
                 }
