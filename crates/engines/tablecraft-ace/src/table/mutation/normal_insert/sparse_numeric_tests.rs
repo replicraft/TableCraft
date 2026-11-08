@@ -27,7 +27,7 @@ fn literal_sparse_insert_images_prove_and_raw_carrier_history_and_count_forgerie
             .collect::<Vec<_>>();
         let count = requests.len();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: count,
         };
@@ -50,7 +50,7 @@ fn literal_sparse_insert_images_prove_and_raw_carrier_history_and_count_forgerie
             let mut after = case.after.clone();
             after[at] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: count,
             };
@@ -67,7 +67,7 @@ fn literal_sparse_insert_images_prove_and_raw_carrier_history_and_count_forgerie
             );
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: count + 1,
         };

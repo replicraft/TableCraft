@@ -34,7 +34,7 @@ fn text_insert_proof_accepts_only_literal_complete_images_and_protects_causal_by
             .map(RowInsert::new)
             .collect::<Vec<_>>();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed_rows(),
         };
@@ -65,7 +65,7 @@ fn text_insert_proof_accepts_only_literal_complete_images_and_protects_causal_by
             case.data as usize * 4096 + 4095,
         ] {
             let mut forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: case.changed_rows(),
             };
@@ -84,7 +84,7 @@ fn text_insert_proof_accepts_only_literal_complete_images_and_protects_causal_by
             denials += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed_rows() + 1,
         };

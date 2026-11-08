@@ -157,7 +157,7 @@ fn original_preflight_and_fresh_proof_refuse_stale_duplicate_and_altered_bytes()
     let start = first_record(&expected, 8);
     expected[start + 2..start + 6].copy_from_slice(&[73, 0, 0, 0]);
     let mut observation = NativeEditPlan {
-        before: source.bytes.clone(),
+        before: source.bytes.clone().into(),
         after: expected,
         changed_rows: 1,
     };

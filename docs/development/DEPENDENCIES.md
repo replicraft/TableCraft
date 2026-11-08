@@ -1,5 +1,17 @@
 # Adopted dependency and licensing baseline
 
+## Shared native snapshots — 8 November 2026
+
+The engine now consumes the existing `bytes` 1.12.1 selection as well as runtime.
+`NativeImageSource::from_vec` transfers a complete owned vector without copying
+its payload, records the retained capacity and pays sharing-control allocation
+before construction. There is no arbitrary `Bytes`/slice admission constructor.
+Every shared native capture charges the whole retained allocation and control
+allowance before header/catalog traversal. Original BEFORE payloads can be shared;
+AFTER vectors, metadata and proof work remain separately accounted. Fresh native
+save/recovery source capture is unchanged; cached bytes do not grant authority.
+See [image ownership](../access/NATIVE_READING.md#shared-immutable-native-image-ownership).
+
 ## Windows filesystem cleanup — 8 November 2026
 
 The Windows-only IO member enables the existing `windows-sys` 0.61.2
@@ -179,7 +191,7 @@ native window/file-picker dependencies remain host-only.
 
 ## Shared captured database images
 
-`tablecraft-runtime` directly inherits `bytes` 1.12.1 (MIT, declared MSRV 1.57),
+`tablecraft-runtime` and `tablecraft-ace` directly inherit `bytes` 1.12.1 (MIT, declared MSRV 1.57),
 with defaults disabled and only `std` enabled. This version was already locked;
 no registry package upgrade is requested. The published manifest has no build
 script and this selected feature has no additional normal dependency.
@@ -190,9 +202,10 @@ A targeted [RustSec package check](https://rustsec.org/packages/bytes.html)
 found [RUSTSEC-2026-0007](https://rustsec.org/advisories/RUSTSEC-2026-0007.html),
 whose patched range includes 1.12.1. This is not a full dependency-graph audit.
 
-The working consumer transfers the bounded captured `Vec<u8>` into
+The working consumer transfers the bounded captured `Vec<u8>` into the engine's
+whole-owned `NativeImageSource`, backed by
 [`Bytes`](https://docs.rs/bytes/1.12.1/bytes/struct.Bytes.html), then shares handles
-between the native reader and reviewed-edit precondition. The complete physical
+between native readers, original-source witnesses and reviewed native captures. The complete physical
 image stays retained until its last owner drops it; a small view must not be
 accounted as a small backing allocation. Opening still uses the existing 64 MiB
 capture ceiling and native/query work budgets. Review and native journal planning

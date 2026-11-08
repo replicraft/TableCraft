@@ -218,7 +218,7 @@ fn direct_literal_eof_proof_rejects_map_visibility_count_null_and_protected_comp
     for case in cases() {
         let count = if case.batch { 255 } else { 1 };
         let literal = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: count,
         };
@@ -251,7 +251,7 @@ fn direct_literal_eof_proof_rejects_map_visibility_count_null_and_protected_comp
             let mut changed = case.after.clone();
             changed[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: changed,
                 changed_rows: count,
             };
@@ -268,7 +268,7 @@ fn direct_literal_eof_proof_rejects_map_visibility_count_null_and_protected_comp
             ));
         }
         let wrong = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

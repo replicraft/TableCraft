@@ -186,8 +186,12 @@ semantics is adopted implicitly.
   alternative, not a second default; evaluate `bilge` only for useful dense bitfields.
 - Prefer `bitflags`, `bytes`, `encoding_rs`, `indexmap` and `tempfile` when a real
   named-flags, shared-buffer, supported-code-page, ordered-property or temporary-file
-  consumer appears. `bytes` now shares bounded runtime captured images between
-  readers and reviewed edits; charge retained backing, not just view lengths.
+  consumer appears. `bytes` now shares whole-owned runtime/native captured images
+  between readers, original-source witnesses and reviewed native plans. Only a
+  consumed `Vec` establishes the complete retained-capacity witness; arbitrary
+  `Bytes`/slices are not image admission. Charge retained backing and control
+  storage, not just view lengths. AFTER vectors and fresh filesystem/native save
+  proof remain separate; a cached shared payload is not mutation authority.
   `encoding_rs` is now adopted for [explicit scalar character-code pages](../expressions/text/CHARACTER_CODE_PAGES.md)
   and the separate [strict Japanese string codec](../expressions/text/JAPANESE_STRING_ENCODING.md),
   with defaults disabled and non-replacing decoding. Character operations retain

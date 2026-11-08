@@ -60,7 +60,7 @@ fn external_long_fresh_proof_reconstructs_whole_images_without_staged_descriptor
             })
             .collect::<Vec<_>>();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed,
         };
@@ -84,7 +84,7 @@ fn external_long_fresh_proof_reconstructs_whole_images_without_staged_descriptor
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed,
             };
@@ -102,7 +102,7 @@ fn external_long_fresh_proof_reconstructs_whole_images_without_staged_descriptor
             refused += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed + 1,
         };

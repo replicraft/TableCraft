@@ -1,6 +1,7 @@
 //! Explicit engineering candidates, separate from qualified native edit plans.
 use super::{EditError, Int32Update, NativeEditPlan};
 use crate::{NativeImage, header::check};
+use bytes::Bytes;
 use tablecraft_core::limits::ResourceBudget;
 
 pub(super) use super::ace_profile::{qualify, qualify_fixed};
@@ -20,7 +21,7 @@ pub(super) use super::ace_profile::{qualify, qualify_fixed};
 /// }
 /// ```
 pub struct Ace16WritePreview {
-    before: Vec<u8>,
+    before: Bytes,
     after: Vec<u8>,
     changed_rows: usize,
 }
@@ -33,7 +34,7 @@ impl Ace16WritePreview {
             changed_rows: plan.changed_rows,
         }
     }
-    pub(super) fn from_candidate(before: Vec<u8>, after: Vec<u8>, changed_rows: usize) -> Self {
+    pub(super) fn from_candidate(before: Bytes, after: Vec<u8>, changed_rows: usize) -> Self {
         Self {
             before,
             after,

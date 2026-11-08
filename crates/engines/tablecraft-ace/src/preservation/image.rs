@@ -1,7 +1,14 @@
+mod source;
+#[cfg(test)]
+mod tests;
+
+pub use source::NativeImageSource;
+
 use super::{COPY_CHUNK_BYTES, ObjectDependency};
 use crate::{
     CatalogInspection, Header, InspectError, header::check, inspect_catalog, inspect_header,
 };
+use bytes::Bytes;
 use std::io::{Cursor, Read, Seek};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
@@ -68,7 +75,7 @@ impl CapturePolicy {
 /// mutable byte accessor: later edit plans must prove their precise write ranges.
 /// No Debug/Serde implementation exposes retained database contents.
 pub struct NativeImage {
-    pub(crate) bytes: Vec<u8>,
+    pub(crate) bytes: Bytes,
     catalog: CatalogInspection,
     capture: CapturePolicy,
 }
@@ -148,8 +155,69 @@ impl NativeImage {
             return Err(InspectError::Malformed);
         }
         let catalog = inspect_catalog(&mut Cursor::new(&bytes), scope, budget, cancelled)?;
+        let bytes = NativeImageSource::from_vec(bytes, budget, cancelled)?.into_bytes();
         Ok(Self {
             bytes,
+            catalog,
+            capture,
+        })
+    }
+
+    /// Inspect an existing immutable whole allocation without copying its payload.
+    /// The complete original capacity is charged as retained memory before any
+    /// metadata traversal, even when the vector had unused capacity. Catalog work
+    /// and cancellation retain the same bounded inspection contracts as capture.
+    pub fn capture_shared(
+        source: NativeImageSource,
+        scope: CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::capture_shared_with_policy(source, scope, CapturePolicy::Standard, budget, cancelled)
+    }
+
+    /// Inspect shared bytes under the same privately retained fixed-update-only
+    /// purpose policy as `capture_for_fixed_updates`, including for small files.
+    pub fn capture_shared_for_fixed_updates(
+        source: NativeImageSource,
+        scope: CatalogScope,
+        limits: FixedUpdateImageLimits,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::capture_shared_with_policy(
+            source,
+            scope,
+            CapturePolicy::FixedUpdate(limits),
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_shared_with_policy(
+        source: NativeImageSource,
+        scope: CatalogScope,
+        capture: CapturePolicy,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        let _span = tracing::debug_span!("native.image.capture_shared").entered();
+        check(budget, cancelled)?;
+        let length = source.as_bytes().len() as u64;
+        if length > capture.max_bytes() {
+            return Err(InspectError::StructureLimit);
+        }
+        budget.charge_allocation(source.retained_capacity() as u64, 1)?;
+        budget.charge_allocation(source::SHARING_CONTROL_BYTES, 1)?;
+
+        let mut reader = Cursor::new(source.as_bytes());
+        let header = inspect_header(&mut reader, budget, cancelled)?;
+        header.read_profile()?;
+        let catalog = inspect_catalog(&mut reader, scope, budget, cancelled)?;
+        check(budget, cancelled)?;
+
+        Ok(Self {
+            bytes: source.into_bytes(),
             catalog,
             capture,
         })

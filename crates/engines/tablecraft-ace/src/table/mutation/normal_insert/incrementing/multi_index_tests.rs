@@ -42,7 +42,7 @@ fn literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_ali
     for case in &cases {
         let original = requests(fixtures::presence());
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 2,
         };
@@ -56,7 +56,7 @@ fn literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_ali
         )
         .unwrap();
         let empty = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };
@@ -73,7 +73,7 @@ fn literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_ali
 
         for offset in case.protected_offsets() {
             let mut forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: 2,
             };
@@ -93,7 +93,7 @@ fn literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_ali
         }
         for count in [0, 1, 3] {
             let wrong = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: count,
             };
@@ -129,12 +129,14 @@ fn literal_batch_proof_binds_request_order_generated_ids_two_pages_and_every_ali
             denied += 1;
         }
         let mut changed_before = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 2,
         };
-        changed_before.before[case.definition * 4096 + 20..case.definition * 4096 + 24]
+        let mut altered_before = changed_before.before.to_vec();
+        altered_before[case.definition * 4096 + 20..case.definition * 4096 + 24]
             .copy_from_slice(&136_i32.to_le_bytes());
+        changed_before.before = altered_before.into();
         assert!(
             proof::prove(
                 &changed_before,

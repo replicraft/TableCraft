@@ -33,7 +33,7 @@ fn updates(case: &Case) -> Vec<Int32Update> {
 
 fn observation(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.expected.clone(),
         changed_rows: case.changed_rows,
     }
@@ -132,7 +132,7 @@ fn tree_proof_reconstructs_eighteen_literal_images_and_protects_nodes_prefixes_a
     );
     let retained = model::source(6, Recipe::NodeRetainedUpper);
     let empty = NativeEditPlan {
-        before: retained.before.clone(),
+        before: retained.before.clone().into(),
         after: retained.before.clone(),
         changed_rows: 0,
     };

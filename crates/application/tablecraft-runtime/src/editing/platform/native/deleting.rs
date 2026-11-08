@@ -53,7 +53,12 @@ impl Document {
         }
 
         let mut work = budget();
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let metadata = crate::rows::presentation::Metadata::inspect(
             &mut image.reader(),
             &target.table,

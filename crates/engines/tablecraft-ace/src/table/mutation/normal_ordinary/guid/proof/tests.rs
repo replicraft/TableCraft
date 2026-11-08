@@ -29,7 +29,7 @@ fn indexed_guid_literal_populations_and_protected_bytes_have_fresh_proof() {
             .collect();
         let groups = [FixedColumnUpdates::new("Items", "Group", &updates)];
         let plan = NativeEditPlan {
-            before: case.before.to_vec(),
+            before: case.before.to_vec().into(),
             after: case.after.to_vec(),
             changed_rows: case.changed_rows(),
         };
@@ -45,7 +45,7 @@ fn indexed_guid_literal_populations_and_protected_bytes_have_fresh_proof() {
         counts[0] += 1;
 
         let wrong_count = NativeEditPlan {
-            before: case.before.to_vec(),
+            before: case.before.to_vec().into(),
             after: case.after.to_vec(),
             changed_rows: case.changed_rows() + 1,
         };
@@ -68,7 +68,7 @@ fn indexed_guid_literal_populations_and_protected_bytes_have_fresh_proof() {
                 let mut after = case.after.to_vec();
                 after[offset] ^= mask;
                 let forged = NativeEditPlan {
-                    before: case.before.to_vec(),
+                    before: case.before.to_vec().into(),
                     after,
                     changed_rows: case.changed_rows(),
                 };
@@ -105,7 +105,7 @@ fn indexed_guid_literal_populations_and_protected_bytes_have_fresh_proof() {
                     [guid, score]
                 };
                 let composed = NativeEditPlan {
-                    before: case.before.to_vec(),
+                    before: case.before.to_vec().into(),
                     after: case.composite_after(),
                     changed_rows: 1,
                 };

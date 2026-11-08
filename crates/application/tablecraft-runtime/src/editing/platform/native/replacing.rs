@@ -132,7 +132,12 @@ impl Document {
         let matcher = Matcher::new(request, mode, &mut matching, cancelled)?;
         matcher.require_type(kind)?;
 
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut native, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut native,
+            cancelled,
+        )?;
         let editor = NativeJournalEditor::new(image, &request.target.table, &mut native, cancelled)
             .map_err(EditError::from)?;
         if editor.update_profile() == UpdateProfile::Unavailable {

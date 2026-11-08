@@ -140,7 +140,7 @@ fn binary_literal_proof_rejects_data_mask_capacity_history_row_and_protected_cha
     let mut refused = 0;
     for case in cases() {
         let literal = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed_rows(),
         };
@@ -165,7 +165,7 @@ fn binary_literal_proof_rejects_data_mask_capacity_history_row_and_protected_cha
             descending + 490,
         ] {
             let mut forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: case.changed_rows(),
             };
@@ -174,7 +174,7 @@ fn binary_literal_proof_rejects_data_mask_capacity_history_row_and_protected_cha
             refused += 1;
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

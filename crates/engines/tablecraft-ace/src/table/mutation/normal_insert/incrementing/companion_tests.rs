@@ -35,7 +35,7 @@ fn literal_companion_images_prove_and_protected_bytes_counts_and_intent_refuse()
     for case in &cases {
         let original = requests(case.presence());
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -51,7 +51,7 @@ fn literal_companion_images_prove_and_protected_bytes_counts_and_intent_refuse()
         accepted += 1;
 
         let empty = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };
@@ -68,7 +68,7 @@ fn literal_companion_images_prove_and_protected_bytes_counts_and_intent_refuse()
 
         for offset in case.protected_offsets() {
             let mut forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: 1,
             };
@@ -88,7 +88,7 @@ fn literal_companion_images_prove_and_protected_bytes_counts_and_intent_refuse()
         }
 
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

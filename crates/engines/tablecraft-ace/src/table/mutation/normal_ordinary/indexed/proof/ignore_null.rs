@@ -33,7 +33,7 @@ fn literal_omission_population_history_and_preservation_are_independently_proved
         let groups = [FixedColumnUpdates::new("Single", "Left", &updates)];
         let scope = CatalogScope::new(264);
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed(),
         };
@@ -43,7 +43,7 @@ fn literal_omission_population_history_and_preservation_are_independently_proved
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed(),
             };
@@ -54,7 +54,7 @@ fn literal_omission_population_history_and_preservation_are_independently_proved
             counts[1] += 1;
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed() + 1,
         };
@@ -114,7 +114,7 @@ fn independent_proof_refuses_required_unique_and_ambiguous_family_requests() {
             // This deliberately unqualified AFTER does not pretend to be a new
             // expected image. Original requests must refuse before comparison.
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.before.clone(),
                 changed_rows: 0,
             };

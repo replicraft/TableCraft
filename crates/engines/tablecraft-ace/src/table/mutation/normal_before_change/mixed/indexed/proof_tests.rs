@@ -28,7 +28,7 @@ fn requests(case: &Case) -> Vec<Int32Update> {
 
 fn observation(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.expected.as_ref().unwrap().clone(),
         changed_rows: case.changed_rows,
     }
@@ -157,7 +157,7 @@ fn indexed_mixed_proof_replays_original_requests_and_checks_unique_and_generated
             Err(EditError::Unsupported(WriteBlocker::Column))
         );
         let unchanged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };
@@ -172,7 +172,7 @@ fn indexed_mixed_proof_replays_original_requests_and_checks_unique_and_generated
         // No fabricated conflict expected image: independent replay must reject
         // its own duplicate final key before considering this observation.
         let unchanged = NativeEditPlan {
-            before: conflict.before.clone(),
+            before: conflict.before.clone().into(),
             after: conflict.before.clone(),
             changed_rows: 0,
         };

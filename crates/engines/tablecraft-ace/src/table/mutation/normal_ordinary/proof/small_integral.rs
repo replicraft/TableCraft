@@ -37,7 +37,7 @@ fn byte_int16_literal_spans_and_null_inactive_bytes_are_independently_proved() {
             .map(|((column, _, _), updates)| FixedColumnUpdates::new("Items", column, updates))
             .collect();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -55,7 +55,7 @@ fn byte_int16_literal_spans_and_null_inactive_bytes_are_independently_proved() {
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -73,7 +73,7 @@ fn byte_int16_literal_spans_and_null_inactive_bytes_are_independently_proved() {
             counts[1] += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 2,
         };

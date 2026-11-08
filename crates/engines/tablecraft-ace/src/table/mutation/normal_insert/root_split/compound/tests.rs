@@ -37,7 +37,7 @@ fn literal_compound_direct_proof_rejects_data_index_map_history_and_cardinality_
     let mut rejected = 0;
     for case in cases {
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -70,7 +70,7 @@ fn literal_compound_direct_proof_rejects_data_index_map_history_and_cardinality_
             let mut after = case.after.clone();
             after[at] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -88,7 +88,7 @@ fn literal_compound_direct_proof_rejects_data_index_map_history_and_cardinality_
             rejected += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.after,
             changed_rows: 0,
         };

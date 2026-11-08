@@ -374,6 +374,17 @@ decoding use the existing Access/ACE services. Passwords are consumed into
 zeroizing storage, including on failures. Opening a source never executes its
 active content or follows stored external paths.
 
+The captured plain source transfers its complete vector into the engine's
+[`NativeImageSource`](../access/NATIVE_READING.md#shared-immutable-native-image-ownership).
+The browser cursor, original-source witness and native review captures share that
+immutable `bytes::Bytes` payload. Each review still charges its full retained
+capacity and control allowance, then decodes and qualifies native metadata under
+its own cumulative operation budgets. Mutable AFTER candidates remain separate.
+The owner accepts only consumed vectors; arbitrary/sliced `Bytes` cannot establish
+a whole-image witness. Plain-source sharing does not enable encoded/package edits
+or extend a native write profile. Save still captures and checks the real
+exclusive target afresh; cached bytes never authorize persistence or recovery.
+
 The worker owns the session and one replaceable pending request and response.
 New commands supersede older work through generation cancellation; publication
 and host acceptance both reject stale generations. Pending replacement and old

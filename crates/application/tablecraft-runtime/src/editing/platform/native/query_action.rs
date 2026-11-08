@@ -91,7 +91,12 @@ pub(in crate::editing) fn review(
     let native_pool = RefCell::new(action_review_budget(document.edits.original.len())?);
     let image = {
         let mut native = native_pool.borrow_mut();
-        NativeImage::capture(&mut document.source, SCOPE, &mut native, cancelled)?
+        NativeImage::capture_shared(
+            document.edits.image_source.clone(),
+            SCOPE,
+            &mut native,
+            cancelled,
+        )?
     };
 
     let source =

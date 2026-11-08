@@ -20,7 +20,7 @@ fn updates(case: &Case) -> Vec<Int32Update> {
 
 fn observation(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.expected.as_ref().unwrap().clone(),
         changed_rows: case.changed_rows,
     }
@@ -150,7 +150,7 @@ fn fresh_original_programs_and_written_requests_determine_the_expected_image() {
         let mut other_program = observation(&case);
         // The other committed original has the same table, index and rows but
         // a different native-owned program. Reusing the old AFTER must fail.
-        other_program.before = model::source(header, Recipe::CounterRestore).before;
+        other_program.before = model::source(header, Recipe::CounterRestore).before.into();
         assert_eq!(
             prove(&other_program, "Score", &updates(&case)),
             Err(EditError::Preservation)
@@ -165,7 +165,9 @@ fn fresh_original_programs_and_written_requests_determine_the_expected_image() {
         );
         // No index exists on this source. Changing the readonly counter operand
         // changes the independently replayed result; no stale frame may survive.
-        other_operand.before[start + 2..start + 6].copy_from_slice(&2_i32.to_le_bytes());
+        let mut altered_before = other_operand.before.to_vec();
+        altered_before[start + 2..start + 6].copy_from_slice(&2_i32.to_le_bytes());
+        other_operand.before = altered_before.into();
         assert_eq!(
             prove(&other_operand, "Score", &updates(&ordinary_counter)),
             Err(EditError::Preservation)
@@ -198,7 +200,7 @@ fn direct_proof_refuses_generated_dormant_opaque_and_equal_assignment_contexts()
             // A fabricated unchanged observation is not an expected image for
             // a refused request. The proof must qualify BEFORE independently.
             let observed = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.before.clone(),
                 changed_rows: 0,
             };
@@ -216,7 +218,7 @@ fn direct_proof_refuses_generated_dormant_opaque_and_equal_assignment_contexts()
         }
         let case = model::source(header, Recipe::CounterPrimary);
         let observed = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };

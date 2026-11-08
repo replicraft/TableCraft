@@ -36,7 +36,7 @@ fn requests() -> Vec<RowInsert> {
 fn literal_escaped_images_pass_independent_proof_and_then_match_complete_plans() {
     for case in cases() {
         let literal = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -75,7 +75,7 @@ fn readable_unescaped_alias_cannot_satisfy_the_original_feff_insert_request() {
             vec![Value::Int32(24), Value::Text("new".into()), Value::Null]
         );
         let forged = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.alias,
             changed_rows: 1,
         };

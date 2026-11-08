@@ -72,9 +72,9 @@ pub use preservation::{
     FixedUpdateImageLimits, MacroCoverageChild, MacroProgramCoverage, MacroProgramDiagnostic,
     MacroProgramNode, MacroProgramNodeKind, MacroProgramProfile, MacroProgramText,
     MacroProgramTextKind, MacroPropertyInventory, MacroPropertyObservation, NativeImage,
-    ObjectDependency, ObjectPayloadData, ObjectPayloads, OpaquePayload, PayloadPresence,
-    TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty, TableMacroCoverage,
-    TableMacroInventory, XmlByteSpan,
+    NativeImageSource, ObjectDependency, ObjectPayloadData, ObjectPayloads, OpaquePayload,
+    PayloadPresence, TableExtra, TableExtraCoverage, TableExtraGroup, TableExtraProperty,
+    TableMacroCoverage, TableMacroInventory, XmlByteSpan,
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{

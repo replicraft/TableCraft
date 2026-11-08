@@ -30,7 +30,7 @@ fn explicit_azl_literal_proofs_preserve_property_payloads_rows_and_noop_origins(
             .map(RowInsert::new)
             .collect::<Vec<_>>();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after_bytes().to_vec(),
             changed_rows: case.changed_rows(),
         };
@@ -49,7 +49,7 @@ fn explicit_azl_literal_proofs_preserve_property_payloads_rows_and_noop_origins(
             case.data as usize * 4096 + 4095,
         ] {
             let mut forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after_bytes().to_vec(),
                 changed_rows: case.changed_rows(),
             };

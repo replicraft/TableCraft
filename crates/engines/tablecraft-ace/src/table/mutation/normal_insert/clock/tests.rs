@@ -48,7 +48,7 @@ fn literal_clock_and_no_read_outcomes_prove_and_causal_forgeries_refuse_without_
             .needs_clock()
             .then(|| ClockReading::new(case.clock_input()).unwrap());
         let plan = NativeEditPlan {
-            before: case.before.to_vec(),
+            before: case.before.to_vec().into(),
             after: case.after.to_vec(),
             changed_rows: rows.len(),
         };
@@ -67,7 +67,7 @@ fn literal_clock_and_no_read_outcomes_prove_and_causal_forgeries_refuse_without_
             let mut forged = case.after.to_vec();
             forged[at] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.to_vec(),
+                before: case.before.to_vec().into(),
                 after: forged,
                 changed_rows: rows.len(),
             };
@@ -86,7 +86,7 @@ fn literal_clock_and_no_read_outcomes_prove_and_causal_forgeries_refuse_without_
             refused += 1;
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.to_vec(),
+            before: case.before.to_vec().into(),
             after: case.after.to_vec(),
             changed_rows: rows.len() + 1,
         };
@@ -143,7 +143,7 @@ fn literal_clock_and_no_read_outcomes_prove_and_causal_forgeries_refuse_without_
                 let mut forged = case.after.to_vec();
                 forged[at] ^= 1;
                 let forged = NativeEditPlan {
-                    before: case.before.to_vec(),
+                    before: case.before.to_vec().into(),
                     after: forged,
                     changed_rows: rows.len(),
                 };

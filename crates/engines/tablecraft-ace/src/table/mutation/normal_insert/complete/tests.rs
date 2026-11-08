@@ -154,7 +154,7 @@ fn two_page_complete_rows_match_literal_images_and_original_tcna4_wires() {
 fn fresh_direct_proof_rejects_extra_page_each_map_claim_visibility_and_protected_bytes() {
     for case in cases() {
         let literal = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 600,
         };
@@ -177,7 +177,7 @@ fn fresh_direct_proof_rejects_extra_page_each_map_claim_visibility_and_protected
                 let mut after = case.after.clone();
                 after[at] ^= 1 << (bit % 8);
                 let forged = NativeEditPlan {
-                    before: case.before.clone(),
+                    before: case.before.clone().into(),
                     after,
                     changed_rows: 600,
                 };
@@ -205,7 +205,7 @@ fn fresh_direct_proof_rejects_extra_page_each_map_claim_visibility_and_protected
             let mut after = case.after.clone();
             after[at] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 600,
             };
@@ -224,7 +224,7 @@ fn fresh_direct_proof_rejects_extra_page_each_map_claim_visibility_and_protected
         let mut after = case.after.clone();
         after.resize(after.len() + 4096, 0);
         let extra = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after,
             changed_rows: 600,
         };

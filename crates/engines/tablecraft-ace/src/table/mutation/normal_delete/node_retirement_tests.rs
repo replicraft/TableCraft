@@ -22,7 +22,7 @@ fn cases() -> Vec<Case> {
 
 fn plan(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.after.clone(),
         changed_rows: case.recipe.selected().len(),
     }
@@ -60,7 +60,7 @@ fn literal_node_retirement_proof_accepts_both_orders_and_exact_empty_after_sourc
             accepted += 1;
         }
         let empty = NativeEditPlan {
-            before: case.after.clone(),
+            before: case.after.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };
@@ -90,7 +90,9 @@ fn direct_proof_rejects_fence_row_map_retired_residual_history_and_data_changes(
         // An independently changed, still opaque original tail is part of the
         // actual source authority, not replaceable by an expected-image hash.
         let mut original = plan(&case);
-        original.before[case.left[0] * 4096 + 4095] ^= 1;
+        let mut altered_before = original.before.to_vec();
+        altered_before[case.left[0] * 4096 + 4095] ^= 1;
+        original.before = altered_before.into();
         assert_eq!(prove(&original, &requests), Err(EditError::Preservation));
         refused += 1;
     }

@@ -29,7 +29,7 @@ fn nullable_key_proof_accepts_twelve_literal_outcomes_without_planning() {
         for recipe in model::RECIPES {
             let case = model::source(header, recipe);
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.expected.clone(),
                 changed_rows: 1,
             };
@@ -65,7 +65,7 @@ fn nullable_key_proof_rejects_inactive_payload_and_index_complement_changes() {
             let mut after = case.expected.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -73,7 +73,7 @@ fn nullable_key_proof_rejects_inactive_payload_and_index_complement_changes() {
         }
 
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.expected.clone(),
             changed_rows: 0,
         };

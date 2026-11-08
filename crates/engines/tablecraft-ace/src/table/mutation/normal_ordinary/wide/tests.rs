@@ -65,7 +65,7 @@ fn prove(case: &Case, plan: &NativeEditPlan, reverse: bool) -> Result<(), EditEr
 
 fn literal(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.after.clone(),
         changed_rows: case.changed,
     }
@@ -86,7 +86,7 @@ fn literal_wider_indexed_plans_pass_fresh_manual_proof_in_both_original_orders()
             });
         }
         let empty = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };
@@ -126,7 +126,9 @@ fn manual_wider_proof_rejects_history_row_mask_map_padding_and_original_tail_cha
         // The original inactive byte is still readable and protected; an old
         // literal AFTER must not silently restore the earlier original tail.
         let mut before = literal(case);
-        before.before[case.layout.roots[1] as usize * 4096 + 4095] ^= 1;
+        let mut altered_before = before.before.to_vec();
+        altered_before[case.layout.roots[1] as usize * 4096 + 4095] ^= 1;
+        before.before = altered_before.into();
         assert_eq!(prove(case, &before, false), Err(EditError::Preservation));
     }
 }

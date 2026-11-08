@@ -22,7 +22,6 @@ use crate::editing::platform::table_creation::TableCreationProfile;
 use crate::{CreationOutcome, CreationReport};
 #[cfg(feature = "offline-edit")]
 use crate::{InsertRetryWitness, editing::journal_path};
-use bytes::Bytes;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
@@ -192,7 +191,9 @@ impl Document {
                 return Err(Error::SourceChanged);
             }
         }
-        let bytes = Bytes::from(bytes);
+        let image_source =
+            tablecraft_ace::NativeImageSource::from_vec(bytes, &mut work, cancelled)?;
+        let bytes = image_source.shared_bytes();
         #[cfg(all(
             feature = "offline-edit",
             any(target_os = "macos", target_os = "linux", windows)
@@ -200,7 +201,7 @@ impl Document {
         let edits = {
             work.charge_allocation(source_path.as_os_str().len() as u64, 1)?;
             work.charge_allocation(1, size_of::<AtomicBool>() as u64)?;
-            DocumentEdits::new(source_path.clone(), bytes.clone())
+            DocumentEdits::new(source_path.clone(), bytes.clone(), image_source)
         };
         #[cfg(all(
             feature = "offline-edit",

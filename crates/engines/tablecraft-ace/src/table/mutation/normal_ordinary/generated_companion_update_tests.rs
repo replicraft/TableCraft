@@ -40,7 +40,7 @@ fn literal_score_proof_preserves_generated_counter_defaults_deleted_rows_and_ind
                 .collect();
             let groups = [FixedColumnUpdates::new(case.table, "Score", &updates)];
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: case.changed(),
             };
@@ -60,7 +60,7 @@ fn literal_score_proof_preserves_generated_counter_defaults_deleted_rows_and_ind
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed(),
             };
@@ -73,7 +73,7 @@ fn literal_score_proof_preserves_generated_counter_defaults_deleted_rows_and_ind
             byte_refusals += 1;
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed() + 1,
         };
@@ -100,7 +100,7 @@ fn literal_score_proof_preserves_generated_counter_defaults_deleted_rows_and_ind
             )];
             let groups = [FixedColumnUpdates::new(case.table, "Score", &stale)];
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: case.changed(),
             };
@@ -115,7 +115,7 @@ fn literal_score_proof_preserves_generated_counter_defaults_deleted_rows_and_ind
         if case.recipe == Recipe::Changed {
             let groups = [FixedColumnUpdates::new(case.table, "Id", &[])];
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.before.clone(),
                 changed_rows: 0,
             };

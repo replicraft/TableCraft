@@ -8,7 +8,7 @@ use std::{
         atomic::{AtomicBool, Ordering},
     },
 };
-use tablecraft_ace::RecoverableNativeEditPlan;
+use tablecraft_ace::{NativeImageSource, RecoverableNativeEditPlan};
 use tablecraft_core::values::Value;
 
 pub(in crate::editing) struct ReviewedState {
@@ -21,6 +21,7 @@ pub(in crate::editing) struct ReviewedState {
 }
 
 pub(crate) struct DocumentEdits {
+    pub(in crate::editing) image_source: NativeImageSource,
     pub(in crate::editing) path: PathBuf,
     pub(in crate::editing) original: Bytes,
     pub(in crate::editing) valid: Arc<AtomicBool>,
@@ -29,8 +30,9 @@ pub(crate) struct DocumentEdits {
 }
 
 impl DocumentEdits {
-    pub(crate) fn new(path: PathBuf, original: Bytes) -> Self {
+    pub(crate) fn new(path: PathBuf, original: Bytes, image_source: NativeImageSource) -> Self {
         Self {
+            image_source,
             path,
             original,
             valid: Arc::new(AtomicBool::new(true)),

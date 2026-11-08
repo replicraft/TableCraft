@@ -10,7 +10,7 @@ use crate::{
 };
 use bytes::Bytes;
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{FirstTableDefinition, NativeImage};
+use tablecraft_ace::{FirstTableDefinition, NativeImage, NativeImageSource};
 use tablecraft_builders::table::TableDraftSnapshot;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -59,7 +59,12 @@ impl Document {
         let mut work = budget();
         check(cancelled)?;
         let definition = declaration::capture(snapshot, &mut work, cancelled)?;
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let (expected, columns, definition) = match profile {
             TableCreationProfile::First => {
                 let plan = image.plan_first_table(definition, &mut work, cancelled)?;
@@ -80,9 +85,10 @@ impl Document {
         work.charge_allocation(1, size_of::<CreatedTableReopen>() as u64)?;
         work.charge_allocation(1, size_of::<State>() as u64)?;
         check(cancelled)?;
+        let expected = NativeImageSource::from_vec(expected, &mut work, cancelled)?.shared_bytes();
         let reopen = Arc::new(CreatedTableReopen {
             path: self.edits.path.clone(),
-            expected: Bytes::from(expected),
+            expected,
             table,
             columns,
             document_revision,

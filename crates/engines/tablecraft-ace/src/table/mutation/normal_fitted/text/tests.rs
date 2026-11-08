@@ -41,7 +41,7 @@ fn literal_text_proof_derives_raw_general_keys_and_rejects_protected_forgeries()
             updates: &updates,
         }];
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed_rows(),
         };
@@ -65,7 +65,7 @@ fn literal_text_proof_derives_raw_general_keys_and_rejects_protected_forgeries()
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed_rows(),
             };
@@ -78,7 +78,7 @@ fn literal_text_proof_derives_raw_general_keys_and_rejects_protected_forgeries()
             rejected += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

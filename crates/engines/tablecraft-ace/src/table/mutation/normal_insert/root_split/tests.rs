@@ -85,7 +85,7 @@ fn literal_direct_proof_rejects_wrong_children_maps_history_tails_records_and_ge
     let cases = cases();
     for case in cases {
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -112,7 +112,7 @@ fn literal_direct_proof_rejects_wrong_children_maps_history_tails_records_and_ge
             let mut after = case.after.clone();
             after[at] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -136,7 +136,7 @@ fn literal_direct_proof_rejects_wrong_children_maps_history_tails_records_and_ge
             let mut after = case.after.clone();
             after.resize(length, 0);
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: count,
             };

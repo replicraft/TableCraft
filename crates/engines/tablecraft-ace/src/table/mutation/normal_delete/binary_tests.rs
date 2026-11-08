@@ -16,7 +16,7 @@ fn budget() -> ResourceBudget {
 
 fn plan(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.after.clone(),
         changed_rows: case.recipe.selected().len(),
     }
@@ -78,7 +78,7 @@ fn literal_binary_delete_proof_accepts_all_sources_reverse_orders_and_empty_tabl
             accepted += 1;
         }
         let empty = NativeEditPlan {
-            before: case.after.clone(),
+            before: case.after.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };
@@ -110,7 +110,9 @@ fn binary_delete_direct_proof_rejects_masked_data_row_history_map_and_inactive_t
         // This original differs only in a valid opaque INDEX tail byte. A proof
         // must preserve that actual BEFORE, rather than a fixture hash/template.
         let mut origin = plan(&case);
-        origin.before[case.roots[2] as usize * 4096 + 4095] ^= 1;
+        let mut altered_before = origin.before.to_vec();
+        altered_before[case.roots[2] as usize * 4096 + 4095] ^= 1;
+        origin.before = altered_before.into();
         assert_eq!(prove(&origin, &rows), Err(EditError::Preservation));
         refused += 1;
     }

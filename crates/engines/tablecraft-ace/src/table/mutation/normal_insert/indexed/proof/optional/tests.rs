@@ -35,7 +35,7 @@ fn four_literal_optional_directional_images_prove_without_insertion_stage_author
     for case in cases() {
         for (count, after) in [(1, &case.single), (2, &case.batch)] {
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: after.clone(),
                 changed_rows: count,
             };
@@ -78,7 +78,7 @@ fn direct_optional_proof_rejects_direction_null_history_rows_and_original_carrie
                     changed[offset] ^= 1;
                 }
                 let forged = NativeEditPlan {
-                    before: case.before.clone(),
+                    before: case.before.clone().into(),
                     after: changed,
                     changed_rows: count,
                 };
@@ -100,7 +100,7 @@ fn direct_optional_proof_rejects_direction_null_history_rows_and_original_carrie
                 (after[..after.len() - 1].to_vec(), count),
             ] {
                 let forged = NativeEditPlan {
-                    before: case.before.clone(),
+                    before: case.before.clone().into(),
                     after: changed,
                     changed_rows,
                 };
@@ -123,7 +123,7 @@ fn direct_optional_proof_rejects_direction_null_history_rows_and_original_carrie
             original[0][2] = Value::Int32(0);
             let changed_request = original.into_iter().map(RowInsert::new).collect::<Vec<_>>();
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: after.clone(),
                 changed_rows: count,
             };

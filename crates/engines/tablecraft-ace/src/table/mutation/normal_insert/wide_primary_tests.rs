@@ -143,7 +143,7 @@ fn literal_wide_primary_images_use_exact_carriers_and_reject_wrong_key_or_histor
         ];
         let requests = vec![RowInsert::new(original.clone())];
         let plan = NativeEditPlan {
-            before: before.clone(),
+            before: before.clone().into(),
             after: after.clone(),
             changed_rows: 1,
         };
@@ -158,7 +158,7 @@ fn literal_wide_primary_images_use_exact_carriers_and_reject_wrong_key_or_histor
             let mut forged = after.clone();
             forged[at] ^= 1;
             let plan = NativeEditPlan {
-                before: before.clone(),
+                before: before.clone().into(),
                 after: forged,
                 changed_rows: 1,
             };
@@ -167,7 +167,7 @@ fn literal_wide_primary_images_use_exact_carriers_and_reject_wrong_key_or_histor
             );
         }
         let count = NativeEditPlan {
-            before: before.clone(),
+            before: before.clone().into(),
             after: after.clone(),
             changed_rows: 0,
         };

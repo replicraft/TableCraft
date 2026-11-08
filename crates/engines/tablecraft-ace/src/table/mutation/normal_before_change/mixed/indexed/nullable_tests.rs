@@ -92,7 +92,7 @@ fn previous_unindexed_proof_accepts_nullable_index_literal_images() {
         let case = model::source(header);
         let requests = [Int32Update::new(0, 1000, 17)];
         let plan = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.expected,
             changed_rows: 1,
         };
@@ -154,7 +154,7 @@ fn qualified_present_id_keeps_legacy_proof_and_actual_null_target_boundaries() {
         // The original private unindexed proof retains its original refusal;
         // only the separately qualified general route gained present Id writes.
         let observed = NativeEditPlan {
-            before: companion.before.clone(),
+            before: companion.before.clone().into(),
             after: companion.expected.clone(),
             changed_rows: 1,
         };
@@ -185,7 +185,7 @@ fn qualified_present_id_keeps_legacy_proof_and_actual_null_target_boundaries() {
         // Calling the indexed-only auditor directly for that route stays wrong.
         let old = model::source(header);
         let unindexed = NativeEditPlan {
-            before: old.before,
+            before: old.before.into(),
             after: old.expected,
             changed_rows: 1,
         };

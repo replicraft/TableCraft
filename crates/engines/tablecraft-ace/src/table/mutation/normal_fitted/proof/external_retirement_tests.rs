@@ -69,7 +69,7 @@ fn external_retirement_fresh_proof_reconstructs_source_relative_maps_parents_and
             })
             .collect::<Vec<_>>();
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed,
         };
@@ -109,7 +109,7 @@ fn external_retirement_fresh_proof_reconstructs_source_relative_maps_parents_and
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed,
             };
@@ -127,7 +127,7 @@ fn external_retirement_fresh_proof_reconstructs_source_relative_maps_parents_and
             refused += 1;
         }
         let forged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed + 1,
         };

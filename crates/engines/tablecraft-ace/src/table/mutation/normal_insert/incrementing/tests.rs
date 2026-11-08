@@ -36,7 +36,7 @@ fn literal_increment_images_and_empty_requests_prove_from_original_presence() {
             let before = sources.bytes(header, recipe.before());
             let after = sources.bytes(header, recipe.after());
             let plan = NativeEditPlan {
-                before: before.to_vec(),
+                before: before.to_vec().into(),
                 after: after.to_vec(),
                 changed_rows: 1,
             };
@@ -51,7 +51,7 @@ fn literal_increment_images_and_empty_requests_prove_from_original_presence() {
             .unwrap();
             accepted += 1;
             let empty = NativeEditPlan {
-                before: before.to_vec(),
+                before: before.to_vec().into(),
                 after: before.to_vec(),
                 changed_rows: 0,
             };
@@ -80,7 +80,7 @@ fn literal_increment_images_and_empty_requests_prove_from_original_presence() {
                 3 * 4096 + 4080,
             ] {
                 let mut forged = NativeEditPlan {
-                    before: before.to_vec(),
+                    before: before.to_vec().into(),
                     after: after.to_vec(),
                     changed_rows: 1,
                 };
@@ -99,7 +99,7 @@ fn literal_increment_images_and_empty_requests_prove_from_original_presence() {
                 denied += 1;
             }
             let count = NativeEditPlan {
-                before: before.to_vec(),
+                before: before.to_vec().into(),
                 after: after.to_vec(),
                 changed_rows: 0,
             };

@@ -43,7 +43,7 @@ fn groups(case: &Case) -> Vec<NativeFixedIntentGroup> {
 
 fn literal_plan(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case
             .expected
             .as_ref()

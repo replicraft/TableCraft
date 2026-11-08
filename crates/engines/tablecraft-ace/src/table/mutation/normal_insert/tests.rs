@@ -75,7 +75,7 @@ fn original_payload_metadata_null_and_count_forgeries_fail_fresh_proof() {
             let mut forged = case.after.clone();
             forged[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: forged,
                 changed_rows: 1,
             };
@@ -92,7 +92,7 @@ fn original_payload_metadata_null_and_count_forgeries_fail_fresh_proof() {
             );
         }
         let wrong_count = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.after,
             changed_rows: 0,
         };

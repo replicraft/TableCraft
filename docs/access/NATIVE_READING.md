@@ -41,6 +41,34 @@ snapshot acquisition remain unimplemented. Host Read/Seek callbacks own I/O time
 with signed native IDs and exact nullable fields. It does not reconstruct or run
 SQL, follow remote-database metadata or imply query/index integrity.
 
+## Shared immutable native image ownership
+
+`NativeImageSource::from_vec` consumes a caller-owned complete `Vec<u8>` into a
+`bytes::Bytes` allocation without copying the payload. It records the original
+retained capacity, including unused capacity, and charges shared control storage
+before constructing it. The caller still owns the earlier vector allocation and
+read accounting. Clones and read cursors share that original allocation.
+
+There is no constructor accepting arbitrary `Bytes` or a borrowed slice: either
+could conceal a larger retained allocation behind a small view. `shared_bytes`
+can produce a read cursor owner, but a derived/sliced `Bytes` cannot be admitted
+back as the original whole-image witness.
+
+`NativeImage::capture_shared` performs the same header/catalog inspection,
+cancellation and standard capture policy as ordinary capture, charging the whole
+retained capacity and control allowance before traversal. The separate
+`capture_shared_for_fixed_updates` retains its existing explicit purpose limit;
+sharing does not convert that image into general write admission. Native BEFORE
+images can share the original payload; mutable AFTER candidates remain separate
+vectors. This reduces copies, not validation or accounting.
+
+These owners establish neither source stability nor write/recovery authority.
+Files still need the documented stable/offline conditions. Save and recovery
+retain fresh filesystem capture, complete source comparison, exact native
+operation reconstruction and full-image proof; an immutable cached image never
+replaces those checks. No broader file/profile qualification follows from
+sharing bytes.
+
 ## Format facts and reader policy
 
 Native detection uses content, not filename extensions. Supported native table

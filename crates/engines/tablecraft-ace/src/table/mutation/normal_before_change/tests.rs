@@ -27,7 +27,7 @@ fn independent_proof_rejects_payload_sibling_mask_slot_metadata_and_count_forger
     for header in [5, 6] {
         let case = source(header, Recipe::Sequential);
         let correct = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.expected.as_ref().unwrap().clone(),
             changed_rows: case.changed_rows,
         };
@@ -60,7 +60,7 @@ fn independent_proof_rejects_payload_sibling_mask_slot_metadata_and_count_forger
             200,              // Unrelated retained header bytes.
         ] {
             let mut forged = NativeEditPlan {
-                before: correct.before_bytes().to_vec(),
+                before: correct.before_bytes().to_vec().into(),
                 after: correct.after_bytes().to_vec(),
                 changed_rows: correct.changed_rows(),
             };
@@ -68,7 +68,7 @@ fn independent_proof_rejects_payload_sibling_mask_slot_metadata_and_count_forger
             assert_eq!(prove(&forged, &requests), Err(EditError::Preservation));
         }
         let wrong_count = NativeEditPlan {
-            before: correct.before_bytes().to_vec(),
+            before: correct.before_bytes().to_vec().into(),
             after: correct.after_bytes().to_vec(),
             changed_rows: 0,
         };
@@ -89,7 +89,7 @@ fn restore_original_keeps_distinct_valid_intents_without_inventing_historical_au
     for header in [5, 6] {
         let case = source(header, Recipe::RestoreOriginal);
         let observation = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.expected.as_ref().unwrap().clone(),
             changed_rows: 0,
         };

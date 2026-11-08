@@ -145,7 +145,7 @@ fn independent_ordinary_proof_binds_last_counter_and_inactive_index_tail() {
             &requests,
         )];
         let mut observation = NativeEditPlan {
-            before: source.bytes.clone(),
+            before: source.bytes.clone().into(),
             after: literal_after(&source),
             changed_rows: 1,
         };

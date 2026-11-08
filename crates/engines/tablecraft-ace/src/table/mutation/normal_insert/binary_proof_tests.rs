@@ -31,7 +31,7 @@ fn requests(case: &sources::Case) -> Vec<RowInsert> {
 
 fn plan(case: &sources::Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.after.clone(),
         changed_rows: sources::insert_values(case.recipe).len(),
     }

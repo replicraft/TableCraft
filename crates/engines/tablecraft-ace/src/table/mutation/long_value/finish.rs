@@ -149,7 +149,7 @@ pub(super) fn finish(
 
     Ok(Ace16WritePreview::from_candidate(
         image.bytes,
-        after.bytes,
+        bytes,
         staged.changes.len(),
     ))
 }

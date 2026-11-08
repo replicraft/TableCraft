@@ -54,13 +54,13 @@ fn literal_carrier_plans_and_unchanged_compressed_cells_prove_without_any_planne
     let mut proven = 0;
     for case in cases() {
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
         prove(&plan, &case, &updates(&case)).unwrap();
         let unchanged = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.before.clone(),
             changed_rows: 0,
         };
@@ -96,7 +96,7 @@ fn carrier_proof_rejects_mask_modes_footer_inactive_tail_history_keys_and_counts
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -104,7 +104,7 @@ fn carrier_proof_rejects_mask_modes_footer_inactive_tail_history_keys_and_counts
             refused += 1;
         }
         let count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

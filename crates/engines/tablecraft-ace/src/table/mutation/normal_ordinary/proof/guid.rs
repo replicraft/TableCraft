@@ -28,7 +28,7 @@ fn guid_native_permutation_and_inactive_null_payload_have_independent_full_image
         let updates = [FixedScalarUpdate::new(row, before, after)];
         let groups = [FixedColumnUpdates::new("Items", "GuidValue", &updates)];
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -46,7 +46,7 @@ fn guid_native_permutation_and_inactive_null_payload_have_independent_full_image
             let mut after = case.after.clone();
             after[offset] ^= mask;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -64,7 +64,7 @@ fn guid_native_permutation_and_inactive_null_payload_have_independent_full_image
             counts[1] += 1;
         }
         let count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 2,
         };

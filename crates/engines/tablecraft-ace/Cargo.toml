@@ -19,6 +19,7 @@ workspace = true
 
 [dependencies]
 arrayvec.workspace = true
+bytes.workspace = true
 getrandom.workspace = true
 quick-xml.workspace = true
 base64.workspace = true
@@ -52,6 +53,10 @@ clap.workspace = true
 csv.workspace = true
 proptest.workspace = true
 smallvec.workspace = true
+
+[[bench]]
+name = "image_capture"
+harness = false
 
 [[bench]]
 name = "index_columns"

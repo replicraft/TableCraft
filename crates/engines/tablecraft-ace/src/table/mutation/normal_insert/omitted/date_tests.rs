@@ -42,7 +42,7 @@ fn literal_date_after_images_pass_independent_proof_and_bit_mask_count_request_f
                 let before = sources.bytes(header, case, "before");
                 let after = sources.bytes(header, case, phase);
                 let plan = NativeEditPlan {
-                    before: before.clone(),
+                    before: before.clone().into(),
                     after: after.clone(),
                     changed_rows: 1,
                 };
@@ -68,7 +68,7 @@ fn literal_date_after_images_pass_independent_proof_and_bit_mask_count_request_f
                         1
                     };
                     let plan = NativeEditPlan {
-                        before: before.clone(),
+                        before: before.clone().into(),
                         after: forged,
                         changed_rows: 1,
                     };
@@ -86,7 +86,7 @@ fn literal_date_after_images_pass_independent_proof_and_bit_mask_count_request_f
                     denials += 1;
                 }
                 let wrong_count = NativeEditPlan {
-                    before: before.clone(),
+                    before: before.clone().into(),
                     after: after.clone(),
                     changed_rows: 0,
                 };

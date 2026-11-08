@@ -16,7 +16,7 @@ fn budget() -> ResourceBudget {
 
 fn plan(source: &sources::Source) -> NativeEditPlan {
     NativeEditPlan {
-        before: source.before.clone(),
+        before: source.before.clone().into(),
         after: source.after.clone(),
         changed_rows: 1,
     }
@@ -113,7 +113,9 @@ fn complete_scalar_proof_refuses_wrong_counts_requests_and_valid_changed_before_
             } else {
                 8 * 4096 + 4035
             };
-            literal.before[offset] ^= 1;
+            let mut altered_before = literal.before.to_vec();
+            altered_before[offset] ^= 1;
+            literal.before = altered_before.into();
             assert!(matches!(
                 check(&literal, &source.values),
                 Err(EditError::Preservation)

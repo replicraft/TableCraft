@@ -32,7 +32,7 @@ fn literal_id_primary_replay_rejects_other_bytes_wrong_counts_and_stale_requests
             .collect();
         let groups = [FixedColumnUpdates::new("BinaryKeys", "Id", &updates)];
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed(),
         };
@@ -46,7 +46,7 @@ fn literal_id_primary_replay_rejects_other_bytes_wrong_counts_and_stale_requests
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed(),
             };
@@ -64,7 +64,7 @@ fn literal_id_primary_replay_rejects_other_bytes_wrong_counts_and_stale_requests
             byte_refusals += 1;
         }
         let wrong = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed() + 1,
         };

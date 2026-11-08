@@ -42,7 +42,7 @@ fn ieee_literal_pairs_and_protected_bit_forgeries_have_independent_proof() {
             .collect();
         let scope = CatalogScope::new(291);
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -52,7 +52,7 @@ fn ieee_literal_pairs_and_protected_bit_forgeries_have_independent_proof() {
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let forged = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -63,7 +63,7 @@ fn ieee_literal_pairs_and_protected_bit_forgeries_have_independent_proof() {
             counts[1] += 1;
         }
         let count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 2,
         };

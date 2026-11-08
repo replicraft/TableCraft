@@ -1,6 +1,7 @@
 use super::super::indexes::{IndexKeyUpdate, MutationKey, index_patches};
 use super::{EditError, WriteBlocker, field, gates, physical, rows};
 use crate::{FileFormat, InspectError, NativeImage, format::reader::Reader, header::check};
+use bytes::Bytes;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
 
@@ -50,7 +51,7 @@ impl Int32Update {
 /// Planning never writes to a source. Persistence requires a qualified journal
 /// and exclusive offline access; `after_bytes` alone supplies no durability.
 pub struct NativeEditPlan {
-    pub(super) before: Vec<u8>,
+    pub(super) before: Bytes,
     pub(super) after: Vec<u8>,
     pub(super) changed_rows: usize,
 }

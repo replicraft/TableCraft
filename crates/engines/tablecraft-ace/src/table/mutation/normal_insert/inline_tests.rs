@@ -23,7 +23,7 @@ fn all_literal_inline_images_prove_without_a_writer_and_reject_causal_forgeries(
     for case in cases {
         let requests = vec![RowInsert::new(sources::values(case.recipe))];
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 1,
         };
@@ -54,7 +54,7 @@ fn all_literal_inline_images_prove_without_a_writer_and_reject_causal_forgeries(
             let mut after = case.after.clone();
             after[at] ^= 1;
             let bad = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: 1,
             };
@@ -71,7 +71,7 @@ fn all_literal_inline_images_prove_without_a_writer_and_reject_causal_forgeries(
             );
         }
         let count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: 0,
         };

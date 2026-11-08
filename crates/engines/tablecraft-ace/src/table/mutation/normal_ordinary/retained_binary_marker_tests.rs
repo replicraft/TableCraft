@@ -44,7 +44,7 @@ fn literal_marker_plans_replay_complete_images_and_refuse_protected_bytes_counts
                 .collect();
             let groups = [FixedColumnUpdates::new("BinaryKeys", "Marker", &updates)];
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: case.changed(),
             };
@@ -69,7 +69,7 @@ fn literal_marker_plans_replay_complete_images_and_refuse_protected_bytes_counts
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.changed(),
             };
@@ -87,7 +87,7 @@ fn literal_marker_plans_replay_complete_images_and_refuse_protected_bytes_counts
             forgeries += 1;
         }
         let wrong_count = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.changed() + 1,
         };

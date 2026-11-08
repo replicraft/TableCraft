@@ -37,7 +37,12 @@ impl Document {
             return Err(EditError::ReadOnlySource.into());
         }
         let mut work = budget();
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let editor = NativeJournalEditor::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         if editor.update_profile() == UpdateProfile::Unavailable {
@@ -95,7 +100,12 @@ impl Document {
             return Err(EditError::StaleDraft.into());
         }
         let mut work = budget();
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let editor = NativeJournalEditor::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
 

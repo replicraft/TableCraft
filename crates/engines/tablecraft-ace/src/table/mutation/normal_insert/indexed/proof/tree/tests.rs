@@ -29,7 +29,7 @@ fn independent_node_proof_accepts_literal_growth_and_original_empty_images() {
     for case in cases() {
         for empty in [false, true] {
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: if empty {
                     case.before.clone()
                 } else {
@@ -68,7 +68,7 @@ fn independent_node_proof_rejects_fence_row_partition_history_and_inactive_compl
             let mut changed = case.after.clone();
             changed[offset] ^= 1;
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: changed,
                 changed_rows: 1,
             };
@@ -86,7 +86,7 @@ fn independent_node_proof_rejects_fence_row_partition_history_and_inactive_compl
             refused += 1;
         }
         let plan = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.after,
             changed_rows: 0,
         };

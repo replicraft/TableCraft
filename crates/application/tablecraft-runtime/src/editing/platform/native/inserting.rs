@@ -52,7 +52,12 @@ impl Document {
         let mut work = budget();
         let features =
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         let columns = inserter.columns();
@@ -100,7 +105,12 @@ impl Document {
         let mut work = budget();
         let features =
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
-        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let image = NativeImage::capture_shared(
+            self.edits.image_source.clone(),
+            SCOPE,
+            &mut work,
+            cancelled,
+        )?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         validate_feature_columns(&features, inserter.columns(), &mut output)?;

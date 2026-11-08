@@ -59,7 +59,7 @@ fn literal_wider_root_promotions_prove_without_stage_or_prepared_index_facts() {
             .map(crate::RowInsert::new)
             .collect();
         let plan = NativeEditPlan {
-            before: case.before,
+            before: case.before.into(),
             after: case.after,
             changed_rows: case.inserted,
         };
@@ -84,7 +84,7 @@ fn manual_wider_proof_rejects_children_row_partition_history_masks_and_opaque_re
             let mut after = case.after.clone();
             after[offset] ^= 1;
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after,
                 changed_rows: case.inserted,
             };
@@ -101,7 +101,7 @@ fn manual_wider_proof_rejects_children_row_partition_history_masks_and_opaque_re
         }
         for count in [0, case.inserted + 1] {
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: count,
             };
@@ -115,7 +115,7 @@ fn manual_wider_proof_rejects_children_row_partition_history_masks_and_opaque_re
         let mut wrong = case.insert_values();
         wrong[0][2] = tablecraft_core::values::Value::Int32(6818);
         let plan = NativeEditPlan {
-            before: case.before.clone(),
+            before: case.before.clone().into(),
             after: case.after.clone(),
             changed_rows: case.inserted,
         };

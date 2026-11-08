@@ -102,7 +102,7 @@ fn exercise(before: &[u8], table: &str, definition: usize, data: usize) {
     let mut forged = after;
     forged[data * 4096 + 4095] ^= 1;
     let forged = NativeEditPlan {
-        before: before.to_vec(),
+        before: before.to_vec().into(),
         after: forged,
         changed_rows: 1,
     };

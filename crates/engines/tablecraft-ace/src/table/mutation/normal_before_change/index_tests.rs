@@ -41,7 +41,7 @@ fn prove(plan: &NativeEditPlan, updates: &[Int32Update]) -> Result<(), EditError
 
 fn observation(case: &Case) -> NativeEditPlan {
     NativeEditPlan {
-        before: case.before.clone(),
+        before: case.before.clone().into(),
         after: case.expected.as_ref().unwrap().clone(),
         changed_rows: case.changed_rows,
     }
@@ -138,7 +138,7 @@ fn independent_final_constraints_include_unique_and_primary_logical_aliases() {
         assert!(unique.expected.is_none());
         checked_source(&unique.before);
         let forged = NativeEditPlan {
-            before: unique.before.clone(),
+            before: unique.before.clone().into(),
             after: duplicate_image(&unique.before),
             changed_rows: 1,
         };
@@ -167,7 +167,7 @@ fn independent_final_constraints_include_unique_and_primary_logical_aliases() {
         );
         let forged = NativeEditPlan {
             after: duplicate_image(&before),
-            before,
+            before: before.into(),
             changed_rows: 1,
         };
         assert_eq!(

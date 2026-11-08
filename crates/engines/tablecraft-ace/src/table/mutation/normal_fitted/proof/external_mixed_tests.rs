@@ -55,7 +55,7 @@ fn external_mixed_literal_proof_rejects_moved_descriptor_slack_payload_maps_and_
             let owned = from_original(fixture::request_groups(case, reverse));
             let groups = borrowed(&owned);
             let plan = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: fixture::changed_rows(case),
             };
@@ -73,7 +73,7 @@ fn external_mixed_literal_proof_rejects_moved_descriptor_slack_payload_maps_and_
                 let mut after = case.after.clone();
                 after[at] ^= 1;
                 let forged = NativeEditPlan {
-                    before: case.before.clone(),
+                    before: case.before.clone().into(),
                     after,
                     changed_rows: fixture::changed_rows(case),
                 };
@@ -91,7 +91,7 @@ fn external_mixed_literal_proof_rejects_moved_descriptor_slack_payload_maps_and_
                 refused += 1;
             }
             let wrong_count = NativeEditPlan {
-                before: case.before.clone(),
+                before: case.before.clone().into(),
                 after: case.after.clone(),
                 changed_rows: fixture::changed_rows(case) + 1,
             };
