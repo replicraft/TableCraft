@@ -235,7 +235,7 @@ impl Desktop {
         }
     }
 
-    pub(super) fn capture_workspace_restore(&mut self) -> Option<WorkspaceRestore> {
+    pub(super) fn capture_filter_restore_definitions(&mut self) -> Option<Vec<RestoreFilter>> {
         let mut definitions = Vec::new();
         let Some(count) = self
             .objects
@@ -273,6 +273,19 @@ impl Desktop {
             return None;
         }
         definitions.extend(self.objects.definitions.iter().cloned());
+        Some(definitions)
+    }
+
+    /// Retain inert definitions after a witnessed query-only replacement; every
+    /// old source-bound native handle is invalidated rather than rebound.
+    pub(super) fn retain_filter_restore_definitions(&mut self, definitions: Vec<RestoreFilter>) {
+        self.objects = Sessions::default();
+        self.objects.definitions = definitions;
+        self.filter = None;
+    }
+
+    pub(super) fn capture_workspace_restore(&mut self) -> Option<WorkspaceRestore> {
+        let definitions = self.capture_filter_restore_definitions()?;
         Some(WorkspaceRestore {
             layout: self.state.capture_workspace_layout(),
             definitions,

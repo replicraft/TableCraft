@@ -20,9 +20,11 @@ impl Desktop {
             }
             SavedQuerySqlCloseDecision::Cancel => self.cancel_table_draft_action(),
             SavedQuerySqlCloseDecision::Save => {
-                // Editing remains unavailable until the consuming save lifecycle
-                // and deferred document transitions are connected in this host.
-                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                if let Some(request) = result.request {
+                    self.save_query_definition_for_close(request);
+                } else {
+                    self.cancel_table_draft_action();
+                }
             }
         }
     }

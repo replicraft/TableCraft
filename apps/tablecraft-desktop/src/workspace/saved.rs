@@ -99,7 +99,11 @@ impl Desktop {
                     nullable: parameter.nullable,
                 })
                 .collect(),
-        ) {
+        ) && self.state.saved_query_sql().is_none()
+        {
+            // A same-revision retained SQL draft already has its source binding.
+            // In particular, witnessed own-save publication retains submitted
+            // spelling rather than replacing it with canonical inspection SQL.
             self.inspect_saved_query_sql(selected);
         }
     }

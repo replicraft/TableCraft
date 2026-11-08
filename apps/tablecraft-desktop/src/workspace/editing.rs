@@ -4,6 +4,7 @@ mod inserting;
 #[cfg(test)]
 mod pasting;
 mod query_action;
+mod query_definition;
 pub(super) mod recovery;
 pub(super) mod table_creation;
 pub(super) mod table_rename;
@@ -24,6 +25,7 @@ use tablecraft_ui::{
 
 pub(super) struct Editing {
     worker: SaveWorker,
+    query_definition: Option<query_definition::QueryDefinitionHost>,
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
@@ -51,6 +53,7 @@ enum SaveOwner {
     TableCreation,
     TableRename,
     QueryAction,
+    QueryDefinition,
 }
 
 struct ActiveSave {
@@ -67,6 +70,7 @@ impl Editing {
     pub(super) fn new(ctx: egui::Context) -> Self {
         Self {
             worker: SaveWorker::new(move || ctx.request_repaint()),
+            query_definition: None,
             review: None,
             insert_review: None,
             delete_review: None,
@@ -81,7 +85,7 @@ impl Editing {
     }
 
     pub(super) fn has_save(&self) -> bool {
-        self.save.is_some() || self.worker.is_busy()
+        self.save.is_some() || self.worker.is_busy() || self.query_definition.is_some()
     }
 
     pub(super) fn clear_refresh(&mut self) {
@@ -254,6 +258,10 @@ impl Desktop {
         if let Some(retry) = &mut save.insert_retry {
             retry.evidence.observe(report);
         }
+        if matches!(save.owner, SaveOwner::QueryDefinition) {
+            self.query_definition_save_report(report);
+            return;
+        }
         if matches!(save.owner, SaveOwner::TableRename) {
             self.table_rename_save_report(report);
             return;
@@ -282,10 +290,14 @@ impl Desktop {
             }
             SaveOwner::TableCreation => {}
             SaveOwner::TableRename => {}
+            SaveOwner::QueryDefinition => {}
         }
     }
 
     pub(super) fn cancel_current_save(&mut self) {
+        if self.cancel_query_definition_operation() {
+            return;
+        }
         if let Some(save) = &self.editing.save {
             self.editing.worker.cancel(save.id);
         } else {
@@ -300,6 +312,11 @@ impl Desktop {
     }
 
     pub(super) fn resolve_save(&mut self, id: u64, recover: bool) {
+        if self.editing.query_definition.is_some()
+            && !self.can_resolve_query_definition_save(id, recover)
+        {
+            return;
+        }
         let Some(save) = &mut self.editing.save else {
             return;
         };
@@ -330,6 +347,9 @@ impl Desktop {
                     SaveOwner::TableRename => {
                         self.state.begin_table_rename_resolution(id, next);
                     }
+                    SaveOwner::QueryDefinition => {
+                        self.query_definition_resolution_started(next);
+                    }
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -338,6 +358,10 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if self.editing.query_definition.is_some() {
+            self.acknowledge_query_definition(id);
+            return;
+        }
         if self
             .editing
             .save
@@ -408,6 +432,7 @@ impl Desktop {
             }
             SaveOwner::TableCreation => {}
             SaveOwner::TableRename => {}
+            SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {
             self.select_file(save.path);

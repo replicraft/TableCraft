@@ -35,6 +35,12 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    QueryDefinitionReview {
+        request_id: u64,
+    },
+    QueryDefinitionReopen {
+        request_id: u64,
+    },
     TableRenameReview {
         request_id: u64,
     },
@@ -171,6 +177,7 @@ pub(super) struct Desktop {
     table_creation: Option<TableCreationHost>,
     table_rename: Option<TableRenameHost>,
     resume_after_table_creation: bool,
+    resume_after_query_definition: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
@@ -206,6 +213,7 @@ impl Desktop {
             table_creation: None,
             table_rename: None,
             resume_after_table_creation: false,
+            resume_after_query_definition: false,
             close_after_first_record: None,
             editing,
             recovery: None,
@@ -409,8 +417,10 @@ impl Desktop {
                 Ok(Response::QuerySqlDraft { draft }) => {
                     self.publish_saved_query_sql(generation, draft);
                 }
-                Ok(Response::QuerySqlReviewed { .. })
-                | Ok(Response::QueryExpressionReviewed { .. })
+                Ok(Response::QuerySqlReviewed { review, capability }) => {
+                    self.start_reviewed_query_definition(generation, review, capability);
+                }
+                Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::DatabaseOptionsReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
@@ -518,6 +528,15 @@ impl Desktop {
                             })
                             .collect(),
                     };
+                    if let PendingOperation::QueryDefinitionReopen { request_id } = self.pending {
+                        self.finish_query_definition_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
                     if let PendingOperation::RenamedTableReopen { request_id } = self.pending {
                         self.finish_table_rename_reopen(
                             request_id,
@@ -682,6 +701,13 @@ impl Desktop {
                             self.state.error = Some(error.to_string());
                         }
                     }
+                    PendingOperation::QueryDefinitionReview { request_id } => {
+                        let request_id = *request_id;
+                        self.query_definition_review_failed(request_id, error.to_string());
+                    }
+                    PendingOperation::QueryDefinitionReopen { .. } => {
+                        self.fail_query_definition_reopen(&error);
+                    }
                     PendingOperation::TableCreationReview { request_id } => {
                         let request_id = *request_id;
                         self.table_creation_review_failed(request_id, error.to_string());
@@ -810,7 +836,9 @@ impl eframe::App for Desktop {
             {
                 self.close_object(tab);
             }
-            if std::mem::take(&mut self.resume_after_table_creation) {
+            let table_transition = std::mem::take(&mut self.resume_after_table_creation);
+            let query_transition = std::mem::take(&mut self.resume_after_query_definition);
+            if table_transition || query_transition {
                 self.resume_table_draft_action(ctx);
             }
         }
@@ -964,11 +992,11 @@ impl eframe::App for Desktop {
                 Action::SavedQuerySqlClose { result } => {
                     self.finish_saved_query_sql_close(result, ui.ctx());
                 }
-                Action::ReviewSavedQuerySql { .. } => {
-                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                Action::ReviewSavedQuerySql { request } => {
+                    self.save_query_definition(request);
                 }
-                Action::SavedQuerySqlSave { .. } => {
-                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                Action::SavedQuerySqlSave { identity, command } => {
+                    self.query_definition_save_action(identity, command);
                 }
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
