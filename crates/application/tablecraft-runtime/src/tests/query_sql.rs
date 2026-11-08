@@ -284,6 +284,19 @@ fn original_sql_and_native_expression_spelling_cannot_be_silently_normalized() {
     let (_directory, path, worker, target) = opened(&noncanonical);
     let draft = inspect(&worker, &target);
     assert_eq!(draft.eligibility, QuerySqlEligibility::Unavailable);
-    assert!(draft.sql.is_none());
+    assert_eq!(draft.sql.as_deref(), Some("SELECT 4 AS [Answer];"));
+    // Read-only reconstruction may normalize spelling, but that displayed
+    // representation cannot bypass the native original-expression check.
+    assert!(matches!(
+        request(
+            &worker,
+            Command::ReviewQuerySql {
+                target,
+                original_sql: draft.sql.unwrap(),
+                proposed_sql: "SELECT 5 AS Answer;".into(),
+            }
+        ),
+        Err(Error::QueryExpression(_))
+    ));
     assert_eq!(std::fs::read(&path).unwrap(), noncanonical);
 }
