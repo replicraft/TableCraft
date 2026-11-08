@@ -183,7 +183,14 @@ fn explicit_discard_is_bound_to_actual_object_and_text_revision() {
     assert!(state.saved_query_sql_dirty());
     let revision = state.saved_query_sql_revision_for(&tab).unwrap();
     assert!(!state.close_object(&tab));
-    assert!(state.discard_saved_query_sql(&tab, revision));
+    assert!(state.saved_query_sql_close_open());
+    assert!(!state.discard_saved_query_sql(&tab, revision));
+    let choice = state
+        .choose_saved_query_sql_close(SavedQuerySqlCloseDecision::Discard)
+        .unwrap();
+    assert_eq!(choice.tab, tab);
+    assert_eq!(choice.draft_revision, revision);
+    assert_eq!(choice.decision, SavedQuerySqlCloseDecision::Discard);
     assert!(!state.has_modified_saved_query_sql());
     assert!(state.close_object(&tab));
 }

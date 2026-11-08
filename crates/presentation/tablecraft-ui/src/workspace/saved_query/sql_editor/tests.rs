@@ -39,6 +39,10 @@ fn qat_save_emits_exact_owned_text_and_disables_run_for_the_dirty_definition() {
     harness.event(Event::Paste(exact.into()));
     harness.run_steps(1);
     assert_eq!(harness.state().0.saved_query_sql().unwrap().1, exact);
+    assert!(!harness.state().0.saved_query_command_ready());
+    assert!(!harness.state().0.can_run_saved_query(&target, &[]));
+    assert!(harness.state_mut().0.request_saved_query_run().is_none());
+    assert!(harness.state().1.is_empty());
     assert!(
         harness
             .get_by_role_and_label(Role::Button, "Run saved query")

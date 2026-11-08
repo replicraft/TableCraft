@@ -42,6 +42,7 @@ impl State {
 
     pub(in crate::workspace) fn saved_query_command_ready(&self) -> bool {
         self.saved_query_visible()
+            && !self.saved_query_sql_dirty()
             && self.saved_query.prompt.is_none()
             && super::inputs_within_limits(&self.saved_query.inputs)
             && self.saved_query.target.as_ref().is_some_and(|target| {
