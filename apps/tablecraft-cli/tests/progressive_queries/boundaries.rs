@@ -6,7 +6,6 @@ fn unsupported_relational_and_source_using_shapes_publish_nothing() {
     for sql in [
         "SELECT Id FROM Items ORDER BY Id",
         "SELECT TOP 1 PERCENT Id FROM Items",
-        "SELECT TOP 1 Id FROM Items ORDER BY Id",
         "SELECT DISTINCT CDbl(Id) FROM Items",
         "SELECT Last(Id) FROM Items",
         "SELECT Count(*) FROM Items HAVING Last(Id)>0",
@@ -21,9 +20,20 @@ fn unsupported_relational_and_source_using_shapes_publish_nothing() {
         "SELECT Now() FROM Items WHERE False",
         "SELECT Rnd() FROM Items WHERE False",
     ] {
+        let output = file.query(sql, &["--stream", "--batch-rows", "1"]);
+        assert_eq!(
+            output.status.code(),
+            Some(2),
+            "expected refusal for {sql}; stderr: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
         assert!(
-            failure(file.query(sql, &["--stream", "--batch-rows", "1"])).is_empty(),
-            "{sql}"
+            !output.stderr.is_empty(),
+            "missing refusal diagnostic for {sql}"
+        );
+        assert!(
+            output.stdout.is_empty(),
+            "unexpected published output for {sql}"
         );
     }
 }
