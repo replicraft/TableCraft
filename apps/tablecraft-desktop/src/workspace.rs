@@ -402,6 +402,9 @@ impl Desktop {
                 continue;
             }
             match result {
+                Ok(Response::AddColumnReviewed { .. }) => {
+                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
                 Ok(Response::TableRenameReviewed { review, capability }) => {
                     self.start_reviewed_table_rename(generation, review, capability);
                 }

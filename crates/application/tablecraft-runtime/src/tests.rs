@@ -1,3 +1,9 @@
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod add_column;
 mod boolean;
 mod captions;
 mod contents;

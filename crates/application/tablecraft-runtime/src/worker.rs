@@ -75,6 +75,26 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewAddInt32Column {
+                document_revision,
+                table,
+                column,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_add_int32_column(*document_revision, table, column, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenColumnAdded { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_column_added(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::ReviewTableCreation {
                 document_revision,
                 snapshot,
@@ -357,6 +377,10 @@ impl Worker {
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewTableCreation { .. } => "review_table_creation",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewAddInt32Column { .. } => "review_add_column",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::OpenColumnAdded { .. } => "open_column_added",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::OpenTableCreated { .. } => "open_table_created",
                     Command::Open { .. } => "open",

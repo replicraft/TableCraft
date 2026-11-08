@@ -1,5 +1,7 @@
 //! The actual offline owner lives on this worker until released or diagnosed.
 mod apply;
+#[cfg(feature = "ace16-create")]
+mod apply_add_column;
 mod apply_delete;
 mod apply_insert;
 mod apply_query_action;
@@ -9,6 +11,8 @@ mod apply_table_rename;
 mod outcomes;
 mod restart;
 
+#[cfg(feature = "ace16-create")]
+use self::apply_add_column::apply_add_column;
 #[cfg(feature = "ace16-create")]
 use self::apply_table_creation::apply_table_creation;
 use self::{
@@ -20,11 +24,11 @@ use self::{
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
 };
-#[cfg(feature = "ace16-create")]
-use crate::editing::ReviewedTableCreation;
 use crate::editing::save::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
 };
+#[cfg(feature = "ace16-create")]
+use crate::editing::{ReviewedAddColumn, ReviewedTableCreation};
 use crate::{
     controls::action_recovery_budget,
     editing::{
@@ -43,6 +47,8 @@ use std::{
 use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
+    #[cfg(feature = "ace16-create")]
+    ApplyAddColumn(ReviewedAddColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
@@ -91,6 +97,11 @@ pub struct SaveWorker {
 }
 
 impl SaveWorker {
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_add_column() -> bool {
+        true
+    }
+
     pub const fn supports_table_rename() -> bool {
         true
     }
@@ -134,6 +145,8 @@ impl SaveWorker {
                 let operation = match &task {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyAddColumn(..) => SaveOperation::Apply,
                     Task::Apply(..)
                     | Task::ApplyTableRename(..)
                     | Task::ApplyInsert(..)
@@ -153,6 +166,10 @@ impl SaveWorker {
                     tracing::debug_span!("application save task", operation = operation_name);
                 let _entered = span.enter();
                 let outcome = match task {
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyAddColumn(reviewed, bundle) => {
+                        apply_add_column(reviewed, bundle, &mut retained, &cancelled)
+                    }
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(reviewed, bundle) => {
                         apply_table_creation(reviewed, bundle, &mut retained, &cancelled)
@@ -306,6 +323,17 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryInsert)
+    }
+
+    /// Consume the current source-qualified ADD-column review once.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_add_column(
+        &self,
+        reviewed: ReviewedAddColumn,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedAddColumn>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyAddColumn)
     }
 
     #[cfg(feature = "ace16-create")]

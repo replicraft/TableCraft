@@ -32,7 +32,10 @@ pub use creation::{
     CreationWorker,
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-pub use editing::{CreatedTableReopen, ReviewedTableCreation};
+pub use editing::{
+    AddColumnReview, AddedColumnReopen, CreatedTableReopen, ReviewedAddColumn,
+    ReviewedTableCreation,
+};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
@@ -71,7 +74,7 @@ pub use worker::Worker;
 use std::path::PathBuf;
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use tablecraft_ace::{AddTableError, FirstTableError};
+use tablecraft_ace::{AddColumnIntentError, AddTableError, FirstTableError};
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
 };
@@ -91,6 +94,12 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error("original insertion source changed before reopening")]
     InsertOriginalSourceChanged,
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    AddColumn(#[from] AddColumnIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved column contents changed before reopening")]
+    AddedColumnSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FirstTable(#[from] FirstTableError),
@@ -209,6 +218,16 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
         witness: Arc<InsertRetryWitness>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewAddInt32Column {
+        document_revision: u64,
+        table: String,
+        column: String,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenColumnAdded {
+        witness: Arc<AddedColumnReopen>,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewTableCreation {
@@ -386,6 +405,11 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    AddColumnReviewed {
+        review: AddColumnReview,
+        capability: ReviewedAddColumn,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     TableCreationReviewed {

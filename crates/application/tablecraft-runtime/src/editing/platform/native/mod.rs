@@ -1,4 +1,6 @@
 //! Supported native filesystem editing services.
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod add_column;
 pub(in crate::editing) mod deleting;
 pub(in crate::editing) mod draft;
 pub(in crate::editing) mod ids;

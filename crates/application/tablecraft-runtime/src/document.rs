@@ -114,6 +114,25 @@ impl Document {
     }
 
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    pub(super) fn open_column_added(
+        witness: &crate::AddedColumnReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            Error::CreatedSourceChanged | Error::SourceChanged => Error::AddedColumnSourceChanged,
+            error => error,
+        })
+    }
+
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     pub(super) fn open_table_created(
         witness: &CreatedTableReopen,
         revision: u64,
