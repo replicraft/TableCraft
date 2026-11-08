@@ -1,12 +1,20 @@
 //! Exact complement and independent native metadata/identity observation.
 use super::{
     CATALOG_DEFINITION, CATALOG_PAGE, DATABASE_ID, DATABASE_PARENT, DatabaseOptionsError,
-    MAP_HEADER_BYTES, MAP_PAGE, ORIGINAL_OBJECTS, PROPERTY_CANDIDATE, PROPERTY_OWNED,
+    LVAL_OWNER, MAP_HEADER_BYTES, MAP_PAGE, ORIGINAL_OBJECTS, PROPERTY_CANDIDATE, PROPERTY_OWNED,
+    properties,
 };
 use crate::{
     InspectError, NativeImage, PropertyGroupKind,
-    creation::catalog_page::Page,
-    format::{layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES},
+    creation::{catalog_page::Page, record::DATABASE_SYSTEM_FLAGS},
+    format::{
+        bytes::u16_at,
+        data_type,
+        layout::RECORD_COUNT_OFFSET,
+        page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
+        reader::{row_count, row_range},
+        row::{ROW_COUNT_OFFSET, slot_offset},
+    },
     header::check,
     inspect_catalog, inspect_database_properties,
 };
@@ -23,7 +31,9 @@ pub(super) fn candidate(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), DatabaseOptionsError> {
     check(budget, cancelled)?;
-    if after.len() != before.as_bytes().len() + PAGE_BYTES {
+    if after.len() != before.as_bytes().len() + PAGE_BYTES
+        || new_page as usize * PAGE_BYTES != before.as_bytes().len()
+    {
         return Err(DatabaseOptionsError::Preservation);
     }
     let base = CATALOG_PAGE * PAGE_BYTES;
@@ -107,7 +117,7 @@ pub(super) fn candidate(
     if db.native_id() != DATABASE_ID as i32
         || db.parent_id() != DATABASE_PARENT as i32
         || db.type_code() != 2
-        || db.flags() != 0x8000_0000
+        || db.flags() != DATABASE_SYSTEM_FLAGS
         || db.page() != CATALOG_PAGE as u32
         || usize::from(db.slot()) != ORIGINAL_OBJECTS
     {
@@ -126,23 +136,38 @@ pub(super) fn candidate(
     if properties.object_id() != db.object_id()
         || group.kind() != PropertyGroupKind::Table
         || !group.name().is_empty()
-        || group.properties().len() != 2
+        || group.properties().len() != properties::NAMES.len()
+        || properties.raw_bytes().len() != properties::ENCODED_BYTES
     {
         return Err(DatabaseOptionsError::Preservation);
     }
-    for (property, name) in group
-        .properties()
-        .iter()
-        .zip(["Track Name AutoCorrect Info", "Perform Name AutoCorrect"])
-    {
+    for (property, name) in group.properties().iter().zip(properties::NAMES) {
         check(budget, cancelled)?;
         if property.name() != name
-            || property.native_type() != 4
-            || property.flags() != 1
+            || property.native_type() != data_type::INT32
+            || property.flags() != properties::DDL_FLAG
             || property.raw_value() != 0_i32.to_le_bytes()
         {
             return Err(DatabaseOptionsError::Preservation);
         }
+    }
+    let page = &after[new_page as usize * PAGE_BYTES..];
+    if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
+        || page[OWNER_OFFSET..OWNER_OFFSET + size_of::<u32>()] != (LVAL_OWNER as u32).to_le_bytes()
+        || page[OWNER_OFFSET + size_of::<u32>()..ROW_COUNT_OFFSET] != [0; size_of::<u32>()]
+        || row_count(page)? != 1
+    {
+        return Err(DatabaseOptionsError::Preservation);
+    }
+    let (flags, start, end) = row_range(page, 0)?;
+    if flags != 0
+        || end != PAGE_BYTES
+        || end - start != properties::ENCODED_BYTES
+        || page[start..end] != *properties.raw_bytes()
+        || usize::from(u16_at(page, DATA_SIGNATURE.len())?) != start - slot_offset(1)
+        || page[slot_offset(1)..start].iter().any(|byte| *byte != 0)
+    {
+        return Err(DatabaseOptionsError::Preservation);
     }
     check(budget, cancelled)?;
     Ok(())

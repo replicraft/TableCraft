@@ -1,5 +1,7 @@
 //! Explicit OFF metadata on the original closed creator ledger, never a default.
 mod properties;
+#[cfg(test)]
+mod tests;
 mod verify;
 
 use super::{

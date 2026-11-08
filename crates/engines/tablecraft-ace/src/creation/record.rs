@@ -35,7 +35,7 @@ const CATALOG_PROPERTY_FIELD: usize = 14;
 const CATALOG_PROPERTY_VARIABLE: usize = 8;
 const EXTERNAL_PROPERTY_BYTES: usize = 3 * size_of::<u32>();
 const SINGLE_PROPERTY_FLAG: u32 = 0x4000_0000;
-const DATABASE_SYSTEM_FLAGS: u32 = 0x8000_0000;
+pub(super) const DATABASE_SYSTEM_FLAGS: u32 = 0x8000_0000;
 
 pub(super) struct DataPage<'a> {
     bytes: &'a mut [u8],
