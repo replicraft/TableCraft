@@ -81,6 +81,10 @@ impl State {
     }
 
     pub fn can_delete_row(&self, target: &DeleteTarget) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         !self.busy
             && !self.total_selection_active()
             && !self.zoom_dialog_open()
@@ -129,6 +133,10 @@ impl State {
     }
 
     pub fn can_apply_delete(&self, review_id: u64) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         matches!(&self.deletion,
             Some(Dialog::Review { review, .. })
                 if !self.busy && review.id == review_id

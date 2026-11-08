@@ -2,6 +2,9 @@
 mod layout;
 pub(super) mod memory;
 mod names;
+mod saved_sql;
+mod saved_sql_close;
+mod saved_sql_lifecycle;
 mod session;
 mod shortcuts;
 
@@ -328,6 +331,10 @@ impl State {
         if !self.can_close_object(tab) {
             return false;
         }
+        if self.saved_query_sql_revision_for(tab).is_some() {
+            self.request_saved_query_sql_close(tab);
+            return false;
+        }
         let approved = self.table_draft_discard_approved.as_ref().is_some_and(
             |(approved, revision, record_revision, property_revision)| {
                 approved == tab
@@ -346,6 +353,9 @@ impl State {
     }
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
+        if self.saved_query_sql_revision_for(tab).is_some() {
+            return false;
+        }
         let Some(index) = self
             .objects
             .entries
@@ -377,6 +387,7 @@ impl State {
 
     pub(super) fn object_switch_ready(&self) -> bool {
         !self.busy
+            && !self.saved_query_sql_close_open()
             && self.table_draft_close.is_none()
             && self.table_draft_save.is_none()
             && !self.table_draft_field_delete_open()
@@ -419,6 +430,9 @@ impl State {
             .as_ref()
             .map(|database| database.document_revision);
         if self.objects.revision != revision {
+            if self.has_modified_saved_query_sql() {
+                return;
+            }
             self.objects = Objects {
                 revision,
                 ..Objects::default()
@@ -638,6 +652,9 @@ impl State {
     }
 
     pub(super) fn clear_object_sessions(&mut self) {
+        if self.has_modified_saved_query_sql() {
+            return;
+        }
         self.sql.clear();
         self.objects = Objects::default();
         self.clear_object_slots();

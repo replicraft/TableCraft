@@ -42,3 +42,12 @@ saved-query-prompt-title = Parameterwert eingeben
 saved-query-prompt-ok = OK
 saved-query-prompt-cancel = Abbrechen
 saved-query-prompt-validation = Typisierte Werte werden beim Ausführen der Abfrage geprüft.
+
+# Saved query SQL close confirmation.
+saved-query-close-title = Änderungen speichern?
+saved-query-close-question = Änderungen an der Abfrage „{ $name }“ speichern?
+saved-query-close-save = Speichern
+saved-query-close-discard = Verwerfen
+saved-query-close-cancel = Abbrechen
+saved-query-close-unavailable = Diese Abfrage kann derzeit nicht gespeichert werden.
+saved-query-close-stale = Der Abfrageentwurf wurde geändert. Brechen Sie ab und schließen Sie ihn erneut.

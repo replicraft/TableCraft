@@ -42,3 +42,12 @@ saved-query-prompt-title = Enter Parameter Value
 saved-query-prompt-ok = OK
 saved-query-prompt-cancel = Cancel
 saved-query-prompt-validation = Typed values are validated when the query runs.
+
+# Saved query SQL close confirmation.
+saved-query-close-title = Save changes?
+saved-query-close-question = Save changes to query “{ $name }”?
+saved-query-close-save = Save
+saved-query-close-discard = Discard
+saved-query-close-cancel = Cancel
+saved-query-close-unavailable = Saving is not available for this query.
+saved-query-close-stale = The query draft has changed. Cancel and close it again.

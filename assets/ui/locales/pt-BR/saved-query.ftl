@@ -42,3 +42,12 @@ saved-query-prompt-title = Inserir valor do parâmetro
 saved-query-prompt-ok = OK
 saved-query-prompt-cancel = Cancelar
 saved-query-prompt-validation = Os valores tipados são validados quando a consulta é executada.
+
+# Saved query SQL close confirmation.
+saved-query-close-title = Salvar alterações?
+saved-query-close-question = Salvar as alterações na consulta “{ $name }”?
+saved-query-close-save = Salvar
+saved-query-close-discard = Descartar
+saved-query-close-cancel = Cancelar
+saved-query-close-unavailable = Esta consulta não pode ser salva no momento.
+saved-query-close-stale = O rascunho da consulta foi alterado. Cancele e feche novamente.

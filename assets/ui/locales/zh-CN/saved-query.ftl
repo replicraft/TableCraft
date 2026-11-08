@@ -42,3 +42,12 @@ saved-query-prompt-title = 输入参数值
 saved-query-prompt-ok = 确定
 saved-query-prompt-cancel = 取消
 saved-query-prompt-validation = 带类型的值会在运行查询时进行验证。
+
+# Saved query SQL close confirmation.
+saved-query-close-title = 保存更改？
+saved-query-close-question = 是否保存对查询“{ $name }”的更改？
+saved-query-close-save = 保存
+saved-query-close-discard = 放弃
+saved-query-close-cancel = 取消
+saved-query-close-unavailable = 当前无法保存此查询。
+saved-query-close-stale = 查询草稿已更改。请取消并重新关闭。

@@ -42,3 +42,12 @@ saved-query-prompt-title = 매개 변수 값 입력
 saved-query-prompt-ok = 확인
 saved-query-prompt-cancel = 취소
 saved-query-prompt-validation = 형식이 지정된 값은 쿼리를 실행할 때 검증됩니다.
+
+# Saved query SQL close confirmation.
+saved-query-close-title = 변경 내용을 저장하시겠습니까?
+saved-query-close-question = 쿼리 “{ $name }”의 변경 내용을 저장하시겠습니까?
+saved-query-close-save = 저장
+saved-query-close-discard = 저장 안 함
+saved-query-close-cancel = 취소
+saved-query-close-unavailable = 현재 이 쿼리를 저장할 수 없습니다.
+saved-query-close-stale = 쿼리 초안이 변경되었습니다. 취소한 후 다시 닫으세요.

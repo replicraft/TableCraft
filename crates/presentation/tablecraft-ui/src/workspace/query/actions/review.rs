@@ -266,6 +266,10 @@ impl State {
     }
 
     pub fn can_apply_query_action(&self, review_id: u64) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         !self.busy && self.query_action.as_ref().is_some_and(|session| {
             session.origin.current(self)
                 && matches!(&session.phase, Phase::Review { review, .. } if review.id == review_id)

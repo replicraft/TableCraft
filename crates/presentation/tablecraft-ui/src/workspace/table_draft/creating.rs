@@ -53,6 +53,10 @@ impl State {
     }
 
     fn can_start_table_draft(&self) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         self.table_save_available
             && self.object_switch_ready()
             && !self.creation_is_pending()

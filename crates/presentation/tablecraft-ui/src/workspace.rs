@@ -53,7 +53,10 @@ pub use records::RecordTarget;
 pub use recovery::RecoveryOutcome;
 pub use row_identity::{RowOrdinalError, RowOrdinals};
 pub use save_display::SaveCleanupNotice;
-pub use saved_query::{SavedQuery, SavedQueryTarget};
+pub use saved_query::{
+    SavedQuery, SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
+    SavedQuerySqlError, SavedQuerySqlRequest, SavedQueryTarget,
+};
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 pub use table_draft::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
 pub use totals::{
@@ -145,6 +148,9 @@ pub enum Action {
     },
     AcknowledgeTableDraftSave {
         id: u64,
+    },
+    SavedQuerySqlClose {
+        result: SavedQuerySqlCloseResult,
     },
     TableDraftsDiscarded,
     TableDraftDiscardCancelled,
@@ -384,7 +390,10 @@ pub struct State {
     totals: totals::Totals,
     zoom: zoom::Zoom,
     records: records::RecordNavigation,
+    /// Host lifecycle readiness; native eligibility alone never enables editing.
+    pub saved_query_sql_edit_available: bool,
     saved_query: saved_query::SavedQueryState,
+    saved_query_sql_close: Option<saved_query::SqlCloseConfirmation>,
     selected_field: usize,
     design_focus_pending: Option<schema::PaneEntry>,
     pane_focus_entry: Option<focus::Entry>,
@@ -634,7 +643,8 @@ impl State {
 
     /// Remove metadata when the host replaces or closes its source.
     pub fn clear_schema(&mut self) {
-        if self.insertion_dialog_open()
+        if self.has_modified_saved_query_sql()
+            || self.insertion_dialog_open()
             || self.recovery_prompt_open()
             || self.table_draft_field_delete_open()
         {
@@ -832,6 +842,7 @@ impl State {
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
+        self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);

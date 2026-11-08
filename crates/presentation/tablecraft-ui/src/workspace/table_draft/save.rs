@@ -92,7 +92,8 @@ impl State {
     }
 
     pub fn can_save_table_draft(&self) -> bool {
-        self.table_save_available
+        !self.has_modified_saved_query_sql()
+            && self.table_save_available
             && self.object_switch_ready()
             && !self.creation_is_pending()
             && self.active_object().is_some_and(|tab| {
@@ -116,7 +117,8 @@ impl State {
         &mut self,
         close: Option<CloseIntent>,
     ) -> bool {
-        if !self.table_save_available
+        if self.has_modified_saved_query_sql()
+            || !self.table_save_available
             || self.busy
             || self.creation_is_pending()
             || self.table_draft_save.is_some()

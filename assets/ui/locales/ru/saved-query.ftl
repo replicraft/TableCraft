@@ -42,3 +42,12 @@ saved-query-prompt-title = Введите значение параметра
 saved-query-prompt-ok = ОК
 saved-query-prompt-cancel = Отмена
 saved-query-prompt-validation = Типизированные значения проверяются при выполнении запроса.
+
+# Saved query SQL close confirmation.
+saved-query-close-title = Сохранить изменения?
+saved-query-close-question = Сохранить изменения в запросе «{ $name }»?
+saved-query-close-save = Сохранить
+saved-query-close-discard = Не сохранять
+saved-query-close-cancel = Отмена
+saved-query-close-unavailable = Этот запрос сейчас нельзя сохранить.
+saved-query-close-stale = Черновик запроса изменился. Отмените действие и закройте его снова.

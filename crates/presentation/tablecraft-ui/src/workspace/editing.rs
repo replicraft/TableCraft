@@ -111,6 +111,10 @@ impl State {
 
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         if self.total_selection_active()
             || self.field_filter_dialog_open()
             || self.view != DocumentView::Table
@@ -254,6 +258,10 @@ impl State {
 
     /// Check the still-visible accepted input before consuming a save capability.
     pub fn can_apply_edit(&self, review_id: u64) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         let Some(EditDialog::Draft {
             draft,
             input,

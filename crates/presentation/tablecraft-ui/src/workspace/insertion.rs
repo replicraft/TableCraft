@@ -220,6 +220,10 @@ impl State {
     }
 
     pub fn can_insert_row(&self, target: &InsertTarget) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         self.insert_continuation_allows(target)
             && !self.busy
             && !self.zoom_dialog_open()
@@ -347,6 +351,10 @@ impl State {
     }
 
     pub fn can_apply_insert(&self, review_id: u64) -> bool {
+        if self.has_modified_saved_query_sql() {
+            return false;
+        }
+
         let Some(Dialog::Draft {
             draft,
             entries,

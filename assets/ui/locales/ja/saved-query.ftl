@@ -42,3 +42,12 @@ saved-query-prompt-title = パラメーター値の入力
 saved-query-prompt-ok = OK
 saved-query-prompt-cancel = キャンセル
 saved-query-prompt-validation = 型付きの値はクエリの実行時に検証されます。
+
+# Saved query SQL close confirmation.
+saved-query-close-title = 変更を保存しますか？
+saved-query-close-question = クエリ「{ $name }」の変更を保存しますか？
+saved-query-close-save = 保存
+saved-query-close-discard = 破棄
+saved-query-close-cancel = キャンセル
+saved-query-close-unavailable = このクエリは現在保存できません。
+saved-query-close-stale = クエリの下書きが変更されました。キャンセルして、もう一度閉じてください。

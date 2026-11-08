@@ -1,6 +1,13 @@
 //! Explicit saved-query inspection and execution; no SQL reconstruction in UI.
 mod editor;
 mod prompt;
+mod sql;
+
+pub(super) use sql::Confirmation as SqlCloseConfirmation;
+pub use sql::{
+    SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
+    SavedQuerySqlError, SavedQuerySqlRequest,
+};
 
 use super::objects::memory::{self, Counter};
 use super::query::parameters::{
@@ -30,6 +37,7 @@ struct Pending {
 
 #[derive(Default)]
 pub(super) struct SavedQueryState {
+    pub(in crate::workspace) sql: Option<sql::Draft>,
     pub(super) active: bool,
     pub(super) target: Option<SavedQueryTarget>,
     pub(super) data: Option<Data>,
@@ -83,6 +91,9 @@ impl SavedQueryState {
 
     pub(super) fn retained_bytes(&self) -> Option<usize> {
         let mut count = Counter::new(size_of::<Self>());
+        if let Some(sql) = &self.sql {
+            count.add(sql.retained_bytes()?);
+        }
         if let Some(target) = &self.target {
             count.string(&target.name);
         }
@@ -166,9 +177,18 @@ impl State {
                 return;
             }
             let restored_inputs = self.saved_query.restored_inputs.take();
+            let mut sql = self
+                .saved_query
+                .sql
+                .take()
+                .filter(|draft| draft.target() == &target);
+            if let Some(draft) = &mut sql {
+                draft.interrupt();
+            }
             self.select_view(DocumentView::Query);
             self.reset_saved_query();
             self.saved_query.restored_inputs = restored_inputs;
+            self.saved_query.sql = sql;
             self.saved_query.active = true;
             self.saved_query.target = Some(target);
             self.saved_query.pending = Some(Pending {
@@ -265,6 +285,7 @@ impl State {
         parameters: &[ParameterInput],
     ) -> bool {
         self.saved_parameter_copy_fits(parameters)
+            && !self.saved_query.sql.as_ref().is_some_and(sql::Draft::dirty)
             && !self.busy
             && self.saved_query_visible()
             && !self.backstage_visible()
@@ -363,6 +384,9 @@ impl State {
     }
 
     pub(super) fn interrupt_saved_query(&mut self) {
+        if let Some(sql) = &mut self.saved_query.sql {
+            sql.interrupt();
+        }
         self.saved_query.prompt = None;
         if self.saved_query.pending.take().is_some() {
             self.saved_query.error = Some(self.localizer.text("saved-query-interrupted"));
