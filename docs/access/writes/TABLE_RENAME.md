@@ -66,9 +66,8 @@ retained trees and inactive tails remain unchanged by the catalog rename.
 Original INDEX write-stamp bytes are preserved too; the zero-stamp restriction
 for rewriting an INDEX page does not apply to this catalog-only mutation.
 
-This explicit planner has no journal or frontend save path. The original
-`plan_table_rename`, recoverable planner and frozen `TCRN0001` reconstruction
-remain unindexed. Four focused tests pass, including 42 complete independent
+The original `plan_table_rename`, recoverable planner and frozen `TCRN0001`
+reconstruction remain unindexed. Four focused tests pass, including 42 complete independent
 BEFORE/AFTER pairs across both stored headers, and key/membership/dependency,
 cancellation, budget and frozen-profile refusals. The shared ownership filter
 passes one active case; three historical pinned-original cases remain ignored.
@@ -81,6 +80,24 @@ opaque-byte preservation passes the four affected tests; the other 18 unchanged
 rename/intent cases were not repeated. This is focused engine evidence, not a
 whole-workspace gate. Indexed SDK getter observations, native Access comparisons,
 and the new code's strict lint remain unrun. Ordinary creators still refuse.
+
+The separate engine `plan_recoverable_indexed_table_rename` API now seals the
+indexed planner purpose as `TCRN0002`, profile 2. The original API still seals
+`TCRN0001`, profile 1, with unchanged framing and unindexed source admission.
+Both use the same 84-byte request header and checked expected-image V1 journal;
+the request version does not change the journal language. Capture binds the
+actual native planner purpose, even when both planner routes produce identical
+images. Fresh reconstruction selects only the retained request's exact profile.
+Crossed version/profile pairs and unknown versions refuse without another decoder
+or planner attempt. Indexed source admission still requires positive disabled
+Name AutoCorrect and all original closed-catalog restrictions.
+
+Five new focused intent tests and independent V2 wire controls are authored;
+their execution remains pending. They cover purpose binding, full-image fresh
+requalification, pending/committed/torn recovery, legacy replay refusal on indexed
+sources, stale originals and altered journal AFTER images. Existing adapter
+family decoding uses the engine's checked request decoder; creating/reviewing
+indexed adapter/frontend saves is not connected by this engine checkpoint.
 
 The planner changes the actual catalog Name carrier using its native column
 encoding. It adjusts the necessary variable offsets, DATA slot offsets and free

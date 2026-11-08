@@ -1,15 +1,17 @@
-//! Closed TCRN0001 framing; complete validation precedes decoded name allocation.
+//! Closed version/profile dispatch; validation precedes decoded name allocation.
 use super::{
-    Identity, MAX_NAME_BYTES, NativeTableRenameIntent, TableRenameIntentError, binding, copy_name,
-    validate_name,
+    Identity, MAX_NAME_BYTES, NativeTableRenameIntent, Profile, TableRenameIntentError, binding,
+    copy_name, validate_name,
 };
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const MAGIC: &[u8; 8] = b"TCRN0001";
+const MAGIC_V1: &[u8; 8] = b"TCRN0001";
+const MAGIC_V2: &[u8; 8] = b"TCRN0002";
 const PREFIX: &[u8; 4] = b"TCRN";
-const PROFILE: u16 = 1;
-const TOTAL_AT: usize = MAGIC.len();
+const UNINDEXED_PROFILE: u16 = 1;
+const RETAINED_INT32_PROFILE: u16 = 2;
+const TOTAL_AT: usize = MAGIC_V1.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
 const BEFORE_LENGTH_AT: usize = FLAGS_AT + size_of::<u16>();
@@ -51,9 +53,13 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| InspectError::Allocation)?;
-    output.extend_from_slice(MAGIC);
+    let (magic, profile) = match intent.profile {
+        Profile::UnindexedV1 => (MAGIC_V1, UNINDEXED_PROFILE),
+        Profile::RetainedInt32V2 => (MAGIC_V2, RETAINED_INT32_PROFILE),
+    };
+    output.extend_from_slice(magic);
     output.extend_from_slice(&(length as u32).to_le_bytes());
-    output.extend_from_slice(&PROFILE.to_le_bytes());
+    output.extend_from_slice(&profile.to_le_bytes());
     output.extend_from_slice(&0_u16.to_le_bytes());
     output.extend_from_slice(&intent.before_length.to_le_bytes());
     output.extend_from_slice(&intent.before_binding);
@@ -83,9 +89,11 @@ pub(super) fn decode(
     {
         return Err(TableRenameIntentError::InvalidRecord);
     }
-    if input.get(..MAGIC.len()) != Some(MAGIC) {
-        return Err(TableRenameIntentError::UnsupportedVersion);
-    }
+    let (profile, expected_profile) = match input.get(..MAGIC_V1.len()) {
+        Some(magic) if magic == MAGIC_V1 => (Profile::UnindexedV1, UNINDEXED_PROFILE),
+        Some(magic) if magic == MAGIC_V2 => (Profile::RetainedInt32V2, RETAINED_INT32_PROFILE),
+        _ => return Err(TableRenameIntentError::UnsupportedVersion),
+    };
     budget.charge(Resource::Steps, input.len() as u64)?;
     if u32::from_le_bytes(bytes(input, TOTAL_AT)?) as usize != input.len()
         || u16::from_le_bytes(bytes(input, FLAGS_AT)?) != 0
@@ -94,7 +102,7 @@ pub(super) fn decode(
     {
         return Err(TableRenameIntentError::InvalidRecord);
     }
-    if u16::from_le_bytes(bytes(input, PROFILE_AT)?) != PROFILE {
+    if u16::from_le_bytes(bytes(input, PROFILE_AT)?) != expected_profile {
         return Err(TableRenameIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(bytes(input, BEFORE_LENGTH_AT)?);
@@ -128,6 +136,7 @@ pub(super) fn decode(
     let new_name = copy_name(new_name, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(NativeTableRenameIntent {
+        profile,
         table,
         new_name,
         identity,

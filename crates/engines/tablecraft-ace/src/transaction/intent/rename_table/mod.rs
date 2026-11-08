@@ -38,7 +38,7 @@ pub enum TableRenameIntentError {
     /// The complete source length or digest differs from the retained original.
     #[error("table-rename intent before image does not match")]
     BeforeMismatch,
-    /// Fresh native identity or exact spellings differ from the original request.
+    /// Native identity, spellings or actual admission purpose differs.
     #[error("table-rename intent native identity does not match")]
     IdentityMismatch,
 }
@@ -58,9 +58,26 @@ struct Identity {
     catalog_slot: u8,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Profile {
+    UnindexedV1,
+    RetainedInt32V2,
+}
+
+impl Profile {
+    fn from_plan(plan: &NativeTableRenamePlan) -> Self {
+        if plan.has_indexed_admission() {
+            Self::RetainedInt32V2
+        } else {
+            Self::UnindexedV1
+        }
+    }
+}
+
 /// Exact original and proposed spellings, native identity and complete BEFORE binding.
 /// Decoding this data does not qualify the source, dependencies or replacement image.
 pub struct NativeTableRenameIntent {
+    profile: Profile,
     table: SchemaName,
     new_name: SchemaName,
     identity: Identity,
@@ -84,6 +101,7 @@ impl NativeTableRenameIntent {
         let before_binding = binding::digest(plan.before_bytes(), budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(Self {
+            profile: Profile::from_plan(plan),
             table,
             new_name,
             identity: Identity {
@@ -108,7 +126,7 @@ impl NativeTableRenameIntent {
         self.new_name.as_str()
     }
 
-    /// Encode the closed TCRN request under explicit allocation/work limits.
+    /// Encode the exact version/profile selected by the native planner's purpose.
     /// Encoded bytes contain intent and source binding, never native save authority.
     pub fn encode(
         &self,
@@ -149,7 +167,8 @@ impl NativeTableRenameIntent {
 
     fn verify_plan(&self, plan: &NativeTableRenamePlan) -> Result<(), TableRenameIntentError> {
         let actual = plan.identity();
-        if actual.native_id() != self.identity.native_id
+        if Profile::from_plan(plan) != self.profile
+            || actual.native_id() != self.identity.native_id
             || actual.parent_id() != self.identity.parent_id
             || actual.definition_page() != self.identity.definition_page
             || actual.catalog_page() != self.identity.catalog_page
@@ -160,6 +179,22 @@ impl NativeTableRenameIntent {
             return Err(TableRenameIntentError::IdentityMismatch);
         }
         Ok(())
+    }
+
+    fn reconstruct(
+        &self,
+        image: crate::NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeTableRenamePlan, crate::TableRenameError> {
+        match self.profile {
+            Profile::UnindexedV1 => {
+                image.plan_table_rename(self.table(), self.new_name(), budget, cancelled)
+            }
+            Profile::RetainedInt32V2 => {
+                image.plan_indexed_table_rename(self.table(), self.new_name(), budget, cancelled)
+            }
+        }
     }
 }
 

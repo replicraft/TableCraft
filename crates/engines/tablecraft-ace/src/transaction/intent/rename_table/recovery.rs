@@ -33,7 +33,7 @@ pub fn qualify_native_table_rename_recovery<'a, J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let plan = image.plan_table_rename(intent.table(), intent.new_name(), budget, cancelled)?;
+    let plan = intent.reconstruct(image, budget, cancelled)?;
     intent.verify_plan(&plan)?;
     equal_image(
         plan.before_bytes(),

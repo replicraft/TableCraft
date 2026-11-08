@@ -97,17 +97,23 @@ impl NativeTableRenameIdentity {
 /// complement are retained. Native Access DateUpdate timing remains unqualified;
 /// the planner conservatively preserves its original bytes. No Access execution
 /// comparison is implied by independent byte-oracle qualification.
-/// Persistence requires the separately checked schema journal operation, which
-/// currently admits only the original unindexed planner profile.
+/// Persistence requires the separately checked, profile-bound schema journal
+/// operation; the original and indexed profiles retain distinct intent versions.
 pub struct NativeTableRenamePlan {
     before: NativeImage,
     after: Vec<u8>,
     table: String,
     new_name: String,
     identity: NativeTableRenameIdentity,
+    indexes: source::IndexPolicy,
 }
 
 impl NativeTableRenamePlan {
+    /// Actual native admission purpose, retained independently of candidate bytes.
+    pub(crate) fn has_indexed_admission(&self) -> bool {
+        self.indexes == source::IndexPolicy::RetainedInt32
+    }
+
     /// Actual original catalog spelling, independent of caller lookup spelling.
     pub fn table(&self) -> &str {
         &self.table
@@ -167,8 +173,8 @@ impl NativeImage {
     /// System tables remain unindexed; explicit disabled Name AutoCorrect, the
     /// closed single-user-table catalog and all other source guards still apply.
     /// Physical aliases, retained tree ownership and complete key/row membership
-    /// must qualify. No current journal intent or frontend save accepts this
-    /// expanded profile; the original recoverable rename remains unindexed.
+    /// must qualify. The separate recoverable indexed API seals this profile as
+    /// TCRN0002; the original recoverable rename remains unindexed TCRN0001.
     pub fn plan_indexed_table_rename(
         self,
         table: &str,
@@ -238,6 +244,7 @@ impl NativeImage {
             table: qualified.table,
             new_name: qualified.proposed,
             identity: qualified.identity,
+            indexes,
         })
     }
 }

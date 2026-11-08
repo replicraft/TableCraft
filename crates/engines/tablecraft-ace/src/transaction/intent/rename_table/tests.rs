@@ -13,6 +13,9 @@ use tablecraft_io::{
 };
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::canonical_catalog_names::{RenamePair, rename_pair};
+use tablecraft_testkit::fixtures::access::{
+    canonical_indexed_rename, canonical_ordinary_indexed::Case as IndexedCase,
+};
 
 const SCOPE: CatalogScope = CatalogScope::new(783);
 const BYTES: u64 = 64 * 1024 * 1024;
@@ -38,29 +41,38 @@ fn decoded(raw: &[u8]) -> NativeTableRenameIntent {
 }
 
 fn literal(pair: &RenamePair) -> Vec<u8> {
+    literal_request(&pair.before, &pair.old_name, &pair.new_name, b"TCRN0001", 1)
+}
+
+fn literal_request(
+    before: &[u8],
+    old_name: &str,
+    new_name: &str,
+    magic: &[u8; 8],
+    profile: u16,
+) -> Vec<u8> {
     // Independent 84-byte TCRN header, original native identity and spellings.
     // No production wire offsets, encoder or captured intent are consulted.
-    let mut raw = b"TCRN0001".to_vec();
-    raw.extend_from_slice(
-        &(84_u32 + pair.old_name.len() as u32 + pair.new_name.len() as u32).to_le_bytes(),
-    );
-    raw.extend_from_slice(&[1, 0, 0, 0]);
-    raw.extend_from_slice(&(pair.before.len() as u64).to_le_bytes());
+    let mut raw = magic.to_vec();
+    raw.extend_from_slice(&(84_u32 + old_name.len() as u32 + new_name.len() as u32).to_le_bytes());
+    raw.extend_from_slice(&profile.to_le_bytes());
+    raw.extend_from_slice(&[0, 0]);
+    raw.extend_from_slice(&(before.len() as u64).to_le_bytes());
     let mut digest = Sha256::new();
     digest.update(b"TCNI0001:BEFORE\0");
-    digest.update((pair.before.len() as u64).to_le_bytes());
-    digest.update(&pair.before);
+    digest.update((before.len() as u64).to_le_bytes());
+    digest.update(before);
     raw.extend_from_slice(&digest.finalize());
     raw.extend_from_slice(&7_i32.to_le_bytes());
     raw.extend_from_slice(&0x0f00_0001_i32.to_le_bytes());
     raw.extend_from_slice(&7_u32.to_le_bytes());
     raw.extend_from_slice(&4_u32.to_le_bytes());
     raw.extend_from_slice(&[8, 0, 0, 0]);
-    raw.extend_from_slice(&(pair.old_name.len() as u16).to_le_bytes());
-    raw.extend_from_slice(&(pair.new_name.len() as u16).to_le_bytes());
+    raw.extend_from_slice(&(old_name.len() as u16).to_le_bytes());
+    raw.extend_from_slice(&(new_name.len() as u16).to_le_bytes());
     raw.extend_from_slice(&0_u32.to_le_bytes());
-    raw.extend_from_slice(pair.old_name.as_bytes());
-    raw.extend_from_slice(pair.new_name.as_bytes());
+    raw.extend_from_slice(old_name.as_bytes());
+    raw.extend_from_slice(new_name.as_bytes());
     raw
 }
 
@@ -138,7 +150,7 @@ fn malformed_wire_refuses_before_name_allocation_and_does_not_change_action_fami
         assert_eq!(limits.remaining(Resource::Bytes), 0);
     }
     let mut future = raw.clone();
-    future[7] = b'2';
+    future[7] = b'3';
     assert!(matches!(
         NativeTableRenameIntent::decode(&future, &mut budget(), &|| false),
         Err(TableRenameIntentError::UnsupportedVersion)
@@ -291,10 +303,19 @@ impl DurableStorage for Storage {
 fn pending_committed_and_torn_targets_recover_through_same_qualified_v1_session() {
     let pair = rename_pair(5, "Items", "Renamed", true);
     let raw = literal(&pair);
+    assert_recovery(&pair.before, &pair.after, &raw, || plan(&pair));
+}
+
+fn assert_recovery(
+    before: &[u8],
+    after: &[u8],
+    raw: &[u8],
+    build: impl Fn() -> RecoverableNativeTableRenamePlan,
+) {
     for state in 0..4 {
-        let mut target = Storage::new(pair.before.clone());
+        let mut target = Storage::new(before.to_vec());
         let mut journal = Storage::new(Vec::new());
-        let prepared = plan(&pair)
+        let prepared = build()
             .prepare(&mut target, &mut journal, &mut budget(), &|| false)
             .unwrap();
         if matches!(state, 1 | 3) {
@@ -307,14 +328,14 @@ fn pending_committed_and_torn_targets_recover_through_same_qualified_v1_session(
         } else {
             drop(prepared);
             if state == 2 {
-                let middle = pair.after.len() / 2;
-                target.bytes.get_mut()[..middle].copy_from_slice(&pair.after[..middle]);
+                let middle = after.len() / 2;
+                target.bytes.get_mut()[..middle].copy_from_slice(&after[..middle]);
             }
         }
         let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
         let qualified = qualify_native_table_rename_recovery(
             checked,
-            decoded(&raw),
+            decoded(raw),
             SCOPE,
             &mut budget(),
             &|| false,
@@ -339,17 +360,11 @@ fn pending_committed_and_torn_targets_recover_through_same_qualified_v1_session(
                 RecoveryOutcome::RolledBack
             }
         );
-        assert!(
-            target.bytes.get_ref().as_slice()
-                == if state == 1 {
-                    pair.after.as_slice()
-                } else {
-                    pair.before.as_slice()
-                }
-        );
+        let expected = if state == 1 { after } else { before };
+        assert_eq!(target.bytes.get_ref().as_slice(), expected);
         let writes = target.writes;
         let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
-        qualify_native_table_rename_recovery(checked, decoded(&raw), SCOPE, &mut budget(), &|| {
+        qualify_native_table_rename_recovery(checked, decoded(raw), SCOPE, &mut budget(), &|| {
             false
         })
         .unwrap()
@@ -434,4 +449,191 @@ fn decoding_exact_resource_limits_and_last_cancellation_are_enforced() {
         }),
         Err(TableRenameIntentError::Inspect(InspectError::Cancelled))
     ));
+}
+
+#[test]
+fn indexed_v2_literal_wire_and_complete_images_survive_fresh_requalification() {
+    for header in [5, 6] {
+        for case in [
+            IndexedCase::CounterPrimary,
+            IndexedCase::NullableOrdinary,
+            IndexedCase::AliasHistory,
+            IndexedCase::RetainedTree,
+            IndexedCase::UnknownIndexHeader,
+        ] {
+            let pair = canonical_indexed_rename::pair(header, case, "Items", "雪🙂");
+            let reviewed = image(&pair.before)
+                .plan_recoverable_indexed_table_rename("Items", "雪🙂", &mut budget(), &|| false)
+                .unwrap();
+            let raw = reviewed.intent().encode(&mut budget(), &|| false).unwrap();
+            assert_eq!(
+                raw,
+                literal_request(&pair.before, "Items", "雪🙂", b"TCRN0002", 2)
+            );
+            assert_eq!(decoded(&raw).encode(&mut budget(), &|| false).unwrap(), raw);
+            let fresh = reviewed
+                .requalify_with_budgets(image(&pair.before), &mut budget(), &mut budget(), &|| {
+                    false
+                })
+                .unwrap();
+            assert_eq!(fresh.before_bytes(), pair.before);
+            assert_eq!(fresh.after_bytes(), pair.after);
+            assert_eq!(
+                fresh.intent().encode(&mut budget(), &|| false).unwrap(),
+                raw
+            );
+        }
+    }
+}
+
+#[test]
+fn intent_binds_actual_planner_purpose_even_when_complete_bytes_are_identical() {
+    let pair = rename_pair(5, "Items", "Renamed", true);
+    let legacy = image(&pair.before)
+        .plan_table_rename("Items", "Renamed", &mut budget(), &|| false)
+        .unwrap();
+    let explicit = image(&pair.before)
+        .plan_indexed_table_rename("Items", "Renamed", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(legacy.before_bytes(), explicit.before_bytes());
+    assert_eq!(legacy.after_bytes(), explicit.after_bytes());
+    let legacy_intent =
+        NativeTableRenameIntent::capture(&legacy, &mut budget(), &|| false).unwrap();
+    let indexed_intent =
+        NativeTableRenameIntent::capture(&explicit, &mut budget(), &|| false).unwrap();
+    assert!(legacy_intent.verify_plan(&legacy).is_ok());
+    assert!(indexed_intent.verify_plan(&explicit).is_ok());
+    assert!(matches!(
+        legacy_intent.verify_plan(&explicit),
+        Err(TableRenameIntentError::IdentityMismatch)
+    ));
+    assert!(matches!(
+        indexed_intent.verify_plan(&legacy),
+        Err(TableRenameIntentError::IdentityMismatch)
+    ));
+    assert_eq!(
+        legacy_intent.encode(&mut budget(), &|| false).unwrap(),
+        literal(&pair)
+    );
+    assert_eq!(
+        indexed_intent.encode(&mut budget(), &|| false).unwrap(),
+        literal_request(&pair.before, "Items", "Renamed", b"TCRN0002", 2)
+    );
+}
+
+#[test]
+fn version_profile_pairs_are_closed_and_v2_framing_refuses_before_allocating_names() {
+    let pair = canonical_indexed_rename::pair(5, IndexedCase::AliasHistory, "Items", "Renamed");
+    for (magic, profile) in [(b"TCRN0001", 2), (b"TCRN0002", 1), (b"TCRN0002", 3)] {
+        let raw = literal_request(&pair.before, "Items", "Renamed", magic, profile);
+        let mut limits = ResourceBudget::new(0, 0, STEPS);
+        assert!(matches!(
+            NativeTableRenameIntent::decode(&raw, &mut limits, &|| false),
+            Err(TableRenameIntentError::UnsupportedProfile)
+        ));
+        assert_eq!(limits.remaining(Resource::Bytes), 0);
+    }
+    let raw = literal_request(&pair.before, "Items", "Renamed", b"TCRN0002", 2);
+    for offset in [8, 14, 73, 74, 75, 76, 78, 80, 84] {
+        let mut malformed = raw.clone();
+        malformed[offset] ^= 0xff;
+        let mut limits = ResourceBudget::new(0, 0, STEPS);
+        assert!(matches!(
+            NativeTableRenameIntent::decode(&malformed, &mut limits, &|| false),
+            Err(TableRenameIntentError::InvalidRecord)
+        ));
+        assert_eq!(limits.remaining(Resource::Bytes), 0);
+    }
+    let mut unknown = raw;
+    unknown[..8].copy_from_slice(b"TCRN0003");
+    assert!(matches!(
+        NativeTableRenameIntent::decode(&unknown, &mut budget(), &|| false),
+        Err(TableRenameIntentError::UnsupportedVersion)
+    ));
+}
+
+#[test]
+fn indexed_v2_recovers_pending_committed_and_torn_journals_without_legacy_fallback() {
+    for header in [5, 6] {
+        for case in [IndexedCase::AliasHistory, IndexedCase::RetainedTree] {
+            let pair = canonical_indexed_rename::pair(header, case, "Items", "Renamed");
+            let raw = literal_request(&pair.before, "Items", "Renamed", b"TCRN0002", 2);
+            let build = || {
+                image(&pair.before)
+                    .plan_recoverable_indexed_table_rename(
+                        "Items",
+                        "Renamed",
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .unwrap()
+            };
+            assert_recovery(&pair.before, &pair.after, &raw, build);
+
+            let mut target = Storage::new(pair.before.clone());
+            let mut journal = Storage::new(Vec::new());
+            drop(
+                build()
+                    .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+                    .unwrap(),
+            );
+            let legacy = literal_request(&pair.before, "Items", "Renamed", b"TCRN0001", 1);
+            let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+            assert!(matches!(
+                qualify_native_table_rename_recovery(
+                    checked,
+                    decoded(&legacy),
+                    SCOPE,
+                    &mut budget(),
+                    &|| false
+                ),
+                Err(NativeRecoveryQualificationError::Rename(
+                    TableRenameError::Source
+                ))
+            ));
+            assert_eq!(target.writes, 0);
+        }
+    }
+}
+
+#[test]
+fn indexed_v2_stale_original_and_tampered_journal_after_publish_no_authority() {
+    let pair = canonical_indexed_rename::pair(5, IndexedCase::CounterPrimary, "Items", "Renamed");
+    let build = || {
+        image(&pair.before)
+            .plan_recoverable_indexed_table_rename("Items", "Renamed", &mut budget(), &|| false)
+            .unwrap()
+    };
+    let mut stale = pair.before.clone();
+    let last = stale.len() - 1;
+    stale[last] ^= 1;
+    assert!(matches!(
+        build().requalify_with_budgets(image(&stale), &mut budget(), &mut budget(), &|| false),
+        Err(NativeRecoveryQualificationError::ImageMismatch)
+    ));
+
+    let raw = literal_request(&pair.before, "Items", "Renamed", b"TCRN0002", 2);
+    let mut after = pair.after.clone();
+    after[last] ^= 1;
+    let mut target = Storage::new(pair.before.clone());
+    let mut journal = Storage::new(Vec::new());
+    drop(
+        journal::prepare_expected(
+            &mut target,
+            &mut journal,
+            &pair.before,
+            &after,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+    );
+    let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        qualify_native_table_rename_recovery(checked, decoded(&raw), SCOPE, &mut budget(), &|| {
+            false
+        }),
+        Err(NativeRecoveryQualificationError::ImageMismatch)
+    ));
+    assert_eq!(target.writes, 0);
 }

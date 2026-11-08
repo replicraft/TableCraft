@@ -33,6 +33,24 @@ pub struct RecoverableNativeTableRenamePlan {
 }
 
 impl NativeImage {
+    /// Seal the explicit unchanged-Int32-index profile using TCRN0002.
+    ///
+    /// The original recoverable API remains TCRN0001 and unindexed. This route
+    /// binds the actual planner purpose before any journal can be prepared.
+    pub fn plan_recoverable_indexed_table_rename(
+        self,
+        table: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeTableRenamePlan, RecoverableTableRenameError> {
+        let _span = tracing::debug_span!("native.table_rename.plan_recoverable_indexed").entered();
+        let plan = self.plan_indexed_table_rename(table, new_name, budget, cancelled)?;
+        let intent = NativeTableRenameIntent::capture(&plan, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(RecoverableNativeTableRenamePlan { plan, intent })
+    }
+
     /// Qualify a native rename and bind its original request to the complete source.
     pub fn plan_recoverable_table_rename(
         self,
@@ -101,12 +119,7 @@ impl RecoverableNativeTableRenamePlan {
         equal_image(fresh.as_bytes(), self.before_bytes(), proof, cancelled)?;
         self.intent
             .verify_before(fresh.as_bytes(), proof, cancelled)?;
-        let plan = fresh.plan_table_rename(
-            self.intent.table(),
-            self.intent.new_name(),
-            native,
-            cancelled,
-        )?;
+        let plan = self.intent.reconstruct(fresh, native, cancelled)?;
         self.intent.verify_plan(&plan)?;
         equal_image(plan.before_bytes(), self.before_bytes(), proof, cancelled)?;
         equal_image(plan.after_bytes(), self.after_bytes(), proof, cancelled)?;

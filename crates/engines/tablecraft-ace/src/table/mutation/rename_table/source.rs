@@ -51,7 +51,7 @@ pub(super) struct Qualified {
     name_column: usize,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum IndexPolicy {
     Unindexed,
     RetainedInt32,
