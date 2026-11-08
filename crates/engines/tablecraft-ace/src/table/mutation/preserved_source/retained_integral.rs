@@ -1,5 +1,4 @@
 //! Complete readonly scalar indexes; GUID remains dense UPDATE Source only.
-mod ownership;
 use super::{ColumnFraming, ReadProfile, RetainedKeys};
 use crate::{
     EditError, IndexCheckStatus, IndexInspection, InspectError, NativeColumn, NativeImage,
@@ -182,7 +181,7 @@ pub(super) fn qualify(
     {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
     }
-    ownership::require(
+    crate::table::mutation::index_ownership::require(
         image,
         schema.definition_page(),
         long_values,

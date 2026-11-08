@@ -1,4 +1,7 @@
 //! Source-qualified persisted catalog renaming, without dependency repair.
+#[cfg(test)]
+mod indexed_tests;
+mod indexes;
 mod page;
 mod record;
 mod source;
@@ -87,14 +90,15 @@ impl NativeTableRenameIdentity {
 
 /// An owning, unpublished native table rename with exact BEFORE/AFTER images.
 ///
-/// This first profile requires explicit disabled Name AutoCorrect, one ordinary
-/// local user table and a closed, dependency-free catalog. It does not repair
+/// Both planners require explicit disabled Name AutoCorrect, one ordinary
+/// local user table and a closed, dependency-free catalog. They do not repair
 /// NameMaps, saved queries, forms, macros, relationships or catalog indexes.
 /// The original table definition, data, native identities, timestamps and opaque
 /// complement are retained. Native Access DateUpdate timing remains unqualified;
 /// the planner conservatively preserves its original bytes. No Access execution
 /// comparison is implied by independent byte-oracle qualification.
-/// Persistence requires the separately checked schema journal operation.
+/// Persistence requires the separately checked schema journal operation, which
+/// currently admits only the original unindexed planner profile.
 pub struct NativeTableRenamePlan {
     before: NativeImage,
     after: Vec<u8>,
@@ -149,10 +153,50 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeTableRenamePlan, TableRenameError> {
+        self.plan_table_rename_profile(
+            table,
+            new_name,
+            source::IndexPolicy::Unindexed,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Produce an unpublished rename with qualified unchanged user Int32 indexes.
+    ///
+    /// System tables remain unindexed; explicit disabled Name AutoCorrect, the
+    /// closed single-user-table catalog and all other source guards still apply.
+    /// Physical aliases, retained tree ownership and complete key/row membership
+    /// must qualify. No current journal intent or frontend save accepts this
+    /// expanded profile; the original recoverable rename remains unindexed.
+    pub fn plan_indexed_table_rename(
+        self,
+        table: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeTableRenamePlan, TableRenameError> {
+        self.plan_table_rename_profile(
+            table,
+            new_name,
+            source::IndexPolicy::RetainedInt32,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn plan_table_rename_profile(
+        self,
+        table: &str,
+        new_name: &str,
+        indexes: source::IndexPolicy,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeTableRenamePlan, TableRenameError> {
         let _span = tracing::debug_span!("native.table.rename.plan").entered();
         self.require_standard_capture()?;
         validate_name(new_name, budget, cancelled)?;
-        let qualified = source::qualify(&self, table, new_name, budget, cancelled)?;
+        let qualified = source::qualify(&self, table, new_name, indexes, budget, cancelled)?;
         let mut after = super::record_serialization::copy(self.as_bytes(), budget, cancelled)
             .map_err(source::serialization_error)?;
 

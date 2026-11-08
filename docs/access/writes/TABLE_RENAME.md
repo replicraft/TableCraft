@@ -55,6 +55,21 @@ locale-insensitive lookup aliases.
 
 ## Exact mutation and original intent
 
+An additional explicit `NativeImage::plan_indexed_table_rename` planner now
+constructs unpublished candidates with unchanged user-table single-Int32 indexes.
+It retains the closed single-table catalog, explicit disabled Name AutoCorrect
+and unindexed system-table requirements. The retained reader must check complete
+key/row populations and physical owned membership; shared member-role proof
+excludes INDEX/DATA/TDEF/map/LVAL aliases, and all index map storage and members
+must be globally allocated. Generated primary keys, physical logical aliases,
+retained trees and inactive tails remain unchanged by the catalog rename.
+
+This explicit planner has no journal or frontend save path. The original
+`plan_table_rename`, recoverable planner and frozen `TCRN0001` reconstruction
+remain unindexed. Independent raw indexed BEFORE/AFTER cases and refusal checks
+are authored; their focused execution is pending the current batched validation
+gate. No ordinary-creator admission or native Access comparison is claimed.
+
 The planner changes the actual catalog Name carrier using its native column
 encoding. It adjusts the necessary variable offsets, DATA slot offsets and free
 counter within the existing catalog page. The page must have enough capacity;

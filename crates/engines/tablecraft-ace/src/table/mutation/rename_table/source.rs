@@ -51,6 +51,12 @@ pub(super) struct Qualified {
     name_column: usize,
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum IndexPolicy {
+    Unindexed,
+    RetainedInt32,
+}
+
 impl Qualified {
     pub fn name_column(&self) -> &NativeColumn {
         &self.catalog_schema.columns()[self.name_column]
@@ -69,6 +75,7 @@ pub(super) fn qualify(
     image: &NativeImage,
     requested: &str,
     proposed: &str,
+    indexes: IndexPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Qualified, TableRenameError> {
@@ -258,7 +265,7 @@ pub(super) fn qualify(
             cancelled,
         )?;
     }
-    qualify_storage(image, identity, budget, cancelled)?;
+    qualify_storage(image, identity, indexes, budget, cancelled)?;
     Ok(Qualified {
         table: copy_text(object.name().as_str(), budget, cancelled)?,
         proposed: copy_text(proposed, budget, cancelled)?,
@@ -338,6 +345,7 @@ fn find_role<'a>(
 fn qualify_storage(
     image: &NativeImage,
     identity: NativeTableRenameIdentity,
+    indexes: IndexPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), TableRenameError> {
@@ -390,7 +398,10 @@ fn qualify_storage(
             return Err(TableRenameError::Source);
         }
         if schema.layout.physical_indexes != 0 || schema.layout.logical_indexes != 0 {
-            return Err(TableRenameError::Source);
+            if origin.is_system() || matches!(indexes, IndexPolicy::Unindexed) {
+                return Err(TableRenameError::Source);
+            }
+            super::indexes::qualify(image, &schema, reader.budget, cancelled)?;
         }
         if !origin.is_system()
             && schema.columns().iter().any(|column| {
