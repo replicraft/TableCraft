@@ -315,6 +315,7 @@ pub mod canonical_add_table;
 pub mod canonical_creation_autonumber;
 pub mod canonical_initial_table_creation;
 pub mod canonical_normal_autonumber;
+pub mod canonical_repeated_add_table;
 
 pub mod genuine_recursive_retirement;
 

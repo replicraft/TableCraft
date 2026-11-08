@@ -1,5 +1,32 @@
 # Candidate Access fixtures
 
+## Repository-authored repeated table additions
+
+`tablecraft-testkit::fixtures::access::canonical_repeated_add_table` independently
+authors two populated original tables, later empty table roles and append-only
+AFTER images. It retains `Items(Id=1, Score=17)` at `8:0` and independently encodes
+`More(Id=1, Name=Ada)` at `11:0`, including its primary-key history. Definition,
+DATA-gap and root-tail sentinels in the second table make preservation observable.
+No production creator, insertion, schema codec or append geometry supplies these
+bytes. The original two-table fixture and its hashes below remain unchanged.
+
+`source()` provides the third-table boundary; `with_existing_tables(2..=18)`
+provides later BEFORE/AFTER pairs. `capacity_source()` is a valid nineteen-table,
+64-page database whose bitmap cannot represent another table. It does not invent
+an invalid 67-page AFTER. Generated database images remain ignored.
+
+The [read-only checker](ace16_table_addition/ReadRepeatedAddition.java) observes
+five distinct images across the 2→3, 3→4 and 18→19 boundaries with reviewed
+Jackcess 5.0.4. It verifies both original rows and physical row identities,
+complete table inventories, and the empty added tables' LONG AutoNumber,
+TEXT(20) and primary-index metadata. The six exported files include the identical
+third-table AFTER and next BEFORE; that duplicate is explicitly recorded and
+does not count as additional distinct evidence. All file hashes remain unchanged
+after reading. The [result](results/ace16-repeated-table-independent-reader-2026-11-07.json)
+pins every image, source, checker and JAR. No third-party database fixture or
+implementation is copied. These are independent read observations, not native
+Access mutation, indexed lookup, first-insertion, recovery or platform evidence.
+
 ## Repository-authored append-table fixture
 
 `tablecraft-testkit::fixtures::access::canonical_add_table` independently builds

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "host": "macOS ARM64",
+  "scope": "Independent read-only observations of repository-authored repeated-append fixture images. Not producer verification, native Access save/reopen, indexed lookup, insertion, journal recovery or platform durability.",
+  "reader": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "program": {
+    "path": "docs/testing/ace16_table_addition/ReadRepeatedAddition.java",
+    "bytes": 2945,
+    "sha256": "982af03ea486e18fc7a7c486019202af944c3f600d98beb820520fbaa1d4c73c"
+  },
+  "fixture_source": {
+    "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_repeated_add_table.rs",
+    "bytes": 5600,
+    "sha256": "618a6f74c69093df6a9dbe57bb78e2b91638445f3b73b618fd9c91fae649a01e"
+  },
+  "java_version": "openjdk version \"21.0.8\" 2025-07-15 LTS\nOpenJDK Runtime Environment Temurin-21.0.8+9 (build 21.0.8+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.8+9 (build 21.0.8+9-LTS, mixed mode, sharing)\n",
+  "distinct_images": 5,
+  "images": [
+    {
+      "path": ".cache/repeated-table-independent-20261107/2-before.accdb",
+      "bytes": 53248,
+      "sha256": "7767340af638e561a010bb8a0c94245257ac591f10b33f646c59e864b9e41194",
+      "tables": 2,
+      "stdout": "V2016 [VERSION_2016] [Items, More] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/repeated-table-independent-20261107/2-after.accdb",
+      "bytes": 65536,
+      "sha256": "3141179f8c12959a103cd5b0b1418907d3ea9a57d6593ab935bdf09d901f6a21",
+      "tables": 3,
+      "stdout": "V2016 [VERSION_2016] [Items, More, Third] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/repeated-table-independent-20261107/3-before.accdb",
+      "bytes": 65536,
+      "sha256": "3141179f8c12959a103cd5b0b1418907d3ea9a57d6593ab935bdf09d901f6a21",
+      "tables": 3,
+      "stdout": "V2016 [VERSION_2016] [Items, More, Third] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "same_bytes_as": ".cache/repeated-table-independent-20261107/2-after.accdb",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/repeated-table-independent-20261107/3-after.accdb",
+      "bytes": 77824,
+      "sha256": "cde1f15dde649fa6afee43d4be65a00cb481a04e937c153f20506aa508f05b46",
+      "tables": 4,
+      "stdout": "V2016 [VERSION_2016] [Items, More, Table4, Third] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/repeated-table-independent-20261107/18-before.accdb",
+      "bytes": 249856,
+      "sha256": "b2ec40574e2f89cef71bbf74689bedab6785a0f80e81bee319270271a509bb23",
+      "tables": 18,
+      "stdout": "V2016 [VERSION_2016] [Items, More, Table10, Table11, Table12, Table13, Table14, Table15, Table16, Table17, Table18, Table4, Table5, Table6, Table7, Table8, Table9, Third] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/repeated-table-independent-20261107/18-after.accdb",
+      "bytes": 262144,
+      "sha256": "f9d39ca6a38fb76d124845a4ad501650df496dc39db51394fd5cdcfce03c2c0d",
+      "tables": 19,
+      "stdout": "V2016 [VERSION_2016] [Items, More, Table10, Table11, Table12, Table13, Table14, Table15, Table16, Table17, Table18, Table19, Table4, Table5, Table6, Table7, Table8, Table9, Third] original=Row[8:0][{Id=1,Score=17}] second=Row[11:0][{Id=1,Name=Ada}]\n",
+      "unchanged_after_reader": true
+    }
+  ],
+  "observations": [
+    "All requested user table names and counts agree for 2→3, 3→4 and 18→19 boundaries.",
+    "Items retains Id=1, Score=17 at row 8:0; More retains Id=1, Name=Ada at row 11:0.",
+    "Every later table is empty with two declared fields, LONG AutoNumber Id, TEXT(20) Name and primary-index metadata.",
+    "The third-table AFTER and next BEFORE are identical bytes; their repeated observations are not counted as separate images.",
+    "All database file hashes are unchanged after their read-only observations."
+  ]
+}
