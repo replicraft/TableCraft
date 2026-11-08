@@ -226,7 +226,7 @@ def assemble(root, inventory, locations, policy, upstream, cache):
         raise ValueError("Unsupported desktop notice policy schema")
     if any(document.get("review_status") not in ("reviewed", "generated") for document in (policy, upstream)):
         raise ValueError("Both complete notice policies require explicit review")
-    if policy.get("reviewed_inventory_sha256") != digest:
+    if policy.get("inventory_sha256", policy.get("reviewed_inventory_sha256")) != digest:
         raise ValueError("Desktop dependency/feature inventory changed or is not reviewed")
     entries = {}
     for document, remote in ((policy, False), (upstream, True)):
@@ -244,8 +244,9 @@ def assemble(root, inventory, locations, policy, upstream, cache):
         for entry in inventory["packages"] if entry["source"] == "workspace"
     ]
     project = policy.get("project_license", {})
+    project_licenses = {project.get("declared_license"), *project.get("additional_declared_licenses", [])}
     if policy.get("project_packages") != own or any(
-        entry["declared_license"] != project.get("declared_license") for entry in own
+        entry["declared_license"] not in project_licenses for entry in own
     ):
         raise ValueError("Project package/license authority differs from inventory")
     project_file = relative_file(root, project.get("path"))
@@ -488,6 +489,7 @@ def published_sources(base, selected, declared):
     """Retain published license/notice documents without interpreting their text."""
     sources = []
     selected_found = False
+    generic = {"license", "license.txt", "license.md", "license.rst", "licence", "copying", "copying.txt"}
     names = {
         "MIT": {"license-mit", "license-mit.txt", "license-mit.md"},
         "Apache-2.0": {"license-apache", "license-apache.txt", "license-apache.md", "license-apache-2.0.txt"},
@@ -507,7 +509,10 @@ def published_sources(base, selected, declared):
         if not text.strip() or "\0" in text:
             raise ValueError("Published license/notice source is blank or binary")
         sources.append(source)
-        if license_file and (lower in names or selected == declared):
+        if license_file and (
+            lower in names
+            or (selected == declared and path.parent == base and lower in generic)
+        ):
             selected_found = True
     if not selected_found:
         raise ValueError(f"Selected license needs an explicit source exception: {selected}")
@@ -526,16 +531,25 @@ def expand_policy(root, inventory, locations, policy):
         exceptions[key] = entry
     generated = {
         "schema": SCHEMA, "review_status": "generated",
-        "reviewed_inventory_sha256": fingerprint(inventory),
+        "inventory_sha256": fingerprint(inventory),
         "packages": [], "assets": [], "content_bindings": [],
         "project_packages": [],
     }
+    project_license = tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["license"]
+    additional_licenses = set()
     for item in inventory["packages"]:
         key = (item["name"], item["version"])
         if item["source"] == "workspace":
             generated["project_packages"].append({
                 field: item[field] for field in ("name", "version", "declared_license")
             })
+            if item["declared_license"] != project_license:
+                exception = policy.get("workspace_license_exceptions", {}).get(item["name"])
+                if not exception or exception["declared_license"] != item["declared_license"]:
+                    raise ValueError("Workspace license needs an explicit asset/source exception")
+                if not exception.get("asset") or exception["asset"] not in {entry["name"] for entry in policy.get("assets", [])}:
+                    raise ValueError("Workspace license exception requires its maintained asset notice")
+                additional_licenses.add(item["declared_license"])
             continue
         base = locations[key]
         if key in exceptions:
@@ -573,8 +587,9 @@ def expand_policy(root, inventory, locations, policy):
         if base is None:
             continue
         generated["content_bindings"].append(bind_source(binding, base))
-    project_license = tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["license"]
     generated["project_license"] = bind_source({"path": "LICENSE", "declared_license": project_license}, root)
+    if additional_licenses:
+        generated["project_license"]["additional_declared_licenses"] = sorted(additional_licenses)
     return generated
 
 

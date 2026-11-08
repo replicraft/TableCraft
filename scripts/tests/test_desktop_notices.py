@@ -169,6 +169,32 @@ checksum="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         with self.assertRaises(ValueError):
             notices.published_sources(base, "MIT", "MIT OR Apache-2.0")
 
+    def test_unrelated_nested_license_cannot_supply_a_missing_package_grant(self):
+        base = self.root / "unqualified"
+        (base / "nested").mkdir(parents=True)
+        (base / "nested/LICENSE").write_bytes(b"Vendored component grant.\n")
+        (base / "LICENSE-THIRD-PARTY").write_bytes(b"Additional component grant.\n")
+        with self.assertRaisesRegex(ValueError, "explicit source exception"):
+            notices.published_sources(base, "MIT", "MIT")
+
+    def test_workspace_additional_license_requires_explicit_asset_authority(self):
+        policy = self.compact_policy()
+        inventory = copy.deepcopy(self.inventory)
+        own = next(entry for entry in inventory["packages"] if entry["source"] == "workspace")
+        own["declared_license"] = "Apache-2.0 AND CC-BY-4.0"
+        with self.assertRaisesRegex(ValueError, "Workspace license"):
+            notices.expand_policy(self.root, inventory, self.locations, policy)
+        policy["workspace_license_exceptions"] = {
+            own["name"]: {"declared_license": own["declared_license"], "asset": "Synthetic compiled font"},
+        }
+        expanded = notices.expand_policy(self.root, inventory, self.locations, policy)
+        self.assertEqual(expanded["project_license"]["additional_declared_licenses"], [own["declared_license"]])
+        notices.assemble(self.root, inventory, self.locations, expanded,
+                         {"schema": 1, "review_status": "generated", "packages": []}, self.root)
+        policy["assets"] = []
+        with self.assertRaisesRegex(ValueError, "maintained asset"):
+            notices.expand_policy(self.root, inventory, self.locations, policy)
+
     def test_generated_bundle_is_temporary_and_explicit_input_is_preserved(self):
         with patch.object(notices, "generate", return_value=({}, {}, b"Generated exact notices.\n")) as generate:
             with notices.bundle() as path:

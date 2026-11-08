@@ -127,5 +127,7 @@ tests and eight association-metadata tests locally on macOS. Both workflow files
 pass the retained actionlint 1.7.12 check. The updated six-platform headless
 [CI configuration](DEVELOPMENT.md#configured-native-ci-coverage--7-november-2026)
 has not been remotely rerun here; no workflow, tag, push or release was initiated.
-The release workflow remains CLI-only, and user-owned desktop notice drafts are
-not incorporated by this audit.
+The release workflow remains CLI-only. Desktop archives now support
+[packaging-time notice generation](DESKTOP_PACKAGING.md) from maintained exception
+policy and locked sources; generated inventories and notice bundles stay in
+release staging. This does not add desktop publication or native build evidence.

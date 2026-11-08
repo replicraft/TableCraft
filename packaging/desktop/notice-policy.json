@@ -590,11 +590,7 @@
       "sha256": "05c60b829931ef7f1f130735843c11f5cf9cc69546eca5fc941d014781c68e31",
       "bytes": 472,
       "cache_file": "SSheldon-rust-dispatch/82d6c7a5b75dc0c71c3f46f87bb6c16a476f7748/Cargo.toml",
-      "role": "notice",
-      "extraction": {
-        "start_line": 12,
-        "end_line": 12
-      }
+      "role": "notice"
     },
     "source-57": {
       "url": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md",
@@ -1563,6 +1559,20 @@
           "role": "license"
         }
       ]
+    },
+    {
+      "name": "Access error-message reference data",
+      "selected_license": "CC-BY-4.0",
+      "sources": [
+        {
+          "path": "crates/query/tablecraft-expressions/data/error_messages/LICENSE",
+          "role": "license"
+        },
+        {
+          "path": "crates/query/tablecraft-expressions/data/error_messages/NOTICE",
+          "role": "notice"
+        }
+      ]
     }
   ],
   "content_bindings": [
@@ -1647,5 +1657,11 @@
       "root": "repository",
       "path": "crates/presentation/tablecraft-ui/src/fonts.rs"
     }
-  ]
+  ],
+  "workspace_license_exceptions": {
+    "tablecraft-expressions": {
+      "declared_license": "Apache-2.0 AND CC-BY-4.0",
+      "asset": "Access error-message reference data"
+    }
+  }
 }

@@ -244,8 +244,9 @@ The user set the following project order on 8 November 2026:
    documentation follow in this phase, not ahead of the browser host.
 
 The initial accepted library phase is complete: generated Windows IO bindings
-and standard flushes, whole-owned immutable snapshot sharing, and measured opt-in
-native parallel AES removal. Wrapper candidates that do not replace current
+and standard flushes, whole-owned immutable snapshot sharing, and adaptive
+parallel streaming across the implemented native encryption codecs. The initial
+page measurements and later end-to-end measurements remain separate evidence. Wrapper candidates that do not replace current
 security/durability contracts were not added. See the
 [implementation record](../IMPLEMENTATION.md#native-library-refactors--8-november-2026)
 and [measurements](../testing/NATIVE_LIBRARY_REFACTORS.md). This is not an exhaustive

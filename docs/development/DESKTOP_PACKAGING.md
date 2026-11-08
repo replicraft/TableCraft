@@ -26,10 +26,32 @@ ICO does not embed it in a Windows executable; that resource step remains open.
 ## Portable archives
 
 [`package_desktop.py`](../../scripts/packaging/package_desktop.py) accepts an
-already built native desktop binary and an explicit, reviewed, complete desktop
-notice bundle. The current `packaging/ThirdPartyLicenses.txt` covers the CLI;
-it is not a reviewed desktop bundle. The tool checks the supplied notice bytes,
-but cannot establish their legal completeness.
+already built native desktop binary. It generates desktop notices from locked
+Cargo sources by default, or accepts an explicit bundle with `--notices`.
+The maintained [notice policy](../../packaging/desktop/notice-policy.json) holds
+license choices, exceptional immutable sources and asset attributions. Inventory,
+local paths, source hashes and expanded manifests are generated outputs.
+
+The original development manifests are preserved in ignored cache. They are not
+release inputs or tracked generated files. The generator and its tests are
+maintained source code. The existing CLI notice bundle has a separate scope.
+
+Prepare a fresh staging directory, fetch any missing pinned upstream text, and
+generate optional inspection artifacts with:
+
+```sh
+mkdir -p dist
+python3 scripts/packaging/desktop_notices.py inventory --output dist/desktop-inventory.json
+python3 scripts/packaging/desktop_notices.py sources --output dist/desktop-license-sources.json
+python3 scripts/packaging/desktop_notices.py fetch
+python3 scripts/packaging/desktop_notices.py generate --output dist/DesktopThirdPartyLicenses.txt
+```
+
+Cargo inventory reads are locked and offline. Upstream fetching is explicit;
+packaging does not silently use a different revision or invent missing license
+text. Unknown license expressions and missing required sources fail generation.
+Generated text/manifests and downloaded caches stay outside tracked inputs.
+The packaging command owns its temporary generated notice file and cleans it up.
 
 Archive names start with `tablecraft-desktop-<version>-`. Windows uses ZIP with
 the executable, project license, notices and `RELEASE.json`. Linux uses tar.gz
@@ -37,19 +59,17 @@ with the same resources. macOS uses ZIP with a `TableCraft.app` bundle, includin
 the executable, generated Info.plist, supplied ICNS, license and notices. The
 manifest hashes every payload file; a SHA-256 sidecar accompanies each archive.
 
-After building the appropriate binary and reviewing desktop notices, a macOS
-preparation command has this form:
+After building the appropriate binary and preparing pinned notice sources, a
+macOS preparation command can use default notice generation:
 
 ```sh
 python3 scripts/packaging/package_desktop.py package --version 0.1.0 \
   --target aarch64-apple-darwin \
   --binary target/aarch64-apple-darwin/release/tablecraft-desktop \
-  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
   --icon .cache/desktop-icons/application.icns --output .cache/desktop-dist
 python3 scripts/packaging/package_desktop.py verify --version 0.1.0 \
   --target aarch64-apple-darwin \
   --archive .cache/desktop-dist/tablecraft-desktop-0.1.0-macos-arm64.zip \
-  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
   --icon .cache/desktop-icons/application.icns --smoke
 ```
 
@@ -83,11 +103,11 @@ six archives and six sidecars together before creating assembly outputs:
 ```sh
 python3 scripts/packaging/desktop_release.py finalize --version 0.1.0 \
   --output .cache/desktop-dist \
-  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
+  --notices dist/DesktopThirdPartyLicenses.txt \
   --icon .cache/desktop-icons/application.icns
 python3 scripts/packaging/desktop_release.py verify --version 0.1.0 \
   --output .cache/desktop-dist \
-  --notices /path/to/reviewed/desktop/ThirdPartyLicenses.txt \
+  --notices dist/DesktopThirdPartyLicenses.txt \
   --icon .cache/desktop-icons/application.icns
 ```
 
@@ -117,3 +137,12 @@ generated ICNS passed extraction and headless `--help`/`--version` smoke checks.
 It used an explicitly synthetic test notice, remains in ignored cache and is
 not distributable. This checks the archive path, not a release build or a
 completed desktop notice audit.
+
+## Generated notice verification — 8 November 2026
+
+Twenty focused notice tests and 33 archive tests pass. Two fresh locked/offline
+generations produced identical 803,876-byte notice bundles, including the
+expression package's CC-BY-4.0 reference-data notices. This validates deterministic
+generation against the retained sources; it does not establish native platform
+builds, installation or a legal completeness guarantee. No generated bundle,
+expanded manifest or downloaded source cache is checked in.
