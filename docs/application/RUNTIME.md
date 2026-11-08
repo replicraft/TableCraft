@@ -1606,3 +1606,36 @@ virtualization; these do not qualify native screen readers or Access behavior.
 Native observations and current platform limits are recorded in the
 [desktop guide](../ui/DESKTOP.md). Payload-free diagnostics remain governed by
 [the tracing contract](../development/TRACING.md).
+
+## Reviewed explicit database options
+
+With `offline-edit` and `ace16-create`, the separate
+`ReviewDisableNameAutoCorrect { document_revision }` request reviews only the
+explicit source-bound disable-both operation. Its current creator source profile
+and preserved bytes are defined by the [native options contract](../access/writes/DATABASE_OPTIONS.md).
+A successful unlocked review returns `DatabaseOptionsReview` and a consuming
+`ReviewedDatabaseOptions`; review never holds the native exclusive file owner,
+creates a journal or changes defaults.
+
+`SaveWorker::start_disable_name_auto_correct` uses the existing nonreplaceable
+worker and actual adapter resizable pair. It retains owners and terminal failures
+across cancellation/replacement, returns unconsumed capabilities for stale/busy
+start refusals, and rechecks the complete original before staging. Committed or
+verified replacement receipts report only
+`SaveDatabaseOptionsChange::NameAutoCorrectDisabled`; table/query changes and
+matched/changed row counts remain absent.
+
+The capability's `DatabaseOptionsReopen` witness is a read-only full-AFTER guard.
+After explicit save acknowledgement, `OpenDatabaseOptionsSaved` creates a fresh
+read session only when every expected byte still matches; a changed file refuses
+without replaying the option action. A later table rename requires its own
+explicit review/save. Unsupported hosts retain explicit refusals. No GUI option
+command or implicit Name AutoCorrect change is supplied by this service.
+
+Five focused service tests are authored for exact independent images, separate
+rename composition, busy/stale owner boundaries, document invalidation,
+and guarded reopen. Runtime validation remains pending the coordinated batch.
+The [completed prior 72-test SQL/creator batch](../testing/results/sql-creator-focused-2026-11-08.json)
+passes the earlier query, column and creator rename services. It predates the
+option service and shared expected-image copy extraction; those new tests and
+rewired-consumer regressions are not included in its passing count.

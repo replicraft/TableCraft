@@ -1,6 +1,8 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 #[cfg(feature = "ace16-create")]
 mod add_column;
+#[cfg(feature = "ace16-create")]
+mod database_options;
 mod deleting;
 mod inserting;
 mod query_action;
@@ -24,6 +26,8 @@ pub(crate) mod platform;
 
 #[cfg(feature = "ace16-create")]
 pub use add_column::{AddColumnReview, AddedColumnReopen, ReviewedAddColumn};
+#[cfg(feature = "ace16-create")]
+pub use database_options::{DatabaseOptionsReopen, DatabaseOptionsReview, ReviewedDatabaseOptions};
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,

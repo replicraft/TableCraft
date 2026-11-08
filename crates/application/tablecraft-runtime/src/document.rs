@@ -71,6 +71,27 @@ pub(super) struct Document {
 }
 
 impl Document {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    pub(super) fn open_database_options_saved(
+        witness: &crate::DatabaseOptionsReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            Error::CreatedSourceChanged | Error::SourceChanged => {
+                Error::DatabaseOptionsSourceChanged
+            }
+            error => error,
+        })
+    }
+
     #[cfg(feature = "offline-edit")]
     pub(super) fn open_query_expression_saved(
         witness: &crate::QueryExpressionReopen,

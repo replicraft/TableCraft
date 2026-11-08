@@ -43,6 +43,22 @@ impl Worker {
         let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewDisableNameAutoCorrect { document_revision } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_disable_name_auto_correct(*document_revision, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenDatabaseOptionsSaved { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_database_options_saved(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
             #[cfg(feature = "offline-edit")]
             Command::ReviewTableRename {
                 document_revision,
@@ -403,6 +419,10 @@ impl Worker {
                         || thread_shared.generation.load(Ordering::Acquire) != request.id
                 };
                 let operation = match &request.command {
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewDisableNameAutoCorrect { .. } => "review_database_options",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::OpenDatabaseOptionsSaved { .. } => "open_database_options_saved",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewTableRename { .. } => "review_table_rename",
                     #[cfg(feature = "offline-edit")]

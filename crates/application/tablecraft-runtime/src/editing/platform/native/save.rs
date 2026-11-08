@@ -2,6 +2,8 @@
 mod apply;
 #[cfg(feature = "ace16-create")]
 mod apply_add_column;
+#[cfg(feature = "ace16-create")]
+mod apply_database_options;
 mod apply_delete;
 mod apply_insert;
 mod apply_query_action;
@@ -14,6 +16,8 @@ mod restart;
 
 #[cfg(feature = "ace16-create")]
 use self::apply_add_column::apply_add_column;
+#[cfg(feature = "ace16-create")]
+use self::apply_database_options::apply_database_options;
 #[cfg(feature = "ace16-create")]
 use self::apply_table_creation::apply_table_creation;
 use self::{
@@ -30,7 +34,7 @@ use crate::editing::save::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
 };
 #[cfg(feature = "ace16-create")]
-use crate::editing::{ReviewedAddColumn, ReviewedTableCreation};
+use crate::editing::{ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedTableCreation};
 use crate::{
     controls::action_recovery_budget,
     editing::{
@@ -50,6 +54,8 @@ use std::{
 use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
+    #[cfg(feature = "ace16-create")]
+    ApplyDatabaseOptions(ReviewedDatabaseOptions, PathBuf),
     ApplyQueryExpression(ReviewedQueryExpression, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyAddColumn(ReviewedAddColumn, PathBuf),
@@ -101,6 +107,11 @@ pub struct SaveWorker {
 }
 
 impl SaveWorker {
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_database_options() -> bool {
+        true
+    }
+
     pub const fn supports_query_expression() -> bool {
         true
     }
@@ -152,6 +163,8 @@ impl SaveWorker {
                 let cancelled = || owner.cancelled.load(Ordering::Acquire);
                 let operation = match &task {
                     #[cfg(feature = "ace16-create")]
+                    Task::ApplyDatabaseOptions(..) => SaveOperation::Apply,
+                    #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyAddColumn(..) => SaveOperation::Apply,
@@ -175,6 +188,10 @@ impl SaveWorker {
                     tracing::debug_span!("application save task", operation = operation_name);
                 let _entered = span.enter();
                 let outcome = match task {
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyDatabaseOptions(reviewed, bundle) => {
+                        apply_database_options(reviewed, bundle, &mut retained, &cancelled)
+                    }
                     Task::ApplyQueryExpression(reviewed, bundle) => {
                         apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
                     }
@@ -281,6 +298,17 @@ impl SaveWorker {
             }
         });
         Self { shared }
+    }
+
+    /// Consume only the explicitly reviewed option request through this save owner.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_disable_name_auto_correct(
+        &self,
+        reviewed: ReviewedDatabaseOptions,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedDatabaseOptions>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyDatabaseOptions)
     }
 
     pub fn start(&self, reviewed: ReviewedEdit, bundle: PathBuf) -> Result<u64, SaveStartError> {

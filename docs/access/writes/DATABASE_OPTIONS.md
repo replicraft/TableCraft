@@ -85,13 +85,47 @@ The allocation-free receipt has a separate
 or verified Replacement images. Original images and rollback retain no such
 marker. Matched/changed rows and table-schema/query changes remain absent.
 Existing cancellation, setup, recovery/finalization and release failures retain
-the same owner and terminal outcomes. Six focused adapter tests are authored;
-their execution remains pending.
+the same owner and terminal outcomes. All six focused adapter tests pass.
 
-No runtime/GUI option command, Access comparison or Windows execution is supplied
-by this checkpoint. Existing add-table source admission still assumes the
-original seven-role ledger. Rename V1/V2 still requires its existing inline OFF
-source grammar, so this external option candidate does not yet establish
-creator-compatible rename or general CRUD composition. Those operations need
-explicit new source/profile qualification and original-intent recovery rather
-than relaxed historical guards.
+The shared runtime now has a separate explicit option review/save checkpoint.
+`ReviewDisableNameAutoCorrect` requires the current document revision and issues
+`DatabaseOptionsReview` plus the consuming `ReviewedDatabaseOptions` capability.
+The unlocked review retains complete original/candidate bytes and a full-image
+read-only reopen witness. `SaveWorker::start_disable_name_auto_correct` consumes
+it through the same nonreplaceable save owner, rechecks source validity and
+stages the existing adapter operation under the retained exclusive target.
+Only the separate database-options completion fact is reported; row counts and
+schema/query facts remain absent. The existing resizable recovery lifecycle
+handles retained/cold requests without a new host recovery implementation.
+
+After acknowledgement, `OpenDatabaseOptionsSaved` verifies the entire expected
+replacement before creating a fresh read session. It neither replays the setting
+operation nor grants permission to rename. Unsupported hosts return explicit
+refusals and unconsumed save capabilities. A shared native helper owns the same
+fallible, budgeted expected-image copy used by option, rename, column and query
+reviews. Five focused runtime tests are authored; compilation/execution remains
+pending the coordinated batch.
+
+`DatabaseProperties::name_auto_correct` provides an inert typed observation:
+`Absent` when neither named setting occurs in an unnamed default map,
+`ExplicitOff` only for one occurrence each of native LONG/DDL zero, and `Other`
+for partial, duplicated, differently typed/flagged or other values. A missing
+MSysDb remains the outer inspection's `None`. No missing or nonzero value is
+called enabled, and this observation alone never qualifies a mutation. The two
+focused observation tests are authored but unrun at this checkpoint.
+
+The [earlier completed SQL/creator batch](../../testing/results/sql-creator-focused-2026-11-08.json)
+passes 72 tests, including 35 engine rename, four runtime rename and six long-value
+cases. Its V3 positives establish bounded native option-then-rename composition.
+It predates this new runtime options service, metadata observer and expected-image
+copy extraction; the five service tests, two observer tests and rewired-consumer
+regressions remain unrun.
+
+No GUI option command, native Microsoft Access comparison or Windows execution
+is supplied here. Existing add-table source admission still assumes the original
+seven-role ledger. Rename V1/V2 retain their exact inline source grammar;
+[the separately sealed creator V3 source](TABLE_RENAME.md) now qualifies bounded
+rename after explicit OFF, with independent source/image/recovery tests passing.
+The setting change remains an explicit operation and never changes constructor
+defaults or runs automatically during rename. General CRUD composition remains
+incomplete.

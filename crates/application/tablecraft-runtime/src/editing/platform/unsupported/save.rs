@@ -1,7 +1,7 @@
 //! Unsupported hosts return every unconsumed capability without starting work.
 use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
-use crate::editing::{ReviewedAddColumn, ReviewedTableCreation};
+use crate::editing::{ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedTableCreation};
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
     ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
@@ -11,6 +11,23 @@ use std::path::PathBuf;
 pub struct SaveWorker;
 
 impl SaveWorker {
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_database_options() -> bool {
+        false
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub fn start_disable_name_auto_correct(
+        &self,
+        reviewed: ReviewedDatabaseOptions,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedDatabaseOptions>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
     pub const fn supports_query_expression() -> bool {
         false
     }

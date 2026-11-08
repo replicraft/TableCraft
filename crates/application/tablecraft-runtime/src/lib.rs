@@ -33,8 +33,8 @@ pub use creation::{
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
-    AddColumnReview, AddedColumnReopen, CreatedTableReopen, ReviewedAddColumn,
-    ReviewedTableCreation,
+    AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
+    DatabaseOptionsReview, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -89,6 +89,12 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    DatabaseOptions(#[from] tablecraft_ace::DatabaseOptionsIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("database option contents changed before reopening")]
+    DatabaseOptionsSourceChanged,
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     QueryExpression(#[from] tablecraft_ace::RecoverableQueryExpressionError),
@@ -217,6 +223,14 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewDisableNameAutoCorrect {
+        document_revision: u64,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenDatabaseOptionsSaved {
+        witness: Arc<DatabaseOptionsReopen>,
+    },
     #[cfg(feature = "offline-edit")]
     ReviewTableRename {
         document_revision: u64,
@@ -434,6 +448,11 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    DatabaseOptionsReviewed {
+        review: DatabaseOptionsReview,
+        capability: ReviewedDatabaseOptions,
+    },
     #[cfg(feature = "offline-edit")]
     QuerySqlDraft {
         draft: QuerySqlDraft,

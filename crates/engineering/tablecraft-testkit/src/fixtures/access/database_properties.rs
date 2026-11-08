@@ -46,7 +46,7 @@ pub fn query_modes(entries: &[(u8, u8, &[u8])]) -> Vec<u8> {
     )
 }
 
-/// Explicit database Name AutoCorrect settings; absent values mean enabled.
+/// Explicit database Name AutoCorrect OFF settings; absence remains distinct.
 /// Both entries are independent LONG/DDL zero values in the unnamed default map.
 pub fn name_auto_correct_disabled() -> Vec<u8> {
     name_auto_correct_values(&[(1, 4, &0_i32.to_le_bytes()), (1, 4, &0_i32.to_le_bytes())])

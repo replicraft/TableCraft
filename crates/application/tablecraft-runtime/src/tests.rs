@@ -9,6 +9,12 @@ mod captions;
 mod contents;
 #[cfg(all(
     feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod database_options;
+#[cfg(all(
+    feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod deleting;

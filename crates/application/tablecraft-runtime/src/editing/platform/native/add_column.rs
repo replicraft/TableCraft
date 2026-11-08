@@ -9,10 +9,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, NativeImageSource, RecoverableAddColumnPlan};
-use tablecraft_core::limits::Resource;
-
-const EXPECTED_COPY_CHUNK_BYTES: usize = 16 * 1024;
+use tablecraft_ace::{NativeImage, RecoverableAddColumnPlan};
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<AddedColumnReopen>,
@@ -40,15 +37,7 @@ pub(in crate::editing) fn review(
     )?;
     let plan =
         image.plan_recoverable_add_int32_column_for_source(table, column, &mut work, cancelled)?;
-    work.charge_allocation(plan.after_bytes().len() as u64, 1)?;
-    let mut expected = Vec::new();
-    expected.try_reserve_exact(plan.after_bytes().len())?;
-    for chunk in plan.after_bytes().chunks(EXPECTED_COPY_CHUNK_BYTES) {
-        check(cancelled)?;
-        work.charge(Resource::Steps, chunk.len() as u64)?;
-        expected.extend_from_slice(chunk);
-    }
-    let expected = NativeImageSource::from_vec(expected, &mut work, cancelled)?.shared_bytes();
+    let expected = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
     let mut output = Presentation::new(cancelled);
     let review = AddColumnReview {
         id: issue_id()?,

@@ -10,13 +10,9 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{
-    InspectError, NativeImage, NativeImageSource, RecoverableNativeQueryExpressionPlan,
-};
+use tablecraft_ace::{InspectError, NativeImage, RecoverableNativeQueryExpressionPlan};
 use tablecraft_core::limits::Resource;
 use tablecraft_model::ObjectKind;
-
-const EXPECTED_COPY_CHUNK_BYTES: usize = 16 * 1024;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<QueryExpressionReopen>,
@@ -62,16 +58,7 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    work.charge_allocation(plan.after_bytes().len() as u64, 1)?;
-    let mut expected_bytes = Vec::new();
-    expected_bytes.try_reserve_exact(plan.after_bytes().len())?;
-    for chunk in plan.after_bytes().chunks(EXPECTED_COPY_CHUNK_BYTES) {
-        check(cancelled)?;
-        work.charge(Resource::Steps, chunk.len() as u64)?;
-        expected_bytes.extend_from_slice(chunk);
-    }
-    let expected_bytes =
-        NativeImageSource::from_vec(expected_bytes, &mut work, cancelled)?.shared_bytes();
+    let expected_bytes = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
     let mut output = Presentation::new(cancelled);
     let review = QueryExpressionReview {
         id: issue_id()?,

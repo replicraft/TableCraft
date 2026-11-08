@@ -1,4 +1,7 @@
 //! Inert database property maps, bound to their native catalog containment role.
+mod name_auto_correct;
+pub use name_auto_correct::DatabaseNameAutoCorrect;
+
 use super::{PropertyGroup, PropertyGroupKind, decode, inspect::read_property_bytes};
 use crate::{InspectError, NativeReadSource, format::data_type, header::check, inspect_catalog};
 use tablecraft_core::{

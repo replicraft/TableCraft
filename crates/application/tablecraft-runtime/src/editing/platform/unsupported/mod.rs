@@ -1,6 +1,8 @@
 //! Public facts and explicit refusals without native editing authority.
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) mod add_column;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod database_options;
 pub(in crate::editing) mod deleting;
 pub(in crate::editing) mod draft;
 pub(in crate::editing) mod inserting;
