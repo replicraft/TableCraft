@@ -152,7 +152,11 @@ that expression limit. Native admission rejects an oversized expression without
 truncation or a journal. Required/AllowZeroLength use exact optional Boolean
 presence, independently from NULL, an empty string and an omitted record field.
 
-Wider-target default definitions use TCNT0004/profile 4, including a NULL default
+Present Description selects TCNT0005/profile 5. The snapshot and native
+declaration retain exact optional text, including present-empty and AutoNumber
+descriptions; they do not evaluate that text. Authoring currently bounds each
+description to 255 UTF-16 units, independently of aggregate native capacity.
+Without Description, wider-target default definitions use TCNT0004/profile 4, including a NULL default
 whose target is Byte, Int16, Single, Double, Decimal or GUID. Otherwise explicit
 policies use TCNT0003/profile 3. Existing policy-free TCNT0001/profile 1 and
 legacy-family default-bearing TCNT0002/profile 2 remain reconstructable under
@@ -221,6 +225,10 @@ TCNT remains canonical-blank initialization; TCAT binds the actual populated
 original. TCAT1/profile 1 stays exactly ten pages; TCAT2/profile 2 admits only
 thirteen through 61 pages in three-page steps. Both retain the pinned TCNT 1–4
 declaration-template grammar.
+Description-bearing definitions use separate TCAT3/profile 3 and TCAT4/profile 4
+actions for those same respective source partitions, each pinning TCNT5 only.
+The old grammar and frame ceilings remain unchanged; an outer/profile/template
+mismatch refuses instead of retrying another decoder.
 The template's canonical header is not the append operation's source binding.
 Action dispatch chooses its decoder once, with no retry as another schema or row
 action. Each route uses checked V2 same-file resizing, complete native

@@ -115,6 +115,9 @@ pub(super) fn capture(
         if let Some(value) = default {
             column = column.with_default_literal(value)?;
         }
+        if let Some(description) = field.description() {
+            column = column.with_description(description)?;
+        }
         columns.push(column);
     }
     Ok(FirstTableDefinition::capture(

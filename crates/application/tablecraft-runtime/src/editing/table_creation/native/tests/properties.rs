@@ -1,7 +1,8 @@
 //! Real schema review, durable save and fresh native property observations.
 use super::{opened, request, terminal};
 use crate::{
-    Command, Field, FieldPropertyValue, Response, SaveOutcome, SaveWorker, Worker, journal_path,
+    Command, Field, FieldPropertyValue, InsertInput, InsertTarget, Response, SaveOutcome,
+    SaveWorker, Worker, journal_path,
 };
 use std::path::PathBuf;
 use tablecraft_builders::table::{DraftDefaultMode, DraftFieldType, TableDraft};
@@ -59,6 +60,147 @@ fn property<'a>(field: &'a Field, name: &str) -> &'a FieldPropertyValue {
         .find(|entry| entry.name == name)
         .unwrap()
         .value
+}
+
+#[test]
+fn descriptions_reopen_as_exact_inert_text_with_empty_and_absent_distinct() {
+    let mut draft = TableDraft::initial();
+    let id = draft.fields()[0].id();
+    let boundary = format!("{}😀", "é".repeat(253));
+    draft.set_field_description(id, Some(&boundary)).unwrap();
+    let named = draft.add_field(DraftFieldType::ShortText).unwrap();
+    draft.rename_field(named, "Label").unwrap();
+    let exact = "  Résumé 日本語 Now()  ";
+    draft.set_field_description(named, Some(exact)).unwrap();
+    let empty = draft.add_field(DraftFieldType::Number).unwrap();
+    draft.set_field_description(empty, Some("")).unwrap();
+    draft.add_field(DraftFieldType::YesNo).unwrap();
+
+    let (_directory, path, reader, fields) = persist(draft);
+    let expected = [
+        FieldPropertyValue::Text(boundary),
+        FieldPropertyValue::Text(exact.into()),
+        FieldPropertyValue::Text(String::new()),
+        FieldPropertyValue::Absent,
+    ];
+    assert_eq!(fields.len(), expected.len());
+    for (field, expected) in fields.iter().zip(&expected) {
+        assert_eq!(property(field, "Description"), expected);
+    }
+    drop(reader);
+
+    // Read through a fresh runtime, so the assertion cannot reuse draft metadata
+    // or a property cache belonging to the save/reopen session.
+    let fresh = Worker::new(|| {});
+    let Response::Opened {
+        document_revision: mut revision,
+        ..
+    } = request(
+        &fresh,
+        Command::Open {
+            path: path.clone(),
+            password: String::new(),
+        },
+    )
+    .unwrap()
+    else {
+        panic!("expected a fresh native runtime");
+    };
+    let Response::Details { fields, .. } = request(
+        &fresh,
+        Command::Describe {
+            table: "Properties".into(),
+        },
+    )
+    .unwrap() else {
+        panic!("expected persisted native field descriptions");
+    };
+    assert_eq!(fields.len(), expected.len());
+    for (field, expected) in fields.iter().zip(&expected) {
+        assert_eq!(property(field, "Description"), expected);
+    }
+
+    let unchanged = std::fs::read(&path).unwrap();
+    let Response::InsertDraft(insertion) = request(
+        &fresh,
+        Command::BeginInsert {
+            target: InsertTarget {
+                document_revision: revision,
+                table: "Properties".into(),
+            },
+        },
+    )
+    .unwrap() else {
+        panic!("expected described-table insertion metadata");
+    };
+    assert!(matches!(
+        request(
+            &fresh,
+            Command::ReviewInsert {
+                draft_id: insertion.id,
+                inputs: (0..4).map(|_| InsertInput::Omitted).collect(),
+            }
+        )
+        .unwrap(),
+        Response::InsertReviewed { .. }
+    ));
+    assert_eq!(std::fs::read(&path).unwrap(), unchanged);
+    assert!(!journal_path(&path).exists());
+
+    // Both append source partitions must retain the original descriptions and
+    // carry the new exact declaration through their own reviewed journal route.
+    let saver = SaveWorker::new(|| {});
+    for table in ["Second", "Third"] {
+        let mut draft = TableDraft::initial();
+        let field = draft.add_field(DraftFieldType::ShortText).unwrap();
+        draft.set_field_description(field, Some(exact)).unwrap();
+        let Response::TableCreationReviewed { capability } = request(
+            &fresh,
+            Command::ReviewTableCreation {
+                document_revision: revision,
+                snapshot: draft.snapshot(table).unwrap(),
+            },
+        )
+        .unwrap() else {
+            panic!("expected a description-bearing append review");
+        };
+        let witness = capability.reopen_witness();
+        let operation = saver
+            .start_table_creation(capability, journal_path(&path))
+            .unwrap();
+        let outcome = terminal(&saver).outcome;
+        assert!(matches!(outcome, SaveOutcome::Saved { .. }), "{outcome:?}");
+        assert!(saver.acknowledge(operation));
+        let Response::Opened {
+            document_revision, ..
+        } = request(&fresh, Command::OpenTableCreated { witness }).unwrap()
+        else {
+            panic!("expected complete described-table reopening");
+        };
+        revision = document_revision;
+        for name in ["Properties", table] {
+            let Response::Details { fields, .. } =
+                request(&fresh, Command::Describe { table: name.into() }).unwrap()
+            else {
+                panic!("expected stored descriptions after append");
+            };
+            if name == "Properties" {
+                assert_eq!(fields.len(), expected.len());
+                for (field, expected) in fields.iter().zip(&expected) {
+                    assert_eq!(property(field, "Description"), expected);
+                }
+            } else {
+                assert_eq!(
+                    property(&fields[0], "Description"),
+                    &FieldPropertyValue::Absent
+                );
+                assert_eq!(
+                    property(&fields[1], "Description"),
+                    &FieldPropertyValue::Text(exact.into())
+                );
+            }
+        }
+    }
 }
 
 #[test]

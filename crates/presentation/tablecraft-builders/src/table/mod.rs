@@ -20,11 +20,15 @@ pub const MAX_DRAFT_NAME_BYTES: usize = MAX_DRAFT_NAME_UNITS * 4;
 pub const SHORT_TEXT_UNITS: u16 = 255;
 pub const MIN_SHORT_TEXT_UNITS: u16 = 1;
 pub const MAX_DRAFT_DEFAULT_BYTES: usize = 4096;
+pub const MAX_DRAFT_DESCRIPTION_UNITS: usize = 255;
+pub const MAX_DRAFT_DESCRIPTION_BYTES: usize = MAX_DRAFT_DESCRIPTION_UNITS * 4;
 
 #[derive(Clone, Copy, Debug, Error, PartialEq, Eq)]
 pub enum TableDraftError {
     #[error("the draft name is invalid or duplicated")]
     InvalidName,
+    #[error("the draft field description exceeds its bounded text profile")]
+    InvalidDescription,
     #[error("the draft field no longer exists")]
     MissingField,
     #[error("the initial AutoNumber field cannot be changed in this authoring profile")]

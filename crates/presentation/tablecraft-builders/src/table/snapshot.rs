@@ -12,6 +12,7 @@ pub struct SnapshotField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    description: Option<String>,
     short_text_units: Option<u16>,
     number_size: Option<DraftNumberSize>,
     decimal: Option<DecimalConstraints>,
@@ -35,6 +36,10 @@ impl SnapshotField {
 
     pub fn is_primary(&self) -> bool {
         self.primary
+    }
+
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
     }
 
     pub fn short_text_units(&self) -> Option<u16> {
@@ -93,12 +98,16 @@ impl TableDraftSnapshot {
             + self
                 .fields
                 .iter()
-                .map(|field| field.name.capacity() + field.default_mode.retained_bytes())
+                .map(|field| {
+                    field.name.capacity()
+                        + field.description.as_ref().map_or(0, String::capacity)
+                        + field.default_mode.retained_bytes()
+                })
                 .sum::<usize>()
     }
 }
 
-fn copy_name(name: &str) -> Result<String, TableDraftError> {
+fn copy_text(name: &str) -> Result<String, TableDraftError> {
     let mut result = String::new();
     result
         .try_reserve_exact(name.len())
@@ -119,9 +128,10 @@ impl TableDraft {
         for field in self.fields() {
             fields.push(SnapshotField {
                 id: field.id(),
-                name: copy_name(field.name())?,
+                name: copy_text(field.name())?,
                 kind: field.kind(),
                 primary: field.is_primary(),
+                description: field.description().map(copy_text).transpose()?,
                 short_text_units: field.short_text_units(),
                 number_size: field.number_size(),
                 decimal: field.decimal_constraints(),
@@ -131,7 +141,7 @@ impl TableDraft {
             });
         }
         Ok(TableDraftSnapshot {
-            table_name: copy_name(table_name)?,
+            table_name: copy_text(table_name)?,
             revision: self.revision(),
             fields,
         })

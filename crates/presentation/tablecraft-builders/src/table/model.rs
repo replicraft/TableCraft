@@ -1,3 +1,4 @@
+mod description;
 mod properties;
 
 pub use properties::{DraftDefaultMode, DraftNumberSize};
@@ -24,6 +25,7 @@ pub struct DraftField {
     name: String,
     kind: DraftFieldType,
     primary: bool,
+    description: Option<String>,
     properties: FieldProperties,
 }
 
@@ -43,6 +45,10 @@ impl DraftField {
     pub fn is_primary(&self) -> bool {
         self.primary
     }
+
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
 }
 
 pub struct TableDraft {
@@ -60,6 +66,7 @@ impl TableDraft {
                 name: "ID".into(),
                 kind: DraftFieldType::AutoNumberIncrement,
                 primary: true,
+                description: None,
                 properties: FieldProperties::new(DraftFieldType::AutoNumberIncrement),
             }],
             revision: 0,
@@ -86,7 +93,11 @@ impl TableDraft {
             + self
                 .fields
                 .iter()
-                .map(|field| field.name.capacity() + field.properties.retained_bytes())
+                .map(|field| {
+                    field.name.capacity()
+                        + field.description.as_ref().map_or(0, String::capacity)
+                        + field.properties.retained_bytes()
+                })
                 .sum::<usize>()
     }
 
@@ -123,6 +134,7 @@ impl TableDraft {
             name,
             kind,
             primary: false,
+            description: None,
             properties: FieldProperties::new(kind),
         });
         self.next_field = next_field;
