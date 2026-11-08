@@ -4,7 +4,7 @@ use crate::{NativeImage, NativeRecoveryQualificationError, TableRenameError};
 use sha2::{Digest, Sha256};
 use std::{cell::Cell, io::Cursor};
 use tablecraft_core::limits::Resource;
-use tablecraft_io::journal::{self, DurableStorage, RecoveryOutcome, V1State, inspect_v1};
+use tablecraft_io::journal::{self, RecoveryOutcome, V1State, inspect_v1};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::canonical_catalog_names::{RenamePair, rename_pair};
 use tablecraft_testkit::fixtures::access::{

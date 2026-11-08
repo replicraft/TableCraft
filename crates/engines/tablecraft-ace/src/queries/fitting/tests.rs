@@ -141,11 +141,17 @@ fn retained_sdk_constant_expression_matches_complete_independent_after() {
     let before = std::fs::read(std::env::var_os("TABLECRAFT_QUERYDEF_BEFORE").unwrap()).unwrap();
     let expected = std::fs::read(std::env::var_os("TABLECRAFT_QUERYDEF_AFTER").unwrap()).unwrap();
     assert_eq!(
-        format!("{:x}", Sha256::digest(&before)),
+        Sha256::digest(&before)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>(),
         "83f9d69408948d64eab4dbeafcca468116b5624bdf6b9510569640497b487779"
     );
     assert_eq!(
-        format!("{:x}", Sha256::digest(&expected)),
+        Sha256::digest(&expected)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>(),
         "6f4269175635cccea5d61fae371899d1efa06a1f79a78172efa75539792f6693"
     );
     let plan = capture(&before)
