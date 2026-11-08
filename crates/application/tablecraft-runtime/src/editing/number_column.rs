@@ -1,4 +1,7 @@
 //! Explicit GUI Number semantics: nullable LONG, Required false, typed zero.
+mod availability;
+pub use availability::NumberColumnAvailability;
+
 use super::{AddedColumnReopen, platform};
 use crate::{Error, Response, document::Document};
 use std::{path::Path, sync::Arc};

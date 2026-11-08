@@ -424,7 +424,8 @@ impl Desktop {
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::DatabaseOptionsReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
-                | Ok(Response::NumberColumnReviewed { .. }) => {
+                | Ok(Response::NumberColumnReviewed { .. })
+                | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
                 Ok(Response::TableRenameReviewed { review, capability }) => {

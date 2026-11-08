@@ -1,4 +1,6 @@
 //! Unsupported hosts cannot issue a persisted Number declaration capability.
+pub(in crate::editing) mod availability;
+
 use crate::{
     Error, Response,
     document::Document,

@@ -1,4 +1,6 @@
 //! No-lock Number review binds the exact original Required(false)/zero request.
+pub(in crate::editing) mod availability;
+
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},

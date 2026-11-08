@@ -34,8 +34,8 @@ pub use creation::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
     AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
-    DatabaseOptionsReview, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn,
-    ReviewedTableCreation,
+    DatabaseOptionsReview, NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions,
+    ReviewedNumberColumn, ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -274,6 +274,11 @@ pub enum Command {
         witness: Arc<InsertRetryWitness>,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    InspectNumberColumnAvailability {
+        document_revision: u64,
+        table: String,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewAddNumberColumn {
         document_revision: u64,
         table: String,
@@ -484,6 +489,10 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    NumberColumnAvailability {
+        availability: NumberColumnAvailability,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     NumberColumnReviewed {

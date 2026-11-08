@@ -36,7 +36,7 @@ pub use inserting::{
     InsertTarget, ReviewedInsert,
 };
 #[cfg(feature = "ace16-create")]
-pub use number_column::ReviewedNumberColumn;
+pub use number_column::{NumberColumnAvailability, ReviewedNumberColumn};
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{

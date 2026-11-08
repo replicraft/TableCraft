@@ -125,6 +125,14 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::InspectNumberColumnAvailability {
+                document_revision,
+                table,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_number_column_availability(*document_revision, table, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::ReviewAddNumberColumn {
                 document_revision,
                 table,
@@ -448,6 +456,10 @@ impl Worker {
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewTableCreation { .. } => "review_table_creation",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::InspectNumberColumnAvailability { .. } => {
+                        "inspect_number_column_source"
+                    }
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewAddNumberColumn { .. } => "review_add_number_column",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
