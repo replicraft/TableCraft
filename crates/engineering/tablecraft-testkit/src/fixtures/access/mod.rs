@@ -405,6 +405,7 @@ pub mod calculated_storage;
 /// Independent populated multivalue parent/child images.
 pub mod complex_links;
 
+pub mod query_expression_edits;
 /// Independent saved-query catalog/fragment images; no SQL reconstruction.
 pub mod saved_queries;
 

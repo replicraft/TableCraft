@@ -17,6 +17,11 @@ pub use collation::{
 };
 mod queries;
 #[cfg(feature = "journal")]
+pub use queries::{
+    NativeQueryExpressionEditsPlan, OwnedQueryFragmentExpressionEdit, QueryExpressionEditsError,
+    QueryFragmentExpressionEdit,
+};
+#[cfg(feature = "journal")]
 pub use queries::{NativeQueryExpressionPlan, QueryExpressionError};
 pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
