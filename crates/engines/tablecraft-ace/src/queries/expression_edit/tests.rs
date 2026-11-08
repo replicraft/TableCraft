@@ -1,9 +1,10 @@
 use super::{QueryAttribute, QueryFragmentExpressionEdit};
 use crate::{NativeImage, QueryExpressionEditsError};
-use std::io::Cursor;
+use sha2::{Digest, Sha256};
+use std::{io::Cursor, path::Path};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::fixtures::access::query_expression_edits as raw;
+use tablecraft_testkit::{fixtures::access::query_expression_edits as raw, support::bytes::hex};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 1_000_000, 500_000_000)
@@ -125,8 +126,7 @@ fn present_empty_compiled_payload_refuses_while_legacy_language_stays_closed() {
 #[test]
 #[ignore = "private generated SDK full images; explicit separate gate only"]
 fn sdk_complete_images_qualify_projection_where_multiple_pages_and_repeated_roots() {
-    use sha2::{Digest, Sha256};
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
     let original =
         root.join(".cache/querydef-existing-save-sdk-20261108/files/multi-page-before.accdb");
     let repeat = root.join(".cache/querydef-repeat-save-sdk-20261108/files");
@@ -203,7 +203,7 @@ fn sdk_complete_images_qualify_projection_where_multiple_pages_and_repeated_root
     for (before_path, after_path, query, edits, after_hash) in cases {
         let before = std::fs::read(before_path).unwrap();
         let after = std::fs::read(after_path).unwrap();
-        assert_eq!(format!("{:x}", Sha256::digest(&after)), after_hash);
+        assert_eq!(hex(&Sha256::digest(&after)), after_hash);
         let plan = image(&before)
             .plan_query_expression_edits(query, &edits, &mut budget(), &|| false)
             .unwrap();

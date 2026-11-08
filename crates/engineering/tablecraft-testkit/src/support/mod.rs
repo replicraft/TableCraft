@@ -6,6 +6,7 @@
 pub mod access;
 #[cfg(feature = "ace-support")]
 pub mod ace;
+pub mod bytes;
 #[cfg(feature = "cli-support")]
 pub mod cli;
 #[cfg(feature = "query-support")]

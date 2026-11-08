@@ -1,10 +1,12 @@
 use super::{Expected, capture, require_inline};
 use crate::{NativeImage, QueryAttribute, inspect_table_schema};
 use sha2::{Digest, Sha256};
-use std::io::Cursor;
+use std::{io::Cursor, path::Path};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::fixtures::access::saved_queries::fitting_select::storage_pair;
+use tablecraft_testkit::{
+    fixtures::access::saved_queries::fitting_select::storage_pair, support::bytes::hex,
+};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(128 * 1024 * 1024, 1_000_000, 200_000_000)
@@ -75,7 +77,7 @@ fn raw_source_binding_requires_exact_native_key_and_expected_text() {
 #[test]
 #[ignore = "private hash-pinned first-party SDK images; independent evidence is retained under .cache"]
 fn sdk_roots_bind_multiple_definitions_pages_forwarding_and_retired_targets() {
-    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
     let cases = [
         (
             "querydef-existing-save-sdk-20261108/files/multi-page-before.accdb",
@@ -100,7 +102,7 @@ fn sdk_roots_bind_multiple_definitions_pages_forwarding_and_retired_targets() {
     ];
     for (file, expression, hash) in cases {
         let bytes = std::fs::read(root.join(".cache").join(file)).unwrap();
-        assert_eq!(format!("{:x}", Sha256::digest(&bytes)), hash);
+        assert_eq!(hex(&Sha256::digest(&bytes)), hash);
         let native = image(&bytes);
         let schema = inspect_table_schema(
             &mut native.reader(),
