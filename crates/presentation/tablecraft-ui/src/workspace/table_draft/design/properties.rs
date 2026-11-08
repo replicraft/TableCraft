@@ -1,17 +1,19 @@
 //! Editable draft declarations remain separate from stored metadata and literal parsing.
 pub(in crate::workspace::table_draft) mod editor;
 mod number;
+mod sheet;
 #[cfg(test)]
 mod tests;
 
 use super::Editor;
-use crate::localization::tr;
+use crate::{localization::tr, theme::palette};
 use editor::{DefaultChoice, MAX_SIZE_INPUT_BYTES};
 use egui::{Ui, WidgetInfo, WidgetType};
+use sheet::Sheet;
 use tablecraft_builders::table::{DraftFieldType, DraftNumberSize, MAX_DRAFT_DEFAULT_BYTES};
 
 const HELP_WIDTH_FRACTION: f32 = 0.28;
-const PROPERTY_INPUT_WIDTH: f32 = 180.0;
+const HELP_DIVIDER_WIDTH: f32 = 1.0;
 const PROPERTY_INPUT_MARGIN: egui::Margin = egui::Margin::symmetric(4, 2);
 
 /// Keep the active working controls visible when locale font metrics or the
@@ -103,7 +105,9 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
     };
     let available = ui.available_size();
     let help_width = available.x * HELP_WIDTH_FRACTION;
-    let sheet_width = (available.x - help_width - ui.spacing().item_spacing.x).max(1.0);
+    let sheet_width =
+        (available.x - help_width - ui.spacing().item_spacing.x * 2.0 - HELP_DIVIDER_WIDTH)
+            .max(1.0);
     ui.horizontal_top(|ui| {
         ui.allocate_ui_with_layout(
             egui::vec2(sheet_width, available.y),
@@ -120,6 +124,15 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
                         }
                     });
             },
+        );
+        let (divider, _) = ui.allocate_exact_size(
+            egui::vec2(HELP_DIVIDER_WIDTH, available.y),
+            egui::Sense::hover(),
+        );
+        ui.painter().vline(
+            divider.center().x,
+            divider.y_range(),
+            egui::Stroke::new(HELP_DIVIDER_WIDTH, palette(ui.ctx()).grid_line),
         );
         ui.allocate_ui_with_layout(
             egui::vec2(help_width, available.y),
@@ -154,11 +167,15 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
     let mode = DefaultChoice::from_mode(field.default_mode());
     let mut next_mode = None;
     ui.push_id(("field_property_inputs", field_id), |ui| {
+        let mut sheet = Sheet::new(ui);
+        let value_width = sheet.value_width();
         egui::Grid::new("draft_field_facts")
+            .spacing(egui::Vec2::ZERO)
+            .min_row_height(sheet.row_height())
             .striped(false)
             .show(ui, |ui| {
                 if kind == DraftFieldType::ShortText {
-                    ui.label(tr(ui, "design-field-size"));
+                    sheet.label(ui, "design-field-size", true);
                     let mut size = editor.properties.size(position).to_owned();
                     let id = ui.make_persistent_id("text_units");
                     let rejected = crate::text_input::reject_events_with_limits(
@@ -172,7 +189,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         egui::TextEdit::singleline(&mut size)
                             .id(id)
                             .margin(PROPERTY_INPUT_MARGIN)
-                            .desired_width(PROPERTY_INPUT_WIDTH),
+                            .desired_width(value_width),
                     );
                     let label = tr(ui, "design-field-size");
                     input.widget_info(|| {
@@ -189,14 +206,14 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         });
                         input.on_hover_text(tr(ui, "table-draft-property-invalid-size"));
                     }
-                    ui.end_row();
+                    sheet.end_row(ui);
                 } else if let Some(size) = number_size {
-                    number::show(ui, editor, position, size);
+                    number::show(ui, editor, position, size, &mut sheet);
                 } else if matches!(
                     kind,
                     DraftFieldType::AutoNumberIncrement | DraftFieldType::LargeInteger
                 ) {
-                    ui.label(tr(ui, "design-field-size"));
+                    sheet.label(ui, "design-field-size", true);
                     ui.label(tr(
                         ui,
                         if kind == DraftFieldType::LargeInteger {
@@ -205,36 +222,42 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                             "design-size-long-integer"
                         },
                     ));
-                    ui.end_row();
+                    sheet.end_row(ui);
                 }
-                ui.label(tr(ui, "design-required"));
-                if let Some(value) =
-                    boolean_property(ui, "required", "design-required", required, !primary)
-                {
+                sheet.label(ui, "design-required", true);
+                if let Some(value) = boolean_property(
+                    ui,
+                    "required",
+                    "design-required",
+                    required,
+                    !primary,
+                    value_width,
+                ) {
                     editor
                         .properties
                         .set_required(&mut editor.draft, position, Some(value));
                 }
-                ui.end_row();
+                sheet.end_row(ui);
                 if kind == DraftFieldType::ShortText {
-                    ui.label(tr(ui, "design-allow-zero-length"));
+                    sheet.label(ui, "design-allow-zero-length", true);
                     if let Some(value) = boolean_property(
                         ui,
                         "allow_zero_length",
                         "design-allow-zero-length",
                         zero_length,
                         !primary,
+                        value_width,
                     ) {
                         editor
                             .properties
                             .set_zero_length(&mut editor.draft, position, Some(value));
                     }
-                    ui.end_row();
+                    sheet.end_row(ui);
                 }
-                ui.label(tr(ui, "design-default-value"));
+                sheet.label(ui, "design-default-value", true);
                 ui.add_enabled_ui(!primary, |ui| {
                     let response = egui::ComboBox::from_id_salt("default_mode")
-                        .width(PROPERTY_INPUT_WIDTH)
+                        .width(value_width)
                         .selected_text(tr(ui, mode.key()))
                         .show_ui(ui, |ui| {
                             for choice in [
@@ -267,16 +290,21 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         WidgetInfo::labeled(WidgetType::ComboBox, response.enabled(), &label)
                     });
                 });
-                ui.end_row();
+                sheet.end_row(ui);
                 if mode == DefaultChoice::Literal {
                     if number_size == Some(DraftNumberSize::ReplicationId) {
-                        ui.colored_label(
-                            ui.visuals().error_fg_color,
-                            tr(ui, "table-draft-number-guid-default"),
+                        sheet.empty_label(ui);
+                        ui.add_sized(
+                            [value_width, ui.spacing().interact_size.y],
+                            egui::Label::new(
+                                egui::RichText::new(tr(ui, "table-draft-number-guid-default"))
+                                    .color(ui.visuals().error_fg_color),
+                            )
+                            .wrap(),
                         );
-                        ui.end_row();
+                        sheet.end_row(ui);
                     }
-                    ui.label(tr(ui, "table-draft-property-literal-input"));
+                    sheet.label(ui, "table-draft-property-literal-input", true);
                     let mut literal = editor.properties.literal(position).to_owned();
                     let id = ui.make_persistent_id("literal_default");
                     let rejected = crate::text_input::reject_events_with_limits(
@@ -292,7 +320,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                             .desired_rows(1)
                             .id(id)
                             .margin(PROPERTY_INPUT_MARGIN)
-                            .desired_width(PROPERTY_INPUT_WIDTH),
+                            .desired_width(value_width),
                     );
                     let label = tr(ui, "table-draft-property-literal-input");
                     // Keep TextEdit's actual multiline role and text actions.
@@ -313,18 +341,19 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         });
                         input.on_hover_text(tr(ui, "table-draft-property-input-limit"));
                     }
-                    ui.end_row();
+                    sheet.end_row(ui);
                 }
                 for key in [
                     "design-caption",
                     "design-validation-rule",
                     "design-validation-text",
                 ] {
-                    ui.add_enabled(false, egui::Label::new(tr(ui, key)));
+                    sheet.label(ui, key, false);
                     ui.add_enabled(false, egui::Label::new(tr(ui, "ribbon-unavailable")));
-                    ui.end_row();
+                    sheet.end_row(ui);
                 }
             });
+        sheet.paint(ui);
     });
     if let Some(mode) = next_mode {
         editor
@@ -351,11 +380,12 @@ fn boolean_property(
     label: &str,
     current: Option<bool>,
     enabled: bool,
+    value_width: f32,
 ) -> Option<bool> {
     let mut selected = None;
     ui.add_enabled_ui(enabled, |ui| {
         let response = egui::ComboBox::from_id_salt(id)
-            .width(PROPERTY_INPUT_WIDTH)
+            .width(value_width)
             .selected_text(tr(ui, flag_key(current)))
             .show_ui(ui, |ui| {
                 for value in [false, true] {

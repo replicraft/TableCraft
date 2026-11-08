@@ -559,3 +559,155 @@ fn replication_id_size_preserves_literal_but_blocks_save_until_default_mode_is_c
     );
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn property_cells_fill_the_sheet_align_as_rows_and_keep_rules_before_the_help_pane() {
+    for size in [egui::vec2(1280.0, 820.0), egui::vec2(900.0, 580.0)] {
+        for theme in [crate::Theme::Light, crate::Theme::Dark] {
+            for decimal in [false, true] {
+                let (mut state, field) = state();
+                state.theme = theme;
+                let draft = &mut state.table_draft.as_mut().unwrap().draft;
+                if decimal {
+                    draft.set_field_type(field, DraftFieldType::Number).unwrap();
+                    draft
+                        .set_field_number_size(field, DraftNumberSize::Decimal)
+                        .unwrap();
+                }
+                draft
+                    .set_field_default(field, DraftDefaultMode::Literal("42".into()))
+                    .unwrap();
+                let help = state.localizer.text("table-draft-property-help");
+                let mut harness = Harness::builder().with_size(size).build_ui_state(
+                    |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                    (state, Vec::new()),
+                );
+                crate::configure(&harness.ctx);
+                harness.run_steps(3);
+                let mut rows = vec![(
+                    if decimal {
+                        Role::ComboBox
+                    } else {
+                        Role::TextInput
+                    },
+                    "Field Size",
+                )];
+                if decimal {
+                    rows.extend([(Role::TextInput, "Precision"), (Role::TextInput, "Scale")]);
+                }
+                rows.push((Role::ComboBox, "Required"));
+                if !decimal {
+                    rows.push((Role::ComboBox, "Allow Zero Length"));
+                }
+                rows.extend([
+                    (Role::ComboBox, "Default Value"),
+                    (Role::MultilineTextInput, "Literal default"),
+                ]);
+                let labels = rows.iter().map(|(_, label)| *label).collect::<Vec<_>>();
+                let rows = rows
+                    .iter()
+                    .map(|(role, label)| harness.get_by_role_and_label(*role, label).rect())
+                    .collect::<Vec<_>>();
+                let first = rows[0];
+                let last = *rows.last().unwrap();
+                let sheet_left = harness.get_by_label("General").rect().left();
+                let help_rect = harness.get_by_label(&help).rect();
+                assert!(
+                    first.width() > (help_rect.left() - sheet_left) * 0.5,
+                    "value cells must use the property pane remainder: {size:?} {theme:?} {first:?} {help_rect:?}"
+                );
+                assert!(help_rect.left() > first.right());
+                assert!(
+                    help_rect.left() - first.right() < 40.0,
+                    "no unused column between values and help"
+                );
+                for row in &rows {
+                    assert!((row.left() - first.left()).abs() < 1.0);
+                    assert!((row.right() - first.right()).abs() < 1.0);
+                }
+                let pixel = 1.0 / harness.ctx.pixels_per_point();
+                for label in labels {
+                    let label_rect = harness.get_by_role_and_label(Role::Label, label).rect();
+                    assert!(
+                        (label_rect.left() - sheet_left).abs() <= pixel,
+                        "property labels start at the sheet edge: {label} {label_rect:?} sheet_left={sheet_left}"
+                    );
+                }
+                let mut label_value_rule = false;
+                let mut help_divider = false;
+                let mut horizontal_rules = Vec::new();
+                let mut vertical_rules = Vec::new();
+                for clipped in &harness.output().shapes {
+                    let mut leaves = Vec::new();
+                    super::super::tests::paint_leaves(&clipped.shape, &mut leaves);
+                    for shape in leaves {
+                        let egui::Shape::LineSegment { points, .. } = shape else {
+                            continue;
+                        };
+                        let vertical = (points[0].x - points[1].x).abs() < 0.1;
+                        let top = points[0].y.min(points[1].y);
+                        let bottom = points[0].y.max(points[1].y);
+                        if vertical && bottom >= first.top() && top <= last.bottom() {
+                            vertical_rules.push((*points, clipped.clip_rect));
+                        }
+                        if vertical && top <= first.top() + pixel && bottom >= last.bottom() - pixel
+                        {
+                            if (points[0].x - first.left()).abs() < 1.0 {
+                                label_value_rule = true;
+                                assert!(clipped.clip_rect.right() < help_rect.left());
+                            }
+                            if points[0].x > first.right() && points[0].x < help_rect.left() {
+                                help_divider = true;
+                            }
+                        }
+                        let horizontal = (points[0].y - points[1].y).abs() < 0.1;
+                        if horizontal
+                            && points[0].x <= sheet_left + pixel
+                            && points[1].x >= first.right() - pixel
+                            && points[1].x < help_rect.left()
+                            && clipped.clip_rect.right() < help_rect.left()
+                        {
+                            horizontal_rules.push(points[0].y);
+                        }
+                    }
+                }
+                assert!(
+                    label_value_rule,
+                    "the label/value boundary must be visibly ruled: size={size:?} theme={theme:?} decimal={decimal} first={first:?} last={last:?} sheet_left={sheet_left} help={help_rect:?} vertical_rules={vertical_rules:?}"
+                );
+                assert!(
+                    help_divider,
+                    "a separate divider must precede the help pane"
+                );
+                horizontal_rules.sort_by(f32::total_cmp);
+                horizontal_rules.dedup_by(|left, right| (*left - *right).abs() < pixel * 0.5);
+                let mut previous_band = None;
+                for row in &rows {
+                    let covering = horizontal_rules
+                        .windows(2)
+                        .enumerate()
+                        .filter_map(|(index, band)| {
+                            (row.top() >= band[0] - pixel && row.bottom() <= band[1] + pixel)
+                                .then_some(index)
+                        })
+                        .collect::<Vec<_>>();
+                    assert_eq!(
+                        covering.len(),
+                        1,
+                        "each control fits one fully ruled cell: size={size:?} theme={theme:?} decimal={decimal} row={row:?} horizontal_rules={horizontal_rules:?}"
+                    );
+                    let band = covering[0];
+                    if let Some(previous) = previous_band {
+                        assert_eq!(
+                            band,
+                            previous + 1,
+                            "working controls occupy consecutive distinct cells, independent of control-frame insets"
+                        );
+                    }
+                    previous_band = Some(band);
+                }
+                assert!(harness.state().1.is_empty());
+            }
+        }
+    }
+}

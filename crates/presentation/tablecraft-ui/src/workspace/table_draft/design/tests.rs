@@ -471,7 +471,7 @@ fn view_switch_consumes_current_name_text_before_committing_either_surface() {
     }
 }
 
-fn paint_leaves<'a>(shape: &'a egui::Shape, output: &mut Vec<&'a egui::Shape>) {
+pub(super) fn paint_leaves<'a>(shape: &'a egui::Shape, output: &mut Vec<&'a egui::Shape>) {
     match shape {
         egui::Shape::Vec(children) => {
             for child in children {

@@ -1,5 +1,5 @@
 //! Number-size selection edits the same unsaved declaration as the upper type grid.
-use super::{Editor, PROPERTY_INPUT_MARGIN, PROPERTY_INPUT_WIDTH, editor::MAX_SIZE_INPUT_BYTES};
+use super::{Editor, PROPERTY_INPUT_MARGIN, editor::MAX_SIZE_INPUT_BYTES, sheet::Sheet};
 use crate::localization::tr;
 use egui::{Ui, WidgetInfo, WidgetType};
 use tablecraft_builders::table::DraftNumberSize;
@@ -17,8 +17,15 @@ const SIZES: [(DraftNumberSize, &str); 7] = [
     ),
 ];
 
-pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: DraftNumberSize) {
-    ui.label(tr(ui, "design-field-size"));
+pub(super) fn show(
+    ui: &mut Ui,
+    editor: &mut Editor,
+    position: usize,
+    size: DraftNumberSize,
+    sheet: &mut Sheet,
+) {
+    let value_width = sheet.value_width();
+    sheet.label(ui, "design-field-size", true);
     let selected_key = SIZES
         .iter()
         .find(|(candidate, _)| *candidate == size)
@@ -26,7 +33,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: Draf
         .1;
     let mut next = None;
     let response = egui::ComboBox::from_id_salt("number_size")
-        .width(PROPERTY_INPUT_WIDTH)
+        .width(value_width)
         .selected_text(tr(ui, selected_key))
         .show_ui(ui, |ui| {
             for (candidate, key) in SIZES {
@@ -42,7 +49,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: Draf
         .response;
     let label = tr(ui, "design-field-size");
     response.widget_info(|| WidgetInfo::labeled(WidgetType::ComboBox, response.enabled(), &label));
-    ui.end_row();
+    sheet.end_row(ui);
 
     // Apply after painting the current pair so a same-frame raw edit cannot be
     // hidden by a size selection. Rejected pairs keep the existing size selected.
@@ -51,7 +58,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: Draf
             (true, "table-draft-number-precision"),
             (false, "table-draft-number-scale"),
         ] {
-            ui.label(tr(ui, key));
+            sheet.label(ui, key, true);
             let mut raw = editor
                 .properties
                 .decimal_text(position, precision)
@@ -68,7 +75,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: Draf
                 egui::TextEdit::singleline(&mut raw)
                     .id(id)
                     .margin(PROPERTY_INPUT_MARGIN)
-                    .desired_width(PROPERTY_INPUT_WIDTH),
+                    .desired_width(value_width),
             );
             let label = tr(ui, key);
             input
@@ -88,7 +95,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, position: usize, size: Draf
                 });
                 input.on_hover_text(tr(ui, "table-draft-number-invalid-decimal"));
             }
-            ui.end_row();
+            sheet.end_row(ui);
         }
     }
     if let Some(size) = next {

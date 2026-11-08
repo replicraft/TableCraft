@@ -32,6 +32,17 @@ Decimal controls. Those controls and dark styling remain documented adaptations,
 not verified Access visual or interaction parity. Native save/reopen evidence
 comes from the separate runtime and desktop acceptance tests.
 
+The subsequent property-sheet pass adds contiguous ruled cells, left-aligned
+labels, value controls filling the remaining column and a separate help divider.
+Five revised frames with the same language/theme/size matrix were inspected under
+`.cache/ui-previews/property-sheet-accepted-20261107/`. Earlier centered-label and
+border-gap frames remain in `property-sheet-20261107/`; failed geometry logs are
+retained separately. Row heights align to physical pixels. The paint regression
+checks that controls occupy consecutive ruled cells, allowing input-frame insets
+rather than incorrectly requiring widget bounds to touch. All 25 Design tests
+and strict shared-UI all-target/all-feature lint pass. Parsing, raw input,
+widget identity and save behavior are unchanged.
+
 ## Initial field-property authoring — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=design-properties|design-default` drives the

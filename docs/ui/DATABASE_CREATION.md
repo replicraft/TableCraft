@@ -134,6 +134,14 @@ distinguishes Create > Table, which opens Datasheet view, from Create > Table
 Design, which opens Design view. The retained Datasheet and Design captures guide
 those separate surfaces; they do not capture activation of the Create command.
 
+Fresh Table Design has its own key-selection workflow. Microsoft's
+[Table Designer procedure](https://support.microsoft.com/en-us/access/training/video-build-tables-with-the-table-designer)
+starts with a field the user defines, then an explicit Primary Key choice. Saving
+without a key asks whether to create one. The working Datasheet-to-Design switch
+retains the ID already created by Datasheet; it does not implement that fresh
+Design workflow. Enabling Create > Table Design requires the actual editable
+key/no-key behavior rather than opening another protected-ID draft.
+
 This route uses the existing macOS/Linux and Windows Save implementations and
 retains their platform limits described above. Windows cross-compilation and
 headless checks do not establish actual Windows execution or native Access
