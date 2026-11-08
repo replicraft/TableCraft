@@ -168,3 +168,6 @@ mod policies;
 
 #[path = "first_table/descriptions.rs"]
 mod descriptions;
+
+#[path = "first_table/manual.rs"]
+mod manual;

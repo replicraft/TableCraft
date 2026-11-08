@@ -362,3 +362,5 @@ mod policies;
 mod numbers;
 
 mod descriptions;
+
+mod manual;

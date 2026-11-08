@@ -14,6 +14,7 @@ const DEFAULT_MAGIC: &[u8; 8] = b"TCNT0002";
 const POLICY_MAGIC: &[u8; 8] = b"TCNT0003";
 const WIDER_MAGIC: &[u8; 8] = b"TCNT0004";
 const DESCRIPTION_MAGIC: &[u8; 8] = b"TCNT0005";
+const MANUAL_MAGIC: &[u8; 8] = b"TCNT0006";
 const DESCRIPTION_PRESENT: u8 = 0x20;
 const DESCRIPTION_LENGTH_BYTES: usize = size_of::<u16>();
 const MAX_DESCRIPTION_UNITS: usize = 255;
@@ -39,6 +40,8 @@ const DEFAULT_CONSTRUCTION_PROFILE: u16 = 2;
 const POLICY_CONSTRUCTION_PROFILE: u16 = 3;
 const WIDER_CONSTRUCTION_PROFILE: u16 = 4;
 const DESCRIPTION_CONSTRUCTION_PROFILE: u16 = 5;
+const MANUAL_CONSTRUCTION_PROFILE: u16 = 6;
+const NO_PRIMARY_POSITION: u16 = u16::MAX;
 const CANONICAL_BEFORE_PAGES: u64 = 7;
 const CANONICAL_BEFORE_BYTES: u64 = CANONICAL_BEFORE_PAGES * PAGE_BYTES as u64;
 const TOTAL_AT: usize = MAGIC.len();
@@ -155,6 +158,9 @@ fn encode_definition(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, FirstTableIntentError> {
     let columns = definition.borrowed_columns(budget, cancelled)?;
+    let manual = definition.is_manual();
+    let primary = definition.primary_name();
+    let primary_bytes = primary.map_or(0, str::len);
     let has_descriptions = columns.iter().any(|column| column.description().is_some());
     let description_bytes = columns
         .iter()
@@ -189,12 +195,12 @@ fn encode_definition(
         + description_bytes
         + HEADER_BYTES
         + definition.table().len()
-        + definition.primary_name().len()
+        + primary_bytes
         + columns
             .iter()
             .map(|column| FIELD_HEADER_BYTES + column.name().len())
             .sum::<usize>();
-    let maximum = if has_descriptions {
+    let maximum = if has_descriptions || manual {
         MAX_RECORD_BYTES
     } else {
         LEGACY_MAX_RECORD_BYTES
@@ -224,7 +230,9 @@ fn encode_definition(
     raw.try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
     raw.resize(HEADER_BYTES, 0);
-    let magic = if has_descriptions {
+    let magic = if manual {
+        MANUAL_MAGIC
+    } else if has_descriptions {
         DESCRIPTION_MAGIC
     } else if has_wider_defaults {
         WIDER_MAGIC
@@ -235,7 +243,9 @@ fn encode_definition(
     } else {
         MAGIC
     };
-    let profile = if has_descriptions {
+    let profile = if manual {
+        MANUAL_CONSTRUCTION_PROFILE
+    } else if has_descriptions {
         DESCRIPTION_CONSTRUCTION_PROFILE
     } else if has_wider_defaults {
         WIDER_CONSTRUCTION_PROFILE
@@ -253,14 +263,24 @@ fn encode_definition(
     raw[BINDING_AT..TABLE_LENGTH_AT].copy_from_slice(&binding);
     raw[TABLE_LENGTH_AT..PRIMARY_LENGTH_AT]
         .copy_from_slice(&(definition.table().len() as u16).to_le_bytes());
-    raw[PRIMARY_LENGTH_AT..COLUMNS_AT]
-        .copy_from_slice(&(definition.primary_name().len() as u16).to_le_bytes());
+    raw[PRIMARY_LENGTH_AT..COLUMNS_AT].copy_from_slice(&(primary_bytes as u16).to_le_bytes());
     raw[COLUMNS_AT..RESERVED_AT].copy_from_slice(&(columns.len() as u16).to_le_bytes());
+    if manual {
+        let position = definition
+            .primary_position()
+            .map_or(NO_PRIMARY_POSITION, |position| position as u16);
+        raw[RESERVED_AT..HEADER_BYTES].copy_from_slice(&position.to_le_bytes());
+    }
     raw.extend(definition.table().as_bytes());
-    raw.extend(definition.primary_name().as_bytes());
+    if let Some(primary) = primary {
+        raw.extend(primary.as_bytes());
+    }
     for column in columns {
         check(budget, cancelled)?;
         let (tag, capacity, precision, scale) = field(column)?;
+        if manual && tag == 0 {
+            return Err(FirstTableIntentError::InvalidRecord);
+        }
         raw.extend((column.name().len() as u16).to_le_bytes());
         let mut flags = u8::from(column.default_literal().is_some());
         if let Some(required) = column.required() {
@@ -357,7 +377,7 @@ pub(super) fn decode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeFirstTableIntent, FirstTableIntentError> {
     check(budget, cancelled)?;
-    let maximum = if raw.starts_with(DESCRIPTION_MAGIC) {
+    let maximum = if raw.starts_with(DESCRIPTION_MAGIC) || raw.starts_with(MANUAL_MAGIC) {
         MAX_RECORD_BYTES
     } else {
         LEGACY_MAX_RECORD_BYTES
@@ -369,14 +389,23 @@ pub(super) fn decode(
         .charge(Resource::Steps, raw.len() as u64)
         .map_err(InspectError::from)?;
     let described_version = raw.starts_with(DESCRIPTION_MAGIC);
+    let manual_version = raw.starts_with(MANUAL_MAGIC);
     let (defaults_version, policies_version, wider_version) = match &raw[..MAGIC.len()] {
         version if version == MAGIC => (false, false, false),
         version if version == DEFAULT_MAGIC => (true, false, false),
         version if version == POLICY_MAGIC => (true, true, false),
-        version if version == WIDER_MAGIC || version == DESCRIPTION_MAGIC => (true, true, true),
+        version
+            if version == WIDER_MAGIC
+                || version == DESCRIPTION_MAGIC
+                || version == MANUAL_MAGIC =>
+        {
+            (true, true, true)
+        }
         _ => return Err(FirstTableIntentError::UnsupportedVersion),
     };
-    let expected_profile = if described_version {
+    let expected_profile = if manual_version {
+        MANUAL_CONSTRUCTION_PROFILE
+    } else if described_version {
         DESCRIPTION_CONSTRUCTION_PROFILE
     } else if wider_version {
         WIDER_CONSTRUCTION_PROFILE
@@ -398,7 +427,7 @@ pub(super) fn decode(
     let count = usize::from(word(raw, COLUMNS_AT));
     if total != raw.len()
         || word(raw, FLAGS_AT) != 0
-        || word(raw, RESERVED_AT) != 0
+        || !manual_version && word(raw, RESERVED_AT) != 0
         || before_length != CANONICAL_BEFORE_BYTES
         || !(1..=MAX_COLUMNS).contains(&count)
     {
@@ -416,7 +445,29 @@ pub(super) fn decode(
         at: HEADER_BYTES,
     };
     let table = cursor.name(usize::from(word(raw, TABLE_LENGTH_AT)))?;
-    let primary = cursor.name(usize::from(word(raw, PRIMARY_LENGTH_AT)))?;
+    let primary_length = usize::from(word(raw, PRIMARY_LENGTH_AT));
+    let primary_position = if manual_version {
+        let position = word(raw, RESERVED_AT);
+        if position == NO_PRIMARY_POSITION {
+            if primary_length != 0 {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            None
+        } else {
+            let position = usize::from(position);
+            if primary_length == 0 || position >= count {
+                return Err(FirstTableIntentError::InvalidRecord);
+            }
+            Some(position)
+        }
+    } else {
+        Some(0)
+    };
+    let primary = if primary_position.is_some() {
+        Some(cursor.name(primary_length)?)
+    } else {
+        None
+    };
     let mut columns = [CreateColumn::new("", ScalarType::Int32); MAX_COLUMNS];
     let mut defaults: [Option<carrier::Borrowed<'_>>; MAX_COLUMNS] = std::array::from_fn(|_| None);
     let carriers = if wider_version {
@@ -431,7 +482,9 @@ pub(super) fn decode(
         check(budget, cancelled)?;
         let header = cursor.take(FIELD_HEADER_BYTES)?;
         let name = cursor.name(usize::from(word(header, 0)))?;
-        if (header[2] == 0) != (position == 0) {
+        if manual_version && header[2] == 0
+            || !manual_version && (header[2] == 0) != (position == 0)
+        {
             return Err(FirstTableIntentError::InvalidRecord);
         }
         let flags = header[3];
@@ -440,11 +493,11 @@ pub(super) fn decode(
         } else {
             u8::from(defaults_version)
         };
-        if described_version {
+        if described_version || manual_version {
             allowed |= DESCRIPTION_PRESENT;
         }
         if flags & !allowed != 0
-            || position == 0 && flags & !DESCRIPTION_PRESENT != 0
+            || !manual_version && position == 0 && flags & !DESCRIPTION_PRESENT != 0
             || flags & REQUIRED_VALUE != 0 && flags & REQUIRED_PRESENT == 0
             || flags & ALLOW_EMPTY_VALUE != 0 && flags & ALLOW_EMPTY_PRESENT == 0
             || flags & ALLOW_EMPTY_PRESENT != 0 && header[2] != TEXT_FIELD_TAG
@@ -507,10 +560,14 @@ pub(super) fn decode(
         if flags & ALLOW_EMPTY_PRESENT != 0 {
             declaration = declaration.with_allow_zero_length(flags & ALLOW_EMPTY_VALUE != 0)?;
         }
-        *destination = if position == 0 {
-            declaration
-                .with_primary_key(primary)?
-                .with_incrementing_autonumber()?
+        *destination = if Some(position) == primary_position {
+            let primary = primary.ok_or(FirstTableIntentError::InvalidRecord)?;
+            let keyed = declaration.with_primary_key(primary)?;
+            if manual_version {
+                keyed
+            } else {
+                keyed.with_incrementing_autonumber()?
+            }
         } else {
             declaration
         };
@@ -519,7 +576,7 @@ pub(super) fn decode(
         return Err(FirstTableIntentError::InvalidRecord);
     }
     if described_version && !found_description
-        || wider_version && !described_version && !found_wider_default
+        || wider_version && !described_version && !manual_version && !found_wider_default
         || policies_version && !wider_version && !found_policy
         || defaults_version && !policies_version && defaults.iter().all(Option::is_none)
     {
@@ -538,7 +595,11 @@ pub(super) fn decode(
     }
     // Full framing is checked before bounded default ownership. Capture then
     // validates all native declarations before retaining names and declarations.
-    let definition = FirstTableDefinition::capture(table, &columns[..count], budget, cancelled)?;
+    let definition = if manual_version {
+        FirstTableDefinition::capture_manual(table, &columns[..count], budget, cancelled)?
+    } else {
+        FirstTableDefinition::capture(table, &columns[..count], budget, cancelled)?
+    };
     check(budget, cancelled)?;
     Ok(NativeFirstTableIntent {
         definition,

@@ -9,3 +9,6 @@ pub use source::first_table_source_available;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod manual_tests;

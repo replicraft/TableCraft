@@ -10,9 +10,15 @@ The caller supplies an owned `FirstTableDefinition`, retaining its exact table,
 field and primary-index names and declarations. Ordinary companions retain exact
 optional Required and AllowZeroLength policies: absent, explicitly false and
 explicitly true remain distinct. AllowZeroLength applies only to sized Short Text.
-The first field is an Increment Int32 primary key; its policies and defaults
-remain protected. Description is separate inert metadata and is permitted on the
-primary field too. It retains absence versus present-empty text without trimming
+`FirstTableDefinition::capture` retains the original generated profile: the first
+field is an Increment Int32 primary key, with protected policies/defaults.
+`capture_manual` is a separate request profile with no generated fields. It
+accepts ordinary fields with no key, or one explicit Int32, Int64 or Currency
+primary at its actual field position. It never inserts an ID, changes a manual
+field into AutoNumber or relocates a selected key to the first field. The owned
+`primary_name()` and `primary_position()` are optional, and `is_manual()` retains
+the original request profile. Description is separate inert metadata and is
+permitted on a generated or manual primary too. It retains absence versus present-empty text without trimming
 or normalization. The constructive profile conservatively counts at most 255
 UTF-16 units, following Microsoft's documented [255-character Description limit](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/description-property-access);
 that counting choice is not native supplementary-character parity evidence.
@@ -45,7 +51,9 @@ the existing retained filesystem journal pair and native V2 resizable journal:
    when defaults and policies are absent, `TCNT0002` for checked constant defaults
    without policies, `TCNT0003` when an explicit field policy is present, or
    `TCNT0004` for any default on a newly supported Number/GUID target. An explicit
-   Description, including an empty one, selects `TCNT0005` instead.
+   Description, including an empty one, selects `TCNT0005` for a generated
+   declaration. An explicitly manual/keyless declaration selects `TCNT0006`,
+   whether or not it also has Description, policies or defaults.
 2. Prepare the complete checked BEFORE/AFTER transaction against the same target.
 3. Commit the native resize/write operation once.
 4. Retire the acknowledged journal and follow the actual platform cleanup policy,
@@ -114,6 +122,47 @@ version/profile mismatches refuse. Original TCNT1–4 encodings, closed grammars
 record ceilings and reconstruction remain unchanged; they cannot acquire the new
 presence bit or a larger record merely because version 5 exists.
 
+## Manual and keyless original intent
+
+`TCNT0006` uses construction profile 6 and the same exact seven-page canonical
+BEFORE length and binding. The header remains 64 bytes. Only this version
+repurposes the final u16 header word, formerly reserved, as a zero-based primary
+field position. `0xffff` explicitly means no primary key and requires a zero
+primary-name byte length. A keyed record requires a nonempty primary name and a
+position within the declared field count. Position zero is a valid manual key;
+it is not absence.
+
+V6 accepts only ordinary field tags; generated tag zero is forbidden at every
+position. The selected primary must have the native constructive Int32, Int64 or
+Currency key family. Decoding restores the key on that actual field and calls
+`capture_manual`; it never calls generated-field construction to fill a missing
+key. Optional Description, existing typed constants and applicable field policies
+retain their exact presence/value semantics. Description is not required in V6.
+Native declarations, inline metadata capacity, primary constraints and all normal
+resource/cancellation controls remain mandatory.
+
+The V6 decoder checks complete framing, optional-key consistency and scalar/carrier
+tags before retaining decoded ownership. Typed declaration validation still
+precedes retaining the owned schema. It keeps the
+existing bounded described-record ceiling rather than introducing an unbounded
+manual schema. Profiles 1–5 preserve their original byte languages, reserved-zero
+headers, record ceilings and generated-first-field behavior. They do not gain
+manual ordinary fields or keyless admission. Recovery selects the recorded
+version once, reconstructs the same manual/keyless plan from canonical BEFORE,
+and compares the complete rebuilt AFTER through the existing checked V2 session.
+A different key decision, field position or declaration cannot authorize the
+recorded replacement.
+
+This initial manual schema route applies only to canonical-blank first-table
+creation. The separate [append-table operation](ADD_TABLE_PERSISTENCE.md) rejects
+manual definitions before source capture. Its existing TCAT1–4 actions also
+refuse nested TCNT6; their legacy/described template grammars are not widened.
+Saving manual/no-key tables into populated databases requires its own qualified
+allocation/source/proof work. This implementation does not establish full Access
+Design, manual-key insertion, Microsoft Access save/reopen or Windows filesystem
+parity. The verification checkpoints below remain their recorded scopes; no new
+manual-profile passing result is inferred from them.
+
 These schema-intent changes do not widen the existing TCNA5 clock envelope.
 It retains nested TCNA2 only: construction and recoverable planning reject wider
 original supplied carriers before native qualification or clock callbacks, and
@@ -133,7 +182,7 @@ retain the existing 255-UTF-16-unit ceiling. These are checked constructive rule
 not native Access parity evidence for every floating-point boundary.
 
 The eight-byte per-field header retains its existing layout. Profile 3 uses its
-flags byte as follows (V4 and V5 preserve these policy bits):
+flags byte as follows (V4, V5 and V6 preserve these policy bits):
 
 | Bit | Meaning |
 | --- | --- |

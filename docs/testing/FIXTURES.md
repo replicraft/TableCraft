@@ -10877,3 +10877,28 @@ Ten header-selected ordinary views pass native reads/constraints and exact SDK
 observations before new mutation calls. Fourteen adversarial views retain
 separate refusal expectations. All exported inputs and expected observations
 remain frozen; no third-party database bytes are copied.
+
+
+## Authored manual/keyless first-table candidates — 7 November 2026
+
+The [manual Design result](results/ace16-manual-design-independent-reader-2026-11-07.json)
+records eight TableCraft-produced candidates: keyless and manual Int32, Int64 and
+Currency primaries, each before and after supplied ordinary row insertion. Every
+schema has two fields, with the optional primary on the actual second field and
+no generated AutoNumber. The original repository-owned exporter calls public
+candidate APIs, writes fresh exclusive outputs and does not execute a journal.
+
+The original [read-only observer](ace16_table_addition/ReadManualTables.java)
+uses the previously reviewed Jackcess 5.0.4 JAR in ignored local cache. It checks
+the complete user-table/column/index inventory, exact native scalar types,
+primary absence or actual field identity, complete row enumeration and supplied
+values. All eight file hashes remain unchanged. The result pins reader, observer,
+exporter and producer sources. Regeneration after nonsemantic validation-order
+changes yields the same eight hashes as the earlier exploratory export; these
+are eight distinct cases, not sixteen.
+
+These are independent observations of production candidates, not independently
+authored AFTER-byte goldens, journal execution or Microsoft Access save/reopen
+qualification. Native fixture goldens and cold recovery tests supply separate
+evidence. No third-party database bytes, JARs or class files are tracked; the
+original observer/export recipe uses the repository license.

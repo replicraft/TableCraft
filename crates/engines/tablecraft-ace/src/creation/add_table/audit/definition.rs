@@ -153,7 +153,9 @@ pub(super) fn verify(
     name(
         &mut expected,
         &mut names,
-        definition.primary_name(),
+        definition
+            .primary_name()
+            .ok_or(AddTableError::Preservation)?,
         budget,
         cancelled,
     )?;

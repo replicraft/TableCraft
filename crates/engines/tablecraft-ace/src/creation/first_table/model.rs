@@ -19,11 +19,17 @@ struct Column {
     allow_zero_length: Option<bool>,
 }
 
+struct Primary {
+    name: String,
+    position: usize,
+}
+
 /// Owned original declarations for the first table in the canonical blank file.
 /// This is request data, without persistence or imported-file mutation authority.
 pub struct FirstTableDefinition {
     table: String,
-    primary: String,
+    primary: Option<Primary>,
+    manual: bool,
     columns: Vec<Column>,
 }
 
@@ -59,8 +65,58 @@ impl FirstTableDefinition {
         let primary = columns[0]
             .primary_key_name()
             .ok_or(CreateDatabaseError::Declaration)?;
+        Self::retain(table, columns, Some((0, primary)), false, budget, cancelled)
+    }
+
+    /// Capture an empty manual Design declaration with no generated fields.
+    /// At most one explicit Int32, Int64 or Currency primary is permitted at its
+    /// actual field position. Absence never invents a key or AutoNumber field.
+    pub fn capture_manual(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        let _span = tracing::debug_span!("native.first_table.capture_manual_definition").entered();
+        request::validate(
+            table,
+            Columns::Values(columns),
+            Rows::Values(&[]),
+            budget,
+            cancelled,
+        )?;
+        let mut primary = None;
+        for (position, column) in columns.iter().enumerate() {
+            check(budget, cancelled)?;
+            if column.incrementing_autonumber() {
+                return Err(CreateDatabaseError::Declaration);
+            }
+            if let Some(name) = column.primary_key_name()
+                && primary.replace((position, name)).is_some()
+            {
+                return Err(CreateDatabaseError::Declaration);
+            }
+        }
+        Self::retain(table, columns, primary, true, budget, cancelled)
+    }
+
+    fn retain(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        primary: Option<(usize, &str)>,
+        manual: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
         let table = copy_name(table, budget)?;
-        let primary = copy_name(primary, budget)?;
+        let primary = primary
+            .map(|(position, name)| {
+                Ok::<_, InspectError>(Primary {
+                    name: copy_name(name, budget)?,
+                    position,
+                })
+            })
+            .transpose()?;
         budget
             .charge_allocation(columns.len() as u64, size_of::<Column>() as u64)
             .map_err(InspectError::from)?;
@@ -89,6 +145,7 @@ impl FirstTableDefinition {
         Ok(Self {
             table,
             primary,
+            manual,
             columns: retained,
         })
     }
@@ -121,9 +178,19 @@ impl FirstTableDefinition {
         &self.table
     }
 
-    /// Exact explicit primary-index name.
-    pub fn primary_name(&self) -> &str {
-        &self.primary
+    /// Exact explicit primary-index name, absent for a manual keyless table.
+    pub fn primary_name(&self) -> Option<&str> {
+        self.primary.as_ref().map(|primary| primary.name.as_str())
+    }
+
+    /// Actual ordered field owning the optional primary index.
+    pub fn primary_position(&self) -> Option<usize> {
+        self.primary.as_ref().map(|primary| primary.position)
+    }
+
+    /// Whether the original request uses manual fields rather than Increment.
+    pub fn is_manual(&self) -> bool {
+        self.manual
     }
 
     /// Number of original ordered declarations.
@@ -159,10 +226,14 @@ impl FirstTableDefinition {
                     CreateColumn::decimal(&column.name, constraints)
                 }
             };
-            let borrowed = if position == 0 {
-                borrowed
-                    .with_primary_key(&self.primary)?
-                    .with_incrementing_autonumber()?
+            let borrowed = match &self.primary {
+                Some(primary) if primary.position == position => {
+                    borrowed.with_primary_key(&primary.name)?
+                }
+                _ => borrowed,
+            };
+            let borrowed = if !self.manual && position == 0 {
+                borrowed.with_incrementing_autonumber()?
             } else {
                 borrowed
             };

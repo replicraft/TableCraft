@@ -509,3 +509,42 @@ fn legacy_outer_languages_refuse_described_templates_and_described_outer_require
     assert_eq!(entry_only.remaining(Resource::Steps), 0);
     assert_eq!(entry_only.remaining(Resource::Bytes), 0);
 }
+
+#[test]
+fn all_existing_append_actions_refuse_manual_tcnt6_without_decoder_fallback() {
+    let mut nested = template(1);
+    nested[..8].copy_from_slice(b"TCNT0006");
+    nested[12..14].copy_from_slice(&6_u16.to_le_bytes());
+    nested[58..60].copy_from_slice(&0_u16.to_le_bytes());
+    nested[62..64].copy_from_slice(&65535_u16.to_le_bytes());
+    nested.drain(68..77);
+    nested[70] = 4;
+    let nested_length = nested.len() as u32;
+    nested[8..12].copy_from_slice(&nested_length.to_le_bytes());
+    crate::NativeFirstTableIntent::decode(&nested, &mut budget(), &|| false).unwrap();
+    for version in 1..=4_u16 {
+        let before = if version == 2 || version == 4 {
+            canonical_repeated_add_table::source().before
+        } else {
+            canonical_add_table::source().before
+        };
+        let mut raw = literal(&before, 1);
+        raw.truncate(64);
+        raw[7] = b'0' + version as u8;
+        raw[12..14].copy_from_slice(&version.to_le_bytes());
+        raw[16..24].copy_from_slice(&(before.len() as u64).to_le_bytes());
+        raw[56..60].copy_from_slice(&nested_length.to_le_bytes());
+        raw.extend(&nested);
+        let length = raw.len() as u32;
+        raw[8..12].copy_from_slice(&length.to_le_bytes());
+        let mut no_ownership = ResourceBudget::new(0, 0, 1_000_000);
+        assert!(
+            matches!(
+                NativeAddTableIntent::decode(&raw, &mut no_ownership, &|| false),
+                Err(AddTableIntentError::UnsupportedVersion)
+            ),
+            "outer version {version}"
+        );
+        assert_eq!(no_ownership.remaining(Resource::Bytes), 0);
+    }
+}

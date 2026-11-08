@@ -81,7 +81,7 @@ fn canonical_blank_initialization_matches_each_independent_complete_schema() {
 
         let definition = plan.into_definition();
         assert_eq!(definition.table(), "Items");
-        assert_eq!(definition.primary_name(), "PrimaryId");
+        assert_eq!(definition.primary_name(), Some("PrimaryId"));
         assert_eq!(definition.column_count(), expected.columns.len());
     }
 }

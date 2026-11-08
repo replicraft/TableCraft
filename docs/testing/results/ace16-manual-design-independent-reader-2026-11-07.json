@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "host": "macOS ARM64",
+  "scope": "Independent read-only observations of eight TableCraft-produced manual/keyless first-table ACE16 candidates, before and after supplied ordinary insertion. Not independent producer bytes, journal execution, native Access save/reopen, or platform durability.",
+  "reader": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "program": {
+    "path": "docs/testing/ace16_table_addition/ReadManualTables.java",
+    "bytes": 4115,
+    "sha256": "229062d7c6f61347df5c75f2370f90a9e75a581b3e767b9478fed46190670cc7"
+  },
+  "exporter": {
+    "path": ".cache/manual-design-independent-20261107/export.rs",
+    "bytes": 2664,
+    "sha256": "320364354135ac55698462a1d1f70465b3922b4a006d5a8b54a229616fd76a56"
+  },
+  "producer_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/first_table/model.rs",
+      "bytes": 9890,
+      "sha256": "bd12bff6093124e4e0281912cf582cd953071bc3e329d22ca47e1c2ba71c8359"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/first_table/plan.rs",
+      "bytes": 3225,
+      "sha256": "676619fe8e3137d05fe2f8e2325807ecccf4cadff5acde393417694f74f7c272"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/input.rs",
+      "bytes": 3056,
+      "sha256": "377834e4b8086f2efea717b7a2419d9ef187365923b7cd9ee3aae487669d66a8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/column.rs",
+      "bytes": 11730,
+      "sha256": "65b782b7da8e7cb467850c82d394f4c26bc965deba42f237c58919fe92f5695a"
+    }
+  ],
+  "java_version": "openjdk version \"21.0.8\" 2025-07-15 LTS\nOpenJDK Runtime Environment Temurin-21.0.8+9 (build 21.0.8+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.8+9 (build 21.0.8+9-LTS, mixed mode, sharing)\n",
+  "cases": [
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/keyless-before.accdb",
+      "bytes": 36864,
+      "sha256": "43852798e12f1e415bbd2e10713073d1d2a72fa1cfc0e948a61428f9bf4e57cc",
+      "kind": "keyless",
+      "rows": 0,
+      "sha256_after": "43852798e12f1e415bbd2e10713073d1d2a72fa1cfc0e948a61428f9bf4e57cc",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual keyless key-position=absent rows=0\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/keyless-after.accdb",
+      "bytes": 36864,
+      "sha256": "c39c5083e752c5c038e0d4d0bd971d7fe459c5cdf34653b632ebc17a6b9ad73c",
+      "kind": "keyless",
+      "rows": 1,
+      "sha256_after": "c39c5083e752c5c038e0d4d0bd971d7fe459c5cdf34653b632ebc17a6b9ad73c",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual keyless key-position=absent rows=1\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/int32-before.accdb",
+      "bytes": 40960,
+      "sha256": "01d333e5735b11f2e2802da126bc3a4b0c4c0a988f75072b4311168aab878c87",
+      "kind": "int32",
+      "rows": 0,
+      "sha256_after": "01d333e5735b11f2e2802da126bc3a4b0c4c0a988f75072b4311168aab878c87",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual int32 key-position=1 rows=0\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/int32-after.accdb",
+      "bytes": 40960,
+      "sha256": "a9e42ebd75e766fe7c1bbf428df6e85393e4b2b78bb91af690e8555904eda8e9",
+      "kind": "int32",
+      "rows": 1,
+      "sha256_after": "a9e42ebd75e766fe7c1bbf428df6e85393e4b2b78bb91af690e8555904eda8e9",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual int32 key-position=1 rows=1\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/int64-before.accdb",
+      "bytes": 40960,
+      "sha256": "5cb42743f4ddc4bcc287abd7e3b2ac4a2daae9b66c759332e0325114495e0b19",
+      "kind": "int64",
+      "rows": 0,
+      "sha256_after": "5cb42743f4ddc4bcc287abd7e3b2ac4a2daae9b66c759332e0325114495e0b19",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual int64 key-position=1 rows=0\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/int64-after.accdb",
+      "bytes": 40960,
+      "sha256": "b802b2c1620b9ffacb38dbe03cacebb87832d1f3e823d82e02eb7d6d721c80e2",
+      "kind": "int64",
+      "rows": 1,
+      "sha256_after": "b802b2c1620b9ffacb38dbe03cacebb87832d1f3e823d82e02eb7d6d721c80e2",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual int64 key-position=1 rows=1\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/currency-before.accdb",
+      "bytes": 40960,
+      "sha256": "170518ee942eb223f60bc53b92feff708a5e7a9d859d37fad9dbda1cc514beba",
+      "kind": "currency",
+      "rows": 0,
+      "sha256_after": "170518ee942eb223f60bc53b92feff708a5e7a9d859d37fad9dbda1cc514beba",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual currency key-position=1 rows=0\n",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/manual-design-independent-20261107/images-final/currency-after.accdb",
+      "bytes": 40960,
+      "sha256": "b39e45a028d756fc7bcf4f7f820e02165dcbf5600f68b764bace821d8c758b10",
+      "kind": "currency",
+      "rows": 1,
+      "sha256_after": "b39e45a028d756fc7bcf4f7f820e02165dcbf5600f68b764bace821d8c758b10",
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] Manual currency key-position=1 rows=1\n",
+      "matches_prior_candidate": true
+    }
+  ],
+  "notes": [
+    "All eight file hashes unchanged after read-only observation.",
+    "Prior exports were produced before nonsemantic validation-order/readability corrections. All refreshed hashes match those prior candidates; these are eight distinct cases, not sixteen.",
+    "Exporter uses public recoverable-candidate APIs but does not prepare, commit or recover a journal.",
+    "Keyless has zero indexes; keyed profiles each retain one manual primary on actual second field, with no AutoNumber."
+  ]
+}

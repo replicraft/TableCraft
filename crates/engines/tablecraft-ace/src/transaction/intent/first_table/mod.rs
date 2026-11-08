@@ -41,7 +41,8 @@ pub enum FirstTableIntentError {
 
 /// Original owned declarations and full-source binding for TCNT0001/profile 1,
 /// default-bearing TCNT0002/profile 2, explicit-policy TCNT0003/profile 3 or
-/// wider-target-default TCNT0004/profile 4, or described TCNT0005/profile 5.
+/// wider-target-default TCNT0004/profile 4, described TCNT0005/profile 5, or
+/// manual/keyless TCNT0006/profile 6. Older profiles retain their generated ID.
 /// Decoding this record supplies no native write, recovery or absence authority.
 pub struct NativeFirstTableIntent {
     definition: FirstTableDefinition,

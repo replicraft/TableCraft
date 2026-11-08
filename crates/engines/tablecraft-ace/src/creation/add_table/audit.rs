@@ -216,21 +216,20 @@ pub(super) fn verify(
     let [index] = checked.indexes() else {
         return Err(AddTableError::Preservation);
     };
+    let primary_name = definition
+        .primary_name()
+        .ok_or(AddTableError::Preservation)?;
     budget
         .charge(
             Resource::Steps,
-            index
-                .index()
-                .name()
-                .len()
-                .max(definition.primary_name().len()) as u64,
+            index.index().name().len().max(primary_name.len()) as u64,
         )
         .map_err(crate::InspectError::from)?;
     if index.status() != IndexCheckStatus::Checked
         || index.index().root_page() != role.root as u32
         || index.index().usage_map() != reference(source::MAP_PAGE as u32, role.index as u8)
         || index.index().native_type() != 1
-        || index.index().name() != definition.primary_name()
+        || index.index().name() != primary_name
         || index.index().flags() != 0x89
         || index.index().columns().len() != 1
         || index.index().columns()[0].number() != 0

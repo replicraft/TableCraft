@@ -58,6 +58,9 @@ impl NativeImage {
     ) -> Result<AddTablePlan, AddTableError> {
         let _span = tracing::debug_span!("native.add_table.plan").entered();
         check(budget, cancelled)?;
+        if definition.is_manual() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         let original = source::capture(&self, definition.table(), budget, cancelled)?;
         let after = build::build(&self, &definition, &original, budget, cancelled)?;
         audit::verify(&self, &after, &definition, &original, budget, cancelled)?;
