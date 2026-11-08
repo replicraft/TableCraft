@@ -5,7 +5,10 @@ use crate::{
     SaveSchemaChange, SaveStartFailure, SaveWorker,
 };
 use tablecraft_testkit::{
-    fixtures::access::{canonical_add_column, canonical_creation, canonical_native17_creation},
+    fixtures::access::{
+        canonical_add_column, canonical_created_add_column, canonical_creation,
+        canonical_native17_creation,
+    },
     support::access::retained_target::assert_retained_target_observation,
 };
 
@@ -33,72 +36,76 @@ fn review(
 
 #[test]
 fn reviewed_column_saves_exact_sdk_image_and_reopens_full_schema_without_row_counts() {
-    let source = canonical_add_column::source("Extra");
-    let (directory, path, worker, revision) = opened(&source.before);
-    let (_, capability) = review(&worker, revision, "Extra");
-    let (_, second) = review(&worker, revision, "Other");
-    assert_eq!(capability.source_path(), path);
-    let witness = capability.reopen_witness();
-    assert_eq!(witness.table_name(), "Items");
-    assert_eq!(witness.column_name(), "Extra");
-    assert_eq!(witness.document_revision(), revision);
-    tablecraft_access::editing::offline::OfflineWriteSession::open(
-        &path,
-        crate::controls::SCOPE,
-        &mut crate::controls::budget(),
-        &|| false,
-    )
-    .unwrap()
-    .release()
-    .unwrap();
-    assert_eq!(std::fs::read(&path).unwrap(), source.before);
+    let keyless = canonical_add_column::source("Extra");
+    let created = canonical_created_add_column::default_zero_source();
+    let expected = canonical_created_add_column::append(&created, "Extra");
+    for (before, after) in [(keyless.before, keyless.after), (created, expected)] {
+        let (directory, path, worker, revision) = opened(&before);
+        let (_, capability) = review(&worker, revision, "Extra");
+        let (_, second) = review(&worker, revision, "Other");
+        assert_eq!(capability.source_path(), path);
+        let witness = capability.reopen_witness();
+        assert_eq!(witness.table_name(), "Items");
+        assert_eq!(witness.column_name(), "Extra");
+        assert_eq!(witness.document_revision(), revision);
+        tablecraft_access::editing::offline::OfflineWriteSession::open(
+            &path,
+            crate::controls::SCOPE,
+            &mut crate::controls::budget(),
+            &|| false,
+        )
+        .unwrap()
+        .release()
+        .unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), before);
 
-    let saves = SaveWorker::new(|| {});
-    let bundle = directory.path().join("column.journal");
-    let id = saves.start_add_column(capability, bundle.clone()).unwrap();
-    let rejected = saves
-        .start_add_column(second, directory.path().join("other.journal"))
-        .unwrap_err();
-    assert_eq!(rejected.kind, SaveStartFailure::Busy);
-    assert!(rejected.into_reviewed().is_some());
-    let report = terminal(&saves);
-    let SaveOutcome::Saved { receipt } = report.outcome else {
-        panic!("expected completed source-qualified column save: {report:?}");
-    };
-    assert_eq!(receipt.schema_change, Some(SaveSchemaChange::ColumnAdded));
-    assert_eq!((receipt.matched_rows, receipt.changed_rows), (None, None));
-    assert_eq!(saves.poll(), Some(report));
-    assert!(saves.acknowledge(id));
-    assert!(!bundle.exists());
-    assert_eq!(std::fs::read(&path).unwrap(), source.after);
-    assert!(matches!(
-        request(&worker, Command::OpenColumnAdded { witness }).unwrap(),
-        Response::Opened { .. }
-    ));
-    let Response::Details {
-        fields,
-        declared_rows,
-        ..
-    } = request(
-        &worker,
-        Command::Describe {
-            table: "Items".into(),
-        },
-    )
-    .unwrap()
-    else {
-        panic!("expected newly opened schema");
-    };
-    assert_eq!(declared_rows, 0);
-    assert_eq!(
-        fields
-            .iter()
-            .map(|field| field.name.as_str())
-            .collect::<Vec<_>>(),
-        ["Id", "Score", "Extra"]
-    );
-    assert_eq!(fields[2].native_type, 4);
-    assert_eq!(fields[2].reader_nullable, Some(true));
+        let saves = SaveWorker::new(|| {});
+        let bundle = directory.path().join("column.journal");
+        let id = saves.start_add_column(capability, bundle.clone()).unwrap();
+        let rejected = saves
+            .start_add_column(second, directory.path().join("other.journal"))
+            .unwrap_err();
+        assert_eq!(rejected.kind, SaveStartFailure::Busy);
+        assert!(rejected.into_reviewed().is_some());
+        let report = terminal(&saves);
+        let SaveOutcome::Saved { receipt } = report.outcome else {
+            panic!("expected completed source-qualified column save: {report:?}");
+        };
+        assert_eq!(receipt.schema_change, Some(SaveSchemaChange::ColumnAdded));
+        assert_eq!((receipt.matched_rows, receipt.changed_rows), (None, None));
+        assert_eq!(saves.poll(), Some(report));
+        assert!(saves.acknowledge(id));
+        assert!(!bundle.exists());
+        assert_eq!(std::fs::read(&path).unwrap(), after);
+        assert!(matches!(
+            request(&worker, Command::OpenColumnAdded { witness }).unwrap(),
+            Response::Opened { .. }
+        ));
+        let Response::Details {
+            fields,
+            declared_rows,
+            ..
+        } = request(
+            &worker,
+            Command::Describe {
+                table: "Items".into(),
+            },
+        )
+        .unwrap()
+        else {
+            panic!("expected newly opened schema");
+        };
+        assert_eq!(declared_rows, 0);
+        assert_eq!(
+            fields
+                .iter()
+                .map(|field| field.name.as_str())
+                .collect::<Vec<_>>(),
+            ["Id", "Score", "Extra"]
+        );
+        assert_eq!(fields[2].native_type, 4);
+        assert_eq!(fields[2].reader_nullable, Some(true));
+    }
 }
 
 #[test]

@@ -29,12 +29,7 @@ pub fn qualify_native_add_column_recovery<'a, J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let candidate = image.prepare_add_int32_column_candidate(
-        intent.table(),
-        intent.column(),
-        budget,
-        cancelled,
-    )?;
+    let candidate = intent.reconstruct(image, budget, cancelled)?;
     same_image(
         candidate.before_bytes(),
         checked.before_bytes(),

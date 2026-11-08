@@ -271,3 +271,5 @@ fn a_valid_journal_digest_does_not_authorize_a_substituted_after_image() {
     assert_eq!(target.writes, 0);
     assert!(target.bytes.get_ref() == &pair.before);
 }
+
+mod created;

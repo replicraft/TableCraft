@@ -1,18 +1,101 @@
 //! Fresh source reconstruction before a consuming column journal can be staged.
-use super::{AddColumnIntentError, NativeAddColumnIntent};
+use super::{AddColumnIntentError, NativeAddColumnIntent, Profile};
 use crate::{
-    AddColumnCandidate, NativeImage, header::check, transaction::qualified_recovery::equal_image,
+    AddColumnCandidate, CreatedAddColumnCandidate, NativeImage, check_table, header::check,
+    transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
 
+/// The actual native constructor purpose is retained before request capture.
+pub(super) enum Candidate {
+    Keyless(AddColumnCandidate),
+    Created(CreatedAddColumnCandidate),
+}
+
+impl Candidate {
+    pub(super) fn profile(&self) -> Profile {
+        match self {
+            Self::Keyless(_) => Profile::KeylessV1,
+            Self::Created(_) => Profile::CreatedV2,
+        }
+    }
+
+    pub(super) fn before_bytes(&self) -> &[u8] {
+        match self {
+            Self::Keyless(plan) => plan.before_bytes(),
+            Self::Created(plan) => plan.before_bytes(),
+        }
+    }
+
+    pub(super) fn after_bytes(&self) -> &[u8] {
+        match self {
+            Self::Keyless(plan) => plan.after_bytes(),
+            Self::Created(plan) => plan.after_bytes(),
+        }
+    }
+
+    pub(super) fn table(&self) -> &str {
+        match self {
+            Self::Keyless(plan) => plan.table(),
+            Self::Created(plan) => plan.table(),
+        }
+    }
+
+    pub(super) fn column(&self) -> &str {
+        match self {
+            Self::Keyless(plan) => plan.column(),
+            Self::Created(plan) => plan.column(),
+        }
+    }
+}
+
 /// Qualified declaration and original request, without a public arbitrary-AFTER constructor.
 pub struct RecoverableAddColumnPlan {
-    pub(super) candidate: AddColumnCandidate,
+    pub(super) candidate: Candidate,
     pub(super) intent: NativeAddColumnIntent,
 }
 
 impl NativeImage {
+    /// Select a declared source purpose from actual native index metadata.
+    /// Each selected constructor repeats its complete admission; a rejected
+    /// constructor is never retried as another profile. Persisted requests later
+    /// reconstruct only their captured profile, without this selection step.
+    pub fn plan_recoverable_add_int32_column_for_source(
+        self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableAddColumnPlan, AddColumnIntentError> {
+        check(budget, cancelled)?;
+        let scope = self.catalog().catalog().scope();
+        let checked = check_table(&mut self.reader(), scope, table, budget, cancelled)?;
+        if checked.indexes().is_empty() {
+            self.plan_recoverable_add_int32_column(table, column, budget, cancelled)
+        } else {
+            self.plan_recoverable_created_add_int32_column(table, column, budget, cancelled)
+        }
+    }
+
+    /// Seal the canonical generated-primary source purpose as TCAC0002/profile 2.
+    /// The original API and TCAC0001 remain keyless and unmodified.
+    pub fn plan_recoverable_created_add_int32_column(
+        self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableAddColumnPlan, AddColumnIntentError> {
+        let _span = tracing::debug_span!("native.created_add_column.plan_recoverable").entered();
+        let candidate = Candidate::Created(
+            self.prepare_created_add_int32_column_candidate(table, column, budget, cancelled)?,
+        );
+        let intent = NativeAddColumnIntent::capture(&candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(RecoverableAddColumnPlan { candidate, intent })
+    }
+
     /// Qualify an empty-table nullable Int32 addition and bind its original request.
     /// Existing creation, rename and row intent languages are unchanged.
     pub fn plan_recoverable_add_int32_column(
@@ -23,8 +106,9 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableAddColumnPlan, AddColumnIntentError> {
         let _span = tracing::debug_span!("native.add_column.plan_recoverable").entered();
-        let candidate =
-            self.prepare_add_int32_column_candidate(table, column, budget, cancelled)?;
+        let candidate = Candidate::Keyless(
+            self.prepare_add_int32_column_candidate(table, column, budget, cancelled)?,
+        );
         let intent = NativeAddColumnIntent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(RecoverableAddColumnPlan { candidate, intent })
@@ -69,12 +153,10 @@ impl RecoverableAddColumnPlan {
         same_image(fresh.as_bytes(), self.before_bytes(), proof, cancelled)?;
         self.intent
             .verify_before(fresh.as_bytes(), proof, cancelled)?;
-        let candidate = fresh.prepare_add_int32_column_candidate(
-            self.intent.table(),
-            self.intent.column(),
-            native,
-            cancelled,
-        )?;
+        let candidate = self.intent.reconstruct(fresh, native, cancelled)?;
+        if candidate.profile() != self.candidate.profile() {
+            return Err(AddColumnIntentError::ImageMismatch);
+        }
         same_image(
             candidate.before_bytes(),
             self.before_bytes(),

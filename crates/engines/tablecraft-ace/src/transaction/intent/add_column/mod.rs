@@ -4,7 +4,7 @@ mod planning;
 mod recovery;
 
 use super::{NativeIntentError, binding};
-use crate::{AddColumnCandidate, AddColumnError, InspectError, header::check};
+use crate::{AddColumnError, CreatedAddColumnError, InspectError, NativeImage, header::check};
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
 use thiserror::Error;
@@ -27,6 +27,9 @@ pub enum AddColumnIntentError {
     /// The actual source or new declaration failed native qualification.
     #[error(transparent)]
     Column(#[from] AddColumnError),
+    /// The generated-primary native source or declaration failed qualification.
+    #[error(transparent)]
+    CreatedColumn(#[from] CreatedAddColumnError),
     /// The closed request language or bounded name framing is invalid.
     #[error("invalid add-column intent record")]
     InvalidRecord,
@@ -47,12 +50,18 @@ impl From<LimitError> for AddColumnIntentError {
     }
 }
 
-/// Data-only original request for one nullable ordinary Int32 declaration.
-///
-/// TCAC0001/profile 1 binds the complete canonical source, exact table spelling
-/// and proposed field name. It grants neither write permission nor admission for
-/// other field types, populated tables, indexes, defaults or required programs.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Profile {
+    KeylessV1,
+    CreatedV2,
+}
+
+/// Data-only request binding an exact native source and appended Int32 field.
+/// TCAC0001/profile 1 remains canonical keyless. TCAC0002/profile 2 admits its
+/// separate generated-primary source proof. Neither permits other target types,
+/// inferred new defaults, populated tables or skipped required programs.
 pub struct NativeAddColumnIntent {
+    profile: Profile,
     table: SchemaName,
     column: SchemaName,
     before_length: u64,
@@ -64,7 +73,7 @@ impl NativeAddColumnIntent {
     pub const MAX_ENCODED_BYTES: usize = codec::HEADER_BYTES + 2 * MAX_NAME_BYTES;
 
     fn capture(
-        candidate: &AddColumnCandidate,
+        candidate: &planning::Candidate,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddColumnIntentError> {
@@ -74,11 +83,38 @@ impl NativeAddColumnIntent {
         check(budget, cancelled)?;
 
         Ok(Self {
+            profile: candidate.profile(),
             table,
             column,
             before_length: candidate.before_bytes().len() as u64,
             before_binding,
         })
+    }
+
+    fn reconstruct(
+        &self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<planning::Candidate, AddColumnIntentError> {
+        match self.profile {
+            Profile::KeylessV1 => Ok(planning::Candidate::Keyless(
+                image.prepare_add_int32_column_candidate(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?,
+            )),
+            Profile::CreatedV2 => Ok(planning::Candidate::Created(
+                image.prepare_created_add_int32_column_candidate(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?,
+            )),
+        }
     }
 
     /// Exact original decoded table name.

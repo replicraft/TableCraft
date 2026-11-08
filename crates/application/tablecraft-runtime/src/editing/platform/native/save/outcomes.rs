@@ -13,7 +13,8 @@ use tablecraft_access::editing::offline::{
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
-    DatabaseOptionsError, DatabaseOptionsIntentError, FirstTableError, FirstTableIntentError,
+    CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError, FirstTableError,
+    FirstTableIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -463,6 +464,13 @@ fn add_column_intent_failure(error: &AddColumnIntentError) -> Option<SaveFailure
         AddColumnIntentError::Inspect(error) => inspection_failure(error),
         AddColumnIntentError::Binding(error) => intent_failure(error),
         AddColumnIntentError::Column(error) => add_column_failure(error),
+        AddColumnIntentError::CreatedColumn(error) => match error {
+            CreatedAddColumnError::Inspect(error)
+            | CreatedAddColumnError::Declaration(CreateDatabaseError::Inspect(error)) => {
+                inspection_failure(error)
+            }
+            _ => None,
+        },
         AddColumnIntentError::Proof(error) => qualification_failure(error),
         _ => None,
     }

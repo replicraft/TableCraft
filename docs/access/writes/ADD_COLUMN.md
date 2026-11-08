@@ -66,3 +66,30 @@ checks now pass: consuming review/save, full-schema reopen, stale revisions and
 capabilities, source drift and whole-content reopen witness validation. The native
 and unsupported host services share the typed contract; this gate executes on
 macOS only.
+
+## Generated-primary source and versioned request
+
+The separate `prepare_created_add_int32_column_candidate` source proof now passes
+seven focused cases, including complete SDK AFTER images for an inline existing
+default zero and mixed scalar declarations. It admits canonical empty header-5
+creator tables with a first LONG Increment primary and constructively known
+inline field properties. Original keys, defaults, descriptions, field metadata
+and all bytes outside the definition-page envelope remain unchanged. It still
+appends only a nullable Int32 with an absent new default; authoring a new default
+zero needs a separate property-storage/allocation operation.
+
+`plan_recoverable_created_add_int32_column` now seals that separate purpose as
+`TCAC0002`/profile 2. The old API and `TCAC0001`/profile 1 keep their exact keyless
+admission and original wire body. Both use a 60-byte request header and the
+existing fixed-length checked V1 image journal. Version/profile pairs are closed;
+crossed or future pairs refuse before name allocation. Fresh reconstruction
+selects only the captured native constructor, never another profile after a
+failure.
+
+The shared runtime selects one declared constructor from actual native index
+metadata. Selection does not grant admission: the selected source proof remains
+complete, and unsupported layouts refuse. This metadata selection is not used
+to reinterpret retained requests during recovery. Three new V2 wire/recovery
+cases and an expanded runtime save/reopen case are authored for the next batch;
+execution remains pending. This is not general populated-table alteration or
+GUI default authoring.

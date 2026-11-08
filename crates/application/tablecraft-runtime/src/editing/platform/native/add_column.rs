@@ -38,7 +38,8 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let plan = image.plan_recoverable_add_int32_column(table, column, &mut work, cancelled)?;
+    let plan =
+        image.plan_recoverable_add_int32_column_for_source(table, column, &mut work, cancelled)?;
     work.charge_allocation(plan.after_bytes().len() as u64, 1)?;
     let mut expected = Vec::new();
     expected.try_reserve_exact(plan.after_bytes().len())?;
