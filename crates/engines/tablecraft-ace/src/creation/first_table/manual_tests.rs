@@ -170,13 +170,13 @@ fn manual_keys_keep_actual_position_and_existing_complete_first_insert_route() {
 
 #[cfg(feature = "journal")]
 #[test]
-fn manual_append_is_refused_before_entering_increment_only_role_construction() {
+fn legacy_append_refuses_manual_declarations_before_increment_role_construction() {
     let source = canonical_creation_primary::source(canonical_creation_primary::Case::Empty);
     let columns = [CreateColumn::new("Value", ScalarType::Int32)];
     let definition =
         FirstTableDefinition::capture_manual("Other", &columns, &mut budget(), &|| false).unwrap();
     assert!(matches!(
-        image(&source.bytes).plan_add_table(definition, &mut budget(), &|| false),
+        image(&source.bytes).plan_add_table_legacy(definition, &mut budget(), &|| false),
         Err(AddTableError::Create(CreateDatabaseError::Declaration))
     ));
 }

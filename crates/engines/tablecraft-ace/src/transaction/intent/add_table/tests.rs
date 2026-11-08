@@ -352,7 +352,7 @@ fn repeated_v2_rejects_future_nested_templates_wrong_profiles_and_trailing_bytes
     for case in 0..5 {
         let mut corrupt = raw.clone();
         match case {
-            0 => corrupt[7] = b'5',
+            0 => corrupt[7] = b'6',
             1 => corrupt[12] = 1,
             2 => corrupt[64 + 7] = b'5',
             3 => corrupt[64 + 12] = 4,
@@ -548,3 +548,5 @@ fn all_existing_append_actions_refuse_manual_tcnt6_without_decoder_fallback() {
         assert_eq!(no_ownership.remaining(Resource::Bytes), 0);
     }
 }
+
+mod mixed;

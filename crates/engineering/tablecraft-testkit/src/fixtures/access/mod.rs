@@ -406,3 +406,6 @@ pub mod database_properties;
 
 /// Independent complete ACE 16 envelope with no user tables.
 pub mod canonical_blank_creation;
+
+/// Independent mixed manual/keyless/Increment append ledgers.
+pub mod canonical_mixed_add_table;

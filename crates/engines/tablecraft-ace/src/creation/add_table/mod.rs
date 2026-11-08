@@ -11,7 +11,9 @@ use crate::{InspectError, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
 
-pub use availability::add_table_source_available;
+pub use availability::{
+    AddTableSourceCapabilities, add_table_source_available, add_table_source_capabilities,
+};
 
 /// Refusal before an existing source receives a new table.
 #[derive(Debug, Error)]
@@ -43,13 +45,19 @@ pub struct AddTablePlan {
     before: NativeImage,
     after: Vec<u8>,
     definition: FirstTableDefinition,
+    profile: ConstructionProfile,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ConstructionProfile {
+    LegacyGenerated,
+    Mixed,
 }
 
 impl NativeImage {
-    /// Append an empty explicitly declared Increment table to the qualified
-    /// bounded ACE16 append lineage. Every existing table retains one DATA page
-    /// and one primary root. Imported catalog/index/allocation expansion and
-    /// manual Design schemas remain outside this operation.
+    /// Append an empty manual or Increment table to a qualified bounded ledger.
+    /// Each existing table retains one DATA page and its optional primary root.
+    /// Imported catalogs, allocation expansion and broader schema changes refuse.
     pub fn plan_add_table(
         self,
         definition: FirstTableDefinition,
@@ -57,6 +65,33 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<AddTablePlan, AddTableError> {
         let _span = tracing::debug_span!("native.add_table.plan").entered();
+        check(budget, cancelled)?;
+        let keyed = definition.primary_position().is_some();
+        let (geometry, legacy) = source::derive_geometry(&self, keyed, budget, cancelled)?;
+        if legacy && !definition.is_manual() {
+            return self.plan_add_table_legacy(definition, budget, cancelled);
+        }
+        let original = source::qualify_geometry(&self, geometry, legacy, budget, cancelled)?;
+        source::require_name(&self, definition.table(), budget, cancelled)?;
+        let after = build::build(&self, &definition, &original, budget, cancelled)?;
+        audit::verify(&self, &after, &definition, &original, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(AddTablePlan {
+            before: self,
+            after,
+            definition,
+            profile: ConstructionProfile::Mixed,
+        })
+    }
+
+    /// Reconstruct only the original generated-source/generated-target language.
+    /// Selected legacy recovery never gains mixed-source admission by fallback.
+    pub(crate) fn plan_add_table_legacy(
+        self,
+        definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<AddTablePlan, AddTableError> {
         check(budget, cancelled)?;
         if definition.is_manual() {
             return Err(CreateDatabaseError::Declaration.into());
@@ -69,11 +104,17 @@ impl NativeImage {
             before: self,
             after,
             definition,
+            profile: ConstructionProfile::LegacyGenerated,
         })
     }
 }
 
 impl AddTablePlan {
+    /// Fresh structural source/target classification selects the closed wire language.
+    pub fn requires_mixed_intent(&self) -> bool {
+        self.profile == ConstructionProfile::Mixed
+    }
+
     /// Complete retained original bytes; no existing object was reconstructed.
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()

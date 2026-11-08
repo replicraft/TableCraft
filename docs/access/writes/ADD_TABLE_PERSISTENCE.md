@@ -13,25 +13,39 @@ has no new add-table command from this change.
 
 ## Source and request profiles
 
-A qualified source has `n` existing local user tables, for `1 <= n <= 18`, and
-exactly `7 + 3n` 4-KiB pages. Its qualified system/header roles, dense `7 + n`
-catalog records and `20 + 3n` inline usage-map records retain the admitted native
-lineage. This is structural qualification, not a remembered creator flag or
-permission inferred from file length. Complete existing row/index membership and
-ownership are checked for every table.
+Two source languages remain distinct. The retained generated-table language has
+`n` existing local tables, for `1 <= n <= 18`, exactly `7 + 3n` 4-KiB pages,
+`7 + n` catalog records and `20 + 3n` inline usage-map records. Its old source
+qualification is retained for TCAT1–4 replay.
 
-For zero-based existing table `i`, definition/DATA/primary-root pages are
-`7 + 3i`, `8 + 3i` and `9 + 3i`. The first table keeps owned/candidate/root map
-slots 3/7/22. Later tables use slots `20 + 3i`, `21 + 3i` and `22 + 3i`. Each has
-one DATA page and one qualified unique Int32 primary root. Existing records,
-physical references, primary history, field properties and opaque free tails are
-not reserialized.
+The mixed language derives an ordered ledger from the actual catalog, table
+definitions and indexes. Each existing table has a definition followed by one
+DATA page and, only when it has a primary key, one primary-root page. The first
+definition is page 7; subsequent definitions follow the preceding table's actual
+two- or three-page extent. The ledger must end exactly at EOF. For `p` original
+pages and `n` tables, catalog/map counts are `7 + n` and `20 + (p - 7)`.
+Length is only a framing bound: matching a legacy length does not turn a manual
+or keyless source into a legacy generated source. Complete existing row/index
+membership, schema roles and ownership are checked for every table.
 
-The original one-table source contract remains unchanged. The repeated profile
-with two or more existing tables additionally requires ordinary in-row scalar
-storage with no extended field flags. Memo/OLE LVAL, complex references,
-Date/Time Extended and other unsupported schema/storage roles refuse; they are
-not projected away to make a source eligible.
+The first table retains owned/candidate map slots 3/7 and optional primary-map
+slot 22. A later definition at page `d` uses owned/candidate slots
+`20 + (d - 7)` and the following slot, with one further slot only for a primary
+root. A mixed source may combine generated Int32 Increment primaries, ordinary
+single-field Int32/Int64/Currency primaries at their actual field position, and
+keyless tables. Existing records, physical references, primary history, field
+properties and opaque free tails are not reserialized.
+
+The original one-table generated source contract remains unchanged. Its retained
+empty Long Text/OLE declaration exception uses the same source checks for both
+generated and manual targets. This preserves existing source bytes; it does not
+author new LVAL fields or broaden repeated-source admission. After an append,
+another append still refuses if a table exposes those unsupported storage roles.
+Repeated generated sources and sources with mixed manual/keyless roles require
+ordinary in-row scalar storage with no extended field flags. Memo/OLE LVAL,
+complex references, Date/Time Extended and unsupported schema/storage roles
+refuse rather than being projected away. Composite, descending and broader
+primary-key families remain outside this append profile.
 
 The operation refuses out-of-EOF ownership claims, extra objects, unsupported
 catalog/index/allocation layouts, unavailable contiguous record capacity and
@@ -40,10 +54,11 @@ limitations do not establish support for arbitrary imported Access applications.
 Ordinary retained property bytes and unused page gaps stay unchanged. Existing
 programs are never executed or skipped to admit a mutation.
 
-The request currently uses the existing owned `FirstTableDefinition`: an empty
-schema with an explicitly requested Int32 Increment primary followed by supported
-scalar fields, typed constant defaults and optional Required/AllowZeroLength
-policies. Optional Description is retained independently on ordinary fields and
+The request uses the owned `FirstTableDefinition`. `capture` retains the generated
+Int32 Increment-primary declaration. `capture_manual` supplies an ordinary schema
+with no generated field and either no key or one explicit Int32/Int64/Currency
+primary at its actual field position. Both retain supported scalar fields, typed
+constant defaults and optional Required/AllowZeroLength policies. Optional Description is retained independently on ordinary fields and
 the generated primary, including the difference between absent and present-empty.
 It is inert text, with no trimming, normalization or expression evaluation. The
 constructive profile conservatively counts up to 255 UTF-16 units against
@@ -51,30 +66,36 @@ Microsoft's [255-character Description contract](https://learn.microsoft.com/en-
 MR2 stores exact UTF-16 text with flags 1 and native Text type 10. Aggregate
 inline-property and catalog-page capacity still refuse independently; several
 individually valid descriptions need not fit one candidate catalog page.
-This does not stand in for manual Design view or schemas without a
-primary key. Names use the catalog's owning comparison policy; this first profile
+No hidden ID or primary root is invented for a keyless request. A primary key's
+non-NULL/unique restriction remains separate from an ordinary field's explicit
+Required policy. Names use the catalog's owning comparison policy; this profile
 refuses non-ASCII table-name ambiguity rather than inventing locale equivalence.
 A conflicting existing name refuses before a candidate is published.
 
 ## Exact append and independent proof
 
-New definition, DATA and primary-root pages append at the original EOF and its
-next two pages. Owned/candidate/root maps append at slots `20 + 3n` through
-`22 + 3n`. The new catalog record appends at slot `7 + n`, and the declared count
-advances from `7 + n` to `8 + n`. For the retained one-table source these remain
-pages 10/11/12, map slots 23/24/25 and catalog slot 8 exactly. No original page,
-record offset or reference is relocated.
+New definition and DATA pages append at the original EOF and its next page.
+A keyed request adds its primary root on the following page; a keyless request
+adds exactly two pages and no root/map placeholder. Owned/candidate maps append,
+with a third map only for a keyed target. The new catalog record appends at slot
+`7 + n`, and the declared count advances to `8 + n`. The retained generated
+one-table transition remains pages 10/11/12, map slots 23/24/25 and catalog slot 8
+exactly. No original page, record offset or reference is relocated.
 
-The largest admitted source has eighteen tables and 61 pages. Its addition
-produces nineteen tables and 64 pages. That ceiling comes from the current
-base-zero eight-byte inline/global FREE-map bitmap profile; it is **not a native
-Access format or table-count limit**. Global bitmap/map-container and catalog
-capacity growth remain separate implementation work.
+The base-zero eight-byte inline/global FREE-map profile covers at most 64 pages.
+A qualified 61-page source can fit either target shape; a 62-page source can fit
+only a two-page keyless target. An Increment or ordinary manual-keyed request
+against that same 62-page source refuses without a write. Table counts depend on
+the actual keyed/keyless extents, and inline map/catalog record capacity can
+refuse earlier. The old generated-only eighteen→nineteen transition remains
+61→64 pages. Neither nineteen tables nor this bitmap ceiling is a native Access
+format or table-count limit. Global bitmap/map-container and catalog capacity
+growth remain separate work.
 
 The producer modifies only these appended bodies/slots/counters, catalog count
 and new pages. It preserves every other original byte, including unused catalog
 and map gaps. Independent proof reconstructs the complete new definition,
-empty DATA/root pages and native17 catalog row, checks the old-byte edit envelope,
+empty DATA and optional root pages and native17 catalog row, checks the old-byte edit envelope,
 and decodes actual field/index/map metadata. Defaults are projected from actual
 stored expressions through the independent constant projector with no clock.
 Policies retain exact presence and Boolean values. Description is checked as exact
@@ -88,19 +109,22 @@ same-name and allocation refusals, forged metadata and out-of-scope bytes, a
 semantically valid overlong catalog record, atomic capacity refusal and measured
 allocation/row/work/cancellation admission.
 
-`add_table_source_available(captured, scope, budget, cancelled)` supplies an
-advisory source fact without a dummy declaration or output plan. It rejects
-unsupported input lengths before capture or allocation, then uses the same
-complete source qualification as actual planning. Structural write refusals can
-make this fact false while ordinary catalog/sequential browsing still works;
-false is not a database-health claim. Cancellation, I/O, allocation, resource and
-canonical-construction failures remain errors. Actual planning captures and
-qualifies the source again and checks the real requested name/schema.
+`add_table_source_capabilities(captured, scope, budget, cancelled)` supplies
+separate `can_add_keyless()` and `can_add_keyed()` advisory facts without a dummy
+declaration or output plan. `add_table_source_available` retains the keyed-target
+advisory meaning. Unsupported page counts refuse before capture/allocation;
+complete native structural qualification follows. Facts include the two/three-page
+bitmap requirement and inline map-record capacity, while actual name/schema and
+catalog-record fit remain consuming-plan checks. Structural write refusals can
+make the facts unavailable while ordinary browsing still works; they are not a
+database-health claim. Cancellation, I/O, allocation, resources and
+canonical-construction failures remain errors. Actual planning recaptures and
+qualifies the source and checks the real requested declaration independently.
 
 ## Original intent and V2 journal
 
 `AddTablePlan::encode_intent` retains the complete actual BEFORE binding and
-original schema using four disjoint closed action versions:
+original schema using five disjoint closed action versions:
 
 | Action | Profile | Original image length | Declaration template |
 | --- | ---: | --- | --- |
@@ -108,21 +132,27 @@ original schema using four disjoint closed action versions:
 | `TCAT0002` | 2 | Thirteen through 61 pages, in three-page steps | TCNT1–4 only |
 | `TCAT0003` | 3 | Exactly ten pages | TCNT5 only; at least one Description |
 | `TCAT0004` | 4 | Thirteen through 61 pages, in three-page steps | TCNT5 only; at least one Description |
+| `TCAT0005` | 5 | Page-aligned 9–61 pages for a keyed target; 9–62 for a keyless target | Closed TCNT1–6, with actual manual key position or keyless sentinel only in TCNT6 |
 
-Capture chooses the version from Description presence and exact source length; that is wire framing,
-not native source authority. A version/profile/length mismatch refuses before
-decoded ownership allocation. Neither action can be downgraded or retried as the
-other. TCAT1/2 preserve their original nested TCNT1–4 grammar and original record
-ceilings. Description-bearing TCAT3/4 pin nested TCNT5 instead; a new action
-cannot disguise an older template, nor can an older action acquire Description
-or its larger record allowance. The nested record is only a declaration template:
-its canonical-blank header never identifies or authorizes the actual source.
-Standalone TCNT1–4 behavior remains unchanged. TCNT5 retains exact optional
-Description bytes, including present-empty, through original declaration ownership
-and fresh native reconstruction; see [first-table intent framing](FIRST_TABLE_PERSISTENCE.md#typed-completion-and-recovery).
-Unknown action/template versions and mismatched profiles refuse without decoder
-fallback. The new description actions use the same source partitions and native
-qualification; they do not expand allocation, catalog or table-count capacity.
+For TCAT1–4, Description presence and the exact legacy source partition select
+the version. TCAT5 is selected from the freshly qualified mixed source/target
+operation: a manual target, a nonlegacy source, or both. Generated TCNT1–5 targets
+can therefore follow a manual/keyless source without changing their declaration
+language. Decoded intents retain their typed outer identity; re-encoding a TCAT5
+record cannot downgrade it merely because its source length matches an older
+partition. `NativeAddTableIntent::new_mixed` is explicitly data-only binding,
+not source-role qualification or permission to save.
+
+A version/profile/length mismatch refuses before decoded ownership allocation.
+TCAT1/2 retain their TCNT1–4 grammar and original record ceilings; TCAT3/4 retain
+TCNT5 and their Description allowance. All four still reject nested TCNT6.
+TCAT5 independently pins TCNT1–6 magic/profile pairs, rather than delegating
+future version admission to a broader decoder. TCNT6 alone carries the actual
+optional manual key; it never invents an Increment field. The nested canonical
+blank header is only declaration-template data and never identifies the actual
+AddTable source. Unknown versions and mismatched profiles refuse without decoder
+fallback. Standalone TCNT1–6 behavior remains separate; see
+[first-table framing](FIRST_TABLE_PERSISTENCE.md#typed-completion-and-recovery).
 
 `AddTablePlan::prepare` consumes the checked plan through
 `prepare_resizable_expected`, comparing the complete expected BEFORE and keeping
@@ -131,8 +161,13 @@ inventing row counts. The caller owns exclusive target/journal association,
 durable namespace setup and subsequent retirement; preparation creates no files.
 
 `qualify_native_add_table_recovery` verifies the original actual-source binding,
-captures the checked journal's BEFORE, reruns `plan_add_table` and compares both
-complete reconstructed images with that same checked V2 session. Only then does
+captures the checked journal's BEFORE and reconstructs only the selected native
+operation. TCAT1–4 use the retained legacy-only source/target planner; they cannot
+acquire mixed-ledger admission even when the page count matches. TCAT5 uses
+structural planning and additionally requires its resulting typed plan to be
+mixed. A legacy generated-source/generated-target operation relabeled TCAT5
+refuses too. Both routes compare complete reconstructed BEFORE/AFTER images with
+that same checked V2 session. Only then does
 `QualifiedAddTableRecovery` permit explicit recovery or settled-image confirmation.
 It does not reopen the journal, retry another decoder, clean resources or infer
 historical completion from current bytes. Refusal performs no target writes.
@@ -198,9 +233,15 @@ authored fixture bytes, not production mutation correctness, indexed lookups,
 insertion, recovery, native Access or platform durability. The producer's
 whole-image comparisons and journal tests remain separate evidence.
 
-Current source qualification still refuses arbitrary imported catalogs, indirect
-allocation or global bitmap expansion, unsupported catalog/index growth,
-manual/no-primary Design schemas and broader schema alteration. Existing
-unrelated objects outside the admitted lineage are refused rather than regenerated
-or discarded. Nineteen existing tables require further allocation work before
-another append; they remain readable through the existing browser/query paths.
+At that generated-only checkpoint, manual/keyless append sources remained
+unavailable and a nineteen-table generated source required allocation work before
+another append. Those counts and reader observations remain historical evidence.
+
+The current mixed-role source and TCAT5 implementation extends structural
+admission as described above. Its new codec and cold-recovery checks are not
+included in those earlier passing counts. Arbitrary imported catalogs, indirect
+allocation/global bitmap expansion, unsupported catalog/index growth and broader
+schema alteration remain refused. Unrelated objects outside the admitted lineage
+are refused rather than regenerated or discarded. Native Access save/reopen and
+Windows/Linux execution qualification remain separate from these source and
+protocol contracts.

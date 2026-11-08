@@ -2,7 +2,7 @@
 use super::{
     AddTableError,
     append::Page,
-    geometry::{Geometry, Role},
+    geometry::{Geometry, MAX_TABLES, Role, SYSTEM_OBJECTS, SYSTEM_PAGES},
 };
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, PayloadPresence, check_table,
@@ -15,7 +15,6 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) const MAP_PAGE: usize = 3;
 pub(super) const CATALOG_PAGE: usize = 4;
-const BASE_MAP_ROWS: usize = 23;
 const MAP_RECORD_BYTES: usize = 13;
 const MAP_HEADER_BYTES: usize = 5;
 const TABLES_ID: i32 = 0x0f00_0001;
@@ -53,6 +52,16 @@ pub(super) fn capture(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, AddTableError> {
     let source = qualify(image, budget, cancelled)?;
+    require_name(image, proposed, budget, cancelled)?;
+    Ok(source)
+}
+
+pub(super) fn require_name(
+    image: &NativeImage,
+    proposed: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), AddTableError> {
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, proposed.len() as u64)
@@ -77,7 +86,7 @@ pub(super) fn capture(
     {
         return Err(AddTableError::DuplicateName);
     }
-    Ok(source)
+    Ok(())
 }
 
 pub(super) fn qualify(
@@ -86,9 +95,20 @@ pub(super) fn qualify(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, AddTableError> {
     check(budget, cancelled)?;
+    let geometry = Geometry::capture(image.as_bytes().len()).ok_or(AddTableError::Source)?;
+    qualify_geometry(image, geometry, true, budget, cancelled)
+}
+
+pub(super) fn qualify_geometry(
+    image: &NativeImage,
+    geometry: Geometry,
+    legacy: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, AddTableError> {
+    check(budget, cancelled)?;
     image.require_standard_capture()?;
     let bytes = image.as_bytes();
-    let geometry = Geometry::capture(bytes.len()).ok_or(AddTableError::Source)?;
     let canonical = create_blank_ace16_database(budget, cancelled)?;
     // These system-only roles must have their exact qualified native structure.
     // Existing user definitions, rows, property records and free tails are never rebuilt.
@@ -159,21 +179,25 @@ pub(super) fn qualify(
         check(budget, cancelled)?;
         let raw = &page(bytes, MAP_PAGE)[range.clone()];
         let mut expected = [0; MAP_RECORD_BYTES];
-        let (member, candidate) = match slot {
-            0 | 4 => (Some(CATALOG_PAGE), false),
-            3 | 7 => (Some(8), slot == 7),
-            22 => (Some(9), false),
-            BASE_MAP_ROWS.. => {
-                let table = 1 + (slot - BASE_MAP_ROWS) / 3;
-                let role = geometry.table(table).ok_or(AddTableError::Source)?;
-                let position = (slot - BASE_MAP_ROWS) % 3;
-                (
-                    Some(if position == 2 { role.root } else { role.data }),
-                    position == 1,
-                )
-            }
-            _ => (None, false),
+        let mut member = if matches!(slot, 0 | 4) {
+            Some(CATALOG_PAGE)
+        } else {
+            None
         };
+        let mut candidate = false;
+        for table in 0..geometry.tables {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, 4)
+                .map_err(InspectError::from)?;
+            let role = geometry.table(table).ok_or(AddTableError::Source)?;
+            if slot == role.owned || slot == role.candidate {
+                member = Some(role.data);
+                candidate = slot == role.candidate;
+            } else if role.primary.is_some_and(|primary| primary.map == slot) {
+                member = role.primary.map(|primary| primary.root);
+            }
+        }
         if let Some(member) = member {
             expected[MAP_HEADER_BYTES + member / 8] = 1 << (member % 8);
         }
@@ -191,6 +215,7 @@ pub(super) fn qualify(
         qualify_table(
             image,
             geometry.table(table).ok_or(AddTableError::Source)?,
+            legacy,
             geometry.tables > 1,
             budget,
             cancelled,
@@ -207,6 +232,7 @@ pub(super) fn qualify(
 fn qualify_table(
     image: &NativeImage,
     role: Role,
+    legacy: bool,
     repeated: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -257,7 +283,7 @@ fn qualify_table(
     // LONG_TEXT/OLE and complex references can expose storage or program roles
     // outside this closed TD/DATA/root lineage. Preserve the original one-table
     // profile unchanged for existing TCAT1 records.
-    if repeated {
+    if repeated || !legacy {
         let schema = inspect_table_schema(
             &mut image.reader(),
             objects.scope(),
@@ -303,29 +329,68 @@ fn qualify_table(
         .map_err(InspectError::from)?;
     if schema.definition_page() != role.definition as u32
         || schema.physical_layout().usage != reference(MAP_PAGE as u32, role.owned as u8)
-        || schema.physical_layout().physical_indexes != 1
-        || schema.physical_layout().logical_indexes != 1
+        || schema.physical_layout().physical_indexes != usize::from(role.primary.is_some())
+        || schema.physical_layout().logical_indexes != usize::from(role.primary.is_some())
         || schema
             .columns()
             .iter()
             .any(|column| column.scalar_type().is_none())
-        || schema.columns().first().is_none_or(|column| {
+    {
+        return Err(AddTableError::Source);
+    }
+    if legacy
+        && schema.columns().first().is_none_or(|column| {
             column.number() != 0 || column.native_type() != 4 || column.flags() != 7
         })
     {
         return Err(AddTableError::Source);
     }
-    let [index] = checked.indexes() else {
-        return Err(AddTableError::Source);
-    };
-    if index.status() != IndexCheckStatus::Checked
-        || index.index().root_page() != role.root as u32
-        || index.index().usage_map() != reference(MAP_PAGE as u32, role.index as u8)
-        || index.index().native_type() != 1
-        || index.index().flags() != 0x89
-        || index.index().columns().len() != 1
-        || index.index().columns()[0].number() != 0
-    {
+    if !legacy {
+        for (position, column) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            let generated = column.flags() == 7;
+            let flags = if column.fixed() { 3 } else { 2 };
+            if column.number() != position
+                || column.extended_flags() != 0
+                || (column.flags() != flags && !generated)
+                || (generated
+                    && (position != 0 || column.native_type() != 4 || role.primary.is_none()))
+            {
+                return Err(AddTableError::Source);
+            }
+        }
+    }
+    if let Some(primary) = role.primary {
+        let [index] = checked.indexes() else {
+            return Err(AddTableError::Source);
+        };
+        let [key] = index.index().columns() else {
+            return Err(AddTableError::Source);
+        };
+        let key_column = schema
+            .columns()
+            .get(key.number())
+            .ok_or(AddTableError::Source)?;
+        if index.status() != IndexCheckStatus::Checked
+            || index.index().root_page() != primary.root as u32
+            || index.index().usage_map() != reference(MAP_PAGE as u32, primary.map as u8)
+            || index.index().native_type() != 1
+            || index.index().flags() != 0x89
+            || key.descending()
+            || (legacy && key.number() != 0)
+            || !matches!(
+                key_column.native_type(),
+                data_type::INT32 | data_type::INT64 | data_type::CURRENCY
+            )
+            || (schema
+                .columns()
+                .first()
+                .is_some_and(|column| column.flags() == 7)
+                && key.number() != 0)
+        {
+            return Err(AddTableError::Source);
+        }
+    } else if !checked.indexes().is_empty() {
         return Err(AddTableError::Source);
     }
     // The single owned DATA page and root occupy distinct fixed roles; no
@@ -339,13 +404,94 @@ fn qualify_table(
     budget
         .charge(Resource::Steps, 27)
         .map_err(InspectError::from)?;
-    let root = page(bytes, role.root);
-    if root[..2] != [4, 1]
-        || root[4..8] != (role.definition as u32).to_le_bytes()
-        || root[8..27].iter().any(|byte| *byte != 0)
-    {
-        return Err(AddTableError::Source);
+    if let Some(primary) = role.primary {
+        let root = page(bytes, primary.root);
+        if root[..2] != [4, 1]
+            || root[4..8] != (role.definition as u32).to_le_bytes()
+            || root[8..27].iter().any(|byte| *byte != 0)
+        {
+            return Err(AddTableError::Source);
+        }
     }
     check(budget, cancelled)?;
     Ok(())
+}
+
+/// Derive roles from ordered native catalog/schema facts before selecting a
+/// construction profile. This is not a fallback from failed legacy admission.
+pub(super) fn derive_geometry(
+    image: &NativeImage,
+    keyed: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Geometry, bool), AddTableError> {
+    check(budget, cancelled)?;
+    let bytes = image.as_bytes();
+    if !bytes.len().is_multiple_of(PAGE_BYTES) || !(9..=62).contains(&(bytes.len() / PAGE_BYTES)) {
+        return Err(AddTableError::Source);
+    }
+    let objects = image.catalog().catalog();
+    let tables = objects
+        .objects()
+        .len()
+        .checked_sub(SYSTEM_OBJECTS)
+        .ok_or(AddTableError::Source)?;
+    if tables == 0 || tables > MAX_TABLES {
+        return Err(AddTableError::Source);
+    }
+    budget
+        .charge(
+            Resource::Steps,
+            size_of::<[Option<Role>; MAX_TABLES]>() as u64,
+        )
+        .map_err(InspectError::from)?;
+    let mut roles = [None; MAX_TABLES];
+    let mut next = SYSTEM_PAGES;
+    let mut legacy = true;
+    for (table, slot) in roles.iter_mut().take(tables).enumerate() {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, image.catalog().origins().len() as u64)
+            .map_err(InspectError::from)?;
+        let origin = image
+            .catalog()
+            .origins()
+            .iter()
+            .find(|origin| {
+                origin.page() == CATALOG_PAGE as u32
+                    && origin.slot() as usize == SYSTEM_OBJECTS + table
+            })
+            .ok_or(AddTableError::Source)?;
+        if origin.native_id() != next as i32 || origin.is_system() || origin.type_code() != 1 {
+            return Err(AddTableError::Source);
+        }
+        let object = objects
+            .get(origin.object_id())
+            .ok_or(AddTableError::Source)?;
+        let schema = inspect_table_schema(
+            &mut image.reader(),
+            objects.scope(),
+            object.name().as_str(),
+            budget,
+            cancelled,
+        )?;
+        let physical = schema.physical_layout();
+        if physical.physical_indexes > 1 || physical.logical_indexes != physical.physical_indexes {
+            return Err(AddTableError::Source);
+        }
+        let has_key = physical.physical_indexes == 1;
+        let role = Role::at(table, next, has_key).ok_or(AddTableError::Source)?;
+        legacy &= has_key
+            && schema.columns().first().is_some_and(|column| {
+                column.number() == 0 && column.native_type() == 4 && column.flags() == 7
+            });
+        next += role.pages();
+        *slot = Some(role);
+    }
+    if next != bytes.len() / PAGE_BYTES {
+        return Err(AddTableError::Source);
+    }
+    let geometry =
+        Geometry::from_roles(roles, tables, next, keyed).ok_or(AddTableError::Capacity)?;
+    Ok((geometry, legacy))
 }

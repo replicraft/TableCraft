@@ -61,7 +61,7 @@ pub(super) fn verify(
         budget,
         cancelled,
     )?;
-    if maps.count != source.maps.count + 3 || catalog.count != source.catalog.count + 1 {
+    if maps.count != source.maps.count + role.pages() || catalog.count != source.catalog.count + 1 {
         return Err(AddTableError::Preservation);
     }
     if source::page(after, CATALOG_DEFINITION)
@@ -70,10 +70,7 @@ pub(super) fn verify(
     {
         return Err(AddTableError::Preservation);
     }
-    for (range, member) in maps.records[source.maps.count..]
-        .iter()
-        .zip([role.data, role.data, role.root])
-    {
+    for (range, member) in maps.records[source.maps.count..].iter().zip(role.members()) {
         let mut expected = [0; 13];
         expected[5 + member / 8] = 1 << (member % 8);
         if source::page(after, source::MAP_PAGE)[range.clone()] != expected {
@@ -156,7 +153,7 @@ pub(super) fn verify(
             || observed.number() != position
             || observed.storage_length() != width(*declared)?
             || observed.flags()
-                != if position == 0 {
+                != if declared.incrementing_autonumber() {
                     7
                 } else if observed.fixed() {
                     3
@@ -175,8 +172,8 @@ pub(super) fn verify(
     if schema.physical_layout().fixed_end != 2 + fixed_offset
         || schema.physical_layout().variable_slots != variable
         || schema.physical_layout().max_columns != columns.len()
-        || schema.physical_layout().physical_indexes != 1
-        || schema.physical_layout().logical_indexes != 1
+        || schema.physical_layout().physical_indexes != usize::from(role.primary.is_some())
+        || schema.physical_layout().logical_indexes != usize::from(role.primary.is_some())
     {
         return Err(AddTableError::Preservation);
     }
@@ -213,6 +210,12 @@ pub(super) fn verify(
     {
         return Err(AddTableError::Preservation);
     }
+    let Some(primary) = role.primary else {
+        if !checked.indexes().is_empty() || definition.primary_name().is_some() {
+            return Err(AddTableError::Preservation);
+        }
+        return Ok(());
+    };
     let [index] = checked.indexes() else {
         return Err(AddTableError::Preservation);
     };
@@ -226,13 +229,13 @@ pub(super) fn verify(
         )
         .map_err(crate::InspectError::from)?;
     if index.status() != IndexCheckStatus::Checked
-        || index.index().root_page() != role.root as u32
-        || index.index().usage_map() != reference(source::MAP_PAGE as u32, role.index as u8)
+        || index.index().root_page() != primary.root as u32
+        || index.index().usage_map() != reference(source::MAP_PAGE as u32, primary.map as u8)
         || index.index().native_type() != 1
         || index.index().name() != primary_name
         || index.index().flags() != 0x89
         || index.index().columns().len() != 1
-        || index.index().columns()[0].number() != 0
+        || Some(index.index().columns()[0].number()) != definition.primary_position()
         || index.index().columns()[0].descending()
     {
         return Err(AddTableError::Preservation);

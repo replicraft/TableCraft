@@ -23,7 +23,10 @@ mod constraints;
 #[cfg(feature = "ace16-create")]
 mod creation;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
-pub use creation::{AddTableError, AddTablePlan, add_table_source_available};
+pub use creation::{
+    AddTableError, AddTablePlan, AddTableSourceCapabilities, add_table_source_available,
+    add_table_source_capabilities,
+};
 #[cfg(feature = "ace16-create")]
 pub use creation::{
     CreateColumn, CreateDatabaseError, CreateTable, CreatedDatabase, FirstTableDefinition,

@@ -24,6 +24,12 @@ impl AddTablePlan {
         let before_binding = binding::digest(self.before_bytes(), budget, cancelled)?;
         codec::encode(
             self.definition(),
+            if self.requires_mixed_intent() {
+                codec::Profile::Mixed
+            } else {
+                codec::legacy_profile(self.before_bytes().len() as u64)
+                    .ok_or(AddTableIntentError::BeforeMismatch)?
+            },
             self.before_bytes().len() as u64,
             before_binding,
             budget,

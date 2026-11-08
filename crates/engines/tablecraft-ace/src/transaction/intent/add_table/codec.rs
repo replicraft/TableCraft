@@ -11,11 +11,13 @@ const MAGIC: &[u8; 8] = b"TCAT0001";
 const REPEATED_MAGIC: &[u8; 8] = b"TCAT0002";
 const DESCRIBED_MAGIC: &[u8; 8] = b"TCAT0003";
 const REPEATED_DESCRIBED_MAGIC: &[u8; 8] = b"TCAT0004";
+const MIXED_MAGIC: &[u8; 8] = b"TCAT0005";
 const PREFIX: &[u8; 4] = b"TCAT";
 const PROFILE: u16 = 1;
 const REPEATED_PROFILE: u16 = 2;
 const DESCRIBED_PROFILE: u16 = 3;
 const REPEATED_DESCRIBED_PROFILE: u16 = 4;
+const MIXED_PROFILE: u16 = 5;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -37,6 +39,8 @@ const NESTED_PRIMARY_LENGTH_AT: usize = NESTED_TABLE_LENGTH_AT + size_of::<u16>(
 const NESTED_COLUMNS_AT: usize = NESTED_PRIMARY_LENGTH_AT + size_of::<u16>();
 const NESTED_RESERVED_AT: usize = NESTED_COLUMNS_AT + size_of::<u16>();
 const NESTED_HEADER_BYTES: usize = NESTED_RESERVED_AT + size_of::<u16>();
+const MANUAL_NESTED_MAGIC: &[u8; 8] = b"TCNT0006";
+const NO_PRIMARY_POSITION: u16 = u16::MAX;
 const COPY_BYTES: usize = 4096;
 
 // Profile 1 admits only the initial ten-page AddTable source. This length is
@@ -51,8 +55,63 @@ const REPEATED_PAGE_STEP: u64 = 3;
 const LEGACY_MAX_RECORD_BYTES: usize = HEADER_BYTES + LEGACY_MAX_DECLARATION_TEMPLATE_BYTES;
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + MAX_DECLARATION_TEMPLATE_BYTES;
 
-pub(super) fn accepts_before_length(length: u64) -> bool {
-    version_for_length(length).is_some()
+// Mixed source framing is independent of native ledger parsing. A keyless
+// target needs two pages; every target with a primary key needs three.
+const MIXED_MIN_PAGES: u64 = 9;
+const MIXED_MAPPED_PAGES: u64 = 64;
+const KEYLESS_TARGET_PAGES: u64 = 2;
+const KEYED_TARGET_PAGES: u64 = 3;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Profile {
+    Legacy,
+    Described,
+    Repeated,
+    RepeatedDescribed,
+    Mixed,
+}
+
+impl Profile {
+    fn wire(self) -> (&'static [u8; 8], u16) {
+        match self {
+            Self::Legacy => (MAGIC, PROFILE),
+            Self::Repeated => (REPEATED_MAGIC, REPEATED_PROFILE),
+            Self::Described => (DESCRIBED_MAGIC, DESCRIBED_PROFILE),
+            Self::RepeatedDescribed => (REPEATED_DESCRIBED_MAGIC, REPEATED_DESCRIBED_PROFILE),
+            Self::Mixed => (MIXED_MAGIC, MIXED_PROFILE),
+        }
+    }
+
+    fn described(self) -> bool {
+        matches!(self, Self::Described | Self::RepeatedDescribed)
+    }
+
+    fn maximum(self) -> usize {
+        if self.described() || self == Self::Mixed {
+            MAX_RECORD_BYTES
+        } else {
+            LEGACY_MAX_RECORD_BYTES
+        }
+    }
+}
+
+pub(super) fn legacy_profile(length: u64) -> Option<Profile> {
+    match version_for_length(length)?.1 {
+        PROFILE => Some(Profile::Legacy),
+        REPEATED_PROFILE => Some(Profile::Repeated),
+        _ => None,
+    }
+}
+
+pub(super) fn mixed_before_length(length: u64, keyless: bool) -> bool {
+    let added_pages = if keyless {
+        KEYLESS_TARGET_PAGES
+    } else {
+        KEYED_TARGET_PAGES
+    };
+    length.is_multiple_of(PAGE_BYTES as u64)
+        && (MIXED_MIN_PAGES..=MIXED_MAPPED_PAGES - added_pages)
+            .contains(&(length / PAGE_BYTES as u64))
 }
 
 fn repeated_length(length: u64) -> bool {
@@ -71,8 +130,10 @@ fn version_for_length(length: u64) -> Option<(&'static [u8; 8], u16)> {
     }
 }
 
-fn pin_template(raw: &[u8], described: bool) -> Result<(), AddTableIntentError> {
-    let maximum = if described {
+fn pin_template(raw: &[u8], outer: Profile) -> Result<(), AddTableIntentError> {
+    let described = outer.described();
+    let mixed = outer == Profile::Mixed;
+    let maximum = if described || mixed {
         MAX_DECLARATION_TEMPLATE_BYTES
     } else {
         LEGACY_MAX_DECLARATION_TEMPLATE_BYTES
@@ -80,12 +141,14 @@ fn pin_template(raw: &[u8], described: bool) -> Result<(), AddTableIntentError> 
     if !(NESTED_HEADER_BYTES..=maximum).contains(&raw.len()) {
         return Err(AddTableIntentError::InvalidRecord);
     }
-    let expected = match (&raw[..NESTED_MAGIC.len()], described) {
-        (b"TCNT0001", false) => 1_u16,
-        (b"TCNT0002", false) => 2,
-        (b"TCNT0003", false) => 3,
-        (b"TCNT0004", false) => 4,
-        (b"TCNT0005", true) => 5,
+    let expected = match (&raw[..NESTED_MAGIC.len()], described, mixed) {
+        (b"TCNT0001", false, _) => 1_u16,
+        (b"TCNT0002", false, _) => 2,
+        (b"TCNT0003", false, _) => 3,
+        (b"TCNT0004", false, _) => 4,
+        (b"TCNT0005", true, false) => 5,
+        (b"TCNT0005", false, true) => 5,
+        (b"TCNT0006", false, true) => 6,
         _ => return Err(AddTableIntentError::UnsupportedVersion),
     };
     let profile = u16::from_le_bytes(raw[NESTED_PROFILE_AT..NESTED_FLAGS_AT].try_into().unwrap());
@@ -93,7 +156,7 @@ fn pin_template(raw: &[u8], described: bool) -> Result<(), AddTableIntentError> 
         return Err(AddTableIntentError::UnsupportedProfile);
     }
     if raw[NESTED_FLAGS_AT..NESTED_BEFORE_AT] != [0; size_of::<u16>()]
-        || raw[NESTED_RESERVED_AT..NESTED_HEADER_BYTES] != [0; size_of::<u16>()]
+        || (expected != 6 && raw[NESTED_RESERVED_AT..NESTED_HEADER_BYTES] != [0; size_of::<u16>()])
     {
         return Err(AddTableIntentError::InvalidRecord);
     }
@@ -102,26 +165,27 @@ fn pin_template(raw: &[u8], described: bool) -> Result<(), AddTableIntentError> 
 
 pub(super) fn encode(
     definition: &FirstTableDefinition,
+    outer: Profile,
     before_length: u64,
     before_binding: BeforeBinding,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, AddTableIntentError> {
     check(budget, cancelled)?;
-    let (magic, profile) =
-        version_for_length(before_length).ok_or(AddTableIntentError::BeforeMismatch)?;
     let nested = encode_declaration_template(definition, budget, cancelled)?;
-    let described = nested.starts_with(DESCRIBED_NESTED_MAGIC);
-    pin_template(&nested, described)?;
-    let (magic, profile) = match (profile, described) {
-        (PROFILE, true) => (DESCRIBED_MAGIC, DESCRIBED_PROFILE),
-        (REPEATED_PROFILE, true) => (REPEATED_DESCRIBED_MAGIC, REPEATED_DESCRIBED_PROFILE),
-        (_, false) => (magic, profile),
-        _ => return Err(AddTableIntentError::UnsupportedProfile),
+    let outer = match (outer, nested.starts_with(DESCRIBED_NESTED_MAGIC)) {
+        (Profile::Legacy, true) => Profile::Described,
+        (Profile::Repeated, true) => Profile::RepeatedDescribed,
+        _ => outer,
     };
+    pin_template(&nested, outer)?;
+    if !profile_accepts_length(outer, before_length, &nested) {
+        return Err(AddTableIntentError::BeforeMismatch);
+    }
+    let (magic, profile) = outer.wire();
     let total = HEADER_BYTES
         .checked_add(nested.len())
-        .filter(|length| *length <= MAX_RECORD_BYTES)
+        .filter(|length| *length <= outer.maximum())
         .ok_or(AddTableIntentError::InvalidRecord)?;
     budget
         .charge_allocation(total as u64, 1)
@@ -157,7 +221,8 @@ pub(super) fn decode(
 ) -> Result<NativeAddTableIntent, AddTableIntentError> {
     check(budget, cancelled)?;
     let described = raw.starts_with(DESCRIBED_MAGIC) || raw.starts_with(REPEATED_DESCRIBED_MAGIC);
-    let maximum = if described {
+    let mixed = raw.starts_with(MIXED_MAGIC);
+    let maximum = if described || mixed {
         MAX_RECORD_BYTES
     } else {
         LEGACY_MAX_RECORD_BYTES
@@ -169,10 +234,11 @@ pub(super) fn decode(
         .charge(Resource::Steps, HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
     let expected_profile = match &raw[..MAGIC.len()] {
-        magic if magic == MAGIC => PROFILE,
-        magic if magic == REPEATED_MAGIC => REPEATED_PROFILE,
-        magic if magic == DESCRIBED_MAGIC => DESCRIBED_PROFILE,
-        magic if magic == REPEATED_DESCRIBED_MAGIC => REPEATED_DESCRIBED_PROFILE,
+        magic if magic == MAGIC => Profile::Legacy,
+        magic if magic == REPEATED_MAGIC => Profile::Repeated,
+        magic if magic == DESCRIBED_MAGIC => Profile::Described,
+        magic if magic == REPEATED_DESCRIBED_MAGIC => Profile::RepeatedDescribed,
+        magic if magic == MIXED_MAGIC => Profile::Mixed,
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 AddTableIntentError::UnsupportedVersion
@@ -181,7 +247,9 @@ pub(super) fn decode(
             });
         }
     };
-    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != expected_profile {
+    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap())
+        != expected_profile.wire().1
+    {
         return Err(AddTableIntentError::UnsupportedProfile);
     }
     let total = u32::from_le_bytes(raw[TOTAL_AT..PROFILE_AT].try_into().unwrap()) as usize;
@@ -191,14 +259,8 @@ pub(super) fn decode(
     if total != raw.len()
         || raw[FLAGS_AT..BEFORE_AT] != [0; size_of::<u16>()]
         || raw[RESERVED_AT..HEADER_BYTES] != [0; size_of::<u32>()]
-        || version_for_length(before_length).is_none_or(|(_, profile)| {
-            let expected_source_profile = if described {
-                expected_profile - (DESCRIBED_PROFILE - PROFILE)
-            } else {
-                expected_profile
-            };
-            profile != expected_source_profile
-        })
+        || (expected_profile != Profile::Mixed
+            && !profile_accepts_length(expected_profile, before_length, &[]))
         || nested_length != raw.len() - HEADER_BYTES
     {
         return Err(AddTableIntentError::InvalidRecord);
@@ -207,12 +269,37 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, NESTED_HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
-    pin_template(nested, described)?;
+    pin_template(nested, expected_profile)?;
+    if !profile_accepts_length(expected_profile, before_length, nested) {
+        return Err(AddTableIntentError::InvalidRecord);
+    }
     let definition = decode_declaration_template(nested, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(NativeAddTableIntent {
         definition,
+        profile: expected_profile,
         before_length,
         before_binding: raw[BINDING_AT..NESTED_LENGTH_AT].try_into().unwrap(),
     })
+}
+
+fn profile_accepts_length(profile: Profile, length: u64, nested: &[u8]) -> bool {
+    match profile {
+        Profile::Legacy | Profile::Described => length == BEFORE_BYTES,
+        Profile::Repeated | Profile::RepeatedDescribed => repeated_length(length),
+        Profile::Mixed => {
+            let keyless = nested.starts_with(MANUAL_NESTED_MAGIC)
+                && u16::from_le_bytes(
+                    nested[NESTED_PRIMARY_LENGTH_AT..NESTED_COLUMNS_AT]
+                        .try_into()
+                        .unwrap(),
+                ) == 0
+                && u16::from_le_bytes(
+                    nested[NESTED_RESERVED_AT..NESTED_HEADER_BYTES]
+                        .try_into()
+                        .unwrap(),
+                ) == NO_PRIMARY_POSITION;
+            mixed_before_length(length, keyless)
+        }
+    }
 }

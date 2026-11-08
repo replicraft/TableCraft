@@ -24,11 +24,14 @@ pub(super) fn verify(
     if source::page(after, role.data) != expected {
         return Err(AddTableError::Preservation);
     }
+    let Some(primary) = role.primary else {
+        return Ok(());
+    };
     expected.fill(0);
     expected[..2].copy_from_slice(&[4, 1]);
     expected[2..4].copy_from_slice(&INDEX_PAYLOAD_BYTES.to_le_bytes());
     expected[4..8].copy_from_slice(&(role.definition as u32).to_le_bytes());
-    if source::page(after, role.root) != expected {
+    if source::page(after, primary.root) != expected {
         return Err(AddTableError::Preservation);
     }
     check(budget, cancelled)?;

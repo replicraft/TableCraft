@@ -165,7 +165,7 @@ fn work_allocation_rows_and_cancellation_remain_errors_including_canonical_const
     }
     let mut capture_budget = budget();
     let initial_capture_bytes = capture_budget.remaining(Resource::Bytes);
-    NativeImage::capture(
+    let captured = NativeImage::capture(
         &mut Cursor::new(source.as_bytes()),
         SCOPE,
         &mut capture_budget,
@@ -175,9 +175,21 @@ fn work_allocation_rows_and_cancellation_remain_errors_including_canonical_const
     let capture_bytes = initial_capture_bytes - capture_budget.remaining(Resource::Bytes);
     assert!(matches!(
         add_table_source_available(
+            source.as_bytes(), SCOPE,
+            &mut ResourceBudget::new(capture_bytes, 100_000, 100_000_000), &|| false,
+        ),
+        Err(AddTableError::Inspect(InspectError::Limit(error))) if error.resource == Resource::Bytes
+    ));
+    // Pay the exact new structural-derivation phase as well, then exhaust bytes
+    // at canonical construction. Both distinct typed error owners must survive.
+    super::super::source::derive_geometry(&captured, false, &mut capture_budget, &|| false)
+        .unwrap();
+    let before_canonical_bytes = initial_capture_bytes - capture_budget.remaining(Resource::Bytes);
+    assert!(matches!(
+        add_table_source_available(
             source.as_bytes(),
             SCOPE,
-            &mut ResourceBudget::new(capture_bytes, 100_000, 100_000_000),
+            &mut ResourceBudget::new(before_canonical_bytes, 100_000, 100_000_000),
             &|| false,
         ),
         Err(AddTableError::Create(CreateDatabaseError::Inspect(

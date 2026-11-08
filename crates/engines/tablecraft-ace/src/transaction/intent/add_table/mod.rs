@@ -39,15 +39,17 @@ pub enum AddTableIntentError {
     BeforeMismatch,
 }
 
-/// Exact original schema and complete source binding for TCAT0001 through TCAT0004.
+/// Exact original schema and complete source binding for TCAT0001 through TCAT0005.
 /// TCAT1 binds exactly ten pages; TCAT2 binds thirteen through sixty-one pages
 /// in three-page steps. TCAT3/4 retain those respective source partitions but
-/// require described TCNT5 templates. These wire bounds grant no native role authority.
+/// require described TCNT5 templates. TCAT5 retains a distinct mixed-ledger identity
+/// and closed TCNT1–6 declaration grammar. These wire bounds grant no native role authority.
 /// Its nested TCNT record is only a closed declaration template. The template's
 /// canonical-blank header never identifies or authorizes this operation's source.
 /// Neither capture nor decode qualifies native mutation, journaling or recovery.
 pub struct NativeAddTableIntent {
     definition: FirstTableDefinition,
+    profile: codec::Profile,
     before_length: u64,
     before_binding: BeforeBinding,
 }
@@ -65,13 +67,36 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         check(budget, cancelled)?;
-        if !codec::accepts_before_length(before.len() as u64) {
+        let profile = codec::legacy_profile(before.len() as u64)
+            .ok_or(AddTableIntentError::BeforeMismatch)?;
+        let before_binding = binding::digest(before, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(Self {
+            definition,
+            profile,
+            before_length: before.len() as u64,
+            before_binding,
+        })
+    }
+
+    /// Bind a declaration using the explicit mixed-ledger TCAT5 language.
+    /// This data-only constructor does not classify or authorize native source roles.
+    pub fn new_mixed(
+        definition: FirstTableDefinition,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableIntentError> {
+        check(budget, cancelled)?;
+        if !codec::mixed_before_length(before.len() as u64, definition.primary_position().is_none())
+        {
             return Err(AddTableIntentError::BeforeMismatch);
         }
         let before_binding = binding::digest(before, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(Self {
             definition,
+            profile: codec::Profile::Mixed,
             before_length: before.len() as u64,
             before_binding,
         })
@@ -95,6 +120,7 @@ impl NativeAddTableIntent {
     ) -> Result<Vec<u8>, AddTableIntentError> {
         codec::encode(
             &self.definition,
+            self.profile,
             self.before_length,
             self.before_binding,
             budget,

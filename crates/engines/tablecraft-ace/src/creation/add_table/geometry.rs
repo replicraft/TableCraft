@@ -1,102 +1,143 @@
-//! Bounded append roles; file length is framing, never ownership evidence.
+//! Bounded structural roles; file length is framing, never ownership evidence.
 use crate::format::page::PAGE_BYTES;
 
-const SYSTEM_PAGES: usize = 7;
-const TABLE_PAGES: usize = 3;
-const SYSTEM_OBJECTS: usize = 7;
+pub(super) const SYSTEM_PAGES: usize = 7;
+pub(super) const SYSTEM_OBJECTS: usize = 7;
+const LEGACY_TABLE_PAGES: usize = 3;
 const RESERVED_MAPS: usize = 20;
 const MAP_BITMAP_BYTES: usize = 8;
-const MAPPED_PAGES: usize = MAP_BITMAP_BYTES * u8::BITS as usize;
-const FIRST_OWNED_SLOT: usize = 3;
-const FIRST_CANDIDATE_SLOT: usize = 7;
-const FIRST_INDEX_SLOT: usize = 22;
-const LATER_OWNED_BASE: usize = 20;
+pub(super) const MAPPED_PAGES: usize = MAP_BITMAP_BYTES * u8::BITS as usize;
+pub(super) const MAX_TABLES: usize = (MAPPED_PAGES - SYSTEM_PAGES) / 2;
+
+#[derive(Clone, Copy)]
+pub(super) struct PrimaryRole {
+    pub root: usize,
+    pub map: usize,
+}
 
 #[derive(Clone, Copy)]
 pub(super) struct Role {
     pub definition: usize,
     pub data: usize,
-    pub root: usize,
+    pub primary: Option<PrimaryRole>,
     pub owned: usize,
     pub candidate: usize,
-    pub index: usize,
     pub catalog: usize,
 }
 
 impl Role {
-    fn at(table: usize) -> Option<Self> {
-        let definition = SYSTEM_PAGES.checked_add(table.checked_mul(TABLE_PAGES)?)?;
+    pub fn at(table: usize, definition: usize, keyed: bool) -> Option<Self> {
         let data = definition.checked_add(1)?;
-        let root = definition.checked_add(2)?;
-        if root >= MAPPED_PAGES {
+        let root = keyed.then(|| definition.checked_add(2)).flatten();
+        if data >= MAPPED_PAGES || root.is_some_and(|root| root >= MAPPED_PAGES) {
             return None;
         }
-        let (owned, candidate, index) = if table == 0 {
-            (FIRST_OWNED_SLOT, FIRST_CANDIDATE_SLOT, FIRST_INDEX_SLOT)
+        let user_pages = definition.checked_sub(SYSTEM_PAGES)?;
+        let (owned, candidate) = if table == 0 {
+            (3, 7)
         } else {
-            let owned = LATER_OWNED_BASE.checked_add(table.checked_mul(TABLE_PAGES)?)?;
-            (owned, owned.checked_add(1)?, owned.checked_add(2)?)
+            let owned = RESERVED_MAPS.checked_add(user_pages)?;
+            (owned, owned.checked_add(1)?)
         };
-        u8::try_from(index).ok()?;
+        let primary = root.map(|root| PrimaryRole {
+            root,
+            map: RESERVED_MAPS + user_pages + 2,
+        });
+        u8::try_from(primary.map_or(candidate, |primary| primary.map)).ok()?;
         let catalog = SYSTEM_OBJECTS.checked_add(table)?;
         u8::try_from(catalog).ok()?;
         Some(Self {
             definition,
             data,
-            root,
+            primary,
             owned,
             candidate,
-            index,
             catalog,
         })
+    }
+
+    pub fn pages(self) -> usize {
+        2 + usize::from(self.primary.is_some())
+    }
+
+    pub fn members(self) -> impl Iterator<Item = usize> {
+        [
+            Some(self.data),
+            Some(self.data),
+            self.primary.map(|primary| primary.root),
+        ]
+        .into_iter()
+        .flatten()
     }
 }
 
 #[derive(Clone, Copy)]
 pub(super) struct Geometry {
     pub tables: usize,
+    pub before_pages: usize,
     pub after_pages: usize,
     pub catalog_rows: usize,
     pub map_rows: usize,
     pub added: Role,
+    pub roles: [Option<Role>; MAX_TABLES],
 }
 
 impl Geometry {
-    /// Preflight unsupported lengths without reading or allocating a snapshot.
-    /// Every accepted role still needs complete source qualification afterwards.
+    /// Legacy three-page framing; semantic qualification remains unchanged.
     pub fn capture(bytes: usize) -> Option<Self> {
         if !bytes.is_multiple_of(PAGE_BYTES) {
             return None;
         }
         let before_pages = bytes / PAGE_BYTES;
         let user_pages = before_pages.checked_sub(SYSTEM_PAGES)?;
-        if user_pages == 0 || !user_pages.is_multiple_of(TABLE_PAGES) {
+        if user_pages == 0 || !user_pages.is_multiple_of(LEGACY_TABLE_PAGES) {
             return None;
         }
-        let tables = user_pages / TABLE_PAGES;
-        let after_pages = before_pages.checked_add(TABLE_PAGES)?;
+        let tables = user_pages / LEGACY_TABLE_PAGES;
+        let mut roles = [None; MAX_TABLES];
+        if tables > roles.len() {
+            return None;
+        }
+        for (index, slot) in roles.iter_mut().take(tables).enumerate() {
+            *slot = Some(Role::at(
+                index,
+                SYSTEM_PAGES + index * LEGACY_TABLE_PAGES,
+                true,
+            )?);
+        }
+        Self::from_roles(roles, tables, before_pages, true)
+    }
+
+    pub fn from_roles(
+        roles: [Option<Role>; MAX_TABLES],
+        tables: usize,
+        before_pages: usize,
+        keyed: bool,
+    ) -> Option<Self> {
+        if tables == 0 || tables > roles.len() {
+            return None;
+        }
+        let added = Role::at(tables, before_pages, keyed)?;
+        let after_pages = before_pages.checked_add(added.pages())?;
         if after_pages > MAPPED_PAGES {
-            return None;
-        }
-        let added = Role::at(tables)?;
-        let catalog_rows = SYSTEM_OBJECTS.checked_add(tables)?;
-        let map_rows = RESERVED_MAPS.checked_add(tables.checked_mul(TABLE_PAGES)?)?;
-        if added.definition != before_pages || added.owned != map_rows {
             return None;
         }
         Some(Self {
             tables,
+            before_pages,
             after_pages,
-            catalog_rows,
-            map_rows,
+            catalog_rows: SYSTEM_OBJECTS + tables,
+            map_rows: RESERVED_MAPS + before_pages.checked_sub(SYSTEM_PAGES)?,
             added,
+            roles,
         })
     }
 
-    pub fn table(self, index: usize) -> Option<Role> {
-        if index >= self.tables {
-            return None;
-        }
-        Role::at(index)
+    pub fn table(&self, index: usize) -> Option<Role> {
+        self.roles
+            .get(index)
+            .copied()
+            .flatten()
+            .filter(|_| index < self.tables)
     }
 }

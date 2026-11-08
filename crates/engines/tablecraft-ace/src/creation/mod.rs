@@ -19,7 +19,10 @@ mod stored_text;
 mod variable;
 
 #[cfg(feature = "journal")]
-pub use add_table::{AddTableError, AddTablePlan, add_table_source_available};
+pub use add_table::{
+    AddTableError, AddTablePlan, AddTableSourceCapabilities, add_table_source_available,
+    add_table_source_capabilities,
+};
 pub use column::CreateColumn;
 pub use database::{
     CreatedDatabase, create_ace16_database, create_ace16_database_tables,

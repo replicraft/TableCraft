@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "host": "macOS ARM64",
+  "scope": "Read-only Jackcess observations of one independent mixed five-table source and ten native append/insertion candidates, plus six retained empty Long Text/OLE source/manual-append images. Not journal execution, native Access save/reopen, or platform durability.",
+  "reader": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "program": {
+    "path": "docs/testing/ace16_table_addition/ReadMixedTables.java",
+    "bytes": 5741,
+    "sha256": "7cc62e3545f4e278434401f7b326333d450ae299a37022d4cd14969725393942"
+  },
+  "legacy_program": {
+    "path": "docs/testing/ace16_table_addition/ObserveLegacySources.java",
+    "bytes": 3672,
+    "sha256": "ac57acea5f976074669fadf786fb078cc4148635d64a7f5fd129aaf56d0855d2"
+  },
+  "exporter": {
+    "path": ".cache/mixed-design-independent-20261107/export.rs",
+    "bytes": 3975,
+    "sha256": "a5756348ee53f05c091f69569d037a545c5caefa074ec154d2605763911e6a52"
+  },
+  "legacy_exporter": {
+    "path": ".cache/mixed-design-independent-20261107/legacy_export.rs",
+    "bytes": 2543,
+    "sha256": "28db6206a53c1a0f9f4eef9e4b8fa2c3600b9cf892872d26e864ee7825e61a42"
+  },
+  "producer_sources": [
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_mixed_add_table.rs",
+      "bytes": 6409,
+      "sha256": "10d6bf0912cf4377c20fb8ad13fc5bb45b46b9b1d5b53802795ca11493edbfe6"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/mod.rs",
+      "bytes": 5477,
+      "sha256": "472ba048504ca3e4ca40472f958039e645bb067d1f9bc99966a56f86fa115c6c"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/source.rs",
+      "bytes": 17063,
+      "sha256": "a2887983a8b6cf11a1ac0533fdb8816518fcfef868c0aa4eae3764759f3ae0c0"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/geometry.rs",
+      "bytes": 4259,
+      "sha256": "08f7dc8eea92ffe6b83e8f5583c63bfd3c13fd19be93a0dd0df0cf4edc7fcdf5"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/build.rs",
+      "bytes": 4813,
+      "sha256": "266a9ffe4e8fa2fa7475bbbd51839d069a0b927f156b5ae511e1d842936a94f2"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/audit.rs",
+      "bytes": 10091,
+      "sha256": "a6a7e980e4bf6f7f0c340631f60d2e41dacc911a52e352814627e5249076d2e8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/audit/definition.rs",
+      "bytes": 6694,
+      "sha256": "22d6c79d77afca69e10858d864631440a4d31c8fc7f2f7ec9230267dda546954"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/tests/legacy_source_targets.rs",
+      "bytes": 4399,
+      "sha256": "4113704ce34edcf4fedca83516384283b9f6bd786ba180c258290a3663861b7d"
+    }
+  ],
+  "java_version": "openjdk version \"21.0.8\" 2025-07-15 LTS\nOpenJDK Runtime Environment Temurin-21.0.8+9 (build 21.0.8+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.8+9 (build 21.0.8+9-LTS, mixed mode, sharing)\n",
+  "cases": [
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/source.accdb",
+      "bytes": 86016,
+      "sha256": "ca63a680e3189ba1c6e915bf6224e23ad1aa5ab8a976365674cd83e47040be90",
+      "sha256_after": "ca63a680e3189ba1c6e915bf6224e23ad1aa5ab8a976365674cd83e47040be90",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "source",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source source rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/keyless-empty.accdb",
+      "bytes": 94208,
+      "sha256": "2fc965a954ac23b9c66fe680ef0e0d303603e43c697441b8f368dd3682a0a8ae",
+      "sha256_after": "2fc965a954ac23b9c66fe680ef0e0d303603e43c697441b8f368dd3682a0a8ae",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "keyless",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source keyless rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/keyless-row.accdb",
+      "bytes": 94208,
+      "sha256": "c2510585ab191165dac327e0f6cb65a4709fe8cc4ceeddc0d1318d2dfcca1ed6",
+      "sha256_after": "c2510585ab191165dac327e0f6cb65a4709fe8cc4ceeddc0d1318d2dfcca1ed6",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "keyless",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source keyless rows=1\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/int32-empty.accdb",
+      "bytes": 98304,
+      "sha256": "079ab747f64a48fcd705ebf6437d35cef4d0d77bbb9d6a568c2c6581d95f7311",
+      "sha256_after": "079ab747f64a48fcd705ebf6437d35cef4d0d77bbb9d6a568c2c6581d95f7311",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "int32",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source int32 rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/int32-row.accdb",
+      "bytes": 98304,
+      "sha256": "7a0bf7e82d27a7fc091085703c53738df5a99f08e6262698cae9671f886fad46",
+      "sha256_after": "7a0bf7e82d27a7fc091085703c53738df5a99f08e6262698cae9671f886fad46",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "int32",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source int32 rows=1\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/int64-empty.accdb",
+      "bytes": 98304,
+      "sha256": "ae966f0bc52dcf9680d8fb70f220f778aca2e890acbbb5f220441cb11f029090",
+      "sha256_after": "ae966f0bc52dcf9680d8fb70f220f778aca2e890acbbb5f220441cb11f029090",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "int64",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source int64 rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/int64-row.accdb",
+      "bytes": 98304,
+      "sha256": "947a0e4fdd36ebeff56a01c2c640f0d01fd1b62d527b6a646255f09b43013baa",
+      "sha256_after": "947a0e4fdd36ebeff56a01c2c640f0d01fd1b62d527b6a646255f09b43013baa",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "int64",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source int64 rows=1\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/currency-empty.accdb",
+      "bytes": 98304,
+      "sha256": "5940e01165356951d7306dc7328f01155ecb2840c2d0d5042e48bbc81c29ff49",
+      "sha256_after": "5940e01165356951d7306dc7328f01155ecb2840c2d0d5042e48bbc81c29ff49",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "currency",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source currency rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/currency-row.accdb",
+      "bytes": 98304,
+      "sha256": "fcbc741afeca3f22bc0ca5edc126e8d72d804a950bb76764735f72869bdb416b",
+      "sha256_after": "fcbc741afeca3f22bc0ca5edc126e8d72d804a950bb76764735f72869bdb416b",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "currency",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source currency rows=1\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/generated-empty.accdb",
+      "bytes": 98304,
+      "sha256": "f6c0e0d87577089ac909a7fed2516d8a0d99118220049c2b786d85c939799bbd",
+      "sha256_after": "f6c0e0d87577089ac909a7fed2516d8a0d99118220049c2b786d85c939799bbd",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "generated",
+        "0"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source generated rows=0\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/generated-row.accdb",
+      "bytes": 98304,
+      "sha256": "ce521aa078e55c6cec995d9ffa90a89bfb7e670cc401fed550c41c8162a6a83a",
+      "sha256_after": "ce521aa078e55c6cec995d9ffa90a89bfb7e670cc401fed550c41c8162a6a83a",
+      "observer": "ReadMixedTables",
+      "arguments": [
+        "generated",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] mixed-source generated rows=1\n",
+      "stderr": "",
+      "matches_prior_candidate": true
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/memo-source.accdb",
+      "bytes": 40960,
+      "sha256": "04ce6f95281a7cbe64bfd33db4cae3c568294129be3640cb31d5f85a0875e97e",
+      "sha256_after": "04ce6f95281a7cbe64bfd33db4cae3c568294129be3640cb31d5f85a0875e97e",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "memo",
+        "source"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] memo source schema=exact rows=0\n",
+      "stderr": ""
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/memo-keyless.accdb",
+      "bytes": 49152,
+      "sha256": "6f6049f38210c110467d24cb012b45c9c5177879c0a6944332cd170742ca2161",
+      "sha256_after": "6f6049f38210c110467d24cb012b45c9c5177879c0a6944332cd170742ca2161",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "memo",
+        "keyless"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] memo keyless schema=exact rows=0\n",
+      "stderr": ""
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/memo-keyed.accdb",
+      "bytes": 53248,
+      "sha256": "d90e9ae764604a3aafa235dc3fd1727c4f3759a5301259ea66f8ecf0ccf99de2",
+      "sha256_after": "d90e9ae764604a3aafa235dc3fd1727c4f3759a5301259ea66f8ecf0ccf99de2",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "memo",
+        "keyed"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] memo keyed schema=exact rows=0\n",
+      "stderr": ""
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/ole-source.accdb",
+      "bytes": 40960,
+      "sha256": "c75a3354ba6fb9e90e5e1e5400795591e0bf38bd19e7d8fb32d2c22eac5f13b2",
+      "sha256_after": "c75a3354ba6fb9e90e5e1e5400795591e0bf38bd19e7d8fb32d2c22eac5f13b2",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "ole",
+        "source"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] ole source schema=exact rows=0\n",
+      "stderr": ""
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/ole-keyless.accdb",
+      "bytes": 49152,
+      "sha256": "4b019a43b631ff2af6b12cbce6a3487eb0f0c54221780739528f5396824faeab",
+      "sha256_after": "4b019a43b631ff2af6b12cbce6a3487eb0f0c54221780739528f5396824faeab",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "ole",
+        "keyless"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] ole keyless schema=exact rows=0\n",
+      "stderr": ""
+    },
+    {
+      "path": ".cache/mixed-design-independent-20261107/images-qualified/ole-keyed.accdb",
+      "bytes": 53248,
+      "sha256": "dcaf3d0e8cdd400cd03fb2572b265b4161cfede7e4f313f2bc9a107932f3369e",
+      "sha256_after": "dcaf3d0e8cdd400cd03fb2572b265b4161cfede7e4f313f2bc9a107932f3369e",
+      "observer": "ObserveLegacySources",
+      "arguments": [
+        "ole",
+        "keyed"
+      ],
+      "exit_code": 0,
+      "stdout": "V2016 [VERSION_2016] ole keyed schema=exact rows=0\n",
+      "stderr": ""
+    }
+  ],
+  "notes": [
+    "Mixed source has generated, keyless, Int32, Int64 and Currency tables; only original generated Items is populated, with Id=1/Score=10.",
+    "Five target families each observed empty after append and with one newly inserted row. Manual keys use actual second field; generated target uses first-field Increment.",
+    "Legacy Memo/OLE source and keyed/keyless append observations contain no rows or payload references; this is metadata qualification only.",
+    "Complete table/column/index inventory, scalar types, generation flags, primary field/name, exact available row values and EOF are checked.",
+    "All seventeen hashes remain unchanged after reading. The eleven refreshed mixed candidates match prior observed hashes after the source-classification correction; these are seventeen distinct cases, not twenty-eight.",
+    "The legacy observer source was promoted byte-for-byte from its compiled cache source to the recorded public path.",
+    "Export uses public APIs and exclusive fresh files. It does not prepare, apply or recover a journal; recovery and actual desktop saves have separate tests."
+  ]
+}

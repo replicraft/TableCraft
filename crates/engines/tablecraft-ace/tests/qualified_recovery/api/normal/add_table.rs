@@ -567,3 +567,6 @@ fn described_append_actions_recover_only_exact_tcnt5_requests_in_both_source_par
         assert_eq!(journal.writes, writes);
     }
 }
+
+#[path = "add_table/mixed.rs"]
+mod mixed;

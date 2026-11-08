@@ -1,4 +1,4 @@
-use super::NativeAddTableIntent;
+use super::{AddTableIntentError, NativeAddTableIntent, codec::Profile};
 use crate::{
     NativeImage, NativeRecoveryQualificationError, header::check,
     transaction::qualified_recovery::equal_image,
@@ -34,7 +34,15 @@ pub fn qualify_native_add_table_recovery<'a, J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let plan = image.plan_add_table(intent.definition, budget, cancelled)?;
+    let plan = if intent.profile == Profile::Mixed {
+        let plan = image.plan_add_table(intent.definition, budget, cancelled)?;
+        if !plan.requires_mixed_intent() {
+            return Err(AddTableIntentError::UnsupportedProfile.into());
+        }
+        plan
+    } else {
+        image.plan_add_table_legacy(intent.definition, budget, cancelled)?
+    };
     equal_image(
         plan.before_bytes(),
         checked.before_bytes(),

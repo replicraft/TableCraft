@@ -45,7 +45,9 @@ pub(super) fn build(
     if source.catalog.start
         < catalog_length + HEADER_BYTES + (source.catalog.count + 1) * SLOT_BYTES
         || source.maps.start
-            < 3 * MAP_RECORD_BYTES + HEADER_BYTES + (source.maps.count + 3) * SLOT_BYTES
+            < role.pages() * MAP_RECORD_BYTES
+                + HEADER_BYTES
+                + (source.maps.count + role.pages()) * SLOT_BYTES
     {
         return Err(AddTableError::Capacity);
     }
@@ -70,10 +72,10 @@ pub(super) fn build(
         .map_err(InspectError::from)?;
     after.resize(length, 0);
 
-    let primary = request
-        .primary
-        .as_ref()
-        .ok_or(AddTableError::Preservation)?;
+    let primary = request.primary.as_ref();
+    if primary.is_some() != role.primary.is_some() {
+        return Err(AddTableError::Preservation);
+    }
     definition::write_role_with_primary(
         page_mut(&mut after, role.definition),
         request.fields(),
@@ -84,22 +86,26 @@ pub(super) fn build(
             owned: reference(source::MAP_PAGE as u32, role.owned as u8),
             candidate: reference(source::MAP_PAGE as u32, role.candidate as u8),
         },
-        Some(definition::PrimaryRole {
-            prepared: primary,
-            root: role.root,
-            map: reference(source::MAP_PAGE as u32, role.index as u8),
-        }),
+        primary
+            .zip(role.primary)
+            .map(|(prepared, primary)| definition::PrimaryRole {
+                prepared,
+                root: primary.root,
+                map: reference(source::MAP_PAGE as u32, primary.map as u8),
+            }),
         budget,
         cancelled,
     )?;
     DataPage::new(page_mut(&mut after, role.data), role.definition)?.finish()?;
-    primary.write_leaf(
-        page_mut(&mut after, role.root),
-        role.definition,
-        role.data,
-        budget,
-        cancelled,
-    )?;
+    if let Some((prepared, primary)) = primary.zip(role.primary) {
+        prepared.write_leaf(
+            page_mut(&mut after, primary.root),
+            role.definition,
+            role.data,
+            budget,
+            cancelled,
+        )?;
+    }
 
     let catalog = page_mut(&mut after, source::CATALOG_PAGE);
     let mut catalog_layout = Page::capture(catalog, CATALOG_DEFINITION as u32, budget, cancelled)?;
@@ -125,7 +131,7 @@ pub(super) fn build(
 
     let maps = page_mut(&mut after, source::MAP_PAGE);
     let mut map_layout = Page::capture(maps, 0, budget, cancelled)?;
-    for member in [role.data, role.data, role.root] {
+    for member in role.members() {
         Page::charge_append(MAP_RECORD_BYTES, budget, cancelled)?;
         let range = map_layout.append(maps, MAP_RECORD_BYTES)?;
         record::inline_map(&mut maps[range], Some(member))?;

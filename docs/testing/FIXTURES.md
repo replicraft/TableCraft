@@ -10902,3 +10902,38 @@ authored AFTER-byte goldens, journal execution or Microsoft Access save/reopen
 qualification. Native fixture goldens and cold recovery tests supply separate
 evidence. No third-party database bytes, JARs or class files are tracked; the
 original observer/export recipe uses the repository license.
+
+
+## Authored mixed append ledgers — 7 November 2026
+
+The testkit's independent
+[raw mixed-ledger builder](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_mixed_add_table.rs)
+composes the existing authored generated, keyless, Int32, Int64 and Currency
+sources without calling production creators, planners, schema decoders or intent
+encoders. The first table retains its declared rows; later tables start empty.
+Literal catalog entries, map slots, page parents and optional roots are relocated
+under the bounded bitmap. Opaque TD/DATA/root sentinels remain protected. The
+62-page source has one generated and 26 keyless tables, exposing the distinction
+between a two-page keyless append and a three-page keyed append. Engine and
+runtime/desktop tests import this owner directly.
+
+The [mixed Design result](results/ace16-mixed-design-independent-reader-2026-11-07.json)
+records a read-only Jackcess observation of one independent five-table source
+and ten native append/first-insertion candidates. Its original
+[observer](ace16_table_addition/ReadMixedTables.java) checks complete table,
+column and index inventories, generation flags, actual primary field/name,
+scalar types, exact original/new row values and EOF. The five-table source has
+only its generated first table populated. Each added family is observed empty
+and then with one inserted row; manual keys occupy the actual second field.
+All eleven hashes stay unchanged after reading. The same result separately
+records six empty Long Text/OLE legacy sources and manual append candidates,
+observed by [the retained-source checker](ace16_table_addition/ObserveLegacySources.java).
+Those six checks cover schema metadata and empty EOF, not live LVAL payloads.
+Their hashes also stay unchanged; the total is seventeen distinct images.
+
+The result pins the previously reviewed cached Jackcess 5.0.4 JAR, original
+observer/exporter and relevant producer/fixture sources. Candidate export does
+not prepare or execute a journal. Independent whole-image goldens, cold recovery
+and actual application saves provide separate evidence; these observations do
+not qualify native Access save/reopen or filesystem durability. No third-party
+database bytes, JARs or class files are committed.

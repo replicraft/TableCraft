@@ -153,15 +153,14 @@ and compares the complete rebuilt AFTER through the existing checked V2 session.
 A different key decision, field position or declaration cannot authorize the
 recorded replacement.
 
-This initial manual schema route applies only to canonical-blank first-table
-creation. The separate [append-table operation](ADD_TABLE_PERSISTENCE.md) rejects
-manual definitions before source capture. Its existing TCAT1–4 actions also
-refuse nested TCNT6; their legacy/described template grammars are not widened.
-Saving manual/no-key tables into populated databases requires its own qualified
-allocation/source/proof work. This implementation does not establish full Access
-Design, manual-key insertion, Microsoft Access save/reopen or Windows filesystem
-parity. The verification checkpoints below remain their recorded scopes; no new
-manual-profile passing result is inferred from them.
+This first-table route applies only to canonical-blank creation. The separate
+[append-table operation](ADD_TABLE_PERSISTENCE.md) now supports qualified mixed
+manual/keyless/generated ledgers through TCAT5, with the actual source digest
+and freshly checked allocation roles. Its existing TCAT1–4 actions still refuse
+nested TCNT6; their legacy/described template grammars and source restrictions
+are not widened. Neither operation establishes full Access Design, Microsoft
+Access save/reopen or Windows filesystem parity. The verification checkpoints
+below retain their recorded scopes; later manual/append results are separate.
 
 These schema-intent changes do not widen the existing TCNA5 clock envelope.
 It retains nested TCNA2 only: construction and recoverable planning reject wider

@@ -6,7 +6,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::ScalarType;
 
 const PAGE_BYTES: usize = 4096;
-const FIELD_START: usize = 75;
+const FIELD_START: usize = 63;
+const INDEX_COLUMN_SHIFT: usize = 12;
 const FIELD_BYTES: usize = 25;
 const PHYSICAL_INDEX_BYTES: usize = 52;
 const LOGICAL_INDEX_BYTES: usize = 28;
@@ -82,12 +83,18 @@ pub(super) fn verify(
         .charge(Resource::Steps, (4 * PAGE_BYTES) as u64)
         .map_err(InspectError::from)?;
     let mut expected = [0; PAGE_BYTES];
-    let mut names = FIELD_START + columns.len() * FIELD_BYTES;
+    let field_start = FIELD_START
+        + if role.primary.is_some() {
+            INDEX_COLUMN_SHIFT
+        } else {
+            0
+        };
+    let mut names = field_start + columns.len() * FIELD_BYTES;
     let mut fixed_offset = 0;
     let mut variable = 0;
     for (position, column) in columns.iter().enumerate() {
         check(budget, cancelled)?;
-        let at = FIELD_START + position * FIELD_BYTES;
+        let at = field_start + position * FIELD_BYTES;
         let scalar = column.scalar_type();
         let variable_field = matches!(
             scalar,
@@ -110,7 +117,7 @@ pub(super) fn verify(
             expected[at + 11] = decimal.precision();
             expected[at + 12] = decimal.scale();
         }
-        expected[at + 15] = if position == 0 {
+        expected[at + 15] = if column.incrementing_autonumber() {
             7
         } else if variable_field {
             2
@@ -127,38 +134,46 @@ pub(super) fn verify(
         }
     }
 
-    let physical = names;
-    long(&mut expected, physical, 1923)?;
-    for key in 0..KEY_SLOTS {
+    if let Some(primary) = role.primary {
+        let physical = names;
+        long(&mut expected, physical, 1923)?;
+        for key in 0..KEY_SLOTS {
+            short(
+                &mut expected,
+                physical + 4 + key * KEY_BYTES,
+                usize::from(u16::MAX),
+            )?;
+        }
         short(
             &mut expected,
-            physical + 4 + key * KEY_BYTES,
-            usize::from(u16::MAX),
+            physical + 4,
+            definition
+                .primary_position()
+                .ok_or(AddTableError::Preservation)?,
+        )?;
+        expected[physical + 6] = 1;
+        long(
+            &mut expected,
+            physical + 34,
+            (MAP_PAGE << 8) | primary.map as u32,
+        )?;
+        long(&mut expected, physical + 38, primary.root as u32)?;
+        expected[physical + 46] = 0x89;
+        names += PHYSICAL_INDEX_BYTES;
+        long(&mut expected, names, 1625)?;
+        long(&mut expected, names + 13, u32::MAX)?;
+        expected[names + 23] = 1;
+        names += LOGICAL_INDEX_BYTES;
+        name(
+            &mut expected,
+            &mut names,
+            definition
+                .primary_name()
+                .ok_or(AddTableError::Preservation)?,
+            budget,
+            cancelled,
         )?;
     }
-    short(&mut expected, physical + 4, 0)?;
-    expected[physical + 6] = 1;
-    long(
-        &mut expected,
-        physical + 34,
-        (MAP_PAGE << 8) | role.index as u32,
-    )?;
-    long(&mut expected, physical + 38, role.root as u32)?;
-    expected[physical + 46] = 0x89;
-    names += PHYSICAL_INDEX_BYTES;
-    long(&mut expected, names, 1625)?;
-    long(&mut expected, names + 13, u32::MAX)?;
-    expected[names + 23] = 1;
-    names += LOGICAL_INDEX_BYTES;
-    name(
-        &mut expected,
-        &mut names,
-        definition
-            .primary_name()
-            .ok_or(AddTableError::Preservation)?,
-        budget,
-        cancelled,
-    )?;
     short(&mut expected, names, usize::from(u16::MAX))?;
     let length = names + 2;
 
@@ -177,8 +192,8 @@ pub(super) fn verify(
     short(&mut expected, 41, columns.len())?;
     short(&mut expected, 43, variable)?;
     short(&mut expected, 45, columns.len())?;
-    long(&mut expected, 47, 1)?;
-    long(&mut expected, 51, 1)?;
+    long(&mut expected, 47, u32::from(role.primary.is_some()))?;
+    long(&mut expected, 51, u32::from(role.primary.is_some()))?;
     long(&mut expected, 55, (MAP_PAGE << 8) | role.owned as u32)?;
     long(&mut expected, 59, (MAP_PAGE << 8) | role.candidate as u32)?;
     if source::page(after, role.definition) != expected {
