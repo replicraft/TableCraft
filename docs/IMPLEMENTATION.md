@@ -1,5 +1,25 @@
 # Implementation status
 
+## Independent query/native UPDATE review planning — 8 November 2026
+
+Batch SQL UPDATE planning now has a real Access adapter route with separate
+query and native allowances. Binding, original-row evaluation and complete
+request materialization consume query capacity; native snapshot construction
+and the one consuming native finish use native capacity. Existing single-pool
+APIs share the same implementation and preserve their charge order. Initial
+intent hashing remains native planning work; journal persistence is separate.
+
+Ten neutral batch tests and two new real-adapter cases pass, including independent
+refusals and original-snapshot multi-SET semantics. The complete adapter unit
+batch passes 109 cases. Strict affected-package lint, minimal-feature compilation,
+formatting and dependency boundaries pass. Twelve focused native cases and the
+existing interrupted-save fault case also pass in this batch. Two initial test
+expectations omitted expression-row accounting; the failure log is preserved and
+the corrected batch passes without changing production charges.
+See the [reviewed UPDATE contract](access/writes/REVIEWED_UPDATES.md).
+The next integration is the runtime's consuming SQL action review and save worker,
+followed by GUI warning/execution. No new GUI action is enabled by these APIs.
+
 ## Independent reviewed-UPDATE qualification pools — 8 November 2026
 
 Native and Access reviewed UPDATE staging now accept separate caller-owned

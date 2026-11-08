@@ -4,4 +4,4 @@ mod plan;
 pub(in crate::execution) mod source;
 
 pub use error::UpdateError;
-pub use plan::{UpdatePlan, plan_batch_update, plan_update};
+pub use plan::{UpdatePlan, plan_batch_update, plan_batch_update_with_budgets, plan_update};

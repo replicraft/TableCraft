@@ -141,3 +141,30 @@ pub fn plan_recoverable_batch_update(
         editor, query, budget, collation, cancelled,
     )?)
 }
+
+/// Evaluate the closed local batch using an independent query allowance.
+/// Snapshot construction and the single native finish, including original
+/// intent binding, consume the native allowance. No journal or lease is created.
+#[cfg(feature = "journal")]
+pub fn plan_recoverable_batch_update_with_budgets(
+    image: NativeImage,
+    query: &Query,
+    native: &mut ResourceBudget,
+    query_budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<RecoverableNativeEditPlan>, RecoverableError> {
+    let table = local_batch_update_table(query)?;
+    let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
+    Ok(tablecraft_query::plan_batch_update_with_budgets(
+        editor,
+        query,
+        query_budget,
+        native,
+        collation,
+        cancelled,
+    )?)
+}
+
+#[cfg(all(test, feature = "journal"))]
+mod budgets;

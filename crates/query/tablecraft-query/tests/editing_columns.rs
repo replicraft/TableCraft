@@ -7,7 +7,7 @@ use tablecraft_core::{
 use tablecraft_db::{
     CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, SnapshotError, UpdateProfile,
 };
-use tablecraft_query::plan_batch_update;
+use tablecraft_query::{plan_batch_update, plan_batch_update_with_budgets};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
 use tablecraft_sql::{ParseLimits, parse_query};
 
@@ -16,6 +16,7 @@ type Recorded = Vec<(String, Vec<(usize, Value)>)>;
 struct Editor {
     snapshot: Snapshot,
     calls: Rc<Cell<usize>>,
+    backend_steps: u64,
 }
 
 impl EditableTable for Editor {
@@ -45,10 +46,11 @@ impl EditableBatch for Editor {
     fn plan_columns(
         self,
         columns: &[ColumnUpdates<'_>],
-        _: &mut ResourceBudget,
+        budget: &mut ResourceBudget,
         _: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
         self.calls.set(self.calls.get() + 1);
+        budget.charge(Resource::Steps, self.backend_steps)?;
         columns
             .iter()
             .map(|column| {
@@ -102,6 +104,7 @@ fn create_editor() -> (Editor, Rc<Cell<usize>>) {
         Editor {
             snapshot,
             calls: Rc::clone(&calls),
+            backend_steps: 0,
         },
         calls,
     )
@@ -285,4 +288,108 @@ fn both_column_vectors_exact_limits_and_final_cancel_precede_finish() {
         ))
     ));
     assert_eq!(calls.get(), 0);
+}
+
+#[test]
+fn split_batch_query_refusals_leave_backend_pool_untouched() {
+    let query = parse_query(
+        "UPDATE Items SET [Group]=Score, Score=[Group]",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    for mut query_budget in [
+        ResourceBudget::new(0, 100_000, 1_000_000),
+        ResourceBudget::new(16 * 1024 * 1024, 0, 1_000_000),
+        ResourceBudget::new(16 * 1024 * 1024, 100_000, 0),
+    ] {
+        let (editor, calls) = create_editor();
+        let mut native = ResourceBudget::new(7, 11, 13);
+        let result = plan_batch_update_with_budgets(
+            editor,
+            query.query(),
+            &mut query_budget,
+            &mut native,
+            None,
+            &|| false,
+        );
+        assert!(matches!(
+            result,
+            Err(tablecraft_query::UpdateError::Query(
+                tablecraft_query::QueryError::Limit(_)
+            ))
+        ));
+        assert_eq!(calls.get(), 0);
+        assert_eq!(native, ResourceBudget::new(7, 11, 13));
+    }
+}
+
+#[test]
+fn split_batch_backend_failure_is_independent_of_successful_query_evaluation() {
+    let query = parse_query(
+        "UPDATE Items SET [Group]=Score, Score=[Group]",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let (mut editor, calls) = create_editor();
+    editor.backend_steps = 1;
+    let mut query_budget = budget();
+    let mut native = ResourceBudget::new(7, 11, 0);
+    let result = plan_batch_update_with_budgets(
+        editor,
+        query.query(),
+        &mut query_budget,
+        &mut native,
+        None,
+        &|| false,
+    );
+    let Err(tablecraft_query::UpdateError::Backend(SnapshotError::Limit(error))) = result else {
+        panic!("the backend must retain its own exhausted step limit");
+    };
+    assert_eq!(error.resource, Resource::Steps);
+    assert_eq!(error.remaining, 0);
+    assert_eq!(calls.get(), 1);
+    // Each original row is visited and then materialized as an expression row.
+    assert_eq!(query_budget.remaining(Resource::Rows), 100_000 - 2 * 4);
+    assert!(query_budget.remaining(Resource::Steps) < 1_000_000);
+    assert_eq!(native, ResourceBudget::new(7, 11, 0));
+}
+
+#[test]
+fn split_batch_preserves_original_snapshot_and_one_consuming_finish() {
+    let query = parse_query(
+        "UPDATE Items AS i SET i.[Group]=i.Score, i.Score=i.[Group] WHERE i.Id IN (1,3)",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let (mut editor, calls) = create_editor();
+    editor.backend_steps = 3;
+    let mut query_budget = budget();
+    let mut native = ResourceBudget::new(0, 0, 3);
+    let result = plan_batch_update_with_budgets(
+        editor,
+        query.query(),
+        &mut query_budget,
+        &mut native,
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(result.matched_rows(), 2);
+    assert_eq!(
+        result.into_backend(),
+        vec![
+            (
+                "Group".to_owned(),
+                vec![(0, Value::Int32(100)), (2, Value::Int32(300))]
+            ),
+            (
+                "Score".to_owned(),
+                vec![(0, Value::Int32(10)), (2, Value::Int32(30))]
+            ),
+        ]
+    );
+    assert_eq!(calls.get(), 1);
+    assert_eq!(native, ResourceBudget::new(0, 0, 0));
+    // Each original row is visited and then materialized as an expression row.
+    assert_eq!(query_budget.remaining(Resource::Rows), 100_000 - 2 * 4);
 }

@@ -49,12 +49,24 @@ steps; engine-only image comparison and hashing consume steps. Capture continues
 to consume native bytes/rows/work. Successful capture followed by proof refusal
 retains a Ready session; capture failure still requires explicit refresh.
 
-These entrypoints separate fresh qualification only. Review-time SQL evaluation
-and native candidate construction still share their existing planning budget,
-and journal preparation/commit retain their existing explicit persistence budget.
-The runtime action workflow must supply and bound those phases deliberately;
-these APIs do not establish independent end-to-end query/native/persistence
-quotas or automatically enable GUI actions.
+These entrypoints separate fresh qualification only. For review-time planning,
+`tablecraft_query::plan_batch_update_with_budgets` evaluates every original-row
+expression and allocates the complete column requests under a query allowance,
+then calls the consuming backend once under its independent allowance. Existing
+single-pool APIs use the same preparation and finish without changing their
+cumulative order or request semantics.
+
+The Access `plan_recoverable_batch_update_with_budgets` consumer uses the native
+allowance for snapshot construction and backend finish, including initial intent
+hashing, and the query allowance for binding/evaluation/request materialization.
+A query failure cannot trigger native finish or retry evaluation. The local-target,
+parameter, collation, carrier and constraint restrictions remain unchanged.
+
+Journal preparation/commit retain their existing explicit persistence budget.
+The runtime action workflow must supply and bound these phases deliberately;
+these APIs do not automatically establish end-to-end host quotas or enable GUI
+actions. Initial native intent hashing still belongs to the native planning
+allowance; fresh requalification's hashing belongs to its separate proof allowance.
 
 `NativeRecoveryQualificationError` preserves typed capture, intent, normal-planner
 and image/count mismatch failures. Requalification creates no journal and writes
@@ -126,3 +138,16 @@ The focused native batch passed ten default cases and two separately executed
 hash-pinned growth cases. Seven adapter cases passed, including exact proof-byte
 admission and separate native/proof failures with the original lease retained.
 Logs remain under ignored `.cache/update-budget-*20261108.log`.
+
+### Independent query/backend batch planning — 8 November 2026
+
+Ten neutral batch UPDATE tests pass, including three new split-pool cases for
+query failure before backend finish, backend exhaustion after complete query
+evaluation and original-snapshot multi-SET evaluation. Two initial assertions
+incorrectly counted only row visitation; the recorded failed run was retained,
+and corrected expectations also account for existing expression-row materialization.
+The corrected batch passes without changing production accounting.
+
+Two Access adapter cases additionally exercise real native planning against an
+independent complete AFTER and distinguish native snapshot failure from query
+refusal. These are API/fixture checks, not connected runtime or Access evidence.

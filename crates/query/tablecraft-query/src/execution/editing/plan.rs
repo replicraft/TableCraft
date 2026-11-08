@@ -81,26 +81,62 @@ pub fn plan_batch_update<E: EditableBatch>(
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.batch_plan").entered();
     let prepared = prepare(&editor, query, true, budget, collation, cancelled)?;
-    budget
-        .charge_allocation(
-            prepared.columns.len() as u64,
+    let columns = prepared.borrowed_columns(budget, cancelled)?;
+    finish_batch(editor, &prepared, &columns, budget, cancelled)
+}
+
+/// Evaluate and allocate the complete original-row request using the query
+/// allowance, then finish once using an independent backend allowance.
+/// A backend failure never replenishes either pool or retries evaluation.
+pub fn plan_batch_update_with_budgets<E: EditableBatch>(
+    editor: E,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    collation: Option<&dyn Collation>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
+    let _span = tracing::debug_span!("query.update.batch_plan").entered();
+    let prepared = prepare(&editor, query, true, query_budget, collation, cancelled)?;
+    let columns = prepared.borrowed_columns(query_budget, cancelled)?;
+    finish_batch(editor, &prepared, &columns, backend_budget, cancelled)
+}
+
+impl PreparedUpdate {
+    fn borrowed_columns(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<ColumnUpdates<'_>>, QueryError> {
+        budget.charge_allocation(
+            self.columns.len() as u64,
             size_of::<ColumnUpdates<'_>>() as u64,
-        )
-        .map_err(QueryError::from)?;
-    let mut columns = Vec::new();
-    columns
-        .try_reserve_exact(prepared.columns.len())
-        .map_err(|_| QueryError::Allocation)?;
-    for column in &prepared.columns {
+        )?;
+        let mut columns = Vec::new();
+        columns
+            .try_reserve_exact(self.columns.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for column in &self.columns {
+            check(budget, cancelled)?;
+            columns.push(ColumnUpdates {
+                column: &column.name,
+                updates: &column.updates,
+            });
+        }
         check(budget, cancelled)?;
-        columns.push(ColumnUpdates {
-            column: &column.name,
-            updates: &column.updates,
-        });
+        Ok(columns)
     }
-    check(budget, cancelled)?;
+}
+
+fn finish_batch<E: EditableBatch>(
+    editor: E,
+    prepared: &PreparedUpdate,
+    columns: &[ColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let backend = editor
-        .plan_columns(&columns, budget, cancelled)
+        .plan_columns(columns, budget, cancelled)
         .map_err(UpdateError::Backend)?;
     Ok(UpdatePlan {
         backend,
