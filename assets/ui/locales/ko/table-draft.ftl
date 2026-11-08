@@ -2,7 +2,6 @@
 table-draft-unavailable = 저장하지 않은 테이블을 더 이상 사용할 수 없습니다.
 table-draft-new-record = (새 항목)
 table-draft-short-text = 짧은 텍스트 (255)
-table-draft-long-integer = 숫자 (긴 정수)
 table-draft-field-name = 필드 이름
 table-draft-invalid-name = 올바른 고유 필드 이름을 선택하세요.
 table-draft-empty-note = 저장되지 않은 테이블입니다. 레코드 값은 테이블을 저장한 후 검토하고 적용할 때까지 초안으로 유지됩니다.
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = 1부터 255까지의 정수를 입력하세�
 table-draft-property-input-limit = 속성 입력이 제한을 초과했습니다. 이전 텍스트는 유지됩니다.
 table-draft-property-invalid = 저장하기 전에 잘못된 필드 속성을 수정하세요.
 table-draft-property-help = 상수만 입력하세요. 텍스트에는 SQL 따옴표를 붙이지 않고, 숫자에는 소수점으로 마침표를 사용하세요. 논리값은 true/false, 날짜와 시간은 ISO 형식으로 입력하세요. 수식은 계산하지 않습니다. 입력 한도는 UTF-8 4096바이트이며, 저장할 기본값은 추가되거나 이스케이프된 따옴표를 포함해 UTF-16 255단위 이내여야 합니다.
+
+table-draft-number = 숫자
+table-draft-number-byte = 바이트
+table-draft-number-integer = 정수
+table-draft-number-single = 단정밀도
+table-draft-number-double = 배정밀도
+table-draft-number-decimal = 10진수
+table-draft-number-replication-id = 복제 ID
+table-draft-number-precision = 전체 자릿수
+table-draft-number-scale = 소수 자릿수
+table-draft-number-invalid-decimal = 전체 자릿수는 1~28, 소수 자릿수는 0~전체 자릿수여야 합니다. 저장 전에 두 값을 수정하세요.
+table-draft-number-guid-default = 복제 ID의 리터럴 기본값은 아직 사용할 수 없습니다. 다른 모드를 선택하세요. 입력한 텍스트는 유지됩니다.

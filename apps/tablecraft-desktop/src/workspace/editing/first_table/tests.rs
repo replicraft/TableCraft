@@ -213,7 +213,7 @@ fn insert_generated_row(harness: &mut Harness<'_, Desktop>, companion: Option<&s
 fn newly_saved_initial_schemas_accept_native_generated_rows_and_refresh_real_contents() {
     for (kind, values) in [
         (None, [None, None]),
-        (Some(DraftFieldType::LongInteger), [Some("7"), Some("8")]),
+        (Some(DraftFieldType::Number), [Some("7"), Some("8")]),
         (
             Some(DraftFieldType::ShortText),
             [Some("Ada"), Some("Grace")],
@@ -255,7 +255,7 @@ fn cancelling_the_read_only_review_keeps_the_named_draft_and_original_file() {
         harness
             .state_mut()
             .state
-            .add_table_draft_field(DraftFieldType::LongInteger)
+            .add_table_draft_field(DraftFieldType::Number)
     );
     harness.run_steps(2);
     let request = issue_without_dispatch(&mut harness);
@@ -322,7 +322,7 @@ fn saving_from_the_close_confirmation_resumes_the_original_file_open() {
         harness
             .state_mut()
             .state
-            .add_table_draft_field(DraftFieldType::LongInteger)
+            .add_table_draft_field(DraftFieldType::Number)
     );
     let other = directory.path().join("Other.accdb");
     let other_bytes = mutation_fixture::with_rows(&[(1, 20)]);

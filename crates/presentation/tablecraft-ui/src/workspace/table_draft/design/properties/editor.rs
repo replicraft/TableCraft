@@ -1,7 +1,10 @@
 //! Raw property editors are separate from validated declarations and native input parsing.
+mod number;
+
+use number::DecimalInput;
 use tablecraft_builders::table::{
-    DraftDefaultMode, DraftFieldId, DraftFieldType, MAX_DRAFT_DEFAULT_BYTES, MIN_SHORT_TEXT_UNITS,
-    SHORT_TEXT_UNITS, TableDraft,
+    DraftDefaultMode, DraftFieldId, DraftFieldType, DraftNumberSize, MAX_DRAFT_DEFAULT_BYTES,
+    MIN_SHORT_TEXT_UNITS, SHORT_TEXT_UNITS, TableDraft,
 };
 
 pub(super) const MAX_SIZE_INPUT_BYTES: usize = 64;
@@ -15,9 +18,20 @@ pub(in crate::workspace::table_draft) struct Editors {
 struct Entry {
     field: DraftFieldId,
     size: Option<String>,
+    decimal: Option<DecimalInput>,
     literal: String,
     size_invalid: bool,
     literal_rejected: bool,
+    unsupported_default: bool,
+}
+
+impl Entry {
+    fn rejected(&self) -> bool {
+        self.size_invalid
+            || self.literal_rejected
+            || self.unsupported_default
+            || self.decimal.as_ref().is_some_and(|input| input.invalid)
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -60,21 +74,24 @@ impl Editors {
                 .entries
                 .iter()
                 .map(|entry| {
-                    entry.literal.capacity() + entry.size.as_ref().map_or(0, String::capacity)
+                    entry.literal.capacity()
+                        + entry.size.as_ref().map_or(0, String::capacity)
+                        + entry
+                            .decimal
+                            .as_ref()
+                            .map_or(0, DecimalInput::retained_bytes)
                 })
                 .sum::<usize>()
     }
 
     pub(in crate::workspace::table_draft) fn rejected(&self) -> bool {
-        self.entries
-            .iter()
-            .any(|entry| entry.size_invalid || entry.literal_rejected)
+        self.entries.iter().any(Entry::rejected)
     }
 
     pub(in crate::workspace::table_draft) fn field_rejected(&self, field: DraftFieldId) -> bool {
         self.entries
             .iter()
-            .any(|entry| entry.field == field && (entry.size_invalid || entry.literal_rejected))
+            .any(|entry| entry.field == field && entry.rejected())
     }
 
     pub(in crate::workspace::table_draft) fn ensure(
@@ -83,9 +100,15 @@ impl Editors {
         id: DraftFieldId,
     ) -> Option<usize> {
         let field = draft.fields().iter().find(|field| field.id() == id)?;
+        let unsupported_default = field.number_size() == Some(DraftNumberSize::ReplicationId)
+            && matches!(field.default_mode(), DraftDefaultMode::Literal(_));
         if let Some(position) = self.entries.iter().position(|entry| entry.field == id) {
+            self.entries[position].unsupported_default = unsupported_default;
             if self.entries[position].size.is_none() && field.kind() == DraftFieldType::ShortText {
                 self.entries[position].size = Some(field.short_text_units()?.to_string());
+            }
+            if self.entries[position].decimal.is_none() {
+                self.entries[position].decimal = field.decimal_constraints().map(DecimalInput::new);
             }
             return Some(position);
         }
@@ -97,9 +120,11 @@ impl Editors {
         self.entries.push(Entry {
             field: id,
             size: field.short_text_units().map(|size| size.to_string()),
+            decimal: field.decimal_constraints().map(DecimalInput::new),
             literal,
             size_invalid: false,
             literal_rejected: false,
+            unsupported_default,
         });
         Some(self.entries.len() - 1)
     }
@@ -216,6 +241,12 @@ impl Editors {
             return false;
         }
         self.entries[position].literal_rejected = false;
+        self.entries[position].unsupported_default = choice == DefaultChoice::Literal
+            && draft
+                .fields()
+                .iter()
+                .find(|field| field.id() == self.entries[position].field)
+                .is_some_and(|field| field.number_size() == Some(DraftNumberSize::ReplicationId));
         self.revision = revision;
         true
     }
@@ -252,6 +283,13 @@ impl Editors {
         {
             return false;
         }
+        self.entries[position].unsupported_default = draft
+            .fields()
+            .iter()
+            .find(|candidate| candidate.id() == field)
+            .is_some_and(|candidate| {
+                candidate.number_size() == Some(DraftNumberSize::ReplicationId)
+            });
         self.entries[position].literal = raw;
         self.entries[position].literal_rejected = false;
         self.revision = revision;

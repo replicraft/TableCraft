@@ -2,7 +2,6 @@
 table-draft-unavailable = La tabla sin guardar ya no está disponible.
 table-draft-new-record = (Nuevo)
 table-draft-short-text = Texto corto (255)
-table-draft-long-integer = Número (Entero largo)
 table-draft-field-name = Nombre del campo
 table-draft-invalid-name = Elija un nombre de campo válido y único.
 table-draft-empty-note = Tabla sin guardar. Los valores del registro siguen siendo un borrador hasta que se revisen y apliquen después de guardar la tabla.
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = Introduce un número entero entre 1 y 255.
 table-draft-property-input-limit = La entrada de la propiedad supera su límite. Se conserva el texto anterior.
 table-draft-property-invalid = Corrige las propiedades de campo no válidas antes de guardar.
 table-draft-property-help = Solo constantes: texto sin comillas SQL, números con punto decimal, true/false o fecha y hora en formato ISO. No se evalúan fórmulas. La entrada admite 4096 bytes UTF-8; el valor predeterminado guardado debe caber en 255 unidades UTF-16, incluidas las comillas añadidas y escapadas.
+
+table-draft-number = Número
+table-draft-number-byte = Byte
+table-draft-number-integer = Entero
+table-draft-number-single = Simple
+table-draft-number-double = Doble
+table-draft-number-decimal = Decimal
+table-draft-number-replication-id = Id. de replicación
+table-draft-number-precision = Precisión
+table-draft-number-scale = Escala
+table-draft-number-invalid-decimal = La precisión debe ser de 1 a 28 y la escala de 0 a la precisión. Corrija ambos valores antes de guardar.
+table-draft-number-guid-default = Los valores predeterminados literales de Id. de replicación aún no están disponibles. Elija otro modo; el texto introducido se conserva.

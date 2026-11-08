@@ -3,7 +3,7 @@ use super::{
     Choice, Dialog, FieldInput, InsertInput, inputs_match, text_bytes_fit, within_input_limits,
 };
 use crate::{InitialRecord, InputHint, workspace::State};
-use tablecraft_builders::table::DraftFieldType;
+use tablecraft_builders::table::{DraftFieldType, DraftNumberSize, SnapshotField};
 
 impl State {
     /// Seed a pristine, source-current native insertion draft after first-table save.
@@ -47,7 +47,7 @@ impl State {
             let raw = &record.raw_text[position];
             let generated = original.kind() == DraftFieldType::AutoNumberIncrement;
             if native.name != original.name()
-                || native.input_hint != hint(original.kind())
+                || Some(native.input_hint) != hint(original)
                 || native.auto_number != generated
                 || original.is_primary() != generated
                 || generated != (position == 0)
@@ -102,15 +102,24 @@ impl State {
     }
 }
 
-fn hint(kind: DraftFieldType) -> InputHint {
-    match kind {
-        DraftFieldType::AutoNumberIncrement | DraftFieldType::LongInteger => InputHint::Int32,
+fn hint(field: &SnapshotField) -> Option<InputHint> {
+    Some(match field.kind() {
+        DraftFieldType::AutoNumberIncrement => InputHint::Int32,
+        DraftFieldType::Number => match field.number_size()? {
+            DraftNumberSize::Byte => InputHint::Byte,
+            DraftNumberSize::Integer => InputHint::Int16,
+            DraftNumberSize::LongInteger => InputHint::Int32,
+            DraftNumberSize::Single => InputHint::Single,
+            DraftNumberSize::Double => InputHint::Double,
+            DraftNumberSize::Decimal => InputHint::Decimal,
+            DraftNumberSize::ReplicationId => InputHint::Guid,
+        },
         DraftFieldType::ShortText => InputHint::Text,
         DraftFieldType::LargeInteger => InputHint::Int64,
         DraftFieldType::YesNo => InputHint::Boolean,
         DraftFieldType::Currency => InputHint::Currency,
         DraftFieldType::DateTime => InputHint::DateTimeIso,
-    }
+    })
 }
 
 #[cfg(test)]

@@ -1,36 +1,43 @@
 //! Lower exact initial-field properties through shared typed input and native admission.
+mod number;
+
 use crate::{Error, display::Presentation, editing::EditError, scalar_input};
 use tablecraft_ace::{CreateColumn, FirstTableDefinition};
-use tablecraft_builders::table::{DraftDefaultMode, DraftFieldType, TableDraftSnapshot};
+use tablecraft_builders::table::{
+    DraftDefaultMode, DraftFieldType, SnapshotField, TableDraftSnapshot,
+};
 use tablecraft_core::{
     limits::ResourceBudget,
     values::{Currency, Value},
 };
-use tablecraft_schema::ScalarType;
+use tablecraft_schema::{ScalarType, TypeDescriptor};
 
 const PRIMARY_INDEX_NAME: &str = "PrimaryKey";
 
-fn scalar(kind: DraftFieldType) -> ScalarType {
-    match kind {
-        DraftFieldType::AutoNumberIncrement | DraftFieldType::LongInteger => ScalarType::Int32,
+fn scalar(field: &SnapshotField) -> Result<ScalarType, Error> {
+    Ok(match field.kind() {
+        DraftFieldType::AutoNumberIncrement => ScalarType::Int32,
+        DraftFieldType::Number => {
+            number::scalar(field.number_size().ok_or(EditError::Unavailable)?)
+        }
         DraftFieldType::ShortText => ScalarType::Text,
         DraftFieldType::LargeInteger => ScalarType::Int64,
         DraftFieldType::YesNo => ScalarType::Boolean,
         DraftFieldType::Currency => ScalarType::Currency,
         DraftFieldType::DateTime => ScalarType::DateTime,
-    }
+    })
 }
 
-fn type_default(kind: DraftFieldType) -> Option<Value> {
-    match kind {
-        DraftFieldType::LongInteger => Some(Value::Int32(0)),
+fn type_default(field: &SnapshotField) -> Result<Option<Value>, Error> {
+    Ok(match field.kind() {
+        DraftFieldType::Number => return number::default(field),
         DraftFieldType::LargeInteger => Some(Value::Int64(0)),
         DraftFieldType::YesNo => Some(Value::Boolean(false)),
         DraftFieldType::Currency => Some(Value::Currency(Currency::from_scaled(0))),
         DraftFieldType::AutoNumberIncrement
         | DraftFieldType::ShortText
         | DraftFieldType::DateTime => None,
-    }
+    })
 }
 
 pub(super) fn capture(
@@ -45,11 +52,17 @@ pub(super) fn capture(
     for field in snapshot.fields() {
         input.work(1)?;
         defaults.push(match field.default_mode() {
-            DraftDefaultMode::TypeDefault => type_default(field.kind()),
+            DraftDefaultMode::TypeDefault => type_default(field)?,
             DraftDefaultMode::Absent => None,
             DraftDefaultMode::Null => Some(Value::Null),
-            DraftDefaultMode::Literal(text) => Some(scalar_input::parse(
-                scalar(field.kind()),
+            DraftDefaultMode::Literal(text) => Some(scalar_input::parse_declared(
+                match field.decimal_constraints() {
+                    Some(constraints) => {
+                        TypeDescriptor::decimal(constraints.precision(), constraints.scale())
+                            .map_err(|_| EditError::InvalidInput)?
+                    }
+                    None => TypeDescriptor::new(scalar(field)?),
+                },
                 text,
                 false,
                 &mut input,
@@ -82,7 +95,15 @@ pub(super) fn capture(
                 usize::from(field.short_text_units().ok_or(EditError::Unavailable)?),
             )?,
             DraftFieldType::AutoNumberIncrement => return Err(EditError::Unavailable.into()),
-            kind if !field.is_primary() => CreateColumn::new(field.name(), scalar(kind)),
+            DraftFieldType::Number
+                if !field.is_primary() && field.decimal_constraints().is_some() =>
+            {
+                CreateColumn::decimal(
+                    field.name(),
+                    field.decimal_constraints().ok_or(EditError::Unavailable)?,
+                )
+            }
+            _ if !field.is_primary() => CreateColumn::new(field.name(), scalar(field)?),
             _ => return Err(EditError::Unavailable.into()),
         };
         if let Some(required) = field.required() {

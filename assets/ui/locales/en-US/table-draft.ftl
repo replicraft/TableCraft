@@ -2,7 +2,6 @@
 table-draft-unavailable = The unsaved table is no longer available.
 table-draft-new-record = (New)
 table-draft-short-text = Short Text (255)
-table-draft-long-integer = Number (Long Integer)
 table-draft-field-name = Field name
 table-draft-invalid-name = Choose a unique valid field name.
 table-draft-empty-note = Unsaved table. Record values remain drafts until reviewed and applied after the table is saved.
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = Enter a whole number from 1 to 255.
 table-draft-property-input-limit = Property input exceeds its limit. The previous text is retained.
 table-draft-property-invalid = Correct invalid field-property input before saving.
 table-draft-property-help = Constants only: enter text without SQL quotes, numbers with a decimal point, true/false, or an ISO date and time. No formulas are evaluated. Input allows 4096 UTF-8 bytes; a saved default must fit 255 UTF-16 units, including added and escaped quotes.
+
+table-draft-number = Number
+table-draft-number-byte = Byte
+table-draft-number-integer = Integer
+table-draft-number-single = Single
+table-draft-number-double = Double
+table-draft-number-decimal = Decimal
+table-draft-number-replication-id = Replication ID
+table-draft-number-precision = Precision
+table-draft-number-scale = Scale
+table-draft-number-invalid-decimal = Precision must be 1–28 and scale must be 0–precision. Correct both values before saving.
+table-draft-number-guid-default = Literal defaults for Replication ID are not available yet. Choose another default mode; the entered text is retained.

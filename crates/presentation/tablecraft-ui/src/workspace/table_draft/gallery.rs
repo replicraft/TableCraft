@@ -15,7 +15,7 @@ const ICON_GAP: f32 = 6.0;
 
 const AVAILABLE: [(DraftFieldType, &str); 6] = [
     (DraftFieldType::ShortText, "table-draft-short-text"),
-    (DraftFieldType::LongInteger, "table-draft-long-integer"),
+    (DraftFieldType::Number, "table-draft-number"),
     (DraftFieldType::LargeInteger, "table-draft-large-integer"),
     (DraftFieldType::Currency, "table-draft-currency"),
     (DraftFieldType::DateTime, "table-draft-date-time"),

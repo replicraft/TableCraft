@@ -4680,6 +4680,7 @@ dependencies = [
  "jiff",
  "tablecraft-builders",
  "tablecraft-display",
+ "tablecraft-schema",
  "thiserror 2.0.21",
  "unic-langid",
 ]

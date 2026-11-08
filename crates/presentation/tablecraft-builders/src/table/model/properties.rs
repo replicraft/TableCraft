@@ -1,8 +1,16 @@
 //! Source-free field policies and exact unevaluated default input.
+mod number;
+
+pub use number::DraftNumberSize;
+
 use super::{DraftField, DraftFieldId, DraftFieldType, TableDraft};
 use crate::table::{
     MAX_DRAFT_DEFAULT_BYTES, MIN_SHORT_TEXT_UNITS, SHORT_TEXT_UNITS, TableDraftError,
 };
+use tablecraft_schema::DecimalConstraints;
+
+const INITIAL_DECIMAL_PRECISION: u8 = 18;
+const INITIAL_DECIMAL_SCALE: u8 = 0;
 
 /// The initial declaration's default policy, separate from a pending row value.
 /// Literal input is not parsed or converted by this renderer-neutral model.
@@ -46,6 +54,8 @@ impl DraftDefaultMode {
 
 pub(super) struct FieldProperties {
     text_units: u16,
+    number_size: DraftNumberSize,
+    decimal: DecimalConstraints,
     required: Option<bool>,
     allow_zero_length: Option<bool>,
     default_mode: DraftDefaultMode,
@@ -56,6 +66,9 @@ impl FieldProperties {
         let ordinary = kind != DraftFieldType::AutoNumberIncrement;
         Self {
             text_units: SHORT_TEXT_UNITS,
+            number_size: DraftNumberSize::LongInteger,
+            decimal: DecimalConstraints::new(INITIAL_DECIMAL_PRECISION, INITIAL_DECIMAL_SCALE)
+                .expect("valid initial decimal declaration"),
             // Authoring follows Access UI defaults. The native API separately
             // preserves absent declarations and its programmatic defaults.
             required: ordinary.then_some(false),

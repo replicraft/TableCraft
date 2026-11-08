@@ -2,7 +2,6 @@
 table-draft-unavailable = Die ungespeicherte Tabelle ist nicht mehr verfügbar.
 table-draft-new-record = (Neu)
 table-draft-short-text = Kurzer Text (255)
-table-draft-long-integer = Zahl (Lange Ganzzahl)
 table-draft-field-name = Feldname
 table-draft-invalid-name = Wählen Sie einen eindeutigen gültigen Feldnamen.
 table-draft-empty-note = Ungespeicherte Tabelle. Datensatzwerte bleiben ein Entwurf, bis sie nach dem Speichern der Tabelle geprüft und übernommen werden.
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = Geben Sie eine ganze Zahl zwischen 1 und 255
 table-draft-property-input-limit = Die Eigenschaftseingabe überschreitet ihr Limit. Der bisherige Text bleibt erhalten.
 table-draft-property-invalid = Korrigieren Sie ungültige Feldeigenschaften vor dem Speichern.
 table-draft-property-help = Nur Konstanten: Text ohne SQL-Anführungszeichen, Zahlen mit Dezimalpunkt, true/false oder Datum und Uhrzeit im ISO-Format eingeben. Formeln werden nicht ausgewertet. Eingabe: höchstens 4096 UTF-8-Bytes; gespeicherter Standardwert: höchstens 255 UTF-16-Einheiten einschließlich hinzugefügter und maskierter Anführungszeichen.
+
+table-draft-number = Zahl
+table-draft-number-byte = Byte
+table-draft-number-integer = Ganzzahl
+table-draft-number-single = Single
+table-draft-number-double = Double
+table-draft-number-decimal = Dezimal
+table-draft-number-replication-id = Replikations-ID
+table-draft-number-precision = Genauigkeit
+table-draft-number-scale = Skalierung
+table-draft-number-invalid-decimal = Die Genauigkeit muss 1–28 und die Skalierung 0 bis zur Genauigkeit betragen. Korrigieren Sie beide Werte vor dem Speichern.
+table-draft-number-guid-default = Literale Standardwerte für Replikations-ID sind noch nicht verfügbar. Wählen Sie einen anderen Modus; der eingegebene Text bleibt erhalten.

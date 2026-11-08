@@ -35,12 +35,11 @@ fn assert_retirement(receipt: SaveReceipt) {
 }
 
 fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, SaveWorker, u64) {
-    let (directory, path, worker, revision) = opened(&canonical_blank_creation::source());
     let mut draft = TableDraft::initial();
     match companion {
         Companion::None => {}
         Companion::LongInteger | Companion::DefaultLongInteger => {
-            draft.add_field(DraftFieldType::LongInteger).unwrap();
+            draft.add_field(DraftFieldType::Number).unwrap();
         }
         Companion::ShortText | Companion::NullableShortText | Companion::RequiredShortText => {
             let field = draft.add_field(DraftFieldType::ShortText).unwrap();
@@ -57,6 +56,11 @@ fn saved_initial(companion: Companion) -> (tempfile::TempDir, PathBuf, Worker, S
             }
         }
     }
+    saved_draft(draft)
+}
+
+fn saved_draft(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, SaveWorker, u64) {
+    let (directory, path, worker, revision) = opened(&canonical_blank_creation::source());
     let snapshot = draft.snapshot("Items").unwrap();
     let columns = snapshot.fields().len();
     let Response::FirstTableReviewed { capability } = request(
@@ -285,3 +289,5 @@ fn supplied_value_and_explicit_null_cannot_replace_generated_id_omission() {
         assert!(!saves.is_busy());
     }
 }
+
+mod numbers;

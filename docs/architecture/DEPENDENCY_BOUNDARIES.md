@@ -28,7 +28,8 @@ rejects GUI/window dependencies, including optional, target-specific and test/bu
 edges. Native metadata and execution remain runtime services.
 
 `tablecraft-ui` owns egui widgets, styling and accessibility. Its normal local
-dependencies are display and the headless builders model; it receives owned state
+dependencies are display, the headless builders model and schema's validated
+Decimal field constraints; it receives owned state
 and emits typed actions without opening databases. `tablecraft-runtime` owns headless backend workers, document
 reads and application operations, and can share the pure formatter without
 importing UI or desktop. Testkit remains development-only. The binary-only

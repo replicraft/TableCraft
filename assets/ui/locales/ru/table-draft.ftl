@@ -2,7 +2,6 @@
 table-draft-unavailable = Несохранённая таблица больше недоступна.
 table-draft-new-record = (Новая)
 table-draft-short-text = Краткий текст (255)
-table-draft-long-integer = Число (Длинное целое)
 table-draft-field-name = Имя поля
 table-draft-invalid-name = Выберите допустимое уникальное имя поля.
 table-draft-empty-note = Несохранённая таблица. Значения записи остаются черновиком до проверки и применения после сохранения таблицы.
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = Введите целое число от 1 
 table-draft-property-input-limit = Ввод свойства превышает ограничение. Предыдущий текст сохранён.
 table-draft-property-invalid = Исправьте недопустимые свойства полей перед сохранением.
 table-draft-property-help = Только константы: текст без кавычек SQL, числа с десятичной точкой, true/false или дата и время в формате ISO. Формулы не вычисляются. Ввод ограничен 4096 байтами UTF-8; сохранённое значение по умолчанию — 255 единицами UTF-16, включая добавленные и экранированные кавычки.
+
+table-draft-number = Числовой
+table-draft-number-byte = Байт
+table-draft-number-integer = Целое
+table-draft-number-single = Одинарное
+table-draft-number-double = Двойное
+table-draft-number-decimal = Десятичное
+table-draft-number-replication-id = Код репликации
+table-draft-number-precision = Точность
+table-draft-number-scale = Масштаб
+table-draft-number-invalid-decimal = Точность должна быть от 1 до 28, а масштаб — от 0 до точности. Исправьте оба значения перед сохранением.
+table-draft-number-guid-default = Литеральные значения по умолчанию для кода репликации пока недоступны. Выберите другой режим; введённый текст сохранится.

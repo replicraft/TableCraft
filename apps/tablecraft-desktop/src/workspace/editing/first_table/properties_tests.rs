@@ -20,7 +20,7 @@ fn property<'a>(field: &'a Field, name: &str) -> &'a FieldPropertyValue {
         .value
 }
 
-fn choose(harness: &mut Harness<'_, Desktop>, key: &str, choice_key: &str) {
+pub(super) fn choose(harness: &mut Harness<'_, Desktop>, key: &str, choice_key: &str) {
     let label = harness.state().state.localizer.text(key);
     let choice = harness.state().state.localizer.text(choice_key);
     harness
@@ -33,7 +33,7 @@ fn choose(harness: &mut Harness<'_, Desktop>, key: &str, choice_key: &str) {
     harness.run_steps(2);
 }
 
-fn replace(harness: &mut Harness<'_, Desktop>, role: Role, label: &str, text: &str) {
+pub(super) fn replace(harness: &mut Harness<'_, Desktop>, role: Role, label: &str, text: &str) {
     harness.get_by_role_and_label(role, label).focus();
     harness.run_steps(1);
     harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
@@ -71,7 +71,7 @@ fn select_properties(harness: &mut Harness<'_, Desktop>, field: &str) {
     );
 }
 
-fn choose_input(harness: &mut Harness<'_, Desktop>, field: &str, choice: &str) {
+pub(super) fn choose_input(harness: &mut Harness<'_, Desktop>, field: &str, choice: &str) {
     let mode = field_label(harness, "insertion-field-input", field);
     harness
         .get_by_role_and_label(Role::Button, &mode)

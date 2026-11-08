@@ -34,7 +34,7 @@ ALLOWED = {
                           "tablecraft-query", "tablecraft-sql", "tablecraft-expressions"},
     "tablecraft-display": set(),
     "tablecraft-builders": {"tablecraft-sql", "tablecraft-schema"},
-    "tablecraft-ui": {"tablecraft-display", "tablecraft-builders"},
+    "tablecraft-ui": {"tablecraft-display", "tablecraft-builders", "tablecraft-schema"},
     "tablecraft-runtime": {"tablecraft-access", "tablecraft-ace", "tablecraft-core",
                            "tablecraft-model", "tablecraft-io", "tablecraft-query",
                            "tablecraft-sql", "tablecraft-testkit", "tablecraft-db",

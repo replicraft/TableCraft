@@ -1,5 +1,6 @@
 //! Editable draft declarations remain separate from stored metadata and literal parsing.
 pub(in crate::workspace::table_draft) mod editor;
+mod number;
 #[cfg(test)]
 mod tests;
 
@@ -7,10 +8,69 @@ use super::Editor;
 use crate::localization::tr;
 use editor::{DefaultChoice, MAX_SIZE_INPUT_BYTES};
 use egui::{Ui, WidgetInfo, WidgetType};
-use tablecraft_builders::table::{DraftFieldType, MAX_DRAFT_DEFAULT_BYTES};
+use tablecraft_builders::table::{DraftFieldType, DraftNumberSize, MAX_DRAFT_DEFAULT_BYTES};
 
 const HELP_WIDTH_FRACTION: f32 = 0.28;
 const PROPERTY_INPUT_WIDTH: f32 = 180.0;
+const PROPERTY_INPUT_MARGIN: egui::Margin = egui::Margin::symmetric(4, 2);
+
+/// Keep the active working controls visible when locale font metrics or the
+/// Decimal declaration adds rows. The caller still reserves the upper grid.
+pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
+    let field = editor
+        .draft
+        .fields()
+        .iter()
+        .find(|field| Some(field.id()) == editor.design.selected)
+        .or_else(|| editor.draft.fields().first());
+    let Some(field) = field else {
+        return 0.0;
+    };
+    let font = egui::TextStyle::Body.resolve(ui.style());
+    let line_height = |key| {
+        let text_height = ui
+            .painter()
+            .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color())
+            .size()
+            .y;
+        // TextEdit and ComboBox add their vertical padding outside the galley;
+        // interact_size alone can be shorter than a localized input's frame.
+        let padding =
+            f32::from(PROPERTY_INPUT_MARGIN.top) + f32::from(PROPERTY_INPUT_MARGIN.bottom);
+        (text_height + padding.max(ui.spacing().button_padding.y * 2.0))
+            .max(ui.spacing().interact_size.y)
+    };
+    let keys = [
+        Some("design-field-properties"),
+        Some("design-general"),
+        Some("design-required"),
+        Some("design-default-value"),
+        (field.short_text_units().is_some()
+            || field.number_size().is_some()
+            || matches!(
+                field.kind(),
+                DraftFieldType::AutoNumberIncrement | DraftFieldType::LargeInteger
+            ))
+        .then_some("design-field-size"),
+        field.short_text_units().map(|_| "design-allow-zero-length"),
+        field
+            .decimal_constraints()
+            .map(|_| "table-draft-number-precision"),
+        field
+            .decimal_constraints()
+            .map(|_| "table-draft-number-scale"),
+        (DefaultChoice::from_mode(field.default_mode()) == DefaultChoice::Literal)
+            .then_some("table-draft-property-literal-input"),
+    ];
+    let mut height = egui::Frame::side_top_panel(ui.style())
+        .total_margin()
+        .sum()
+        .y;
+    for key in keys.into_iter().flatten() {
+        height += line_height(key) + ui.spacing().item_spacing.y;
+    }
+    height
+}
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
     ui.vertical_centered(|ui| ui.label(tr(ui, "design-field-properties")));
@@ -88,6 +148,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
     let field_id = field.id();
     let kind = field.kind();
     let primary = field.is_primary();
+    let number_size = field.number_size();
     let required = field.required();
     let zero_length = field.allow_zero_length();
     let mode = DefaultChoice::from_mode(field.default_mode());
@@ -110,6 +171,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                     let input = ui.add(
                         egui::TextEdit::singleline(&mut size)
                             .id(id)
+                            .margin(PROPERTY_INPUT_MARGIN)
                             .desired_width(PROPERTY_INPUT_WIDTH),
                     );
                     let label = tr(ui, "design-field-size");
@@ -128,11 +190,11 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         input.on_hover_text(tr(ui, "table-draft-property-invalid-size"));
                     }
                     ui.end_row();
+                } else if let Some(size) = number_size {
+                    number::show(ui, editor, position, size);
                 } else if matches!(
                     kind,
-                    DraftFieldType::AutoNumberIncrement
-                        | DraftFieldType::LongInteger
-                        | DraftFieldType::LargeInteger
+                    DraftFieldType::AutoNumberIncrement | DraftFieldType::LargeInteger
                 ) {
                     ui.label(tr(ui, "design-field-size"));
                     ui.label(tr(
@@ -181,8 +243,17 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                                 DefaultChoice::Null,
                                 DefaultChoice::Literal,
                             ] {
+                                let available = choice != DefaultChoice::Literal
+                                    || number_size != Some(DraftNumberSize::ReplicationId);
                                 if ui
-                                    .selectable_label(mode == choice, tr(ui, choice.key()))
+                                    .add_enabled(
+                                        available,
+                                        egui::Button::selectable(
+                                            mode == choice,
+                                            tr(ui, choice.key()),
+                                        ),
+                                    )
+                                    .on_disabled_hover_text(tr(ui, "ribbon-unavailable"))
                                     .clicked()
                                 {
                                     next_mode = Some(choice);
@@ -198,6 +269,13 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                 });
                 ui.end_row();
                 if mode == DefaultChoice::Literal {
+                    if number_size == Some(DraftNumberSize::ReplicationId) {
+                        ui.colored_label(
+                            ui.visuals().error_fg_color,
+                            tr(ui, "table-draft-number-guid-default"),
+                        );
+                        ui.end_row();
+                    }
                     ui.label(tr(ui, "table-draft-property-literal-input"));
                     let mut literal = editor.properties.literal(position).to_owned();
                     let id = ui.make_persistent_id("literal_default");
@@ -213,6 +291,7 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                         egui::TextEdit::multiline(&mut literal)
                             .desired_rows(1)
                             .id(id)
+                            .margin(PROPERTY_INPUT_MARGIN)
                             .desired_width(PROPERTY_INPUT_WIDTH),
                     );
                     let label = tr(ui, "table-draft-property-literal-input");

@@ -402,3 +402,6 @@ mod design_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod properties_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod numbers_tests;

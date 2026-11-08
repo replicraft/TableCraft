@@ -80,8 +80,9 @@ complete source. Ordinary and recovered Open remain inert until that command.
 With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
 `Command::ReviewFirstTable` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
-Short Text (1–255 UTF-16 units), Long/Large Integer, Currency, Yes/No and legacy
-Date/Time declarations into the native definition. The immutable snapshot also
+Short Text (1–255 UTF-16 units), Number with an explicit Field Size, Large
+Integer, Currency, Yes/No and legacy Date/Time declarations into the native
+definition. The immutable snapshot also
 carries effective capacity, exact optional Required/AllowZeroLength policies and
 an explicit default mode. New ordinary authoring fields start with Required=false;
 Short Text starts with AllowZeroLength=true, following the documented UI defaults.
@@ -101,10 +102,12 @@ exact across ordinary type changes; the protected AutoNumber ID refuses all such
 property changes. The renderer-neutral builder validates bounds, applicability and
 revision changes, without importing core carriers or evaluating expressions.
 
-Runtime lowers `DraftDefaultMode::TypeDefault` to Int32/Int64/Currency zero,
-Boolean false, or an absent Text/DateTime default. `Absent` retains absence;
+Runtime lowers `DraftDefaultMode::TypeDefault` to zero in the selected numeric
+carrier (Decimal at its declared scale), Boolean false, or an absent
+Text/DateTime/GUID default. `Absent` retains absence;
 `Null` retains an actual NULL carrier. `Literal` passes the exact raw text through
-`scalar_input::parse` with the selected type, then native `CreateColumn` validation.
+`scalar_input::parse_declared` with the selected descriptor, then native
+`CreateColumn` validation.
 Text is literal text, integers and Currency use the shared invariant numeric
 syntax, Boolean uses lowercase true/false, and legacy DateTime uses the shared
 explicit civil/bit input profile. No SQL parser, VBA evaluator, clock, field lookup
@@ -120,14 +123,57 @@ that expression limit. Native admission rejects an oversized expression without
 truncation or a journal. Required/AllowZeroLength use exact optional Boolean
 presence, independently from NULL, an empty string and an omitted record field.
 
-Explicit-policy definitions use TCNT0003/profile 3. Existing policy-free
-TCNT0001/profile 1 and default-bearing TCNT0002/profile 2 remain reconstructable
-under their original rules; their decoders do not gain inferred UI properties.
+Wider-target default definitions use TCNT0004/profile 4, including a NULL default
+whose target is Byte, Int16, Single, Double, Decimal or GUID. Otherwise explicit
+policies use TCNT0003/profile 3. Existing policy-free TCNT0001/profile 1 and
+legacy-family default-bearing TCNT0002/profile 2 remain reconstructable under
+their original rules; their decoders do not gain wider default carriers or
+inferred UI properties.
 The saved original intent and rederived native definition carry these properties
 through the existing first-table save and recovery path. Subsequent INSERT still
 uses its actual captured schema, original field presence and consuming review.
 This is working initial-schema authoring, not imported-field alteration, arbitrary
 default evaluation, Windows runtime evidence or native Access qualification.
+
+### Number Field Size lowering
+
+`DraftFieldType::Number` retains `DraftNumberSize` independently from pending row
+text. Byte, Integer, LongInteger, Single, Double, Decimal and ReplicationId map to
+Byte, Int16, Int32, Single, Double, Decimal and Guid carriers respectively. Large
+Number remains Int64; the initial generated ID remains an Int32 Increment primary.
+Number initially selects LongInteger. Decimal constraints begin at precision 18,
+scale 0, bounded by precision 1..=28 and scale 0..=precision. These are explicit
+authoring-profile choices, without importing Access application settings.
+
+`scalar_input::parse_declared` uses exact numeric parsing for a Decimal descriptor,
+then `rescale_exact` and the actual precision/scale validation. It permits
+`1.2`→`1.20` or `1.2300`→`1.23` at scale 2, but rejects `1.234`, coefficient overflow
+or a discarded nonzero digit. First-table defaults, insertion and declared edits
+use that same path. The field's exact stored scale is separate from Decimal
+Places and regional display formatting. A CDec rounding result is not accepted as
+a substitute for the original exact input. The typed native Decimal constructor
+still requires the exact declared scale and precision; it does not perform this
+text-input rescaling itself.
+
+The native default serializer accepts finite Single/Double values through a
+bounded scientific formatter and exact bit reparse, including signed zero.
+Producer and independent default proof preserve IEEE width. Nonfinite defaults
+and generated-row float values refuse rather than acquiring numeric zero. Manual
+GUID cells, NULL and qualified no-default omission are admitted ordinary values;
+non-NULL GUID stored defaults remain unsupported. A Number/ReplicationId choice
+sets no generation flag and supplies neither random GUIDs nor replication.
+
+Original supplied Byte, Int16, Single, Double, Guid or Decimal values use the closed
+TCNA0006/profile 6 omission-preserving intent. Legacy supplied carriers and requests
+with only omitted or NULL wider fields retain TCNA0002/profile 2. The selected
+intent follows the original carrier payload, not a host permission flag or the
+field's display label. Independent reconstruction rereads original source metadata
+and retains all existing source/index/constraint and resource admission gates.
+Normal source support for these wider ordinary values is not a grant for wider
+secondary keys, Random AutoNumber or arbitrary imported schemas. See
+[normal Increment insertion](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+and the [initial Number authoring contract](../ui/DATABASE_CREATION.md#number-field-size-and-decimal-declarations).
+No native Windows/Access or signed-zero comparison is established by these paths.
 
 The consuming `ReviewedFirstTable` retains the original content, exact owned
 native definition and the document's invalidation token. It also exposes an
@@ -513,11 +559,12 @@ an omitted Boolean companion without a default still refuses.
 This resolution happens in the engine, independently in producer binding and
 proof over original metadata. Runtime and UI retain the original Omitted intent
 and hidden raw text; they do not manufacture a supplied NULL or amend a default
-property. TCNA2 retains the same original presence and complete BEFORE binding.
+property. The selected TCNA2/TCNA6 intent retains original presence and the complete
+BEFORE binding.
 Source admission, supported carrier families, ownership/index profiles, Required,
 validation/data-macro eligibility, resource limits and fresh save reconstruction
-remain unchanged. Present-Int32-only multi-index companion restrictions remain
-in force. The non-generated resolver's existing NULL-absence behavior is separate
+remain unchanged. The existing present-Int32 restriction on indexed companions in the multiple-owner
+route remains in force. The non-generated resolver's existing NULL-absence behavior is separate
 and unchanged. See [normal Increment insertion](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 and Microsoft's [omitted-column contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql).
 
@@ -561,8 +608,8 @@ Windows filesystem-journal observation or native Access comparison.
 
 The initial-table route authors checked constant defaults and explicit field
 policies through the property-lowering contract above. Existing policy-free
-TCNT0001/TCNT0002 schemas and absent defaults remain distinct from new TCNT0003
-policy-bearing declarations. Omitted companions use the insertion service's
+TCNT0001/TCNT0002 schemas and absent defaults remain distinct from TCNT0003
+policy-bearing and TCNT0004 wider-default declarations. Omitted companions use the insertion service's
 qualified stored policies and inspected absent-default NULL resolution described
 above; the UI never supplies a guessed record value. New
 Short Text authoring records an explicit AllowZeroLength=true UI default, with

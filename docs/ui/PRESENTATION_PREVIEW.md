@@ -1,5 +1,37 @@
 # Presentation preview
 
+## Number field sizes — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=design-number-size|design-decimal` adds and
+names a Number field, retains raw pending record text `12.5`, then enters Design
+through the actual View menu. Size mode leaves the seven-choice Field Size menu
+open. Decimal mode selects Decimal, sets Precision 6 and Scale 2, and enters the
+literal default `1.25`. Both modes use the existing source-free widget path,
+require `initial-table-draft`, and remain exclusive with other preview interactions.
+They supply no native save capability and never open a database.
+
+Five normal-host frames were rendered and inspected windowlessly on macOS ARM64
+with Windows input emulation. English light size-menu and English dark Decimal
+use 1280×820 pixels at 1×. German light Decimal, Korean dark Decimal and Japanese
+dark size-menu use 900×580 logical points at 1.25× (1125×725 pixels). Files and
+render logs remain under ignored `.cache/ui-previews/initial-numbers-20261107/`.
+The Decimal controls fit above the footer; the Japanese menu contains all seven
+choices. Long explanatory content remains scrollable, and compact translated
+Ribbons retain their horizontal scrolling rather than hiding commands.
+
+The lower pane measures localized control heights, including actual input and
+combo-box padding, while retaining an upper grid with its header, ID, ordinary
+field and Add row. The unchanged compact interaction assertion covers all eight
+languages, both themes and Short Text/Decimal properties. It caught an initial
+Korean literal-control clipping error before the corrected frames were accepted.
+
+The private 1920×1165 Windows/VirtualBox Design image was reopened; its display
+scale is unknown. It establishes the upper grid, separate lower properties and
+right help area. It shows AutoNumber properties, not the Number size menu or
+Decimal controls. Those controls and dark styling remain documented adaptations,
+not verified Access visual or interaction parity. Native save/reopen evidence
+comes from the separate runtime and desktop acceptance tests.
+
 ## Initial field-property authoring — 7 November 2026
 
 `TABLECRAFT_PREVIEW_INITIAL_EDIT=design-properties|design-default` drives the

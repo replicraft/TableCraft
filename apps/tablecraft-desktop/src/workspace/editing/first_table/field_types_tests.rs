@@ -21,7 +21,7 @@ fn gallery_fields_save_with_exact_native_types_and_constant_defaults() {
 
     let fields = [
         ("table-draft-short-text", "TextValue", 10, None),
-        ("table-draft-long-integer", "NumberValue", 4, Some("0")),
+        ("table-draft-number", "NumberValue", 4, Some("0")),
         ("table-draft-yes-no", "Flag", 1, Some("False")),
         ("table-draft-currency", "Amount", 5, Some("0.0000")),
         ("table-draft-large-integer", "LargeValue", 19, Some("0")),

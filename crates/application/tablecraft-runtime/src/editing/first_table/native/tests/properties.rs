@@ -74,11 +74,11 @@ fn exact_capacity_policies_and_default_modes_survive_review_save_and_native_reop
     draft
         .set_field_default(text, DraftDefaultMode::Literal("Now()".into()))
         .unwrap();
-    let absent = draft.add_field(DraftFieldType::LongInteger).unwrap();
+    let absent = draft.add_field(DraftFieldType::Number).unwrap();
     draft
         .set_field_default(absent, DraftDefaultMode::Absent)
         .unwrap();
-    let null = draft.add_field(DraftFieldType::LongInteger).unwrap();
+    let null = draft.add_field(DraftFieldType::Number).unwrap();
     draft.set_field_required(null, Some(false)).unwrap();
     draft
         .set_field_default(null, DraftDefaultMode::Null)
@@ -87,7 +87,7 @@ fn exact_capacity_policies_and_default_modes_survive_review_save_and_native_reop
     draft
         .set_field_default(flag, DraftDefaultMode::Literal("true".into()))
         .unwrap();
-    let number = draft.add_field(DraftFieldType::LongInteger).unwrap();
+    let number = draft.add_field(DraftFieldType::Number).unwrap();
     draft
         .set_field_default(number, DraftDefaultMode::Literal("0042".into()))
         .unwrap();
@@ -133,7 +133,7 @@ fn exact_capacity_policies_and_default_modes_survive_review_save_and_native_reop
 fn invalid_literal_or_native_expression_capacity_refuses_without_a_journal_or_write() {
     let cases = [
         (
-            DraftFieldType::LongInteger,
+            DraftFieldType::Number,
             DraftDefaultMode::Literal("2147483648".into()),
         ),
         (

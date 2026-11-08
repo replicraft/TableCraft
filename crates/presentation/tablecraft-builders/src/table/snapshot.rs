@@ -1,7 +1,10 @@
 //! Immutable, bounded declaration captured at an explicit save request.
 use super::{
-    DraftDefaultMode, DraftFieldId, DraftFieldType, TableDraft, TableDraftError, valid_name,
+    DraftDefaultMode, DraftFieldId, DraftFieldType, DraftNumberSize, TableDraft, TableDraftError,
+    valid_name,
 };
+
+use tablecraft_schema::DecimalConstraints;
 
 #[derive(PartialEq, Eq)]
 pub struct SnapshotField {
@@ -10,6 +13,8 @@ pub struct SnapshotField {
     kind: DraftFieldType,
     primary: bool,
     short_text_units: Option<u16>,
+    number_size: Option<DraftNumberSize>,
+    decimal: Option<DecimalConstraints>,
     required: Option<bool>,
     allow_zero_length: Option<bool>,
     default_mode: DraftDefaultMode,
@@ -34,6 +39,14 @@ impl SnapshotField {
 
     pub fn short_text_units(&self) -> Option<u16> {
         self.short_text_units
+    }
+
+    pub fn number_size(&self) -> Option<DraftNumberSize> {
+        self.number_size
+    }
+
+    pub fn decimal_constraints(&self) -> Option<DecimalConstraints> {
+        self.decimal
     }
 
     pub fn required(&self) -> Option<bool> {
@@ -110,6 +123,8 @@ impl TableDraft {
                 kind: field.kind(),
                 primary: field.is_primary(),
                 short_text_units: field.short_text_units(),
+                number_size: field.number_size(),
+                decimal: field.decimal_constraints(),
                 required: field.required(),
                 allow_zero_length: field.allow_zero_length(),
                 default_mode: field.default_mode().try_copy()?,

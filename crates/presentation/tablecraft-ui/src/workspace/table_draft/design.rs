@@ -28,7 +28,7 @@ const SELECTOR_HALF_HEIGHT: f32 = 4.0;
 
 const TYPES: [(DraftFieldType, &str); 6] = [
     (DraftFieldType::ShortText, "design-type-short-text"),
-    (DraftFieldType::LongInteger, "design-type-number"),
+    (DraftFieldType::Number, "design-type-number"),
     (DraftFieldType::LargeInteger, "design-type-large-number"),
     (DraftFieldType::Currency, "design-type-currency"),
     (DraftFieldType::DateTime, "design-type-date-time"),
@@ -156,7 +156,7 @@ pub(super) fn type_key(kind: DraftFieldType) -> &'static str {
     match kind {
         DraftFieldType::AutoNumberIncrement => "design-type-autonumber",
         DraftFieldType::ShortText => "design-type-short-text",
-        DraftFieldType::LongInteger => "design-type-number",
+        DraftFieldType::Number => "design-type-number",
         DraftFieldType::LargeInteger => "design-type-large-number",
         DraftFieldType::Currency => "design-type-currency",
         DraftFieldType::DateTime => "design-type-date-time",
@@ -202,10 +202,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         });
     let properties_limit =
         (ui.available_height() - MIN_GRID_ROWS * ROW_HEIGHT).max(MIN_PROPERTIES_HEIGHT);
+    let properties_minimum = properties::minimum_height(ui, editor)
+        .max(MIN_PROPERTIES_HEIGHT)
+        .min(properties_limit);
     egui::Panel::bottom(ui.make_persistent_id("draft_design_properties"))
         .resizable(true)
-        .default_size(PROPERTIES_HEIGHT)
-        .min_size(MIN_PROPERTIES_HEIGHT)
+        .default_size(PROPERTIES_HEIGHT.max(properties_minimum))
+        .min_size(properties_minimum)
         .max_size(properties_limit)
         .show(ui, |ui| properties::show(ui, editor));
 

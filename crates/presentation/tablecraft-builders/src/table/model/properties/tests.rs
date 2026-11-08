@@ -22,7 +22,7 @@ fn new_fields_use_access_ui_policies_without_applying_them_to_autonumber() {
     let mut draft = TableDraft::initial();
     for kind in [
         DraftFieldType::ShortText,
-        DraftFieldType::LongInteger,
+        DraftFieldType::Number,
         DraftFieldType::LargeInteger,
         DraftFieldType::YesNo,
         DraftFieldType::Currency,
@@ -140,9 +140,7 @@ fn text_capacity_bounds_and_inapplicable_policies_refuse_without_partial_mutatio
     draft
         .set_field_allow_zero_length(field, Some(true))
         .unwrap();
-    draft
-        .set_field_type(field, DraftFieldType::LongInteger)
-        .unwrap();
+    draft.set_field_type(field, DraftFieldType::Number).unwrap();
     rejects_unchanged(&mut draft, TableDraftError::InvalidProperty, |draft| {
         draft.set_field_text_units(field, 1)
     });

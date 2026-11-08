@@ -1,5 +1,26 @@
 # Implementation status
 
+## Number field-size authoring — 7 November 2026
+
+The initial table's Number declaration now offers Byte, Integer, Long Integer,
+Single, Double, Decimal and Replication ID. Decimal keeps joint Precision/Scale
+validation and exact pending text. Storage input may rescale losslessly but never
+round away digits. Replication ID is ordinary GUID storage, not replication or
+generated GUIDs; non-NULL GUID defaults remain unavailable. Numeric type defaults
+are typed zero, while the GUID default is absent.
+
+Six connected runtime/desktop tests cover all seven native declarations, exact
+row carriers after actual schema/row saves and reopen, omitted defaults versus
+NULL, and invalid Decimal input followed by correction without prior writes.
+Nine focused native codec/default/recovery tests and five clock-envelope tests
+pass. The latter retain TCNA5's nested TCNA2 grammar instead of silently accepting
+the new TCNA6 row dialect. Strict affected-package lint passes. Five offscreen
+normal-host frames were inspected in light/dark and compact translated layouts;
+see [the visual evidence](ui/PRESENTATION_PREVIEW.md#number-field-sizes--7-november-2026).
+This does not establish native Access or Windows/Linux execution. Adding another
+table to an existing database and a faithful fresh Table Design/key-selection
+workflow remain separate unfinished authoring work.
+
 ## Cross-platform audit follow-up — 7 November 2026
 
 Seven explicit engineering fixture exporters now share a testkit directory

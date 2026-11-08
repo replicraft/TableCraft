@@ -69,7 +69,7 @@ No row is stored while editing this buffer.
 | Gallery choice | Initial native declaration | Initial type default |
 | --- | --- | --- |
 | Short Text (255) | Short Text, 255 UTF-16 units | Absent |
-| Number (Long Integer) | Signed 32-bit integer | `0` |
+| Number | Long Integer initially; selectable Field Size below | Typed numeric zero; Replication ID has no default |
 | Large Number | Signed 64-bit integer | `0` |
 | Currency | Fixed-point Currency | `0.0000` |
 | Date & Time | Legacy Date/Time | Absent; no implicit current date/time |
@@ -85,8 +85,8 @@ for fresh proof and recovery. Supplied values take precedence, including explici
 NULL; an unsupported or malformed stored default never falls back to NULL. All
 existing source, carrier, Required and index checks still apply. The initial ID
 keeps Increment generation and its primary key; it has no explicit constant
-default. Other Number sizes, Decimal, Replication ID/GUID and Date/Time Extended
-are not silently substituted.
+default. Number Field Size changes select an explicit carrier rather than
+inferring one from input. Date/Time Extended remains unavailable.
 Long Text, Lookup & Relationship, Rich Text, Attachment, Hyperlink, Calculated
 Field and More Fields remain visible disabled entries with unavailable tooltips.
 
@@ -154,8 +154,9 @@ properties merely from a type's storage representation.
 Number has multiple Field Size choices. Access exposes a configurable
 [default number field size](https://support.microsoft.com/en-us/access/customize-design-settings-for-objects-in-your-database),
 so a generic Number choice alone does not establish one universal numeric subtype.
-TableCraft labels its supported Number choice as Long Integer explicitly;
-it does not import Access application options or offer the other subtypes.
+TableCraft initially selects Long Integer for its Number declaration. The
+selected Field Size can be changed in Design view; this explicit profile does
+not import Access application options.
 The gallery's constant zero/False defaults are explicit declarations. Arbitrary
 Default Value expressions, Required, validation, extra indexing and display
 properties remain separate capabilities. Microsoft's
@@ -255,9 +256,9 @@ persisted conversion semantics through this draft surface.
 
 The editable Design view belongs to the same initial, unsaved table as Datasheet
 view. Ordinary field names and the six supported declaration types can be
-changed there; the initial AutoNumber primary key remains protected. Four field
-properties are editable in the lower General pane: Short Text Field Size,
-Required, Allow Zero Length and Default Value. Description, Caption, validation
+changed there; the initial AutoNumber primary key remains protected. The lower
+General pane edits Field Size, Required, Allow Zero Length and Default Value,
+plus Precision and Scale for a Number field whose size is Decimal. Description, Caption, validation
 rules/messages and Lookup authoring remain unavailable. The pane describes the
 current draft declaration, not an observation of already stored metadata.
 Existing persisted-table Design view remains read only.
@@ -265,9 +266,9 @@ Existing persisted-table Design view remains read only.
 Changing a draft field's type keeps its field identity and all pending record
 input exactly as entered, including Omitted/NULL modes and text hidden by those
 modes. The Type default mode follows the newly selected type; other explicit
-default choices keep their original raw input. Short Text capacity and Allow Zero Length
-retain hidden choices while another type applies, becoming effective again when
-Short Text is restored. None of these edits converts, clears or invents a record
+default choices keep their original raw input. Short Text capacity and Allow
+Zero Length, Number size and Decimal constraints retain their hidden choices
+while another type applies, becoming effective again when their type is restored. None of these edits converts, clears or invents a record
 value. Returning to Datasheet view allows correction. Invalid or noncanonical Yes/No text remains editable as text
 instead of silently appearing as False; an incompatible explicit NULL is retained
 rather than changed to a value. The eventual row review still requires valid
@@ -280,11 +281,59 @@ not introduce native ALTER TABLE, persisted schema conversion, additional field
 types or an alternative record-save path. Pending schema saves and unresolved
 outcomes keep their existing editing guards in both views.
 
+### Number Field Size and Decimal declarations
+
+Number is one authoring type with seven explicit Field Size choices, following
+Microsoft's [Set the field size](https://support.microsoft.com/en-us/access/set-the-field-size)
+and [field-property reference](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties).
+Byte uses an unsigned 8-bit carrier, Integer signed 16-bit, Long Integer signed
+32-bit, Single binary32, Double binary64, Decimal its declared exact precision
+and scale, and Replication ID a stored GUID. Large Number remains a separate
+signed 64-bit declaration. Choosing Replication ID does not enable replication,
+GUID generation or a GUID AutoNumber; ACCDB replication remains unsupported.
+The retained Design image shows Long Integer for the selected AutoNumber ID,
+not an expanded Number selector or Decimal properties. Those controls follow
+the documented workflow rather than a captured-menu match.
+
+The Decimal profile begins at precision 18 and scale 0, following Microsoft's
+[Access SQL data types](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types).
+The [Number/Currency field article](https://support.microsoft.com/en-us/access/create-or-delete-a-number-or-currency-field)
+currently reverses those defaults to precision 0 and scale 18. TableCraft uses
+the SQL reference's consistent 1–28 precision and 0–precision scale contract;
+the conflicting article is not an oracle for its initialization. Native Access
+comparison of this authoring workflow remains pending.
+
+A Decimal input is parsed exactly and rescaled only without changing its numeric
+value. For a scale-2 field, `1.2` becomes `1.20`, and `1.2300` becomes `1.23`;
+`1.234` is refused rather than rounded. The coefficient must also fit the declared
+precision. This applies to typed defaults and the declared input path for record
+insertion/editing. Raw input stays available for correction. The independent
+Decimal Places display property does not set stored scale or round an edit.
+See Microsoft's [number-format contract](https://support.microsoft.com/en-us/access/format-a-number-or-currency-field).
+
+Numeric Type default selects exact zero in the chosen carrier, including Decimal
+zero at its declared scale; Replication ID selects no default. Finite Single and
+Double defaults use bounded scientific spellings with exact bit reparse, retaining
+signed zero. NaN and infinities are refused. Microsoft's
+[expression syntax](https://support.microsoft.com/en-us/access/guide-to-expression-syntax)
+documents signed decimal and E/e scientific values; those grammar rules do not
+establish native float-bit or signed-zero parity. GUID fields accept supplied
+values, NULL and qualified omission, but non-NULL GUID constant defaults remain
+outside the native default-authoring profile. No random or replication provider
+is activated by selecting a Number size.
+
+The [archived Microsoft KB 170117](https://ftp.zx.net.nz/pub/archive/ftp.microsoft.com/MISC/KB/en-us/170/117.HTM)
+documents Access SQL GUID constants using `{guid {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}`.
+That is a historical Microsoft-authored SQL reference, not an ACE 16 stored
+DefaultValue comparison. It does not qualify GUID generation or expand the current
+non-NULL GUID default boundary.
+
 ### Supported field properties
 
 | Property | Current initial-table behavior |
 | --- | --- |
-| Field Size | Short Text accepts 1–255 UTF-16 code units; the initial capacity is 255. Other supported types retain their fixed declared size. |
+| Field Size | Short Text accepts 1–255 UTF-16 code units, initially 255. Number selects Byte, Integer, Long Integer, Single, Double, Decimal or Replication ID, initially Long Integer. |
+| Precision / Scale | Decimal only: precision 1–28 and scale 0–precision, initially 18 / 0. These are stored constraints, separate from display Decimal Places. |
 | Required | No or Yes. New ordinary fields start with explicit No. |
 | Allow Zero Length | Short Text only: Yes or No. New Short Text starts with explicit Yes. |
 | Default Value | Type default, No default, NULL or a typed literal constant. The generated ID has none of these editable properties. |
@@ -304,8 +353,8 @@ while the schema is being edited. Invalid Field Size text stays editable and
 blocks Save until corrected. Native review still checks complete declarations;
 choosing a property value does not bypass type, capacity or insertion constraints.
 
-Type default uses the initial defaults in the gallery table above. No default
-removes that declaration; NULL requests a typed NULL default rather than the
+Type default uses the selected type and Number size's defaults described above.
+No default removes that declaration; NULL requests a typed NULL default rather than the
 text `NULL`. Literal input goes through the runtime's exact scalar-input parser
 for the selected field type. Enter text without wrapping SQL quotes, integers
 or Currency with invariant numeric syntax, lowercase `true`/`false`, or a legacy
@@ -361,13 +410,14 @@ retired artifact; the completion report distinguishes those namespace facts from
 native commitment and does not claim durable Windows deletion. See
 [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
 
-Definitions with explicit Required or Allow Zero Length policies use closed
-`TCNT0003` intents, retaining property presence independently from true/false.
-Ordinary newly authored fields carry the explicit UI policies above and therefore
-use that route. Policy-free default-bearing definitions retain `TCNT0002`;
-policy-free definitions without defaults retain `TCNT0001`. Their existing
-encodings and recovery routes remain distinct, without newly inferred defaults
-or properties during replay. Fresh recovery reconstructs the captured declarations
+Definitions with a default on Byte, Integer, Single, Double, Decimal or GUID
+use closed `TCNT0004` intents, including an explicit NULL default on those target
+families. Otherwise explicit Required or Allow Zero Length policies select
+`TCNT0003`, retaining presence independently from true/false. Policy-free
+legacy-family default-bearing definitions retain `TCNT0002`; policy-free
+definitions without defaults retain `TCNT0001`. These existing encodings and
+recovery routes remain distinct, without newly inferred defaults, properties or
+wider default carriers during replay. Fresh recovery reconstructs the captured declarations
 before qualifying the original and replacement images. No intent permits executing
 an arbitrary default expression.
 

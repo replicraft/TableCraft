@@ -81,7 +81,7 @@ fn window_close_waits_for_explicit_discard_and_cancel_retains_the_draft() {
         harness
             .state_mut()
             .state
-            .add_table_draft_field(DraftFieldType::LongInteger)
+            .add_table_draft_field(DraftFieldType::Number)
     );
     harness
         .input_mut()

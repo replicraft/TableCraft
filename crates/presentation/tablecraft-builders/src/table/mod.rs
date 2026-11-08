@@ -7,7 +7,9 @@
 mod model;
 mod snapshot;
 
-pub use model::{DraftDefaultMode, DraftField, DraftFieldId, DraftFieldType, TableDraft};
+pub use model::{
+    DraftDefaultMode, DraftField, DraftFieldId, DraftFieldType, DraftNumberSize, TableDraft,
+};
 pub use snapshot::{SnapshotField, TableDraftSnapshot};
 
 use thiserror::Error;

@@ -12,6 +12,7 @@ workspace = true
 
 [dependencies]
 tablecraft-builders.workspace = true
+tablecraft-schema.workspace = true
 tablecraft-display.workspace = true
 csv.workspace = true
 fluent-bundle.workspace = true

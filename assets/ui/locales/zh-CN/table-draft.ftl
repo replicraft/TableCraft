@@ -2,7 +2,6 @@
 table-draft-unavailable = 未保存的表已不可用。
 table-draft-new-record = (新建)
 table-draft-short-text = 短文本 (255)
-table-draft-long-integer = 数字 (长整型)
 table-draft-field-name = 字段名称
 table-draft-invalid-name = 请选择有效且唯一的字段名称。
 table-draft-empty-note = 未保存的表。记录值在保存表后经审核并应用之前仍为草稿。
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = 请输入 1 到 255 之间的整数。
 table-draft-property-input-limit = 属性输入超出限制。已保留原来的文本。
 table-draft-property-invalid = 保存前请更正无效的字段属性。
 table-draft-property-help = 仅限常量：文本无需 SQL 引号，数字使用小数点，布尔值使用 true/false，日期和时间使用 ISO 格式。不会计算公式。输入上限为 4096 个 UTF-8 字节；保存的默认值必须在 255 个 UTF-16 单位以内，包括添加和转义的引号。
+
+table-draft-number = 数字
+table-draft-number-byte = 字节
+table-draft-number-integer = 整数
+table-draft-number-single = 单精度
+table-draft-number-double = 双精度
+table-draft-number-decimal = 小数
+table-draft-number-replication-id = 复制 ID
+table-draft-number-precision = 精度
+table-draft-number-scale = 小数位数
+table-draft-number-invalid-decimal = 精度必须为 1–28，小数位数必须为 0 到精度。保存前请更正这两个值。
+table-draft-number-guid-default = 复制 ID 尚不支持字面量默认值。请选择其他模式；已输入的文本会保留。

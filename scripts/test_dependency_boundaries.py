@@ -99,6 +99,11 @@ class BoundaryTests(unittest.TestCase):
         data, _, _ = self.desktop_workspace()
         self.assertEqual(violations(data), [])
 
+    def test_ui_can_consume_validated_schema_constraints_without_backend_services(self):
+        data, ui, _ = self.desktop_workspace()
+        ui["dependencies"].append({"name": "tablecraft-schema"})
+        self.assertEqual(violations(data), [])
+
     def test_headless_builders_are_shared_by_ui_runtime_and_desktop(self):
         data, ui, desktop = self.desktop_workspace()
         builders = package(

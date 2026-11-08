@@ -14,7 +14,7 @@ use tablecraft_builders::table::{DraftFieldType, TableDraft};
 fn prepared() -> (State, InsertTarget, Vec<InsertField>) {
     let mut declaration = TableDraft::initial();
     declaration.add_field(DraftFieldType::ShortText).unwrap();
-    declaration.add_field(DraftFieldType::LongInteger).unwrap();
+    declaration.add_field(DraftFieldType::Number).unwrap();
     let snapshot = declaration.snapshot("Empty table").unwrap();
     let fields = [InputHint::Int32, InputHint::Text, InputHint::Int32]
         .into_iter()

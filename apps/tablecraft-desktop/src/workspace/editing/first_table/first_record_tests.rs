@@ -81,8 +81,7 @@ fn typed_unsaved_record_survives_schema_save_and_requires_its_own_reviewed_commi
 
 #[test]
 fn invalid_row_retains_input_and_the_saved_schema_then_corrects_without_recreating_table() {
-    let (_directory, path, mut harness) =
-        pending_record("table-draft-long-integer", "Score", "oops");
+    let (_directory, path, mut harness) = pending_record("table-draft-number", "Score", "oops");
     save_schema_and_bind_record(&mut harness);
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
@@ -117,7 +116,7 @@ fn invalid_row_retains_input_and_the_saved_schema_then_corrects_without_recreati
 fn removed_initial_field_does_not_shift_surviving_input_across_both_native_saves() {
     let (_directory, path, mut harness) =
         pending_record("table-draft-short-text", "Discard", "remove me");
-    add_named_field(&mut harness, "table-draft-long-integer", "Score");
+    add_named_field(&mut harness, "table-draft-number", "Score");
     let mut arguments = FluentArgs::new();
     arguments.set("field", "Score");
     let score_label = harness

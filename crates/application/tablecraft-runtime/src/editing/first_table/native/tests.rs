@@ -220,7 +220,7 @@ fn common_initial_fields_save_and_reopen_with_native_types_and_explicit_defaults
     let (_directory, path, reader, document_revision) = opened();
     let mut draft = TableDraft::initial();
     for kind in [
-        DraftFieldType::LongInteger,
+        DraftFieldType::Number,
         DraftFieldType::LargeInteger,
         DraftFieldType::YesNo,
         DraftFieldType::Currency,

@@ -57,6 +57,15 @@ apply field formatting or replace Selawik as the default. No Fontique dependency
 is added to shared UI, runtime, query, engine or CLI packages. Cross-platform
 discovery still requires execution on the corresponding platforms.
 
+## Shared numeric field constraints — 7 November 2026
+
+The Number property editor directly consumes the existing local
+`tablecraft-schema::DecimalConstraints` constructor for joint precision/scale
+validation. UI imports this owner directly, while builders own draft settings
+and runtime owns typed input/native lowering. This adds a reviewed UI → schema
+edge without importing native engines, adapters or application services into UI.
+No registry version, shared feature default or third-party notice changes.
+
 ## Headless query builders — 5 November 2026
 
 The local `tablecraft-builders` package shares query-design drafts, bounds and

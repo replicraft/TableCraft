@@ -4,7 +4,7 @@ use crate::workspace::{
 };
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::{Harness, kittest::Queryable};
-use tablecraft_builders::table::{DraftDefaultMode, DraftFieldId, DraftFieldType};
+use tablecraft_builders::table::{DraftDefaultMode, DraftFieldId, DraftFieldType, DraftNumberSize};
 
 fn state() -> (State, DraftFieldId) {
     let mut preview = Preview::new(Scene::InitialTableDraft);
@@ -111,7 +111,7 @@ fn invalid_size_survives_view_tab_and_name_changes_until_explicit_correction() {
         !harness
             .state_mut()
             .0
-            .set_table_draft_field_type(field, DraftFieldType::LongInteger)
+            .set_table_draft_field_type(field, DraftFieldType::Number)
     );
     assert_eq!(
         harness
@@ -331,54 +331,231 @@ fn property_default_heap_is_included_in_initial_record_retention() {
 fn compact_property_controls_remain_accessible_across_all_languages_and_themes() {
     for locale in crate::Locale::ALL {
         for theme in [crate::Theme::Light, crate::Theme::Dark] {
-            let (mut state, field) = state();
-            state
-                .table_draft
-                .as_mut()
-                .unwrap()
-                .draft
-                .set_field_default(field, DraftDefaultMode::Literal("Guest".into()))
-                .unwrap();
-            state.localizer = crate::Localizer::new(locale).unwrap();
-            state.theme = theme;
-            let size = state.localizer.text("design-field-size");
-            let required = state.localizer.text("design-required");
-            let allow_zero_length = state.localizer.text("design-allow-zero-length");
-            let default = state.localizer.text("design-default-value");
-            let literal = state.localizer.text("table-draft-property-literal-input");
-            let general = state.localizer.text("design-general");
-            let footer = state.localizer.text("table-draft-design-input-help");
-            let mut harness = Harness::builder()
-                .with_size(egui::vec2(900.0, 580.0))
-                .build_ui_state(
-                    |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
-                    (state, Vec::new()),
-                );
-            crate::configure(&harness.ctx);
-            harness.run_steps(3);
-            let viewport = egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(900.0, 580.0));
-            let general_rect = harness.get_by_label(&general).rect();
-            let footer_rect = harness.get_by_label(&footer).rect();
-            for node in [
-                harness.get_by_role_and_label(Role::TextInput, &size),
-                harness.get_by_role_and_label(Role::ComboBox, &required),
-                harness.get_by_role_and_label(Role::ComboBox, &allow_zero_length),
-                harness.get_by_role_and_label(Role::ComboBox, &default),
-                harness.get_by_role_and_label(Role::MultilineTextInput, &literal),
-            ] {
-                let rect = node.rect();
-                assert!(
-                    viewport.contains_rect(rect),
-                    "{locale:?} {theme:?}: {:?}",
-                    rect
-                );
-                assert!(
-                    rect.top() >= general_rect.bottom() && rect.bottom() <= footer_rect.top(),
-                    "{locale:?} {theme:?}: control {rect:?} must fit between General \
-                     {general_rect:?} and footer {footer_rect:?}"
-                );
+            for decimal in [false, true] {
+                let (mut state, field) = state();
+                let draft = &mut state.table_draft.as_mut().unwrap().draft;
+                if decimal {
+                    draft.set_field_type(field, DraftFieldType::Number).unwrap();
+                    draft
+                        .set_field_number_size(field, DraftNumberSize::Decimal)
+                        .unwrap();
+                }
+                draft
+                    .set_field_default(field, DraftDefaultMode::Literal("42".into()))
+                    .unwrap();
+                state.localizer = crate::Localizer::new(locale).unwrap();
+                state.theme = theme;
+                let mut controls = vec![
+                    (
+                        if decimal {
+                            Role::ComboBox
+                        } else {
+                            Role::TextInput
+                        },
+                        "design-field-size",
+                    ),
+                    (Role::ComboBox, "design-required"),
+                    (Role::ComboBox, "design-default-value"),
+                    (
+                        Role::MultilineTextInput,
+                        "table-draft-property-literal-input",
+                    ),
+                ];
+                if decimal {
+                    controls.extend([
+                        (Role::TextInput, "table-draft-number-precision"),
+                        (Role::TextInput, "table-draft-number-scale"),
+                    ]);
+                } else {
+                    controls.push((Role::ComboBox, "design-allow-zero-length"));
+                }
+                let controls = controls
+                    .into_iter()
+                    .map(|(role, key)| (role, state.localizer.text(key)))
+                    .collect::<Vec<_>>();
+                let general = state.localizer.text("design-general");
+                let footer = state.localizer.text("table-draft-design-input-help");
+                let mut harness = Harness::builder()
+                    .with_size(egui::vec2(900.0, 580.0))
+                    .build_ui_state(
+                        |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+                        (state, Vec::new()),
+                    );
+                crate::configure(&harness.ctx);
+                harness.run_steps(3);
+                let viewport =
+                    egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(900.0, 580.0));
+                let general_rect = harness.get_by_label(&general).rect();
+                let footer_rect = harness.get_by_label(&footer).rect();
+                for (role, label) in &controls {
+                    let rect = harness.get_by_role_and_label(*role, label).rect();
+                    assert!(
+                        viewport.contains_rect(rect),
+                        "{locale:?} {theme:?} decimal={decimal}: {rect:?}"
+                    );
+                    assert!(
+                        rect.top() >= general_rect.bottom() && rect.bottom() <= footer_rect.top(),
+                        "{locale:?} {theme:?} decimal={decimal}: control {rect:?} must fit between General {general_rect:?} and footer {footer_rect:?}"
+                    );
+                }
+                assert!(harness.state().1.is_empty());
             }
-            assert!(harness.state().1.is_empty());
         }
     }
+}
+
+#[test]
+fn number_sizes_and_joint_decimal_text_update_only_the_unsaved_declaration() {
+    let (mut state, field) = state();
+    assert!(state.set_table_draft_field_type(field, DraftFieldType::Number));
+    assert!(state.table_draft.as_mut().unwrap().record.set_input(
+        field,
+        InsertInput::Value(EditInput {
+            text: "0007 Ω unchanged".into(),
+            is_null: false,
+        })
+    ));
+    assert!(
+        state
+            .table_draft
+            .as_mut()
+            .unwrap()
+            .record
+            .set_input(field, InsertInput::Omitted)
+    );
+    let mut harness = harness(state);
+    for (label, expected) in [
+        ("Byte", DraftNumberSize::Byte),
+        ("Integer", DraftNumberSize::Integer),
+        ("Long Integer", DraftNumberSize::LongInteger),
+        ("Single", DraftNumberSize::Single),
+        ("Double", DraftNumberSize::Double),
+        ("Replication ID", DraftNumberSize::ReplicationId),
+        ("Decimal", DraftNumberSize::Decimal),
+    ] {
+        choose(&mut harness, "Field Size", label);
+        assert_eq!(
+            harness
+                .state()
+                .0
+                .table_draft
+                .as_ref()
+                .unwrap()
+                .draft
+                .fields()[1]
+                .number_size(),
+            Some(expected)
+        );
+        let editor = harness.state().0.table_draft.as_ref().unwrap();
+        let snapshot = editor.draft.snapshot("Numbers").unwrap();
+        assert_eq!(
+            editor.record.raw_texts(&snapshot).unwrap()[1],
+            "0007 Ω unchanged"
+        );
+        assert!(matches!(
+            editor.record.inputs(&snapshot).unwrap()[1],
+            InsertInput::Omitted
+        ));
+    }
+    replace(&mut harness, Role::TextInput, "Scale", "007");
+    replace(&mut harness, Role::TextInput, "Precision", "3");
+    assert!(!harness.state_mut().0.request_table_draft_save());
+    assert!(
+        !harness
+            .state_mut()
+            .0
+            .set_table_draft_field_type(field, DraftFieldType::ShortText)
+    );
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Precision")
+            .value()
+            .as_deref(),
+        Some("3")
+    );
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Scale")
+            .value()
+            .as_deref(),
+        Some("007")
+    );
+    assert!(harness.state_mut().0.show_table_draft_datasheet());
+    harness.run_steps(2);
+    assert!(harness.state_mut().0.show_table_draft_design());
+    harness.run_steps(2);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Precision")
+            .value()
+            .as_deref(),
+        Some("3")
+    );
+    replace(&mut harness, Role::TextInput, "Precision", "0012");
+    let constraints = harness
+        .state()
+        .0
+        .table_draft
+        .as_ref()
+        .unwrap()
+        .draft
+        .fields()[1]
+        .decimal_constraints()
+        .unwrap();
+    assert_eq!((constraints.precision(), constraints.scale()), (12, 7));
+    assert!(
+        !harness
+            .state()
+            .0
+            .table_draft
+            .as_ref()
+            .unwrap()
+            .properties
+            .rejected()
+    );
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn replication_id_size_preserves_literal_but_blocks_save_until_default_mode_is_corrected() {
+    let (mut state, field) = state();
+    assert!(state.set_table_draft_field_type(field, DraftFieldType::Number));
+    let mut harness = harness(state);
+    choose(&mut harness, "Default Value", "Literal");
+    replace(
+        &mut harness,
+        Role::MultilineTextInput,
+        "Literal default",
+        "kept literal",
+    );
+    choose(&mut harness, "Field Size", "Replication ID");
+    assert!(!harness.state_mut().0.request_table_draft_save());
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::MultilineTextInput, "Literal default")
+            .value()
+            .as_deref(),
+        Some("kept literal")
+    );
+    choose(&mut harness, "Default Value", "No default");
+    assert!(
+        !harness
+            .state()
+            .0
+            .table_draft
+            .as_ref()
+            .unwrap()
+            .properties
+            .rejected()
+    );
+    choose(&mut harness, "Field Size", "Long Integer");
+    choose(&mut harness, "Default Value", "Literal");
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::MultilineTextInput, "Literal default")
+            .value()
+            .as_deref(),
+        Some("kept literal")
+    );
+    assert!(harness.state().1.is_empty());
 }

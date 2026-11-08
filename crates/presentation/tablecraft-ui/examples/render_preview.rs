@@ -1,4 +1,6 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
+#[path = "render_preview/initial_numbers.rs"]
+mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
 mod initial_properties;
 
@@ -78,9 +80,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         "design-type" => "-initial-design-type",
         "design-properties" => "-initial-design-properties",
         "design-default" => "-initial-design-default",
+        "design-number-size" => "-initial-design-number-size",
+        "design-decimal" => "-initial-design-decimal",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties or design-default",
+                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties, design-default, design-number-size or design-decimal",
             )
             .into());
         }
@@ -238,8 +242,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
     let localizer = harness.state().state().localizer.clone();
     let boolean = matches!(mode, "boolean" | "boolean-omitted");
+    let number = matches!(mode, "design-number-size" | "design-decimal");
     let field = if boolean {
         INITIAL_BOOLEAN_FIELD
+    } else if number {
+        initial_numbers::FIELD_NAME
     } else {
         INITIAL_FIELD_NAME
     };
@@ -250,6 +257,8 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     let field_type = localizer.text(if boolean {
         "table-draft-yes-no"
+    } else if number {
+        "table-draft-number"
     } else {
         "table-draft-short-text"
     });
@@ -282,7 +291,11 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
             harness.run_steps(LAYOUT_SETTLE_STEPS);
             harness
                 .get_by_role_and_label(egui::accesskit::Role::TextInput, &row_name)
-                .type_text(INITIAL_RECORD_TEXT);
+                .type_text(if number {
+                    initial_numbers::RECORD_TEXT
+                } else {
+                    INITIAL_RECORD_TEXT
+                });
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }
     }
@@ -303,7 +316,12 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
     }
     if matches!(
         mode,
-        "design" | "design-type" | "design-properties" | "design-default"
+        "design"
+            | "design-type"
+            | "design-properties"
+            | "design-default"
+            | "design-number-size"
+            | "design-decimal"
     ) {
         harness
             .get_by_role_and_label(egui::accesskit::Role::Tab, &localizer.text("ribbon-home"))
@@ -338,6 +356,9 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
         }
         if matches!(mode, "design-properties" | "design-default") {
             initial_properties::edit(harness, mode == "design-default");
+        }
+        if number {
+            initial_numbers::edit(harness, mode == "design-number-size");
         }
     }
 }

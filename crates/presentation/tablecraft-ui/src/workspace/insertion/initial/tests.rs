@@ -15,7 +15,7 @@ fn fixture() -> (State, InitialRecord) {
     let mut draft = TableDraft::initial();
     for kind in [
         DraftFieldType::ShortText,
-        DraftFieldType::LongInteger,
+        DraftFieldType::Number,
         DraftFieldType::LargeInteger,
         DraftFieldType::YesNo,
         DraftFieldType::Currency,
@@ -209,4 +209,40 @@ fn omitted_hidden_text_survives_schema_handoff_and_returns_when_value_mode_is_se
     );
     assert!(harness.state().1.is_empty());
     assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
+}
+
+#[test]
+fn number_size_handoff_requires_its_exact_native_input_hint_without_changing_raw_input() {
+    for (size, expected) in [
+        (DraftNumberSize::Byte, InputHint::Byte),
+        (DraftNumberSize::Integer, InputHint::Int16),
+        (DraftNumberSize::LongInteger, InputHint::Int32),
+        (DraftNumberSize::Single, InputHint::Single),
+        (DraftNumberSize::Double, InputHint::Double),
+        (DraftNumberSize::Decimal, InputHint::Decimal),
+        (DraftNumberSize::ReplicationId, InputHint::Guid),
+    ] {
+        let (mut state, mut record) = fixture();
+        let mut draft = TableDraft::initial();
+        for source in &record.snapshot.fields()[1..] {
+            draft.add_field(source.kind()).unwrap();
+        }
+        let field = draft.fields()[2].id();
+        draft.set_field_number_size(field, size).unwrap();
+        record.snapshot = draft.snapshot("Empty table").unwrap();
+        record.raw_text[2] = "0007 raw unchanged".into();
+        if let Some(Dialog::Draft { draft, .. }) = &mut state.insertion {
+            draft.fields[2].input_hint = InputHint::BinaryHex;
+        }
+        assert!(!state.seed_initial_insert(20, &record));
+        if let Some(Dialog::Draft { draft, .. }) = &mut state.insertion {
+            draft.fields[2].input_hint = expected;
+        }
+        assert!(state.seed_initial_insert(20, &record));
+        assert!(matches!(entries(&state)[2], InsertInput::Omitted));
+        let Some(Dialog::Draft { entries, .. }) = &state.insertion else {
+            panic!("expected retained number input");
+        };
+        assert_eq!(entries[2].text, "0007 raw unchanged");
+    }
 }

@@ -1,6 +1,6 @@
 mod properties;
 
-pub use properties::DraftDefaultMode;
+pub use properties::{DraftDefaultMode, DraftNumberSize};
 
 use super::{MAX_DRAFT_FIELDS, TableDraftError, valid_name};
 use properties::FieldProperties;
@@ -12,7 +12,7 @@ pub struct DraftFieldId(u64);
 pub enum DraftFieldType {
     AutoNumberIncrement,
     ShortText,
-    LongInteger,
+    Number,
     LargeInteger,
     YesNo,
     Currency,
@@ -170,7 +170,7 @@ impl TableDraft {
         match kind {
             DraftFieldType::AutoNumberIncrement => return Err(TableDraftError::ProtectedField),
             DraftFieldType::ShortText
-            | DraftFieldType::LongInteger
+            | DraftFieldType::Number
             | DraftFieldType::LargeInteger
             | DraftFieldType::YesNo
             | DraftFieldType::Currency

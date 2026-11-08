@@ -36,7 +36,7 @@ pub(super) fn edit(harness: &mut Harness<'_, Preview>, leave_default_menu_open: 
     }
 }
 
-fn replace(harness: &mut Harness<'_, Preview>, role: Role, key: &str, value: &str) {
+pub(super) fn replace(harness: &mut Harness<'_, Preview>, role: Role, key: &str, value: &str) {
     let label = harness.state().state().localizer.text(key);
     harness.get_by_role_and_label(role, &label).focus();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
@@ -45,7 +45,7 @@ fn replace(harness: &mut Harness<'_, Preview>, role: Role, key: &str, value: &st
     harness.run_steps(LAYOUT_SETTLE_STEPS);
 }
 
-fn choose(harness: &mut Harness<'_, Preview>, label: &str, choice: &str) {
+pub(super) fn choose(harness: &mut Harness<'_, Preview>, label: &str, choice: &str) {
     let localizer = harness.state().state().localizer.clone();
     harness
         .get_by_role_and_label(Role::ComboBox, &localizer.text(label))

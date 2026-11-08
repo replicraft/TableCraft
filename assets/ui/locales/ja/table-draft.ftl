@@ -2,7 +2,6 @@
 table-draft-unavailable = 未保存のテーブルは使用できなくなりました。
 table-draft-new-record = (新規)
 table-draft-short-text = 短いテキスト (255)
-table-draft-long-integer = 数値 (長整数型)
 table-draft-field-name = フィールド名
 table-draft-invalid-name = 有効で一意のフィールド名を指定してください。
 table-draft-empty-note = 未保存のテーブルです。レコードの値は、テーブルの保存後に確認して適用するまで下書きのままです。
@@ -76,3 +75,15 @@ table-draft-property-invalid-size = 1 から 255 までの整数を入力して�
 table-draft-property-input-limit = プロパティの入力が上限を超えています。元のテキストは保持されます。
 table-draft-property-invalid = 保存する前に、無効なフィールドプロパティを修正してください。
 table-draft-property-help = 定数のみです。テキストは SQL の引用符なしで、数値は小数点にピリオドを使い、真偽値は true/false、日時は ISO 形式で入力します。数式は評価しません。入力は UTF-8 で4096バイト以内、保存する既定値は追加・エスケープされる引用符も含めて UTF-16 で255単位以内です。
+
+table-draft-number = 数値
+table-draft-number-byte = バイト型
+table-draft-number-integer = 整数型
+table-draft-number-single = 単精度浮動小数点型
+table-draft-number-double = 倍精度浮動小数点型
+table-draft-number-decimal = 十進型
+table-draft-number-replication-id = レプリケーション ID
+table-draft-number-precision = 精度
+table-draft-number-scale = 小数点以下桁数
+table-draft-number-invalid-decimal = 精度は 1～28、小数点以下桁数は 0～精度の範囲で指定します。保存する前に両方の値を修正してください。
+table-draft-number-guid-default = レプリケーション ID のリテラル既定値はまだ利用できません。別のモードを選択してください。入力したテキストは保持されます。

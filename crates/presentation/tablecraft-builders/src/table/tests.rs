@@ -22,7 +22,7 @@ fn initial_autonumber_is_semantic_pristine_and_protected() {
 fn field_identity_survives_rename_and_failed_mutations_are_atomic() {
     let mut draft = TableDraft::initial();
     let first = draft.add_field(DraftFieldType::ShortText).unwrap();
-    let second = draft.add_field(DraftFieldType::LongInteger).unwrap();
+    let second = draft.add_field(DraftFieldType::Number).unwrap();
     assert_ne!(first, second);
     draft.rename_field(first, "Customer").unwrap();
     assert_eq!(draft.fields()[1].id(), first);
@@ -47,7 +47,7 @@ fn authoring_ceiling_refuses_without_changing_the_last_admitted_revision() {
     }
     assert_eq!(draft.fields().len(), 16);
     assert_eq!(
-        draft.add_field(DraftFieldType::LongInteger),
+        draft.add_field(DraftFieldType::Number),
         Err(TableDraftError::Limit)
     );
     assert_eq!(draft.revision(), 15);
@@ -97,7 +97,7 @@ fn save_names_bound_utf16_and_refuse_invalid_whole_input() {
 #[test]
 fn scalar_gallery_fields_retain_their_exact_kinds_in_the_saved_snapshot() {
     let kinds = [
-        DraftFieldType::LongInteger,
+        DraftFieldType::Number,
         DraftFieldType::LargeInteger,
         DraftFieldType::YesNo,
         DraftFieldType::Currency,
@@ -225,7 +225,7 @@ fn field_type_changes_preserve_identity_name_order_and_owned_snapshot() {
     let original = draft.snapshot("Items").unwrap();
 
     for kind in [
-        DraftFieldType::LongInteger,
+        DraftFieldType::Number,
         DraftFieldType::LargeInteger,
         DraftFieldType::YesNo,
         DraftFieldType::Currency,

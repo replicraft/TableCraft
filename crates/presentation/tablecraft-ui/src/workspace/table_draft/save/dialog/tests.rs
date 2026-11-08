@@ -66,7 +66,7 @@ fn issued_save_binds_owned_declaration_and_each_retry_has_a_fresh_identity() {
     assert_eq!(request.snapshot.fields().len(), 2);
     assert!(state.begin_table_draft_save(&request));
     assert!(!state.begin_table_draft_save(&request));
-    assert!(!state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(!state.add_table_draft_field(DraftFieldType::Number));
     assert!(!state.fail_table_draft_save(request.id + 1, "stale".into()));
     assert!(state.fail_table_draft_save(request.id, "No write occurred".into()));
     assert!(state.has_modified_table_drafts());
@@ -212,7 +212,7 @@ fn command_save_only_opens_the_naming_dialog_with_an_admitted_host_capability() 
 #[test]
 fn individual_close_save_only_closes_after_actual_reopen_metadata_arrives() {
     let mut state = state();
-    assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(state.add_table_draft_field(DraftFieldType::Number));
     let tab = state.active_object().unwrap();
     assert!(!state.close_object(&tab));
     let intent = state.table_draft_close.take().unwrap();
@@ -340,7 +340,7 @@ fn retained_recovery_controls_keep_owner_until_ack_and_never_enable_retry_after_
         !harness
             .state_mut()
             .0
-            .add_table_draft_field(DraftFieldType::LongInteger)
+            .add_table_draft_field(DraftFieldType::Number)
     );
     assert!(
         harness
@@ -376,7 +376,7 @@ fn substituted_declaration_or_target_cannot_consume_the_original_issued_request(
     assert!(!state.busy);
     assert!(state.table_draft_save.as_ref().unwrap().phase == Phase::Issued);
     let mut other = TableDraft::initial();
-    other.add_field(DraftFieldType::LongInteger).unwrap();
+    other.add_field(DraftFieldType::Number).unwrap();
     let wrong_type = TableSaveRequest {
         id: request.id,
         record_revision: request.record_revision,

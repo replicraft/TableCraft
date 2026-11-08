@@ -13,7 +13,7 @@ fn harness() -> Harness<'static, (State, Vec<Action>)> {
     let mut preview = Preview::new(Scene::InitialTableDraft);
     let mut state = std::mem::take(preview.state_mut());
     state.table_save_available = true;
-    for kind in [DraftFieldType::ShortText, DraftFieldType::LongInteger] {
+    for kind in [DraftFieldType::ShortText, DraftFieldType::Number] {
         assert!(state.add_table_draft_field(kind));
         assert!(state.table_draft.as_mut().unwrap().commit_rename());
     }

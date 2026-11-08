@@ -29,7 +29,7 @@ fn declaration_sync_keeps_generated_omitted_and_preserves_field_identity_across_
         row.inputs(&table.snapshot("Items").unwrap()).unwrap(),
         [InsertInput::Omitted, value("Ada")]
     );
-    table.add_field(DraftFieldType::LongInteger).unwrap();
+    table.add_field(DraftFieldType::Number).unwrap();
     assert!(row.synchronize(&table));
     assert_eq!(
         row.inputs(&table.snapshot("Items").unwrap()).unwrap(),
@@ -93,7 +93,7 @@ fn oversized_input_revision_exhaustion_and_stale_schema_refuse_without_partial_c
     assert!(!row.has_rejected_input());
     assert_eq!(row.revision(), revision + 2);
     let mut different = TableDraft::initial();
-    different.add_field(DraftFieldType::LongInteger).unwrap();
+    different.add_field(DraftFieldType::Number).unwrap();
     assert!(row.inputs(&different.snapshot("Items").unwrap()).is_none());
     assert!(
         row.raw_texts(&different.snapshot("Items").unwrap())
@@ -388,7 +388,7 @@ fn noncanonical_boolean_text_stays_editable_until_explicitly_corrected() {
 fn field_removal_preflight_keeps_input_and_refuses_exhausted_revision() {
     let mut table = TableDraft::initial();
     let removed = table.add_field(DraftFieldType::ShortText).unwrap();
-    let kept = table.add_field(DraftFieldType::LongInteger).unwrap();
+    let kept = table.add_field(DraftFieldType::Number).unwrap();
     let mut row = RowDraft::new();
     assert!(row.synchronize(&table));
     assert!(row.set_input(removed, value("hidden retained text")));
@@ -422,7 +422,7 @@ fn declaration_type_changes_keep_raw_modes_and_allocation_instead_of_resetting_i
         }
         let allocation = row.entries[1].text.as_ptr();
         for kind in [
-            DraftFieldType::LongInteger,
+            DraftFieldType::Number,
             DraftFieldType::YesNo,
             DraftFieldType::Currency,
         ] {

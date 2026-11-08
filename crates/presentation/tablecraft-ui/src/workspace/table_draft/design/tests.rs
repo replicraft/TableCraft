@@ -111,7 +111,7 @@ fn design_name_and_type_editors_retain_identity_and_raw_record_input() {
     harness.run_steps(2);
     let editor = harness.state().0.table_draft.as_ref().unwrap();
     assert_eq!(editor.draft.fields()[1].id(), field);
-    assert_eq!(editor.draft.fields()[1].kind(), DraftFieldType::LongInteger);
+    assert_eq!(editor.draft.fields()[1].kind(), DraftFieldType::Number);
     let snapshot = editor.draft.snapshot("Items").unwrap();
     assert_eq!(editor.record.raw_texts(&snapshot).unwrap()[1], "0042");
     assert!(harness.state_mut().0.show_table_draft_datasheet());
@@ -238,11 +238,11 @@ fn protected_id_and_pending_confirmation_or_save_refuse_type_and_view_changes() 
     assert!(!state.set_table_draft_field_type(field, DraftFieldType::AutoNumberIncrement));
     assert!(state.request_table_draft_field_delete(field));
     assert!(!state.show_table_draft_design());
-    assert!(!state.set_table_draft_field_type(field, DraftFieldType::LongInteger));
+    assert!(!state.set_table_draft_field_type(field, DraftFieldType::Number));
     assert!(state.cancel_table_draft_field_delete());
     assert!(state.request_table_draft_save());
     assert!(!state.show_table_draft_design());
-    assert!(!state.set_table_draft_field_type(field, DraftFieldType::LongInteger));
+    assert!(!state.set_table_draft_field_type(field, DraftFieldType::Number));
 }
 
 #[test]
@@ -330,7 +330,7 @@ fn refused_type_request_cannot_commit_a_pending_name_or_change_input_revision() 
 #[test]
 fn another_name_cell_cannot_replace_an_invalid_pending_name_or_its_record_input() {
     let (mut state, first) = state();
-    assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(state.add_table_draft_field(DraftFieldType::Number));
     assert!(state.table_draft.as_mut().unwrap().commit_rename());
     assert!(state.table_draft.as_mut().unwrap().record.set_input(
         first,

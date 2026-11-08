@@ -139,7 +139,7 @@ fn named_field_input_rejects_oversized_replacement_without_renaming_a_prefix() {
 fn parked_draft_stays_modified_and_layout_cannot_replace_it() {
     let mut state = state();
     assert!(state.open_initial_table_draft());
-    assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(state.add_table_draft_field(DraftFieldType::Number));
     let draft = state.active_object().unwrap();
     let sql = ObjectTarget {
         document_revision: 71,
@@ -161,7 +161,7 @@ fn parked_draft_stays_modified_and_layout_cannot_replace_it() {
 fn existing_individual_close_does_not_accept_a_global_deferred_transition() {
     let mut state = state();
     assert!(state.open_initial_table_draft());
-    assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(state.add_table_draft_field(DraftFieldType::Number));
     let draft = state.active_object().unwrap();
     assert!(!state.close_object(&draft));
     assert!(!state.request_table_draft_discard());
@@ -181,7 +181,7 @@ fn stale_discard_approval_cannot_close_a_newer_draft_revision() {
         state.table_draft_record_revision_for(&tab).unwrap(),
         state.table_draft_property_revision_for(&tab).unwrap(),
     ));
-    assert!(state.add_table_draft_field(DraftFieldType::LongInteger));
+    assert!(state.add_table_draft_field(DraftFieldType::Number));
     assert!(!state.close_object(&tab));
     assert_eq!(state.table_draft_revision(), Some(2));
     assert!(state.table_draft_discard_approved.is_none());
