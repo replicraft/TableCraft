@@ -1,5 +1,61 @@
 # Presentation preview
 
+## Saved-query SQL editor and close states — 8 November 2026
+
+The existing offscreen renderer now accepts `TABLECRAFT_PREVIEW_SAVED_SQL` with
+`TABLECRAFT_PREVIEW_SCENE=saved-query`. These scenarios seed source-free SQL and
+an example-only host availability fact; they open no database, issue no native
+capability and perform no save. `TABLECRAFT_PREVIEW_HOST=normal` selects normal
+presentation gates while retaining the resource-free synthetic host.
+
+```sh
+TABLECRAFT_PREVIEW_HOST=normal TABLECRAFT_PREVIEW_SCENE=saved-query \
+TABLECRAFT_PREVIEW_SAVED_SQL=dirty TABLECRAFT_PREVIEW_LOCALE=en-US \
+TABLECRAFT_PREVIEW_THEME=light TABLECRAFT_PREVIEW_WIDTH=1280 \
+TABLECRAFT_PREVIEW_HEIGHT=820 TABLECRAFT_PREVIEW_SCALE=1 \
+TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/saved-query-sql \
+cargo run -p tablecraft-ui --example render_preview
+```
+
+The default `none` leaves the ordinary scene unchanged. `editor` shows the clean
+editable definition; `dirty` shows exact proposed SQL and its unsaved notice;
+`read-only` shows the original SQL with editing disabled. `close` shows the dirty
+query's Save/Discard/Cancel confirmation. `close-unavailable` disables Save while
+retaining Discard/Cancel; `close-stale` disables both Save and Discard while
+retaining Cancel. Non-`none` modes require the single saved-query scene and cannot
+be combined with another renderer interaction workflow. Output adds `-sql-MODE`
+to the existing locale/theme/scene filename, before an optional scale suffix.
+
+Seven final frames were rendered and visually reviewed on macOS 14.7.2 ARM64
+through egui_kittest/wgpu with Windows input emulation. The graphics-adapter
+identity was not captured. Dimensions below are logical points:
+
+| Mode | Locale/theme | Size | Scale |
+| --- | --- | --- | --- |
+| dirty | en-US/light | 1280 × 820 | 1× |
+| close | en-US/light | 1280 × 820 | 1× |
+| dirty | de/dark | 900 × 580 | 1.25× |
+| close | de/dark | 900 × 580 | 1.25× |
+| read-only | ja/light | 1100 × 720 | 1× |
+| close-unavailable | ru/dark | 900 × 580 | 1.25× |
+| close-stale | en-US/dark | 900 × 580 | 1.25× |
+
+The renderer checks exact SQL, edit eligibility, dirty state, modal button
+availability and complete painting of its labels inside the modal/viewport.
+Final captures include the corrected common left inset for the editor and empty
+results notice. The [combined evidence record](../testing/results/saved-sql-options-workflows-2026-11-08.json)
+separates these offscreen observations from the headless service/workflow gates;
+private PNGs remain in ignored local cache.
+
+The retained Windows Access Home capture was reopened for chrome comparison:
+1920 × 1141 pixels inside VirtualBox, with unknown display scale. It informs the
+full Ribbon, navigation and object-tab composition. As recorded in
+[visual references](VISUAL_REFERENCES.md#sql-workspace-qualification--6-november-2026),
+there is no corresponding Access SQL-editor, results or saved-query close capture.
+The editor, unsaved notice and close confirmation remain TableCraft adaptations.
+These frames establish neither native Access save interaction nor pixel parity;
+no native app windows were opened.
+
 ## Persisted table naming — 8 November 2026
 
 The [restricted rename workflow](../access/writes/TABLE_RENAME.md) has three

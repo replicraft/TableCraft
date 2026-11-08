@@ -1,5 +1,29 @@
 # Implementation status
 
+## Saved SQL presentation and explicit database options — 8 November 2026
+
+The desktop now inspects qualified saved SQL through runtime without executing
+it. Shared UI retains exact object-owned drafts, including parked tabs, and
+binds close decisions and review callbacks to the actual text revision. QAT and
+keyboard Save capture text after the current frame's editor changes. Dirty SQL
+disables the saved query's Run command; deferred Open/Create/window-close
+transitions preserve drafts until explicit confirmation. Production SQL editing
+remains disabled while its consuming save/recovery/reopen controller is connected.
+
+The explicit runtime Name AutoCorrect OFF service now owns review, save and
+full-image guarded reopen. Native metadata distinguishes an absent declaration,
+explicit OFF and other stored values without guessing an enabled default. The
+desktop has not enabled this option's UI.
+
+The [focused workflow record](testing/results/saved-sql-options-workflows-2026-11-08.json)
+records 105 passing tests across native metadata, runtime options/reopen services,
+saved-query presentation, object sessions and headless desktop workflows. Strict
+affected-library/desktop lint passes after correcting session allocation and
+error-pattern findings. Initial compile, UI-test and lint failures remain
+separate from passing corrected gates. These are macOS/headless checks, not
+Microsoft Access or Windows execution, general QueryDef CRUD, or full native
+compatibility qualification.
+
 ## Adaptive encryption and persisted rename — 8 November 2026
 
 Native encryption copies now stream adaptive batches for every implemented

@@ -20,8 +20,10 @@ Unrelated mutations are blocked while saved SQL is dirty because the current
 workspace preference restore does not retain those drafts across a source change.
 
 The saved SQL editor and its close prompt are visual adaptations: no retained
-Access capture exists for those surfaces. Headless checks for this connected
-slice are pending; earlier saved-query read/execution checks remain separate.
+Access capture exists for those surfaces. The
+[focused workflow checks](../testing/results/saved-sql-options-workflows-2026-11-08.json)
+pass, including stale replies, exact close decisions, frame-ordered Save and
+deferred Open/Cancel. Earlier saved-query read/execution checks remain separate.
 
 ## Inline new-record draft — 7 November 2026
 
