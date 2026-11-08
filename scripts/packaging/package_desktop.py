@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Portable desktop archives; no installation, association registration or GUI launch.
 
-Callers must supply a reviewed complete desktop notice bundle, and a real ICNS
-for macOS. These checks establish archive integrity, not license completeness,
+Notices are generated from locked Cargo sources and maintained reviewed policy
+unless a reviewed bundle is supplied explicitly. macOS requires a real ICNS.
+These checks establish archive integrity, not license completeness,
 interactive compatibility, signing or native file-open event support.
 """
 import argparse
@@ -22,6 +23,7 @@ import zipfile
 import zlib
 
 import release_contract as contract
+import desktop_notices
 from file_associations import APPLICATION_ID
 
 MANIFEST = "RELEASE.json"
@@ -413,7 +415,7 @@ def main():
         command = commands.add_parser(name)
         command.add_argument("--version", required=True)
         command.add_argument("--target", choices=contract.TARGETS, required=True)
-        command.add_argument("--notices", type=Path, required=True)
+        command.add_argument("--notices", type=Path, help="Explicit reviewed bundle; default: generate from locked sources")
         command.add_argument("--icon", type=Path)
         if name == "package":
             command.add_argument("--binary", type=Path, required=True)
@@ -423,12 +425,13 @@ def main():
             command.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     try:
-        if args.command == "package":
-            print(package(args.version, args.target, args.binary, args.notices, args.output, args.icon))
-        else:
-            verify_archive(args.archive, args.version, args.target, args.notices, args.icon, args.smoke)
+        with desktop_notices.bundle(args.notices) as notices:
+            if args.command == "package":
+                print(package(args.version, args.target, args.binary, notices, args.output, args.icon))
+            else:
+                verify_archive(args.archive, args.version, args.target, notices, args.icon, args.smoke)
     except (
-        OSError, ValueError, subprocess.SubprocessError, zipfile.BadZipFile,
+        OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, zipfile.BadZipFile,
         tarfile.TarError, zlib.error,
     ) as error:
         parser.exit(1, f"Desktop packaging failed: {error}\n")

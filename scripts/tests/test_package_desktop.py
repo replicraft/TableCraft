@@ -66,6 +66,32 @@ class DesktopPackagingTests(unittest.TestCase):
             for entry, content in transform(entries):
                 stream.writestr(entry, content)
 
+    def test_packaging_command_generates_notices_before_creating_archive(self):
+        target = "x86_64-pc-windows-msvc"
+        binary = self.root / "desktop.exe"
+        binary.write_bytes(native_binary(target))
+        arguments = [
+            "package_desktop.py", "package", "--version", VERSION,
+            "--target", target, "--binary", str(binary),
+            "--output", str(self.root / "dist"),
+        ]
+        generated = b"Generated exact dependency notices.\n"
+        with patch.object(sys, "argv", arguments):
+            with patch.object(desktop.desktop_notices, "generate", return_value=({}, {}, generated)) as generate:
+                desktop.main()
+        generate.assert_called_once()
+        archive = self.root / "dist" / desktop.archive_name(VERSION, target)
+        with zipfile.ZipFile(archive) as stream:
+            self.assertEqual(stream.read(desktop.NOTICES), generated)
+
+        # A missing source blocks packaging before it creates any output directory.
+        arguments[-1] = str(self.root / "refused")
+        with patch.object(sys, "argv", arguments):
+            with patch.object(desktop.desktop_notices, "generate", side_effect=ValueError("Missing source")):
+                with self.assertRaises(SystemExit):
+                    desktop.main()
+        self.assertFalse((self.root / "refused").exists())
+
     def test_all_six_targets_have_closed_payloads_and_real_macos_bundles(self):
         for target in contract.TARGETS:
             with self.subTest(target=target):

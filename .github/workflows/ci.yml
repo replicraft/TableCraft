@@ -71,6 +71,8 @@ jobs:
         run: python -m unittest discover -s scripts/tests -p "test_package_*.py"
       - name: Test file association metadata
         run: python -m unittest discover -s scripts/tests -p "test_file_associations.py"
+      - name: Test desktop notice generation
+        run: python -m unittest discover -s scripts/tests -p "test_desktop_notices.py"
       - name: Check standalone core
         run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Check standalone SQL parser

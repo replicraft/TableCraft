@@ -1,0 +1,1651 @@
+{
+  "schema": 1,
+  "license_choices": {
+    "0BSD OR MIT OR Apache-2.0": "MIT",
+    "MIT OR Apache-2.0": "MIT",
+    "BSD-2-Clause": "BSD-2-Clause",
+    "Apache-2.0 OR MIT": "MIT",
+    "MIT/Apache-2.0": "MIT",
+    "Zlib OR Apache-2.0 OR MIT": "MIT",
+    "Unlicense OR MIT": "MIT",
+    "MIT": "MIT",
+    "Apache-2.0": "Apache-2.0",
+    "MIT / Apache-2.0": "MIT",
+    "Unlicense/MIT": "MIT",
+    "MIT OR Apache-2.0 OR Zlib": "MIT",
+    "Apache-2.0 AND MIT": "Apache-2.0 AND MIT",
+    "(Apache-2.0 OR MIT) AND BSD-3-Clause": "MIT AND BSD-3-Clause",
+    "(MIT OR Apache-2.0) AND OFL-1.1 AND Ubuntu-font-1.0": "MIT AND OFL-1.1 AND Ubuntu-font-1.0 AND Bitstream-Vera",
+    "BSL-1.0": "BSL-1.0",
+    "Unicode-3.0": "Unicode-3.0",
+    "Zlib": "Zlib",
+    "ISC": "ISC",
+    "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT": "MIT",
+    "MIT OR Zlib OR Apache-2.0": "MIT",
+    "BSD-3-Clause OR Apache-2.0": "Apache-2.0",
+    "Apache-2.0/MIT": "MIT",
+    "Apache-2.0 OR BSL-1.0": "Apache-2.0",
+    "Apache-2.0 OR GPL-2.0-only": "Apache-2.0",
+    "BSD-3-Clause": "BSD-3-Clause",
+    "(MIT OR Apache-2.0) AND Unicode-3.0": "MIT AND Unicode-3.0",
+    "BSD-2-Clause OR Apache-2.0 OR MIT": "MIT"
+  },
+  "sources": {
+    "source-1": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "cache_file": "AccessKit-accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/LICENSE-APACHE",
+      "role": "license"
+    },
+    "source-2": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/LICENSE.chromium",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308",
+      "bytes": 1559,
+      "cache_file": "AccessKit-accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/LICENSE.chromium",
+      "role": "notice"
+    },
+    "source-3": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/common/src/geometry.rs",
+      "sha256": "2f2c37da6a856f1463c593bd2c01d07f237951556c3f72594cb05a2561afa7ed",
+      "bytes": 22258,
+      "cache_file": "AccessKit-accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/common/src/geometry.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 10
+      }
+    },
+    "source-4": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/common/src/lib.rs",
+      "sha256": "da99bad8c05747eee4c1cee0850488c4e61170f7f55cbf6b39e79cd4e4a1acbf",
+      "bytes": 109170,
+      "cache_file": "AccessKit-accesskit/a55d3e1a18bb9ef0e4bccc9083fb13c3e0ad8969/common/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-5": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE-APACHE",
+      "role": "license"
+    },
+    "source-6": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE.chromium",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308",
+      "bytes": 1559,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE.chromium",
+      "role": "notice"
+    },
+    "source-7": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/action.rs",
+      "sha256": "36d0787759c74a16a0718a81bd9b10d73d03c1114610c7c7d529ef8f2bd8efb5",
+      "bytes": 432,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/action.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-8": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/adapter.rs",
+      "sha256": "2fcb0ff427d66daf1a54ffbcc21e323d8289d64d5c1b1e5a124d114bbf8c5c4f",
+      "bytes": 21424,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/adapter.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-9": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/callback.rs",
+      "sha256": "5a4c799c0209340518170f3e9714f5f0e159b7a46ecff8c61596d05b3da3b4bd",
+      "bytes": 592,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/callback.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-10": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/simplified.rs",
+      "sha256": "6a71e4daa8efe0a65e449571aa14efce869241d7e61f03ae228599ef587cd04a",
+      "bytes": 25070,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/simplified.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-11": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/text_attributes.rs",
+      "sha256": "bd20841018e863c108d9a25ef6c5324951f4fba02c582e19943bdccdd052a744",
+      "bytes": 2121,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/atspi-common/src/text_attributes.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-12": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/LICENSE-APACHE",
+      "role": "license"
+    },
+    "source-13": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/LICENSE.chromium",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308",
+      "bytes": 1559,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/LICENSE.chromium",
+      "role": "notice"
+    },
+    "source-14": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/filters.rs",
+      "sha256": "e2df7bf15790369fbedd20030c61949292664f4d2881615c8170b42380681c10",
+      "bytes": 13941,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/filters.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-15": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/iterators.rs",
+      "sha256": "22233da2a6c999c355b74edddbf80fc98c6f32bd52f55de2bacd523f013824a7",
+      "bytes": 32127,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/iterators.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-16": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/lib.rs",
+      "sha256": "f7c619c1c2e4add099d4dece693b36be535262a1f696a188e6040ad6877e34bf",
+      "bytes": 7557,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-17": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/node.rs",
+      "sha256": "7ca5b53a821529e168af71f63d064ef20308a3634e019c8ce4f1c965c2b483cf",
+      "bytes": 61508,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/node.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-18": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/text.rs",
+      "sha256": "44d8d2732fda2a60a67bd7c002ff712409b6dfa19318679d448fa9b5fc6b5f18",
+      "bytes": 102617,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/consumer/src/text.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-19": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/filters.rs",
+      "sha256": "7ed1578cac719bfaf02c96aa3fd9adc070b487eef9126d8da2b5bc611b66c6f4",
+      "bytes": 13941,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/filters.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-20": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/iterators.rs",
+      "sha256": "984175319d0f0f606b6b8838e953be9ed8ec52a8e66b3c9b5c97528e81efefb0",
+      "bytes": 33089,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/iterators.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-21": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/lib.rs",
+      "sha256": "11bf579ec7ff5251ff8646b2008d327db47fad4cfd586c7745076c5710e0fc7c",
+      "bytes": 7557,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-22": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/node.rs",
+      "sha256": "ad6600c99446d0b912d91151cced32a5ef5e2ca143f42ccad10a806c44ecd3b9",
+      "bytes": 62996,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/node.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-23": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/text.rs",
+      "sha256": "205b9794ebe28de282602fb953f7d8bf317cabeb0bd6920b1c40485ceb9cfed8",
+      "bytes": 102801,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/consumer/src/text.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-24": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/LICENSE-APACHE",
+      "role": "license"
+    },
+    "source-25": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/LICENSE.chromium",
+      "sha256": "845022e0c1db1abb41a6ba4cd3c4b674ec290f3359d9d3c78ae558d4c0ed9308",
+      "bytes": 1559,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/LICENSE.chromium",
+      "role": "notice"
+    },
+    "source-26": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/filters.rs",
+      "sha256": "7ed1578cac719bfaf02c96aa3fd9adc070b487eef9126d8da2b5bc611b66c6f4",
+      "bytes": 13941,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/filters.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-27": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/iterators.rs",
+      "sha256": "241345c892b481f075826cebc9ce9a0d68ee3b88bfa49668ed99388e61031f38",
+      "bytes": 32863,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/iterators.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-28": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/lib.rs",
+      "sha256": "11bf579ec7ff5251ff8646b2008d327db47fad4cfd586c7745076c5710e0fc7c",
+      "bytes": 7557,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-29": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/node.rs",
+      "sha256": "99e7ebd71e596c68b822eaab9443f93d533092f7953d79e859149ae5260ad841",
+      "bytes": 66498,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/node.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-30": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/text.rs",
+      "sha256": "aec62207031f24728fd8621159ba4b93f98dfa287a6e6ee36d5f370857ac9ae3",
+      "bytes": 102639,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/consumer/src/text.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-31": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/adapter.rs",
+      "sha256": "936ea36f37706197375a09d2d062f2d080e0c0db97099108d12a2294ec2f4e71",
+      "bytes": 10567,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/adapter.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-32": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/filters.rs",
+      "sha256": "cfe74d16da43ccfda209f11107faf78442c6830fa126cf2d48ffdcdf14c65288",
+      "bytes": 282,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/filters.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-33": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/node.rs",
+      "sha256": "7fcbb84ed76e25d1ba4f69ef646a5b0cd83f96aaccfa7a0b500518da1ef43e91",
+      "bytes": 58078,
+      "cache_file": "AccessKit-accesskit/c88605b96d04431f9c3c792464a0f2f253480e94/platforms/macos/src/node.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-34": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "bytes": 1023,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/LICENSE-MIT",
+      "role": "license"
+    },
+    "source-35": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/adapter.rs",
+      "sha256": "2035e00e976c5d107ddf6af94f7e748ede19c5ec5df6054b47bb5dee6b23584d",
+      "bytes": 8334,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/adapter.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-36": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/atspi/interfaces/hyperlink.rs",
+      "sha256": "9a53b1d164208963ed047326f12ab380700807a3338b8c76f4edd8a492cd35d8",
+      "bytes": 1930,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/atspi/interfaces/hyperlink.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-37": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/atspi/interfaces/selection.rs",
+      "sha256": "980d556b2620de481146580744d80f3bde0631b148d1330aed268a0a5a6b7905",
+      "bytes": 2669,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/atspi/interfaces/selection.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-38": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/context.rs",
+      "sha256": "9a848d68eee83ca49eab29494fee2fab44c4a47951fc88498b03ed41e445f395",
+      "bytes": 8246,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/context.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-39": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/executor.rs",
+      "sha256": "38e4a47fc2afd555d91d8e74156165d7da632c381e488a1c7693ed140ff278fa",
+      "bytes": 4452,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/executor.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 8
+      }
+    },
+    "source-40": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/lib.rs",
+      "sha256": "4416ce59366d321c3dbd29a1054c3ad6c426168c97f7b237ff3e818de6c3168c",
+      "bytes": 972,
+      "cache_file": "AccessKit-accesskit/f40dfc01a0c0e76de535969f82fb35e19513737d/platforms/unix/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-41": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/adapter.rs",
+      "sha256": "7135ef9045b907f33e675888940b90f2d967fd6a26b1484d69773f2154247187",
+      "bytes": 24966,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/adapter.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-42": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/context.rs",
+      "sha256": "8a45005a8c1449e4ed234bb6f041f026f2dbc6d2935e76407637adb1c127601c",
+      "bytes": 2241,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/context.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-43": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/lib.rs",
+      "sha256": "8a6f20ed5354c9834d88a59091c764f65aa31359f81c57386fe06e9d806e9396",
+      "bytes": 501,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-44": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/node.rs",
+      "sha256": "e2e558a8f7ce54cd7d5b66e95cd65f42f7ee2533ece0b7796a999348f6640e49",
+      "bytes": 54510,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/node.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 9
+      }
+    },
+    "source-45": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/window_handle.rs",
+      "sha256": "dec1d78c81784a18c50f066e89d57d0fe02a7c9199a11e47a0833f8b9113d8c2",
+      "bytes": 753,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/windows/src/window_handle.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-46": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/lib.rs",
+      "sha256": "cbe4ef8dde0a3aa3d9777e51f86eeff2eb4396e290ab5ea83494920b8005b631",
+      "bytes": 9654,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 3
+      }
+    },
+    "source-47": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/android.rs",
+      "sha256": "3bd0c85c8da3ed2dfaafc107616e9a72216dfae65c0dff2eec63c0ed841afae3",
+      "bytes": 1690,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/android.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 3
+      }
+    },
+    "source-48": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/macos.rs",
+      "sha256": "9bb36fff123be11afadc7a7f8c09d2b8d04d3f091ad3f6bf23bec55ff933ebf1",
+      "bytes": 2042,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/macos.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 3
+      }
+    },
+    "source-49": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/mod.rs",
+      "sha256": "7bd9ce32dbdd50903add37e53af398d876d6d570f8b563aaeb57f2b728031aa7",
+      "bytes": 1137,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/mod.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 5
+      }
+    },
+    "source-50": {
+      "url": "https://raw.githubusercontent.com/AccessKit/accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/null.rs",
+      "sha256": "0bad7fd53d810d9076ef1cc6feef3e1e68930c26a0677a4fdb38ce36c8658c96",
+      "bytes": 819,
+      "cache_file": "AccessKit-accesskit/1bbcf100942bac96c2c3a4a91cb67b0b20201a24/platforms/winit/src/platform_impl/null.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 3
+      }
+    },
+    "source-51": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/4fc083f1c6d6784577e38b0ee8dbd344481e2fd2/LICENSE.txt",
+      "sha256": "e353f37b12aefbb9f9b29490e837cfee05d9bda70804b3562839a3285c1df1e5",
+      "bytes": 1066,
+      "cache_file": "madsmtm-objc2/4fc083f1c6d6784577e38b0ee8dbd344481e2fd2/LICENSE.txt",
+      "role": "license"
+    },
+    "source-52": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/b4167b582b2f75f9a1be75495c41b765344fd03c/LICENSE.md",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+      "bytes": 1339,
+      "cache_file": "madsmtm-objc2/b4167b582b2f75f9a1be75495c41b765344fd03c/LICENSE.md",
+      "role": "notice"
+    },
+    "source-53": {
+      "url": "https://raw.githubusercontent.com/spdx/license-list-data/d46e94e2c78ceede1cfc63cfa0396472d2798d4c/text/MIT.txt",
+      "sha256": "b05785f9f18e6716bab63424b11454513b9943a222595b70411009202fc592b5",
+      "bytes": 1078,
+      "cache_file": "spdx-license-list-data/d46e94e2c78ceede1cfc63cfa0396472d2798d4c/MIT.txt",
+      "role": "license",
+      "canonical": true
+    },
+    "source-54": {
+      "url": "https://raw.githubusercontent.com/DoumanAsh/clipboard-win/ed27008ae5d1f10cfbb266de039f0fb35fd05a56/LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "bytes": 1338,
+      "cache_file": "DoumanAsh-clipboard-win/ed27008ae5d1f10cfbb266de039f0fb35fd05a56/LICENSE",
+      "role": "license"
+    },
+    "source-55": {
+      "url": "https://raw.githubusercontent.com/SSheldon/rust-dispatch/82d6c7a5b75dc0c71c3f46f87bb6c16a476f7748/Cargo.toml",
+      "sha256": "05c60b829931ef7f1f130735843c11f5cf9cc69546eca5fc941d014781c68e31",
+      "bytes": 472,
+      "cache_file": "SSheldon-rust-dispatch/82d6c7a5b75dc0c71c3f46f87bb6c16a476f7748/Cargo.toml",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 4,
+        "end_line": 4
+      }
+    },
+    "source-56": {
+      "url": "https://raw.githubusercontent.com/SSheldon/rust-dispatch/82d6c7a5b75dc0c71c3f46f87bb6c16a476f7748/Cargo.toml",
+      "sha256": "05c60b829931ef7f1f130735843c11f5cf9cc69546eca5fc941d014781c68e31",
+      "bytes": 472,
+      "cache_file": "SSheldon-rust-dispatch/82d6c7a5b75dc0c71c3f46f87bb6c16a476f7748/Cargo.toml",
+      "role": "notice",
+      "extraction": {
+        "start_line": 12,
+        "end_line": 12
+      }
+    },
+    "source-57": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+      "bytes": 1339,
+      "cache_file": "madsmtm-objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md",
+      "role": "notice"
+    },
+    "source-58": {
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358,
+      "cache_file": "apache/Apache-2.0.txt",
+      "role": "license"
+    },
+    "source-59": {
+      "url": "https://raw.githubusercontent.com/emilk/egui/49682f8baa058bf49e011035cfbd6e825f88a5ef/LICENSE-MIT",
+      "sha256": "95ca92f5f8ea5231f1580b3a2a799e8260af3114b900e1def5355a7f44bcf60c",
+      "bytes": 1092,
+      "cache_file": "emilk-egui/49682f8baa058bf49e011035cfbd6e825f88a5ef/LICENSE-MIT",
+      "role": "license"
+    },
+    "source-60": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/LICENSES/Apache-2.0.txt",
+      "sha256": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+      "bytes": 10280,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/LICENSES/Apache-2.0.txt",
+      "role": "license"
+    },
+    "source-61": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/arbitrary.rs",
+      "sha256": "30e90bc431c4e74f756a619f432b30ccadc9b3288fc85f2d4bd160a374d0dfdb",
+      "bytes": 895,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/arbitrary.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-62": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/enum_map_impls.rs",
+      "sha256": "9a03bf2500215e3c2dcb7e93cfc4d466bd767bdb9b83673b013f7ef50ac08d04",
+      "bytes": 3089,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/enum_map_impls.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 6
+      }
+    },
+    "source-63": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/internal.rs",
+      "sha256": "ea03c0ca57eb52012e77dc3928ba5407109c5d24d373b7d7359ba037d890716f",
+      "bytes": 3749,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/internal.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 5
+      }
+    },
+    "source-64": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/lib.rs",
+      "sha256": "3e34c9461dfb5b102d620b0196b30dab2d8d429e801e193f8e2e78adfef9039e",
+      "bytes": 13652,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/lib.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 8
+      }
+    },
+    "source-65": {
+      "url": "https://codeberg.org/xfix/enum-map/raw/commit/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/serde.rs",
+      "sha256": "f3a9919e2f6c0721a7e1fa386eb712875c5fce01d4f01d5d4775bc246d45ba90",
+      "bytes": 3324,
+      "cache_file": "xfix-enum-map/c788a9c4bd0431308d889942719f7a38761d9884/enum-map/src/serde.rs",
+      "role": "attribution",
+      "extraction": {
+        "start_line": 1,
+        "end_line": 4
+      }
+    },
+    "source-66": {
+      "url": "https://raw.githubusercontent.com/projectfluent/fluent-langneg-rs/7fdc590466ea63ca2367ac10fb1b881fe561f1a8/LICENSE-MIT",
+      "sha256": "016fcc02048817d628b04b140c54db290fd9d29a5e8a55b77871194e810716ac",
+      "bytes": 1053,
+      "cache_file": "projectfluent-fluent-langneg-rs/7fdc590466ea63ca2367ac10fb1b881fe561f1a8/LICENSE-MIT",
+      "role": "license"
+    },
+    "source-67": {
+      "url": "https://raw.githubusercontent.com/zbraniecki/pluralrules/d0715d5b7cca72e228d6e6c4de154bd30dfdd06a/intl_pluralrules/LICENSE-APACHE",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "cache_file": "zbraniecki-pluralrules/d0715d5b7cca72e228d6e6c4de154bd30dfdd06a/intl_pluralrules/LICENSE-APACHE",
+      "role": "license"
+    },
+    "source-68": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/5237cbf081d04ef75a1f6a207b4018e7c1ae7438/LICENSE.txt",
+      "sha256": "e353f37b12aefbb9f9b29490e837cfee05d9bda70804b3562839a3285c1df1e5",
+      "bytes": 1066,
+      "cache_file": "madsmtm-objc2/5237cbf081d04ef75a1f6a207b4018e7c1ae7438/LICENSE.txt",
+      "role": "license"
+    },
+    "source-69": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/d7d2fa23ceaa5e6096c923b081040e5d81b3b9df/LICENSE.md",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+      "bytes": 1339,
+      "cache_file": "madsmtm-objc2/d7d2fa23ceaa5e6096c923b081040e5d81b3b9df/LICENSE.md",
+      "role": "notice"
+    },
+    "source-70": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/e282618be4c3a3b9542957e0c8540e9588472ce8/LICENSE.txt",
+      "sha256": "e353f37b12aefbb9f9b29490e837cfee05d9bda70804b3562839a3285c1df1e5",
+      "bytes": 1066,
+      "cache_file": "madsmtm-objc2/e282618be4c3a3b9542957e0c8540e9588472ce8/LICENSE.txt",
+      "role": "license"
+    },
+    "source-71": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+      "bytes": 1339,
+      "cache_file": "madsmtm-objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md",
+      "role": "notice"
+    },
+    "source-72": {
+      "url": "https://raw.githubusercontent.com/madsmtm/objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md",
+      "sha256": "7f976f7e9cb2d87df7230606feb932c3f21ac0e664045a775b600046ff850c54",
+      "bytes": 1339,
+      "cache_file": "madsmtm-objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md",
+      "role": "notice"
+    },
+    "source-73": {
+      "url": "https://raw.githubusercontent.com/aclysma/profiling/8271551172eb6fa4cba47369aedd93790c623df9/LICENSE-MIT",
+      "sha256": "c8167fdeeed46d3f244d3f85c5bf998ce889343691c32be2c61a8bc4b5c08333",
+      "bytes": 1093,
+      "cache_file": "aclysma-profiling/8271551172eb6fa4cba47369aedd93790c623df9/LICENSE-MIT",
+      "role": "license"
+    }
+  },
+  "packages": [
+    {
+      "name": "accesskit",
+      "version": "0.24.1",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-1"
+        },
+        {
+          "source": "source-2"
+        },
+        {
+          "source": "source-3"
+        },
+        {
+          "source": "source-4"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_atspi_common",
+      "version": "0.18.1",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-5"
+        },
+        {
+          "source": "source-6"
+        },
+        {
+          "source": "source-7"
+        },
+        {
+          "source": "source-8"
+        },
+        {
+          "source": "source-9"
+        },
+        {
+          "source": "source-10"
+        },
+        {
+          "source": "source-11"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_consumer",
+      "version": "0.35.0",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-12"
+        },
+        {
+          "source": "source-13"
+        },
+        {
+          "source": "source-14"
+        },
+        {
+          "source": "source-15"
+        },
+        {
+          "source": "source-16"
+        },
+        {
+          "source": "source-17"
+        },
+        {
+          "source": "source-18"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_consumer",
+      "version": "0.36.0",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-5"
+        },
+        {
+          "source": "source-6"
+        },
+        {
+          "source": "source-19"
+        },
+        {
+          "source": "source-20"
+        },
+        {
+          "source": "source-21"
+        },
+        {
+          "source": "source-22"
+        },
+        {
+          "source": "source-23"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_consumer",
+      "version": "0.38.0",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-24"
+        },
+        {
+          "source": "source-25"
+        },
+        {
+          "source": "source-26"
+        },
+        {
+          "source": "source-27"
+        },
+        {
+          "source": "source-28"
+        },
+        {
+          "source": "source-29"
+        },
+        {
+          "source": "source-30"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_macos",
+      "version": "0.26.3",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-24"
+        },
+        {
+          "source": "source-25"
+        },
+        {
+          "source": "source-31"
+        },
+        {
+          "source": "source-32"
+        },
+        {
+          "source": "source-33"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_unix",
+      "version": "0.21.1",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-5"
+        },
+        {
+          "source": "source-34"
+        },
+        {
+          "source": "source-35"
+        },
+        {
+          "source": "source-36"
+        },
+        {
+          "source": "source-37"
+        },
+        {
+          "source": "source-38"
+        },
+        {
+          "source": "source-39"
+        },
+        {
+          "source": "source-40"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "MIT"
+      ]
+    },
+    {
+      "name": "accesskit_windows",
+      "version": "0.32.1",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-12"
+        },
+        {
+          "source": "source-13"
+        },
+        {
+          "source": "source-41"
+        },
+        {
+          "source": "source-42"
+        },
+        {
+          "source": "source-43"
+        },
+        {
+          "source": "source-44"
+        },
+        {
+          "source": "source-45"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred.",
+      "additional_obligations": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "name": "accesskit_winit",
+      "version": "0.32.2",
+      "declared_license": "Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-12"
+        },
+        {
+          "source": "source-46"
+        },
+        {
+          "source": "source-47"
+        },
+        {
+          "source": "source-48"
+        },
+        {
+          "source": "source-49"
+        },
+        {
+          "source": "source-50"
+        }
+      ],
+      "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred."
+    },
+    {
+      "name": "block2",
+      "version": "0.5.1",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-51"
+        }
+      ],
+      "rationale": "This exact published revision retains the full root MIT grant and its Steven Sheldon copyright. The text is not transplanted from another release."
+    },
+    {
+      "name": "block2",
+      "version": "0.6.2",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-52"
+        },
+        {
+          "source": "source-53"
+        }
+      ],
+      "rationale": "The exact root LICENSE.md explicitly licenses this named crate under MIT by reference to the OSI MIT definition. Preserve that grant and its Apple-SDK provenance caveat, plus the unmodified canonical SPDX MIT terms. Its literal copyright placeholder is canonical template text, not package attribution; no older-release author is transplanted."
+    },
+    {
+      "name": "clipboard-win",
+      "version": "5.4.3",
+      "declared_license": "BSL-1.0",
+      "selected_license": "BSL-1.0",
+      "sources": [
+        {
+          "source": "source-54"
+        }
+      ],
+      "rationale": "The exact revision LICENSE is the complete Boost Software License 1.0 named by the published crate."
+    },
+    {
+      "name": "dispatch",
+      "version": "0.2.0",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-55"
+        },
+        {
+          "source": "source-56"
+        },
+        {
+          "source": "source-53"
+        }
+      ],
+      "rationale": "The exact pinned Cargo.toml explicitly declares license MIT and the literal author Steven Sheldon. Preserve that declaration by two exact reviewed single-line extractions and reproduce the unmodified canonical SPDX MIT terms by reference. The canonical placeholder is not asserted to be package authorship; no copyright line is invented."
+    },
+    {
+      "name": "dispatch2",
+      "version": "0.3.1",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-57"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "ecolor",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "eframe",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "egui",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "egui-winit",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "egui_extras",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "egui_glow",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "emath",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "enum-map",
+      "version": "2.7.3",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-60"
+        },
+        {
+          "source": "source-61"
+        },
+        {
+          "source": "source-62"
+        },
+        {
+          "source": "source-63"
+        },
+        {
+          "source": "source-64"
+        },
+        {
+          "source": "source-65"
+        }
+      ],
+      "rationale": "Select the explicitly declared Apache-2.0 alternative and its exact REUSE LICENSES text. Preserve the actual per-file SPDX copyright headers as small verified excerpts instead of filling the MIT template with guessed authors."
+    },
+    {
+      "name": "epaint",
+      "version": "0.36.2",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-59"
+        }
+      ],
+      "rationale": "The exact shared root MIT file at the published egui revision includes its original Emil Ernerfeldt copyright. Package-specific repository URLs normalize to the same reviewed root."
+    },
+    {
+      "name": "fluent-langneg",
+      "version": "0.13.1",
+      "declared_license": "Apache-2.0 OR MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-66"
+        }
+      ],
+      "rationale": "The exact upstream root MIT grant retains Copyright Mozilla Foundation."
+    },
+    {
+      "name": "intl_pluralrules",
+      "version": "7.0.2",
+      "declared_license": "Apache-2.0/MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-67"
+        }
+      ],
+      "rationale": "The published legacy Apache-2.0/MIT declaration allows the Apache alternative; its complete exact upstream package LICENSE-APACHE was omitted from the registry archive. No copyright is fabricated for the separate owner-free MIT text."
+    },
+    {
+      "name": "objc-sys",
+      "version": "0.3.5",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-51"
+        }
+      ],
+      "rationale": "This exact published revision retains the full root MIT grant and its Steven Sheldon copyright. The text is not transplanted from another release."
+    },
+    {
+      "name": "objc2",
+      "version": "0.5.3",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-68"
+        }
+      ],
+      "rationale": "This exact published revision retains the full root MIT grant and its Steven Sheldon copyright. The text is not transplanted from another release."
+    },
+    {
+      "name": "objc2",
+      "version": "0.6.5",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-69"
+        },
+        {
+          "source": "source-53"
+        }
+      ],
+      "rationale": "The exact root LICENSE.md explicitly licenses this named crate under MIT by reference to the OSI MIT definition. Preserve that grant and its Apple-SDK provenance caveat, plus the unmodified canonical SPDX MIT terms. Its literal copyright placeholder is canonical template text, not package attribution; no older-release author is transplanted."
+    },
+    {
+      "name": "objc2-app-kit",
+      "version": "0.2.2",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-70"
+        }
+      ],
+      "rationale": "This exact published revision retains the full root MIT grant and its Steven Sheldon copyright. The text is not transplanted from another release."
+    },
+    {
+      "name": "objc2-app-kit",
+      "version": "0.3.2",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "objc2-core-foundation",
+      "version": "0.3.2",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "objc2-core-graphics",
+      "version": "0.3.2",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "objc2-core-text",
+      "version": "0.3.2",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "objc2-encode",
+      "version": "4.1.0",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-72"
+        },
+        {
+          "source": "source-53"
+        }
+      ],
+      "rationale": "The exact root LICENSE.md explicitly licenses this named crate under MIT by reference to the OSI MIT definition. Preserve that grant and its Apple-SDK provenance caveat, plus the unmodified canonical SPDX MIT terms. Its literal copyright placeholder is canonical template text, not package attribution; no older-release author is transplanted."
+    },
+    {
+      "name": "objc2-foundation",
+      "version": "0.2.2",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-70"
+        }
+      ],
+      "rationale": "This exact published revision retains the full root MIT grant and its Steven Sheldon copyright. The text is not transplanted from another release."
+    },
+    {
+      "name": "objc2-foundation",
+      "version": "0.3.2",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-53"
+        }
+      ],
+      "rationale": "The exact root LICENSE.md explicitly licenses this named crate under MIT by reference to the OSI MIT definition. Preserve that grant and its Apple-SDK provenance caveat, plus the unmodified canonical SPDX MIT terms. Its literal copyright placeholder is canonical template text, not package attribution; no older-release author is transplanted."
+    },
+    {
+      "name": "profiling",
+      "version": "1.0.18",
+      "declared_license": "MIT OR Apache-2.0",
+      "selected_license": "MIT",
+      "sources": [
+        {
+          "source": "source-73"
+        }
+      ],
+      "rationale": "The exact revision root MIT grant retains Philip Degarmo and other contributors attribution."
+    },
+    {
+      "name": "dpi",
+      "version": "0.1.2",
+      "declared_license": "Apache-2.0 AND MIT",
+      "selected_license": "Apache-2.0 AND MIT",
+      "sources": [
+        {
+          "path": "LICENSE",
+          "role": "license"
+        },
+        {
+          "path": "LICENSE-LIBM-MIT",
+          "role": "license"
+        }
+      ]
+    },
+    {
+      "name": "encoding_rs",
+      "version": "0.8.42",
+      "declared_license": "(Apache-2.0 OR MIT) AND BSD-3-Clause",
+      "selected_license": "MIT AND BSD-3-Clause",
+      "sources": [
+        {
+          "path": "LICENSE-MIT",
+          "role": "license"
+        },
+        {
+          "path": "LICENSE-WHATWG",
+          "role": "license"
+        },
+        {
+          "path": "COPYRIGHT",
+          "role": "notice"
+        }
+      ]
+    },
+    {
+      "name": "epaint_default_fonts",
+      "version": "0.36.2",
+      "declared_license": "(MIT OR Apache-2.0) AND OFL-1.1 AND Ubuntu-font-1.0",
+      "selected_license": "MIT AND OFL-1.1 AND Ubuntu-font-1.0 AND Bitstream-Vera",
+      "sources": [
+        {
+          "source": "source-59"
+        },
+        {
+          "path": "fonts/OFL.txt",
+          "role": "license"
+        },
+        {
+          "path": "fonts/UFL.txt",
+          "role": "license"
+        },
+        {
+          "path": "fonts/Hack-Regular.txt",
+          "role": "license"
+        },
+        {
+          "path": "fonts/emoji-icon-font-mit-license.txt",
+          "role": "license"
+        },
+        {
+          "text": "Copyright 2013 Google Inc. All Rights Reserved.\n\nNoto is a trademark of Google Inc.\n",
+          "bytes": 84,
+          "sha256": "e3f905d39ccf8bb5bdd47eed535f1e0cc76a9eab050e5c191c3bd48651c2a633",
+          "role": "attribution",
+          "derived_from": {
+            "root": "package",
+            "path": "fonts/NotoEmoji-Regular.ttf",
+            "bytes": 418804,
+            "sha256": "415dc6290378574135b64c808dc640c1df7531973290c4970c51fdeb849cb0c5"
+          },
+          "url": "https://raw.githubusercontent.com/emilk/egui/49682f8baa058bf49e011035cfbd6e825f88a5ef/crates/epaint_default_fonts/fonts/NotoEmoji-Regular.ttf"
+        },
+        {
+          "text": "Copyright 2011 Canonical Ltd.  Licensed under the Ubuntu Font Licence 1.0\n\nUbuntu and Canonical are registered trademarks of Canonical Ltd.\n",
+          "bytes": 140,
+          "sha256": "9340c94f137d3fb71a3811378013db0b021b4b7e798c800e28c1d803a2c1b7a7",
+          "role": "attribution",
+          "derived_from": {
+            "root": "package",
+            "path": "fonts/Ubuntu-Light.ttf",
+            "bytes": 361676,
+            "sha256": "80307b8da7649aa4ee4d484b232140e3ce1ec0ca093073d3c53c8f5a5ced7a70"
+          },
+          "url": "https://raw.githubusercontent.com/emilk/egui/49682f8baa058bf49e011035cfbd6e825f88a5ef/crates/epaint_default_fonts/fonts/Ubuntu-Light.ttf"
+        }
+      ]
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.27",
+      "declared_license": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "selected_license": "MIT AND Unicode-3.0",
+      "sources": [
+        {
+          "path": "LICENSE-MIT",
+          "role": "license"
+        },
+        {
+          "path": "LICENSE-UNICODE",
+          "role": "license"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "name": "Selawik UI font",
+      "selected_license": "OFL-1.1",
+      "sources": [
+        {
+          "path": "assets/ui/fonts/OFL-Selawik.txt",
+          "role": "license"
+        }
+      ]
+    },
+    {
+      "name": "Noto Sans CJK regional fonts",
+      "selected_license": "OFL-1.1",
+      "sources": [
+        {
+          "path": "assets/ui/fonts/OFL-NotoSansCJK.txt",
+          "role": "license"
+        },
+        {
+          "text": "\u00a9 2014-2021 Adobe (http://www.adobe.com/).\n\nNoto is a trademark of Google Inc.\n",
+          "bytes": 80,
+          "sha256": "2e7fe8aa19715595f70544505c6eba76465399ec549ef36deae070ce5f395959",
+          "role": "attribution",
+          "derived_from": {
+            "root": "repository",
+            "path": "assets/ui/fonts/NotoSansJP-Regular.otf",
+            "bytes": 4533028,
+            "sha256": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073"
+          },
+          "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/SubsetOTF/JP/NotoSansJP-Regular.otf"
+        }
+      ]
+    },
+    {
+      "name": "Noto Emoji UI fallback",
+      "selected_license": "OFL-1.1",
+      "sources": [
+        {
+          "path": "assets/ui/fonts/OFL-NotoEmoji.txt",
+          "role": "license"
+        }
+      ]
+    },
+    {
+      "name": "Jackcess-derived General collation data and encoding adaptations",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "path": "crates/engines/tablecraft-ace/data/general/NOTICE",
+          "role": "notice"
+        },
+        {
+          "path": "crates/engines/tablecraft-ace/data/general/LICENSE-APACHE-2.0.txt",
+          "role": "license"
+        }
+      ]
+    }
+  ],
+  "content_bindings": [
+    {
+      "root": "package",
+      "path": "fonts/Hack-Regular.ttf",
+      "package": {
+        "name": "epaint_default_fonts",
+        "version": "0.36.2"
+      }
+    },
+    {
+      "root": "package",
+      "path": "fonts/NotoEmoji-Regular.ttf",
+      "package": {
+        "name": "epaint_default_fonts",
+        "version": "0.36.2"
+      }
+    },
+    {
+      "root": "package",
+      "path": "fonts/Ubuntu-Light.ttf",
+      "package": {
+        "name": "epaint_default_fonts",
+        "version": "0.36.2"
+      }
+    },
+    {
+      "root": "package",
+      "path": "fonts/emoji-icon-font.ttf",
+      "package": {
+        "name": "epaint_default_fonts",
+        "version": "0.36.2"
+      }
+    },
+    {
+      "root": "repository",
+      "path": "assets/ui/fonts/NotoEmoji-Variable.ttf"
+    },
+    {
+      "root": "repository",
+      "path": "assets/ui/fonts/NotoSansJP-Regular.otf"
+    },
+    {
+      "root": "repository",
+      "path": "assets/ui/fonts/NotoSansKR-Regular.otf"
+    },
+    {
+      "root": "repository",
+      "path": "assets/ui/fonts/NotoSansSC-Regular.otf"
+    },
+    {
+      "root": "repository",
+      "path": "assets/ui/fonts/selawk.ttf"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/general-2010.bin"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/general-legacy.bin"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/kana-vowels.bin"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/like-2010.fst"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/like-french-legacy.fst"
+    },
+    {
+      "root": "repository",
+      "path": "crates/engines/tablecraft-ace/data/general/like-legacy.fst"
+    },
+    {
+      "name": "Shared UI font registration scope",
+      "root": "repository",
+      "path": "crates/presentation/tablecraft-ui/src/fonts.rs"
+    }
+  ]
+}

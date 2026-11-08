@@ -10,6 +10,8 @@ on:
       - 'scripts/packaging/**'
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_file_associations.py'
+      - 'scripts/tests/test_desktop_notices.py'
+      - 'packaging/desktop/notice-policy.json'
       - 'packaging/ThirdPartyLicenses.txt'
       - 'LICENSE'
       - 'Cargo.toml'
@@ -51,6 +53,7 @@ jobs:
           fi
       - run: python -m unittest discover -s scripts/tests -p 'test_package_*.py'
       - run: python -m unittest discover -s scripts/tests -p 'test_file_associations.py'
+      - run: python -m unittest discover -s scripts/tests -p 'test_desktop_notices.py'
 
   build:
     name: Build and smoke-test ${{ matrix.target }}
