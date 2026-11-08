@@ -8,9 +8,14 @@ rejects mutation/Save. Ordinary qualified query saves automatically acknowledge
 the exact successful receipt, then retain the full-image witness and atomic
 rebind before clearing dirty text. Exceptional outcomes remain explicit.
 
-The separate native default-zero column candidate passes both independent full
-SDK AFTER pins. It does not yet enable a journaled save or GUI column creation;
-the UI's additional explicit Required(false) declaration still needs qualification.
+The initial native default-zero column candidate passes both independent full
+SDK AFTER pins. The subsequent exact Number declaration also qualifies explicit
+Required(false): three complete SDK images match independent native candidates.
+Its distinct TCAC0003 request, resizable V2 journal, offline recovery and consuming
+runtime review/save/reopen services pass the [65-case follow-up batch](testing/results/number-column-runtime-batch-2026-11-08.json).
+The actual GUI TableDraft producer matches both source classes. Saved-column
+GUI naming/save controls remain disabled while their lifecycle is implemented.
+New source-availability and failure cases await the next coordinated batch.
 The [combined batch record](testing/results/gui-query-column-batch-2026-11-08.json)
 retains 60 passing focused checks, strict affected-package lint and two inspected
 light/dark offscreen frames. The earlier stale runtime assertion failure is
