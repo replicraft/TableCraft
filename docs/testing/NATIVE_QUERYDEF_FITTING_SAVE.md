@@ -4,8 +4,8 @@ On 8 November 2026, an original Jackcess 5.0.4 fixture retained one native SELEC
 while its stored projection changed from `42` to `43`. The complete independent
 raw AFTER image equals the complete SDK-produced AFTER image. This establishes
 an expression-only byte oracle. The engine now has an unpublished candidate
-planner for the closed profile below; **no normal QueryDef save/recovery route
-is supplied by this evidence or candidate**.
+planner for the closed profile below; **no adapter, runtime, CLI or GUI QueryDef
+save route is supplied by this evidence or engine checkpoint**.
 Native Microsoft Access save/reopen remains unrun.
 
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
@@ -73,8 +73,21 @@ no complete database bytes are tracked. Fixture provenance is recorded in
 With the native engine's `journal` feature, the sealed
 `NativeImage::plan_query_literal_expression` returns an owning
 `NativeQueryExpressionPlan`. It retains complete BEFORE/AFTER images, original
-name/native ID and expected/replacement literal. It has no journal preparation,
-recovery intent, filesystem publication, adapter, runtime or GUI save consumer.
+name/native ID and expected/replacement literal. This candidate alone has no
+journal preparation or mutation authority.
+
+The separate engine-only `plan_recoverable_query_literal_expression` captures a
+closed `TCQE0001`/profile 1 original intent. Its eighty-byte header retains the
+exact signed query ID, Tables parent, catalog page/slot, full original length and
+source digest; bounded trailing fields retain the original query name and
+expected/replacement literals. It stores no final fragments or patched AFTER.
+Other action prefixes and unknown versions/profiles refuse without fallback.
+Fresh requalification spends independent cumulative native/proof pools and
+reconstructs the complete candidate through the same strict planner. The same
+retained checked V1 journal is qualified against both complete rebuilt images
+before recovery or settled confirmation. Generic prepare/commit/rollback require
+caller-owned exclusive offline resources and durable journal namespaces; no
+filesystem publication, adapter, runtime, CLI or GUI consumer is implemented.
 
 The initial source profile is unencoded ACE 16 code 5/subversion zero with one
 saved query and five fragments, the observed `Answer` alias, and a source-free
@@ -97,9 +110,13 @@ A new raw nine-page fixture supplies full nullable catalog carriers and distinct
 represented map cells while retaining the independent one-byte AFTER. Focused
 cases cover that complete image, no-op/source qualification, literal/original/
 capacity refusals, another table's DATA claim, cancellation and exhausted budgets.
-An explicit ignored SDK test pins the reference BEFORE/AFTER hashes. At this
-checkpoint these newly authored Rust cases are **unrun**; formatter and source
-review do not establish a passing candidate or broader source eligibility.
+An explicit ignored SDK test pins the reference BEFORE/AFTER hashes. Seven
+original-intent cases additionally cover independent wire bytes, malformed
+records before allocation, cross-action refusal, stale/tampered requests,
+separate quotas/cancellation, pending/committed/torn-marker recovery and rejected
+patched AFTER images without target writes. At this checkpoint these newly
+authored Rust cases are **unrun**; formatter and source review do not establish
+a passing candidate, persistence route or broader source eligibility.
 
 ## Required proof before a normal native save
 

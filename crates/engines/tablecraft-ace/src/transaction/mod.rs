@@ -8,6 +8,12 @@ pub use intent::{
     NativeUpdateIntent, NativeUpdateProfile, RecoverableEditError, RecoverableNativeEditPlan,
 };
 #[cfg(feature = "journal")]
+pub use intent::{
+    NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
+    RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
+};
+#[cfg(feature = "journal")]
 mod native_recovery;
 #[cfg(feature = "journal")]
 mod update_rebuild;

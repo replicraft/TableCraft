@@ -85,3 +85,10 @@ pub use add_column::{
     AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,
     RecoverableAddColumnPlan, qualify_native_add_column_recovery,
 };
+
+mod query_expression;
+pub use query_expression::{
+    NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
+    RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
+};

@@ -277,3 +277,10 @@ pub use transaction::{
     AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,
     RecoverableAddColumnPlan, qualify_native_add_column_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use transaction::{
+    NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
+    RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
+};
