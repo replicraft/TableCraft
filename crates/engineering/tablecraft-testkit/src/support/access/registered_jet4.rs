@@ -23,7 +23,10 @@ pub struct RegisteredJet4 {
 }
 
 fn verify_hash(bytes: &[u8], expected: &str) {
-    let actual = format!("{:x}", Sha256::digest(bytes));
+    let actual = Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
     assert_eq!(actual, expected);
 }
 
