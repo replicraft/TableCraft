@@ -1,4 +1,4 @@
-//! Shared normal UPDATE planning; file ownership and publication stay with hosts.
+//! Shared normal mutation planning; file ownership and publication stay with hosts.
 #[cfg(feature = "journal")]
 mod comparison;
 #[cfg(feature = "journal")]
@@ -6,7 +6,10 @@ mod deleting;
 #[cfg(feature = "journal")]
 mod inserting;
 #[cfg(feature = "journal")]
-pub use deleting::{RecoverableDeleteError, local_delete_table, plan_recoverable_delete};
+pub use deleting::{
+    RecoverableDeleteError, local_delete_table, plan_recoverable_delete,
+    plan_recoverable_delete_with_options,
+};
 #[cfg(feature = "journal")]
 pub use inserting::{
     RecoverableInsertError, local_insert_table, plan_recoverable_insert,
@@ -25,9 +28,9 @@ use tablecraft_core::values::Value;
 #[cfg(feature = "journal")]
 use tablecraft_db::EditableTable;
 use tablecraft_expressions::comparison::Collation;
-use tablecraft_query::{QueryError, UpdateError, UpdatePlan};
 #[cfg(feature = "journal")]
-use tablecraft_query::{UpdateOptions, source::CollationResolver};
+use tablecraft_query::{MutationOptions, source::CollationResolver};
+use tablecraft_query::{QueryError, UpdateError, UpdatePlan};
 use tablecraft_sql::{
     query::{Query, Statement},
     select::TableSource,
@@ -179,9 +182,9 @@ pub fn plan_recoverable_batch_update_with_budgets(
     )?)
 }
 
-/// Explicit evaluation inputs for one native original-snapshot UPDATE.
+/// Explicit evaluation inputs for one native original-snapshot mutation.
 #[cfg(feature = "journal")]
-pub struct NativeUpdateOptions<'a> {
+pub struct NativeMutationOptions<'a> {
     /// Complete typed literal inputs, validated against the SQL declarations.
     pub parameters: &'a [(&'a str, Value)],
     /// Database comparison provider for expressions without stored-field policy.
@@ -200,21 +203,21 @@ pub fn plan_recoverable_batch_update_with_options(
     query: &Query,
     native: &mut ResourceBudget,
     query_budget: &mut ResourceBudget,
-    options: NativeUpdateOptions<'_>,
+    options: NativeMutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<RecoverableNativeEditPlan>, RecoverableError> {
     let table = local_batch_update_table(query, true)?;
     let schema = comparison::schema(&image, table, native, cancelled)?;
     let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
     let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;
-    let comparison = UpdateOptions {
+    let comparison = MutationOptions {
         parameters: Some(options.parameters),
         collation: Some(options.collation),
         collation_resolver: Some(options.resolver),
         text_collations: &policies,
     };
 
-    Ok(tablecraft_query::plan_batch_update_with_comparison(
+    Ok(tablecraft_query::plan_batch_update_with_options(
         editor,
         query,
         query_budget,

@@ -78,8 +78,8 @@ filesystem resource remains the caller's responsibility.
 
 ## Stored field comparison policies
 
-The optional query `UpdateOptions` and
-`plan_batch_update_with_comparison` route preserve field text identities through
+The optional query `MutationOptions` and
+`plan_batch_update_with_options` route preserve field text identities through
 the binder and complete original-row cells, supplying the existing resolver to
 WHERE and SET evaluation. Existing shared-pool and split-pool APIs retain their
 policy-free defaults and charge order. Scalar DB contracts stay query-neutral.
@@ -100,7 +100,7 @@ clock, random or application contexts.
 
 ## Typed query-layer UPDATE parameters
 
-`UpdateOptions.parameters` explicitly admits a complete set of typed literal
+`MutationOptions.parameters` explicitly admits a complete set of typed literal
 bindings to the neutral batch planner. `None` preserves the existing refusal of
 parameter declarations; `Some` requires every declaration exactly once, with no
 extra inputs. Names follow the query schema comparison policy. Declared carriers,
@@ -110,7 +110,7 @@ same validation as retrieval. Parameter text is never parsed as SQL.
 Binding and parameter validation precede row evaluation. Every WHERE and SET
 expression still uses the original row, and the backend finish occurs only after
 all rows succeed. Parameter comparison and text validation consume query work
-and observe cancellation. The Access consumer accepts `NativeUpdateOptions`,
+and observe cancellation. The Access consumer accepts `NativeMutationOptions`,
 derives stored-field policies itself and supplies the explicit typed bindings to
 the neutral planner. Legacy planners without a parameter input contract still
 refuse declarations.

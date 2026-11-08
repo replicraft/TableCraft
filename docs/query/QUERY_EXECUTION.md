@@ -30,6 +30,16 @@ The seven neutral batch tests pass alongside the nine existing neutral edit
 tests; native adapter/CLI observations are recorded in the owning engineering
 contract. These checks do not qualify a normal ACE save.
 
+The explicit `plan_delete_with_options` API selects original snapshot handles
+under shared `MutationOptions`: complete typed parameters, actual field comparison
+policies and an explicit resolver. Query evaluation and retained handle allocation
+consume a separate allowance from the backend finish. Every predicate succeeds
+before one finish, including for zero matches. `plan_delete` retains its existing
+one-pool, declaration-refusing contract. UPDATE now consumes the same options and
+frozen-row policy construction through `plan_batch_update_with_options`; no old
+import aliases remain. This does not enable DELETE in the desktop SQL editor or
+broaden native writer eligibility.
+
 The complete-row `plan_insert` [SQL INSERT consumer](../access/writes/SQL_INSERT_COPIES.md)
 uses `InsertableTable` metadata without scanning rows to invent its target schema.
 It admits one complete explicit VALUES row, binds all fields before value

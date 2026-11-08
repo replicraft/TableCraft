@@ -1,12 +1,14 @@
 //! Normal DELETE lowering consumes the existing shared predicate service.
+use super::{NativeMutationOptions, comparison};
 use crate::editing::{
     NativeEditError,
     journal::{self, NativeJournalEditor},
 };
 use tablecraft_ace::{NativeImage, RecoverableNativeDeletePlan};
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_db::DeletableTable;
 use tablecraft_expressions::comparison::Collation;
-use tablecraft_query::{DeleteError, DeletePlan, QueryError};
+use tablecraft_query::{DeleteError, DeletePlan, MutationOptions, QueryError};
 use tablecraft_sql::{
     query::{Query, Statement},
     select::TableSource,
@@ -29,6 +31,10 @@ pub enum RecoverableDeleteError {
 
 /// Check the local action before opening a target or reading native records.
 pub fn local_delete_table(query: &Query) -> Result<&str, QueryError> {
+    local_table(query, false)
+}
+
+fn local_table(query: &Query, allow_parameters: bool) -> Result<&str, QueryError> {
     let Statement::Delete(delete) = &query.statement else {
         return Err(QueryError::Unsupported);
     };
@@ -36,7 +42,7 @@ pub fn local_delete_table(query: &Query) -> Result<&str, QueryError> {
         return Err(QueryError::Unsupported);
     };
     let qualifier = table.alias.as_ref().unwrap_or(&table.name).as_str();
-    if !query.parameters.is_empty()
+    if (!allow_parameters && !query.parameters.is_empty())
         || table.database.is_some()
         || (!delete.targets.is_empty()
             && (delete.targets.len() != 1
@@ -61,3 +67,36 @@ pub fn plan_recoverable_delete(
         editor, query, budget, collation, cancelled,
     )?)
 }
+
+/// Evaluate typed parameters and predicates under actual native field policies,
+/// keeping native snapshot/admission work separate from query selection work.
+/// The result remains a sealed candidate, not permission to publish a journal.
+pub fn plan_recoverable_delete_with_options(
+    image: NativeImage,
+    query: &Query,
+    native: &mut ResourceBudget,
+    query_budget: &mut ResourceBudget,
+    options: NativeMutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DeletePlan<RecoverableNativeDeletePlan>, RecoverableDeleteError> {
+    let table = local_table(query, true)?;
+    let schema = comparison::schema(&image, table, native, cancelled)?;
+    let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
+    let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;
+    Ok(tablecraft_query::plan_delete_with_options(
+        editor,
+        query,
+        query_budget,
+        native,
+        MutationOptions {
+            parameters: Some(options.parameters),
+            collation: Some(options.collation),
+            collation_resolver: Some(options.resolver),
+            text_collations: &policies,
+        },
+        cancelled,
+    )?)
+}
+
+#[cfg(test)]
+mod tests;

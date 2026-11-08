@@ -3,8 +3,12 @@ use crate::{
     ExecutionOptions, QueryError,
     binding::{BoundDelete, bind_delete},
     discovery::DiscoveryState,
-    execution::{Environment, Runtime, cell::CellValue, editing::source::SnapshotSource},
+    execution::{
+        Environment, Runtime,
+        mutation::{MutationOptions, source::MutationSource},
+    },
     profile::MAX_BIND_BYTES,
+    source::validate_text_collations,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{DeletableTable, RowHandle};
@@ -36,6 +40,11 @@ impl<P> DeletePlan<P> {
         self.matched_rows
     }
 
+    /// Borrow the sealed backend candidate without consuming its query counts.
+    pub const fn backend(&self) -> &P {
+        &self.backend
+    }
+
     /// Consume the wrapper; persistence remains an explicit host responsibility.
     pub fn into_backend(self) -> P {
         self.backend
@@ -43,8 +52,8 @@ impl<P> DeletePlan<P> {
 }
 
 /// Select original rows of one local table, then prepare one deletion candidate.
-/// Pure predicates retain the evaluator's eager errors and explicit collation.
-/// Joins, parameters, external sources, calls and hidden retrieval remain closed.
+/// Pure predicates retain eager errors and explicit collation. Declarations,
+/// joins, external sources and hidden retrieval remain closed in this legacy API.
 /// Even no matches call the backend once, preserving empty-operation admission.
 pub fn plan_delete<E: DeletableTable>(
     editor: E,
@@ -54,8 +63,60 @@ pub fn plan_delete<E: DeletableTable>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DeletePlan<E::Plan>, DeleteError<E::Error>> {
     let _span = tracing::debug_span!("query.delete.plan").entered();
+    let selected = select_rows(
+        &editor,
+        query,
+        budget,
+        MutationOptions {
+            collation,
+            ..Default::default()
+        },
+        cancelled,
+    )?;
+    finish(editor, &selected, budget, cancelled)
+}
+
+/// Evaluate a complete original-row selection with explicit typed inputs and
+/// field comparison policies, then finish with an independent backend allowance.
+/// No durable mutation or native authorization is implied by this generic plan.
+pub fn plan_delete_with_options<E: DeletableTable>(
+    editor: E,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    options: MutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DeletePlan<E::Plan>, DeleteError<E::Error>> {
+    let _span = tracing::debug_span!("query.delete.plan").entered();
+    let selected = select_rows(&editor, query, query_budget, options, cancelled)?;
+    finish(editor, &selected, backend_budget, cancelled)
+}
+
+fn finish<E: DeletableTable>(
+    editor: E,
+    selected: &[RowHandle],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<DeletePlan<E::Plan>, DeleteError<E::Error>> {
+    let matched_rows = selected.len();
+    let backend = editor
+        .plan_deletes(selected, budget, cancelled)
+        .map_err(DeleteError::Backend)?;
+    Ok(DeletePlan {
+        backend,
+        matched_rows,
+    })
+}
+
+fn select_rows<E: DeletableTable>(
+    editor: &E,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    options: MutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<RowHandle>, QueryError> {
     if cancelled() {
-        return Err(QueryError::Cancelled.into());
+        return Err(QueryError::Cancelled);
     }
 
     budget
@@ -63,14 +124,27 @@ pub fn plan_delete<E: DeletableTable>(
         .map_err(QueryError::from)?;
     let snapshot = editor.snapshot();
     if snapshot.policy().names != NameComparison::AsciiInsensitive {
-        return Err(QueryError::Unsupported.into());
+        return Err(QueryError::Unsupported);
     }
 
     budget
         .charge(Resource::Bytes, MAX_BIND_BYTES as u64)
         .map_err(QueryError::from)?;
-    let source = SnapshotSource(snapshot);
-    let BoundDelete { filter } = bind_delete(query, &source)?;
+    if !options.text_collations.is_empty() {
+        budget.charge(Resource::Steps, options.text_collations.len() as u64)?;
+        validate_text_collations(snapshot.columns(), options.text_collations)?;
+    }
+    let source = MutationSource {
+        snapshot,
+        text_collations: options.text_collations,
+    };
+    let BoundDelete { parameters, filter } = bind_delete(
+        query,
+        &source,
+        options.parameters.is_some(),
+        budget,
+        cancelled,
+    )?;
 
     let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
@@ -82,13 +156,15 @@ pub fn plan_delete<E: DeletableTable>(
         discovery: &discovery,
         parameters: Vec::new(),
         options: ExecutionOptions {
-            collation,
+            collation: options.collation,
+            collation_resolver: options.collation_resolver,
             cancelled: Some(cancelled),
             ..ExecutionOptions::default()
         },
         budget,
     };
     runtime.tick()?;
+    runtime.bind_parameters(&parameters, options.parameters.unwrap_or(&[]), true)?;
     let mut selected: Vec<RowHandle> = Vec::new();
 
     for (ordinal, row) in snapshot.rows().iter().enumerate() {
@@ -98,8 +174,12 @@ pub fn plan_delete<E: DeletableTable>(
             .charge(Resource::Rows, 1)
             .map_err(QueryError::from)?;
         let mut expression_row = runtime.allocate_expression_row(row.len())?;
-        for value in row {
-            expression_row.push(CellValue::scalar(runtime.copy(value)?));
+        for (position, value) in row.iter().enumerate() {
+            expression_row.push(source.cell(
+                position,
+                runtime.copy(value)?,
+                options.collation_resolver.is_some(),
+            ));
         }
 
         let environment = Environment {
@@ -141,15 +221,7 @@ pub fn plan_delete<E: DeletableTable>(
     }
 
     runtime.tick()?;
-    let matched_rows = selected.len();
-    let backend = editor
-        .plan_deletes(&selected, budget, cancelled)
-        .map_err(DeleteError::Backend)?;
-
-    Ok(DeletePlan {
-        backend,
-        matched_rows,
-    })
+    Ok(selected)
 }
 
 #[cfg(test)]

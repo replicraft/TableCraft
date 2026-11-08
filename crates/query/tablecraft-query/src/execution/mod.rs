@@ -13,14 +13,16 @@ mod crosstab;
 mod declarations;
 mod deleting;
 mod domain;
-pub use deleting::{DeleteError, DeletePlan, plan_delete};
+pub use deleting::{DeleteError, DeletePlan, plan_delete, plan_delete_with_options};
 mod editing;
 mod inserting;
+mod mutation;
 pub use inserting::{InsertError, local_insert_table, plan_insert, plan_insert_with_omissions};
+pub use mutation::MutationOptions;
 mod execute;
 pub use editing::{
-    UpdateError, UpdateOptions, UpdatePlan, plan_batch_update, plan_batch_update_with_budgets,
-    plan_batch_update_with_comparison, plan_update,
+    UpdateError, UpdatePlan, plan_batch_update, plan_batch_update_with_budgets,
+    plan_batch_update_with_options, plan_update,
 };
 pub(crate) use execute::ExecutionContext;
 mod exact_keys;

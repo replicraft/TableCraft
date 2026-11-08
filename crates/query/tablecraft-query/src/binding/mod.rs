@@ -29,6 +29,7 @@ mod grouping;
 pub(crate) use editing::{BoundUpdate, bind_batch_update, bind_update};
 mod literals;
 mod multivalue;
+mod mutation_parameters;
 mod mutation_scalar;
 mod named;
 mod parameters;

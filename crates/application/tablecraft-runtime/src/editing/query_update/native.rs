@@ -61,7 +61,7 @@ pub(super) fn review(
             parsed.query(),
             &mut native,
             &mut query_work,
-            sql::NativeUpdateOptions {
+            sql::NativeMutationOptions {
                 parameters: &bindings,
                 collation: resolver.default_collation(),
                 resolver: &resolver,

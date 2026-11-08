@@ -4,7 +4,9 @@ use crate::{
     NativeCollationResolver,
     editing::{
         NativeEditError,
-        sql::{NativeUpdateOptions, RecoverableError, plan_recoverable_batch_update_with_options},
+        sql::{
+            NativeMutationOptions, RecoverableError, plan_recoverable_batch_update_with_options,
+        },
     },
 };
 use std::{cell::RefCell, io::Cursor};
@@ -51,7 +53,7 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
             parsed.query(),
             &mut budget(),
             &mut budget(),
-            NativeUpdateOptions {
+            NativeMutationOptions {
                 parameters: &[],
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -79,7 +81,7 @@ fn actual_text_field_policy_is_used_even_when_the_explicit_caller_default_refuse
                 literal.query(),
                 &mut budget(),
                 &mut budget(),
-                NativeUpdateOptions {
+                NativeMutationOptions {
                     parameters: &[],
                     collation: resolver.default_collation(),
                     resolver: &resolver
@@ -157,7 +159,7 @@ fn native_metadata_refusal_cannot_consume_or_refill_the_independent_query_allowa
             parsed.query(),
             &mut ResourceBudget::new(0, 0, 0),
             &mut query,
-            NativeUpdateOptions {
+            NativeMutationOptions {
                 parameters: &[],
                 collation: resolver.default_collation(),
                 resolver: &resolver,
@@ -222,7 +224,7 @@ fn explicit_native_parameter_context_preserves_legacy_declaration_refusal() {
         parsed.query(),
         &mut budget(),
         &mut budget(),
-        NativeUpdateOptions {
+        NativeMutationOptions {
             parameters: &parameters,
             collation: resolver.default_collation(),
             resolver: &resolver,

@@ -39,8 +39,9 @@ pub use binding::{
 };
 pub use error::QueryError;
 pub use execution::{
-    DeleteError, DeletePlan, UpdateError, UpdateOptions, UpdatePlan, plan_batch_update,
-    plan_batch_update_with_budgets, plan_batch_update_with_comparison, plan_delete, plan_update,
+    DeleteError, DeletePlan, MutationOptions, UpdateError, UpdatePlan, plan_batch_update,
+    plan_batch_update_with_budgets, plan_batch_update_with_options, plan_delete,
+    plan_delete_with_options, plan_update,
 };
 pub use execution::{
     ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult, StreamError, StreamSummary,

@@ -5,7 +5,7 @@ use tablecraft_core::values::Value;
 use tablecraft_db::Snapshot;
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_query::{
-    QueryError, UpdateError, UpdateOptions, plan_batch_update_with_comparison,
+    MutationOptions, QueryError, UpdateError, plan_batch_update_with_options,
     source::{CollationResolver, TextCollationId},
 };
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
@@ -106,12 +106,12 @@ fn field_resolver_governs_where_and_eager_set_lineage_instead_of_database_defaul
         ParseLimits::default(),
     )
     .unwrap();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
@@ -142,12 +142,12 @@ fn typed_text_parameters_preserve_the_stored_field_policy_in_where_and_set() {
     .unwrap();
     let parameters = [("needle", Value::Text("ALPHA".into()))];
 
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: Some(&parameters),
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),
@@ -189,12 +189,12 @@ fn conflicting_or_unknown_field_policies_refuse_before_the_consuming_backend_fin
         let (editor, calls) = editor();
         let resolver = Resolver::default();
         let query = parse_query(statement, ParseLimits::default()).unwrap();
-        let result = plan_batch_update_with_comparison(
+        let result = plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: None,
                 collation: Some(&DEFAULT_COMPARER),
                 collation_resolver: Some(&resolver),
@@ -215,12 +215,12 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
     for policies in [vec![Some(FOLD)], vec![Some(FOLD), None, None, None]] {
         let (editor, calls) = editor();
         let query = parse_query("UPDATE Items SET Score=77", ParseLimits::default()).unwrap();
-        let result = plan_batch_update_with_comparison(
+        let result = plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: None,
                 text_collations: &policies,
                 ..Default::default()
@@ -245,12 +245,12 @@ fn malformed_policy_alignment_and_provider_cancellation_cannot_finish_a_batch() 
         ParseLimits::default(),
     )
     .unwrap();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: None,
             collation: Some(&DEFAULT_COMPARER),
             collation_resolver: Some(&resolver),

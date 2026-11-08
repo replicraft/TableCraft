@@ -1,3 +1,5 @@
+mod options;
+
 use super::{DeleteError, plan_delete};
 use std::{cell::Cell, rc::Rc};
 use tablecraft_core::{
@@ -15,6 +17,7 @@ fn budget() -> ResourceBudget {
 struct Deleter {
     snapshot: Snapshot,
     calls: Rc<Cell<usize>>,
+    backend_steps: u64,
 }
 
 impl DeletableTable for Deleter {
@@ -28,9 +31,10 @@ impl DeletableTable for Deleter {
     fn plan_deletes(
         self,
         rows: &[RowHandle],
-        _: &mut ResourceBudget,
+        budget: &mut ResourceBudget,
         _: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
+        budget.charge(Resource::Steps, self.backend_steps)?;
         self.calls.set(self.calls.get() + 1);
         rows.iter().map(|&row| self.snapshot.ordinal(row)).collect()
     }
@@ -50,6 +54,10 @@ fn source(empty: bool) -> (Deleter, Rc<Cell<usize>>) {
             vec![Value::Int32(3), Value::Null],
         ]
     };
+    snapshot_source(columns, rows)
+}
+
+fn snapshot_source(columns: Vec<Column>, rows: Vec<Vec<Value>>) -> (Deleter, Rc<Cell<usize>>) {
     let snapshot = Snapshot::new(
         "Items".into(),
         columns,
@@ -68,6 +76,7 @@ fn source(empty: bool) -> (Deleter, Rc<Cell<usize>>) {
         Deleter {
             snapshot,
             calls: calls.clone(),
+            backend_steps: 0,
         },
         calls,
     )

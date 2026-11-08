@@ -5,7 +5,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
-use tablecraft_query::{QueryError, UpdateError, UpdateOptions, plan_batch_update_with_comparison};
+use tablecraft_query::{MutationOptions, QueryError, UpdateError, plan_batch_update_with_options};
 use tablecraft_sql::{ParseLimits, parse_query};
 
 #[test]
@@ -17,12 +17,12 @@ fn typed_parameters_filter_original_rows_and_preserve_null_assignments() {
     .unwrap();
     let parameters = [("CHOSEN", Value::Int32(2)), ("replacement", Value::Null)];
     let (editor, calls) = create_editor();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: Some(&parameters),
             ..Default::default()
         },
@@ -54,12 +54,12 @@ fn missing_extra_duplicate_and_wrong_carriers_refuse_even_for_unused_parameters(
         vec![("chosen", Value::Int16(1))],
     ] {
         let (editor, calls) = create_editor();
-        let result = plan_batch_update_with_comparison(
+        let result = plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: Some(&parameters),
                 ..Default::default()
             },
@@ -80,12 +80,12 @@ fn missing_extra_duplicate_and_wrong_carriers_refuse_even_for_unused_parameters(
     let parameters = [("chosen", Value::Int32(1)), ("CHOSEN", Value::Int32(2))];
     let (editor, calls) = create_editor();
     assert!(matches!(
-        plan_batch_update_with_comparison(
+        plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: Some(&parameters),
                 ..Default::default()
             },
@@ -106,12 +106,12 @@ fn declaration_constraints_and_legacy_refusal_precede_empty_backend_finish() {
     let inputs = [("text_value", Value::Text("abc".into()))];
     for parameters in [None, Some(inputs.as_slice())] {
         let (editor, calls) = create_editor();
-        let result = plan_batch_update_with_comparison(
+        let result = plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters,
                 ..Default::default()
             },
@@ -145,12 +145,12 @@ fn parameter_values_cannot_hide_late_rhs_failure_or_become_sql() {
     ];
     let (editor, calls) = create_editor();
     assert!(
-        plan_batch_update_with_comparison(
+        plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: Some(&parameters),
                 ..Default::default()
             },
@@ -170,12 +170,12 @@ fn sql_looking_text_is_only_a_literal_value() {
     .unwrap();
     let parameters = [("inert", Value::Text("DELETE FROM Items".into()))];
     let (editor, calls) = create_editor();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: Some(&parameters),
             collation: Some(&super::comparison::DEFAULT_COMPARER),
             ..Default::default()
@@ -199,12 +199,12 @@ fn fields_take_precedence_over_same_named_declared_parameters() {
     .unwrap();
     let parameters = [("Id", Value::Int32(999))];
     let (editor, calls) = create_editor();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: Some(&parameters),
             ..Default::default()
         },
@@ -227,12 +227,12 @@ fn value_parameters_keep_the_supplied_carrier_for_arithmetic() {
     .unwrap();
     let parameters = [("increment", Value::Int16(32767))];
     let (editor, calls) = create_editor();
-    let result = plan_batch_update_with_comparison(
+    let result = plan_batch_update_with_options(
         editor,
         query.query(),
         &mut budget(),
         &mut budget(),
-        UpdateOptions {
+        MutationOptions {
             parameters: Some(&parameters),
             ..Default::default()
         },
@@ -262,12 +262,12 @@ fn parameter_name_work_and_cancellation_precede_backend_finish() {
     ];
     let (editor, calls) = create_editor();
     assert!(matches!(
-        plan_batch_update_with_comparison(
+        plan_batch_update_with_options(
             editor,
             query.query(),
             &mut budget(),
             &mut budget(),
-            UpdateOptions {
+            MutationOptions {
                 parameters: Some(&parameters),
                 ..Default::default()
             },
@@ -283,12 +283,12 @@ fn parameter_name_work_and_cancellation_precede_backend_finish() {
     let mut query_budget = budget();
     let before = query_budget.remaining(Resource::Steps);
     assert!(matches!(
-        plan_batch_update_with_comparison(
+        plan_batch_update_with_options(
             editor,
             query.query(),
             &mut query_budget,
             &mut ResourceBudget::new(0, 0, 0),
-            UpdateOptions {
+            MutationOptions {
                 parameters: Some(&parameters),
                 ..Default::default()
             },

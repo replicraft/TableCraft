@@ -1,36 +1,18 @@
-use super::{UpdateError, assignment::update_value, source::UpdateSource};
-use crate::execution::cell::CellValue;
+use super::{UpdateError, assignment::update_value};
+use crate::execution::mutation::{MutationOptions, source::MutationSource};
 use crate::{
     ExecutionOptions, QueryError,
     binding::{BoundUpdate, bind_batch_update, bind_update},
     discovery::DiscoveryState,
     execution::{Environment, Runtime},
     profile::MAX_BIND_BYTES,
-    source::{CollationResolver, TextCollationId, TextPolicy, validate_text_collations},
+    source::validate_text_collations,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{CellUpdate, ColumnUpdates, EditableBatch, EditableTable, UpdateProfile};
-use tablecraft_expressions::{comparison::Collation, logic::Truth, numeric::OperandDeclaration};
+use tablecraft_expressions::{comparison::Collation, logic::Truth};
 use tablecraft_schema::{NameComparison, ScalarType};
 use tablecraft_sql::query::Query;
-
-/// Explicit typed inputs, comparison providers and field provenance for one frozen UPDATE.
-/// Policy identities remain opaque; this layer never chooses native comparers.
-#[derive(Default)]
-pub struct UpdateOptions<'a> {
-    /// Exact typed inputs for all declarations. None preserves legacy refusal.
-    /// Values are literal carriers, never SQL fragments or expressions.
-    pub parameters: Option<&'a [(&'a str, Value)]>,
-    /// Explicit comparison for expressions without a stored field policy.
-    pub collation: Option<&'a dyn Collation>,
-    /// Resolve field identities in the source's stable policy namespace.
-    pub collation_resolver: Option<&'a dyn CollationResolver>,
-    /// Policies aligned with snapshot columns; empty retains policy-free behavior.
-    pub text_collations: &'a [Option<TextCollationId>],
-}
 
 /// A backend candidate after all matching-row expressions have succeeded.
 /// This is not a committed edit; persistence remains an explicit host action.
@@ -84,7 +66,7 @@ pub fn plan_update<E: EditableTable>(
         query,
         false,
         budget,
-        UpdateOptions {
+        MutationOptions {
             collation,
             ..Default::default()
         },
@@ -119,7 +101,7 @@ pub fn plan_batch_update<E: EditableBatch>(
         query,
         true,
         budget,
-        UpdateOptions {
+        MutationOptions {
             collation,
             ..Default::default()
         },
@@ -146,7 +128,7 @@ pub fn plan_batch_update_with_budgets<E: EditableBatch>(
         query,
         true,
         query_budget,
-        UpdateOptions {
+        MutationOptions {
             collation,
             ..Default::default()
         },
@@ -158,12 +140,12 @@ pub fn plan_batch_update_with_budgets<E: EditableBatch>(
 
 /// Plan using actual field policies for binding and every original-row cell.
 /// Query staging and native finish retain their separate cumulative allowances.
-pub fn plan_batch_update_with_comparison<E: EditableBatch>(
+pub fn plan_batch_update_with_options<E: EditableBatch>(
     editor: E,
     query: &Query,
     query_budget: &mut ResourceBudget,
     backend_budget: &mut ResourceBudget,
-    comparison: UpdateOptions<'_>,
+    comparison: MutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
     let _span = tracing::debug_span!("query.update.batch_plan").entered();
@@ -219,7 +201,7 @@ fn prepare<E: EditableTable>(
     query: &Query,
     multiple: bool,
     budget: &mut ResourceBudget,
-    comparison: UpdateOptions<'_>,
+    comparison: MutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedUpdate, QueryError> {
     check(budget, cancelled)?;
@@ -241,7 +223,7 @@ fn prepare<E: EditableTable>(
         budget.charge(Resource::Steps, comparison.text_collations.len() as u64)?;
         validate_text_collations(snapshot.columns(), comparison.text_collations)?;
     }
-    let source = UpdateSource {
+    let source = MutationSource {
         snapshot,
         text_collations: comparison.text_collations,
     };
@@ -318,20 +300,11 @@ fn prepare<E: EditableTable>(
         runtime.budget.charge(Resource::Rows, 1)?;
         let mut expression_row = runtime.allocate_expression_row(row.len())?;
         for (position, value) in row.iter().enumerate() {
-            let mut cell = CellValue::scalar(runtime.copy(value)?);
-            if comparison.collation_resolver.is_some() || !comparison.text_collations.is_empty() {
-                let policy = comparison
-                    .text_collations
-                    .get(position)
-                    .copied()
-                    .flatten()
-                    .map_or(TextPolicy::Default, TextPolicy::Column);
-                cell = cell
-                    .with_policy(policy)
-                    .with_complete_policy(true)
-                    .with_declaration(Some(OperandDeclaration::Scalar));
-            }
-            expression_row.push(cell);
+            expression_row.push(source.cell(
+                position,
+                runtime.copy(value)?,
+                comparison.collation_resolver.is_some(),
+            ));
         }
 
         let env = Environment {

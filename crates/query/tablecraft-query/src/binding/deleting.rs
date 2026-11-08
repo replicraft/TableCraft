@@ -1,17 +1,25 @@
 //! Bind a single local DELETE predicate without enabling hidden retrieval.
-use super::Binder;
+use super::{Binder, Parameter};
 use crate::{QueryError, Source, plan::Expr};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::{
     query::{Query, Statement},
     select::TableSource,
 };
 
 pub(crate) struct BoundDelete {
+    pub parameters: Vec<Parameter>,
     pub filter: Option<Expr>,
 }
 
-pub(crate) fn bind_delete(query: &Query, source: &dyn Source) -> Result<BoundDelete, QueryError> {
-    if !query.parameters.is_empty() {
+pub(crate) fn bind_delete(
+    query: &Query,
+    source: &dyn Source,
+    allow_parameters: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<BoundDelete, QueryError> {
+    if !allow_parameters && !query.parameters.is_empty() {
         return Err(QueryError::Unsupported);
     }
 
@@ -30,6 +38,10 @@ pub(crate) fn bind_delete(query: &Query, source: &dyn Source) -> Result<BoundDel
             || !delete.targets[0].as_str().eq_ignore_ascii_case(qualifier))
     {
         return Err(QueryError::Unsupported);
+    }
+
+    if allow_parameters {
+        super::mutation_parameters::admit(&query.parameters, Some(budget), cancelled)?;
     }
 
     let mut binder = Binder {
@@ -59,6 +71,9 @@ pub(crate) fn bind_delete(query: &Query, source: &dyn Source) -> Result<BoundDel
         policy_visits: 0,
         bytes: 0,
     };
+    binder.parameters = binder.bind_parameters(&query.parameters)?;
+    binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
+
     let relation = binder.relation(
         table,
         &[],
@@ -79,5 +94,8 @@ pub(crate) fn bind_delete(query: &Query, source: &dyn Source) -> Result<BoundDel
         return Err(QueryError::Unsupported);
     }
 
-    Ok(BoundDelete { filter })
+    Ok(BoundDelete {
+        parameters: binder.parameters,
+        filter,
+    })
 }
