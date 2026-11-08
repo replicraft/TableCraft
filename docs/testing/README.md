@@ -1,5 +1,6 @@
 # Testing and evidence
 
+- [Native snapshot and parallel decryption measurements](NATIVE_LIBRARY_REFACTORS.md)
 - [Cross-platform audit and native CI scope](CROSS_PLATFORM_AUDIT.md)
 - [Read/query acceptance](READ_QUERY_ACCEPTANCE.md)
 - [Fixture provenance and notices](FIXTURES.md)

@@ -240,6 +240,15 @@ The user set the following project order on 8 November 2026:
    localization instructions remain private; implementation and public operating
    documentation follow in this phase, not ahead of the browser host.
 
+The initial accepted library phase is complete: generated Windows IO bindings
+and standard flushes, whole-owned immutable snapshot sharing, and measured opt-in
+native parallel AES removal. Wrapper candidates that do not replace current
+security/durability contracts were not added. See the
+[implementation record](../IMPLEMENTATION.md#native-library-refactors--8-november-2026)
+and [measurements](../testing/NATIVE_LIBRARY_REFACTORS.md). This is not an exhaustive
+claim that no further library refactor is possible; phase 3 deliberately repeats
+the review against completed native workloads.
+
 SQLite, native projects and VBA execution remain deferred throughout this order.
 The native backend delivery sequence is:
 

@@ -8,6 +8,13 @@ do not expand SQLite, native-project Python, conversion or project infrastructur
 as part of the active backend/pre-UI goal. Follow the
 [Access behavioral-parity decision](docs/decisions/0003_ACCESS_BEHAVIORAL_PARITY.md).
 
+Follow the accepted [delivery order](docs/features/ACCESS_PARITY_ROADMAP.md#delivery-order-and-acceptance):
+library refactors and measured experiments, native read/write/query completion,
+an ownership/crate/dependency audit, the browser host, then shared web/desktop
+localization. Keep browser-only additions target/feature scoped. The private
+localization instructions apply in that final phase; do not start catalog/font
+migrations or scaffold the web host ahead of the earlier work.
+
 Native Access behavior governs shared services and the eventual UI: preserve
 corresponding Access defaults, restrictions, workflows, validation, confirmations,
 events and documented quirks across GUI, CLI and future agent hosts. Improvements

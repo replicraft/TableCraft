@@ -1,5 +1,45 @@
 # Implementation status
 
+## Native library refactors — 8 November 2026
+
+Windows IO now uses the existing generated device-information structure and
+standard file flush API; it retains the native security/publication contracts.
+The reviewed `fs4`, richer Windows bindings and permission/capability wrappers do
+not replace those contracts, so no extra wrapper dependency was added.
+
+Native/runtime immutable originals now share whole-owned `bytes::Bytes` storage
+through `NativeImageSource`. Full retained capacity/control admission, private
+capture purpose and fresh filesystem source proof remain explicit. AFTER buffers
+remain separate. Optional native Rayon powers explicit CLI Agile encryption
+removal with 2–16 workers under the existing 64 MiB captured-image envelope;
+default removal stays streaming and unsupported ciphers refuse without fallback.
+The normal desktop dependency tree does not include Rayon.
+
+The batched gates pass 1,302 native engine units (260 existing ignored cases),
+131 Access adapter units, 179 runtime tests plus its diagnostic integration,
+134 desktop tests, 108 CLI units and 16 encryption integration tests. Strict
+native affected-package lint, minimal/offline-edit builds, Windows/Linux runtime
+compilation, Windows engine compilation with the parallel feature, strict
+FreeBSD unsupported-runtime lint and minimal UI/query/IO WASM compilation pass.
+The earlier Windows IO gate also passed 159 unit/integration/doc checks, strict
+native/Windows lint and ARM64 publication/journal compilation. No native Windows
+execution or Access comparison is claimed. These are targeted package gates,
+not a new complete-workspace or complete browser compatibility claim.
+
+The first retries caught a Bytes preview buffer type mismatch, private immutable
+proof-test mutations, an unreachable cancellation injection and benchmark chunk
+API lint/type errors. Corrected runs pass; initial and corrected logs remain in
+ignored `.cache/library-*` files. The retained
+[benchmark report](testing/NATIVE_LIBRARY_REFACTORS.md) includes all measured
+samples, earlier noisy cohorts and the precise workload limitations.
+
+The accepted order remains library refactors, native read/write/query completion,
+an ownership/crate/dependency review, the browser host, then coordinated
+web/desktop localization. Persisted table rename is the next native CRUD slice;
+its partial intent/independent fixtures are not a working operation. Web and
+localization are not started by this milestone. See the
+[delivery and acceptance order](features/ACCESS_PARITY_ROADMAP.md#delivery-order-and-acceptance).
+
 ## GUI-reviewed INSERT SELECT append — 8 November 2026
 
 Scratch Run now reviews qualified local INSERT SELECT/UNION appends through the
