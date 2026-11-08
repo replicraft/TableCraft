@@ -7,6 +7,8 @@ mod initial_numbers;
 mod initial_properties;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
+#[path = "render_preview/saved_sql.rs"]
+mod saved_sql;
 #[path = "render_preview/table_creation.rs"]
 mod table_creation;
 #[path = "render_preview/table_rename.rs"]
@@ -92,6 +94,21 @@ fn main() -> Result<(), Box<dyn Error>> {
         "-navigation-collapsed"
     } else {
         ""
+    };
+    let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
+    if !matches!(
+        saved_sql.as_str(),
+        "none" | "editor" | "dirty" | "read-only" | "close" | "close-unavailable" | "close-stale"
+    ) {
+        return Err(io::Error::other("saved SQL preview must be none, editor, dirty, read-only, close, close-unavailable or close-stale").into());
+    }
+    if saved_sql != "none" && scenes != [Scene::SavedQuery] {
+        return Err(io::Error::other("saved SQL preview requires saved-query scene").into());
+    }
+    let saved_sql_suffix = if saved_sql == "none" {
+        String::new()
+    } else {
+        format!("-sql-{saved_sql}")
     };
     let table_rename = match setting("TABLECRAFT_PREVIEW_TABLE_RENAME", "false")?.as_str() {
         "false" => false,
@@ -206,7 +223,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(!table_suffix.is_empty())
         + usize::from(date_residue != "none")
         + usize::from(!initial_suffix.is_empty())
-        + usize::from(table_rename);
+        + usize::from(table_rename)
+        + usize::from(saved_sql != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -338,9 +356,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if table_rename {
             table_rename::open(&mut harness);
         }
+        if saved_sql != "none" {
+            saved_sql::prepare(&mut harness, &saved_sql);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
