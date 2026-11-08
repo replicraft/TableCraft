@@ -3,8 +3,8 @@
 `NativeImage::plan_disable_name_auto_correct` now constructs an unpublished native
 candidate for an explicit request to disable Track/Perform Name AutoCorrect.
 This does not change constructor defaults, imply that missing metadata is zero,
-or provide a normal save capability. The new candidate's focused tests remain
-unrun at this implementation checkpoint.
+or implicitly save a file. The native candidate and separate original-intent
+lane retain their own explicit qualification below.
 
 The first source language is the existing canonical seven-system-role creator
 ledger with exactly one user table and no MSysDb. Source admission reuses the
@@ -39,11 +39,35 @@ raw fixtures author six empty/populated keyless/manual/generated-primary pairs
 with retained sentinels for the native candidate tests. Authored tests and SDK
 write observations remain distinct from executed native planner checks.
 
-This candidate is outside all existing creation and rename intent languages.
-No journal, adapter/runtime/GUI option save, Access comparison or Windows
-execution is supplied by this checkpoint. Existing add-table source admission
-still assumes the original seven-role ledger. Rename V1/V2 still requires its
-existing inline OFF source grammar, so this external option candidate does not
-yet establish creator-compatible rename or general CRUD composition. Those
-operations need explicit new source/profile qualification and original-intent
-recovery rather than relaxed historical guards.
+The initial three-test native batch passed cancellation/budget and source/alias
+refusals, but the positive case stopped at an incorrect complete Header equality
+check: that summary includes page count derived from actual EOF. The correction
+keeps every stored header byte in the exact complement proof, compares unchanged
+format/geometry/encoding facts and requires exactly one additional physical page.
+The corrected six-image execution is pending the next coordinated batch. The
+independent SDK/literal matches do not substitute for this native rerun.
+
+`plan_recoverable_disable_name_auto_correct` now binds a qualified candidate to a
+new closed `TCDO0001`/profile 1 original request. Its fixed 64-byte record contains
+the complete BEFORE length/digest and the explicit disable-both action; it stores
+no target path, payload patch or AFTER. The bounded 9/10-page wire envelope never
+qualifies source ownership by itself. Fresh requalification compares the entire
+original, rebuilds the same closed native candidate under a separate native pool,
+then compares both complete images under the proof allowance.
+
+Persistence uses the existing expected-image V2 journal with an explicit
+resizable target. Cold recovery verifies original intent, freshly captures the
+journal BEFORE and reconstructs the complete option candidate before consuming
+that same checked V2 session. Pending/torn writes restore original bytes and
+length; committed writes require the full replacement. Settled confirmation
+checks bytes/barriers without repair or another option action. Six focused
+wire/requalification/recovery tests are authored and remain unrun at this
+checkpoint. Existing TCAT/TCNT/TCAC/TCRN languages are unchanged.
+
+No adapter/runtime/GUI option save, Access comparison or Windows execution is
+supplied by this checkpoint. Existing add-table source admission still assumes
+the original seven-role ledger. Rename V1/V2 still requires its existing inline
+OFF source grammar, so this external option candidate does not yet establish
+creator-compatible rename or general CRUD composition. Those operations need
+explicit new source/profile qualification and original-intent recovery rather
+than relaxed historical guards.

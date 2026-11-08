@@ -1,6 +1,9 @@
 //! In-memory durable-storage protocol observations, without filesystem guarantees.
 use std::io::{self, Cursor, Read, Seek, SeekFrom, Write};
-use tablecraft_io::{IoError, journal::DurableStorage};
+use tablecraft_io::{
+    IoError,
+    journal::{DurableStorage, ResizableDurableStorage},
+};
 
 /// Byte storage with write-call accounting and explicit no-op test barriers.
 /// This models the journal protocol, never power-loss or filesystem durability.
@@ -50,6 +53,21 @@ impl DurableStorage for MemoryStorage {
     }
 
     fn sync_storage(&mut self) -> Result<(), IoError> {
+        Ok(())
+    }
+}
+
+impl ResizableDurableStorage for MemoryStorage {
+    fn resize_storage(&mut self, length: u64) -> Result<(), IoError> {
+        let length =
+            usize::try_from(length).map_err(|_| IoError::Io(io::ErrorKind::InvalidInput))?;
+        let bytes = self.bytes.get_mut();
+        if length > bytes.len() {
+            bytes
+                .try_reserve_exact(length - bytes.len())
+                .map_err(|_| IoError::Io(io::ErrorKind::OutOfMemory))?;
+        }
+        bytes.resize(length, 0);
         Ok(())
     }
 }

@@ -187,3 +187,9 @@ pub use intent::{
     AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,
     RecoverableAddColumnPlan, qualify_native_add_column_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
+    RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
+};

@@ -284,3 +284,9 @@ pub use transaction::{
     QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
     RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
+    RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
+};

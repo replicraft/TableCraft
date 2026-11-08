@@ -79,6 +79,14 @@ pub use rename_table::{
 };
 
 #[cfg(feature = "ace16-create")]
+mod database_options;
+#[cfg(feature = "ace16-create")]
+pub use database_options::{
+    DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
+    RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
+};
+
+#[cfg(feature = "ace16-create")]
 mod add_column;
 #[cfg(feature = "ace16-create")]
 pub use add_column::{
