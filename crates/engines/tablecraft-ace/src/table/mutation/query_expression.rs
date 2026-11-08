@@ -227,9 +227,11 @@ pub(crate) fn qualify(
                     .iter()
                     .any(|byte| *byte != 0)
                 || !stored[INLINE_HEADER_BYTES..]
-                    .chunks_exact(2)
+                    .as_chunks::<{ size_of::<u16>() }>()
+                    .0
+                    .iter()
                     .zip(expected.bytes())
-                    .all(|(pair, byte)| pair == u16::from(byte).to_le_bytes())
+                    .all(|(pair, byte)| *pair == u16::from(byte).to_le_bytes())
             {
                 return Err(QueryExpressionError::Source);
             }

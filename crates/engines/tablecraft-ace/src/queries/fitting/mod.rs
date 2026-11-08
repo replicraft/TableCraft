@@ -120,7 +120,9 @@ impl NativeImage {
             .map_err(|_| InspectError::Allocation)?;
         after.extend_from_slice(self.as_bytes());
         for (pair, value) in after[span.clone()]
-            .chunks_exact_mut(2)
+            .as_chunks_mut::<{ size_of::<u16>() }>()
+            .0
+            .iter_mut()
             .zip(replacement.bytes())
         {
             check(budget, cancelled)?;
