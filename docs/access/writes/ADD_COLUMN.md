@@ -2,8 +2,8 @@
 
 The native engine now has an authored source-qualified candidate and a separate
 original-intent persistence/recovery API for appending one nullable ordinary
-Int32 field. These APIs are checkpointed for the next coordinated validation
-batch; they do not yet enable saved-column editing in the GUI or CLI.
+Int32 field. The focused native and offline adapter checks pass; these APIs do not yet
+enable saved-column editing in the GUI or CLI.
 
 ## Actual source and preservation
 
@@ -54,6 +54,11 @@ intent languages remain unchanged.
 The focused authored tests cover independent request bytes, complete-image
 reconstruction, malformed framing, stale originals, request substitution,
 pending/committed/torn journals, settled confirmation and independent proof
-limits. Their execution is pending. Native Windows and Microsoft Access
-save/reopen behavior, timestamp parity, adapter dispatch, runtime reviews and GUI
-column editing are not qualified by this checkpoint.
+limits. Five candidate, six native intent/recovery and five offline adapter tests pass.
+The adapter stages a reviewed plan against fresh retained-target bytes and
+dispatches only the closed TCAC family during cold and settled recovery. A
+committed `SchemaChange::ColumnAdded` has no matched/changed row counts.
+
+See the [focused batch record](../../testing/results/schema-save-workflows-2026-11-08.json).
+Native Windows and Microsoft Access save/reopen behavior, timestamp parity,
+runtime reviews and GUI column editing are not qualified by this checkpoint.

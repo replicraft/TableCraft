@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "platform": "macOS native and headless unit boundaries",
+  "source_checkpoint": "559e97be",
+  "compiled_before_followup_fix": "604c8567",
+  "passed": 93,
+  "failed": 1,
+  "ignored_in_normal_filters": 1,
+  "cases": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::add_column::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-creation-add_column-tests-20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "110f5d5386916b7f97469de001a714b0689f5e5916907cdac9097cc01fca1769"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::add_column::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-transaction-intent-add_column-tests-20261108.log",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "3822b37b1c8a77eb3a73f8abd25b75698f22ab8bb7bb2533e0455b48c016cf87"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "queries::fitting::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-queries-fitting-tests-20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 1,
+      "log_sha256": "b1af818be4e8f1e5d19719abcc5704eba8e5c751659f7d0a8f6b81fc7bbc7e71"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::query_expression::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-transaction-intent-query_expression-tests-20261108.log",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "b1e1e583b2a57259a35396d0f53123d9f42feef1d08056ecb8d80146e257c321"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::database_options::tests",
+      "exit_code": 101,
+      "log": ".cache/schema-focused-tablecraft_ace-creation-database_options-tests-20261108.log",
+      "passed": 2,
+      "failed": 1,
+      "ignored": 0,
+      "log_sha256": "87102f41e3ce0325c5fdc9d90fba9c458bb2a2b9c1aa18843a602d71592c8b38"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::add_table::",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-creation-add_table--20261108.log",
+      "passed": 26,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "d31ab6731111fa1fd588cc7678ba93bf30f3149bde96effaae3852d2c9ff219f"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "rename_table",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_ace-rename_table-20261108.log",
+      "passed": 27,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "5a136feeacf07135d29605af17895531135f304fade9a6aaae86d88e1ca41df6"
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "editing::offline::add_column::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_access-editing-offline-add_column-tests-20261108.log",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "c195c08252aebed65d291a624d3c28bcf29504883ea3a58b8b1900f9bc1a0e56"
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::platform::save::outcomes::tests",
+      "exit_code": 0,
+      "log": ".cache/schema-focused-tablecraft_runtime-editing-platform-save-outcomes-tests-20261108.log",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "769a288c928277258dd7541e5f29bc1085b6775cfa65a99b91b0723d3ffadff9"
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "queries::fitting::tests::retained_sdk_constant_expression_matches_complete_independent_after",
+      "explicit_ignored": true,
+      "exit_code": 0,
+      "log": ".cache/schema-focused-query-sdk-oracle-20261108.log",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "43a7dd4fd12265d8c320a8fe79f2b99590006eabbce16005eb8be381bbe11f41"
+    }
+  ],
+  "failure_followup": {
+    "filter": "creation::database_options::tests",
+    "reason": "Full Header equality included derived page_count despite deliberate EOF append",
+    "fix_commit": "604c8567",
+    "rerun": "pending"
+  },
+  "limitations": [
+    "No new GUI column or query-save commands enabled by this batch",
+    "Column profile remains canonical empty keyless nullable Int32",
+    "Query profile remains same-length nonnegative Int32 constant SELECT",
+    "No native Windows or Microsoft Access execution",
+    "This is a focused batch, not a complete workspace gate"
+  ],
+  "initial_compile_failure": "Query test SHA output LowerHex mismatch and unused rename import, fixed42eb457b; failed logs retained"
+}

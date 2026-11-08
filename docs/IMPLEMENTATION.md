@@ -48,6 +48,25 @@ AFTER and retain the original source unchanged. These are macOS consumer checks,
 not broader Jet4 writes or native Access qualification. See the
 [workflow record](testing/results/jet4-genuine-application-workflows-2026-11-08.json).
 
+## Saved-column and query persistence foundation — 8 November 2026
+
+The [empty-table ADD-column](access/writes/ADD_COLUMN.md) candidate, original
+intent and shared offline save/recovery route pass five construction, six native
+intent and five adapter cases. The operation adds nullable Int32 fields only to
+canonical empty keyless tables; ordinary desktop-created generated keys and
+field properties still need broader admission. The GUI has not enabled it.
+
+The existing-query fitting candidate passes five normal cases plus an explicit
+retained SDK whole-image comparison; seven original-intent/recovery tests pass.
+This is same-length nonnegative Int32 constant SELECT editing, not general
+QueryDef CRUD. Shared catalog append and rename regressions pass 26 and 27 cases;
+nine runtime outcome-classification tests pass. The explicit database-options
+positive test exposed an incorrect derived-page-count equality; its committed
+fix awaits the next focused run. The
+[batch record](testing/results/schema-save-workflows-2026-11-08.json) retains the
+failure and correction separately. Native Windows/Access qualification remains
+unrun.
+
 ## Native library refactors — 8 November 2026
 
 Windows IO now uses the existing generated device-information structure and
