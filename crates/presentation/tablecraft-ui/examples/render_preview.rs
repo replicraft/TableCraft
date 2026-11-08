@@ -96,11 +96,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ""
     };
     let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
-    if !matches!(
-        saved_sql.as_str(),
-        "none" | "editor" | "dirty" | "read-only" | "close" | "close-unavailable" | "close-stale"
-    ) {
-        return Err(io::Error::other("saved SQL preview must be none, editor, dirty, read-only, close, close-unavailable or close-stale").into());
+    if !saved_sql::is_mode(&saved_sql) {
+        return Err(io::Error::other("unknown saved SQL preview mode").into());
     }
     if saved_sql != "none" && scenes != [Scene::SavedQuery] {
         return Err(io::Error::other("saved SQL preview requires saved-query scene").into());

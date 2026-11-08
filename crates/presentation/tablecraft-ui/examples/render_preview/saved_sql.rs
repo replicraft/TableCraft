@@ -1,4 +1,5 @@
 //! Source-free visual scenarios, without a runtime review, database or native save.
+mod status;
 use super::LAYOUT_SETTLE_STEPS;
 use egui::{Shape, accesskit::Role};
 use egui_kittest::{
@@ -11,6 +12,13 @@ const INSPECTION_ID: u64 = 710;
 const SQL_INSPECTION_ID: u64 = 711;
 const ORIGINAL: &str = "SELECT 42 AS Answer";
 const PROPOSED: &str = "select 43 as [Answer];\n";
+
+pub(super) fn is_mode(mode: &str) -> bool {
+    matches!(
+        mode,
+        "none" | "editor" | "dirty" | "read-only" | "close" | "close-unavailable" | "close-stale"
+    ) || status::is_mode(mode)
+}
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     let target = harness
@@ -50,6 +58,10 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 state.database.as_mut().unwrap().document_revision += 1;
             }
         }
+    }
+    if status::is_mode(mode) {
+        status::prepare(harness, mode);
+        return;
     }
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     harness.run();
