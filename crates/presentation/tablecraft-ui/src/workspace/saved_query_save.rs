@@ -150,9 +150,7 @@ impl State {
         if !self.admit_object_bytes(estimate.finish()) {
             return None;
         }
-        let Some(request) = copy_request(request) else {
-            return None;
-        };
+        let request = copy_request(request)?;
         let status = SaveStatus {
             identity: SavedQuerySqlSaveIdentity {
                 request_id,

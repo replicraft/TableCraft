@@ -26,20 +26,17 @@ pub(super) fn fits(
     count.string(&state.sql);
     // Filtered capture may reserve a geometric Vec capacity and owns one
     // temporary active-kind spelling until preference construction completes.
-    if let Some(active_id) = state.objects.active {
-        if let Some(entry) = state
+    if let Some(active_id) = state.objects.active
+        && let Some(entry) = state
             .objects
             .entries
             .iter()
             .find(|entry| entry.tab.id == active_id)
-        {
-            match &entry.tab.target.kind {
-                ObjectKind::Table { name } | ObjectKind::SavedQuery { name, .. } => {
-                    count.string(name)
-                }
-                ObjectKind::Sql => {}
-                ObjectKind::DraftTable { .. } => return Some(false),
-            }
+    {
+        match &entry.tab.target.kind {
+            ObjectKind::Table { name } | ObjectKind::SavedQuery { name, .. } => count.string(name),
+            ObjectKind::Sql => {}
+            ObjectKind::DraftTable { .. } => return Some(false),
         }
     }
     if let Some(navigation) = &state.objects.navigation {
