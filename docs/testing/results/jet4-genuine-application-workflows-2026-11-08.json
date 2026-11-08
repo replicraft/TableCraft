@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "platform": "macOS native runtime and headless egui desktop",
+  "scenario_commit": "eb464286",
+  "digest_compile_fix": "e9ce5614",
+  "source": {
+    "recipe": "docs/testing/ScalarFixture.java",
+    "profile": "V2000/Jet4",
+    "bytes": 135168,
+    "sha256": "de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82"
+  },
+  "oracle": {
+    "expected_sha256": "abf76b9a2eec8ffd8074a2eb131cebe48d17b75691217b6e475292074108e54f",
+    "independent_literal_patch": "ID 1 -> 41 at offset130954; all other bytes identical"
+  },
+  "observations": [
+    "explicit hash-pinned source selected through TABLECRAFT_JET4_SCALAR_SOURCE",
+    "runtime consuming review and SaveWorker persistence",
+    "desktop pasted edit, consuming review, save, acknowledgment and automatic refresh",
+    "fresh worker/desktop reopen confirms all three ID values",
+    "whole saved image matches independent expected image",
+    "journal namespace removed and original source unchanged"
+  ],
+  "cases": [
+    {
+      "package": "tablecraft_runtime",
+      "test": "genuine_jet4_reviewed_cell_save_matches_independent_whole_image",
+      "explicit_ignored_run": true,
+      "passed": true,
+      "executable": {
+        "path": ".cache/cargo-backend-20261102/debug/deps/tablecraft_runtime-46895ad390dd0f00",
+        "sha256": "d300c5fbda49df8de25043f0c9ffad0409a4483a67fa60b5e522f134c95ce016"
+      },
+      "log": {
+        "path": ".cache/tablecraft_runtime-genuine-jet4-workflow-20261108.log",
+        "sha256": "3ecbf622f2b05a2edf5da3d34d84d79d641480ff91d75ae66883fb5dfe7d25e6"
+      }
+    },
+    {
+      "package": "tablecraft-desktop",
+      "test": "genuine_jet4_reviewed_cell_save_refreshes_and_reopens_exact_image",
+      "explicit_ignored_run": true,
+      "passed": true,
+      "executable": {
+        "path": ".cache/cargo-backend-20261102/debug/deps/tablecraft_desktop-4ca0b8db824eb639",
+        "sha256": "b01425c46acba55468e8ec16cabc3bd988a8d92e616af3a534e0bd6869a575f4"
+      },
+      "log": {
+        "path": ".cache/tablecraft-desktop-genuine-jet4-workflow-20261108.log",
+        "sha256": "6c2481944ea988f247c628c73d90b8a983bebe332e66d0ab64d785fc0e926826"
+      }
+    }
+  ],
+  "initial_build_failure": "SHA output lacks LowerHex; fixed by bytewise hexadecimal formatting; original log retained",
+  "not_qualified": [
+    "native Windows or Linux execution",
+    "Microsoft Access authored fixture or execution",
+    "genuine-source interrupted recovery",
+    "Jet4 nullable or non-Int32 writes, INSERT, DELETE or DDL"
+  ],
+  "native_windows_launched": false
+}

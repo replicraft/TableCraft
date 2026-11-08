@@ -1756,6 +1756,16 @@ platforms, nullable/non-Int32 targets and Microsoft Access execution/save/reopen
 remain separate qualification work. Existing TCNI0001 and ACE admission are
 unchanged; this adds a genuine-source consumer observation to the existing route.
 
+The opt-in runtime and headless desktop scenarios also pass on this same genuine
+source. Both exercise consuming review, SaveWorker persistence and complete
+independent AFTER comparison; the desktop additionally checks acknowledgment,
+automatic refresh and a new host reopening the file. The shared testkit loader
+requires an explicit `TABLECRAFT_JET4_SCALAR_SOURCE` and both pinned image hashes.
+Ordinary CI leaves these two tests explicitly ignored. See the
+[application workflow result](results/jet4-genuine-application-workflows-2026-11-08.json).
+These checks do not expand the existing Jet4 write profile or qualify Windows,
+native Access or interrupted recovery on this genuine source.
+
 ## Original existing-tree index update fixture
 
 [IndexUpdateFixture.java](IndexUpdateFixture.java) is an original MIT

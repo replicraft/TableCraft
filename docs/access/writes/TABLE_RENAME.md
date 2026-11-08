@@ -79,8 +79,9 @@ The first 22-test rename batch passed 21 cases and exposed an incorrect refusal
 expectation for the unchanged INDEX write stamp. Reclassifying it as explicit
 opaque-byte preservation passes the four affected tests; the other 18 unchanged
 rename/intent cases were not repeated. This is focused engine evidence, not a
-whole-workspace gate. Indexed SDK getter observations, native Access comparisons,
-and the new code's strict lint remain unrun. Ordinary creators still refuse.
+whole-workspace gate. Indexed SDK getter observations and native Access
+comparisons remain unrun. The connected strict library/desktop lint and updated
+journal-only engine build pass. Ordinary creators still refuse.
 
 The separate engine `plan_recoverable_indexed_table_rename` API now seals the
 indexed planner purpose as `TCRN0002`, profile 2. The original API still seals

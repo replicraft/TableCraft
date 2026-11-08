@@ -41,6 +41,13 @@ database options, broader creator qualification and remaining saved table/column
 CRUD are required. No general CRUD completion is claimed. Web and the broader
 coordinated localization pass remain later delivery gates.
 
+The existing Jet 4 Int32 update route now also passes two opt-in genuine V2000
+application scenarios: consuming runtime save/reopen and headless desktop
+paste/review/save/acknowledge/refresh/reopen. Both compare the complete independent
+AFTER and retain the original source unchanged. These are macOS consumer checks,
+not broader Jet4 writes or native Access qualification. See the
+[workflow record](testing/results/jet4-genuine-application-workflows-2026-11-08.json).
+
 ## Native library refactors — 8 November 2026
 
 Windows IO now uses the existing generated device-information structure and
