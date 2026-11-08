@@ -9,22 +9,25 @@ use crate::{
 
 impl Preview {
     pub(super) fn dispatch(&mut self, action: Action) {
-        let save_owner = matches!(
-            self.state.edit,
-            Some(EditDialog::Saving { .. } | EditDialog::Finished { .. })
-        ) || matches!(
-            self.state.insertion,
-            Some(
-                crate::workspace::insertion::Dialog::Saving { .. }
-                    | crate::workspace::insertion::Dialog::Finished { .. }
+        let save_owner = self.state.query_update_save_pending()
+            || matches!(
+                self.state.edit,
+                Some(EditDialog::Saving { .. } | EditDialog::Finished { .. })
             )
-        ) || matches!(
-            self.state.deletion,
-            Some(
-                crate::workspace::deletion::Dialog::Saving { .. }
-                    | crate::workspace::deletion::Dialog::Finished { .. }
+            || matches!(
+                self.state.insertion,
+                Some(
+                    crate::workspace::insertion::Dialog::Saving { .. }
+                        | crate::workspace::insertion::Dialog::Finished { .. }
+                )
             )
-        );
+            || matches!(
+                self.state.deletion,
+                Some(
+                    crate::workspace::deletion::Dialog::Saving { .. }
+                        | crate::workspace::deletion::Dialog::Finished { .. }
+                )
+            );
         if save_owner
             && !matches!(
                 &action,
@@ -38,7 +41,10 @@ impl Preview {
             return;
         }
 
-        if self.deletion_save_action(&action) || self.insertion_save_action(&action) {
+        if self.query_update_save_action(&action)
+            || self.deletion_save_action(&action)
+            || self.insertion_save_action(&action)
+        {
             return;
         }
         match action {
@@ -229,7 +235,14 @@ impl Preview {
                     self.state.set_schema(fixtures::schema(&table));
                 }
             }
+            Action::ApplyQueryUpdate { review_id } => self.mock_apply_query_update(review_id),
+            Action::CancelQueryUpdateReview { request_id } => {
+                self.mock_cancel_query_update_review(request_id);
+            }
             Action::Query => {
+                if self.mock_review_query_update().is_some() {
+                    return;
+                }
                 self.mock_open_object(ObjectTarget {
                     document_revision: fixtures::REVISION,
                     kind: ObjectKind::Sql,

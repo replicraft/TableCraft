@@ -728,11 +728,16 @@ Matched counts include unchanged assignments; changed counts describe the native
 plan. A successful save is followed by an explicit fresh open; the old read
 snapshot is not silently relabeled as updated.
 
-The runtime route is implemented; desktop action review/confirmation and dispatch
-remain unconnected. An unsolicited action-review response is discarded by the
-desktop without saving and reports the existing localized unavailable message.
-Normal GUI Run still uses the documented retrieval workflow. Broader action SQL,
-append/DELETE, native QueryDef persistence and DDL remain roadmap work.
+Desktop Run now dispatches classified UPDATE to this review service and renders
+the shared Yes/No confirmation. It retains the original inspected target and
+consuming capability privately; the shared UI owns display facts and exact
+SQL/tab/document/edit/publication witnesses. Only explicit Yes starts the same
+save worker. Before acceptance, No/Escape releases staging while preserving
+prior results. After acceptance, cancellation is request-only and terminal
+reports survive view changes until acknowledgment. Successful fresh-open restores
+the SQL tab/draft and clears obsolete result snapshots without rerunning UPDATE.
+Other action kinds, append/DELETE, native QueryDef persistence and DDL remain
+roadmap work; disabled or unsupported routes never gain authority by classification.
 
 ## Reviewed offline row insertion
 
@@ -1331,8 +1336,9 @@ The desktop's explicit scratch Run now uses this service to acquire declared
 parameters through shared UI staging, then execute the exact retained target.
 Parameterless SQL continues from the same explicit Run after inert inspection.
 Desktop owns DTO/request routing and the runtime target's lifetime; query parsing,
-parameter conversion and execution remain in runtime/query services. This does
-not execute action SQL or persist query definitions. See the
+parameter conversion and execution remain in runtime/query services. The
+classified UPDATE route separately uses reviewed action confirmation; other action
+kinds and persisted query definitions remain unsupported. See the
 [scratch workspace contract](../ui/SQL_WORKSPACE.md#declared-scratch-parameters).
 
 ## Native saved queries and declared parameters

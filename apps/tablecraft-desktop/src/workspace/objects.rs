@@ -284,11 +284,18 @@ impl Desktop {
     }
 
     pub(super) fn restore_workspace_after_save(&mut self, table: &str) -> bool {
+        self.restore_workspace_after_save_preferring(ObjectKind::Table {
+            name: table.to_owned(),
+        })
+    }
+
+    pub(super) fn restore_workspace_after_query_update(&mut self) -> bool {
+        self.restore_workspace_after_save_preferring(ObjectKind::Sql)
+    }
+
+    fn restore_workspace_after_save_preferring(&mut self, preferred: ObjectKind) -> bool {
         let Some(restore) = self.objects.restore.take() else {
             return false;
-        };
-        let preferred = ObjectKind::Table {
-            name: table.to_owned(),
         };
         if !self
             .state

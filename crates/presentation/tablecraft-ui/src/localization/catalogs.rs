@@ -28,6 +28,7 @@ macro_rules! sections {
             section!($locale, "datasheet"),
             section!($locale, "diagnostics"),
             section!($locale, "query"),
+            section!($locale, "query-update"),
             section!($locale, "query-design"),
             section!($locale, "saved-query"),
             section!($locale, "design"),
@@ -45,7 +46,7 @@ macro_rules! sections {
     };
 }
 
-pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 23] {
+pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 24] {
     match locale {
         Locale::EnUs => sections!("en-US"),
         Locale::Es => sections!("es"),

@@ -149,9 +149,10 @@ checks and production-library cross-compilation passed for Windows x64/ARM64,
 Intel macOS and Linux x64/ARM64. Cross-compilation is not platform execution.
 
 This is local Rust qualification on macOS ARM64, separate from native Access
-comparison, non-macOS execution and physical durability qualification. Runtime
-consuming action reviews and GUI UPDATE confirmation/execution remain subsequent
-work in the [parity roadmap](../../features/ACCESS_PARITY_ROADMAP.md).
+comparison, non-macOS execution and physical durability qualification. The later
+[runtime and GUI workflow](../../ui/SQL_WORKSPACE.md#reviewed-local-update) consumes
+these capabilities; broader action support remains in the
+[parity roadmap](../../features/ACCESS_PARITY_ROADMAP.md).
 
 ### Independent fresh-qualification pools — 8 November 2026
 

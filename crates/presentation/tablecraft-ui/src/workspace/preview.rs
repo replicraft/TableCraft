@@ -14,6 +14,7 @@ mod insertion;
 mod object_status;
 mod queries;
 mod query_design;
+mod query_update;
 mod restart;
 mod schema;
 mod totals;
@@ -102,6 +103,9 @@ pub enum Scene {
     QueryError,
     ScratchInspecting,
     ScratchParameters,
+    QueryUpdateReview,
+    QueryUpdateSaving,
+    QueryUpdateResult,
     SavedInspecting,
     SavedRunning,
     SavedError,
@@ -129,7 +133,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 98] = [
+    pub const ALL: [Self; 101] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -204,6 +208,9 @@ impl Scene {
         Self::QueryError,
         Self::ScratchInspecting,
         Self::ScratchParameters,
+        Self::QueryUpdateReview,
+        Self::QueryUpdateSaving,
+        Self::QueryUpdateResult,
         Self::SavedInspecting,
         Self::SavedRunning,
         Self::SavedError,
@@ -238,6 +245,7 @@ impl Scene {
                 | Self::ObjectLoading
                 | Self::QueryRunning
                 | Self::ScratchInspecting
+                | Self::QueryUpdateSaving
                 | Self::SavedInspecting
                 | Self::SavedRunning
                 | Self::CollectionLoading
@@ -332,6 +340,9 @@ impl Scene {
             Self::QueryError => "query-error",
             Self::ScratchInspecting => "scratch-inspecting",
             Self::ScratchParameters => "scratch-parameters",
+            Self::QueryUpdateReview => "query-update-review",
+            Self::QueryUpdateSaving => "query-update-saving",
+            Self::QueryUpdateResult => "query-update-result",
             Self::SavedInspecting => "saved-inspecting",
             Self::SavedRunning => "saved-running",
             Self::SavedError => "saved-error",
@@ -562,6 +573,9 @@ impl Preview {
             Scene::QueryError => self.prepare_query_error(),
             Scene::ScratchInspecting => self.prepare_scratch_parameters(true),
             Scene::ScratchParameters => self.prepare_scratch_parameters(false),
+            Scene::QueryUpdateReview | Scene::QueryUpdateSaving | Scene::QueryUpdateResult => {
+                self.prepare_query_update_scene(scene);
+            }
             Scene::SavedInspecting => self.prepare_saved_inspecting(),
             Scene::SavedRunning => self.prepare_saved_running(),
             Scene::SavedError => self.prepare_saved_error(),

@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL 쿼리
-query-help = 열린 데이터베이스에서 지원되는 읽기 쿼리를 실행합니다.
+query-help = 지원되는 읽기 쿼리를 실행하거나 지원되는 UPDATE를 저장 전에 검토합니다.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = 쿼리 실행
 query-empty = 쿼리를 실행하면 결과가 표시됩니다.

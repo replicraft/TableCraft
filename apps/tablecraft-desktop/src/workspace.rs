@@ -34,6 +34,9 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    QueryUpdateReview {
+        request_id: u64,
+    },
     Read,
     Open {
         request_id: u64,
@@ -417,11 +420,8 @@ impl Desktop {
                 Ok(Response::QueryParameters { target, parameters }) => {
                     self.publish_query_parameters(generation, target, parameters);
                 }
-                Ok(Response::QueryUpdateReviewed { .. }) => {
-                    // No desktop command requests an action review until its
-                    // confirmation workflow is connected. Drop an unsolicited
-                    // capability without dispatching it to the save worker.
-                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                Ok(Response::QueryUpdateReviewed { review, capability }) => {
+                    self.publish_query_update_review(generation, review, capability);
                 }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
@@ -598,6 +598,10 @@ impl Desktop {
                     columns,
                     rows,
                 }) => {
+                    if let PendingOperation::QueryUpdateReview { request_id } = &self.pending {
+                        self.cancel_query_update_review(*request_id);
+                        continue;
+                    }
                     if let PendingOperation::Contents { request_id, .. } = &self.pending {
                         let target = crate::view_models::contents_target(&target);
                         let data = Data {
@@ -619,6 +623,10 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::QueryUpdateReview { request_id } => {
+                        let request_id = *request_id;
+                        self.fail_query_update_review(request_id, error.to_string());
+                    }
                     PendingOperation::QueryInspection { request_id } => {
                         let request_id = *request_id;
                         self.query_parameters = None;
@@ -896,6 +904,10 @@ impl eframe::App for Desktop {
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
+                }
+                Action::ApplyQueryUpdate { review_id } => self.apply_query_update(review_id),
+                Action::CancelQueryUpdateReview { request_id } => {
+                    self.cancel_query_update_review(request_id);
                 }
                 Action::Query => self.inspect_query_parameters(),
                 Action::RunParameterizedQuery {

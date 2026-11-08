@@ -1,4 +1,5 @@
 //! Query editor admission is shared with keyboard command handling.
+pub(super) mod actions;
 pub(super) mod parameters;
 pub(super) mod provenance;
 

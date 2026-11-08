@@ -313,6 +313,7 @@ impl State {
 
     pub(super) fn bump_focus_publication(&mut self) {
         self.clear_query_parameter_acquisition();
+        self.close_query_update();
         self.focus_publication = self.focus_publication.wrapping_add(1);
         self.pane_focus_entry = None;
         self.design_focus_pending = None;

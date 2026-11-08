@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL-Abfrage
-query-help = Eine unterstützte Leseabfrage in der geöffneten Datenbank ausführen.
+query-help = Eine unterstützte Leseabfrage ausführen oder ein unterstütztes UPDATE vor dem Speichern prüfen.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Abfrage ausführen
 query-empty = Führen Sie eine Abfrage aus, um ihre Ergebnisse anzuzeigen.

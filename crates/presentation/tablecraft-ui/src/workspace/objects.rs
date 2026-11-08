@@ -386,6 +386,7 @@ impl State {
             && !self.deletion_dialog_open()
             && self.contents_request_id().is_none()
             && !self.parameter_prompt_open()
+            && !self.query_update_dialog_open()
             && !self.find_window_open()
             && !self.zoom_dialog_open()
             && !self.table_filter_pending()
@@ -599,6 +600,7 @@ impl State {
         self.query_result = Default::default();
         self.query_pending = None;
         self.clear_query_parameter_acquisition();
+        self.close_query_update();
         self.saved_query = super::saved_query::SavedQueryState::default();
         self.table_selection = Default::default();
         self.query_selection = Default::default();

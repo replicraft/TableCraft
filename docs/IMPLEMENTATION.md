@@ -1,5 +1,39 @@
 # Implementation status
 
+## GUI-reviewed SQL UPDATE — 8 November 2026
+
+Scratch Run now uses runtime statement classification: retrieval retains its
+parameter/execution path, qualified local UPDATE requests a real native review,
+and other action/DDL kinds stop without writing. The shared warning transfers
+the original SQL/tab/document/edit/publication witness, shows actual matched and
+changed counts and requires Yes. No/Escape before acceptance releases staging
+while preserving previous results. After SaveWorker acceptance, cancellation is
+request-only and terminal ownership survives view/SQL changes until acknowledgment.
+
+Desktop holds runtime capabilities privately and uses the existing nonreplaceable
+save/recovery owner. Successful acknowledgment freshly opens the source, restores
+the SQL tab/draft and clears obsolete snapshots without re-running UPDATE. Native
+writer, encryption, parameter and expression-profile restrictions remain in force.
+Bounded diagnostics preserve retained-resource permissions even under UI memory
+pressure. Eight sectioned query-update catalogs and three resource-free preview
+scenes exercise the same controls; they grant no backend authority.
+
+The runtime gate passes 170 tests and desktop passes 130. The full UI gate passed
+501/503; seven corrected focused cases cover all 503 across batch/follow-up, as
+recorded in the [offscreen evidence](ui/PRESENTATION_PREVIEW.md#reviewed-sql-update--8-november-2026).
+Strict affected-package lint, renderer build, formatting and package boundaries
+pass. Shared UI/runtime libraries also compile for Windows x64/ARM64, Intel
+macOS and Linux x64/ARM64; this is compilation rather than platform execution.
+Six offscreen frames were inspected; no native window was launched. The
+new warning remains an adaptation, not a screenshot-qualified Access replica.
+Native Access and non-macOS execution remain separate qualification work.
+
+The preceding platform cleanup groups UPDATE's native/unsupported implementation
+behind module guards. Common facts and inspected-source checks remain shared;
+FreeBSD's unsupported editing branch compiles under strict lint without expanding
+its native save support. Next query work includes declared action parameters,
+append/DELETE actions and the remaining native schema/query-definition workflows.
+
 ## Runtime-reviewed SQL UPDATE saves — 8 November 2026
 
 The read worker now reviews immutable inspected local UPDATE SQL against the

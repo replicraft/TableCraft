@@ -1,9 +1,10 @@
 # Scratch SQL workspace
 
 The scratch SQL object separates the editable draft from the text that produced
-its displayed results. Explicit Run uses the existing read-only runtime query
-service. Editing the draft, selecting a cached result view or switching object
-tabs does not execute SQL.
+its displayed results. Explicit Run uses runtime-owned statement classification:
+retrieval uses the read query service, while qualified local UPDATE enters a
+separate review and confirmation workflow. Editing the draft, selecting a cached
+result view or switching object tabs does not execute SQL.
 
 Scratch and saved retrieval execution share the runtime's
 [query context](../application/RUNTIME.md#read-query-execution-context): lazy local
@@ -12,8 +13,42 @@ sequence, unsecured CurrentUser metadata and an explicit English Error catalog.
 Those providers do not authorize writes, select database collation or turn
 display formatting into SQL conversion policy. Declared scratch parameters use
 the [shared runtime parameter service](../application/RUNTIME.md#scratch-query-parameter-service)
-and the same staged dialog controls as saved queries. Action-query execution and
-native saved-definition editing remain unfinished.
+and the same staged dialog controls as saved queries. Local UPDATE uses the
+reviewed action service described below. Other action kinds, DDL and native
+saved-definition editing remain unfinished.
+
+## Reviewed local UPDATE
+
+Run inspects the actual statement, then requests a source-bound runtime UPDATE
+review. Desktop does not parse SQL or reinterpret a failed read as a write. The
+shared confirmation displays the actual target table, matched records and records
+with effective changes. Yes applies the reviewed operation; No/Escape before
+acceptance drops the lease-free review and preserves prior results, SQL and selection.
+The dialog states that database changes have no Undo. Microsoft's
+[update-query workflow](https://support.microsoft.com/en-us/access/create-and-run-an-update-query)
+documents explicit confirmation and the absence of Undo; no corresponding local
+warning capture is retained, so the dialog layout remains an adaptation.
+
+The original scratch inspection's SQL allocation, edit revision, tab/document
+identity and publication witness transfer into the action session. They are not
+recaptured from mutable UI state. Stale/duplicate callbacks cannot replace an
+accepted review. After the save worker accepts the opaque runtime capability,
+Cancel/Escape requests cancellation rather than dropping ownership. Retained
+failures use the existing Recover/Release controls; all terminal outcomes require
+acknowledgment from the same save owner.
+
+After acknowledged success, the host reopens the actual source and restores the
+SQL tab/draft, clearing obsolete query snapshots. It never reruns UPDATE to refresh
+results and never publishes affected counts as query rows. Query results do not
+gain native row handles. Synthetic preview scenes use the same controls but only
+canned DTOs and explicit mock outcomes; no database capability is present.
+
+The existing native writer qualifications still apply. This does not enable older
+ACE writers, encrypted/package editing, declared action parameters, joined/external
+targets or additional expression contexts. Unsupported action/DDL kinds stop after
+inspection without a write; unsupported UPDATE shapes fail before confirmation.
+Evaluated LIKE still needs a supplied mode and is not enabled by this UI route.
+See the [runtime contract](../application/RUNTIME.md#reviewed-sql-update-actions).
 
 ## Declared scratch parameters
 

@@ -1,5 +1,43 @@
 # Presentation preview
 
+## Reviewed SQL UPDATE — 8 November 2026
+
+`query-update-review`, `query-update-saving` and `query-update-result` use the
+production shared action state with synthetic counts, IDs and explicit mock
+outcomes. No database file, runtime capability or save worker exists in these
+scenes. The preview now has 101 scenes; the eight-language/two-theme matrix covers
+1,616 combinations and retains the complete normal/synthetic Ribbon.
+
+Six normal-host frames in ignored `.cache/ui-previews/query-update-20261108/`
+were rendered and inspected offscreen on macOS ARM64 with Windows input emulation.
+Review covers English light and Russian dark at 1280×820, 1×; German dark at
+900×580 logical points, 1.25× (1125×725 pixels); and Japanese light at 900×580,
+2× (1800×1160 pixels). Saving uses English light at 1280×820, 1×; the mock result
+uses German dark at 900×580, 1.25×. Table/count labels, explicit confirmation,
+no-Undo text and Yes/No are visible, with No initially focused. Pending and
+terminal frames retain the shared cancellation/outcome controls. Prior results
+remain visibly previous behind the modal, not replaced with fabricated action rows.
+
+The actual cached Microsoft parameter prompt was reopened at 233×123 pixels,
+unknown application build/platform/DPI. It does not establish UPDATE warning
+layout. Microsoft's [update-query workflow](https://support.microsoft.com/en-us/access/create-and-run-an-update-query)
+supplies confirmation/no-Undo behavior; no corresponding Access warning or SQL
+workspace capture is retained. This warning/save presentation is a documented
+adaptation. No native app windows or Access processes were launched.
+
+The first full UI batch passed 501 of 503 tests. Two new assertions incorrectly
+queried the table-data slot and plain labels without Fluent isolation; their
+failures remain recorded. Corrected focused action/preview gates pass all seven
+cases, covering the remaining two and all 503 UI cases across batch/follow-up.
+A secondary preview assertion used the same wrong data slot and was also corrected.
+Connected desktop tests independently cover No/no journal, actual confirmed save,
+source-drift retention/release and fresh SQL-tab reopen without UPDATE replay.
+Final gates pass 170 runtime and 130 desktop tests, strict affected-package lint,
+renderer build, minimal-feature checks, formatting and dependency guards. Shared
+UI/runtime libraries compile for Windows x64/ARM64, Intel macOS and Linux
+x64/ARM64; those checks do not establish execution on those platforms.
+Verification logs remain under ignored `.cache/gui-update-*20261108.log`.
+
 ## Scratch parameter acquisition — 8 November 2026
 
 `scratch-inspecting` and `scratch-parameters` use the real shared acquisition

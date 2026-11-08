@@ -465,3 +465,14 @@ all-target/all-feature lint for both packages. Earlier captured counts and image
 observations above remain checkpoints. No native app window was opened for this
 follow-up; Windows/Linux execution and cross-platform DPI/font behavior remain
 unqualified.
+
+## SQL UPDATE confirmation — 8 November 2026
+
+Microsoft's [update-query workflow](https://support.microsoft.com/en-us/access/create-and-run-an-update-query)
+provides the explicit confirmation and no-Undo behavior. No corresponding retained
+Access warning/SQL editor/save-result capture exists in this record. The shared
+confirmation and save/recovery presentation remain visual adaptations, not
+screenshot-qualified native parity. The actual cached parameter-prompt image was
+reopened at 233×123 pixels; it supports only the existing compact prompt reference,
+with unknown application build/platform/DPI. It does not verify UPDATE layout.
+See the [offscreen rendering record](PRESENTATION_PREVIEW.md#reviewed-sql-update--8-november-2026).

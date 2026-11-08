@@ -3,6 +3,7 @@ use super::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
     Command, InspectedQuery, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
+    QueryOperation,
 };
 use tablecraft_ui::{Action, ParameterInput, ParameterSpec};
 
@@ -18,6 +19,7 @@ impl Desktop {
     }
 
     pub(super) fn release_stale_query_parameters(&mut self) {
+        self.release_stale_query_update_review();
         if self.query_parameters.as_ref().is_some_and(|inspected| {
             !self
                 .state
@@ -103,6 +105,21 @@ impl Desktop {
             self.clear_query_parameters();
             self.pending = PendingOperation::Read;
             return;
+        }
+
+        match target.operation() {
+            QueryOperation::Update => {
+                self.begin_query_update_from_inspection(request_id, target);
+                return;
+            }
+            QueryOperation::Unsupported => {
+                self.state.fail_query_parameter_inspection(request_id);
+                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                self.query_parameters = None;
+                self.pending = PendingOperation::Read;
+                return;
+            }
+            QueryOperation::Read => {}
         }
 
         let specs = parameters

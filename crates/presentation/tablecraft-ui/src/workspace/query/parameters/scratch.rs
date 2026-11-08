@@ -60,6 +60,28 @@ impl State {
         self.saved_query_prompt_open() || self.scratch_parameter_prompt_open()
     }
 
+    pub(in crate::workspace) fn take_query_update_origin(
+        &mut self,
+        inspection_id: u64,
+        sql: &str,
+    ) -> Option<crate::workspace::query::actions::update::Origin> {
+        let session = self.query_parameters.as_ref()?;
+        if session.inspection_id != inspection_id
+            || session.sql != sql
+            || !session.current(self)
+            || !matches!(session.phase, Phase::Inspecting)
+        {
+            return None;
+        }
+        let session = self.query_parameters.take()?;
+        Some(crate::workspace::query::actions::update::Origin {
+            sql: session.sql,
+            sql_revision: session.sql_revision,
+            object: session.object,
+            publication: session.publication,
+        })
+    }
+
     pub fn clear_query_parameter_acquisition(&mut self) {
         self.query_parameters = None;
     }
@@ -73,6 +95,7 @@ impl State {
     /// Admit a fresh Run intent before a host captures or clears any state.
     pub fn can_inspect_query_parameters(&self) -> bool {
         self.query_ready()
+            && !self.query_update_dialog_open()
             && self.query_sql_revision().is_some()
             && self.active_object().is_some_and(|tab| {
                 tab.target.kind == ObjectKind::Sql

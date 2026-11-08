@@ -199,6 +199,9 @@ impl State {
         if let Some(parameters) = &self.query_parameters {
             count.add(parameters.retained_bytes()?);
         }
+        if let Some(update) = &self.query_update {
+            count.add(update.retained_bytes()?);
+        }
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.table_filter.retained_bytes()?);
         count.add(self.totals.retained_bytes()?);
