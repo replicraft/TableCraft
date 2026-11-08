@@ -448,6 +448,12 @@ follow-up commits for failures. State which checks remain unrun. Do not hold a
 growing working tree solely to wait for validation. Formatting and review remain
 required before committing.
 
+Reuse a consistent Cargo target directory and package/feature selections across
+batched checks to avoid unnecessary build variants. Check available disk space
+before large builds. Prune obsolete compiler cache states when needed; preserve
+retained fixtures, pinned reference tools, executed binaries used as evidence and
+verification records. Do not disable incremental compilation as a cleanup policy.
+
 Run applicable formatting, lint, test and build checks from the development
 guide. Report unavailable environments and unrun checks accurately. A native
 Access compatibility claim requires actual Access comparison evidence; a
