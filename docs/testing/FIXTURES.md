@@ -1723,6 +1723,39 @@ Native/CLI outputs match; duplicates, rules and stale values publish no file.
 The original input remains unchanged. This does not qualify ACE writes or native
 Microsoft Access save/reopen.
 
+## Genuine Jet4 journaled Int32 update
+
+The existing registered 23 October `Scalar-V2000.mdb` source (135,168 bytes,
+SHA-256 `de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82`)
+now also passes the unchanged normal journal CLI on a fresh temporary copy.
+This is original MIT ScalarFixture content generated with the reviewed Jackcess
+5.0.4 V2000 writer, rather than a synthetic ACE fixture with a changed header.
+Public schema/index inspection first confirms fourteen readable columns, an
+ordinary non-NULL Int32 `ID` and no selected-table indexes. Original and independent
+expected images both pass the three-row public-reader check before mutation.
+
+[The focused comparison](compare_jet4_journal_updates.py) changes `ID=1` to `41`.
+Its independently specified page 31/slot 0 field at absolute offset 130954 yields
+complete expected SHA-256
+`abf76b9a2eec8ffd8074a2eb131cebe48d17b75691217b6e475292074108e54f`;
+only byte 130954 differs. The normal `query journal-update` reports one matched
+and changed row, commits exactly that full image, retires/removes the journal
+under the local captured-parent barrier and reopens with all fourteen-column
+rows equal to the independent expectation. The registered original remains
+unchanged. The [result record](results/jet4-genuine-journal-update-2026-11-08.json)
+pins the existing compiled CLI; this gate performs no new Cargo build.
+
+```sh
+python3 docs/testing/compare_jet4_journal_updates.py \
+  --cli path/to/tablecraft \
+  --database .cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb
+```
+
+The observed runtime is macOS. Genuine-source interruption/recovery, other
+platforms, nullable/non-Int32 targets and Microsoft Access execution/save/reopen
+remain separate qualification work. Existing TCNI0001 and ACE admission are
+unchanged; this adds a genuine-source consumer observation to the existing route.
+
 ## Original existing-tree index update fixture
 
 [IndexUpdateFixture.java](IndexUpdateFixture.java) is an original MIT
@@ -10973,3 +11006,30 @@ not prepare or execute a journal. Independent whole-image goldens, cold recovery
 and actual application saves provide separate evidence; these observations do
 not qualify native Access save/reopen or filesystem durability. No third-party
 database bytes, JARs or class files are committed.
+
+## Existing QueryDef fitting-expression reference
+
+[ConstantQuerySaveFixture.java](ConstantQuerySaveFixture.java) is original
+Apache-2.0 repository code using the previously reviewed Jackcess 5.0.4
+system-table/QueryImpl.Row metadata recipe. Its artifact SHA-256 is
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+It creates a fresh V2016 database with one five-fragment constant SELECT, copies
+that file and explicitly updates only its COLUMN Expression from `42` to `43`.
+Expression evaluation stays disabled; original source SHA-256 is checked before
+and after the copied-file update. Queries are rendered through read-only SDK
+opens. No native Access or active database content is run.
+
+The [observation record](results/querydef-fitting-expression-2026-11-08.json)
+pins both complete files, spans, SDK/recipe hashes and separate explicit CLI
+saved-query execution. BEFORE SHA-256 is
+`83f9d69408948d64eab4dbeafcca468116b5624bdf6b9510569640497b487779`;
+AFTER SHA-256 is
+`6f4269175635cccea5d61fae371899d1efa06a1f79a78172efa75539792f6693`.
+An independent raw AFTER changes only the observed inline Memo literal byte and
+equals the entire SDK AFTER; its read-only SDK rendering also returns `43`.
+Generated databases remain private/untracked. The testkit's original
+`saved_queries::fitting_select` raw pair retains independent synthetic identity
+and observed record framing without production codecs or copied SDK database
+bytes. It does not include the SDK source's system indexes. The
+[reference contract](NATIVE_QUERYDEF_FITTING_SAVE.md) separates this byte oracle
+from native producer, source ownership, recovery and Access qualification.

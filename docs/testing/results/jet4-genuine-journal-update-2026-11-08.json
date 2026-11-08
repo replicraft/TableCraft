@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Existing normal Jet4 Int32 journal CLI; genuine registered Jackcess V2000 fixture; local macOS",
+  "consumer": "docs/testing/compare_jet4_journal_updates.py",
+  "consumer_commit": "27d82544",
+  "source": {
+    "recipe": "docs/testing/ScalarFixture.java",
+    "registered_profile": "V2000/Jet4",
+    "bytes": 135168,
+    "sha256": "de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82"
+  },
+  "compiled_cli": {
+    "path": ".cache/cargo-backend-20261102/debug/tablecraft",
+    "sha256": "d42527245d28cee607c7cbf49f90e8f88931b008ad3afd32de381f100bd23d02",
+    "fresh_build_in_this_gate": false
+  },
+  "oracle": {
+    "expected_sha256": "abf76b9a2eec8ffd8074a2eb131cebe48d17b75691217b6e475292074108e54f",
+    "field_offset": 130954,
+    "field_width": 4,
+    "changed_byte_offsets": [
+      130954
+    ],
+    "source_owned_raw_bytes": true,
+    "production_encoder_used": false
+  },
+  "source_gate": {
+    "original_and_expected_public_reader_checks": true,
+    "columns": 14,
+    "rows": 3,
+    "id_carrier": "Int32",
+    "id_flags": "0x03",
+    "id_extended_flags": "0x00",
+    "indexes": 0,
+    "complete_expected_rows_differ_only_in_first_id": true
+  },
+  "operation": {
+    "sql": "UPDATE ScalarSamples SET ID=41 WHERE ID=1",
+    "fresh_copy_only": true,
+    "normal_intent_profile": "TCNI0001/profile 1 via existing normal route",
+    "matched_rows": 1,
+    "changed_rows": 1,
+    "complete_committed_image_matches_oracle": true,
+    "complete_reopened_rows_match": true,
+    "original_unchanged": true
+  },
+  "lifecycle": {
+    "transaction": "Committed",
+    "namespace": "Retired",
+    "retirement_guarantee": "Captured-parent barrier",
+    "cleanup": "Removed"
+  },
+  "verification": {
+    "comparison_exit_code": 0,
+    "new_production_engine_code": false,
+    "cargo_commands_run": false,
+    "gui_launched": false
+  },
+  "not_qualified": [
+    "Microsoft Access authored source",
+    "Microsoft Access execution/save/reopen",
+    "Windows/Linux runtime execution in this gate",
+    "physical power-loss durability",
+    "genuine-source interrupted recovery/finalization scenarios",
+    "nullable or non-Int32 Jet4 updates",
+    "Jet4 INSERT/DELETE/DDL"
+  ]
+}
