@@ -5,6 +5,17 @@ fixture data and test machinery. Workspace consumers use it through
 `dev-dependencies`; production engines, adapters and applications do not acquire
 it as a normal dependency. The crate has no application-package dependency.
 
+## Journal protocol observations
+
+The opt-in `journal-support` feature exposes
+`support::io::journal::MemoryStorage`. Native rename and column-addition tests
+import this real owner directly. It retains caller-owned bytes, counts write
+calls, implements explicit no-op test storage barriers and rejects replacing a
+barrier with `Write::flush`. These observations qualify protocol behavior only;
+they do not model filesystem durability or power loss. Private request/image
+assertions remain with the native operation. This shares repeated trait plumbing
+without merging independently authored wire oracles or scenario cases.
+
 ## Ownership
 
 `fixtures::access::{calculated_storage, complex_links}` now own the independent
@@ -31,6 +42,7 @@ src/
     ├── ace/page_reads.rs       byte-exact read-position counter for six consumers
     ├── ace/mutable_source.rs   shared adversarial source for lifecycle observations
     ├── ace/resources.rs        public planner budget/cancellation assertions
+    ├── io/journal.rs           in-memory journal protocol/write observations
     ├── query/multivalue.rs     query Source, DTO and assertion machinery
     ├── access/owned_growth.rs  retained adapter-session workflows
     ├── cli/mod.rs              headless process runner with explicit executable

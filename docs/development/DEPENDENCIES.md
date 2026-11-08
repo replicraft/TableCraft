@@ -334,6 +334,14 @@ features and library ownership are unchanged; no registry package, version,
 feature default or third-party license is added. The root-owned offline lockfile
 refresh and dependency guard validate the additional local development edge.
 
+## Shared journal test observations (8 November 2026)
+
+The testkit's opt-in `journal-support` feature consumes its existing optional
+workspace `tablecraft-io` declaration and journal contract. ACE enables this only
+through its development dependency for rename and ADD-column protocol tests.
+Production dependencies and default raw fixtures are unchanged; no registry
+package or license is added. See the [testkit guide](../testing/TESTKIT.md).
+
 ## Shared test support (2 November 2026)
 
 `tablecraft-testkit` now organizes independent Access/format fixtures under
