@@ -9,6 +9,7 @@ use crate::{
 };
 use std::cell::RefCell;
 use tablecraft_access::{NativeSource, SavedRead};
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_sql::ParseLimits;
 
 /// Host input envelope; native reconstruction may impose a smaller declaration cap.
@@ -70,6 +71,7 @@ impl Document {
         &mut self,
         target: &SavedQueryTarget,
         inputs: &[ParameterInput],
+        clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         require_revision(self, target, cancelled)?;
@@ -88,6 +90,7 @@ impl Document {
             &resolver,
             &bindings,
             &target.name,
+            clock,
             cancelled,
         )
     }

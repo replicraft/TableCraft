@@ -7,6 +7,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 use std::time::{Duration, Instant};
+use tablecraft_display::ScalarPresentation;
 use tablecraft_runtime::Response;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 use tablecraft_ui::{ObjectKind, ObjectTarget, QueryDesignCompletion};
@@ -63,6 +64,53 @@ fn design(harness: &mut Harness<'_, Desktop>) {
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);
+}
+
+#[test]
+fn actual_sql_run_supplies_clock_random_and_session_context_without_edit_identity() {
+    let (_directory, path, original, mut harness) = opened(source());
+    scratch(&mut harness);
+    sql(
+        &mut harness,
+        "SELECT Date() AS [Today], Time() AS [ClockTime], Now() AS [RightNow], \
+         Rnd() AS [Sequence], Rnd(0) AS [Repeated], CurrentUser() AS [UserName]",
+    );
+    let mut initial_random = None;
+    for _ in 0..2 {
+        run(&mut harness);
+        let data = harness.state().state.query_data.as_ref().unwrap();
+        assert_eq!(data.rows.len(), 1);
+        assert_eq!(data.columns.len(), 6);
+        assert!(data.source_revision.is_none());
+        assert!(data.row_ordinals.is_none());
+        let row = &data.rows[0];
+        let Some(ScalarPresentation::DateTime { calendar, .. }) = row[0].presentation else {
+            panic!("Date must retain typed date presentation");
+        };
+        assert_eq!(
+            (calendar.hour(), calendar.minute(), calendar.second()),
+            (0, 0, 0)
+        );
+        let Some(ScalarPresentation::DateTime { calendar, .. }) = row[1].presentation else {
+            panic!("Time must retain typed date presentation");
+        };
+        assert_eq!(
+            (calendar.year(), calendar.month(), calendar.day()),
+            (1899, 12, 30)
+        );
+        assert!(matches!(
+            row[2].presentation,
+            Some(ScalarPresentation::DateTime { .. })
+        ));
+        assert_eq!(row[3].text, row[4].text);
+        if let Some(initial) = &initial_random {
+            assert_eq!(&row[3].text, initial);
+        } else {
+            initial_random = Some(row[3].text.clone());
+        }
+        assert_eq!(row[5].text, "Admin");
+    }
+    assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
 fn criterion(harness: &mut Harness<'_, Desktop>, index: usize, value: &str) {

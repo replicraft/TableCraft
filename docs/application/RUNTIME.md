@@ -337,6 +337,33 @@ records five distinct images across six exported files, retaining both original
 rows and empty added-table metadata; it is not insertion, recovery or native
 Access save qualification.
 
+## Read-query execution context
+
+Explicit scratch and saved retrieval queries now share one runtime-owned context.
+`Worker::new` supplies a lazy local Jiff clock; `Worker::with_query_clock` accepts
+a caller-owned expression `Clock` for deterministic hosts and tests. Open,
+catalog inspection, saved-query inspection and failed binding do not read it.
+Clock expressions read on execution and may obtain fresh readings; unavailable
+local timezone/time conversion reports a typed error without substituting UTC.
+This does not supply a native write-default clock or execute stored programs.
+
+Each explicit Run owns one sequential `RndState` initialized with its reviewed
+default seed, shared by nested/named reads within that run. The next Run resets
+it, matching the existing CLI policy. This is not native Access application-session
+Randomize/Rnd lifecycle qualification and uses no entropy or process-global RNG.
+The same context supplies unsecured `Admin` expression metadata for CurrentUser
+and the existing explicit-number English reference error-message catalog. Admin
+is not an OS account, MDW authentication or an authorization grant; Error's
+omitted-number VBA runtime state remains unavailable. Error text does not follow
+the Fluent interface language implicitly.
+
+Database collation and ANSI LIKE mode retain their source-bound policies.
+Numeric/date/week/code-page/casing and omitted-year contexts remain explicit:
+display preferences and the current clock do not silently select them. Missing
+required policies still refuse. Query results retain their existing buffered
+budgets and no native edit identity; action SQL and DDL remain separate work.
+See [the SQL workspace](../ui/SQL_WORKSPACE.md).
+
 ## Session and task ownership
 
 Open captures an immutable image of a stable/offline file up to 64 MiB, closing

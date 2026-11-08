@@ -15,6 +15,12 @@ Microsoft documents that [expression-service boundary](https://learn.microsoft.c
 Implementing a closed expression function in Rust does not activate or execute
 stored VBA modules, and does not change the VBA runtime deferral.
 
+The shared runtime's [retrieval context](../application/RUNTIME.md#read-query-execution-context)
+now supplies clock functions, a per-Run default-seeded Rnd state, unsecured
+CurrentUser metadata and explicit-number English Error messages to desktop scratch
+and saved queries. Their statuses remain Partial: provider integration does not
+qualify complete native timing, session, locale or coercion behavior.
+
 **Current implementation priority is direct Access query availability.** Add new
 functions only with a specific Microsoft query example/contract or native execution
 evidence. A function's presence in the broad Access/VBA catalog does not prove

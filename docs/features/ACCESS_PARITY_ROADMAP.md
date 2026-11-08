@@ -96,7 +96,7 @@ See [parser scope](../query/SQL_PARSER.md),
 
 | Query workstream | Required completion |
 | --- | --- |
-| Runtime context | Supply explicit clocks, random/session state, error messages and numeric/date/week/code-page policies where applicable. GUI Run currently omits context that the CLI already supplies; existing kernels can therefore still refuse GUI calls. |
+| Runtime context | Shared runtime scratch/saved execution now supplies a lazy local clock, per-Run Basic random state, unsecured session metadata and English reference messages. Numeric/date/week/code-page/casing and omitted-year policies still need explicit host contracts; native timing/RNG/session semantics remain unqualified. |
 | Parameters and sources | Scratch SQL parameter prompts as well as saved-query prompts; deliberate linked/external/collection source bindings and permission/namespace ownership. Stored paths must not open targets implicitly. |
 | Retrieval semantics | Full supported joins/subqueries, grouping/HAVING/TOP, UNION and pivot behavior, declared types, Variant/coercion/NULL/Error semantics, sort orders/LCIDs and database policy precedence. Finish the documented partial profiles rather than adding unrelated modern SQL. |
 | Action queries | Shared reviewed UPDATE, append/INSERT and DELETE, parameters, assignments, INSERT SELECT, qualified join/subquery targets, affected counts, warnings, validation, atomicity and recovery. Reuse the same native services as datasheet edits. |

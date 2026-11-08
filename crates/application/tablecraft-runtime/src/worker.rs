@@ -5,6 +5,8 @@ use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
 };
 
+use tablecraft_expressions::functions::dates::clock::Clock;
+
 type Reply = (u64, Result<Response, Error>);
 
 struct Pending {
@@ -28,6 +30,16 @@ pub struct Worker {
 
 impl Worker {
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
+        Self::with_query_clock(repaint, Arc::new(crate::query::context::LocalClock))
+    }
+
+    /// Use a caller-owned retrieval clock. The provider is read only by executed
+    /// clock expressions, never by open, inspection, or parameter discovery.
+    /// It must select its own timezone and report failures without a fallback.
+    pub fn with_query_clock(
+        repaint: impl Fn() + Send + Sync + 'static,
+        clock: Arc<dyn Clock>,
+    ) -> Self {
         let mut document: Option<Document> = None;
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
@@ -245,11 +257,13 @@ impl Worker {
             Command::RunSavedQuery { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .run_saved_query(target, parameters, cancelled),
-            Command::Query { sql } => document
-                .as_mut()
-                .ok_or(Error::NoDatabase)?
-                .query(sql, cancelled),
+                .run_saved_query(target, parameters, clock.as_ref(), cancelled),
+            Command::Query { sql } => {
+                document
+                    .as_mut()
+                    .ok_or(Error::NoDatabase)?
+                    .query(sql, clock.as_ref(), cancelled)
+            }
         })
     }
 

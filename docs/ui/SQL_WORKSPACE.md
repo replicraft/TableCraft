@@ -5,6 +5,14 @@ its displayed results. Explicit Run uses the existing read-only runtime query
 service. Editing the draft, selecting a cached result view or switching object
 tabs does not execute SQL.
 
+Scratch and saved retrieval execution share the runtime's
+[query context](../application/RUNTIME.md#read-query-execution-context): lazy local
+Date/Time/Now and admitted Timer projections, a per-Run default-seeded Rnd
+sequence, unsecured CurrentUser metadata and an explicit English Error catalog.
+Those providers do not authorize writes, select database collation or turn
+display formatting into SQL conversion policy. Scratch parameter prompts,
+action-query execution and native saved-definition editing remain unfinished.
+
 ## Result ownership
 
 Before dispatch, shared UI state captures the submitted text under its retained

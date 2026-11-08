@@ -19,6 +19,7 @@ mod formatting;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod inserting;
+mod query_context;
 mod query_design;
 mod repaint;
 #[cfg(all(

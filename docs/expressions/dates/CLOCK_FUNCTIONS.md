@@ -6,6 +6,13 @@ arguments. Date/Time/Now return legacy DateTime; Timer returns Single. Wrong ari
 missing slots fail before operand/provider execution. Bare names remain field
 references; `$` string aliases and Date/Time statements are not implemented.
 
+The desktop runtime now supplies these providers to explicit scratch and saved
+retrieval execution; see [runtime query context](../../application/RUNTIME.md#read-query-execution-context).
+Open and metadata inspection remain clock-free. The default provider uses Jiff's
+fallible system timezone discovery; a host can inject an explicit expression
+Clock without changing query kernels. This does not select date-text policies
+or establish native Access invocation/precision parity.
+
 | Function | Current result |
 | --- | --- |
 | Date() | The provider's local Gregorian date at midnight. |

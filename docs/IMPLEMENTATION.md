@@ -1,5 +1,39 @@
 # Implementation status
 
+## Shared runtime query providers — 7 November 2026
+
+Explicit scratch and saved queries now share runtime-owned lazy clock, per-Run
+Basic random state, unsecured Access session metadata and candidate English
+error-message providers. Date/Time/Now and the already-admitted Timer projection,
+Rnd, CurrentUser and explicit-number Error can use their existing kernels through
+the desktop's ordinary Run flow. No clock is read during Open, inspection or
+failed binding. An injectable Worker clock supports deterministic hosts without
+adding system discovery to the query/expression libraries or logic to desktop.
+
+All 156 runtime and 120 desktop tests pass; the runtime also passes all 95 tests
+without optional editing/creation features. Four new runtime tests include
+Jet 4, registered ACE 2007 and canonical ACE 16 inputs, scratch/saved equivalence,
+inert inspection, exact DATE bit goldens, provider failure and actual superseded
+worker publication. The connected headless desktop test uses the real SQL editor
+and Run action twice, retaining typed results without native edit identity and
+unchanged source bytes. A final focused pass also covers Timer's shared provider.
+
+Strict affected-package lint, isolated runtime creation/editing feature checks,
+Windows x64/ARM64, Intel macOS and Linux x64/ARM64 compilation pass. These do not
+execute target programs or qualify native Access behavior. Formatting, dependency
+guards/tests and documentation links pass. Initial tests incorrectly expected
+ideal civil nanoseconds after binary DATE round-trip; corrected assertions use
+independent raw IEEE goldens and preserve the actual carrier. Initial module-order
+format findings and an incorrect Python test invocation were corrected separately.
+Failed and accepted logs remain under ignored `.cache/gui-query-context-*20261107.log`.
+
+RNG state resets each explicit Run, following the existing CLI policy; native
+Access application-session lifecycle remains unqualified. CurrentUser's Admin is
+expression metadata, not authentication. Numeric/date/week/code-page/casing and
+omitted-year policies remain explicit, independent of display preferences.
+Scratch parameter prompts, action queries, DDL and native query-definition saves
+remain active work. See [the runtime contract](application/RUNTIME.md#read-query-execution-context).
+
 ## Design draft-field deletion — 7 November 2026
 
 Table Design's Delete Rows command and unmodified Delete on a focused existing

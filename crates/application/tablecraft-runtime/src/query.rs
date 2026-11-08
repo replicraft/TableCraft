@@ -1,4 +1,6 @@
 //! Buffered query execution over the retained native source, without provider opens.
+pub(crate) mod context;
+
 use super::{
     Cell, Error, Response,
     controls::{SCOPE, budget, check, comparison_budget},
@@ -9,7 +11,7 @@ use std::cell::RefCell;
 use tablecraft_access::{NativeCollationResolver, NativeSource};
 use tablecraft_ace::{DatabaseQueryMode, NativeReadSource};
 use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_expressions::predicates::LikeMode;
+use tablecraft_expressions::{functions::dates::clock::Clock, predicates::LikeMode};
 use tablecraft_query::{ExecutionOptions, QueryLimits, execute_with_schema_discovery};
 use tablecraft_sql::{ParseLimits, parse_query, query::Query};
 
@@ -22,6 +24,7 @@ impl Document {
     pub(super) fn query(
         &mut self,
         sql: &str,
+        clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         check(cancelled)?;
@@ -39,6 +42,7 @@ impl Document {
             &resolver,
             &[],
             "Query results",
+            clock,
             cancelled,
         )
     }
@@ -50,8 +54,10 @@ pub(super) fn execute<R: NativeReadSource>(
     resolver: &NativeCollationResolver<'_>,
     parameters: &[(&str, Value)],
     title: &str,
+    clock: &dyn Clock,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
+    let context = context::Context::new(clock);
     let like_mode = match source.database_query_mode()? {
         DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
         DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
@@ -71,7 +77,7 @@ pub(super) fn execute<R: NativeReadSource>(
             collation: Some(resolver.default_collation()),
             collation_resolver: Some(resolver),
             like_mode,
-            ..Default::default()
+            ..context.options()
         },
     )?;
     let mut output = Presentation::new(cancelled);

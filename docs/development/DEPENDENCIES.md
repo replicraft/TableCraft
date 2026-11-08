@@ -1,5 +1,21 @@
 # Adopted dependency and licensing baseline
 
+## Runtime query providers — 7 November 2026
+
+The runtime now consumes the existing Jiff dependency's `tz-system`,
+`tzdb-zoneinfo` and `tzdb-bundle-platform` features for a lazy local query clock,
+matching the CLI's existing platform coverage. It also enables the existing
+expression crate's `fluent-catalog` feature for its candidate English query
+error-message provider. The choices are member-scoped, not changes to shared
+workspace defaults. No registry package/version or Cargo.lock change is added.
+Desktop notice generation must use this feature-enabled dependency closure;
+the CLI already selected these features and its release bundle is unchanged.
+
+Clock, Basic Rnd, Access session metadata and reference messages retain their
+owning expression contracts. Neither GUI display preferences nor OS identity
+become query policy or authorization. No GUI/network dependency is introduced
+into runtime or the CLI, and no new entropy source or VBA runtime is supplied.
+
 ## Emoji outline fallback — 7 November 2026
 
 The shared UI bundles the unmodified Noto Emoji 3.002 variable TrueType font from
