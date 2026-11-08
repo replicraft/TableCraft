@@ -1,3 +1,6 @@
+/// Independent fitting SELECT expression BEFORE/AFTER byte oracles.
+pub mod fitting_select;
+
 use super::{data_page, mutation_fixture as base, put16, put32, record};
 
 pub const PAGE_BYTES: usize = 4096;

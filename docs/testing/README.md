@@ -1,5 +1,6 @@
 # Testing and evidence
 
+- [Existing QueryDef fitting-expression reference](NATIVE_QUERYDEF_FITTING_SAVE.md)
 - [Adaptive encryption copy measurements](ADAPTIVE_ENCRYPTION_BENCHMARKS.md)
 - [Native snapshot and parallel decryption measurements](NATIVE_LIBRARY_REFACTORS.md)
 - [Cross-platform audit and native CI scope](CROSS_PLATFORM_AUDIT.md)

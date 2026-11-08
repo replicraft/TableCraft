@@ -1,0 +1,89 @@
+{
+  "scope": "Independent Jackcess fitting expression update observations; no TableCraft writer or native Access save qualification",
+  "profiles": [
+    {
+      "path": ".cache/querydef-fitting-save-20261108/hash-bound-before.accdb",
+      "sha256": "83f9d69408948d64eab4dbeafcca468116b5624bdf6b9510569640497b487779",
+      "bytes": 368640,
+      "query_id": -2147476648,
+      "query_definition_page": 4,
+      "row_span": [
+        368492,
+        368550
+      ],
+      "projection_row_hex": "0800581b0080060000000000000000000141006e007300770065007200040000800000000000000000340032002d001d001d0011000d0004002f",
+      "expression_field_span": [
+        368521,
+        368537
+      ],
+      "expression_field_hex": "04000080000000000000000034003200",
+      "expression_variable_number": 3,
+      "schema": "Table\tMSysQueries\nIndex\tLogical\tPhysical\tRoot page\tType\tFlags\tPrimary\tUnique\tRequired key\tIgnore NULLs\tColumn\tDescending\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tObjectId\tFALSE\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tAttribute\tFALSE\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tOrder\tFALSE\n",
+      "fragments": "Query\tConstants\nNative ID\t-2147476648\nFlags\t0x00000000\nFragment rows\t5\nAttribute\tExpression\tFlag\tLvExtra\tName1\tName2\tOrder\n0\tNULL\tNULL\tNULL\tNULL\tNULL\t0x00000001\n1\tNULL\t1\tNULL\tNULL\tNULL\t0x00000001\n3\tNULL\t0\tNULL\tNULL\tNULL\t0x00000001\n6\t\"\"\"42\"\"\"\tNULL\tNULL\t\"\"\"Answer\"\"\"\tNULL\t0x00000001\n255\tNULL\tNULL\tNULL\tNULL\tNULL\t0x00000001\n",
+      "sql": "SELECT 42 AS [Answer];\n",
+      "execution": "Answer\n42\n"
+    },
+    {
+      "path": ".cache/querydef-fitting-save-20261108/hash-bound-sdk.accdb",
+      "sha256": "6f4269175635cccea5d61fae371899d1efa06a1f79a78172efa75539792f6693",
+      "bytes": 368640,
+      "query_id": -2147476648,
+      "query_definition_page": 4,
+      "row_span": [
+        368492,
+        368550
+      ],
+      "projection_row_hex": "0800581b0080060000000000000000000141006e007300770065007200040000800000000000000000340033002d001d001d0011000d0004002f",
+      "expression_field_span": [
+        368521,
+        368537
+      ],
+      "expression_field_hex": "04000080000000000000000034003300",
+      "expression_variable_number": 3,
+      "schema": "Table\tMSysQueries\nIndex\tLogical\tPhysical\tRoot page\tType\tFlags\tPrimary\tUnique\tRequired key\tIgnore NULLs\tColumn\tDescending\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tObjectId\tFALSE\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tAttribute\tFALSE\nObjectIdAttribute\t0\t0\t12\t1\t0x81\tTRUE\tTRUE\tTRUE\tFALSE\tOrder\tFALSE\n",
+      "fragments": "Query\tConstants\nNative ID\t-2147476648\nFlags\t0x00000000\nFragment rows\t5\nAttribute\tExpression\tFlag\tLvExtra\tName1\tName2\tOrder\n0\tNULL\tNULL\tNULL\tNULL\tNULL\t0x00000001\n1\tNULL\t1\tNULL\tNULL\tNULL\t0x00000001\n3\tNULL\t0\tNULL\tNULL\tNULL\t0x00000001\n6\t\"\"\"43\"\"\"\tNULL\tNULL\t\"\"\"Answer\"\"\"\tNULL\t0x00000001\n255\tNULL\tNULL\tNULL\tNULL\tNULL\t0x00000001\n",
+      "sql": "SELECT 43 AS [Answer];\n",
+      "execution": "Answer\n43\n"
+    }
+  ],
+  "changed_byte_offsets": [
+    368535
+  ],
+  "changed_pages": [
+    89
+  ],
+  "changed_bytes": [
+    {
+      "offset": 368535,
+      "before": 50,
+      "after": 51
+    }
+  ],
+  "inputs_unchanged_after_read_checks": true,
+  "independent_raw_after": {
+    "path": ".cache/querydef-fitting-save-20261108/after-independent-raw.accdb",
+    "sha256": "6f4269175635cccea5d61fae371899d1efa06a1f79a78172efa75539792f6693",
+    "exactly_matches_complete_sdk_after": true,
+    "original_preserved": true,
+    "construction": "Copy original, require exact independently observed16byte inlineMemo carrier, substitute literal UTF16LE42->43; no production codecs",
+    "jackcess_read_only_sql": "SELECT 43 AS Answer;",
+    "sha256_unchanged_after_read_only_sdk": true
+  },
+  "recipe": {
+    "path": "docs/testing/ConstantQuerySaveFixture.java",
+    "sha256": "d35e08ab2d080aca2166cdf7cfb49e77b2486a1601935c7c2d9a31e19371fcbf",
+    "original_before_hash_checked_across_sdk_mutation": true
+  },
+  "sdk": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "version": "5.0.4",
+    "expression_evaluation": false
+  },
+  "limitations": [
+    "Only original Jackcess-generatedV2016 fixture; native Access save/reopen unrun",
+    "No TableCraft native query writer or normal recovery permission implemented",
+    "Fitting inlineMemo expression-only change; unchanged catalog identity, fragment topology and keys",
+    "Whole-file equality proves unchanged index/map bytes for this pair, not complete corrupt-source ownership validation"
+  ]
+}
