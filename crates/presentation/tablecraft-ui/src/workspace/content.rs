@@ -160,14 +160,16 @@ impl State {
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);
         } else if self.view == DocumentView::Query {
-            ui.weak(tr(
-                ui,
-                if self.saved_query.active {
-                    "query-saved-empty"
-                } else {
-                    "query-empty"
-                },
-            ));
+            Frame::new().inner_margin(10).show(ui, |ui| {
+                ui.weak(tr(
+                    ui,
+                    if self.saved_query.active {
+                        "query-saved-empty"
+                    } else {
+                        "query-empty"
+                    },
+                ));
+            });
         } else if self
             .database
             .as_ref()
