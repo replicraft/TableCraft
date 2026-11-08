@@ -54,5 +54,40 @@
     "No native Microsoft Access execution/save/reopen",
     "Candidate implementation tests pending coordinated Cargo batch",
     "No journal or GUI authority supplied by this SDK record"
+  ],
+  "boundary_probe": {
+    "path": ".cache/native-add-column-20261108/AddColumnBoundaryOracle.java",
+    "sha256": "ba12eeb3ffdd970127e8c026921d1e681b2463af843a0a596e097aeb445f9621",
+    "scope": "Independent original public-SDK probe on new copies; no TableCraft candidate encoder called"
+  },
+  "boundary_observations": [
+    {
+      "case": "minimum",
+      "original_columns": 1,
+      "after_columns": 2,
+      "before_sha256": "d66026e33b8375e6106728acaa22daa2bff3c4c7ef11b59736023cec50215ed2",
+      "after_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "bytes": 36864,
+      "raw_oracle_exact": true,
+      "sdk_stdout": "Items\t2\t0\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\n",
+      "tablecraft_check": "Table\tItems\nRows checked\t0\nIndexes checked\t0\nIndexes not checked\t0\nIndex\tStatus\tIndex constraints\n",
+      "changed_pages": [
+        7
+      ]
+    },
+    {
+      "case": "maximum",
+      "original_columns": 15,
+      "after_columns": 16,
+      "before_sha256": "6f93aa2015d1b455b85e11ae3907851d1ccba2f4c139d7f3333090925b6756d7",
+      "after_sha256": "009e7da6d0b46542aa313776e022829077987acfc242197cce4e31c6c98fba26",
+      "bytes": 36864,
+      "raw_oracle_exact": true,
+      "sdk_stdout": "Items\t16\t0\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\n",
+      "tablecraft_check": "Table\tItems\nRows checked\t0\nIndexes checked\t0\nIndexes not checked\t0\nIndex\tStatus\tIndex constraints\n",
+      "changed_pages": [
+        7
+      ]
+    }
   ]
 }

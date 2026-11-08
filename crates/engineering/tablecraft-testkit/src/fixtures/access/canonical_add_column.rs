@@ -23,6 +23,22 @@ pub fn source(name: &str) -> Source {
     Source { before, after }
 }
 
+/// Independently authored minimum one-field source, frozen against SDK addition.
+pub fn one_column_source() -> Vec<u8> {
+    let mut before = source("Extra").before;
+    let original = &before[7 * PAGE..8 * PAGE];
+    let mut definition = vec![0; PAGE];
+    definition[..88].copy_from_slice(&original[..88]);
+    definition[88..94].copy_from_slice(&original[113..119]);
+    put16(&mut definition, 94, 65535);
+    put16(&mut definition, 2, 3992);
+    put32(&mut definition, 8, 96);
+    put16(&mut definition, 41, 1);
+    put16(&mut definition, 45, 1);
+    before[7 * PAGE..8 * PAGE].copy_from_slice(&definition);
+    before
+}
+
 /// Build an independent expected appended declaration for another raw empty source.
 /// This helper parses only its literal one-page field/name geometry, not engine APIs.
 pub fn append(before: &[u8], name: &str) -> Vec<u8> {

@@ -98,6 +98,23 @@ fn unicode_column_names_use_the_same_source_roles_and_exact_independent_tail() {
 
 #[test]
 fn decoded_user_names_and_the_sixteen_field_boundary_are_structural() {
+    let minimum = canonical_add_column::one_column_source();
+    let minimum_after = canonical_add_column::append(&minimum, "Score");
+    checked_empty_columns(&minimum, "Items", &["Id"]);
+    checked_empty_columns(&minimum_after, "Items", &["Id", "Score"]);
+    assert_eq!(
+        hash(&minimum),
+        "d66026e33b8375e6106728acaa22daa2bff3c4c7ef11b59736023cec50215ed2"
+    );
+    assert_eq!(
+        hash(&minimum_after),
+        "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1"
+    );
+    let candidate = image(&minimum)
+        .prepare_add_int32_column_candidate("Items", "Score", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(candidate.after_bytes(), minimum_after);
+
     let raw = canonical_creation::source(canonical_creation::Case::Named);
     let mut before = canonical_native17_creation::source(raw.bytes);
     before[7 * 4096 + 16..7 * 4096 + 20].fill(0);
@@ -124,6 +141,14 @@ fn decoded_user_names_and_the_sixteen_field_boundary_are_structural() {
         names.push(name);
     }
     let expected = canonical_add_column::append(&before, "Last");
+    assert_eq!(
+        hash(&before),
+        "6f93aa2015d1b455b85e11ae3907851d1ccba2f4c139d7f3333090925b6756d7"
+    );
+    assert_eq!(
+        hash(&expected),
+        "009e7da6d0b46542aa313776e022829077987acfc242197cce4e31c6c98fba26"
+    );
     checked_empty_columns(
         &before,
         "Items",
