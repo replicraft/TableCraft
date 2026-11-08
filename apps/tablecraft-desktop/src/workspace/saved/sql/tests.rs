@@ -1,4 +1,5 @@
 use crate::workspace::Desktop;
+use eframe::App;
 use std::time::{Duration, Instant};
 use tablecraft_runtime::Command;
 use tablecraft_testkit::fixtures::access::saved_queries::fitting_select::storage_pair;
