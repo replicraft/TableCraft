@@ -26,6 +26,11 @@ mod query_context;
 ))]
 mod query_delete;
 mod query_design;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod query_insert;
 mod query_parameters;
 #[cfg(all(
     feature = "offline-edit",

@@ -40,6 +40,7 @@ pub(super) fn apply_query_action(
             plan.backend().before_bytes().len(),
             plan.backend().after_bytes().len(),
         ),
+        Plan::Insert(plan) => (plan.before_bytes().len(), plan.after_bytes().len()),
     };
     let Ok(mut proof) = action_proof_budget(before, after) else {
         return SaveOutcome::Failed(no_session(SaveFailureKind::Resource));
@@ -62,6 +63,13 @@ pub(super) fn apply_query_action(
         }
         Plan::Delete(plan) => {
             match session.stage_reviewed_delete_with_budgets(plan, &mut native, &mut proof, &cancel)
+            {
+                Ok(staged) => staged.apply(&bundle, &mut persistence, &cancel),
+                Err(failure) => return retain(failure, retained),
+            }
+        }
+        Plan::Insert(plan) => {
+            match session.stage_reviewed_insert_with_budgets(plan, &mut native, &mut proof, &cancel)
             {
                 Ok(staged) => staged.apply(&bundle, &mut persistence, &cancel),
                 Err(failure) => return retain(failure, retained),

@@ -7,6 +7,7 @@ const UPDATE_SQL: &str =
     "UPDATE [Customers] SET [Balance] = [Balance] + 25 WHERE [City] = 'Madrid'";
 
 const DELETE_SQL: &str = "DELETE FROM [Customers] WHERE [City] = 'Madrid'";
+const INSERT_SQL: &str = "INSERT INTO [Customers] ([CustomerName],[City],[Balance]) VALUES ('New customer','Madrid',CCur(25))";
 
 impl Preview {
     pub(super) fn prepare_query_action_scene(&mut self, scene: Scene) {
@@ -18,25 +19,32 @@ impl Preview {
             self.state
                 .set_query_data(Some(fixtures::SQL.into()), fixtures::query())
         );
-        let sql = if matches!(
-            scene,
-            Scene::QueryDeleteReview | Scene::QueryDeleteSaving | Scene::QueryDeleteResult
-        ) {
-            DELETE_SQL
-        } else {
-            UPDATE_SQL
+        let sql = match scene {
+            Scene::QueryDeleteReview | Scene::QueryDeleteSaving | Scene::QueryDeleteResult => {
+                DELETE_SQL
+            }
+            Scene::QueryInsertReview | Scene::QueryInsertSaving | Scene::QueryInsertResult => {
+                INSERT_SQL
+            }
+            _ => UPDATE_SQL,
         };
         assert!(self.state.replace_query_sql(sql.into()));
         let review = self
             .mock_review_query_action()
             .expect("synthetic action review");
-        if matches!(scene, Scene::QueryUpdateReview | Scene::QueryDeleteReview) {
+        if matches!(
+            scene,
+            Scene::QueryUpdateReview | Scene::QueryDeleteReview | Scene::QueryInsertReview
+        ) {
             return;
         }
 
         let save = self.request();
         assert!(self.state.begin_query_action_save(review, save));
-        if matches!(scene, Scene::QueryUpdateResult | Scene::QueryDeleteResult) {
+        if matches!(
+            scene,
+            Scene::QueryUpdateResult | Scene::QueryDeleteResult | Scene::QueryInsertResult
+        ) {
             assert!(self.state.set_query_action_save_outcome(
                 save,
                 EditSaveOutcome::Saved(self.state.localizer.text("settings-mock-saved")),
@@ -52,6 +60,7 @@ impl Preview {
         let kind = match sql.as_str() {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
+            INSERT_SQL => QueryActionKind::Insert,
             _ => return None,
         };
         let inspection = self.request();
@@ -87,6 +96,7 @@ impl Preview {
                     matched_rows: 2,
                     deleted_rows: 2,
                 },
+                QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 1 },
             },
         };
         self.state
@@ -176,6 +186,12 @@ mod tests {
                 Scene::QueryDeleteSaving,
                 Scene::QueryDeleteResult,
                 DELETE_SQL,
+            ),
+            (
+                Scene::QueryInsertReview,
+                Scene::QueryInsertSaving,
+                Scene::QueryInsertResult,
+                INSERT_SQL,
             ),
         ] {
             let mut review = Preview::new(review_scene);

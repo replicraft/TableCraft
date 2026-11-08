@@ -25,6 +25,7 @@ pub enum QueryOperation {
     Read,
     Update,
     Delete,
+    Insert,
     Unsupported,
 }
 
@@ -34,9 +35,8 @@ impl QueryOperation {
             Statement::Read(_) | Statement::Crosstab(_) => Self::Read,
             Statement::Update(_) => Self::Update,
             Statement::Delete(_) => Self::Delete,
-            Statement::Definition(_) | Statement::MakeTable(_) | Statement::Insert(_) => {
-                Self::Unsupported
-            }
+            Statement::Insert(_) => Self::Insert,
+            Statement::Definition(_) | Statement::MakeTable(_) => Self::Unsupported,
         }
     }
 }

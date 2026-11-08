@@ -89,7 +89,7 @@ documents confirmation of the selected row count before deletion. The
 also describes inspecting the records selected by the same criteria. The current
 GUI warning shows counts and no-Undo text; it does not implement a separate action
 record-preview mode. See the [runtime contract](../../application/RUNTIME.md#reviewed-sql-delete-actions)
-and [SQL workspace](../../ui/SQL_WORKSPACE.md#reviewed-local-update-and-delete).
+and [SQL workspace](../../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
 
 ## Evidence and limits
 

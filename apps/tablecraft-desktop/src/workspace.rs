@@ -426,6 +426,9 @@ impl Desktop {
                 Ok(Response::QueryDeleteReviewed { review, capability }) => {
                     self.publish_query_delete_review(generation, review, capability);
                 }
+                Ok(Response::QueryInsertReviewed { review, capability }) => {
+                    self.publish_query_insert_review(generation, review, capability);
+                }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
                 }

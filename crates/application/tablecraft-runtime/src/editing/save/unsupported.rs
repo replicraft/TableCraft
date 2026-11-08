@@ -3,7 +3,8 @@ use super::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::ReviewedTableCreation;
 use crate::editing::{
-    ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryUpdate,
+    ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
+    ReviewedQueryUpdate,
 };
 use std::path::PathBuf;
 
@@ -64,6 +65,17 @@ impl SaveWorker {
         reviewed: ReviewedQueryDelete,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedQueryDelete>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    pub fn start_query_insert(
+        &self,
+        reviewed: ReviewedQueryInsert,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

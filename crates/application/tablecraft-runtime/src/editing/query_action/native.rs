@@ -12,22 +12,29 @@ use std::{
     cell::RefCell,
     sync::{Arc, atomic::AtomicBool},
 };
-use tablecraft_access::{NativeSource, editing::sql};
+use tablecraft_access::{
+    NativeSource,
+    editing::{journal::NativeJournalInsertPlan, sql},
+};
 use tablecraft_ace::{
     InspectError, NativeImage, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::Resource;
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_query::{DeletePlan, UpdatePlan};
 use tablecraft_sql::{ParseLimits, parse_query};
 
-pub(in crate::editing) enum Kind {
+#[derive(Clone, Copy)]
+pub(in crate::editing) enum Kind<'a> {
     Update,
     Delete,
+    Insert(&'a dyn Clock),
 }
 
 pub(in crate::editing) enum Plan {
     Update(UpdatePlan<RecoverableNativeEditPlan>),
     Delete(DeletePlan<RecoverableNativeDeletePlan>),
+    Insert(NativeJournalInsertPlan),
 }
 
 pub(in crate::editing) struct ReviewedAction {
@@ -42,7 +49,7 @@ pub(in crate::editing) fn review(
     inputs: &[ParameterInput],
     output: &mut Presentation<'_>,
     cancelled: &dyn Fn() -> bool,
-    kind: Kind,
+    kind: Kind<'_>,
 ) -> Result<ReviewedAction, Error> {
     let mut query_work = action_query_budget();
     query_work.charge(Resource::Bytes, target.sql().len() as u64)?;
@@ -53,6 +60,10 @@ pub(in crate::editing) fn review(
             .map_err(sql::RecoverableError::Shape)?,
         Kind::Delete => sql::local_delete_table(parsed.query(), true)
             .map_err(sql::RecoverableDeleteError::Shape)?,
+        Kind::Insert(_) => {
+            sql::local_insert_table(parsed.query(), true, &mut query_work, cancelled)
+                .map_err(sql::RecoverableInsertError::Shape)?
+        }
     };
     let bindings = parameters::bindings(parsed.query(), inputs, output)?;
     if !document.source.editable_native() {
@@ -94,6 +105,15 @@ pub(in crate::editing) fn review(
                 &mut native,
                 &mut query_work,
                 options,
+                cancelled,
+            )?),
+            Kind::Insert(clock) => Plan::Insert(sql::plan_recoverable_insert_with_options(
+                image,
+                parsed.query(),
+                &mut native,
+                &mut query_work,
+                options,
+                Some(clock),
                 cancelled,
             )?),
         }

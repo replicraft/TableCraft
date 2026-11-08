@@ -354,7 +354,7 @@ fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation()
         ),
         (
             "INSERT INTO Items (Id,Score) VALUES (4,40)",
-            QueryOperation::Unsupported,
+            QueryOperation::Insert,
         ),
         ("DELETE FROM Items WHERE Id=1", QueryOperation::Delete),
         (

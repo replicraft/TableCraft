@@ -1,9 +1,11 @@
 # Fresh qualification of reviewed native INSERTs
 
-This working query/engine/adapter boundary prepares INSERT VALUES before taking
-an exclusive offline lease. It is not yet connected to a runtime SQL action
-capability or the desktop SQL editor. Existing datasheet insertion and legacy CLI
-insertion remain separate consumers; their current restrictions are unchanged.
+This working query/engine/adapter boundary now supplies the runtime and desktop
+SQL INSERT VALUES workflow. Typed values are reviewed before an exclusive offline
+lease is acquired. The shared Append query warning requires explicit confirmation,
+and save consumes the sealed candidate without reevaluating SQL or host inputs.
+Existing datasheet insertion and legacy CLI insertion remain separate consumers;
+their current restrictions are unchanged.
 
 ## Typed VALUES and original presence
 
@@ -64,6 +66,57 @@ the existing fixed/resizable journal, recovery, receipt and retirement ownership
 Failures retain that same session, lock and receipts. Hosts must not hold a native
 lease while waiting for review or confirmation.
 
+## Runtime and shared Append confirmation
+
+`ReviewQueryInsert` accepts the same open document's immutable `InspectedQuery`
+and literal typed parameter inputs. It validates source identity, document
+revision, input limits and declaration constraints before native capture. The
+current shape is one local VALUES row. INSERT SELECT, multiple VALUES tuples,
+external destinations and broader expression providers do not become supported
+through classification or parameter binding.
+
+The worker's existing clock is supplied only for source-qualified needed stored
+Date/Now defaults during review. Complete supplied values, supplied NULL, empty
+requests and unneeded defaults do not sample it. The native source/declaration
+checks still precede the at-most-once provider call. Its captured civil reading
+or exact absence remains in the original Clock-family intent; save and recovery
+use that input without another clock call. This does not establish native Access
+clock timing or generated/default-clock composition.
+
+The response separates `QueryInsertReview` facts (table, document revision,
+inserted rows and review ID) from the opaque `ReviewedQueryInsert` capability.
+INSERT has no matched-old-row count. Shared UI captures the expected Insert kind
+and confirmed SQL/parameter witness, then accepts only the corresponding typed
+`Insert { inserted_rows }` effect. The current VALUES profile requires one
+inserted record. A display DTO cannot construct a native plan or select another
+save operation.
+
+`SaveWorker::start_query_insert` preserves the exact selected native plan variant
+through fresh offline staging. The common action-save owner uses its INSERT
+branch, not UPDATE or DELETE decoding. Original presence, native defaults,
+checked generated values and captured clock input retain their owning contracts.
+Source drift, cancellation or proof failure retains the same real session and
+receipts; no review holds an exclusive lease while waiting for confirmation.
+
+Before save acceptance, No/Escape preserves previous query results and changes
+no bytes. After acceptance, cancellation is request-only and terminal outcomes
+survive view changes until acknowledgment. Successful acknowledgment freshly
+opens the database, restores the SQL tab/draft and clears old snapshots without
+rerunning INSERT or inventing a generated row identity. See the
+[runtime service](../../application/RUNTIME.md#reviewed-sql-insert-actions) and
+[shared scratch action workflow](../../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
+
+Microsoft's [INSERT contract](https://support.microsoft.com/en-us/access/insert-into-statement)
+distinguishes a single VALUES record from SELECT append, and requires a complete
+positional row when no field list is supplied. Its
+[append guide](https://support.microsoft.com/en-us/access/add-records-to-a-table-by-using-an-append-query)
+describes preview and no Undo, and its
+[action-query confirmation setting](https://support.microsoft.com/en-us/access/customize-default-settings-for-your-databases)
+includes append queries. The current warning shows the qualified native inserted
+count and no-Undo text. Exact native append-warning wording and layout have not
+been captured, so the warning remains an adaptation; a separate append-record
+preview is not implemented.
+
 ## Evidence and limits
 
 Focused query tests cover strict typed/reordered inputs, original presence,
@@ -84,6 +137,7 @@ Current normal generated-field restrictions, required-program gates and
 [clock-profile limits](NORMAL_CLOCK_DEFAULTS.md) remain explicit. Microsoft’s
 [INSERT contract](https://support.microsoft.com/en-us/access/insert-into-statement)
 also describes explicit AutoNumber values and INSERT SELECT; this bounded route
-does not claim either merely because the syntax can be parsed. The next consumer
-is the shared runtime/GUI action workflow, with a real inserted-row count and no
-invented matched-old-row count.
+does not claim either merely because the syntax can be parsed. Current generated
+field policies, wider clock request grammars and generated/default-clock
+composition stay within their existing native admission. Broader append query
+designer, saved-action and multirow SELECT behavior remain roadmap work.

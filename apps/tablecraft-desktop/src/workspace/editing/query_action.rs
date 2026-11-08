@@ -6,15 +6,17 @@ use std::{
     sync::Arc,
 };
 use tablecraft_runtime::{
-    Command, InspectedQuery, QueryDeleteReview as RuntimeDeleteReview, QueryOperation,
-    QueryUpdateReview as RuntimeUpdateReview, ReviewedQueryDelete, ReviewedQueryUpdate, SaveWorker,
-    journal_path,
+    Command, InspectedQuery, QueryDeleteReview as RuntimeDeleteReview,
+    QueryInsertReview as RuntimeInsertReview, QueryOperation,
+    QueryUpdateReview as RuntimeUpdateReview, ReviewedQueryDelete, ReviewedQueryInsert,
+    ReviewedQueryUpdate, SaveWorker, journal_path,
 };
 use tablecraft_ui::{ParameterInput, QueryActionEffect, QueryActionKind, QueryActionReview};
 
 pub(super) enum ReviewedAction {
     Update(ReviewedQueryUpdate),
     Delete(ReviewedQueryDelete),
+    Insert(ReviewedQueryInsert),
 }
 
 impl ReviewedAction {
@@ -22,6 +24,7 @@ impl ReviewedAction {
         match self {
             Self::Update(_) => QueryActionKind::Update,
             Self::Delete(_) => QueryActionKind::Delete,
+            Self::Insert(_) => QueryActionKind::Insert,
         }
     }
 
@@ -29,6 +32,7 @@ impl ReviewedAction {
         match self {
             Self::Update(capability) => capability.document_revision(),
             Self::Delete(capability) => capability.document_revision(),
+            Self::Insert(capability) => capability.document_revision(),
         }
     }
 
@@ -36,6 +40,7 @@ impl ReviewedAction {
         match self {
             Self::Update(capability) => capability.source_path(),
             Self::Delete(capability) => capability.source_path(),
+            Self::Insert(capability) => capability.source_path(),
         }
     }
 
@@ -43,6 +48,7 @@ impl ReviewedAction {
         match self {
             Self::Update(capability) => capability.table(),
             Self::Delete(capability) => capability.table(),
+            Self::Insert(capability) => capability.table(),
         }
     }
 
@@ -64,6 +70,14 @@ impl ReviewedAction {
                         (message, error.into_reviewed().map(Self::Delete))
                     })
             }
+            Self::Insert(capability) => {
+                worker
+                    .start_query_insert(capability, bundle)
+                    .map_err(|error| {
+                        let message = error.to_string();
+                        (message, error.into_reviewed().map(Self::Insert))
+                    })
+            }
         }
     }
 }
@@ -72,6 +86,7 @@ fn action_kind(target: &InspectedQuery) -> Option<QueryActionKind> {
     match target.operation() {
         QueryOperation::Update => Some(QueryActionKind::Update),
         QueryOperation::Delete => Some(QueryActionKind::Delete),
+        QueryOperation::Insert => Some(QueryActionKind::Insert),
         QueryOperation::Read | QueryOperation::Unsupported => None,
     }
 }
@@ -101,6 +116,10 @@ impl Desktop {
                 parameters: inputs,
             },
             QueryActionKind::Delete => Command::ReviewQueryDelete {
+                target: Arc::clone(&target),
+                parameters: inputs,
+            },
+            QueryActionKind::Insert => Command::ReviewQueryInsert {
                 target: Arc::clone(&target),
                 parameters: inputs,
             },
@@ -191,6 +210,26 @@ impl Desktop {
                 },
             },
             ReviewedAction::Delete(capability),
+        );
+    }
+
+    pub(in crate::workspace) fn publish_query_insert_review(
+        &mut self,
+        request_id: u64,
+        review: RuntimeInsertReview,
+        capability: ReviewedQueryInsert,
+    ) {
+        self.publish_query_action_review(
+            request_id,
+            QueryActionReview {
+                id: review.id,
+                document_revision: review.document_revision,
+                table: review.table,
+                effect: QueryActionEffect::Insert {
+                    inserted_rows: review.inserted_rows,
+                },
+            },
+            ReviewedAction::Insert(capability),
         );
     }
 

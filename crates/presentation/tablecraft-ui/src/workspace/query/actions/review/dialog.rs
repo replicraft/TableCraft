@@ -68,17 +68,22 @@ impl State {
                             "query-action-table",
                             &[("table", review.table.clone())],
                         ));
-                        ui.label(message(
-                            ui,
-                            "query-action-matched",
-                            &[("count", review.effect.matched_rows().to_string())],
-                        ));
+                        if let Some(matched) = review.effect.matched_rows() {
+                            ui.label(message(
+                                ui,
+                                "query-action-matched",
+                                &[("count", matched.to_string())],
+                            ));
+                        }
                         let (effect_key, affected) = match review.effect {
                             QueryActionEffect::Update { changed_rows, .. } => {
                                 ("query-action-update-changed", changed_rows)
                             }
                             QueryActionEffect::Delete { deleted_rows, .. } => {
                                 ("query-action-delete-deleted", deleted_rows)
+                            }
+                            QueryActionEffect::Insert { inserted_rows } => {
+                                ("query-action-insert-inserted", inserted_rows)
                             }
                         };
                         ui.label(message(ui, effect_key, &[("count", affected.to_string())]));
@@ -220,6 +225,7 @@ impl QueryActionKind {
         match self {
             Self::Update => "query-action-update-title",
             Self::Delete => "query-action-delete-title",
+            Self::Insert => "query-action-insert-title",
         }
     }
 
@@ -227,6 +233,7 @@ impl QueryActionKind {
         match self {
             Self::Update => "query-action-update-reviewing",
             Self::Delete => "query-action-delete-reviewing",
+            Self::Insert => "query-action-insert-reviewing",
         }
     }
 
@@ -234,6 +241,7 @@ impl QueryActionKind {
         match self {
             Self::Update => "query-action-update-confirmation",
             Self::Delete => "query-action-delete-confirmation",
+            Self::Insert => "query-action-insert-confirmation",
         }
     }
 }

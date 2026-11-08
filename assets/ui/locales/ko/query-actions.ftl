@@ -13,3 +13,7 @@ query-action-delete-title = 삭제 쿼리
 query-action-delete-reviewing = 삭제 쿼리를 검토하는 중…
 query-action-delete-deleted = 삭제할 레코드: { $count }
 query-action-delete-confirmation = 검토한 레코드를 원본 데이터베이스에서 영구적으로 삭제하시겠습니까?
+query-action-insert-title = 추가 쿼리
+query-action-insert-reviewing = 추가 쿼리를 검토하는 중…
+query-action-insert-inserted = 추가할 레코드: { $count }
+query-action-insert-confirmation = 검토한 레코드를 원본 데이터베이스에 추가하시겠습니까?

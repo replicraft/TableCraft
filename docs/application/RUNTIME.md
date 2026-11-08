@@ -667,8 +667,8 @@ continue to use actual schema/native values, independently of the hint tag.
 
 The platform predicate is applied at the module boundary: common review facts,
 capability getters and inspected-source checks live in the typed
-`editing/query_update.rs` and `editing/query_delete.rs` services. Native preparation
-is shared in `editing/query_action/native.rs`; each operation retains its own
+`editing/query_update.rs`, `editing/query_delete.rs` and `editing/query_insert.rs`
+services. Native preparation is shared in `editing/query_action/native.rs`; each operation retains its own
 sealed plan and explicit unsupported-host response. This removes repeated per-import/per-field guards without
 expanding native save support beyond macOS, Linux and Windows. A FreeBSD library
 compile checks the unsupported branch; it does not qualify FreeBSD native editing.
@@ -739,9 +739,10 @@ save worker. Before acceptance, No/Escape releases staging while preserving
 prior results. After acceptance, cancellation is request-only and terminal
 reports survive view changes until acknowledgment. Successful fresh-open restores
 the SQL tab/draft and clears obsolete result snapshots without rerunning UPDATE.
-The same shared presentation owner also handles the distinct DELETE service
-below. Append/INSERT, other action kinds, native QueryDef persistence and DDL remain
-roadmap work; disabled or unsupported routes never gain authority by classification.
+The same shared presentation owner also handles the distinct DELETE and INSERT
+services below. INSERT SELECT, broader action contexts, native QueryDef persistence
+and DDL remain roadmap work; disabled or unsupported routes never gain authority
+by classification.
 
 ## Reviewed SQL DELETE actions
 
@@ -770,8 +771,8 @@ cannot replace the current decision. UI facts are not native save authority.
 
 `SaveWorker::start_query_delete` consumes only the DELETE capability through the
 same nonreplaceable save owner as other edits. Native save orchestration is
-shared in `editing/save/native/apply_query_action.rs`, with distinct typed UPDATE
-and DELETE plans and staging methods. It checks source validity, opens the target
+shared in `editing/save/native/apply_query_action.rs`, with distinct typed UPDATE,
+DELETE and INSERT plans and staging methods. It checks source validity, opens the target
 exclusively and invokes
 `stage_reviewed_delete_with_budgets` against that retained descriptor. Fresh
 complete BEFORE, original TCND binding, independent normal native reconstruction
@@ -796,7 +797,63 @@ freshly opens the database, restores the SQL draft/tab and discards obsolete
 snapshots without executing DELETE again. Native saved action definitions and
 DELETE query-designer mode remain separate unfinished work. See the
 [sealed native contract](../access/writes/REVIEWED_DELETES.md) and
-[shared scratch workflow](../ui/SQL_WORKSPACE.md#reviewed-local-update-and-delete).
+[shared scratch workflow](../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
+
+## Reviewed SQL INSERT actions
+
+With `offline-edit`, `ReviewQueryInsert` accepts the exact issued `InspectedQuery`
+and literal `ParameterInput` envelopes. Source identity, document revision, input
+limits and declared constraints are checked before native capture. This route
+admits one local INSERT VALUES row through the existing closed expression
+profile. Classification does not enable INSERT SELECT, multiple VALUES tuples,
+external destinations, hidden retrieval, UDFs or new ambient expression contexts.
+
+Named fields bind against actual native metadata before expressions evaluate.
+Supplied expressions retain written VALUES order, then map to backend field order.
+Positional VALUES must supply every exposed field. Complete versus omitted intent
+is selected structurally from the field list and real schema, without retrying a
+failed plan under another policy. Omission, supplied NULL and supplied empty
+values remain distinct; native declarations own defaults, generation and final
+constraints. The browser's generated-field input policy is not a broader SQL
+AutoNumber implementation. Current native supplied-generated-value refusals and
+Increment/default-clock composition limits remain explicit.
+
+The worker's existing clock is supplied only to the native needed-default route.
+Pure inspection, typed input conversion, complete supplied values and unneeded
+defaults do not sample it. The native planner qualifies its source/declarations
+before reading the clock at most once for a needed Date/Now default. The captured
+civil reading or exact absence remains in the original TCNA5 intent; waiting for
+confirmation, saving and recovery do not resample it. Explicit clock calls in
+VALUES remain outside this query profile. This is an explicit review-time policy,
+not native Access statement/row timing qualification.
+
+Review returns `QueryInsertReview` facts (table, document revision, inserted rows
+and review identifier) plus a separate opaque `ReviewedQueryInsert`. There is no
+matched-old-row count. The shared GUI effect is `Insert { inserted_rows }`; the
+current one-row SQL profile requires a count of one. As with UPDATE/DELETE, the
+original SQL/tab/document/publication and confirmed inputs transfer into the
+review owner, and the expected action kind must match the effect. Review holds
+no exclusive native lease or journal.
+
+`SaveWorker::start_query_insert` consumes this distinct capability through the
+same nonreplaceable action-save owner. Its private INSERT plan retains the exact
+`NativeJournalInsertPlan` family: Complete, AllocateEof, CompleteTyped, Omitted or
+Clock. Fresh `stage_reviewed_insert_with_budgets` checks the complete reviewed
+source, rederives native admission/defaults from original requests and captured
+inputs, and requires complete rebuilt images and inserted-count agreement before
+journal creation. SQL, parameters and host providers are not replayed. The
+original TCNA intent is not converted into expanded rows or another family.
+Fixed and growing candidates retain their original journal geometry.
+
+The existing action query/native/proof/persistence allowances remain separate and
+cumulative. No/Escape before acceptance preserves previous query results and
+changes no bytes. After acceptance, cancellation is request-only and the real
+save/recovery owner and terminal outcomes survive until acknowledgment. Successful
+acknowledgment freshly opens the source, restores the SQL draft/tab and clears
+obsolete snapshots without rerunning INSERT or inferring a generated record ID.
+Native saved-action persistence and append query-designer/SELECT workflows remain
+unfinished. See the [sealed INSERT contract](../access/writes/REVIEWED_INSERTS.md)
+and [scratch action workflow](../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
 
 ## Reviewed offline row insertion
 
@@ -1377,9 +1434,10 @@ input conversion, then uses the ordinary shared query executor and context.
 A same-numbered revision from another worker is insufficient. Reopening a
 source invalidates its earlier target.
 
-Inspection also retains `QueryOperation::{Read, Update, Delete, Unsupported}`
+Inspection also retains `QueryOperation::{Read, Update, Delete, Insert, Unsupported}`
 from the actual parsed statement. SELECT/UNION and crosstab syntax classify as
-Read; UPDATE and DELETE have distinct classes; other action/definition kinds
+Read; UPDATE, DELETE and INSERT have distinct classes. Classification still does
+not admit an unsupported INSERT SELECT/body shape; other action/definition kinds
 remain Unsupported. Classification
 is inert metadata, not binding success or write permission. A string literal
 containing UPDATE stays a read query. Hosts must dispatch by this fact rather
@@ -1397,9 +1455,9 @@ parameters through shared UI staging, then execute the exact retained target.
 Parameterless SQL continues from the same explicit Run after inert inspection.
 Desktop owns DTO/request routing and the runtime target's lifetime; query parsing,
 parameter conversion and execution remain in runtime/query services. The
-classified UPDATE and DELETE routes use the same confirmed parameter acquisition
-before reviewed action confirmation; only the sealed native plan survives into
-save. Other action
+classified UPDATE, DELETE and INSERT VALUES routes use the same confirmed
+parameter acquisition before reviewed action confirmation; only the sealed native
+plan survives into save. Other action
 kinds and persisted query definitions remain unsupported. See the
 [scratch workspace contract](../ui/SQL_WORKSPACE.md#declared-scratch-parameters).
 

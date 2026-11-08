@@ -13,3 +13,7 @@ query-action-delete-title = 削除クエリ
 query-action-delete-reviewing = 削除クエリを確認しています…
 query-action-delete-deleted = 削除するレコード数: { $count }
 query-action-delete-confirmation = 確認したレコードを元のデータベースから完全に削除しますか？
+query-action-insert-title = 追加クエリ
+query-action-insert-reviewing = 追加クエリを確認しています…
+query-action-insert-inserted = 追加するレコード数: { $count }
+query-action-insert-confirmation = 確認したレコードを元のデータベースに追加しますか？

@@ -13,3 +13,7 @@ query-action-delete-title = Löschabfrage
 query-action-delete-reviewing = Löschabfrage wird geprüft…
 query-action-delete-deleted = Zu löschende Datensätze: { $count }
 query-action-delete-confirmation = Diese geprüften Datensätze dauerhaft aus der ursprünglichen Datenbank löschen?
+query-action-insert-title = Anfügeabfrage
+query-action-insert-reviewing = Anfügeabfrage wird geprüft…
+query-action-insert-inserted = Anzufügende Datensätze: { $count }
+query-action-insert-confirmation = Diesen geprüften Datensatz an die ursprüngliche Datenbank anfügen?

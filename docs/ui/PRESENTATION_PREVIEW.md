@@ -1,5 +1,41 @@
 # Presentation preview
 
+## Reviewed SQL INSERT VALUES — 8 November 2026
+
+Three production-presentation scenes (`query-insert-review`, `query-insert-saving`
+and `query-insert-result`) exercise the shared typed action owner with synthetic
+counts and explicit mock outcomes. Earlier scene IDs remain unchanged. The
+headless matrix covers 107 scenes across eight locales and two themes (1,712
+combinations); this is execution/layout coverage, not 1,712 inspected image exports.
+
+Six normal-host offscreen frames in ignored
+`.cache/ui-previews/query-insert-20261108/` were rendered and inspected on macOS
+ARM64 with Windows input emulation:
+
+| Surface | Locale/theme | Logical size | Scale |
+| --- | --- | --- | --- |
+| INSERT review | en-US/light | 1280 × 820 | 1× |
+| INSERT review | de/dark | 900 × 580 | 1.25× |
+| INSERT review | ja/light | 900 × 580 | 2× |
+| INSERT saving | en-US/dark | 1280 × 820 | 1× |
+| INSERT mock result | de/dark | 900 × 580 | 1.25× |
+| DELETE review regression | en-US/light | 1280 × 820 | 1× |
+
+The append title, one record to append, explicit confirmation, no-Undo text and
+Yes/No remain visible without clipping. No initially has focus. INSERT has no
+matched-old-row label. Saving retains cancellation; the mock result explicitly
+states no file was changed. DELETE retains its matched/deleted counts. Narrow
+German/Japanese Ribbon layouts retain the horizontal overflow control.
+
+No matching Access append-warning capture is retained, so warning geometry and
+wording remain adaptations rather than verified Access interaction. The retained
+compact parameter image was inspected during implementation but does not qualify
+append-warning layout. See [SQL workspace](SQL_WORKSPACE.md#reviewed-local-action-queries).
+The shared UI gate passes 508 tests; connected desktop/runtime gates pass 134 and
+179 tests respectively, plus the runtime diagnostic integration. No native app
+windows or Access processes were launched; cross-target compilation is separate
+from platform execution and native Access qualification.
+
 ## Reviewed SQL DELETE and shared actions — 8 November 2026
 
 The production presentation now shares one typed action owner for UPDATE and
@@ -28,7 +64,7 @@ frames retain their cancellation/acknowledgment controls; prior results remain
 behind the modal. The actual retained compact Microsoft parameter image was
 reopened during implementation. It does not establish DELETE warning geometry;
 no matching Access warning capture is available. These warnings remain documented
-adaptations, with behavior references in the [SQL workspace](SQL_WORKSPACE.md#reviewed-local-update-and-delete).
+adaptations, with behavior references in the [SQL workspace](SQL_WORKSPACE.md#reviewed-local-action-queries).
 
 The shared UI gate passes 507 tests and desktop passes 133. Connected DELETE
 checks exercise typed prompts, No, Yes, independent complete AFTER bytes, source

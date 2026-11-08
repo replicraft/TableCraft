@@ -1,5 +1,32 @@
 # Implementation status
 
+## GUI-reviewed SQL INSERT VALUES — 8 November 2026
+
+Scratch Run now routes qualified single-record local INSERT VALUES through typed
+parameter prompts, runtime-owned native review, explicit append confirmation and
+the consuming save worker. The review reports records to append without inventing
+matched-old-row counts. Omitted fields remain distinct from supplied NULL; needed
+clock defaults are sampled during review and retained through save. Save rechecks
+the exact native plan without replaying SQL or reading the clock again.
+
+No preserves original bytes and previous query results. Accepted outcomes retain
+the existing save/recovery owner; acknowledgment freshly reopens the SQL draft
+without executing INSERT again. Runtime and desktop tests compare complete AFTER
+images against independent raw fixtures, cover omission versus explicit NULL,
+source drift and clock sampling, and query reopened membership.
+
+The selected gates pass 179 runtime tests plus its diagnostic integration test,
+134 desktop tests, 508 shared UI tests and 121 Access adapter units. Strict affected
+package lint, minimal builds, Windows/Linux shared-library compilation and FreeBSD
+unsupported-runtime lint pass. Six offscreen frames were inspected in English,
+German and Japanese, light/dark themes and three scales; no native windows were
+launched. These checks do not establish native Windows/Access compatibility.
+
+See the [runtime contract](application/RUNTIME.md#reviewed-sql-insert-actions) and
+[SQL workspace](ui/SQL_WORKSPACE.md#reviewed-local-action-queries). Next is INSERT
+SELECT append; broader expression contexts, generated/default composition and
+native saved actions remain separate work. Existing native writer limits remain.
+
 ## Reviewed INSERT planning and fresh proof — 8 November 2026
 
 INSERT VALUES now has explicit typed parameter APIs with independent query/native

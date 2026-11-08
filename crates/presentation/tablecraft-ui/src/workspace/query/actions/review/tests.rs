@@ -11,6 +11,7 @@ const REQUEST: u64 = 12;
 const REVIEW: u64 = 13;
 const SQL: &str = "UPDATE Items SET Score=77 WHERE Id>=2";
 const DELETE_SQL: &str = "DELETE FROM Items WHERE Id>=2";
+const INSERT_SQL: &str = "INSERT INTO Items(Id,Score) VALUES(4,40)";
 
 fn reviewing() -> State {
     reviewing_kind(QueryActionKind::Update)
@@ -20,6 +21,7 @@ fn reviewing_kind(kind: QueryActionKind) -> State {
     let sql = match kind {
         QueryActionKind::Update => SQL,
         QueryActionKind::Delete => DELETE_SQL,
+        QueryActionKind::Insert => INSERT_SQL,
     };
     let mut state = state();
     assert!(state.replace_query_sql(sql.into()));
@@ -263,61 +265,87 @@ fn refused_diagnostic_capacity_never_discards_terminal_resource_permissions() {
 }
 
 #[test]
-fn delete_warning_uses_actual_counts_and_the_shared_yes_no_save_owner() {
-    for yes in [false, true] {
-        let mut state = reviewing_kind(QueryActionKind::Delete);
-        assert!(state.set_query_action_review(REQUEST, delete_facts(4)));
-        let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
-        let mut harness = make_harness(state);
-        harness.run_steps(2);
-        assert!(harness.query_by_label("Delete query").is_some());
-        let mut arguments = crate::FluentArgs::new();
-        arguments.set("count", "4");
-        let deleted = harness
-            .state()
-            .0
-            .localizer
-            .format("query-action-delete-deleted", &arguments);
-        assert!(harness.query_by_label(&deleted).is_some());
-        assert!(
+fn delete_and_append_warnings_use_actual_effect_counts_and_the_shared_yes_no_save_owner() {
+    for (kind, sql, title, key, count) in [
+        (
+            QueryActionKind::Delete,
+            DELETE_SQL,
+            "Delete query",
+            "query-action-delete-deleted",
+            "4",
+        ),
+        (
+            QueryActionKind::Insert,
+            INSERT_SQL,
+            "Append query",
+            "query-action-insert-inserted",
+            "1",
+        ),
+    ] {
+        for yes in [false, true] {
+            let mut state = reviewing_kind(kind);
+            let review = if kind == QueryActionKind::Delete {
+                delete_facts(4)
+            } else {
+                insert_facts(1)
+            };
+            assert!(state.set_query_action_review(REQUEST, review));
+            let rows = state.query_data.as_ref().unwrap().rows.as_ptr();
+            let mut harness = make_harness(state);
+            harness.run_steps(2);
+            assert!(harness.query_by_label(title).is_some());
+            let mut arguments = crate::FluentArgs::new();
+            arguments.set("count", count);
+            let deleted = harness.state().0.localizer.format(key, &arguments);
+            assert!(harness.query_by_label(&deleted).is_some());
+            if kind == QueryActionKind::Insert {
+                let matched = harness
+                    .state()
+                    .0
+                    .localizer
+                    .format("query-action-matched", &arguments);
+                assert!(harness.query_by_label(&matched).is_none());
+            }
+            assert!(
+                harness
+                    .get_by_role_and_label(Role::Button, "No")
+                    .is_focused()
+            );
             harness
-                .get_by_role_and_label(Role::Button, "No")
-                .is_focused()
-        );
-        harness
-            .get_by_role_and_label(Role::Button, if yes { "Yes" } else { "No" })
-            .click_accesskit();
-        harness.run_steps(2);
-        assert_eq!(
-            harness.state().0.query_data.as_ref().unwrap().rows.as_ptr(),
-            rows
-        );
-        assert_eq!(harness.state().0.sql, DELETE_SQL);
-        if !yes {
+                .get_by_role_and_label(Role::Button, if yes { "Yes" } else { "No" })
+                .click_accesskit();
+            harness.run_steps(2);
+            assert_eq!(
+                harness.state().0.query_data.as_ref().unwrap().rows.as_ptr(),
+                rows
+            );
+            assert_eq!(harness.state().0.sql, sql);
+            if !yes {
+                assert!(matches!(
+                    harness.state().1.as_slice(),
+                    [Action::CancelQueryActionReview {
+                        request_id: REQUEST
+                    }]
+                ));
+                assert!(!harness.state().0.query_action_dialog_open());
+                continue;
+            }
             assert!(matches!(
                 harness.state().1.as_slice(),
-                [Action::CancelQueryActionReview {
-                    request_id: REQUEST
-                }]
+                [Action::ApplyQueryAction { review_id: REVIEW }]
             ));
-            assert!(!harness.state().0.query_action_dialog_open());
-            continue;
+            assert!(harness.state_mut().0.begin_query_action_save(REVIEW, 71));
+            assert!(harness.state_mut().0.replace_query_sql("SELECT 2".into()));
+            assert!(!harness.state_mut().0.close_query_action());
+            assert!(
+                harness
+                    .state_mut()
+                    .0
+                    .set_query_action_save_outcome(71, EditSaveOutcome::Saved("Saved".into()))
+            );
+            assert!(harness.state().0.can_acknowledge_query_action_save(71));
+            assert!(harness.state_mut().0.acknowledge_query_action_save(71));
         }
-        assert!(matches!(
-            harness.state().1.as_slice(),
-            [Action::ApplyQueryAction { review_id: REVIEW }]
-        ));
-        assert!(harness.state_mut().0.begin_query_action_save(REVIEW, 71));
-        assert!(harness.state_mut().0.replace_query_sql("SELECT 2".into()));
-        assert!(!harness.state_mut().0.close_query_action());
-        assert!(
-            harness
-                .state_mut()
-                .0
-                .set_query_action_save_outcome(71, EditSaveOutcome::Saved("Saved".into()))
-        );
-        assert!(harness.state().0.can_acknowledge_query_action_save(71));
-        assert!(harness.state_mut().0.acknowledge_query_action_save(71));
     }
 }
 
@@ -351,4 +379,37 @@ fn action_kind_and_delete_cardinality_cannot_be_replaced_by_a_review_callback() 
     assert!(deletion.set_query_action_review(REQUEST, delete_facts(4)));
     assert!(!deletion.set_query_action_review(REQUEST, facts()));
     assert!(deletion.can_apply_query_action(REVIEW));
+}
+
+fn insert_facts(inserted_rows: usize) -> QueryActionReview {
+    QueryActionReview {
+        id: REVIEW,
+        document_revision: 7,
+        table: "Items".into(),
+        effect: QueryActionEffect::Insert { inserted_rows },
+    }
+}
+
+#[test]
+fn append_requires_exact_single_values_count_and_the_same_captured_action_kind() {
+    for kind in [QueryActionKind::Update, QueryActionKind::Delete] {
+        let mut state = reviewing_kind(kind);
+        assert!(!state.set_query_action_review(REQUEST, insert_facts(1)));
+        assert!(!state.can_apply_query_action(REVIEW));
+    }
+    let mut insertion = reviewing_kind(QueryActionKind::Insert);
+    assert!(!insertion.set_query_action_review(REQUEST, facts()));
+    assert!(!insertion.set_query_action_review(REQUEST, delete_facts(4)));
+    for invalid_count in [0, 2, usize::MAX] {
+        assert!(!insertion.set_query_action_review(REQUEST, insert_facts(invalid_count)));
+        assert!(!insertion.can_apply_query_action(REVIEW));
+    }
+    assert_eq!(insert_facts(1).effect.matched_rows(), None);
+    assert!(insertion.set_query_action_review(REQUEST, insert_facts(1)));
+    assert!(!insertion.set_query_action_review(REQUEST, facts()));
+    assert!(insertion.can_apply_query_action(REVIEW));
+    insertion.bump_focus_publication();
+    assert!(!insertion.can_apply_query_action(REVIEW));
+    insertion.validate_query_action();
+    assert!(!insertion.query_action_dialog_open());
 }

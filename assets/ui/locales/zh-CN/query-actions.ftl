@@ -13,3 +13,7 @@ query-action-delete-title = 删除查询
 query-action-delete-reviewing = 正在检查删除查询…
 query-action-delete-deleted = 将删除的记录数：{ $count }
 query-action-delete-confirmation = 要从原始数据库中永久删除这些已检查的记录吗？
+query-action-insert-title = 追加查询
+query-action-insert-reviewing = 正在检查追加查询…
+query-action-insert-inserted = 将追加的记录数：{ $count }
+query-action-insert-confirmation = 要将这条已检查的记录追加到原始数据库吗？

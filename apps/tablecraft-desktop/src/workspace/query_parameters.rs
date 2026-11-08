@@ -115,7 +115,10 @@ impl Desktop {
                 self.pending = PendingOperation::Read;
                 return;
             }
-            QueryOperation::Read | QueryOperation::Update | QueryOperation::Delete => {}
+            QueryOperation::Read
+            | QueryOperation::Update
+            | QueryOperation::Delete
+            | QueryOperation::Insert => {}
         }
 
         let specs = parameters
@@ -181,7 +184,7 @@ impl Desktop {
         let target = Arc::clone(&inspected.target);
         if matches!(
             target.operation(),
-            QueryOperation::Update | QueryOperation::Delete
+            QueryOperation::Update | QueryOperation::Delete | QueryOperation::Insert
         ) {
             self.begin_query_action_from_parameters(inspection_id, target, parameters);
             return;

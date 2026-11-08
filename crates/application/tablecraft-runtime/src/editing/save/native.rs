@@ -26,8 +26,8 @@ use crate::editing::ReviewedTableCreation;
 use crate::{
     controls::action_recovery_budget,
     editing::{
-        ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryUpdate,
-        query_action::native::Plan,
+        ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
+        ReviewedQueryUpdate, query_action::native::Plan,
     },
 };
 use std::{
@@ -48,6 +48,7 @@ enum Task {
     ApplyDelete(ReviewedDelete, PathBuf),
     ApplyQueryUpdate(ReviewedQueryUpdate, PathBuf),
     ApplyQueryDelete(ReviewedQueryDelete, PathBuf),
+    ApplyQueryInsert(ReviewedQueryInsert, PathBuf),
     Restart(PathBuf, PathBuf),
     Recover,
     Release,
@@ -129,6 +130,7 @@ impl SaveWorker {
                     Task::Apply(..)
                     | Task::ApplyInsert(..)
                     | Task::ApplyDelete(..)
+                    | Task::ApplyQueryInsert(..)
                     | Task::ApplyQueryDelete(..)
                     | Task::ApplyQueryUpdate(..) => SaveOperation::Apply,
                     Task::Restart(..) | Task::Recover => SaveOperation::Recover,
@@ -172,6 +174,17 @@ impl SaveWorker {
                         apply_query_action(
                             reviewed.target,
                             Plan::Delete(reviewed.plan),
+                            reviewed.valid,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
+                    }
+                    Task::ApplyQueryInsert(reviewed, bundle) => {
+                        let reviewed = *reviewed.state;
+                        apply_query_action(
+                            reviewed.target,
+                            Plan::Insert(reviewed.plan),
                             reviewed.valid,
                             bundle,
                             &mut retained,
@@ -272,6 +285,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryDelete>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryDelete)
+    }
+
+    /// Consume one unlocked SQL INSERT review without reevaluating its inputs.
+    pub fn start_query_insert(
+        &self,
+        reviewed: ReviewedQueryInsert,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryInsert)
     }
 
     #[cfg(feature = "ace16-create")]

@@ -13,10 +13,13 @@ const MAX_REPORT_BYTES: usize = 4096;
 pub enum QueryActionKind {
     Update,
     Delete,
+    Insert,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum QueryActionEffect {
+    /// One qualified single-row VALUES append, without a matched-old-row count.
+    Insert { inserted_rows: usize },
     Update {
         matched_rows: usize,
         changed_rows: usize,
@@ -32,11 +35,13 @@ impl QueryActionEffect {
         match self {
             Self::Update { .. } => QueryActionKind::Update,
             Self::Delete { .. } => QueryActionKind::Delete,
+            Self::Insert { .. } => QueryActionKind::Insert,
         }
     }
 
     fn valid(self) -> bool {
         match self {
+            Self::Insert { inserted_rows } => inserted_rows == 1,
             Self::Update {
                 matched_rows,
                 changed_rows,
@@ -48,9 +53,12 @@ impl QueryActionEffect {
         }
     }
 
-    fn matched_rows(self) -> usize {
+    fn matched_rows(self) -> Option<usize> {
         match self {
-            Self::Update { matched_rows, .. } | Self::Delete { matched_rows, .. } => matched_rows,
+            Self::Update { matched_rows, .. } | Self::Delete { matched_rows, .. } => {
+                Some(matched_rows)
+            }
+            Self::Insert { .. } => None,
         }
     }
 }

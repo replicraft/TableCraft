@@ -13,3 +13,7 @@ query-action-delete-title = Delete query
 query-action-delete-reviewing = Reviewing the delete query…
 query-action-delete-deleted = Records to delete: { $count }
 query-action-delete-confirmation = Permanently delete these reviewed records from the original database?
+query-action-insert-title = Append query
+query-action-insert-reviewing = Reviewing the append query…
+query-action-insert-inserted = Records to append: { $count }
+query-action-insert-confirmation = Append this reviewed record to the original database?

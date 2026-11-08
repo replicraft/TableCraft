@@ -13,3 +13,7 @@ query-action-delete-title = Запрос на удаление
 query-action-delete-reviewing = Проверка запроса на удаление…
 query-action-delete-deleted = Записей для удаления: { $count }
 query-action-delete-confirmation = Безвозвратно удалить эти проверенные записи из исходной базы данных?
+query-action-insert-title = Запрос на добавление
+query-action-insert-reviewing = Проверка запроса на добавление…
+query-action-insert-inserted = Записей для добавления: { $count }
+query-action-insert-confirmation = Добавить эту проверенную запись в исходную базу данных?

@@ -6,7 +6,8 @@ use egui_kittest::{Harness, kittest::Queryable};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveFailureKind, SaveOutcome};
 use tablecraft_testkit::fixtures::access::{
-    canonical_creation, canonical_native17_creation, mutation_fixture,
+    canonical_creation, canonical_creation_defaults as defaults, canonical_native17_creation,
+    mutation_fixture,
 };
 use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 use tablecraft_ui::{ObjectKind, ObjectTarget};
@@ -153,6 +154,10 @@ fn stale_source_apply_retains_resources_until_explicit_release_and_acknowledgmen
     for (source, sql) in [
         (mutation_fixture::database(), UPDATE),
         (delete_source(), "DELETE FROM Items WHERE Id>=63"),
+        (
+            defaults::source(defaults::Case::Seven).bytes,
+            "INSERT INTO Items (Id) VALUES (24)",
+        ),
     ] {
         let (_directory, path, mut changed, mut harness) = opened(source);
         reviewed(&mut harness, sql);
@@ -190,7 +195,7 @@ fn stale_source_apply_retains_resources_until_explicit_release_and_acknowledgmen
 fn unsupported_actions_never_open_value_prompts_or_write() {
     for sql in [
         "DELETE FROM Items AS i, Items AS j WHERE i.Id=j.Id",
-        "INSERT INTO Items (Id,Score) VALUES (4,40)",
+        "INSERT INTO Items (Id,Score) SELECT Id,Score FROM Items",
     ] {
         let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
         let rows = harness
@@ -298,6 +303,10 @@ fn cancelling_action_parameter_prompts_preserves_results_and_never_reviews() {
             delete_source(),
             "PARAMETERS [Value] LONG; DELETE FROM Items WHERE Id=[Value]",
         ),
+        (
+            defaults::source(defaults::Case::Seven).bytes,
+            "PARAMETERS [Value] LONG; INSERT INTO Items (Id) VALUES ([Value])",
+        ),
     ] {
         let (_directory, path, original, mut harness) = opened(source);
         run(&mut harness, sql);
@@ -396,4 +405,72 @@ fn typed_delete_no_preserves_original_and_yes_commits_literal_images_without_ree
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
         "62"
     );
+}
+
+#[test]
+fn typed_append_decline_and_save_preserve_omission_versus_explicit_null() {
+    for (sql, value, supplied_null) in [
+        (
+            "PARAMETERS [Added] LONG; INSERT INTO Items (Id) VALUES ([Added])",
+            "24",
+            false,
+        ),
+        (
+            "PARAMETERS [Added] LONG; INSERT INTO Items (Id,Score) VALUES ([Added],NULL)",
+            "25",
+            true,
+        ),
+    ] {
+        let source = defaults::source(defaults::Case::Seven);
+        let (expected, _) = defaults::inserted(&source, supplied_null).unwrap();
+        let (_directory, path, original, mut harness) = opened(source.bytes);
+        for accept in [false, true] {
+            run(&mut harness, sql);
+            assert!(harness.state().query_parameters.is_some());
+            assert!(harness.state().editing.query_action_review.is_none());
+            confirm_parameter(&mut harness, "Added", value);
+            finish_reads(&mut harness);
+            assert!(matches!(
+                harness.state().editing.query_action_review.as_ref(),
+                Some((_, ReviewedAction::Insert(_)))
+            ));
+            assert!(!harness.state().editing.has_save());
+            assert_eq!(std::fs::read(&path).unwrap(), original);
+            assert!(!journal_path(&path).exists());
+            assert_eq!(
+                harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+                "99"
+            );
+            harness
+                .get_by_role_and_label(Role::Button, if accept { "Yes" } else { "No" })
+                .click_accesskit();
+            harness.run_steps(2);
+            if !accept {
+                assert!(harness.state().editing.query_action_review.is_none());
+                assert!(!harness.state().editing.has_save());
+                assert_eq!(std::fs::read(&path).unwrap(), original);
+                continue;
+            }
+            let report = finish_save(&mut harness);
+            assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
+                if receipt.matched_rows.is_none() && receipt.changed_rows == Some(1)));
+            harness
+                .get_by_role_and_label(Role::Button, "Close")
+                .click_accesskit();
+            harness.run_steps(1);
+            finish_reads(&mut harness);
+        }
+        assert!(
+            std::fs::read(&path).unwrap() == expected,
+            "complete independent INSERT image differs"
+        );
+        assert!(!journal_path(&path).exists());
+        assert_eq!(harness.state().state.sql, sql);
+        assert!(harness.state().state.query_data.is_none());
+        run(&mut harness, "SELECT Count(*) AS Remaining FROM Items");
+        assert_eq!(
+            harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+            "2"
+        );
+    }
 }

@@ -2,6 +2,7 @@
 mod deleting;
 mod query_action;
 mod query_delete;
+mod query_insert;
 mod query_update;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[path = "state/native.rs"]
@@ -10,6 +11,7 @@ pub(crate) mod state;
 #[path = "state/unsupported.rs"]
 pub(crate) mod state;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
+pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 #[cfg(feature = "ace16-create")]
 mod table_creation;
