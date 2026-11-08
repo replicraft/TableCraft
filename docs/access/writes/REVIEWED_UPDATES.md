@@ -35,6 +35,27 @@ also consume the caller's work allowance. Cancellation is checked on no-op and
 empty operations too. Hosts must fund those complete proof traversals explicitly;
 requalification does not enlarge budgets or retry failed work.
 
+`requalify_with_budgets` keeps native reconstruction and original request
+traversal in the caller's native pool, while complete image comparisons and
+original BEFORE hashing consume a separate proof pool. The existing single-pool
+method remains available with its original cumulative charging order. Neither
+method grants, resets or transfers allowance between pools. A proof pool cannot
+finance additional native rows, allocations or constraint traversal.
+
+The adapter's corresponding `stage_reviewed_update_with_budgets` also puts its
+complete source comparison in the proof pool. That comparison accounts for both
+byte streams, so the adapter proof pool needs byte allowance as well as work
+steps; engine-only image comparison and hashing consume steps. Capture continues
+to consume native bytes/rows/work. Successful capture followed by proof refusal
+retains a Ready session; capture failure still requires explicit refresh.
+
+These entrypoints separate fresh qualification only. Review-time SQL evaluation
+and native candidate construction still share their existing planning budget,
+and journal preparation/commit retain their existing explicit persistence budget.
+The runtime action workflow must supply and bound those phases deliberately;
+these APIs do not establish independent end-to-end query/native/persistence
+quotas or automatically enable GUI actions.
+
 `NativeRecoveryQualificationError` preserves typed capture, intent, normal-planner
 and image/count mismatch failures. Requalification creates no journal and writes
 no target. Its consumed candidate is discarded on failure; any separately owned
@@ -94,3 +115,14 @@ This is local Rust qualification on macOS ARM64, separate from native Access
 comparison, non-macOS execution and physical durability qualification. Runtime
 consuming action reviews and GUI UPDATE confirmation/execution remain subsequent
 work in the [parity roadmap](../../features/ACCESS_PARITY_ROADMAP.md).
+
+### Independent fresh-qualification pools — 8 November 2026
+
+The existing all-profile native checks now exercise both the shared-pool and
+split-pool entrypoints, retaining complete images, counts and identical original
+intent bytes. Three additional native cases check independent exhaustion, equal
+combined work charges and cancellation before final capability publication.
+The focused native batch passed ten default cases and two separately executed
+hash-pinned growth cases. Seven adapter cases passed, including exact proof-byte
+admission and separate native/proof failures with the original lease retained.
+Logs remain under ignored `.cache/update-budget-*20261108.log`.

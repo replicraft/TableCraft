@@ -1,8 +1,9 @@
+mod requalify;
+
 use super::{
     NativeFittedEditIntent, NativeFittedIntentGroup, NativeFixedEditIntent, NativeFixedIntentGroup,
     NativeInt32EditIntent, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
 };
-use crate::transaction::{NativeRecoveryQualificationError, qualified_recovery::equal_image};
 use crate::{
     EditError, Int32Update, NativeEditPlan, NativeImage, PreparedNativeEdit, PreparedNativeUpdate,
     format::page::PAGE_BYTES,
@@ -255,46 +256,6 @@ impl NativeImage {
 }
 
 impl RecoverableNativeEditPlan {
-    /// Requalify this exact original request against a fresh immutable capture.
-    /// No SQL, journal or target is evaluated here. Both complete images and the
-    /// effective change count must reproduce the reviewed plan before it returns.
-    pub fn requalify(
-        self,
-        fresh: NativeImage,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, NativeRecoveryQualificationError> {
-        let _span = tracing::debug_span!("native.update.requalify").entered();
-        equal_image(
-            fresh.as_bytes(),
-            self.plan.before_bytes(),
-            budget,
-            cancelled,
-        )?;
-        let plan =
-            crate::transaction::update_rebuild::rebuild(fresh, &self.intent, budget, cancelled)?;
-        equal_image(
-            plan.before_bytes(),
-            self.plan.before_bytes(),
-            budget,
-            cancelled,
-        )?;
-        equal_image(
-            plan.after_bytes(),
-            self.plan.after_bytes(),
-            budget,
-            cancelled,
-        )?;
-        if plan.changed_rows() != self.plan.changed_rows() {
-            return Err(NativeRecoveryQualificationError::ImageMismatch);
-        }
-        crate::header::check(budget, cancelled)?;
-        Ok(Self {
-            plan,
-            intent: self.intent,
-        })
-    }
-
     /// Original immutable resolved requests and source binding.
     pub fn intent(&self) -> &NativeUpdateIntent {
         &self.intent

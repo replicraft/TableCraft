@@ -5,7 +5,7 @@ use crate::editing::{offline::test_support, sql};
 use std::os::unix::fs::MetadataExt;
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{InspectError, read_table};
-use tablecraft_core::values::Value;
+use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_io::{IoError, SharedFile, journal::RecoveryOutcome};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
@@ -231,4 +231,97 @@ fn earlier_completed_receipt_survives_a_later_stale_review_refusal() {
     assert_locked(&path);
     failure.into_session().release().unwrap();
     assert_eq!(fs::read(path).unwrap(), after);
+}
+
+#[test]
+fn separate_native_and_proof_pools_commit_with_exact_complete_source_comparison_bytes() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("separate-pools.mdb");
+    let before = mutation_fixture::database();
+    let after = expected(&before);
+    let reviewed = review(&before, UPDATE);
+    fs::write(&path, &before).unwrap();
+    let mut native = budget();
+    // Adapter source equality visits both complete images. Native intent
+    // binding and rebuilt-image proof additionally consume proof steps.
+    let mut proof = ResourceBudget::new(2 * before.len() as u64, 0, 100_000_000);
+    let staged = open(&path)
+        .stage_reviewed_update_with_budgets(reviewed, &mut native, &mut proof, &|| false)
+        .unwrap();
+    assert_eq!(proof.remaining(Resource::Bytes), 0);
+    assert_eq!(proof.remaining(Resource::Rows), 0);
+    assert!(proof.remaining(Resource::Steps) < 100_000_000);
+    assert_eq!((staged.matched_rows(), staged.changed_rows()), (2, 2));
+    assert_locked(&path);
+    let (session, receipt) = staged
+        .apply(&directory.path().join("journal"), &mut budget(), &|| false)
+        .unwrap();
+    test_support::assert_completion(&receipt);
+    session.release().unwrap();
+    assert_eq!(fs::read(path).unwrap(), after);
+}
+
+#[test]
+fn native_and_proof_refusals_retain_the_same_lease_and_distinct_capture_state() {
+    for exhausted in ["native", "proof-bytes", "proof-steps"] {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("pool-refusal.mdb");
+        let before = mutation_fixture::database();
+        let reviewed = review(&before, UPDATE);
+        fs::write(&path, &before).unwrap();
+        let mut native = if exhausted == "native" {
+            ResourceBudget::new(0, 0, 0)
+        } else {
+            budget()
+        };
+        let mut proof = match exhausted {
+            "proof-bytes" => ResourceBudget::new(0, 0, 100_000_000),
+            "proof-steps" => ResourceBudget::new(2 * before.len() as u64, 0, 0),
+            _ => budget(),
+        };
+        let proof_before = [
+            proof.remaining(Resource::Bytes),
+            proof.remaining(Resource::Rows),
+            proof.remaining(Resource::Steps),
+        ];
+        let failure = open(&path)
+            .stage_reviewed_update_with_budgets(reviewed, &mut native, &mut proof, &|| false)
+            .err()
+            .expect("each independent pool must reject its own exhausted resource");
+        let Cause::Native(InspectError::Limit(limit)) = failure.cause() else {
+            panic!("expected typed capture or source-comparison resource refusal");
+        };
+        assert_eq!(
+            failure.state(),
+            if exhausted == "native" {
+                SessionState::RefreshRequired
+            } else {
+                SessionState::Ready
+            },
+            "{exhausted}"
+        );
+        if exhausted == "proof-bytes" {
+            assert_eq!(limit.resource, Resource::Bytes);
+        } else {
+            assert_eq!(limit.resource, Resource::Steps);
+        }
+        if exhausted == "native" {
+            assert_eq!(
+                [
+                    proof.remaining(Resource::Bytes),
+                    proof.remaining(Resource::Rows),
+                    proof.remaining(Resource::Steps),
+                ],
+                proof_before,
+                "failed capture cannot consume the independent proof pool"
+            );
+        }
+        assert_eq!(failure.pair_state(), None);
+        assert_eq!(failure.last_completed(), None);
+        assert_locked(&path);
+        test_support::assert_staged_read_state(&path, &before);
+        assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+        failure.into_session().release().unwrap();
+        assert_eq!(fs::read(path).unwrap(), before);
+    }
 }

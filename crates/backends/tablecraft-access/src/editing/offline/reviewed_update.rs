@@ -16,9 +16,35 @@ impl OfflineWriteSession {
     /// an exclusive lease while waiting for confirmation. This method creates no
     /// journal. Every failure retains the session and its existing receipts.
     pub fn stage_reviewed_update(
-        mut self,
+        self,
         reviewed: UpdatePlan<RecoverableNativeEditPlan>,
         budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedUpdate, Failure> {
+        self.stage_reviewed_update_using(reviewed, budget, None, cancelled)
+    }
+
+    /// Requalify a reviewed UPDATE with separate native and preservation pools.
+    /// Capture and native reconstruction consume `native`; complete source and
+    /// replacement comparisons and original-intent binding consume `proof`.
+    /// The adapter source comparison charges two complete image lengths in
+    /// proof bytes, in addition to its cancellation/work steps.
+    /// Failures retain the same target and session state as the shared-pool API.
+    pub fn stage_reviewed_update_with_budgets(
+        self,
+        reviewed: UpdatePlan<RecoverableNativeEditPlan>,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedUpdate, Failure> {
+        self.stage_reviewed_update_using(reviewed, native, Some(proof), cancelled)
+    }
+
+    fn stage_reviewed_update_using(
+        mut self,
+        reviewed: UpdatePlan<RecoverableNativeEditPlan>,
+        native: &mut ResourceBudget,
+        mut proof: Option<&mut ResourceBudget>,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedUpdate, Failure> {
         let _span = tracing::debug_span!("access.offline.stage_reviewed_update").entered();
@@ -32,7 +58,7 @@ impl OfflineWriteSession {
             let image = NativeImage::capture(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
-                budget,
+                native,
                 cancelled,
             )
             .map_err(Cause::Native)?;
@@ -41,12 +67,17 @@ impl OfflineWriteSession {
             super::table::require_original(
                 image.as_bytes(),
                 reviewed.before_bytes(),
-                budget,
+                match proof.as_deref_mut() {
+                    Some(proof) => proof,
+                    None => &mut *native,
+                },
                 cancelled,
             )?;
-            reviewed
-                .requalify(image, budget, cancelled)
-                .map_err(Cause::Qualification)
+            match proof {
+                Some(proof) => reviewed.requalify_with_budgets(image, native, proof, cancelled),
+                None => reviewed.requalify(image, native, cancelled),
+            }
+            .map_err(Cause::Qualification)
         })();
 
         match result {

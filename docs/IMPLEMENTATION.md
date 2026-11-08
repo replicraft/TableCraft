@@ -1,5 +1,21 @@
 # Implementation status
 
+## Independent reviewed-UPDATE qualification pools — 8 November 2026
+
+Native and Access reviewed UPDATE staging now accept separate caller-owned
+native and image-proof pools. Complete comparisons and original BEFORE hashing
+cannot spend native reconstruction allowance, and native work cannot borrow
+proof capacity. Existing single-pool APIs retain their charging order. The same
+normal reconstruction and staged save owners remain in use.
+
+Focused checks passed twelve native cases (including two opt-in pinned growth
+cases) and seven adapter cases. Existing profile checks exercise both APIs;
+additional cases cover independent exhaustion, combined charge preservation,
+late cancellation and retained-session state. See the
+[budget contract](access/writes/REVIEWED_UPDATES.md#work-and-failure-handling).
+This separates fresh qualification, not yet runtime action review or journal
+persistence allowances. GUI UPDATE remains subsequent work.
+
 ## Reviewed UPDATE offline staging — 8 November 2026
 
 The Access adapter now consumes a sealed SQL UPDATE review, captures the retained

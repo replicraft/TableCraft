@@ -1,4 +1,5 @@
 //! Fresh-source reconstruction retains the reviewed original operation exactly.
+mod budgets;
 mod fixed;
 mod growth;
 
@@ -45,17 +46,28 @@ fn check_requalification(
     assert_eq!(plan.changed_rows(), changed);
     assert_eq!(plan.intent().profile(), profile);
 
-    let fresh = plan
-        .requalify(image(before), &mut budget(), &|| false)
+    let mut reviewed = plan;
+    for split_budgets in [false, true] {
+        reviewed = if split_budgets {
+            reviewed.requalify_with_budgets(
+                image(before),
+                &mut budget(),
+                &mut ResourceBudget::new(0, 0, TEST_STEPS),
+                &|| false,
+            )
+        } else {
+            reviewed.requalify(image(before), &mut budget(), &|| false)
+        }
         .unwrap();
-    assert_eq!(fresh.before_bytes(), before);
-    assert_eq!(fresh.after_bytes(), expected);
-    assert_eq!(fresh.changed_rows(), changed);
-    assert_eq!(fresh.intent().profile(), profile);
-    assert_eq!(
-        fresh.intent().encode(&mut budget(), &|| false).unwrap(),
-        original
-    );
+        assert_eq!(reviewed.before_bytes(), before);
+        assert_eq!(reviewed.after_bytes(), expected);
+        assert_eq!(reviewed.changed_rows(), changed);
+        assert_eq!(reviewed.intent().profile(), profile);
+        assert_eq!(
+            reviewed.intent().encode(&mut budget(), &|| false).unwrap(),
+            original
+        );
+    }
 }
 
 fn jet4(before: &[u8], replacement: i32) -> RecoverableNativeEditPlan {
