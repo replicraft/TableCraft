@@ -1,7 +1,7 @@
-# Append-only second-table engine operation
+# Append-only table creation and recovery
 
 With both `ace16-create` and `journal`, `NativeImage::plan_add_table` builds a
-checked empty second-table plan against an actual captured populated source.
+checked empty table plan against an actual captured source with existing tables.
 This is a separate operation from fresh database creation and canonical-blank
 first-table initialization. It never rebuilds existing tables through the fresh
 multiple-table serializer. The Access adapter exposes explicit offline staging,
@@ -11,16 +11,27 @@ from the engine qualification described here. See the [runtime contract](../../a
 and [database-creation workflow](../../ui/DATABASE_CREATION.md). The native CLI
 has no new add-table command from this change.
 
-## Initial source and request profile
+## Source and request profiles
 
-The initial source has ten 4-KiB pages and one existing local user table. Its
-qualified system definitions/catalog roles, dense eight-record catalog and
-23-record usage-map container retain the TableCraft-created layout. This is a
-native structural qualification, not a remembered creator flag. The existing
-user definition is page 7, its single DATA page is 8 and its ascending unique
-Int32 primary root is 9. Complete existing row/index membership is checked to
-establish those roles. Existing data, record offsets, primary history, field
-properties and opaque free tails are not reserialized.
+A qualified source has `n` existing local user tables, for `1 <= n <= 18`, and
+exactly `7 + 3n` 4-KiB pages. Its qualified system/header roles, dense `7 + n`
+catalog records and `20 + 3n` inline usage-map records retain the admitted native
+lineage. This is structural qualification, not a remembered creator flag or
+permission inferred from file length. Complete existing row/index membership and
+ownership are checked for every table.
+
+For zero-based existing table `i`, definition/DATA/primary-root pages are
+`7 + 3i`, `8 + 3i` and `9 + 3i`. The first table keeps owned/candidate/root map
+slots 3/7/22. Later tables use slots `20 + 3i`, `21 + 3i` and `22 + 3i`. Each has
+one DATA page and one qualified unique Int32 primary root. Existing records,
+physical references, primary history, field properties and opaque free tails are
+not reserialized.
+
+The original one-table source contract remains unchanged. The repeated profile
+with two or more existing tables additionally requires ordinary in-row scalar
+storage with no extended field flags. Memo/OLE LVAL, complex references,
+Date/Time Extended and other unsupported schema/storage roles refuse; they are
+not projected away to make a source eligible.
 
 The operation refuses out-of-EOF ownership claims, extra objects, unsupported
 catalog/index/allocation layouts, unavailable contiguous record capacity and
@@ -39,10 +50,18 @@ A conflicting existing name refuses before a candidate is published.
 
 ## Exact append and independent proof
 
-New definition, DATA and primary-root pages append at EOF as pages 10, 11 and 12.
-New owned/candidate/root map records append at slots 23, 24 and 25. A new catalog
-record appends at slot 8 and its declared record count advances from eight to nine.
-Old page identities and references remain unchanged.
+New definition, DATA and primary-root pages append at the original EOF and its
+next two pages. Owned/candidate/root maps append at slots `20 + 3n` through
+`22 + 3n`. The new catalog record appends at slot `7 + n`, and the declared count
+advances from `7 + n` to `8 + n`. For the retained one-table source these remain
+pages 10/11/12, map slots 23/24/25 and catalog slot 8 exactly. No original page,
+record offset or reference is relocated.
+
+The largest admitted source has eighteen tables and 61 pages. Its addition
+produces nineteen tables and 64 pages. That ceiling comes from the current
+base-zero eight-byte inline/global FREE-map bitmap profile; it is **not a native
+Access format or table-count limit**. Global bitmap/map-container and catalog
+capacity growth remain separate implementation work.
 
 The producer modifies only these appended bodies/slots/counters, catalog count
 and new pages. It preserves every other original byte, including unused catalog
@@ -71,12 +90,22 @@ qualifies the source again and checks the real requested name/schema.
 
 ## Original intent and V2 journal
 
-`AddTablePlan::encode_intent` emits `TCAT0001`/profile 1, retaining the full actual
-ten-page BEFORE binding and original schema. Its nested TCNT1–4 record supplies
-only a closed declaration template; the nested canonical-blank header never
-identifies or authorizes the actual source. Original TCNT1–4 standalone behavior
-remains unchanged. An unknown action/template version or mismatched profile
-refuses without decoder fallback.
+`AddTablePlan::encode_intent` retains the complete actual BEFORE binding and
+original schema using two disjoint closed action versions:
+
+| Action | Profile | Original image length |
+| --- | ---: | --- |
+| `TCAT0001` | 1 | Exactly ten pages; original bytes, framing and source semantics retained |
+| `TCAT0002` | 2 | Thirteen through 61 pages, in three-page steps |
+
+Capture chooses the version from the exact source length; that is wire framing,
+not native source authority. A version/profile/length mismatch refuses before
+decoded ownership allocation. Neither action can be downgraded or retried as the
+other. Both independently pin nested TCNT versions/profiles 1–4. That record is
+only a declaration template: its canonical-blank header never identifies or
+authorizes the actual source. Original TCNT1–4 standalone behavior remains
+unchanged. Unknown action/template versions and mismatched profiles refuse
+without decoder fallback.
 
 `AddTablePlan::prepare` consumes the checked plan through
 `prepare_resizable_expected`, comparing the complete expected BEFORE and keeping
@@ -99,7 +128,9 @@ confirmation report it only for committed or verified Replacement images.
 
 ## Observed verification and limits
 
-The focused local macOS ARM64 batches pass:
+### Initial second-table checkpoint
+
+The earlier local macOS ARM64 checkpoint recorded these passing batches:
 
 | Boundary | Passing tests | Scope |
 | --- | ---: | --- |
@@ -122,8 +153,37 @@ execute the first insertion or journal recovery, run Microsoft Access, or test
 Windows/Linux filesystem durability. Independent-reader metadata/read agreement
 must not be presented as native Access mutation parity.
 
-The current append source remains exactly the initial qualified single-table
-layout. It does not admit a third table, arbitrary imported catalogs, catalog
-index growth, allocation-map expansion, manual/no-primary Design schemas or
-broader schema alteration. Existing unrelated objects outside the supported
-source profile are refused rather than regenerated or discarded.
+### Accepted repeated-addition follow-up
+
+The subsequent local macOS ARM64 batches pass:
+
+| Boundary | Passing tests | Scope |
+| --- | ---: | --- |
+| Engine candidate and advisory fact | 19 | The twelve earlier tests plus seven repeated-profile checks, including complete independent AFTER comparisons for every source with two through eighteen tables |
+| TCAT original-intent codec | 5 | Both disjoint action versions, all four pinned declaration templates, actual-source binding, framing, allocation and cancellation |
+| Public native V2 journal/recovery | 6 | Retained ten-page behavior plus third-table commit/interrupted-growth/cold recovery and complete-image tamper refusal |
+| Offline adapter | 19 | Same-file additions, retained/cold TCAT1 and TCAT2 recovery and the existing offline lifecycle |
+| Runtime / desktop | 149 / 111 | Captured source profile, consuming review, repeated Create → Table, duplicate-name correction, separate record saves and fresh queries |
+
+Strict all-feature library/test lint also passes for the six affected packages.
+Windows x64 and ARM64 runtime/desktop all-target/all-feature compilation checks
+pass with their dependencies. These checks are not native Windows filesystem or
+GUI execution, nor a complete twenty-package Windows/CLI/SQLite build.
+
+[Jackcess independently read the repeated-addition fixture images](../../testing/results/ace16-repeated-table-independent-reader-2026-11-07.json).
+The result covers transitions two→three, three→four and eighteen→nineteen tables,
+with both original rows retained at physical positions `8:0` and `11:0`:
+`Items(Id=1, Score=17)` and `More(Id=1, Name=Ada)`. New tables were empty, with
+checked field, AutoNumber and primary-index metadata. Six exported files contain
+five distinct images: the two-table AFTER equals the three-table BEFORE, and the
+receipt marks that duplicate explicitly. These observations concern independently
+authored fixture bytes, not production mutation correctness, indexed lookups,
+insertion, recovery, native Access or platform durability. The producer's
+whole-image comparisons and journal tests remain separate evidence.
+
+Current source qualification still refuses arbitrary imported catalogs, indirect
+allocation or global bitmap expansion, unsupported catalog/index growth,
+manual/no-primary Design schemas and broader schema alteration. Existing
+unrelated objects outside the admitted lineage are refused rather than regenerated
+or discarded. Nineteen existing tables require further allocation work before
+another append; they remain readable through the existing browser/query paths.

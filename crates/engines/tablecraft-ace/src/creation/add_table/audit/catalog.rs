@@ -10,12 +10,12 @@ const VARIABLE_FIELDS: usize = 11;
 const PROPERTY_VARIABLE: usize = 8;
 const INLINE_HEADER_BYTES: usize = 12;
 const INLINE: u32 = 0x8000_0000;
-const NEW_DEFINITION: u32 = 10;
 const TABLES_ID: u32 = 0x0f00_0001;
 
 pub(super) fn verify(
     raw: &[u8],
     name: &str,
+    native_id: u32,
     properties: &TableProperties,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -28,7 +28,7 @@ pub(super) fn verify(
         .map_err(InspectError::from)?;
     let mut expected = [0; PAGE_BYTES];
     expected[..2].copy_from_slice(&17_u16.to_le_bytes());
-    expected[2..6].copy_from_slice(&NEW_DEFINITION.to_le_bytes());
+    expected[2..6].copy_from_slice(&native_id.to_le_bytes());
     expected[6..10].copy_from_slice(&TABLES_ID.to_le_bytes());
     expected[10..12].copy_from_slice(&1_u16.to_le_bytes());
     let mut at = FIXED_BYTES;

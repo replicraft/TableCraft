@@ -10,7 +10,10 @@ use egui_kittest::{
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveKnownOutcome, SaveOutcome, journal_path};
 use tablecraft_testkit::{
-    fixtures::access::{canonical_add_table, canonical_blank_creation, mutation_fixture},
+    fixtures::access::{
+        canonical_add_table, canonical_blank_creation, canonical_repeated_add_table,
+        mutation_fixture,
+    },
     support::access::restart::stage_first_table,
 };
 use tablecraft_ui::ObjectKind;
@@ -80,12 +83,17 @@ fn opening_blank_is_inert_and_explicit_ribbon_table_saves_to_the_same_path() {
 }
 
 #[test]
-fn readable_unqualified_sources_and_completed_second_schema_keep_table_creation_disabled() {
+fn readable_unqualified_sources_and_capacity_limit_keep_table_creation_disabled() {
     let mut noncanonical = canonical_blank_creation::source();
     *noncanonical.last_mut().unwrap() = 17;
+    let mut unqualified_primary = canonical_add_table::source().before;
+    // Existing key bytes disagree with the real row. Sequential browsing does
+    // not use this primary root, while append qualification must reject it.
+    unqualified_primary[9 * 4096 + 484] = 2;
     for original in [
         noncanonical,
-        canonical_add_table::source().after,
+        unqualified_primary,
+        canonical_repeated_add_table::capacity_source(),
         mutation_fixture::database(),
     ] {
         let (_directory, path, _, mut harness) = opened(original.clone());

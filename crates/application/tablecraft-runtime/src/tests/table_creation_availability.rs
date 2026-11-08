@@ -4,6 +4,7 @@ use crate::{Response, Worker};
 use tablecraft_testkit::fixtures::access::{
     canonical_add_table, canonical_blank_creation,
     canonical_initial_table_creation::{self, Case},
+    canonical_repeated_add_table,
 };
 
 #[test]
@@ -22,7 +23,19 @@ fn ordinary_open_advertises_only_qualified_table_creation_profiles_without_write
         (modified, false, 0),
         (populated, supported, 1),
         (canonical_add_table::source().before, supported, 1),
-        (canonical_add_table::source().after, false, 2),
+        (canonical_add_table::source().after, supported, 2),
+        (canonical_repeated_add_table::source().before, supported, 2),
+        (
+            canonical_repeated_add_table::with_existing_tables(18).before,
+            supported,
+            18,
+        ),
+        (canonical_repeated_add_table::capacity_source(), false, 19),
+        (
+            canonical_add_table::claimed_append_destination(false),
+            false,
+            1,
+        ),
     ] {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("ordinary.accdb");

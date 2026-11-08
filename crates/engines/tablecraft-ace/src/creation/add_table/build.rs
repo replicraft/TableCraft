@@ -21,7 +21,6 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const COPY_BYTES: usize = 16 * 1024;
 const CATALOG_DEFINITION: usize = 2;
 const MAP_RECORD_BYTES: usize = 13;
-const NEW_PAGE_COUNT: usize = 13;
 const HEADER_BYTES: usize = 14;
 const SLOT_BYTES: usize = size_of::<u16>();
 
@@ -32,6 +31,7 @@ pub(super) fn build(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, AddTableError> {
+    let role = source.geometry.added;
     let columns = definition.borrowed_columns(budget, cancelled)?;
     let request = request::validate(
         definition.table(),
@@ -50,7 +50,7 @@ pub(super) fn build(
         return Err(AddTableError::Capacity);
     }
 
-    let length = NEW_PAGE_COUNT * PAGE_BYTES;
+    let length = source.geometry.after_pages * PAGE_BYTES;
     budget
         .charge_allocation(length as u64, 1)
         .map_err(InspectError::from)?;
@@ -75,32 +75,28 @@ pub(super) fn build(
         .as_ref()
         .ok_or(AddTableError::Preservation)?;
     definition::write_role_with_primary(
-        page_mut(&mut after, source::NEW_DEFINITION),
+        page_mut(&mut after, role.definition),
         request.fields(),
         0,
         definition::Role {
             user: true,
             catalog: false,
-            owned: reference(source::MAP_PAGE as u32, source::OWNED_SLOT as u8),
-            candidate: reference(source::MAP_PAGE as u32, source::CANDIDATE_SLOT as u8),
+            owned: reference(source::MAP_PAGE as u32, role.owned as u8),
+            candidate: reference(source::MAP_PAGE as u32, role.candidate as u8),
         },
         Some(definition::PrimaryRole {
             prepared: primary,
-            root: source::NEW_ROOT,
-            map: reference(source::MAP_PAGE as u32, source::INDEX_SLOT as u8),
+            root: role.root,
+            map: reference(source::MAP_PAGE as u32, role.index as u8),
         }),
         budget,
         cancelled,
     )?;
-    DataPage::new(
-        page_mut(&mut after, source::NEW_DATA),
-        source::NEW_DEFINITION,
-    )?
-    .finish()?;
+    DataPage::new(page_mut(&mut after, role.data), role.definition)?.finish()?;
     primary.write_leaf(
-        page_mut(&mut after, source::NEW_ROOT),
-        source::NEW_DEFINITION,
-        source::NEW_DATA,
+        page_mut(&mut after, role.root),
+        role.definition,
+        role.data,
         budget,
         cancelled,
     )?;
@@ -112,7 +108,7 @@ pub(super) fn build(
     record::catalog_with_properties(
         &mut catalog[record_range],
         &profile::CatalogObject {
-            id: source::NEW_DEFINITION as u32,
+            id: role.definition as u32,
             parent: profile::TABLES_ID,
             name: request.catalog_name,
             system: false,
@@ -129,7 +125,7 @@ pub(super) fn build(
 
     let maps = page_mut(&mut after, source::MAP_PAGE);
     let mut map_layout = Page::capture(maps, 0, budget, cancelled)?;
-    for member in [source::NEW_DATA, source::NEW_DATA, source::NEW_ROOT] {
+    for member in [role.data, role.data, role.root] {
         Page::charge_append(MAP_RECORD_BYTES, budget, cancelled)?;
         let range = map_layout.append(maps, MAP_RECORD_BYTES)?;
         record::inline_map(&mut maps[range], Some(member))?;

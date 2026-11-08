@@ -88,7 +88,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 - [Fresh native Int32 database creation and publication](writes/FRESH_DATABASE_CREATION.md)
 - [Same-file first-table persistence and recovery](writes/FIRST_TABLE_PERSISTENCE.md)
-- [Append-only second-table engine operation and recovery](writes/ADD_TABLE_PERSISTENCE.md)
+- [Append-only table creation, repeated additions and recovery](writes/ADD_TABLE_PERSISTENCE.md)
 - [Fixed updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
 - [Int32 key updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
 - [Wider numeric key updates with ordinary fields](writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md)

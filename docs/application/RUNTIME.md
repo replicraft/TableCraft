@@ -79,18 +79,25 @@ native image and checks existing user rows and primary membership under the same
 read operation's budgets. It neither builds a proposed table nor runs active
 content, opens a draft, holds a write lease or writes the file.
 
-The current `Added` profile requires exactly ten pages, one existing scalar user
-table at definition/DATA/root pages 7/8/9, eight catalog records, twenty-three
-inline map records, and the qualified system/header/catalog roles. Existing
-primary membership and DATA ownership must check completely. Original opaque
-property data and free gaps remain bytes to preserve; additional objects, external
-payload roles, indirect maps, other page layouts and a third-table addition are
-outside this profile. Proposed names/declarations and append capacity are checked
-later against the actual request. An unavailable advisory fact does not classify
-the database as corrupt. Structural/profile refusals report false; cancellation,
-resource exhaustion, I/O and construction failures remain errors. Read-only
-sources report false. The revision-bound fact enables only explicit Create →
-Table; ordinary and recovered Open do not themselves create a draft.
+The `Added` profile admits one through eighteen existing local user tables in
+the native append lineage: `7 + 3n` pages, `7 + n` catalog records and `20 + 3n`
+inline map records for `n` tables. Each original table's single DATA page and
+checked Int32 primary root retain their original physical roles. Repeated sources
+require ordinary in-row scalar storage without extended flags; unsupported
+Memo/OLE LVAL, complex and extended Date/Time schemas refuse. Original opaque
+property data and unused gaps remain bytes to preserve. Other object/layout,
+indirect-map and ownership profiles remain unavailable.
+
+The largest admitted append produces nineteen tables and 64 pages, at the current
+base-zero inline/global FREE-map bitmap boundary. This is an implementation
+profile, not an Access format limit; further bitmap/catalog growth remains work.
+A readable source at that boundary reports unavailable for another addition.
+Proposed names/declarations and append capacity are checked later against the
+actual request. An unavailable advisory fact does not classify the database as
+corrupt. Structural/profile refusals report false; cancellation, resource
+exhaustion, I/O and construction failures remain errors. Read-only sources report
+false. The revision-bound fact enables only explicit Create → Table; ordinary and
+recovered Open do not themselves create a draft.
 
 With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can
 submit `Command::ReviewTableCreation` with a document revision and immutable
@@ -110,8 +117,9 @@ retry one operation as another after refusal. Document invalidation revokes the
 review; Save detects changed file content through complete original-image
 comparison. The advisory Open result cannot authorize Save. This admits neither
 arbitrary imported-file DDL nor record creation, field alteration, manual Design schemas or
-silent type inference. The two-table result does not make another AddTable command
-available automatically: a fresh Open must qualify its actual source profile.
+silent type inference. After each acknowledged Save, a fresh Open qualifies the actual resulting source
+before another Create → Table can become available. Retained prior availability
+or table count alone cannot enable it.
 
 ### Initial-field property lowering
 
@@ -210,7 +218,9 @@ requires all reviewed original bytes and reconstructs the native schema operatio
 against that descriptor using the same captured `First` or `Added` profile.
 The adapter retains separate `StagedFirstTable` and `StagedAddTable` capabilities.
 TCNT remains canonical-blank initialization; TCAT binds the actual populated
-original and carries only the pinned TCNT 1–4 declaration-template grammar.
+original. TCAT1/profile 1 stays exactly ten pages; TCAT2/profile 2 admits only
+thirteen through 61 pages in three-page steps. Both retain the pinned TCNT 1–4
+declaration-template grammar.
 The template's canonical header is not the append operation's source binding.
 Action dispatch chooses its decoder once, with no retry as another schema or row
 action. Each route uses checked V2 same-file resizing, complete native
@@ -253,30 +263,37 @@ erase the acknowledged save. Pending user transitions remain bound to their
 original request while save/recovery/reopen completes.
 
 The previously recorded five focused first-table adapter tests remain historical
-macOS evidence. The AddTable engine's seven candidate tests, three TCAT codec
-tests and four native journal integration tests subsequently passed locally.
-The subsequent accepted macOS headless host batch records 149 runtime, 111
-desktop, 99 Access-adapter and 427 shared-UI passing tests. Its connected desktop
-addition test creates Table1 and stores Score=17, invokes the actual Create →
-Table command for Table2, refuses a duplicate name without writing, accepts the
-corrected name, and completes reviewed same-file schema Save. The original raw
-`  Ada  ` input survives schema reopening and is inserted only by a separate
-reviewed record Save. The desktop revisits the original row, preserves unsaved
-SQL editor text and confirms both table catalog entries after a fresh Open.
-A subsequent focused extension uses that fresh host's SQL editor and Run query
-controls to read `17` from Table1 and the exact text `  Ada  ` from Table2.
-Separate adapter acceptance checks read both tables and preserve the original
-row/metadata bytes exactly. A third Create → Table stays unavailable because that
-resulting source is outside the current append profile. This is headless application interaction over real local
-files, not a native-window or Access comparison.
+macOS evidence. The initial AddTable checkpoint recorded seven candidate tests,
+three TCAT codec tests and four native journal integration tests. The accepted
+repeated-addition follow-up records nineteen engine candidate/advisory checks,
+five TCAT checks, six native V2 recovery checks, nineteen offline adapter checks,
+149 runtime tests and 111 desktop tests. Strict all-feature library/test lint
+passes for the six affected packages. These boundary-specific counts are not
+added together as a full-workspace qualification.
 
-All six configured target architectures also pass the current compilation checks.
-The Windows x64/ARM64 checks cover eighteen packages and exclude CLI/SQLite because
-the local MSVC C SDK is unavailable; they are not native Windows execution or a
-Windows CLI build. Native Access comparison, Windows same-file filesystem-journal
+The connected headless desktop test creates Table1 with Score=17, invokes the
+actual Create → Table command for Table2, refuses a duplicate name without
+writing, then accepts the corrected name and completes reviewed same-file schema
+Save. Its exact `  Ada  ` input survives reopening and is inserted only by a
+separate reviewed record Save. The same interaction creates and populates Table3
+and Table4, preserving unsaved SQL text and old rows. A fresh desktop host then
+executes SELECTs against all four saved tables and checks their original values.
+The current eighteen-source-table ceiling is checked separately; Create → Table
+Design remains disabled. This is headless interaction over real local files, not
+native-window or Microsoft Access comparison evidence.
+
+Windows x64 and ARM64 runtime/desktop all-target/all-feature compilation checks
+pass with their dependencies. They are not native Windows execution or a complete
+twenty-package Windows/CLI/SQLite build. Earlier six-architecture audit results
+remain their recorded checkpoints and do not substitute for repeated-profile
+native execution. Native Access comparison, Windows same-file filesystem-journal
 behavior and power-loss qualification remain unrun. See the separate
 [first-table](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
-[append-table](../access/writes/ADD_TABLE_PERSISTENCE.md) adapter contracts.
+[append-table](../access/writes/ADD_TABLE_PERSISTENCE.md) adapter contracts. The
+[repeated-fixture independent-reader receipt](../testing/results/ace16-repeated-table-independent-reader-2026-11-07.json)
+records five distinct images across six exported files, retaining both original
+rows and empty added-table metadata; it is not insertion, recovery or native
+Access save qualification.
 
 ## Session and task ownership
 

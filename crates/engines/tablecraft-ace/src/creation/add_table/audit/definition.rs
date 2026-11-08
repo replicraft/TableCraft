@@ -1,5 +1,5 @@
 //! Reconstruct the closed new-definition page independently of its serializer.
-use super::super::{AddTableError, source};
+use super::super::{AddTableError, geometry::Role, source};
 use super::width;
 use crate::{CreateColumn, FirstTableDefinition, InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -13,9 +13,6 @@ const LOGICAL_INDEX_BYTES: usize = 28;
 const KEY_SLOTS: usize = 10;
 const KEY_BYTES: usize = 3;
 const MAP_PAGE: u32 = 3;
-const OWNED_SLOT: u32 = 23;
-const CANDIDATE_SLOT: u32 = 24;
-const INDEX_SLOT: u32 = 25;
 
 fn short(bytes: &mut [u8], at: usize, value: usize) -> Result<(), AddTableError> {
     let value = u16::try_from(value).map_err(|_| AddTableError::Preservation)?;
@@ -72,6 +69,7 @@ fn kind(scalar: ScalarType) -> Result<u8, AddTableError> {
 
 pub(super) fn verify(
     after: &[u8],
+    role: Role,
     definition: &FirstTableDefinition,
     columns: &[CreateColumn<'_>],
     budget: &mut ResourceBudget,
@@ -140,8 +138,12 @@ pub(super) fn verify(
     }
     short(&mut expected, physical + 4, 0)?;
     expected[physical + 6] = 1;
-    long(&mut expected, physical + 34, (MAP_PAGE << 8) | INDEX_SLOT)?;
-    long(&mut expected, physical + 38, source::NEW_ROOT as u32)?;
+    long(
+        &mut expected,
+        physical + 34,
+        (MAP_PAGE << 8) | role.index as u32,
+    )?;
+    long(&mut expected, physical + 38, role.root as u32)?;
     expected[physical + 46] = 0x89;
     names += PHYSICAL_INDEX_BYTES;
     long(&mut expected, names, 1625)?;
@@ -175,9 +177,9 @@ pub(super) fn verify(
     short(&mut expected, 45, columns.len())?;
     long(&mut expected, 47, 1)?;
     long(&mut expected, 51, 1)?;
-    long(&mut expected, 55, (MAP_PAGE << 8) | OWNED_SLOT)?;
-    long(&mut expected, 59, (MAP_PAGE << 8) | CANDIDATE_SLOT)?;
-    if source::page(after, source::NEW_DEFINITION) != expected {
+    long(&mut expected, 55, (MAP_PAGE << 8) | role.owned as u32)?;
+    long(&mut expected, 59, (MAP_PAGE << 8) | role.candidate as u32)?;
+    if source::page(after, role.definition) != expected {
         return Err(AddTableError::Preservation);
     }
     check(budget, cancelled)?;

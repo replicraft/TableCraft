@@ -132,7 +132,7 @@ fn outer_framing_and_nested_version_pairs_refuse_before_decoded_allocation() {
     for case in 0..11 {
         let mut raw = original.clone();
         match case {
-            0 => raw[7] = b'2',
+            0 => raw[7] = b'3',
             1 => raw[12] = 2,
             2 => raw[14] = 1,
             3 => raw[16..24].copy_from_slice(&28672_u64.to_le_bytes()),
@@ -242,4 +242,145 @@ fn source_capture_encoding_and_decoding_keep_work_allocation_and_cancel_limits()
             "cancellation must stop at the requested poll"
         );
     }
+}
+
+#[test]
+fn repeated_v2_has_disjoint_length_grammar_and_preserves_the_four_template_versions() {
+    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
+
+    for existing in [2, 3, 6, 18] {
+        let before = canonical_repeated_add_table::with_existing_tables(existing).before;
+        for version in 1..=4 {
+            // Wire capture remains data-only: the original declaration need not
+            // acquire native name/capacity authority from this framing test.
+            let intent =
+                NativeAddTableIntent::new(definition(version), &before, &mut budget(), &|| false)
+                    .unwrap();
+            let actual = intent.encode(&mut budget(), &|| false).unwrap();
+            let mut expected = literal(&before, version);
+            expected[..8].copy_from_slice(b"TCAT0002");
+            expected[12..14].copy_from_slice(&2_u16.to_le_bytes());
+            expected[16..24].copy_from_slice(&(before.len() as u64).to_le_bytes());
+            assert_eq!(actual, expected);
+            let decoded =
+                NativeAddTableIntent::decode(&expected, &mut budget(), &|| false).unwrap();
+            decoded
+                .verify_before(&before, &mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), expected);
+            for at in [10 * 4096 + 3500, 11 * 4096 + 512, 12 * 4096 + 3500] {
+                let mut changed = before.clone();
+                changed[at] ^= 1;
+                assert!(matches!(
+                    decoded.verify_before(&changed, &mut budget(), &|| false),
+                    Err(AddTableIntentError::BeforeMismatch)
+                ));
+            }
+            let mut downgraded = actual;
+            downgraded[..8].copy_from_slice(b"TCAT0001");
+            downgraded[12..14].copy_from_slice(&1_u16.to_le_bytes());
+            assert!(matches!(
+                NativeAddTableIntent::decode(
+                    &downgraded,
+                    &mut ResourceBudget::new(0, 0, 10_000_000),
+                    &|| false
+                ),
+                Err(AddTableIntentError::InvalidRecord)
+            ));
+        }
+    }
+
+    // Matching profile numbers alone never move source lengths across versions.
+    let old = canonical_add_table::source().before;
+    let mut widened = literal(&old, 1);
+    widened[..8].copy_from_slice(b"TCAT0002");
+    widened[12..14].copy_from_slice(&2_u16.to_le_bytes());
+    assert!(matches!(
+        NativeAddTableIntent::decode(
+            &widened,
+            &mut ResourceBudget::new(0, 0, 10_000_000),
+            &|| false
+        ),
+        Err(AddTableIntentError::InvalidRecord)
+    ));
+
+    for length in [
+        0,
+        9 * 4096,
+        11 * 4096,
+        12 * 4096,
+        13 * 4096 - 1,
+        13 * 4096 + 1,
+        14 * 4096,
+        15 * 4096,
+        62 * 4096,
+        64 * 4096,
+        67 * 4096,
+    ] {
+        let before = vec![0; length];
+        assert!(
+            matches!(
+                NativeAddTableIntent::new(definition(1), &before, &mut budget(), &|| false),
+                Err(AddTableIntentError::BeforeMismatch)
+            ),
+            "length {length}"
+        );
+        let mut raw = literal(&before, 1);
+        raw[..8].copy_from_slice(b"TCAT0002");
+        raw[12..14].copy_from_slice(&2_u16.to_le_bytes());
+        raw[16..24].copy_from_slice(&(length as u64).to_le_bytes());
+        assert!(
+            matches!(
+                NativeAddTableIntent::decode(
+                    &raw,
+                    &mut ResourceBudget::new(0, 0, 10_000_000),
+                    &|| false
+                ),
+                Err(AddTableIntentError::InvalidRecord)
+            ),
+            "length {length}"
+        );
+    }
+}
+
+#[test]
+fn repeated_v2_rejects_future_nested_templates_wrong_profiles_and_trailing_bytes_before_allocation()
+{
+    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
+
+    let before = canonical_repeated_add_table::source().before;
+    let raw = NativeAddTableIntent::new(definition(1), &before, &mut budget(), &|| false)
+        .unwrap()
+        .encode(&mut budget(), &|| false)
+        .unwrap();
+    for case in 0..5 {
+        let mut corrupt = raw.clone();
+        match case {
+            0 => corrupt[7] = b'3',
+            1 => corrupt[12] = 1,
+            2 => corrupt[64 + 7] = b'5',
+            3 => corrupt[64 + 12] = 4,
+            4 => corrupt.push(0),
+            _ => unreachable!(),
+        }
+        assert!(
+            matches!(
+                NativeAddTableIntent::decode(
+                    &corrupt,
+                    &mut ResourceBudget::new(0, 0, 10_000_000),
+                    &|| false
+                ),
+                Err(AddTableIntentError::UnsupportedVersion
+                    | AddTableIntentError::UnsupportedProfile
+                    | AddTableIntentError::InvalidRecord)
+            ),
+            "case {case}"
+        );
+    }
+    let mut none = ResourceBudget::new(0, 0, 10_000_000);
+    assert!(NativeAddTableIntent::decode(&raw, &mut none, &|| false).is_err());
+    assert!(matches!(
+        NativeAddTableIntent::decode(&raw, &mut budget(), &|| true),
+        Err(AddTableIntentError::Inspect(InspectError::Cancelled))
+    ));
 }

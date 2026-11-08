@@ -3,6 +3,7 @@ mod append;
 mod audit;
 mod availability;
 mod build;
+mod geometry;
 mod source;
 
 use super::{CreateDatabaseError, FirstTableDefinition};
@@ -46,8 +47,9 @@ pub struct AddTablePlan {
 
 impl NativeImage {
     /// Append an empty explicitly declared Increment table to the qualified
-    /// single-table ACE16 source. Imported catalog/index/allocation expansion
-    /// and manual Design schemas remain outside this initial operation.
+    /// bounded ACE16 append lineage. Every existing table retains one DATA page
+    /// and one primary root. Imported catalog/index/allocation expansion and
+    /// manual Design schemas remain outside this operation.
     pub fn plan_add_table(
         self,
         definition: FirstTableDefinition,

@@ -1,4 +1,5 @@
 //! Whole independently authored AFTER and bounded append/source refusals.
+mod repeated;
 use super::{AddTableError, AddTablePlan, append::Page, audit, source};
 use crate::{CreateColumn, FirstTableDefinition, NativeImage, read_table};
 use std::{cell::Cell, io::Cursor};

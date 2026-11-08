@@ -1,32 +1,29 @@
 //! Native source geometry and ownership, without a remembered creator flag.
-use super::{AddTableError, append::Page};
+use super::{
+    AddTableError,
+    append::Page,
+    geometry::{Geometry, Role},
+};
 use crate::{
     IndexCheckStatus, InspectError, NativeImage, PayloadPresence, check_table,
     create_blank_ace16_database,
-    format::{layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},
+    format::{data_type, layout::RECORD_COUNT_OFFSET, page::PAGE_BYTES, row::reference},
     header::check,
+    inspect_table_schema,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) const OLD_PAGES: usize = 10;
-pub(super) const NEW_DEFINITION: usize = 10;
-pub(super) const NEW_DATA: usize = 11;
-pub(super) const NEW_ROOT: usize = 12;
 pub(super) const MAP_PAGE: usize = 3;
 pub(super) const CATALOG_PAGE: usize = 4;
-pub(super) const OWNED_SLOT: usize = 23;
-pub(super) const CANDIDATE_SLOT: usize = 24;
-pub(super) const INDEX_SLOT: usize = 25;
-const OLD_CATALOG_ROWS: usize = 8;
-const OLD_MAP_ROWS: usize = 23;
-const FIRST_USER_DEFINITION: u32 = 7;
-const FIRST_USER_DATA: u8 = 8;
-const FIRST_USER_ROOT: u32 = 9;
+const BASE_MAP_ROWS: usize = 23;
+const MAP_RECORD_BYTES: usize = 13;
+const MAP_HEADER_BYTES: usize = 5;
 const TABLES_ID: i32 = 0x0f00_0001;
 
 pub(super) struct Source {
     pub catalog: Page,
     pub maps: Page,
+    pub geometry: Geometry,
 }
 
 pub(super) fn page(bytes: &[u8], number: usize) -> &[u8] {
@@ -91,9 +88,7 @@ pub(super) fn qualify(
     check(budget, cancelled)?;
     image.require_standard_capture()?;
     let bytes = image.as_bytes();
-    if bytes.len() != OLD_PAGES * PAGE_BYTES {
-        return Err(AddTableError::Source);
-    }
+    let geometry = Geometry::capture(bytes.len()).ok_or(AddTableError::Source)?;
     let canonical = create_blank_ace16_database(budget, cancelled)?;
     // These system-only roles must have their exact qualified native structure.
     // Existing user definitions, rows, property records and free tails are never rebuilt.
@@ -120,7 +115,7 @@ pub(super) fn qualify(
         cancelled,
     )?;
     if catalog_definition[RECORD_COUNT_OFFSET..RECORD_COUNT_OFFSET + size_of::<u32>()]
-        != (OLD_CATALOG_ROWS as u32).to_le_bytes()
+        != (geometry.catalog_rows as u32).to_le_bytes()
     {
         return Err(AddTableError::Source);
     }
@@ -132,7 +127,7 @@ pub(super) fn qualify(
         budget,
         cancelled,
     )?;
-    if catalog.count != OLD_CATALOG_ROWS {
+    if catalog.count != geometry.catalog_rows {
         return Err(AddTableError::Source);
     }
     for (actual, expected) in catalog.records.iter().zip(&canonical_catalog.records) {
@@ -144,7 +139,7 @@ pub(super) fn qualify(
         )?;
     }
     let objects = image.catalog().catalog();
-    if objects.objects().len() != OLD_CATALOG_ROWS {
+    if objects.objects().len() != geometry.catalog_rows {
         return Err(AddTableError::Source);
     }
     for object in objects.objects() {
@@ -156,6 +151,68 @@ pub(super) fn qualify(
             return Err(AddTableError::Source);
         }
     }
+    let maps = Page::capture(page(bytes, MAP_PAGE), 0, budget, cancelled)?;
+    if maps.count != geometry.map_rows {
+        return Err(AddTableError::Source);
+    }
+    for (slot, range) in maps.records.iter().enumerate() {
+        check(budget, cancelled)?;
+        let raw = &page(bytes, MAP_PAGE)[range.clone()];
+        let mut expected = [0; MAP_RECORD_BYTES];
+        let (member, candidate) = match slot {
+            0 | 4 => (Some(CATALOG_PAGE), false),
+            3 | 7 => (Some(8), slot == 7),
+            22 => (Some(9), false),
+            BASE_MAP_ROWS.. => {
+                let table = 1 + (slot - BASE_MAP_ROWS) / 3;
+                let role = geometry.table(table).ok_or(AddTableError::Source)?;
+                let position = (slot - BASE_MAP_ROWS) % 3;
+                (
+                    Some(if position == 2 { role.root } else { role.data }),
+                    position == 1,
+                )
+            }
+            _ => (None, false),
+        };
+        if let Some(member) = member {
+            expected[MAP_HEADER_BYTES + member / 8] = 1 << (member % 8);
+        }
+        budget
+            .charge(Resource::Steps, raw.len() as u64)
+            .map_err(InspectError::from)?;
+        // A candidate is only a hint; an absent hint never grants ownership.
+        if candidate && raw == [0; MAP_RECORD_BYTES] {
+            continue;
+        }
+        equal(raw, &expected, budget, cancelled)?;
+    }
+    for table in 0..geometry.tables {
+        check(budget, cancelled)?;
+        qualify_table(
+            image,
+            geometry.table(table).ok_or(AddTableError::Source)?,
+            geometry.tables > 1,
+            budget,
+            cancelled,
+        )?;
+    }
+    check(budget, cancelled)?;
+    Ok(Source {
+        catalog,
+        maps,
+        geometry,
+    })
+}
+
+fn qualify_table(
+    image: &NativeImage,
+    role: Role,
+    repeated: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), AddTableError> {
+    let bytes = image.as_bytes();
+    let objects = image.catalog().catalog();
     budget
         .charge(Resource::Steps, image.catalog().origins().len() as u64)
         .map_err(InspectError::from)?;
@@ -163,13 +220,13 @@ pub(super) fn qualify(
         .catalog()
         .origins()
         .iter()
-        .find(|origin| origin.native_id() == FIRST_USER_DEFINITION as i32)
+        .find(|origin| origin.native_id() == role.definition as i32)
         .ok_or(AddTableError::Source)?;
     if origin.is_system()
         || origin.type_code() != 1
         || origin.parent_id() != TABLES_ID
         || origin.page() != CATALOG_PAGE as u32
-        || origin.slot() != 7
+        || origin.slot() as usize != role.catalog
     {
         return Err(AddTableError::Source);
     }
@@ -190,37 +247,48 @@ pub(super) fn qualify(
         return Err(AddTableError::Source);
     }
 
-    let maps = Page::capture(page(bytes, MAP_PAGE), 0, budget, cancelled)?;
-    if maps.count != OLD_MAP_ROWS {
-        return Err(AddTableError::Source);
-    }
-    for (slot, range) in maps.records.iter().enumerate() {
-        check(budget, cancelled)?;
-        let raw = &page(bytes, MAP_PAGE)[range.clone()];
-        let mut expected = [0; 13];
-        let member = match slot {
-            0 | 4 => Some(CATALOG_PAGE as u8),
-            3 | 7 => Some(FIRST_USER_DATA),
-            22 => Some(FIRST_USER_ROOT as u8),
-            _ => None,
-        };
-        if let Some(member) = member {
-            expected[5 + usize::from(member) / 8] = 1 << (member % 8);
-        }
-        budget
-            .charge(Resource::Steps, raw.len() as u64)
-            .map_err(InspectError::from)?;
-        // A candidate is only a hint; an absent hint never grants ownership.
-        if slot == 7 && raw == [0; 13] {
-            continue;
-        }
-        equal(raw, &expected, budget, cancelled)?;
-    }
-    if page(bytes, FIRST_USER_DEFINITION as usize)[4..8] != [0; 4]
-        || page(bytes, FIRST_USER_DEFINITION as usize)[59..63]
-            != reference(MAP_PAGE as u32, 7).to_le_bytes()
+    if page(bytes, role.definition)[4..8] != [0; 4]
+        || page(bytes, role.definition)[59..63]
+            != reference(MAP_PAGE as u32, role.candidate as u8).to_le_bytes()
     {
         return Err(AddTableError::Source);
+    }
+    // The repeated profile admits only ordinary in-row creator carriers.
+    // LONG_TEXT/OLE and complex references can expose storage or program roles
+    // outside this closed TD/DATA/root lineage. Preserve the original one-table
+    // profile unchanged for existing TCAT1 records.
+    if repeated {
+        let schema = inspect_table_schema(
+            &mut image.reader(),
+            objects.scope(),
+            object.name().as_str(),
+            budget,
+            cancelled,
+        )?;
+        budget
+            .charge(Resource::Steps, schema.columns().len() as u64)
+            .map_err(InspectError::from)?;
+        if schema.columns().iter().any(|column| {
+            column.extended_flags() != 0
+                || !matches!(
+                    column.native_type(),
+                    data_type::BOOLEAN
+                        | data_type::BYTE
+                        | data_type::INT16
+                        | data_type::INT32
+                        | data_type::INT64
+                        | data_type::CURRENCY
+                        | data_type::SINGLE
+                        | data_type::DOUBLE
+                        | data_type::DATE_TIME
+                        | data_type::SHORT_BINARY
+                        | data_type::SHORT_TEXT
+                        | data_type::GUID
+                        | data_type::NUMERIC
+                )
+        }) {
+            return Err(AddTableError::Source);
+        }
     }
     let checked = check_table(
         &mut image.reader(),
@@ -233,8 +301,8 @@ pub(super) fn qualify(
     budget
         .charge(Resource::Steps, schema.columns().len() as u64)
         .map_err(InspectError::from)?;
-    if schema.definition_page() != FIRST_USER_DEFINITION
-        || schema.physical_layout().usage != reference(MAP_PAGE as u32, 3)
+    if schema.definition_page() != role.definition as u32
+        || schema.physical_layout().usage != reference(MAP_PAGE as u32, role.owned as u8)
         || schema.physical_layout().physical_indexes != 1
         || schema.physical_layout().logical_indexes != 1
         || schema
@@ -251,8 +319,8 @@ pub(super) fn qualify(
         return Err(AddTableError::Source);
     };
     if index.status() != IndexCheckStatus::Checked
-        || index.index().root_page() != FIRST_USER_ROOT
-        || index.index().usage_map() != reference(MAP_PAGE as u32, 22)
+        || index.index().root_page() != role.root as u32
+        || index.index().usage_map() != reference(MAP_PAGE as u32, role.index as u8)
         || index.index().native_type() != 1
         || index.index().flags() != 0x89
         || index.index().columns().len() != 1
@@ -263,21 +331,21 @@ pub(super) fn qualify(
     // The single owned DATA page and root occupy distinct fixed roles; no
     // indirect maps, external descendants or append destinations are admitted.
     Page::capture(
-        page(bytes, FIRST_USER_DATA as usize),
-        FIRST_USER_DEFINITION,
+        page(bytes, role.data),
+        role.definition as u32,
         budget,
         cancelled,
     )?;
     budget
         .charge(Resource::Steps, 27)
         .map_err(InspectError::from)?;
-    let root = page(bytes, FIRST_USER_ROOT as usize);
+    let root = page(bytes, role.root);
     if root[..2] != [4, 1]
-        || root[4..8] != FIRST_USER_DEFINITION.to_le_bytes()
+        || root[4..8] != (role.definition as u32).to_le_bytes()
         || root[8..27].iter().any(|byte| *byte != 0)
     {
         return Err(AddTableError::Source);
     }
     check(budget, cancelled)?;
-    Ok(Source { catalog, maps })
+    Ok(())
 }

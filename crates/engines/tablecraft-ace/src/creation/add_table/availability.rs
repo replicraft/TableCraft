@@ -1,6 +1,6 @@
 //! Advisory source facts use the actual operation's complete native qualification.
-use super::{AddTableError, source};
-use crate::{InspectError, NativeImage, format::page::PAGE_BYTES, header::check};
+use super::{AddTableError, geometry::Geometry, source};
+use crate::{InspectError, NativeImage, header::check};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -22,7 +22,7 @@ pub fn add_table_source_available(
 ) -> Result<bool, AddTableError> {
     let _span = tracing::debug_span!("native.add_table.source_available").entered();
     check(budget, cancelled)?;
-    if captured.len() != source::OLD_PAGES * PAGE_BYTES {
+    if Geometry::capture(captured.len()).is_none() {
         return Ok(false);
     }
     let result = (|| {

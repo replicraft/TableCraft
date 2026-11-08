@@ -1,4 +1,4 @@
-//! A second Create → Table uses the same UI and reviewed native operation owners.
+//! Repeated Create → Table uses the same UI and reviewed native operation owners.
 use super::creating_tests::create_table;
 use super::properties_tests::replace;
 use super::test_support::{
@@ -13,7 +13,7 @@ use tablecraft_runtime::journal_path;
 use tablecraft_ui::{EditTarget, ObjectKind};
 
 #[test]
-fn second_table_duplicate_refusal_correction_and_first_record_preserve_old_rows_and_scratch_sql() {
+fn repeated_tables_keep_duplicate_correction_old_rows_and_scratch_sql_across_separate_saves() {
     let (_directory, path, mut harness) = pending_record("table-draft-number", "Score", "17");
     save_schema_and_bind_record(&mut harness, "Table1");
     review(&mut harness);
@@ -109,7 +109,7 @@ fn second_table_duplicate_refusal_correction_and_first_record_preserve_old_rows_
         harness.state().state.data.as_ref().unwrap().rows[0][1].text,
         "  Ada  "
     );
-    assert!(!harness.state().state.can_create_table());
+    assert!(harness.state().state.can_create_table());
     assert!(!journal_path(&path).exists());
     let tabs = harness.state().state.object_tabs();
     let old = tabs
@@ -142,6 +142,39 @@ fn second_table_duplicate_refusal_correction_and_first_record_preserve_old_rows_
         Some(sql)
     );
 
+    for (table, value) in [("Table3", "Grace"), ("Table4", "Linus")] {
+        let before = std::fs::read(&path).unwrap();
+        create_table(&mut harness);
+        harness.get_by_role_and_label(Role::Tab, table);
+        assert_eq!(harness.state().state.sql, sql);
+        add_named_field(&mut harness, "table-draft-short-text", "Name");
+        let input = field_label(&harness, "table-draft-record-field", "Name");
+        replace(&mut harness, Role::TextInput, &input, value);
+        assert_eq!(std::fs::read(&path).unwrap(), before);
+        save_schema_and_bind_record(&mut harness, table);
+        let schema = std::fs::read(&path).unwrap();
+        assert_ne!(schema, before);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::TextInput, "Name")
+                .value()
+                .as_deref(),
+            Some(value)
+        );
+        review(&mut harness);
+        assert!(harness.state().editing.insert_review.is_some());
+        assert_eq!(std::fs::read(&path).unwrap(), schema);
+        apply_and_acknowledge(&mut harness);
+        let data = harness.state().state.data.as_ref().unwrap();
+        assert_eq!(data.table, table);
+        assert_eq!(data.rows.len(), 1);
+        assert_eq!(data.rows[0][0].text, "1");
+        assert_eq!(data.rows[0][1].text, value);
+        assert_eq!(harness.state().state.sql, sql);
+        assert!(harness.state().state.can_create_table());
+        assert!(!journal_path(&path).exists());
+    }
+
     drop(harness);
     let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut reopened);
@@ -156,15 +189,15 @@ fn second_table_duplicate_refusal_correction_and_first_record_preserve_old_rows_
             .iter()
             .filter(|table| !table.system)
             .count(),
-        2
+        4
     );
-    assert!(!reopened.state().state.can_create_table());
+    assert!(reopened.state().state.can_create_table());
     reopened
         .get_by_role_and_label(Role::Tab, "Create")
         .click_accesskit();
     reopened.run_steps(2);
     assert!(
-        reopened
+        !reopened
             .get_by_role_and_label(Role::Button, "Table")
             .accesskit_node()
             .is_disabled()
@@ -185,6 +218,8 @@ fn second_table_duplicate_refusal_correction_and_first_record_preserve_old_rows_
     for (sql, expected) in [
         ("SELECT [Score] FROM [Table1]", "17"),
         ("SELECT [Name] FROM [Table2]", "  Ada  "),
+        ("SELECT [Name] FROM [Table3]", "Grace"),
+        ("SELECT [Name] FROM [Table4]", "Linus"),
     ] {
         replace(&mut reopened, Role::MultilineTextInput, "SQL query", sql);
         let run = reopened.state().state.localizer.text("query-run");

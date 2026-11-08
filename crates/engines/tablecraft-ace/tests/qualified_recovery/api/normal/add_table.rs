@@ -13,6 +13,10 @@ use tablecraft_schema::ScalarType;
 use tablecraft_testkit::fixtures::access::canonical_add_table;
 
 fn definition() -> FirstTableDefinition {
+    definition_named("More")
+}
+
+fn definition_named(table: &str) -> FirstTableDefinition {
     let columns = [
         CreateColumn::new("Id", ScalarType::Int32)
             .with_primary_key("PrimaryId")
@@ -21,13 +25,17 @@ fn definition() -> FirstTableDefinition {
             .unwrap(),
         CreateColumn::short_text("Name", 20).unwrap(),
     ];
-    FirstTableDefinition::capture("More", &columns, &mut budget(), &|| false).unwrap()
+    FirstTableDefinition::capture(table, &columns, &mut budget(), &|| false).unwrap()
 }
 
 fn plan(before: &[u8]) -> AddTablePlan {
+    plan_named(before, "More")
+}
+
+fn plan_named(before: &[u8], table: &str) -> AddTablePlan {
     NativeImage::capture(&mut Cursor::new(before), scope(), &mut budget(), &|| false)
         .unwrap()
-        .plan_add_table(definition(), &mut budget(), &|| false)
+        .plan_add_table(definition_named(table), &mut budget(), &|| false)
         .unwrap()
 }
 
@@ -255,10 +263,16 @@ fn add_table_refuses_mismatched_target_requests_source_and_complete_images_befor
 #[test]
 fn add_table_qualification_charges_all_pools_and_cancellation_retains_same_journal() {
     let source = canonical_add_table::source();
-    let raw = plan(&source.before)
+    assert_qualification_controls(&source.before, &source.after, "More");
+    let repeated = tablecraft_testkit::fixtures::access::canonical_repeated_add_table::source();
+    assert_qualification_controls(&repeated.before, &repeated.after, "Third");
+}
+
+fn assert_qualification_controls(before: &[u8], after: &[u8], table: &str) {
+    let raw = plan_named(before, table)
         .encode_intent(&mut budget(), &|| false)
         .unwrap();
-    let journal = pending(&source.before, &source.after).bytes.into_inner();
+    let journal = pending(before, after).bytes.into_inner();
     let mut measured = budget();
     let polls = Cell::new(0_usize);
     let mut storage = Storage::new(journal.clone());
@@ -328,4 +342,124 @@ fn add_table_qualification_charges_all_pools_and_cancellation_retains_same_journ
         assert_eq!(storage.writes, 0);
         assert_eq!(storage.bytes.get_ref(), &journal);
     }
+}
+
+#[test]
+fn repeated_v2_journal_commit_and_interrupted_growth_recovery_preserve_two_original_rows() {
+    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
+
+    let source = canonical_repeated_add_table::source();
+    let raw = plan_named(&source.before, "Third")
+        .encode_intent(&mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(&raw[..8], b"TCAT0002");
+    for committed in [false, true] {
+        let mut target = Target::new(source.before.clone());
+        let mut journal = Storage::new(Vec::new());
+        if !committed {
+            target.storage.fail_prefix = Some(57_000);
+        }
+        let result = plan_named(&source.before, "Third")
+            .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            .unwrap()
+            .commit(&mut budget(), &|| false);
+        if committed {
+            result.unwrap();
+            assert_eq!(target.storage.bytes.get_ref(), &source.after);
+        } else {
+            assert!(result.is_err());
+            assert!(target.storage.bytes.get_ref().len() > source.before.len());
+            assert_ne!(target.storage.bytes.get_ref(), &source.before);
+        }
+        let mut cold = Storage::new(journal.bytes.get_ref().clone());
+        let qualified = qualify(&mut cold, &raw, &mut budget(), &|| false).unwrap();
+        assert_eq!(
+            qualified.state(),
+            if committed {
+                V2State::Committed
+            } else {
+                V2State::Pending
+            }
+        );
+        assert_eq!(
+            qualified
+                .recover(&mut target, &mut budget(), &|| false)
+                .unwrap(),
+            if committed {
+                RecoveryOutcome::Committed
+            } else {
+                RecoveryOutcome::RolledBack
+            }
+        );
+        let wanted = if committed {
+            &source.after
+        } else {
+            &source.before
+        };
+        assert_eq!(target.storage.bytes.get_ref(), wanted);
+        assert_eq!(
+            &target.storage.bytes.get_ref()[7 * 4096..13 * 4096],
+            &source.before[7 * 4096..13 * 4096]
+        );
+        for (table, row) in ["Items", "More"].into_iter().zip(&source.original_rows) {
+            let actual = read_table(
+                &mut Cursor::new(target.storage.bytes.get_ref()),
+                scope(),
+                table,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(actual.rows(), std::slice::from_ref(row));
+        }
+    }
+}
+
+#[test]
+fn repeated_v2_recovery_refuses_altered_original_or_replacement_and_cannot_downgrade_to_v1() {
+    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
+
+    let source = canonical_repeated_add_table::source();
+    let original = plan_named(&source.before, "Third")
+        .encode_intent(&mut budget(), &|| false)
+        .unwrap();
+    for before_changed in [false, true] {
+        for at in [10 * 4096 + 3500, 11 * 4096 + 512, 12 * 4096 + 3500] {
+            let mut before = source.before.clone();
+            let mut after = source.after.clone();
+            if before_changed {
+                before[at] ^= 1;
+            } else {
+                after[at] ^= 1;
+            }
+            let mut journal = pending(&before, &after);
+            let bytes = journal.bytes.get_ref().clone();
+            let writes = journal.writes;
+            let error = qualify(&mut journal, &original, &mut budget(), &|| false)
+                .err()
+                .expect("tampered repeated images must refuse");
+            if before_changed {
+                assert!(matches!(
+                    error,
+                    NativeRecoveryQualificationError::AddTableIntent(
+                        AddTableIntentError::BeforeMismatch
+                    )
+                ));
+            } else {
+                assert!(matches!(
+                    error,
+                    NativeRecoveryQualificationError::ImageMismatch
+                ));
+            }
+            assert_eq!(journal.writes, writes);
+            assert_eq!(journal.bytes.get_ref(), &bytes);
+        }
+    }
+    let mut downgraded = original;
+    downgraded[..8].copy_from_slice(b"TCAT0001");
+    downgraded[12..14].copy_from_slice(&1_u16.to_le_bytes());
+    assert!(matches!(
+        NativeAddTableIntent::decode(&downgraded, &mut budget(), &|| false),
+        Err(AddTableIntentError::InvalidRecord)
+    ));
 }

@@ -51,7 +51,11 @@ pub(super) fn finish_reads(harness: &mut Harness<'_, Desktop>) {
         std::thread::yield_now();
     }
     harness.run_steps(2);
-    assert!(harness.state().state.error.is_none());
+    assert!(
+        harness.state().state.error.is_none(),
+        "native host read failed: {:?}",
+        harness.state().state.error
+    );
 }
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]

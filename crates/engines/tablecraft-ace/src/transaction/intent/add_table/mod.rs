@@ -39,7 +39,9 @@ pub enum AddTableIntentError {
     BeforeMismatch,
 }
 
-/// Exact original schema and actual ten-page source binding for TCAT0001.
+/// Exact original schema and complete source binding for TCAT0001/TCAT0002.
+/// TCAT1 binds exactly ten pages; TCAT2 binds thirteen through sixty-one pages
+/// in three-page steps. These disjoint wire bounds grant no native role authority.
 /// Its nested TCNT record is only a closed declaration template. The template's
 /// canonical-blank header never identifies or authorizes this operation's source.
 /// Neither capture nor decode qualifies native mutation, journaling or recovery.
@@ -62,7 +64,7 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         check(budget, cancelled)?;
-        if before.len() as u64 != codec::BEFORE_BYTES {
+        if !codec::accepts_before_length(before.len() as u64) {
             return Err(AddTableIntentError::BeforeMismatch);
         }
         let before_binding = binding::digest(before, budget, cancelled)?;

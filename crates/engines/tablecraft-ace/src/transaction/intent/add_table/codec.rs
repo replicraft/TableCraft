@@ -7,8 +7,10 @@ use crate::{FirstTableDefinition, InspectError, format::page::PAGE_BYTES, header
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCAT0001";
+const REPEATED_MAGIC: &[u8; 8] = b"TCAT0002";
 const PREFIX: &[u8; 4] = b"TCAT";
 const PROFILE: u16 = 1;
+const REPEATED_PROFILE: u16 = 2;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -34,8 +36,33 @@ const COPY_BYTES: usize = 4096;
 // Profile 1 admits only the initial ten-page AddTable source. This length is
 // framing, not source authority: the fresh native operation must qualify roles.
 const PROFILE_SOURCE_PAGES: u64 = 10;
-pub(super) const BEFORE_BYTES: u64 = PROFILE_SOURCE_PAGES * PAGE_BYTES as u64;
+const BEFORE_BYTES: u64 = PROFILE_SOURCE_PAGES * PAGE_BYTES as u64;
+// These are protocol-2 admission bounds, deliberately independent of the native
+// producer's source ledger. Existing TCAT1 stays a disjoint ten-page language.
+const REPEATED_MIN_PAGES: u64 = 13;
+const REPEATED_MAX_PAGES: u64 = 61;
+const REPEATED_PAGE_STEP: u64 = 3;
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + MAX_DECLARATION_TEMPLATE_BYTES;
+
+pub(super) fn accepts_before_length(length: u64) -> bool {
+    version_for_length(length).is_some()
+}
+
+fn repeated_length(length: u64) -> bool {
+    length.is_multiple_of(PAGE_BYTES as u64)
+        && (REPEATED_MIN_PAGES..=REPEATED_MAX_PAGES).contains(&(length / PAGE_BYTES as u64))
+        && (length / PAGE_BYTES as u64 - REPEATED_MIN_PAGES).is_multiple_of(REPEATED_PAGE_STEP)
+}
+
+fn version_for_length(length: u64) -> Option<(&'static [u8; 8], u16)> {
+    if length == BEFORE_BYTES {
+        Some((MAGIC, PROFILE))
+    } else if repeated_length(length) {
+        Some((REPEATED_MAGIC, REPEATED_PROFILE))
+    } else {
+        None
+    }
+}
 
 fn pin_template(raw: &[u8]) -> Result<(), AddTableIntentError> {
     if !(NESTED_HEADER_BYTES..=MAX_DECLARATION_TEMPLATE_BYTES).contains(&raw.len()) {
@@ -68,9 +95,8 @@ pub(super) fn encode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, AddTableIntentError> {
     check(budget, cancelled)?;
-    if before_length != BEFORE_BYTES {
-        return Err(AddTableIntentError::BeforeMismatch);
-    }
+    let (magic, profile) =
+        version_for_length(before_length).ok_or(AddTableIntentError::BeforeMismatch)?;
     let nested = encode_declaration_template(definition, budget, cancelled)?;
     pin_template(&nested)?;
     let total = HEADER_BYTES
@@ -87,9 +113,9 @@ pub(super) fn encode(
     raw.try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
     raw.resize(HEADER_BYTES, 0);
-    raw[..MAGIC.len()].copy_from_slice(MAGIC);
+    raw[..MAGIC.len()].copy_from_slice(magic);
     raw[TOTAL_AT..PROFILE_AT].copy_from_slice(&(total as u32).to_le_bytes());
-    raw[PROFILE_AT..FLAGS_AT].copy_from_slice(&PROFILE.to_le_bytes());
+    raw[PROFILE_AT..FLAGS_AT].copy_from_slice(&profile.to_le_bytes());
     raw[BEFORE_AT..BINDING_AT].copy_from_slice(&before_length.to_le_bytes());
     raw[BINDING_AT..NESTED_LENGTH_AT].copy_from_slice(&before_binding);
     raw[NESTED_LENGTH_AT..RESERVED_AT].copy_from_slice(&(nested.len() as u32).to_le_bytes());
@@ -116,14 +142,18 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
-    if &raw[..MAGIC.len()] != MAGIC {
-        return Err(if raw.starts_with(PREFIX) {
-            AddTableIntentError::UnsupportedVersion
-        } else {
-            AddTableIntentError::InvalidRecord
-        });
-    }
-    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != PROFILE {
+    let expected_profile = match &raw[..MAGIC.len()] {
+        magic if magic == MAGIC => PROFILE,
+        magic if magic == REPEATED_MAGIC => REPEATED_PROFILE,
+        _ => {
+            return Err(if raw.starts_with(PREFIX) {
+                AddTableIntentError::UnsupportedVersion
+            } else {
+                AddTableIntentError::InvalidRecord
+            });
+        }
+    };
+    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != expected_profile {
         return Err(AddTableIntentError::UnsupportedProfile);
     }
     let total = u32::from_le_bytes(raw[TOTAL_AT..PROFILE_AT].try_into().unwrap()) as usize;
@@ -133,7 +163,7 @@ pub(super) fn decode(
     if total != raw.len()
         || raw[FLAGS_AT..BEFORE_AT] != [0; size_of::<u16>()]
         || raw[RESERVED_AT..HEADER_BYTES] != [0; size_of::<u32>()]
-        || before_length != BEFORE_BYTES
+        || version_for_length(before_length).is_none_or(|(_, profile)| profile != expected_profile)
         || nested_length != raw.len() - HEADER_BYTES
     {
         return Err(AddTableIntentError::InvalidRecord);

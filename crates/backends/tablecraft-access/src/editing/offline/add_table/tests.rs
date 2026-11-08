@@ -1,4 +1,6 @@
 //! Real-file AddTable composition retains original objects and the existing save owner.
+mod repeated;
+
 use super::*;
 use crate::editing::offline::{
     CompletionKind, SessionState,
@@ -14,7 +16,7 @@ use tablecraft_db::{InsertValue, OmittingInsertableTable};
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::fixtures::access::canonical_add_table;
+use tablecraft_testkit::fixtures::access::{canonical_add_table, canonical_repeated_add_table};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(256 * 1024 * 1024, 100_000, 100_000_000)
@@ -179,9 +181,15 @@ fn duplicate_names_and_stale_original_refuse_without_journal_or_target_changes()
     }
 }
 
-fn retained_pair(path: &Path, bundle: &Path, committed: bool) -> OfflineWriteSession {
-    let source = canonical_add_table::source();
-    fs::write(path, &source.before).unwrap();
+fn retained_pair(
+    path: &Path,
+    bundle: &Path,
+    committed: bool,
+    before: &[u8],
+    table: &str,
+    magic: &[u8; 8],
+) -> OfflineWriteSession {
+    fs::write(path, before).unwrap();
     let mut session = open(path);
     let slot = session.slot_mut().unwrap();
     let plan = NativeImage::capture(
@@ -191,10 +199,10 @@ fn retained_pair(path: &Path, bundle: &Path, committed: bool) -> OfflineWriteSes
         &|| false,
     )
     .unwrap()
-    .plan_add_table(definition("More"), &mut budget(), &|| false)
+    .plan_add_table(definition(table), &mut budget(), &|| false)
     .unwrap();
     let raw = plan.encode_intent(&mut budget(), &|| false).unwrap();
-    assert_eq!(&raw[..8], b"TCAT0001");
+    assert_eq!(&raw[..8], magic);
     let mut pair = OfflineJournalPair::create(
         slot.target.take().unwrap(),
         bundle,
@@ -219,57 +227,65 @@ fn retained_pair(path: &Path, bundle: &Path, committed: bool) -> OfflineWriteSes
 
 #[test]
 fn retained_and_cold_tcat_recovery_preserve_table_added_receipt_and_exact_original() {
-    for committed in [false, true] {
-        for cold in [false, true] {
-            let source = canonical_add_table::source();
-            let directory = tempfile::tempdir().unwrap();
-            let path = directory.path().join("existing.accdb");
-            let bundle = directory.path().join("journal");
-            let owner = retained_pair(&path, &bundle, committed);
-            let (session, receipt) = if cold {
-                owner.release().unwrap();
-                open(&path)
-                    .recover_update(&bundle, &mut budget(), &|| false)
-                    .unwrap()
-            } else {
-                owner.recover_pending(&mut budget(), &|| false).unwrap()
-            };
-            assert_eq!(receipt.kind(), CompletionKind::Recovered);
-            assert_eq!(
-                receipt.outcome(),
-                Some(if committed {
-                    RecoveryOutcome::Committed
+    let first = canonical_add_table::source();
+    let repeated = canonical_repeated_add_table::source();
+    for (before, after, table, magic) in [
+        (&first.before, &first.after, "More", b"TCAT0001"),
+        (&repeated.before, &repeated.after, "Third", b"TCAT0002"),
+    ] {
+        for committed in [false, true] {
+            for cold in [false, true] {
+                let directory = tempfile::tempdir().unwrap();
+                let path = directory.path().join("existing.accdb");
+                let bundle = directory.path().join("journal");
+                let owner = retained_pair(&path, &bundle, committed, before, table, magic);
+                let (session, receipt) = if cold {
+                    owner.release().unwrap();
+                    open(&path)
+                        .recover_update(&bundle, &mut budget(), &|| false)
+                        .unwrap()
                 } else {
-                    RecoveryOutcome::RolledBack
-                })
-            );
-            assert_eq!(
-                (receipt.matched_rows(), receipt.changed_rows()),
-                (None, None)
-            );
-            assert_eq!(
-                receipt.schema_change(),
-                committed.then_some(SchemaChange::TableAdded { column_count: 2 })
-            );
-            assert_eq!(session.state(), SessionState::Ready);
-            assert_completion(&receipt);
-            session.release().unwrap();
-            assert_eq!(
-                fs::read(&path).unwrap(),
-                if committed {
-                    source.after
-                } else {
-                    source.before
-                }
-            );
-            assert_terminal_entries(directory.path(), 1);
+                    owner.recover_pending(&mut budget(), &|| false).unwrap()
+                };
+                assert_eq!(receipt.kind(), CompletionKind::Recovered);
+                assert_eq!(
+                    receipt.outcome(),
+                    Some(if committed {
+                        RecoveryOutcome::Committed
+                    } else {
+                        RecoveryOutcome::RolledBack
+                    })
+                );
+                assert_eq!(
+                    (receipt.matched_rows(), receipt.changed_rows()),
+                    (None, None)
+                );
+                assert_eq!(
+                    receipt.schema_change(),
+                    committed.then_some(SchemaChange::TableAdded { column_count: 2 })
+                );
+                assert_eq!(session.state(), SessionState::Ready);
+                assert_completion(&receipt);
+                session.release().unwrap();
+                assert_eq!(
+                    fs::read(&path).unwrap(),
+                    if committed { after } else { before }.as_slice()
+                );
+                assert_terminal_entries(directory.path(), 1);
+            }
         }
     }
 }
 
 #[test]
 fn tcat_namespace_failures_keep_add_table_decoder_and_never_fall_back_to_tcnt_or_rows() {
-    for raw in [b"TCAT".as_slice(), b"TCAT0001", b"TCAT0001\0"] {
+    for raw in [
+        b"TCAT".as_slice(),
+        b"TCAT0001",
+        b"TCAT0001\0",
+        b"TCAT0002",
+        b"TCAT0003",
+    ] {
         assert!(matches!(
             MutationIntent::decode(raw, &mut budget(), &|| false),
             Err(Cause::AddTableIntent(_))

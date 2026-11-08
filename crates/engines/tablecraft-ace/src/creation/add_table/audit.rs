@@ -21,7 +21,6 @@ use tablecraft_schema::ScalarType;
 const CATALOG_DEFINITION: usize = 2;
 const HEADER_BYTES: usize = 14;
 const SLOT_BYTES: usize = size_of::<u16>();
-const NEW_PAGE_COUNT: usize = 13;
 
 fn permitted(page: usize, offset: usize, source: &Source, maps: &Page, catalog: &Page) -> bool {
     if page == CATALOG_DEFINITION {
@@ -50,10 +49,11 @@ pub(super) fn verify(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), AddTableError> {
-    if after.len() != NEW_PAGE_COUNT * PAGE_BYTES {
+    let role = source.geometry.added;
+    if after.len() != source.geometry.after_pages * PAGE_BYTES {
         return Err(AddTableError::Preservation);
     }
-    empty_pages::verify(after, budget, cancelled)?;
+    empty_pages::verify(after, role, budget, cancelled)?;
     let maps = Page::capture(source::page(after, source::MAP_PAGE), 0, budget, cancelled)?;
     let catalog = Page::capture(
         source::page(after, source::CATALOG_PAGE),
@@ -72,10 +72,10 @@ pub(super) fn verify(
     }
     for (range, member) in maps.records[source.maps.count..]
         .iter()
-        .zip([11_u8, 11, 12])
+        .zip([role.data, role.data, role.root])
     {
         let mut expected = [0; 13];
-        expected[5 + usize::from(member) / 8] = 1 << (member % 8);
+        expected[5 + member / 8] = 1 << (member % 8);
         if source::page(after, source::MAP_PAGE)[range.clone()] != expected {
             return Err(AddTableError::Preservation);
         }
@@ -104,17 +104,16 @@ pub(super) fn verify(
         cancelled,
     )?;
     let schema = checked.schema();
-    if schema.definition_page() != source::NEW_DEFINITION as u32
+    if schema.definition_page() != role.definition as u32
         || schema.declared_rows() != 0
-        || schema.physical_layout().usage
-            != reference(source::MAP_PAGE as u32, source::OWNED_SLOT as u8)
+        || schema.physical_layout().usage != reference(source::MAP_PAGE as u32, role.owned as u8)
         || checked.rows() != 0
         || schema.columns().len() != definition.column_count()
     {
         return Err(AddTableError::Preservation);
     }
     let columns = definition.borrowed_columns(budget, cancelled)?;
-    definition::verify(after, definition, &columns, budget, cancelled)?;
+    definition::verify(after, role, definition, &columns, budget, cancelled)?;
     let mut fixed_offset = 0;
     let mut variable = 0;
     for (position, (observed, declared)) in schema.columns().iter().zip(&columns).enumerate() {
@@ -185,6 +184,7 @@ pub(super) fn verify(
     catalog::verify(
         &source::page(after, source::CATALOG_PAGE)[catalog.records[source.catalog.count].clone()],
         definition.table(),
+        role.definition as u32,
         &properties,
         budget,
         cancelled,
@@ -196,13 +196,13 @@ pub(super) fn verify(
         .catalog()
         .origins()
         .iter()
-        .find(|origin| origin.native_id() == source::NEW_DEFINITION as i32)
+        .find(|origin| origin.native_id() == role.definition as i32)
         .ok_or(AddTableError::Preservation)?;
     if origin.type_code() != 1
         || origin.flags() != 0
         || origin.parent_id() != 0x0f00_0001
         || origin.page() != source::CATALOG_PAGE as u32
-        || origin.slot() != 8
+        || origin.slot() as usize != role.catalog
     {
         return Err(AddTableError::Preservation);
     }
@@ -227,8 +227,8 @@ pub(super) fn verify(
         )
         .map_err(crate::InspectError::from)?;
     if index.status() != IndexCheckStatus::Checked
-        || index.index().root_page() != source::NEW_ROOT as u32
-        || index.index().usage_map() != reference(source::MAP_PAGE as u32, source::INDEX_SLOT as u8)
+        || index.index().root_page() != role.root as u32
+        || index.index().usage_map() != reference(source::MAP_PAGE as u32, role.index as u8)
         || index.index().native_type() != 1
         || index.index().name() != definition.primary_name()
         || index.index().flags() != 0x89
