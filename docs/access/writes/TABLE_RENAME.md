@@ -63,6 +63,8 @@ key/row populations and physical owned membership; shared member-role proof
 excludes INDEX/DATA/TDEF/map/LVAL aliases, and all index map storage and members
 must be globally allocated. Generated primary keys, physical logical aliases,
 retained trees and inactive tails remain unchanged by the catalog rename.
+Original INDEX write-stamp bytes are preserved too; the zero-stamp restriction
+for rewriting an INDEX page does not apply to this catalog-only mutation.
 
 This explicit planner has no journal or frontend save path. The original
 `plan_table_rename`, recoverable planner and frozen `TCRN0001` reconstruction

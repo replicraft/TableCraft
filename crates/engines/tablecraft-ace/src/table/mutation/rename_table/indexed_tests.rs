@@ -27,6 +27,10 @@ fn indexed_candidates_match_complete_independent_images_and_fresh_membership() {
             Case::AliasHistory,
             Case::RetainedTree,
             Case::InactiveIndexTail,
+            // INDEX write stamps are outside the catalog edit. The retained
+            // reader accepts them; an index writer's zero-stamp rule does not
+            // authorize changing or dropping these original opaque bytes.
+            Case::UnknownIndexHeader,
         ] {
             for (old, new) in [
                 ("Items", "Inventory"),
@@ -120,7 +124,6 @@ fn malformed_index_keys_membership_aliases_and_metadata_refuse_even_for_noops() 
         Case::WrongKey,
         Case::WrongRow,
         Case::BadNodeBound,
-        Case::UnknownIndexHeader,
     ] {
         let source = pair(5, case, "Items", "Items");
         assert!(
