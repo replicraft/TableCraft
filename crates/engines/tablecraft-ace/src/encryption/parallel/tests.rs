@@ -139,11 +139,17 @@ fn add_and_password_change_retain_existing_jet_and_agile_semantics() {
 }
 
 #[test]
-fn agile_envelope_only_change_needs_no_worker_memory_or_data_transformation() {
+fn agile_envelope_only_change_batches_unchanged_ciphertext_without_crypto_scratch() {
     let encrypted = image();
     let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
-    let mut memory =
-        |_| -> Result<usize, InspectError> { panic!("envelope-only copy requested worker memory") };
+    let copy_ceiling = FIXED_BUFFER_BYTES + 2 * (PAGE_BYTES + size_of::<PageResult>());
+    assert!(copy_ceiling < ParallelEncryption::minimum_batch_bytes());
+    let batches = Cell::new(0);
+    let mut memory = |retained| {
+        batches.set(batches.get() + 1);
+        assert!(retained <= copy_ceiling);
+        Ok(copy_ceiling)
+    };
     let mut target = Cursor::new(Vec::new());
     rewrite_encryption_parallel_to(
         &mut Cursor::new(&encrypted),
@@ -157,6 +163,8 @@ fn agile_envelope_only_change_needs_no_worker_memory_or_data_transformation() {
         &|| false,
     )
     .unwrap();
+    let data_pages = encrypted.len() / PAGE_BYTES - 1;
+    assert_eq!(batches.get(), data_pages.div_ceil(2));
     assert_eq!(&target.get_ref()[PAGE_BYTES..], &encrypted[PAGE_BYTES..]);
     assert_eq!(
         sequential(

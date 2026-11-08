@@ -101,7 +101,7 @@ pub(super) fn pages_for_memory(
             .and_then(|bytes| bytes.checked_add(FIXED_BUFFER_BYTES))
             .is_some_and(|bytes| bytes <= ceiling)
     };
-    if remaining == 0 || workers == 0 || !fits(1) {
+    if remaining == 0 || !fits(1) {
         return Err(InspectError::Allocation);
     }
     let mut lower = 1;

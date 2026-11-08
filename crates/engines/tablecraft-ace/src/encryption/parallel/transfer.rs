@@ -8,7 +8,7 @@ use crate::{
     InspectError,
     encryption::{
         PageDecoder,
-        streaming::{self, Encoder, Transfer},
+        streaming::{Encoder, Transfer},
     },
     header::check,
 };
@@ -42,11 +42,6 @@ pub(super) fn run<R: Read + Seek, W: Write + Seek>(
     parallel: ParallelEncryption<'_>,
     cancelled: &(dyn Fn() -> bool + Sync),
 ) -> Result<(), InspectError> {
-    if pages.decoder.is_none() && pages.encoder.is_none() {
-        // Password-envelope changes and unencoded Jet password changes perform
-        // no page crypto. Keep their copy path simple and avoid pool admission.
-        return streaming::transfer_sequential(pages);
-    }
     let Transfer {
         source,
         target,
@@ -57,18 +52,19 @@ pub(super) fn run<R: Read + Seek, W: Write + Seek>(
         budget,
         ..
     } = pages;
+    let phases = u64::from(decoder.is_some()) + u64::from(encoder.is_some());
+    let workers = if phases == 0 {
+        0
+    } else {
+        parallel.pool.current_num_threads()
+    };
     let mut buffers = Buffer::new();
     let mut first = 1_u32;
     while first < header.page_count() {
         check(budget, cancelled)?;
         let ceiling = (parallel.memory)(buffers.retained_bytes()?)?;
-        let count = pages_for_memory(
-            ceiling,
-            parallel.pool.current_num_threads(),
-            (header.page_count() - first) as usize,
-        )?;
-        buffers.prepare(count, parallel.pool.current_num_threads(), ceiling, budget)?;
-        let phases = u64::from(decoder.is_some()) + u64::from(encoder.is_some());
+        let count = pages_for_memory(ceiling, workers, (header.page_count() - first) as usize)?;
+        buffers.prepare(count, workers, ceiling, budget)?;
         budget.charge_allocation(count as u64 * phases, PAGE_TRANSFORM_BYTES)?;
         budget.charge(
             Resource::Steps,

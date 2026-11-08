@@ -47,8 +47,9 @@ impl<'a> ParallelEncryption<'a> {
         Self { pool, memory }
     }
 
-    /// Smallest admitted live working set: one page, one status, header buffers
-    /// and one conservative codec scratch reservation. Pool stacks are separate.
+    /// Minimum working set for a page-codec batch: one page, one status, header
+    /// buffers and one conservative codec scratch reservation. Pool stacks are
+    /// separate. No-codec copies need no worker scratch and can use less.
     pub const fn minimum_batch_bytes() -> usize {
         FIXED_BUFFER_BYTES + PAGE_BYTES + size_of::<PageResult>() + WORKER_SCRATCH_BYTES
     }
@@ -68,8 +69,9 @@ impl<'a> ParallelEncryption<'a> {
 /// No complete image is captured: the native read-file ceiling (currently 2 GiB)
 /// applies, independently of the image API's smaller retention ceiling. The
 /// caller's memory policy chooses each batch and can shrink or reuse buffers.
-/// Agile envelope-only password changes need no worker transforms and retain a
-/// simple sequential copy. The pool is never created or resized by the engine.
+/// Agile envelope-only password changes use the same bounded I/O batches with
+/// no worker transforms or scratch reservation. The pool is never created or
+/// resized by the engine.
 ///
 /// The destination must be empty and unpublished. A failure can leave a prefix
 /// there, which the host must discard. This function never publishes, flushes or

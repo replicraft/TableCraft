@@ -201,7 +201,7 @@ pub(super) struct Transfer<'a, R, W> {
     pub cancelled: &'a dyn Fn() -> bool,
 }
 
-pub(super) fn transfer_sequential<R: Read + Seek, W: Write + Seek>(
+fn transfer_sequential<R: Read + Seek, W: Write + Seek>(
     transfer: Transfer<'_, R, W>,
 ) -> Result<(), InspectError> {
     let Transfer {
