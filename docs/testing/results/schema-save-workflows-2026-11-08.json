@@ -114,7 +114,7 @@
     "filter": "creation::database_options::tests",
     "reason": "Full Header equality included derived page_count despite deliberate EOF append",
     "fix_commit": "604c8567",
-    "rerun": "Header correction compiled; positive still fails at a second independently identified raw-slot verification guard"
+    "rerun": "Both verifier corrections now pass the combined9 candidate and intent/recovery cases; earlier failed logs retained above"
   },
   "limitations": [
     "No new GUI column or query-save commands enabled by this batch",
@@ -179,6 +179,72 @@
       }
     ],
     "remaining_options_failure": "LVAL verification treated raw slot word as isolated flags; clean correction and rerun pending",
-    "strict_lint": "Two UTF16 constant-chunk lints fixed93a72a0f; rerun pending"
+    "strict_lint": "Strict affected-library and desktop lint passed after93a72a0f; .cache/schema-application-connected-clippy-fixed-20261108.log"
+  },
+  "final_options_followup": {
+    "source_fix_commit": "12984caf",
+    "passed": 9,
+    "failed": 0,
+    "ignored": 0,
+    "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked database_options",
+    "log": ".cache/database-options-slot-clean-20261108.log",
+    "log_sha256": "1d8e2e40bc6f9eae496bb9ba27ed5bf63cf5ff422f259cd1eeb5171926457414",
+    "diagnosis": "row_range returns a raw slot word, not isolated flags; apply OFFSET_MASK while retaining byte span checks",
+    "independent_candidate_bytes_differed": false
+  },
+  "final_gates": {
+    "strict_library_and_desktop_lint": {
+      "path": ".cache/schema-application-connected-clippy-fixed-20261108.log",
+      "sha256": "e3d47352d622dc95544e79bceeeb52e8f7e117e36eacad7752029aec9c843773"
+    },
+    "runtime_platform_compilation": {
+      "features": [
+        "offline-edit",
+        "ace16-create"
+      ],
+      "default_features": false,
+      "targets": [
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu",
+        "x86_64-unknown-freebsd"
+      ],
+      "passed": true,
+      "log": {
+        "path": ".cache/schema-application-runtime-platform-checks-20261108.log",
+        "sha256": "0c50db6ee0e1ca8245f3934df866d30af039b24ef91dea7956aa1e0ace7acf9d"
+      },
+      "execution_qualified": false
+    },
+    "query_after_typed_group_fix": {
+      "candidate_passed": 5,
+      "intent_passed": 7,
+      "explicit_sdk_passed": 1,
+      "logs": [
+        {
+          "path": ".cache/query-typed-groups-candidate-20261108.log",
+          "sha256": "d773ac923f5b85bc5167c77984619de12701ddb14fad153b00c64ac8057ace82"
+        },
+        {
+          "path": ".cache/query-typed-groups-intent-20261108.log",
+          "sha256": "b4e72970258bc04d194f411a2e1de64cd23b1574b3749023236a5babc0d18d05"
+        },
+        {
+          "path": ".cache/query-typed-groups-sdk-20261108.log",
+          "sha256": "e54fe02865498cd8ea04cfe5d5e97793cf8d02af6dc26dc52ecf36d0ba787ceb"
+        }
+      ]
+    },
+    "dependency_boundaries": {
+      "path": ".cache/schema-application-boundaries-20261108.log",
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a"
+    },
+    "documentation_links": {
+      "path": ".cache/schema-application-links-20261108.log",
+      "sha256": "59a4cdebae50e61325b48b0d9ef5399939d19e81e52e3c6a6bd35d60d0039e66"
+    },
+    "rust_format": {
+      "path": ".cache/schema-application-format-20261108.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    }
   }
 }

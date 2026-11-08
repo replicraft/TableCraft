@@ -39,13 +39,16 @@ raw fixtures author six empty/populated keyless/manual/generated-primary pairs
 with retained sentinels for the native candidate tests. Authored tests and SDK
 write observations remain distinct from executed native planner checks.
 
-The initial three-test native batch passed cancellation/budget and source/alias
-refusals, but the positive case stopped at an incorrect complete Header equality
-check: that summary includes page count derived from actual EOF. The correction
-keeps every stored header byte in the exact complement proof, compares unchanged
-format/geometry/encoding facts and requires exactly one additional physical page.
-The corrected six-image execution is pending the next coordinated batch. The
-independent SDK/literal matches do not substitute for this native rerun.
+The focused native checks pass all three candidate tests, including six complete
+independent images with retained catalog/map/definition sentinels. Initial runs
+exposed two verification mistakes: complete Header equality included page count
+derived from actual EOF, and the LVAL check interpreted the complete slot word as
+flags instead of masking its offset bits. A temporary test-only diagnostic proved
+zero complete-image differences from the independent oracle and identified the
+exact final verification branch. The corrections keep every stored header byte
+in the exact complement proof, require exactly one additional physical page and
+check only actual slot flags. Temporary diagnostics were removed before the
+passing rerun; no native source/profile guard was broadened.
 
 `plan_recoverable_disable_name_auto_correct` now binds a qualified candidate to a
 new closed `TCDO0001`/profile 1 original request. Its fixed 64-byte record contains
@@ -60,9 +63,13 @@ resizable target. Cold recovery verifies original intent, freshly captures the
 journal BEFORE and reconstructs the complete option candidate before consuming
 that same checked V2 session. Pending/torn writes restore original bytes and
 length; committed writes require the full replacement. Settled confirmation
-checks bytes/barriers without repair or another option action. Six focused
-wire/requalification/recovery tests are authored and remain unrun at this
-checkpoint. Existing TCAT/TCNT/TCAC/TCRN languages are unchanged.
+checks bytes/barriers without repair or another option action. All six focused
+wire/requalification/recovery tests pass, including two independently authored
+full-image reconstructions and eight pending/committed/torn-length/partial-marker
+recovery cases. These and the three candidate tests form the nine-test passing
+options batch. The shared memory storage models protocol behavior, not physical
+filesystem durability. Initial failure, diagnostic and corrected logs remain in
+ignored cache records. Existing TCAT/TCNT/TCAC/TCRN languages are unchanged.
 
 No adapter/runtime/GUI option save, Access comparison or Windows execution is
 supplied by this checkpoint. Existing add-table source admission still assumes

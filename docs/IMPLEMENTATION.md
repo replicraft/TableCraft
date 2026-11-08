@@ -64,8 +64,13 @@ QueryDef CRUD. Shared catalog append and rename regressions pass 26 and 27 cases
 The subsequent query-adapter batch passes five save/recovery cases, and runtime
 outcome classification now passes ten cases. The explicit database-options
 positive test exposed an incorrect derived-page-count equality, then a second
-raw-slot/flags verification error. Its clean correction and focused rerun are
-pending. The [batch record](testing/results/schema-save-workflows-2026-11-08.json) retains the
+raw-slot/flags verification error. Both corrections now pass all nine candidate
+and intent/recovery tests. Strict affected-library and desktop lint also passes.
+The runtime with explicit offline-edit/creation features compiles for Windows
+x64, Linux x64 and the FreeBSD unsupported-host contract. These are compilation
+checks, not native execution or Access comparison. The typed UTF-16 query-group
+follow-up passes all five candidates, seven intent cases and the explicit SDK
+whole-image case. The [batch record](testing/results/schema-save-workflows-2026-11-08.json) retains the
 failure and correction separately. Native Windows/Access qualification remains
 unrun.
 
