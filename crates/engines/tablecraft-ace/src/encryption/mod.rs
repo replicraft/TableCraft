@@ -1,13 +1,15 @@
 //! Native encryption inspection and explicit password-based page codecs.
 mod add;
 mod agile;
+mod budget;
 pub use add::check_encryption_add;
+pub use budget::encryption_rewrite_budget;
 pub(crate) mod legacy;
 mod native_header;
 #[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
 mod parallel;
 #[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
-pub use parallel::rewrite_encryption_parallel;
+pub use parallel::{ParallelEncryption, rewrite_encryption_parallel_to};
 mod rewrite;
 mod streaming;
 use crate::{FileFormat, InspectError, inspect_header};

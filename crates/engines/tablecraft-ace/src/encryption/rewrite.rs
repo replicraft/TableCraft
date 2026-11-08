@@ -88,25 +88,6 @@ pub fn rewrite_encryption<R: Read + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<EncryptionCopy, InspectError> {
-    rewrite_with_pages(source, operation, budget, cancelled, decode_pages)
-}
-
-pub(super) fn rewrite_with_pages<R, F>(
-    source: &mut R,
-    operation: EncryptionRewrite<'_>,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-    transform: F,
-) -> Result<EncryptionCopy, InspectError>
-where
-    R: Read + Seek,
-    F: FnOnce(
-        &PageDecoder,
-        &mut [u8],
-        &mut ResourceBudget,
-        &dyn Fn() -> bool,
-    ) -> Result<(), InspectError>,
-{
     if let EncryptionRewrite::Add {
         password,
         new_password,
@@ -172,7 +153,7 @@ where
         return Ok(EncryptionCopy { bytes });
     }
     if let Some(decoder) = &decoder {
-        transform(decoder, &mut bytes, budget, cancelled)?;
+        decode_pages(decoder, &mut bytes, budget, cancelled)?;
     } else {
         for _ in 1..header.page_count() {
             check(budget, cancelled)?;

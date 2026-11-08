@@ -1,106 +1,90 @@
-//! Explicit captured Agile removal; native metadata and publication stay serial.
-use super::{
-    AgilePageDecoder, EncryptionCopy, EncryptionInspection, EncryptionRewrite,
-    OfficeEncryptionFamily, PageDecoder, inspect_encryption, rewrite,
-};
-use crate::{InspectError, format::page::PAGE_BYTES, header::check};
-use rayon::{ThreadPool, prelude::*};
-use std::io::{Read, Seek};
-use tablecraft_core::limits::{Resource, ResourceBudget};
+//! Caller-controlled bounded parallelism for the shared native streaming rewrite.
+mod buffer;
+#[cfg(test)]
+mod tests;
+mod transfer;
 
-const MIN_THREADS: usize = 2;
-const MAX_THREADS: usize = 16;
-const PAGE_CHECK_STEPS: u64 = 2;
-const PAGE_STEPS: u64 = (PAGE_BYTES / super::agile::AES_BLOCK_BYTES) as u64 + PAGE_CHECK_STEPS;
+use super::{
+    EncryptionRewrite,
+    budget::{COORDINATOR_STEPS_PER_PAGE, PAGE_TRANSFORM_BYTES, PAGE_TRANSFORM_STEPS},
+    streaming,
+};
+use crate::{InspectError, format::page::PAGE_BYTES};
+use rayon::ThreadPool;
+use std::io::{Read, Seek, Write};
+
+// The codec owns a zeroizing page plus bounded key, digest and cipher state on
+// each worker stack. Reserve another full page for that auxiliary state. Worker
+// thread stacks themselves belong to the caller-owned pool, outside this lease.
+const WORKER_SCRATCH_BYTES: usize = 2 * PAGE_BYTES;
+const FIXED_BUFFER_BYTES: usize = 2 * PAGE_BYTES;
 
 type PageResult = Result<(), InspectError>;
 
-/// Remove Agile AES encryption using an explicitly supplied native worker pool.
+/// Caller-owned worker pool and adaptive live-buffer policy for native rewrites.
 ///
-/// Only `EncryptionRewrite::Remove` on a qualified Agile source is admitted.
-/// Other operations and cipher families are refused without a serial retry.
-/// The pool must have 2..=16 threads and is never constructed by the engine.
-/// Password verification, header changes and native SID remasking remain serial;
-/// only disjoint owned data pages are decoded concurrently. The complete image
-/// remains bounded to 64 MiB and is returned only after every page and native
-/// rewrite check succeeds. Callers retain the existing stable/offline-source and
-/// fresh-output obligations. This does not authenticate the file's integrity HMAC.
-///
-/// Worker budgets are prepaid from the caller's cumulative budget before page
-/// callbacks. Failures are examined in original page order; any partial decoded
-/// candidate is zeroized and discarded. Cancellation must be safe to query from
-/// multiple workers; it never authorizes partial output publication.
-/// Existing sequential and streaming APIs retain their original behavior.
-pub fn rewrite_encryption_parallel<R: Read + Seek>(
-    source: &mut R,
-    operation: EncryptionRewrite<'_>,
-    pool: &ThreadPool,
-    budget: &mut ResourceBudget,
-    cancelled: &(dyn Fn() -> bool + Sync),
-) -> Result<EncryptionCopy, InspectError> {
-    let _span = tracing::debug_span!("native.encryption.remove.parallel").entered();
-    check(budget, cancelled)?;
-    if !(MIN_THREADS..=MAX_THREADS).contains(&pool.current_num_threads()) {
-        return Err(InspectError::StructureLimit);
-    }
-    if !matches!(&operation, EncryptionRewrite::Remove { .. }) {
-        return Err(InspectError::UnsupportedEncryption);
-    }
-    match inspect_encryption(source, budget, cancelled)? {
-        EncryptionInspection::Office(info) if info.family() == OfficeEncryptionFamily::Agile => {}
-        _ => return Err(InspectError::UnsupportedEncryption),
-    }
-
-    rewrite::rewrite_with_pages(
-        source,
-        operation,
-        budget,
-        cancelled,
-        |decoder, bytes, budget, _| match decoder {
-            PageDecoder::Agile(decoder) => decode_pages(decoder, bytes, pool, budget, cancelled),
-            PageDecoder::Legacy(_) => Err(InspectError::UnsupportedEncryption),
-        },
-    )
+/// The memory callback runs only on the coordinator before each batch. Its input
+/// is the actual retained data/status capacity plus fixed header buffers; workers
+/// have joined and no codec scratch is live at that point. It returns the total
+/// permitted working-set bytes for the next batch, including retained buffers
+/// and the conservative per-active-worker codec scratch reservation. It is not
+/// an additional allocation allowance. A host observing free memory should
+/// account for the supplied retained capacity before choosing a total ceiling.
+/// Cumulative operation budgets remain separate and are never replenished here.
+/// Source/target I/O and this callback do not need Send or Sync.
+pub struct ParallelEncryption<'a> {
+    pool: &'a ThreadPool,
+    memory: &'a mut dyn FnMut(usize) -> Result<usize, InspectError>,
 }
 
-fn decode_pages(
-    decoder: &AgilePageDecoder,
-    bytes: &mut [u8],
-    pool: &ThreadPool,
-    budget: &mut ResourceBudget,
+impl<'a> ParallelEncryption<'a> {
+    /// Borrow an existing pool and coordinator memory policy; no workers spawn here.
+    /// A one-thread pool is valid and uses the same bounded transfer pipeline.
+    pub fn new(
+        pool: &'a ThreadPool,
+        memory: &'a mut dyn FnMut(usize) -> Result<usize, InspectError>,
+    ) -> Self {
+        Self { pool, memory }
+    }
+
+    /// Smallest admitted live working set: one page, one status, header buffers
+    /// and one conservative codec scratch reservation. Pool stacks are separate.
+    pub const fn minimum_batch_bytes() -> usize {
+        FIXED_BUFFER_BYTES + PAGE_BYTES + size_of::<PageResult>() + WORKER_SCRATCH_BYTES
+    }
+}
+
+/// Stream any already-supported native encryption operation with bounded batches.
+///
+/// This shares sequential credential checks, header construction, SID selection
+/// and final source verification. All cipher families supported by
+/// `rewrite_encryption_to` use their existing source-specific immutable codecs;
+/// no unsupported-mode or failed-worker retry occurs. Independent page decoding
+/// and encoding run on disjoint zeroizing owned buffers, with original page
+/// ordinals and prepaid local budgets. SID patches, reads and writes stay on the
+/// coordinator in original order. Every worker phase joins before its buffer is
+/// inspected or reused, and errors are selected in original page order.
+///
+/// No complete image is captured: the native read-file ceiling (currently 2 GiB)
+/// applies, independently of the image API's smaller retention ceiling. The
+/// caller's memory policy chooses each batch and can shrink or reuse buffers.
+/// Agile envelope-only password changes need no worker transforms and retain a
+/// simple sequential copy. The pool is never created or resized by the engine.
+///
+/// The destination must be empty and unpublished. A failure can leave a prefix
+/// there, which the host must discard. This function never publishes, flushes or
+/// syncs the output. Cancellation must support concurrent worker polling; no
+/// active database content or integrity-HMAC authentication is added.
+pub fn rewrite_encryption_parallel_to<R: Read + Seek, W: Write + Seek>(
+    source: &mut R,
+    target: &mut W,
+    operation: EncryptionRewrite<'_>,
+    parallel: ParallelEncryption<'_>,
+    budget: &mut tablecraft_core::limits::ResourceBudget,
     cancelled: &(dyn Fn() -> bool + Sync),
 ) -> Result<(), InspectError> {
-    check(budget, cancelled)?;
-    if !bytes.len().is_multiple_of(PAGE_BYTES) || bytes.len() < PAGE_BYTES {
-        return Err(InspectError::MalformedEncryption);
-    }
-    let pages = bytes.len() / PAGE_BYTES - 1;
-    budget.charge_allocation(pages as u64, size_of::<PageResult>() as u64)?;
-    budget.charge_allocation(pages as u64, PAGE_BYTES as u64)?;
-    budget.charge(Resource::Steps, pages as u64 * PAGE_STEPS)?;
-
-    let mut outcomes = Vec::new();
-    outcomes
-        .try_reserve_exact(pages)
-        .map_err(|_| InspectError::Allocation)?;
-    outcomes.resize_with(pages, || Ok(()));
-    pool.install(|| {
-        bytes[PAGE_BYTES..]
-            .par_chunks_exact_mut(PAGE_BYTES)
-            .zip(outcomes.par_iter_mut())
-            .enumerate()
-            .for_each(|(index, (page, outcome))| {
-                let mut local = ResourceBudget::new(PAGE_BYTES as u64, 0, PAGE_STEPS);
-                *outcome = decoder.decode_page(index as u32 + 1, page, &mut local, cancelled);
-            });
-    });
-    // Statuses contain payload-free errors, never page contents or key material.
-    // Do not short circuit worker scheduling or publish a successful prefix.
-    for outcome in outcomes {
-        outcome?;
-    }
-    check(budget, cancelled)
+    let _span = tracing::debug_span!("native.encryption.copy_pages.parallel").entered();
+    streaming::rewrite_with_transfer(source, target, operation, budget, cancelled, |pages| {
+        transfer::run(pages, parallel, cancelled)
+    })
 }
-
-#[cfg(test)]
-mod tests;

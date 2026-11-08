@@ -58,14 +58,14 @@ pub use constraints::{
     ConstraintReport, ConstraintViolation, FieldCheck, RelationshipCheck, RelationshipCheckStatus,
     RuleCheckStatus, check_table_constraints,
 };
-#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
-pub use encryption::rewrite_encryption_parallel;
 pub use encryption::{
     AgileEncryption, AgileHashAlgorithm, AgilePageDecoder, AgileParameters, EncryptionCopy,
     EncryptionInspection, EncryptionRewrite, OfficeEncryptionFamily, OfficeEncryptionInfo,
-    check_encryption_add, check_encryption_rewrite, inspect_encryption, read_agile_encryption,
-    rewrite_encryption, rewrite_encryption_to,
+    check_encryption_add, check_encryption_rewrite, encryption_rewrite_budget, inspect_encryption,
+    read_agile_encryption, rewrite_encryption, rewrite_encryption_to,
 };
+#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+pub use encryption::{ParallelEncryption, rewrite_encryption_parallel_to};
 pub use error::InspectError;
 pub use format::profiles::ReadProfile;
 pub use header::{FileFormat, Header, inspect_header};

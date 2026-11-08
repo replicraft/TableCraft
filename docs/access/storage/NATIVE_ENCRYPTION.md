@@ -279,42 +279,81 @@ from normal edit plans and journals. This image API retains its **64 MiB image
 cap**. `rewrite_encryption_to` instead transforms pages into an empty, unpublished
 host-owned destination within the **2 GiB native read-source ceiling** and the
 caller's cumulative allowance. It retains zeroizing page buffers and budgeted,
-sorted SID patches rather than a complete image. The CLI defaults to this page path;
-its existing 512 MiB cumulative byte allowance can refuse a copy before the native
-file ceiling. The allowance includes page reads/writes, metadata and crypto work;
-final cancellation prevents success. Owned
-image/key/SID buffers use zeroization. No macros, VBA, expressions or external
+sorted SID patches rather than a complete image. The native CLI uses the adaptive
+parallel page path below, with checked, length-scaled cumulative work allowances distinct from its live-buffer cap.
+The allowance includes page reads/writes, metadata and crypto work; final
+cancellation prevents success. Owned image/key/SID buffers use zeroization. No macros, VBA, expressions or external
 providers are executed. Source stability/offline access remains a host contract;
 this is not shared-file locking, cross-client coordination or a recovery journal.
 
+### Adaptive parallel streaming
+
+All existing CLI `encryption add`, `remove` and `change-password` operations use
+one bounded streaming pipeline. Omitting `--jobs` chooses available parallelism,
+capped at 256 workers; `--jobs 1` uses the same pipeline with one worker. The
+engine exposes `rewrite_encryption_parallel_to` with a caller-owned Rayon pool
+and `ParallelEncryption` memory callback. The optional `parallel-encryption`
+feature remains native-only; default engine, desktop and WASM selection do not
+acquire this feature. The CLI enables it on native targets.
+
+The pipeline uses the already-supported Agile AES, Binary RC4/MD5, CryptoAPI
+RC4/SHA-1, and standard/compatibility AES-ECB/SHA-1 codecs for their qualified
+operations, including the existing Jet route. It does not add cipher/profile
+eligibility. Agile envelope-only password changes need no page transform and
+retain a sequential copy. Credential verification, header construction, native
+SID discovery/remasking and source validation remain coordinated serial work.
+
+Independent page transforms operate on disjoint zeroizing owned buffers with
+original page ordinals. The coordinator owns source/output I/O, SID patching,
+batch memory decisions and ordered failure selection. Work is prepaid under the
+same cumulative operation budget before worker callbacks; workers join before
+their buffers are inspected, reused or discarded. Unsupported operations and
+worker failures are not retried under another mode or codec.
+
+No whole-file image is captured. Streaming retains the **2 GiB native source
+ceiling**, separately from image APIs' **64 MiB retention cap** and the operation's
+finite work allowances. Before every batch, the host refreshes available RAM,
+accounts for buffers already retained and reserves headroom. It uses a supported
+current-process cgroup limit and its ancestors on Linux when discoverable. If
+Linux cgroup discovery is ambiguous, the automatic batch cap is conservatively
+4 MiB; an explicit memory limit can override that heuristic, while observed RAM
+headroom still applies. Swap is not treated as RAM.
+
+`--memory-budget-mib MIB` caps the total live batch working set, rather than
+adding an extra allowance to existing buffers. The engine includes actual data
+and ordered-status capacities, fixed headers and conservative active-worker
+codec scratch. It releases old allocations before replacing them when memory
+pressure requires a smaller batch. Thread-pool stacks, allocator overhead and
+unrelated process memory are outside this cap. Memory observations are racy
+estimates, not reserved RAM or an RSS guarantee. Headroom is effective total RAM
+/ 32, clamped between 16 and 512 MiB and no more than one quarter of effective
+total RAM on small systems.
+
+For example:
+
+```sh
+tablecraft encryption remove source.accdb --output unlocked.accdb
+tablecraft encryption add source.accdb --output encrypted.accdb --jobs 4 --memory-budget-mib 32
+tablecraft encryption change-password source.mdb --output changed.mdb --jobs 1
+```
+
+The destination remains an unpublished host-owned temporary. A late failure can
+leave a prefix there; handled CLI failures discard that temporary. Only complete
+success reaches the unchanged synchronization/no-clobber publication. This
+implementation's large verification batch is pending; there is no new measured
+streaming speedup or native Access compatibility claim. Existing Agile integrity
+HMAC authentication remains unimplemented.
+
 ### Explicit parallel Agile removal
 
-`tablecraft encryption remove source.accdb --output unlocked.accdb --jobs 4`
-selects the optional native Rayon removal path. `--jobs` accepts 1 through 16;
-its default of 1 retains the existing serial streaming path. Values 2 through 16
-construct an explicit CLI-owned worker pool and capture a complete image under
-the **64 MiB** limit, independently of the larger streaming source ceiling and
-cumulative allowances.
+This heading retains the initial 8 November 2026 implementation record and its
+historical links. That first CLI path explicitly selected 2–16 workers for
+Agile removal, captured a complete image under 64 MiB and kept other operations
+serial. The adaptive streaming implementation above supersedes that CLI path.
+Its bounded capture and benchmark evidence must not be read as measurements or
+qualification of the later streaming pipeline.
 
-Only qualified Agile AES removal is admitted in parallel. Other cipher families,
-add-encryption and change-password retain their existing serial APIs; selecting
-parallel removal for an unsupported source refuses without retrying serially.
-The engine's `parallel-encryption` feature is optional, with no default engine,
-desktop or WASM Rayon dependency. The native CLI is its working consumer.
-
-Password verification, header changes and native SID remasking stay serial.
-Only disjoint owned database pages decode concurrently. Work and per-page status
-storage are prepaid from the cumulative caller budget before callbacks; workers
-use bounded local allowances and cancellation safe for concurrent invocation.
-Failures are checked in original page order. All pages and native rewrite checks
-must succeed before returning the copy; a failed partial candidate is zeroized
-and discarded. This does not authenticate the Agile integrity HMAC or establish
-new native profile qualification.
-
-Fresh publication is unchanged: the host writes the complete successful copy to
-its unpublished temporary, synchronizes it and uses no-clobber publication. A
-parallel prefix is never a successful output. This opt-in path makes no measured
-speedup claim.
+### Cipher-specific rewrite behavior
 
 Removal decrypts data pages and clears the native key, date-masked password field
 and (for Office) the entire `0x299..0xe00` encryption-info region. Changing a Jet

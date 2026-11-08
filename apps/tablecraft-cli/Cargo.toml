@@ -39,6 +39,7 @@ tablecraft-sqlite.workspace = true
 uuid.workspace = true
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
+sysinfo.workspace = true
 rayon.workspace = true
 tablecraft-ace = { workspace = true, features = ["parallel-encryption"] }
 

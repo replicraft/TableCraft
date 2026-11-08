@@ -3,10 +3,11 @@ use crate::output::TableOutput;
 use std::io::{Read, Seek};
 use tablecraft_ace::{EncryptionInspection, inspect_encryption};
 mod copying;
+mod resources;
 
 #[derive(clap::Subcommand)]
 #[command(
-    after_help = "Add, remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and copy pages under a cumulative 512 MiB byte allowance; metadata and crypto work also consume that allowance. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
+    after_help = "Add, remove and change-password require a stable/offline source and a fresh explicit output path. They preserve the source and stream page batches using automatic parallelism and available RAM with reserved headroom. --jobs and --memory-budget-mib override worker count and cap working buffers; cumulative work remains bounded by source size and native limits. Jet 4 password fields are separate from its page encoding. Unsupported schemes or SID layouts fail without publishing an output."
 )]
 pub(crate) enum Command {
     /// Report inert encoding/encryption envelope metadata; does not verify passwords.
@@ -22,16 +23,16 @@ pub(crate) enum Command {
         /// New password; prompts with hidden confirmation when omitted.
         #[arg(long, value_name = "PASSWORD")]
         new_password: Option<String>,
+        #[command(flatten)]
+        resources: resources::Options,
     },
     /// Remove encryption and the database password into a fresh output file.
     Remove {
         path: std::path::PathBuf,
         #[arg(long, value_name = "FILE")]
         output: std::path::PathBuf,
-        /// Decode Agile AES pages with this many workers; 1 retains streaming.
-        /// Parallel removal captures at most 64 MiB and refuses other ciphers.
-        #[arg(long, default_value_t = 1, value_parser = clap::value_parser!(u8).range(1..=16))]
-        jobs: u8,
+        #[command(flatten)]
+        resources: resources::Options,
     },
     /// Change the database password into a fresh output, retaining its cipher scheme.
     ChangePassword {
@@ -41,6 +42,8 @@ pub(crate) enum Command {
         /// New password; prompts with hidden confirmation when omitted.
         #[arg(long, value_name = "PASSWORD")]
         new_password: Option<String>,
+        #[command(flatten)]
+        resources: resources::Options,
     },
 }
 
@@ -51,37 +54,43 @@ impl Command {
         password: Option<&str>,
     ) -> Result<String, Error> {
         match self {
-            Self::Remove { path, output, jobs } => copying::run(
+            Self::Remove {
+                path,
+                output,
+                resources,
+            } => copying::run(
                 &path,
                 &output,
                 password,
                 copying::Operation::Remove,
                 None,
-                jobs,
+                resources,
             ),
             Self::ChangePassword {
                 path,
                 output,
                 new_password,
+                resources,
             } => copying::run(
                 &path,
                 &output,
                 password,
                 copying::Operation::ChangePassword,
                 new_password.map(zeroize::Zeroizing::new),
-                1,
+                resources,
             ),
             Self::Add {
                 path,
                 output,
                 new_password,
+                resources,
             } => copying::run(
                 &path,
                 &output,
                 password,
                 copying::Operation::Add,
                 new_password.map(zeroize::Zeroizing::new),
-                1,
+                resources,
             ),
             Self::Inspect { path } => {
                 let mut source = crate::native::open_raw(&path, &mut crate::native::budget())

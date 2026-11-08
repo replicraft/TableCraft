@@ -225,8 +225,34 @@ fn descriptor_truncation_and_unqualified_parameters_are_refused_before_credentia
     }
 }
 
+#[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+fn parallel_stream(
+    bytes: &[u8],
+    operation: crate::EncryptionRewrite<'_>,
+    pool: &rayon::ThreadPool,
+) -> Vec<u8> {
+    let mut target = Cursor::new(Vec::new());
+    let mut memory = |_| Ok(256 * 1024);
+    crate::rewrite_encryption_parallel_to(
+        &mut Cursor::new(bytes),
+        &mut target,
+        operation,
+        crate::ParallelEncryption::new(pool, &mut memory),
+        &mut crate::encryption_rewrite_budget(bytes.len() as u64).unwrap(),
+        &|| false,
+    )
+    .unwrap();
+    target.into_inner()
+}
+
 #[test]
 fn legacy_password_changes_and_removal_preserve_all_native_pages_across_profiles() {
+    #[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(4)
+        .build()
+        .unwrap();
+
     let plain = std::fs::read(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("../../../docs/examples/Access_Example_VBA.accdb"),
@@ -279,6 +305,37 @@ fn legacy_password_changes_and_removal_preserve_all_native_pages_across_profiles
             )
             .unwrap();
             assert!(paged.get_ref() == removed.as_bytes());
+            #[cfg(all(feature = "parallel-encryption", not(target_family = "wasm")))]
+            {
+                let parallel = parallel_stream(
+                    &encrypted,
+                    crate::EncryptionRewrite::Remove {
+                        password: Some("A😀é"),
+                    },
+                    &pool,
+                );
+                assert_eq!(parallel, removed.as_bytes());
+                let changed_parallel = parallel_stream(
+                    &encrypted,
+                    crate::EncryptionRewrite::ChangePassword {
+                        password: Some("A😀é"),
+                        new_password: "parallel replacement",
+                    },
+                    &pool,
+                );
+                let mut recovered = Cursor::new(Vec::new());
+                crate::rewrite_encryption_to(
+                    &mut Cursor::new(changed_parallel),
+                    &mut recovered,
+                    crate::EncryptionRewrite::Remove {
+                        password: Some("parallel replacement"),
+                    },
+                    &mut allowance(),
+                    &|| false,
+                )
+                .unwrap();
+                assert_eq!(recovered.get_ref(), removed.as_bytes());
+            }
 
             let mut changed_pages = Cursor::new(Vec::new());
             crate::rewrite_encryption_to(

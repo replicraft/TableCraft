@@ -76,7 +76,7 @@ pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;
 mod record_layout;
-mod security_identifiers;
+pub(crate) mod security_identifiers;
 pub use indexes::{
     read_stored_table_index_in_table_order, read_stored_table_index_with_references,
     read_stored_table_index_with_request,

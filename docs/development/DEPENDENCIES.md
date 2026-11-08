@@ -1,5 +1,43 @@
 # Adopted dependency and licensing baseline
 
+## Adaptive encryption memory discovery — 8 November 2026
+
+The native CLI now selects `sysinfo` 0.40.1 with `default-features = false` and
+only `system`. The exact published manifest declares MIT licensing and Rust 1.95;
+TableCraft's Rust 1.99 baseline satisfies that direct requirement. There is no
+RAM-only feature. The broader system module is compiled, but the host requests
+RAM refresh and one current-process identity on Linux, with task refresh disabled.
+It does not request all processes, CPU metrics, GPU, disks, networks or users.
+Sysinfo's optional `multithread` and Serde features, and its other default
+subsystem features, are not selected.
+See the [release manifest](https://raw.githubusercontent.com/GuillaumeGomez/sysinfo/v0.40.1/Cargo.toml).
+
+Version 0.40 constructors return `Result`. The host uses
+`MemoryRefreshKind::nothing().with_ram()` and available RAM, not unallocated-only
+free RAM. Linux `Process::cgroup_limits` resolves current membership/mounts and
+ancestor limits; `System::cgroup_limits` only checks conventional roots. A missing
+process result is not retried against another controller. Unknown cgroup limits
+use the documented conservative automatic policy, rather than being represented
+as a verified unrestricted container. Swap is not a working-set allowance.
+See the [API](https://raw.githubusercontent.com/GuillaumeGomez/sysinfo/v0.40.1/src/common/system.rs)
+and [cgroup implementation](https://raw.githubusercontent.com/GuillaumeGomez/sysinfo/v0.40.1/src/unix/linux/cgroup.rs).
+
+The selected system feature uses `libc`/`memchr`, Apple
+`objc2-core-foundation`/`objc2-io-kit`, and Windows `ntapi`/`windows` platform
+bindings. Current lock entries select `windows` 0.62.2; this is an additional
+host-discovery boundary, not a replacement of TableCraft IO's `windows-sys`
+security/durability code. The native engine receives an explicit pool and memory
+callback and does not acquire a sysinfo dependency. WASM does not acquire the
+native CLI discovery dependency.
+
+The CLI uses existing optional native Rayon support for automatic bounded
+streaming across all existing encryption operations/ciphers; one worker uses the
+same pipeline. Cumulative work and live buffers remain separate. Dynamic RAM
+estimates and a configured buffer cap are not exact process RSS or an allocator
+sandbox. The large verification batch and target/packaging qualification for
+this change are pending; no streaming speedup is claimed. See
+[adaptive encryption streaming](../access/storage/NATIVE_ENCRYPTION.md#adaptive-parallel-streaming).
+
 ## Shared native snapshots and opt-in page decoding — 8 November 2026
 
 The engine now consumes the existing `bytes` 1.12.1 selection as well as runtime.
@@ -12,16 +50,20 @@ AFTER vectors, metadata and proof work remain separately accounted. Fresh native
 save/recovery source capture is unchanged; cached bytes do not grant authority.
 See [image ownership](../access/NATIVE_READING.md#shared-immutable-native-image-ownership).
 
-`tablecraft-ace/parallel-encryption` optionally consumes Rayon on native targets.
-The native CLI enables that feature for explicit `encryption remove --jobs 2`
-through `--jobs 16`; default `--jobs 1` retains serial streaming. Parallel removal
-admits only qualified Agile AES sources under complete 64 MiB capture, with
+The snapshot ownership facts above remain current. The following paragraphs
+retain the initial captured-removal adoption record; the adaptive streaming
+consumer described above supersedes that first CLI selection.
+
+`tablecraft-ace/parallel-encryption` initially consumed Rayon on native targets.
+The native CLI initially enabled that feature for explicit `encryption remove --jobs 2`
+through `--jobs 16`; default `--jobs 1` retained serial streaming. That parallel removal
+admitted only qualified Agile AES sources under complete 64 MiB capture, with
 prepaid page work, zeroizing failure disposal and serial native validation/fresh
 publication. Unsupported sources refuse without serial fallback. The engine's
 default build, desktop selection and WASM target do not acquire Rayon through
 this feature. Query evaluation and transaction ordering remain serial.
 
-Four registry packages enter the lockfile for this working consumer. Published
+Four registry packages entered the lockfile for that first working consumer. Published
 manifests and local locked sources declare:
 
 | Package | Version | License | Declared MSRV |

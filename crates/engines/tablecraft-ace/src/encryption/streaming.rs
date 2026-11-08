@@ -26,6 +26,29 @@ pub fn rewrite_encryption_to<R: Read + Seek, W: Write + Seek>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), InspectError> {
+    rewrite_with_transfer(
+        source,
+        target,
+        operation,
+        budget,
+        cancelled,
+        transfer_sequential,
+    )
+}
+
+pub(super) fn rewrite_with_transfer<R, W, F>(
+    source: &mut R,
+    target: &mut W,
+    operation: EncryptionRewrite<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    transfer: F,
+) -> Result<(), InspectError>
+where
+    R: Read + Seek,
+    W: Write + Seek,
+    F: FnOnce(Transfer<'_, R, W>) -> Result<(), InspectError>,
+{
     let _span = tracing::debug_span!("native.encryption.copy_pages").entered();
     check(budget, cancelled)?;
     if target
@@ -149,33 +172,73 @@ pub fn rewrite_encryption_to<R: Read + Seek, W: Write + Seek>(
     verify_header(view.source, header, &original, budget, cancelled)?;
     tablecraft_io::write_exact_at(target, 0, &*page, budget, cancelled)?;
 
-    for number in 1..header.page_count() {
-        check(budget, cancelled)?;
-        budget.charge(Resource::Bytes, (2 * PAGE_BYTES) as u64)?;
-        let offset = u64::from(number) * PAGE_BYTES as u64;
-        tablecraft_io::read_exact_at(view.source, offset, &mut *page, budget, cancelled)?;
-        if let Some(decoder) = &decoder {
-            decoder.decode_page(number, &mut *page, budget, cancelled)?;
-        }
-        patches.apply(offset as usize, &mut *page, budget, cancelled)?;
-        if let Some(encoder) = &encoder {
-            encoder.encode(number, &mut *page, budget, cancelled)?;
-        }
-        tablecraft_io::write_exact_at(target, offset, &*page, budget, cancelled)?;
-    }
+    transfer(Transfer {
+        source: &mut *view.source,
+        target: &mut *target,
+        header,
+        decoder: decoder.as_ref(),
+        encoder: encoder.as_ref(),
+        patches: &mut patches,
+        page: &mut page,
+        budget,
+        cancelled,
+    })?;
 
     patches.finish()?;
     verify_header(view.source, header, &original, budget, cancelled)?;
     check(budget, cancelled)
 }
 
-enum Encoder {
+pub(super) struct Transfer<'a, R, W> {
+    pub source: &'a mut R,
+    pub target: &'a mut W,
+    pub header: Header,
+    pub decoder: Option<&'a PageDecoder>,
+    pub encoder: Option<&'a Encoder>,
+    pub patches: &'a mut crate::table::security_identifiers::SecurityPages,
+    pub page: &'a mut [u8; PAGE_BYTES],
+    pub budget: &'a mut ResourceBudget,
+    pub cancelled: &'a dyn Fn() -> bool,
+}
+
+pub(super) fn transfer_sequential<R: Read + Seek, W: Write + Seek>(
+    transfer: Transfer<'_, R, W>,
+) -> Result<(), InspectError> {
+    let Transfer {
+        source,
+        target,
+        header,
+        decoder,
+        encoder,
+        patches,
+        page,
+        budget,
+        cancelled,
+    } = transfer;
+    for number in 1..header.page_count() {
+        check(budget, cancelled)?;
+        budget.charge(Resource::Bytes, (2 * PAGE_BYTES) as u64)?;
+        let offset = u64::from(number) * PAGE_BYTES as u64;
+        tablecraft_io::read_exact_at(source, offset, page, budget, cancelled)?;
+        if let Some(decoder) = decoder {
+            decoder.decode_page(number, page, budget, cancelled)?;
+        }
+        patches.apply(offset as usize, page, budget, cancelled)?;
+        if let Some(encoder) = encoder {
+            encoder.encode(number, page, budget, cancelled)?;
+        }
+        tablecraft_io::write_exact_at(target, offset, page, budget, cancelled)?;
+    }
+    Ok(())
+}
+
+pub(super) enum Encoder {
     Agile(AgilePageDecoder),
     Legacy(legacy::Decoder),
 }
 
 impl Encoder {
-    fn encode(
+    pub(super) fn encode(
         &self,
         number: u32,
         page: &mut [u8],

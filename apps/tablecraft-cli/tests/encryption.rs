@@ -35,6 +35,10 @@ fn add_encrypts_each_read_family_and_removal_recovers_all_original_bytes() {
                 encrypted.to_str().unwrap(),
                 "--new-password",
                 "public 😀 password",
+                "--jobs",
+                if round == 0 { "1" } else { "4" },
+                "--memory-budget-mib",
+                "2",
             ]);
             assert!(
                 result.status.success(),
@@ -400,7 +404,7 @@ fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
     let added = directory.path().join("added.accdb");
     let changed = directory.path().join("changed.accdb");
     let removed = directory.path().join("removed.accdb");
-    for arguments in [
+    for mut arguments in [
         vec![
             "encryption",
             "add",
@@ -431,6 +435,7 @@ fn larger_than_image_cap_copies_round_trip_through_fresh_cli_outputs() {
             "replacement",
         ],
     ] {
+        arguments.extend(["--jobs", "4", "--memory-budget-mib", "2"]);
         let result = CLI.run(&arguments);
         assert!(
             result.status.success(),
@@ -545,31 +550,30 @@ fn parallel_agile_removal_matches_streaming_and_preserves_fresh_output_guards() 
 }
 
 #[test]
-fn parallel_jobs_are_bounded_and_available_only_for_removal() {
-    for jobs in ["0", "17"] {
-        let result = CLI.run(&[
-            "encryption",
-            "remove",
-            "unused.accdb",
-            "--output",
-            "unused-output.accdb",
-            "--jobs",
-            jobs,
-        ]);
-        assert_eq!(result.status.code(), Some(2));
-        assert!(String::from_utf8_lossy(&result.stderr).contains("invalid value"));
+fn worker_and_memory_controls_apply_to_every_encryption_operation() {
+    for operation in ["add", "remove", "change-password"] {
+        let help = CLI.run(&["encryption", operation, "--help"]);
+        assert!(help.status.success());
+        let text = String::from_utf8_lossy(&help.stdout);
+        assert!(text.contains("--jobs"));
+        assert!(text.contains("--memory-budget-mib"));
+        assert!(!text.contains("64 MiB"));
+        for (flag, value) in [
+            ("--jobs", "0"),
+            ("--jobs", "257"),
+            ("--memory-budget-mib", "0"),
+        ] {
+            let result = CLI.run(&[
+                "encryption",
+                operation,
+                "unused.accdb",
+                "--output",
+                "unused-output.accdb",
+                flag,
+                value,
+            ]);
+            assert_eq!(result.status.code(), Some(2));
+            assert!(String::from_utf8_lossy(&result.stderr).contains("invalid value"));
+        }
     }
-    let result = CLI.run(&[
-        "encryption",
-        "add",
-        "unused.accdb",
-        "--output",
-        "unused-output.accdb",
-        "--jobs",
-        "2",
-        "--new-password",
-        "public password",
-    ]);
-    assert_eq!(result.status.code(), Some(2));
-    assert!(String::from_utf8_lossy(&result.stderr).contains("unexpected argument"));
 }

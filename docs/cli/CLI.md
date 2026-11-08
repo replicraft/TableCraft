@@ -230,20 +230,32 @@ tablecraft query update 'UPDATE Items SET Score=Score+7 WHERE Id=2' \
   --database offline.mdb --output updated.mdb
 ```
 
-`encryption remove` defaults to `--jobs 1`, retaining serial streaming for all
-qualified cipher families. Explicit `--jobs 2` through `--jobs 16` selects native
-Rayon decoding for qualified Agile AES sources only, with a complete **64 MiB**
-image capture. For example:
+All three encryption-copy commands choose worker parallelism automatically on
+native builds, using available parallelism capped at 256. `--jobs 1` selects one
+worker in the same bounded streaming pipeline; explicit values accept 1–256.
+`--memory-budget-mib MIB` sets a positive total live encryption-batch ceiling.
+For example:
 
 ```sh
 tablecraft encryption remove example.accdb --output unlocked.accdb --jobs 4
+tablecraft encryption add example.accdb --output encrypted.accdb --memory-budget-mib 32
+tablecraft encryption change-password example.mdb --output changed.mdb --jobs 1
 ```
 
-An unsupported parallel cipher/profile refuses without a serial fallback. Add
-and change-password remain serial. The complete copy must succeed before the
-same synchronized temporary/no-clobber publication; parallelism publishes no
-partial prefix. See [parallel removal](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal)
-for shared-budget, cancellation and feature boundaries.
+The host refreshes available RAM before each batch, reserves headroom and uses
+current-process/ancestor cgroup limits on Linux where discoverable. Ambiguous
+Linux discovery uses a conservative 4 MiB automatic batch cap; an explicit memory
+limit can override that heuristic but cannot bypass observed RAM headroom.
+The cap includes retained batch buffers and codec scratch, not thread-pool stacks,
+allocator overhead or total process RSS. Swap is not extra RAM.
+
+All previously supported cipher operations use their existing qualified codecs;
+unsupported formats and worker failures refuse without fallback. Streaming can
+reach the native 2 GiB source ceiling under finite cumulative allowances, without
+whole-file capture. The entire operation must succeed before synchronization and
+fresh no-clobber publication. The large verification batch for this implementation
+is pending; no new speedup or native Access comparison is claimed. See
+[adaptive encryption streaming](../access/storage/NATIVE_ENCRYPTION.md#adaptive-parallel-streaming).
 
 Encryption rewrites and qualified Jet 4 fixed Int32 UPDATEs use fresh outputs;
 existing files are not overwritten. Encryption failure behavior is described in

@@ -1,22 +1,20 @@
-use super::Error;
+#[cfg(not(target_family = "wasm"))]
+use super::resources::Memory;
+use super::{Error, resources::Options};
 #[cfg(not(target_family = "wasm"))]
 use rayon::ThreadPoolBuilder;
 use std::{io::IsTerminal, path::Path};
-#[cfg(not(target_family = "wasm"))]
-use tablecraft_ace::rewrite_encryption_parallel;
+#[cfg(target_family = "wasm")]
+use tablecraft_ace::rewrite_encryption_to;
 use tablecraft_ace::{
     EncryptionRewrite, InspectError, check_encryption_add, check_encryption_rewrite,
-    rewrite_encryption_to,
+    encryption_rewrite_budget,
 };
 #[cfg(not(target_family = "wasm"))]
-use tablecraft_core::limits::Resource;
+use tablecraft_ace::{ParallelEncryption, rewrite_encryption_parallel_to};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::SharedFile;
 use zeroize::Zeroizing;
-
-const REWRITE_BYTES: u64 = 512 * 1024 * 1024;
-const REWRITE_ROWS: u64 = 100_000;
-const REWRITE_STEPS: u64 = 100_000_000;
 
 #[derive(Clone, Copy)]
 pub(super) enum Operation {
@@ -31,14 +29,15 @@ pub(super) fn run(
     password: Option<&str>,
     operation: Operation,
     new_password: Option<Zeroizing<String>>,
-    jobs: u8,
+    resources: Options,
 ) -> Result<String, Error> {
     let _span = tracing::debug_span!("cli.encryption.copy").entered();
     if output.try_exists().map_err(|e| Error::Copy(e.kind()))? {
         return Err(Error::Copy(std::io::ErrorKind::AlreadyExists));
     }
     let mut source = SharedFile::open(input).map_err(|e| Error::Read(e.into()))?;
-    let mut budget = ResourceBudget::new(REWRITE_BYTES, REWRITE_ROWS, REWRITE_STEPS);
+    let length = source.length().map_err(|error| Error::Read(error.into()))?;
+    let mut budget = encryption_rewrite_budget(length).map_err(Error::Read)?;
     let preflight = match operation {
         Operation::Add => check_encryption_add::<SharedFile>,
         Operation::Remove | Operation::ChangePassword => check_encryption_rewrite::<SharedFile>,
@@ -100,24 +99,13 @@ pub(super) fn run(
         .unwrap_or_else(|| Path::new("."));
     let mut temporary =
         tempfile::NamedTempFile::new_in(parent).map_err(|e| Error::Copy(e.kind()))?;
-    if jobs > 1 {
-        parallel_remove(
-            &mut source,
-            temporary.as_file_mut(),
-            rewrite,
-            jobs,
-            &mut budget,
-        )?;
-    } else {
-        rewrite_encryption_to(
-            &mut source,
-            temporary.as_file_mut(),
-            rewrite,
-            &mut budget,
-            &|| false,
-        )
-        .map_err(Error::Read)?;
-    }
+    perform_rewrite(
+        &mut source,
+        temporary.as_file_mut(),
+        rewrite,
+        &resources,
+        &mut budget,
+    )?;
     temporary
         .as_file()
         .sync_all()
@@ -134,35 +122,33 @@ pub(super) fn run(
 }
 
 #[cfg(not(target_family = "wasm"))]
-fn parallel_remove(
+fn perform_rewrite(
     source: &mut SharedFile,
     target: &mut std::fs::File,
-    rewrite: EncryptionRewrite<'_>,
-    jobs: u8,
+    operation: EncryptionRewrite<'_>,
+    resources: &Options,
     budget: &mut ResourceBudget,
 ) -> Result<(), Error> {
+    let mut memory = Memory::new(resources)?;
     let pool = ThreadPoolBuilder::new()
-        .num_threads(usize::from(jobs))
+        .num_threads(resources.workers())
         .build()
         .map_err(|_| Error::Read(InspectError::Allocation))?;
-    let copy = rewrite_encryption_parallel(source, rewrite, &pool, budget, &|| false)
-        .map_err(Error::Read)?;
-    budget
-        .charge(Resource::Bytes, copy.as_bytes().len() as u64)
-        .map_err(|error| Error::Read(error.into()))?;
-    tablecraft_io::write_exact_at(target, 0, copy.as_bytes(), budget, &|| false)
-        .map_err(|error| Error::Read(error.into()))
+    let mut allowance = |retained| memory.allowance(retained);
+    let parallel = ParallelEncryption::new(&pool, &mut allowance);
+    rewrite_encryption_parallel_to(source, target, operation, parallel, budget, &|| false)
+        .map_err(Error::Read)
 }
 
 #[cfg(target_family = "wasm")]
-fn parallel_remove(
-    _: &mut SharedFile,
-    _: &mut std::fs::File,
-    _: EncryptionRewrite<'_>,
-    _: u8,
-    _: &mut ResourceBudget,
+fn perform_rewrite(
+    source: &mut SharedFile,
+    target: &mut std::fs::File,
+    operation: EncryptionRewrite<'_>,
+    _: &Options,
+    budget: &mut ResourceBudget,
 ) -> Result<(), Error> {
-    Err(Error::Read(InspectError::UnsupportedEncryption))
+    rewrite_encryption_to(source, target, operation, budget, &|| false).map_err(Error::Read)
 }
 
 fn prompt(label: &str) -> Result<Zeroizing<String>, Error> {
