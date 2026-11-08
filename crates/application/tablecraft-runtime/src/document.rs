@@ -45,7 +45,7 @@ use tablecraft_ace::create_blank_ace16_database;
     feature = "ace16-create",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
-use tablecraft_ace::{add_table_source_available, first_table_source_available};
+use tablecraft_ace::{add_table_source_capabilities, first_table_source_available};
 use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
@@ -214,23 +214,18 @@ impl Document {
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         ))]
-        let table_creation = if !source.editable_native() {
-            None
-        } else if first_table_source_available(&captured, &mut work, cancelled)? {
-            Some(TableCreationProfile::First)
-        } else {
-            add_table_source_available(&captured, SCOPE, &mut work, cancelled)?
-                .then_some(TableCreationProfile::Added)
-        };
-        #[cfg(all(
-            feature = "offline-edit",
-            feature = "ace16-create",
-            any(target_os = "macos", target_os = "linux", windows)
-        ))]
-        let (table_creation_available, table_design_available) = (
-            table_creation.is_some(),
-            matches!(table_creation, Some(TableCreationProfile::First)),
-        );
+        let (table_creation, table_creation_available, table_design_available) =
+            if !source.editable_native() {
+                (None, false, false)
+            } else if first_table_source_available(&captured, &mut work, cancelled)? {
+                (Some(TableCreationProfile::First), true, true)
+            } else {
+                let capabilities =
+                    add_table_source_capabilities(&captured, SCOPE, &mut work, cancelled)?;
+                let keyed = capabilities.can_add_keyed();
+                let design = keyed || capabilities.can_add_keyless();
+                (design.then_some(TableCreationProfile::Added), keyed, design)
+            };
         #[cfg(not(all(
             feature = "offline-edit",
             feature = "ace16-create",

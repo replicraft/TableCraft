@@ -92,14 +92,14 @@ File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
 creation uses local NTFS and still requires runtime qualification.
 Existing destinations are never replaced. The new file opens with an unsaved
 `Table1` draft. Create → Table can repeatedly add tables within qualified ACE 16
-layouts, currently through nineteen user tables. That is an implementation
+layouts, including qualified mixed generated/manual/keyless tables. That is an implementation
 boundary; broader native growth and general schema changes remain in development.
 The draft suggests an unused `TableN` name. Names, supported types and bounded field
 properties can be edited in the initial table's Design view. Fields can also be
 named in their headers, and a first record can be entered before saving the table.
-That record then uses a separate reviewed row save. Create → Table Design starts empty in a canonical blank database and supports
-qualified manual numeric keys or an explicit keyless save. Populated-database
-Design creation and general schema authoring remain in development. Windows saves retain an intact retired journal
+That record then uses a separate reviewed row save. Create → Table Design starts empty for canonical blank and qualified populated
+sources, with supported manual numeric keys or an explicit keyless save. General
+schema authoring and native allocation growth remain in development. Windows saves retain an intact retired journal
 artifact rather than claiming durable deletion.
 See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
 Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with

@@ -120,7 +120,8 @@ The runtime checks the complete immutable captured source against either the
 canonical blank or the qualified populated append lineage under the read
 operation's budget and cancellation checks. It publishes an advisory availability
 fact bound to the opened document revision. A separate fact permits fresh manual
-Table Design only for the canonical blank. The shared UI
+Table Design for canonical blank or admitted populated sources. Its capacity
+can differ: a keyless target needs two pages, while Create > Table needs three. The shared UI
 accepts that fact only for the matching revision and also requires the existing
 Save capability and no conflicting draft, modal or operation.
 Selecting the command changes only local draft state. It neither acquires a
@@ -129,8 +130,8 @@ and declarations; Save freshly rechecks the retained target before mutation.
 
 A readable noncanonical blank remains unavailable for creation. This does not
 restrict opening or reading it. The same command also supports the explicitly
-qualified populated source below. Fresh manual Table Design has the separate
-canonical-blank scope described below. Microsoft's
+qualified populated source below. Fresh manual Table Design has its own
+source/capacity fact, described below. Microsoft's
 [Create a table and add fields](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
 documents Create > Table in an existing database, opening a new Datasheet. That
 workflow differs from Create > Table Design, which opens a fresh Design view.
@@ -211,8 +212,8 @@ separates the initial failed fixture case and corrected passing batch.
 
 ### Fresh manual Table Design
 
-Create > Table Design now opens an empty unsaved Design draft for the exact
-canonical ACE 16 blank. It does not create the Datasheet draft's protected ID or
+Create > Table Design opens an empty unsaved Design draft for the exact canonical
+ACE 16 blank or the qualified populated append source. It does not create the Datasheet draft's protected ID or
 invent an initial field. The user enters a field name and type in the upper grid.
 The working Datasheet-to-Design switch remains distinct: it retains whatever
 fields and generated ID its existing draft already has.
@@ -257,9 +258,14 @@ fresh Design or the no-key prompt, so exact prompt appearance remains an
 adaptation rather than captured visual parity.
 
 A manual/keyless snapshot uses the closed TCNT6 first-table intent and the same
-source-bound review, V2 journal and guarded reopen lifecycle. Manual Design stays
-unavailable for populated files: current TCAT1–4 reject TCNT6, and mixed manual or
-keyless append layouts remain separate work. This feature supplies no imported
+source-bound review, V2 journal and guarded reopen lifecycle. Populated manual
+Design uses the separate TCAT5 mixed-ledger action; old TCAT1–4 still reject TCNT6.
+Qualified existing keyless and manual-primary tables can participate in later
+creation, so a saved manual schema does not inherently end the Create workflow.
+At a 62-page source, a keyless table can fit while a keyed/generated table cannot.
+Design remains available, but Yes in the no-key prompt is disabled before any ID
+is added. A manually selected key receives a native capacity error at review;
+Cancel permits removing the key and retrying No without losing raw record input. This feature supplies no imported
 ALTER, arbitrary DDL, persisted type conversion or unrestricted Access designer.
 Historical verification records below retain their original scopes; this section
 adds no new passing-test or native-platform claim.
@@ -537,7 +543,7 @@ with its field when switching modes or types; another field cannot inherit it.
 
 The shared Save prompt accepts an exact table name and submits the current
 immutable draft snapshot. A Datasheet-origin schema retains its initial generated
-ID; a canonical-blank manual Design can retain one supported manual key or an
+ID; a host-qualified manual Design can retain one supported manual key or an
 explicit no-key decision. The declarations/defaults above and sixteen-field
 ceiling remain in force. No records are authored by this operation.
 The UI keeps the draft distinct from the persisted database while review and
@@ -564,7 +570,9 @@ including present-empty descriptions. Added-table actions use `TCAT0003` for the
 source partition or `TCAT0004` for the repeated thirteen-through-sixty-one-page
 partition, each with a `TCNT0005` declaration template. Legacy `TCAT0001/2`
 continue admitting only their original `TCNT0001–4` templates and original
-resource ceilings. Description does not change source geometry or save authority.
+resource ceilings. Separate `TCAT0005` carries mixed-ledger additions with closed
+`TCNT0001–6` templates and target-specific two/three-page capacity. Description
+does not change source geometry or save authority.
 
 For generated definitions without Description, a default on Byte, Integer,
 Single, Double, Decimal or GUID selects `TCNT0004`, including an explicit NULL

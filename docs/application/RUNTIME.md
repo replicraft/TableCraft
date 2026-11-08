@@ -68,19 +68,20 @@ consuming row review/save still determines native admission. Desktop routes
 those services and retains requested transitions across their acknowledgments;
 it parses no record input and constructs no generated defaults.
 
-Opening a document reports `table_creation_available` alongside its exact
+Opening a document reports separate `table_creation_available` and
+`table_design_available` facts alongside its exact
 `document_revision`. With creation and offline editing enabled on a supported
 host, runtime captures an internal `First` or `Added` profile from the immutable
 source. `First` requires the complete canonical blank. Otherwise `Added` checks
 the actual append-table source profile through the engine's bounded qualification.
-The caller receives an advisory boolean, not a profile selector or native action
+The caller receives advisory booleans, not a profile selector or native action
 capability. Unlike the canonical-blank comparison, append availability captures a
 native image and checks existing user rows and primary membership under the same
 read operation's budgets. It neither builds a proposed table nor runs active
 content, opens a draft, holds a write lease or writes the file.
 
-The `Added` profile admits one through eighteen existing local user tables in
-the native append lineage: `7 + 3n` pages, `7 + n` catalog records and `20 + 3n`
+The original generated-only append lineage admits one through eighteen existing
+local user tables: `7 + 3n` pages, `7 + n` catalog records and `20 + 3n`
 inline map records for `n` tables. Each original table's single DATA page and
 checked Int32 primary root retain their original physical roles. Repeated sources
 require ordinary in-row scalar storage without extended flags; unsupported
@@ -92,6 +93,12 @@ The largest admitted append produces nineteen tables and 64 pages, at the curren
 base-zero inline/global FREE-map bitmap boundary. This is an implementation
 profile, not an Access format limit; further bitmap/catalog growth remains work.
 A readable source at that boundary reports unavailable for another addition.
+The mixed-ledger continuation also admits qualified keyless and single manual
+Int32/Int64/Currency-primary tables. A keyless target requires two new pages;
+a keyed/generated target requires three. The native owner derives all existing
+roles from the actual source and independently reports both capacities. Thus a
+62-page source can enable fresh Design while leaving Create > Table disabled.
+This is still a bounded base-zero append profile, not arbitrary imported DDL.
 Proposed names/declarations and append capacity are checked later against the
 actual request. An unavailable advisory fact does not classify the database as
 corrupt. Structural/profile refusals report false; cancellation, resource
@@ -121,14 +128,18 @@ silent type inference. After each acknowledged Save, a fresh Open qualifies the 
 before another Create → Table can become available. Retained prior availability
 or table count alone cannot enable it.
 
-Canonical blank Open also publishes a separate revision-bound
-`table_design_available` fact. It enables an empty manual Design draft; ordinary
-append availability cannot grant it. Manual snapshots without a generated field
-lower through `FirstTableDefinition::capture_manual`, retaining actual optional
-key position and all explicit field policies/defaults/Descriptions. They require
-the captured First profile; Added refuses manual declarations. No source retry or
-dummy primary root is used. Actual schema constraints and complete BEFORE bytes
-are rechecked by the same consuming SaveWorker and guarded reopen.
+Canonical blank and qualified populated-source Open publish the separate
+revision-bound `table_design_available` fact. It enables an empty manual Design
+draft whenever a supported target can fit; it does not depend on the generated
+Create > Table fact. Manual snapshots without a generated field lower through
+`FirstTableDefinition::capture_manual`, retaining actual optional key position
+and all explicit policies/defaults/Descriptions. The captured First or Added
+operation reviews the actual target declaration; no source retry or dummy primary
+root is used. At keyless-only capacity the existing keyed fact disables the
+no-key dialog's Yes choice before adding an ID; No remains available. A manually
+selected key still receives a fresh typed capacity refusal at review. The draft,
+raw record and correction path remain intact. Actual constraints and complete
+BEFORE bytes are rechecked by the consuming SaveWorker and guarded reopen.
 
 Manual first-table requests use TCNT6 and yield a real keyless table or one
 supported manual numeric primary. A UI Yes decision that adds a protected
@@ -245,7 +256,10 @@ thirteen through 61 pages in three-page steps. Both retain the pinned TCNT 1–4
 declaration-template grammar.
 Description-bearing definitions use separate TCAT3/profile 3 and TCAT4/profile 4
 actions for those same respective source partitions, each pinning TCNT5 only.
-The old grammar and frame ceilings remain unchanged; an outer/profile/template
+TCAT5/profile 5 separately carries mixed-ledger additions with closed TCNT1–6
+templates, including manual/keyless TCNT6. Its source framing checks two-page
+versus three-page target capacity before native reconstruction. The old grammar
+and frame ceilings remain unchanged; an outer/profile/template
 mismatch refuses instead of retrying another decoder.
 The template's canonical header is not the append operation's source binding.
 Action dispatch chooses its decoder once, with no retry as another schema or row
@@ -305,7 +319,9 @@ separate reviewed record Save. The same interaction creates and populates Table3
 and Table4, preserving unsaved SQL text and old rows. A fresh desktop host then
 executes SELECTs against all four saved tables and checks their original values.
 The current eighteen-source-table ceiling is checked separately; Create → Table
-Design remains disabled. This is headless interaction over real local files, not
+Design remained disabled in that recorded generated-only checkpoint. The later
+mixed-ledger capability supersedes that UI restriction without changing the
+checkpoint's test claims. This is headless interaction over real local files, not
 native-window or Microsoft Access comparison evidence.
 
 Windows x64 and ARM64 runtime/desktop all-target/all-feature compilation checks

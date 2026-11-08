@@ -123,8 +123,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         "create-design" => "-create-design",
         "design-key" => "-design-key",
         "design-keyless-prompt" => "-design-keyless-prompt",
+        "design-keyless-only-prompt" => "-design-keyless-only-prompt",
         _ => {
-            return Err(io::Error::other("table command must be none, create, save-name, create-design, design-key or design-keyless-prompt").into());
+            return Err(io::Error::other("table command must be none, create, save-name, create-design, design-key, design-keyless-prompt or design-keyless-only-prompt").into());
         }
     };
     if !table_suffix.is_empty()
@@ -134,13 +135,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
     {
         return Err(io::Error::other("table command requires a table-ready scene").into());
-    }
-    if matches!(
-        table_command.as_str(),
-        "create-design" | "design-key" | "design-keyless-prompt"
-    ) && scenes != [Scene::FirstTableReady]
-    {
-        return Err(io::Error::other("manual Design preview requires first-table-ready").into());
     }
     let width = dimension("TABLECRAFT_PREVIEW_WIDTH", "1280")?;
     let height = dimension("TABLECRAFT_PREVIEW_HEIGHT", "820")?;
@@ -278,7 +272,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         if !table_suffix.is_empty() {
             if matches!(
                 table_command.as_str(),
-                "create-design" | "design-key" | "design-keyless-prompt"
+                "create-design"
+                    | "design-key"
+                    | "design-keyless-prompt"
+                    | "design-keyless-only-prompt"
             ) {
                 table_creation::design(&mut harness, &table_command);
             } else {

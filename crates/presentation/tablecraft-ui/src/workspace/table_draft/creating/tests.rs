@@ -193,13 +193,10 @@ fn unqualified_or_stale_qualification_never_dispatches_create_table() {
 fn manual_design_admission_is_separate_revision_bound_and_revocable() {
     let mut state = state();
     state.set_table_design_available(71, true);
-    assert!(!state.can_create_table_design());
+    assert!(state.can_create_table_design());
+    assert!(!state.can_create_table());
     state.set_table_creation_available(71, true);
     assert!(state.can_create_table());
-    assert!(!state.can_create_table_design());
-    state.set_table_design_available(70, true);
-    assert!(!state.can_create_table_design());
-    state.set_table_design_available(71, true);
     assert!(state.can_create_table_design());
     state.set_table_design_available(70, false);
     assert!(state.can_create_table_design());
@@ -207,10 +204,14 @@ fn manual_design_admission_is_separate_revision_bound_and_revocable() {
     assert!(!state.can_create_table_design());
     state.busy = false;
     state.set_table_creation_available(71, false);
-    assert!(!state.can_create_table_design());
-    state.set_table_creation_available(71, true);
+    assert!(state.can_create_table_design());
+    assert!(!state.can_create_table());
+    state.set_table_design_available(71, false);
     assert!(!state.can_create_table_design());
     state.set_table_design_available(71, true);
+    state.table_save_available = false;
+    assert!(!state.can_create_table_design());
+    state.table_save_available = true;
     state.database.as_mut().unwrap().document_revision = 72;
     assert!(!state.can_create_table_design());
 }

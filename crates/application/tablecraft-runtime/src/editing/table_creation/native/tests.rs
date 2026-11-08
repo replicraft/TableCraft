@@ -8,6 +8,7 @@ use tablecraft_builders::table::{DraftFieldType, TableDraft};
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
 mod addition;
+mod capacity;
 mod manual;
 mod properties;
 

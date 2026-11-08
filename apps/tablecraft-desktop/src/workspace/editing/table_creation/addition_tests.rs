@@ -3,13 +3,14 @@ use super::creating_tests::create_table;
 use super::properties_tests::replace;
 use super::test_support::{
     add_named_field, apply_and_acknowledge, field_label, name_and_confirm, pending_record, review,
-    save_schema_and_bind_record, wait_for_bound_record,
+    save_schema_and_bind_record, start_save, wait_for_bound_record,
 };
 use crate::workspace::Desktop;
-use crate::workspace::test_support::{app_harness, finish_reads};
+use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
 use tablecraft_runtime::journal_path;
+use tablecraft_testkit::fixtures::access::canonical_mixed_add_table;
 use tablecraft_ui::{EditTarget, ObjectKind};
 
 #[test]
@@ -203,7 +204,7 @@ fn repeated_tables_keep_duplicate_correction_old_rows_and_scratch_sql_across_sep
             .is_disabled()
     );
     assert!(
-        reopened
+        !reopened
             .get_by_role_and_label(Role::Button, "Table Design")
             .accesskit_node()
             .is_disabled()
@@ -233,4 +234,212 @@ fn repeated_tables_keep_duplicate_correction_old_rows_and_scratch_sql_across_sep
         assert_eq!(result.rows.len(), 1);
         assert_eq!(result.rows[0][0].text, expected);
     }
+}
+
+#[test]
+fn populated_design_keyed_then_keyless_then_generated_tables_keep_each_separate_record() {
+    let (_directory, path, mut harness) = pending_record("table-draft-number", "Score", "17");
+    save_schema_and_bind_record(&mut harness, "Original");
+    review(&mut harness);
+    apply_and_acknowledge(&mut harness);
+
+    for (table, value, keyed) in [("Manual", "  Ada  ", true), ("Keyless", "日本語", false)] {
+        assert!(harness.state().state.can_create_table_design());
+        let before = std::fs::read(&path).unwrap();
+        harness
+            .get_by_role_and_label(Role::Tab, "Create")
+            .click_accesskit();
+        harness.run_steps(2);
+        harness
+            .get_by_role_and_label(Role::Button, "Table Design")
+            .click_accesskit();
+        harness.run_steps(2);
+        super::manual_tests::add_field(&mut harness, "table-draft-short-text", "Name");
+        super::manual_tests::add_field(&mut harness, "table-draft-number", "ActualKey");
+        if keyed {
+            harness
+                .get_by_role_and_label(Role::Button, "ActualKey")
+                .click_accesskit();
+            harness.run_steps(2);
+            harness
+                .get_by_role_and_label(Role::Button, "Primary Key")
+                .click_accesskit();
+            harness.run_steps(2);
+        }
+        super::design_tests::view(&mut harness, "ribbon-datasheet");
+        for (field, text) in [("Name", value), ("ActualKey", "7")] {
+            let label = field_label(&harness, "table-draft-record-field", field);
+            replace(&mut harness, Role::TextInput, &label, text);
+        }
+        start_save(&mut harness, table);
+        if !keyed {
+            harness.run_steps(2);
+            assert_eq!(std::fs::read(&path).unwrap(), before);
+            harness
+                .get_by_role_and_label(Role::Button, "No")
+                .click_accesskit();
+            harness.run_steps(2);
+        }
+        wait_for_bound_record(&mut harness, table);
+        let schema = std::fs::read(&path).unwrap();
+        // The independently established first user-page boundary excludes only
+        // system catalog/allocation pages. All existing user pages are retained.
+        let first_user_byte = 7 * 4096;
+        assert_eq!(
+            &schema[first_user_byte..before.len()],
+            &before[first_user_byte..]
+        );
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::TextInput, "Name")
+                .value()
+                .as_deref(),
+            Some(value)
+        );
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::TextInput, "ActualKey")
+                .value()
+                .as_deref(),
+            Some("7")
+        );
+        review(&mut harness);
+        apply_and_acknowledge(&mut harness);
+        let data = harness.state().state.data.as_ref().unwrap();
+        assert_eq!(data.table, table);
+        assert_eq!(
+            data.rows[0]
+                .iter()
+                .map(|cell| cell.text.as_str())
+                .collect::<Vec<_>>(),
+            [value, "7"]
+        );
+        assert!(harness.state().state.can_create_table());
+        assert!(harness.state().state.can_create_table_design());
+        assert!(!journal_path(&path).exists());
+    }
+
+    create_table(&mut harness);
+    add_named_field(&mut harness, "table-draft-short-text", "Name");
+    let input = field_label(&harness, "table-draft-record-field", "Name");
+    replace(&mut harness, Role::TextInput, &input, "Grace");
+    save_schema_and_bind_record(&mut harness, "Generated");
+    review(&mut harness);
+    apply_and_acknowledge(&mut harness);
+    drop(harness);
+
+    let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path)));
+    finish_reads(&mut fresh);
+    fresh
+        .get_by_role_and_label(Role::Button, "New SQL query")
+        .click_accesskit();
+    fresh.run_steps(2);
+    for (sql, expected) in [
+        ("SELECT [Score] FROM [Original]", "17"),
+        ("SELECT [Name] FROM [Manual]", "  Ada  "),
+        ("SELECT [Name] FROM [Keyless]", "日本語"),
+        ("SELECT [Name] FROM [Generated]", "Grace"),
+    ] {
+        replace(&mut fresh, Role::MultilineTextInput, "SQL query", sql);
+        let run = fresh.state().state.localizer.text("query-run");
+        fresh
+            .get_by_role_and_label(Role::Button, &run)
+            .click_accesskit();
+        fresh.run_steps(1);
+        finish_reads(&mut fresh);
+        let data = fresh.state().state.query_data.as_ref().unwrap();
+        assert_eq!(data.rows.len(), 1);
+        assert_eq!(data.rows[0][0].text, expected);
+    }
+}
+
+#[test]
+fn keyless_only_capacity_retains_inputs_after_keyed_refusal_and_disables_automatic_id() {
+    let source = canonical_mixed_add_table::capacity_source();
+    let (_directory, path, original, mut harness) = opened(source.bytes);
+    assert!(!harness.state().state.can_create_table());
+    assert!(harness.state().state.can_create_table_design());
+    harness
+        .get_by_role_and_label(Role::Tab, "Create")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Table Design")
+        .click_accesskit();
+    harness.run_steps(2);
+    super::manual_tests::add_field(&mut harness, "table-draft-short-text", "Name");
+    super::manual_tests::add_field(&mut harness, "table-draft-number", "ActualKey");
+    harness
+        .get_by_role_and_label(Role::Button, "ActualKey")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Primary Key")
+        .click_accesskit();
+    harness.run_steps(2);
+    super::design_tests::view(&mut harness, "ribbon-datasheet");
+    for (field, text) in [("Name", "  retained 日本語  "), ("ActualKey", "7")] {
+        let input = field_label(&harness, "table-draft-record-field", field);
+        replace(&mut harness, Role::TextInput, &input, text);
+    }
+    start_save(&mut harness, "Last");
+    finish_reads(&mut harness);
+    harness.get_by_label("catalog or usage-map append capacity is exhausted");
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!journal_path(&path).exists());
+    assert!(harness.state().state.has_unsaved_table_drafts());
+    harness
+        .get_by_role_and_label(Role::Button, "Cancel")
+        .click_accesskit();
+    harness.run_steps(2);
+    super::design_tests::view(&mut harness, "ribbon-table-design");
+    harness
+        .get_by_role_and_label(Role::Button, "ActualKey")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Primary Key")
+        .click_accesskit();
+    harness.run_steps(2);
+    super::design_tests::view(&mut harness, "ribbon-datasheet");
+    for (field, text) in [("Name", "  retained 日本語  "), ("ActualKey", "7")] {
+        let input = field_label(&harness, "table-draft-record-field", field);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::TextInput, &input)
+                .value()
+                .as_deref(),
+            Some(text)
+        );
+    }
+    start_save(&mut harness, "Last");
+    harness.run_steps(2);
+    let yes = harness.get_by_role_and_label(Role::Button, "Yes");
+    assert!(yes.accesskit_node().is_disabled());
+    yes.click_accesskit();
+    harness.run_steps(2);
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(harness.state().table_creation.is_none());
+    harness
+        .get_by_role_and_label(Role::Button, "No")
+        .click_accesskit();
+    harness.run_steps(2);
+    wait_for_bound_record(&mut harness, "Last");
+    assert_eq!(
+        harness.state().state.data.as_ref().unwrap().columns.len(),
+        2
+    );
+    review(&mut harness);
+    apply_and_acknowledge(&mut harness);
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(
+        data.rows[0]
+            .iter()
+            .map(|cell| cell.text.as_str())
+            .collect::<Vec<_>>(),
+        ["  retained 日本語  ", "7"]
+    );
+    assert!(!harness.state().state.can_create_table());
+    assert!(!harness.state().state.can_create_table_design());
+    assert!(!journal_path(&path).exists());
 }

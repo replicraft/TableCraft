@@ -1,5 +1,55 @@
 # Implementation status
 
+## Repeated manual/keyless Table Design — 7 November 2026
+
+Create → Table Design now works in the qualified populated append lineage too.
+A structural ledger retains each table's TD/DATA and optional root roles, so a
+manual/keyless save does not strand subsequent ordinary table creation. The
+actual GUI journey creates generated → manual-keyed → keyless → generated tables,
+saves each first record separately, reopens a fresh host and queries all stored
+rows. Desktop remains a thin capability/outcome consumer.
+
+The native bitmap bound remains 64 pages. Keyless targets need two pages while
+keyed targets need three; at 62 pages only keyless append is admitted. Separate
+revision-bound source facts keep Table Design usable there. Automatic-ID Yes is
+disabled before mutation; a selected manual key refuses without changing the
+draft or raw pending row, and removing it permits explicit No/save/insertion.
+The ceiling is TableCraft's current implementation profile, not an Access limit.
+
+New TCAT5 records retain the selected mixed profile and closed TCNT1–6 declaration
+language. Old TCAT1–4 keep their exact source/target restrictions and resource
+ceilings. Recovery reconstructs the original complete source and AFTER under the
+selected profile, with no legacy fallback or protocol promotion. Fresh source
+classification also preserves the prior one-table empty Long Text/OLE exception
+across target choices, without adding payload authoring or repeated LVAL sources.
+
+The accepted feature checks pass 26 native append, ten append-intent and ten cold
+recovery tests, all 152 runtime, 455 shared-UI and 118 desktop tests. Separate
+creation-only first-table tests pass eleven cases; the creation+journal profile
+passes all 26 append cases. The first attempted journal-free append filter
+selected zero tests because append is journal-gated; it is not counted as test
+coverage. Source and controller fixes were verified with independent byte
+fixtures, not wider test assertions or suppressed diagnostics.
+
+Seventeen [independent-reader observations](testing/results/ace16-mixed-design-independent-reader-2026-11-07.json)
+retain their original hashes. Four populated-table/capacity offscreen frames were
+inspected in both themes and translated compact layouts; see
+[the presentation record](ui/PRESENTATION_PREVIEW.md#populated-table-design-and-capacity--7-november-2026).
+These are local headless/independent-reader results, not native Access or
+Windows/Linux execution. Final strict all-target/all-feature lint passes for
+ACE, Access, runtime, UI, desktop and testkit. All-target/all-feature compilation
+passes for ACE/runtime/UI/desktop on Windows x64/ARM64, Intel macOS and Linux
+x64/ARM64; native macOS ARM64 is covered by lint and execution. All 882 formatter
+roots, 20 dependency boundaries and 7,970 documentation targets pass. Current
+accepted logs use `.cache/gui-mixed-design-qualified-*20261107.log`,
+`.cache/gui-mixed-design-final-qualified-checks-*20261107.log` and the separate
+UI/desktop `.cache/gui-mixed-design-final-*20261107.log` paths. Completed private
+incremental cache was pruned only with Cargo stopped after disk pressure; source,
+fixtures, binaries, dependency products and failed logs were retained, and
+incremental compilation remains enabled. Initial resource-phase assertions, exact malformed-root
+error expectations, test-module registration and snapshot/renderer compile
+failures remain in ignored logs alongside accepted runs.
+
 ## Manual Table Design — 7 November 2026
 
 Create → Table Design now starts with no fields in a qualified canonical blank

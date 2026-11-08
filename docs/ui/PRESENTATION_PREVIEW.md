@@ -1,5 +1,31 @@
 # Presentation preview
 
+## Populated-table Design and capacity — 7 November 2026
+
+The three existing Design preview commands now also accept the
+`additional-table-ready` scene. A fourth command,
+`TABLECRAFT_PREVIEW_TABLE_COMMAND=design-keyless-only-prompt`, publishes synthetic
+keyless-only source facts through the same UI setters: Create → Table stays
+unavailable, Create → Table Design works, automatic-ID Yes is disabled, and No
+remains enabled. It asserts the accessible disabled state and painted prompt.
+These flags select resource-free preview facts; they do not hide controls in
+the normal application or authorize backend actions.
+
+Four normal-host offscreen frames in ignored
+`.cache/ui-previews/mixed-design-20261107/` were inspected on macOS ARM64 with
+Windows input emulation: English light manual key and English dark prompt at
+1280×820, 1×; German light keyless-only prompt and Korean dark empty Design at
+900×580 logical points, 1.25× (1125×725 pixels). Navigation retains the existing
+Table1 while the draft is suggested as Table2. The German prompt visibly disables
+Ja and focuses Nein; all three buttons fit. No native windows were opened.
+
+The actual retained 1920×1165 Windows/VirtualBox Design image had already been
+reopened for this feature; its DPI is unknown. It does not capture a capacity
+refusal or this prompt, so those interactions and dark styling remain
+adaptations. Native Access would not inherit TableCraft's current small bitmap
+implementation ceiling. Actual saves, row retention, refusal/correction and
+cold recovery are qualified separately from these images.
+
 ## Manual Table Design — 7 November 2026
 
 `TABLECRAFT_PREVIEW_TABLE_COMMAND=create-design`, `design-key` and

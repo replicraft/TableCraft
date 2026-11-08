@@ -11,7 +11,7 @@ use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
-fn add_field(harness: &mut Harness<'_, Desktop>, kind_key: &str, name: &str) {
+pub(super) fn add_field(harness: &mut Harness<'_, Desktop>, kind_key: &str, name: &str) {
     let kind = harness.state().state.localizer.text(kind_key);
     harness
         .get_by_role_and_label(Role::Button, "Add field")

@@ -69,7 +69,7 @@ fn manual_schemas_save_real_optional_keys_and_accept_the_first_explicit_record()
         else {
             panic!("expected guarded manual-schema reopening");
         };
-        assert!(!table_design_available);
+        assert!(table_design_available);
         let Response::Details { fields, .. } = request(
             &reader,
             Command::Describe {

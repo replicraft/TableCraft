@@ -14,12 +14,9 @@ impl State {
             return;
         }
         self.table_creation = available.then_some(revision);
-        if !available {
-            self.table_design = None;
-        }
     }
 
-    /// Manual Design currently requires the canonical-blank source profile.
+    /// Manual Design has its own source/capacity qualification.
     /// This presentation fact never substitutes for native review admission.
     pub fn set_table_design_available(&mut self, revision: u64, available: bool) {
         if self
@@ -30,12 +27,11 @@ impl State {
         {
             return;
         }
-        self.table_design =
-            (available && self.table_creation == Some(revision)).then_some(revision);
+        self.table_design = available.then_some(revision);
     }
 
     pub fn can_create_table_design(&self) -> bool {
-        self.can_create_table()
+        self.can_start_table_draft()
             && self
                 .database
                 .as_ref()
@@ -43,16 +39,26 @@ impl State {
     }
 
     pub fn can_create_table(&self) -> bool {
+        self.can_start_table_draft()
+            && self
+                .database
+                .as_ref()
+                .is_some_and(|database| self.table_creation == Some(database.document_revision))
+    }
+
+    pub(super) fn generated_table_available(&self) -> bool {
+        self.database
+            .as_ref()
+            .is_some_and(|database| self.table_creation == Some(database.document_revision))
+    }
+
+    fn can_start_table_draft(&self) -> bool {
         self.table_save_available
             && self.object_switch_ready()
             && !self.creation_is_pending()
             && !self.has_unsaved_table_drafts()
             && !self.insertion_dialog_open()
             && !self.recovery_prompt_open()
-            && self
-                .database
-                .as_ref()
-                .is_some_and(|database| self.table_creation == Some(database.document_revision))
     }
 }
 

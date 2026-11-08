@@ -13,6 +13,7 @@ impl State {
         actions: &mut Vec<Action>,
     ) {
         let available = self.table_save_available && self.save_binding(&save);
+        let automatic_available = available && self.generated_table_available();
         let mut automatic = false;
         let mut keyless = false;
         let mut cancel = false;
@@ -32,20 +33,25 @@ impl State {
                 }
                 ui.horizontal(|ui| {
                     let yes = ui.add_enabled(
-                        available,
+                        automatic_available,
                         egui::Button::new(tr(ui, "table-draft-property-yes")),
                     );
-                    if save.focus_name {
+                    let yes = yes.on_disabled_hover_text(tr(ui, "ribbon-unavailable"));
+                    if save.focus_name && automatic_available {
                         yes.request_focus();
-                        save.focus_name = false;
                     }
                     automatic = yes.clicked();
-                    keyless = ui
-                        .add_enabled(
-                            available,
-                            egui::Button::new(tr(ui, "table-draft-property-no")),
-                        )
-                        .clicked();
+                    let no = ui.add_enabled(
+                        available,
+                        egui::Button::new(tr(ui, "table-draft-property-no")),
+                    );
+                    if save.focus_name {
+                        if !automatic_available {
+                            no.request_focus();
+                        }
+                        save.focus_name = false;
+                    }
+                    keyless = no.clicked();
                     let cancelled = ui.button(tr(ui, "table-draft-cancel"));
                     cancel = cancelled.clicked();
                 });
@@ -57,7 +63,7 @@ impl State {
             self.table_draft_close = save.close;
             return;
         }
-        if automatic && available {
+        if automatic && automatic_available {
             let editor = self.table_draft_editor_mut(&save.tab).unwrap();
             let Some(record_revision) = editor.record.prepare_generated_primary(&editor.draft)
             else {

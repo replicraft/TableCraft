@@ -1,7 +1,10 @@
 //! Use the real Table command against resource-free presentation facts only.
 use super::LAYOUT_SETTLE_STEPS;
 use egui::{Key, Modifiers, accesskit::Role};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use tablecraft_ui::{FluentArgs, preview::Preview};
 
 pub(super) fn create(harness: &mut Harness<'_, Preview>, show_save_name: bool) {
@@ -24,6 +27,21 @@ pub(super) fn create(harness: &mut Harness<'_, Preview>, show_save_name: bool) {
 
 /// Exercise the real manual Design workflow using only synthetic source facts.
 pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
+    let keyless_only = mode == "design-keyless-only-prompt";
+    if keyless_only {
+        let revision = harness
+            .state()
+            .state()
+            .database
+            .as_ref()
+            .expect("the table-ready scene has a synthetic database")
+            .document_revision;
+        let state = harness.state_mut().state_mut();
+        state.set_table_creation_available(revision, false);
+        state.set_table_design_available(revision, true);
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        assert!(!harness.state().state().can_create_table());
+    }
     let localizer = harness.state().state().localizer.clone();
     assert!(harness.state().state().can_create_table_design());
     harness
@@ -73,7 +91,7 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
             "the chosen manual key paints its key marker at the actual second field"
         );
     } else {
-        assert_eq!(mode, "design-keyless-prompt");
+        assert!(mode == "design-keyless-prompt" || keyless_only);
         harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
         harness.run_steps(LAYOUT_SETTLE_STEPS);
         harness
@@ -113,6 +131,15 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
                     .is_some()
             );
         }
+        let yes_label = localizer.text("table-draft-property-yes");
+        let yes = harness.get_by_role_and_label(Role::Button, &yes_label);
+        assert_eq!(yes.accesskit_node().is_disabled(), keyless_only);
+        assert!(
+            !harness
+                .get_by_role_and_label(Role::Button, &localizer.text("table-draft-property-no"),)
+                .accesskit_node()
+                .is_disabled()
+        );
     }
 }
 

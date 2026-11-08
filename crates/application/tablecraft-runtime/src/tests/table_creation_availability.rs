@@ -53,7 +53,7 @@ fn ordinary_open_advertises_only_qualified_table_creation_profiles_without_write
             panic!("expected ordinary native open");
         };
         assert_eq!(table_creation_available, expected);
-        assert_eq!(table_design_available, expected && user_tables == 0);
+        assert_eq!(table_design_available, expected);
         assert!(document_revision > 0);
         assert_eq!(source_path, path);
         assert_eq!(

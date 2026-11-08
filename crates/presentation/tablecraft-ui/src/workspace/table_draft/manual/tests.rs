@@ -571,3 +571,38 @@ fn deleting_the_last_manual_field_cannot_enable_a_nonfunctional_close_save() {
     assert!(!harness.state().0.table_draft_save_open());
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn keyless_only_source_disables_automatic_id_before_any_draft_mutation() {
+    let mut state = state();
+    state.set_table_creation_available(71, false);
+    assert!(state.can_create_table_design());
+    assert!(!state.can_create_table());
+    assert!(state.open_table_design_draft());
+    let name = add(&mut state, DraftFieldType::ShortText, "Name");
+    let editor = state.table_draft.as_mut().unwrap();
+    assert!(editor.record.set_input(
+        name,
+        InsertInput::Value(EditInput {
+            text: "  retained 日本語  ".into(),
+            is_null: false,
+        })
+    ));
+    let before = editor.draft.snapshot("Table1").unwrap();
+    let record_revision = editor.record.revision();
+    let mut harness = harness(state);
+    key_prompt(&mut harness);
+    let yes = harness.get_by_role_and_label(Role::Button, "Yes");
+    assert!(yes.accesskit_node().is_disabled());
+    yes.click_accesskit();
+    harness.run_steps(2);
+    let editor = harness.state().0.table_draft.as_ref().unwrap();
+    assert!(editor.draft.snapshot("Table1").unwrap() == before);
+    assert_eq!(editor.record.revision(), record_revision);
+    assert!(harness.state().1.is_empty());
+    harness
+        .get_by_role_and_label(Role::Button, "No")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert_eq!(harness.state().1.len(), 1);
+}
