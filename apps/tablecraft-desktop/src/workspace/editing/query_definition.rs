@@ -3,8 +3,8 @@ use super::{ActiveSave, SaveOwner, cleanup_notice, save_outcome};
 use crate::workspace::{Desktop, PendingOperation, filtering::RestoreFilter};
 use std::sync::Arc;
 use tablecraft_runtime::{
-    Command, QueryExpressionReopen, QuerySqlReview, ReviewedQueryExpression, SaveOutcome,
-    SaveReport, journal_path,
+    Command, QueryExpressionReopen, QuerySqlReview, ReviewedQueryExpression, SaveCompletion,
+    SaveOperation, SaveOutcome, SaveReport, journal_path,
 };
 use tablecraft_ui::{
     Database, EditSaveOutcome, SaveCleanupNotice, SavedQuerySqlRequest, SavedQuerySqlSaveCommand,
@@ -26,6 +26,7 @@ pub(in crate::workspace) struct QueryDefinitionHost {
     filters: Vec<RestoreFilter>,
     reopen_started: bool,
     unchanged_review: bool,
+    cancellation_requested: bool,
 }
 
 impl QueryDefinitionHost {
@@ -89,6 +90,7 @@ impl Desktop {
             filters,
             reopen_started: false,
             unchanged_review: false,
+            cancellation_requested: false,
         });
         self.generation = request_id;
         self.pending = PendingOperation::QueryDefinitionReview { request_id };
@@ -294,6 +296,36 @@ impl Desktop {
             save_outcome(&self.state.localizer, report.outcome),
         ) {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
+            return;
+        }
+        // Ordinary Save completes without a success confirmation. A receipt
+        // still cannot clear the draft: internal acknowledgement must start the
+        // same complete-image witnessed read and atomic workspace publication.
+        let ordinary = self
+            .editing
+            .query_definition
+            .as_ref()
+            .is_some_and(|host| !host.cancellation_requested)
+            && self.editing.save.as_ref().is_some_and(|save| {
+                save.id == report.id
+                    && matches!(save.owner, SaveOwner::QueryDefinition)
+                    && save.report == Some(report)
+            })
+            && ordinary_applied_query_save(report);
+        if ordinary {
+            self.acknowledge_query_definition(report.id);
+        }
+    }
+
+    pub(in crate::workspace) fn note_query_definition_save_cancellation(&mut self, id: u64) {
+        if self
+            .editing
+            .save
+            .as_ref()
+            .is_some_and(|save| save.id == id && matches!(save.owner, SaveOwner::QueryDefinition))
+            && let Some(host) = &mut self.editing.query_definition
+        {
+            host.cancellation_requested = true;
         }
     }
 
@@ -685,6 +717,18 @@ impl Desktop {
         }
         true
     }
+}
+
+// Recovery, release, cancellation and unqualified completion remain explicit.
+// Reuse the runtime-owned query-only receipt check rather than interpreting text.
+fn ordinary_applied_query_save(report: SaveReport) -> bool {
+    report.operation == SaveOperation::Apply
+        && matches!(report.outcome, SaveOutcome::Saved { receipt }
+            if receipt.completion == SaveCompletion::Applied)
+        && report
+            .outcome
+            .query_expression_reopen_facts()
+            .is_ok_and(|facts| facts.replacement)
 }
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]

@@ -1,7 +1,6 @@
 //! Real witnessed saves preserve the workspace without restoring old row authority.
 use super::{query, storage_pair};
-use crate::workspace::test_support::{finish_reads, finish_save, opened};
-use tablecraft_runtime::SaveOutcome;
+use crate::workspace::test_support::{finish_reads, opened};
 use tablecraft_ui::{ObjectKind, ObjectTarget};
 
 #[test]
@@ -42,9 +41,6 @@ fn witnessed_query_save_preserves_other_tab_identities_and_exact_scratch_sql() {
     let proposed = request.proposed_sql.clone();
 
     harness.state_mut().save_query_definition(request);
-    let report = finish_save(&mut harness);
-    assert!(matches!(report.outcome, SaveOutcome::Saved { .. }));
-    harness.state_mut().acknowledge_query_definition(report.id);
     finish_reads(&mut harness);
 
     let state = &harness.state().state;

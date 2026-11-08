@@ -1,12 +1,11 @@
-//! Actual editor, Save shortcut, retained query modal and explicit Run dispatch.
+//! Actual editor Save finishes through automatic checked reopening, then explicit Run.
 use super::{open_query, storage_pair};
-use crate::workspace::test_support::{finish_reads, finish_save, opened};
+use crate::workspace::test_support::{finish_reads, opened};
 use egui::{Event, Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
-use tablecraft_runtime::{SaveOutcome, SaveQueryChange};
 
 #[test]
-fn editor_save_shortcut_modal_acknowledgement_and_witnessed_run_use_actual_host_dispatch() {
+fn editor_save_shortcut_automatically_reopens_then_explicit_run_uses_actual_host_dispatch() {
     let [before, after] = storage_pair();
     let (_directory, path, _, mut harness) = opened(before);
     open_query(&mut harness);
@@ -32,24 +31,6 @@ fn editor_save_shortcut_modal_acknowledgement_and_witnessed_run_use_actual_host_
     );
 
     harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
-    harness.run_steps(1);
-    let report = finish_save(&mut harness);
-    assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
-        if receipt.query_change == Some(SaveQueryChange::ExpressionSaved)));
-    assert!(
-        harness
-            .state()
-            .state
-            .saved_query_sql_save_status()
-            .is_some()
-    );
-    assert!(harness.state().state.has_modified_saved_query_sql());
-    assert!(harness.state().editing.has_save());
-    assert_eq!(std::fs::read(&path).unwrap(), after);
-
-    harness
-        .get_by_role_and_label(Role::Button, "Close")
-        .click_accesskit();
     harness.run_steps(1);
     finish_reads(&mut harness);
     assert!(

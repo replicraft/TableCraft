@@ -298,8 +298,8 @@ impl Desktop {
         if self.cancel_query_definition_operation() {
             return;
         }
-        if let Some(save) = &self.editing.save {
-            self.editing.worker.cancel(save.id);
+        if let Some(id) = self.editing.save.as_ref().map(|save| save.id) {
+            self.cancel_save(id);
         } else {
             self.cancel_active_recovery();
         }
@@ -307,6 +307,7 @@ impl Desktop {
 
     pub(super) fn cancel_save(&mut self, id: u64) {
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
+            self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
         }
     }

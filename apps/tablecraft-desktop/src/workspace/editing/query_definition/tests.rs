@@ -1,4 +1,5 @@
 //! Real host capability composition; complete bytes remain independently authored.
+mod auto_ack;
 mod guards;
 mod interaction;
 mod workspace;
@@ -58,6 +59,29 @@ fn take_review_response(
     }
 }
 
+// Layer-local observations pause before the real desktop publishes a retained
+// actor report; no product test mode, actor replacement or write replay exists.
+fn start_reviewed_save(harness: &mut Harness<'_, Desktop>) {
+    let (generation, review, capability) = take_review_response(harness);
+    harness
+        .state_mut()
+        .start_reviewed_query_definition(generation, review, capability);
+}
+
+fn raw_save_report(harness: &Harness<'_, Desktop>) -> SaveReport {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    loop {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "native query save did not finish"
+        );
+        if let Some(report) = harness.state().editing.worker.poll() {
+            return report;
+        }
+        std::thread::yield_now();
+    }
+}
+
 #[test]
 fn exact_sql_stays_dirty_until_acknowledged_full_witness_reopen_and_revision_rebind() {
     let [before, after] = storage_pair();
@@ -77,7 +101,8 @@ fn exact_sql_stays_dirty_until_acknowledged_full_witness_reopen_and_revision_reb
         .unwrap();
     let draft_revision = request.draft_revision;
     harness.state_mut().save_query_definition(request);
-    let report = finish_save(&mut harness);
+    start_reviewed_save(&mut harness);
+    let report = raw_save_report(&harness);
     assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
         if receipt.query_change == Some(SaveQueryChange::ExpressionSaved)
             && receipt.schema_change.is_none() && receipt.database_options_change.is_none()
@@ -85,7 +110,18 @@ fn exact_sql_stays_dirty_until_acknowledged_full_witness_reopen_and_revision_reb
     assert!(harness.state().state.has_modified_saved_query_sql());
     assert!(harness.state().editing.has_save());
     assert_eq!(std::fs::read(&path).unwrap(), after);
-    harness.state_mut().acknowledge_query_definition(report.id);
+    assert!(
+        harness
+            .state()
+            .editing
+            .save
+            .as_ref()
+            .unwrap()
+            .report
+            .is_none()
+    );
+    harness.state_mut().poll_saves();
+    assert!(harness.state().editing.save.is_none());
     assert!(harness.state().state.has_modified_saved_query_sql());
     finish_reads(&mut harness);
     let state = &harness.state().state;
@@ -176,7 +212,8 @@ fn failed_witness_reopen_keeps_saved_terminal_facts_and_all_dirty_text() {
     let expected_proposed = request.proposed_sql.clone();
     let expected_revision = request.draft_revision;
     harness.state_mut().save_query_definition(request);
-    let report = finish_save(&mut harness);
+    start_reviewed_save(&mut harness);
+    let report = raw_save_report(&harness);
     assert!(matches!(report.outcome, SaveOutcome::Saved { .. }));
     // Only the terminal envelope is substituted to exercise retained cleanup
     // presentation. No retained-artifact filesystem qualification is inferred.
@@ -188,7 +225,7 @@ fn failed_witness_reopen_keeps_saved_terminal_facts_and_all_dirty_text() {
     let mut changed = after;
     *changed.last_mut().unwrap() ^= 1;
     std::fs::write(&path, &changed).unwrap();
-    harness.state_mut().acknowledge_query_definition(report.id);
+    harness.state_mut().query_definition_save_report(envelope);
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
     while harness
         .state()
