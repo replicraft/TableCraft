@@ -81,21 +81,43 @@ fn assert_close(harness: &Harness<'_, Preview>, mode: &str) {
     let state = harness.state().state();
     assert!(state.saved_query_sql_close_open());
     assert!(state.saved_query_sql_dirty());
-    assert_painted(harness, &state.localizer.text("saved-query-close-title"));
+    let modal_rect = harness
+        .ctx
+        .memory(|memory| memory.area_rect(egui::Id::new("saved_query_sql_close")))
+        .expect("the actual saved SQL close modal owns a retained area");
+    assert!(modal_rect.width() < harness.ctx.viewport_rect().width());
+    assert!(modal_rect.height() < harness.ctx.viewport_rect().height());
+    assert_painted_in(
+        harness,
+        &state.localizer.text("saved-query-close-title"),
+        modal_rect,
+    );
     for (key, disabled) in [
         ("saved-query-close-save", mode != "close"),
         ("saved-query-close-discard", mode == "close-stale"),
         ("saved-query-close-cancel", false),
     ] {
         let label = state.localizer.text(key);
-        let button = harness.get_by_role_and_label(Role::Button, &label);
-        assert_eq!(button.accesskit_node().is_disabled(), disabled, "{key}");
-        assert_painted(harness, &label);
+        let buttons = harness
+            .query_all_by_role_and_label(Role::Button, &label)
+            .filter(|node| modal_rect.contains_rect(node.rect()))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            buttons.len(),
+            1,
+            "one {key} belongs to the actual close modal"
+        );
+        assert_eq!(buttons[0].accesskit_node().is_disabled(), disabled, "{key}");
+        assert_painted_in(harness, &label, modal_rect);
     }
     assert_eq!(state.saved_query_sql().unwrap().1, PROPOSED);
 }
 
 fn assert_painted(harness: &Harness<'_, Preview>, label: &str) {
+    assert_painted_in(harness, label, harness.ctx.viewport_rect());
+}
+
+fn assert_painted_in(harness: &Harness<'_, Preview>, label: &str, owner: egui::Rect) {
     assert!(
         harness.output().shapes.iter().any(|shape| {
             let Shape::Text(text) = &shape.shape else {
@@ -105,6 +127,7 @@ fn assert_painted(harness: &Harness<'_, Preview>, label: &str) {
                 && shape
                     .clip_rect
                     .intersect(harness.ctx.viewport_rect())
+                    .intersect(owner)
                     .contains_rect(egui::Rect::from_min_size(text.pos, text.galley.size()))
         }),
         "expected text painted completely inside the viewport: {label}"
