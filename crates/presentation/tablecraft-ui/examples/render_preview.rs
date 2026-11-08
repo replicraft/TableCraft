@@ -7,6 +7,8 @@ mod initial_numbers;
 mod initial_properties;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
+#[path = "render_preview/number_column.rs"]
+mod number_column;
 #[path = "render_preview/saved_sql.rs"]
 mod saved_sql;
 #[path = "render_preview/table_creation.rs"]
@@ -94,6 +96,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         "-navigation-collapsed"
     } else {
         ""
+    };
+    let number_column = setting("TABLECRAFT_PREVIEW_NUMBER_COLUMN", "none")?;
+    if !number_column::is_mode(&number_column) {
+        return Err(io::Error::other("unknown Number column preview mode").into());
+    }
+    if number_column != "none" && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("Number column preview requires datasheet").into());
+    }
+    let number_column_suffix = if number_column == "none" {
+        String::new()
+    } else {
+        format!("-number-{number_column}")
     };
     let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
     if !saved_sql::is_mode(&saved_sql) {
@@ -221,7 +235,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(date_residue != "none")
         + usize::from(!initial_suffix.is_empty())
         + usize::from(table_rename)
-        + usize::from(saved_sql != "none");
+        + usize::from(saved_sql != "none")
+        + usize::from(number_column != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -356,9 +371,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if saved_sql != "none" {
             saved_sql::prepare(&mut harness, &saved_sql);
         }
+        if number_column != "none" {
+            number_column::prepare(&mut harness, &number_column);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{number_column_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

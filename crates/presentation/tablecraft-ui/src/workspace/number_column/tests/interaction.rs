@@ -1,7 +1,10 @@
 //! Real header widgets emit only an exact naming review, never a native write.
 use crate::{Action, Data, Database, ObjectKind, ObjectTarget, State, Table};
 use egui::{Key, accesskit::Role};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 fn state(available: bool) -> State {
     let mut state = State {
