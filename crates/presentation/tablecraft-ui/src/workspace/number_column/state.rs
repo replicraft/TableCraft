@@ -227,6 +227,13 @@ impl State {
         }
     }
 
+    pub fn number_column_modal_open(&self) -> bool {
+        self.number_column_status.is_some()
+            || self.number_column.draft().is_some_and(|(_, _, _, phase)| {
+                matches!(phase, Phase::Reviewing { .. } | Phase::Reviewed { .. })
+            })
+    }
+
     pub fn number_column_open(&self) -> bool {
         self.number_column.draft().is_some()
     }
@@ -340,8 +347,7 @@ impl State {
         request: &NumberColumnRequest,
         request_id: u64,
     ) -> bool {
-        self.number_column_binding(&request.tab)
-            && self.number_column.release_review(request, request_id)
+        self.number_column.release_review(request, request_id)
     }
 
     /// A rejected worker start returns its unconsumed capability. This releases

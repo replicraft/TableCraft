@@ -148,11 +148,18 @@ impl Desktop {
         if generation != host.request_id
             || generation != self.generation
             || !matches!(self.pending, PendingOperation::NumberColumnReview { request_id } if request_id == generation)
-            || !self
-                .state
-                .number_column_request_current(&host.request, generation)
+        {
+            return;
+        }
+        if !self
+            .state
+            .number_column_request_current(&host.request, generation)
             || !self.state.can_rebind_number_column_layout(&host.request)
         {
+            self.number_column_review_failed(
+                generation,
+                self.state.localizer.text("objects-restore-refused"),
+            );
             return;
         }
         if host.cancelled {
@@ -181,6 +188,10 @@ impl Desktop {
             .state
             .accept_number_column_review(&host.request, generation, review.id)
         {
+            self.number_column_review_failed(
+                generation,
+                self.state.localizer.text("objects-open-refused"),
+            );
             return;
         }
         let path = capability.source_path().to_path_buf();
@@ -188,6 +199,12 @@ impl Desktop {
             self.state
                 .prepare_number_column_save(&host.request, generation, review.id)
         else {
+            self.state
+                .release_number_column_accepted_review(&host.request, generation, review.id);
+            self.number_column_review_failed(
+                generation,
+                self.state.localizer.text("objects-open-refused"),
+            );
             return;
         };
         match self

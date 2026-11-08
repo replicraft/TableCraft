@@ -780,7 +780,8 @@ impl State {
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_active_save_shortcut(ui.ctx());
-        let modal_open = self.saved_query_sql_save_open()
+        let modal_open = self.number_column_modal_open()
+            || self.saved_query_sql_save_open()
             || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
             || self.insert_continuation_pending()
@@ -845,6 +846,7 @@ impl State {
             }
         }
         let modal_open = modal_open
+            || self.number_column_modal_open()
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
             || self.table_rename_open()

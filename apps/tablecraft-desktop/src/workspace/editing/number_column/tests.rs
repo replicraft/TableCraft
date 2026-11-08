@@ -130,3 +130,5 @@ fn review_cancellation_latch_never_starts_actor_even_if_capability_finishes_firs
     assert_eq!(std::fs::read(&path).unwrap(), before);
     assert!(!journal_path(&path).exists());
 }
+
+mod preflight;
