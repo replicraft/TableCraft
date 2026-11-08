@@ -6,6 +6,44 @@ and crash/power-loss durability are separate evidence. No native app windows
 were opened during this audit. SQLite functionality was checked without
 expanding its paused scope; VBA execution remains deferred.
 
+## Latest working-tree review
+
+The renewed three-way audit covers storage/publication and recovery, shared and
+host source portability, and CI/release/association tooling. It includes the
+current mixed-table creation and pending inline Design changes. No additional
+platform defect was found in those source reviews. Existing working changes and
+user-owned desktop packaging files were preserved; no native windows, remote
+jobs, release or push were started.
+
+Fresh all-target/all-feature compilation passes for ACE, runtime, shared UI and
+desktop on Windows MSVC x64/ARM64, Intel macOS and Linux GNU x64/ARM64. macOS
+ARM64 strict all-target/all-feature lint passes for ACE, Access, runtime, UI,
+desktop and testkit. These affected-package checks are separate from the older
+complete-workspace results below. Windows CLI/SQLite retain the documented local
+MSVC C-SDK exclusion. A first lint attempt caught identical branches in pending
+inline-input code; combining the condition preserves its original evaluation
+order, and the corrected lint passes without suppressing the warning.
+
+Repository verification passes 82 Python guard tests, 32 tracked archive tests,
+eight association tests, both workflow lint checks, the 0.1.0 CLI release
+contract, all 882 formatter roots, all 20 dependency boundaries and 7,971 local
+documentation targets. Fresh macOS ARM64 execution passes all 139 IO, 152 runtime
+and 119 desktop tests, plus six inline-field interaction tests and one foreground
+type-menu clipping test. This is an affected-package batch, not a full-workspace
+regression run. Fresh logs use
+the ignored `.cache/platform-renewed-audit-corrected-*20261107.log` and
+`.cache/platform-renewed-execution-*20261107.log` prefixes; the failed first lint
+attempt is retained separately.
+
+The remaining release gates are concrete native acceptance work: Windows
+local-NTFS sharing/ACLs/publication and retained-journal recovery; Linux directory
+barriers and recovery; installed dialogs, clipboard, accessibility, window
+controls and file-open delivery; minimum OS/runtime-library support; and desktop
+installation/signing. The release workflow still publishes only CLI archives.
+Association metadata tests do not install a desktop file handler. Linux portal,
+display-server and font/OpenGL availability also require installed execution.
+Physical power-loss and native Access comparisons remain separate qualifications.
+
 ## Current conclusion
 
 The reviewed implementation has Windows, macOS and Linux routes rather than a
