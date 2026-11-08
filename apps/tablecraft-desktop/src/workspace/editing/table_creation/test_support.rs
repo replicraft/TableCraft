@@ -106,12 +106,12 @@ pub(super) fn pending_record(
     (directory, path, harness)
 }
 
-pub(super) fn save_schema_and_bind_record(harness: &mut Harness<'_, Desktop>) {
-    start_save(harness, "Contacts");
-    wait_for_bound_record(harness);
+pub(super) fn save_schema_and_bind_record(harness: &mut Harness<'_, Desktop>, table: &str) {
+    start_save(harness, table);
+    wait_for_bound_record(harness, table);
 }
 
-pub(super) fn wait_for_bound_record(harness: &mut Harness<'_, Desktop>) {
+pub(super) fn wait_for_bound_record(harness: &mut Harness<'_, Desktop>, table: &str) {
     let deadline = Instant::now() + Duration::from_secs(10);
     while !harness.state().state.inline_insert_active() || harness.state().state.busy {
         assert!(
@@ -125,7 +125,7 @@ pub(super) fn wait_for_bound_record(harness: &mut Harness<'_, Desktop>) {
     assert!(!harness.state().state.has_unsaved_table_drafts());
     assert!(!harness.state().editing.has_save());
     let data = harness.state().state.data.as_ref().unwrap();
-    assert_eq!(data.table, "Contacts");
+    assert_eq!(data.table, table);
     assert!(data.rows.is_empty());
 }
 

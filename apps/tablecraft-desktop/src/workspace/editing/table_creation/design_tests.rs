@@ -80,7 +80,7 @@ fn design_name_and_type_changes_preserve_pending_input_through_native_saves() {
     assert!(harness.state().state.table_draft_design_visible());
     assert_eq!(harness.state().generation, generation);
 
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     assert_eq!(
         harness
             .get_by_role_and_label(Role::TextInput, "Score")
@@ -130,7 +130,7 @@ fn incompatible_yes_no_input_survives_design_and_schema_save_without_becoming_fa
             .is_none()
     );
 
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
     assert!(harness.state().editing.insert_review.is_none());

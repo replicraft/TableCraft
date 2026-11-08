@@ -17,10 +17,10 @@ impl State {
             ui,
             &t,
             self.ribbon_tab,
-            self.can_create_first_table(),
+            self.can_create_table(),
             &mut create_table,
         ) {
-            if create_table && self.can_create_first_table() && !self.open_initial_table_draft() {
+            if create_table && self.can_create_table() && !self.open_initial_table_draft() {
                 self.error = Some(t.text("objects-open-refused"));
             }
             return;

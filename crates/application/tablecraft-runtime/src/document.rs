@@ -6,12 +6,18 @@ use super::{
     source::Source,
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use crate::FirstTableReopen;
+use crate::CreatedTableReopen;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 use crate::editing::DocumentEdits;
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+use crate::editing::TableCreationProfile;
 #[cfg(feature = "ace16-create")]
 use crate::{CreationOutcome, CreationReport};
 #[cfg(feature = "offline-edit")]
@@ -39,7 +45,7 @@ use tablecraft_ace::create_blank_ace16_database;
     feature = "ace16-create",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
-use tablecraft_ace::first_table_source_available;
+use tablecraft_ace::{add_table_source_available, first_table_source_available};
 use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
@@ -57,6 +63,12 @@ pub(super) struct Document {
         any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub(crate) edits: DocumentEdits,
+    #[cfg(all(
+        feature = "offline-edit",
+        feature = "ace16-create",
+        any(target_os = "macos", target_os = "linux", windows)
+    ))]
+    pub(crate) table_creation: Option<TableCreationProfile>,
 }
 
 impl Document {
@@ -82,8 +94,8 @@ impl Document {
     }
 
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-    pub(super) fn open_first_table_saved(
-        witness: &FirstTableReopen,
+    pub(super) fn open_table_created(
+        witness: &CreatedTableReopen,
         revision: u64,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, Response), Error> {
@@ -202,14 +214,26 @@ impl Document {
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         ))]
-        let first_table_creation_available = source.editable_native()
-            && first_table_source_available(&captured, &mut work, cancelled)?;
+        let table_creation = if !source.editable_native() {
+            None
+        } else if first_table_source_available(&captured, &mut work, cancelled)? {
+            Some(TableCreationProfile::First)
+        } else {
+            add_table_source_available(&captured, SCOPE, &mut work, cancelled)?
+                .then_some(TableCreationProfile::Added)
+        };
+        #[cfg(all(
+            feature = "offline-edit",
+            feature = "ace16-create",
+            any(target_os = "macos", target_os = "linux", windows)
+        ))]
+        let table_creation_available = table_creation.is_some();
         #[cfg(not(all(
             feature = "offline-edit",
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         )))]
-        let first_table_creation_available = false;
+        let table_creation_available = false;
         let mut document = Self {
             filter_source: Arc::new(()),
             source,
@@ -219,6 +243,12 @@ impl Document {
                 any(target_os = "macos", target_os = "linux", windows)
             ))]
             edits,
+            #[cfg(all(
+                feature = "offline-edit",
+                feature = "ace16-create",
+                any(target_os = "macos", target_os = "linux", windows)
+            ))]
+            table_creation,
         };
         let mut browser = NativeBrowser::new(&mut document.source, SCOPE, work, cancelled);
         let inventory = browser.inventory()?;
@@ -267,7 +297,7 @@ impl Document {
             Response::Opened {
                 document_revision: revision,
                 source_path,
-                first_table_creation_available,
+                table_creation_available,
                 title,
                 format,
                 tables,

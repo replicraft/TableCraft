@@ -2,12 +2,12 @@
 use super::{open, request};
 use crate::{Response, Worker};
 use tablecraft_testkit::fixtures::access::{
-    canonical_blank_creation,
+    canonical_add_table, canonical_blank_creation,
     canonical_initial_table_creation::{self, Case},
 };
 
 #[test]
-fn ordinary_open_advertises_first_table_only_for_the_exact_editable_canonical_snapshot() {
+fn ordinary_open_advertises_only_qualified_table_creation_profiles_without_writes() {
     let blank = canonical_blank_creation::source();
     let mut modified = blank.clone();
     *modified.last_mut().unwrap() ^= 1;
@@ -20,14 +20,16 @@ fn ordinary_open_advertises_first_table_only_for_the_exact_editable_canonical_sn
     for (bytes, expected, user_tables) in [
         (blank, supported, 0),
         (modified, false, 0),
-        (populated, false, 1),
+        (populated, supported, 1),
+        (canonical_add_table::source().before, supported, 1),
+        (canonical_add_table::source().after, false, 2),
     ] {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("ordinary.accdb");
         std::fs::write(&path, &bytes).unwrap();
         let worker = Worker::new(|| {});
         let Response::Opened {
-            first_table_creation_available,
+            table_creation_available,
             document_revision,
             source_path,
             tables,
@@ -36,7 +38,7 @@ fn ordinary_open_advertises_first_table_only_for_the_exact_editable_canonical_sn
         else {
             panic!("expected ordinary native open");
         };
-        assert_eq!(first_table_creation_available, expected);
+        assert_eq!(table_creation_available, expected);
         assert!(document_revision > 0);
         assert_eq!(source_path, path);
         assert_eq!(

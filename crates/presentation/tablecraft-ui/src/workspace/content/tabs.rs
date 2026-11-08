@@ -73,7 +73,9 @@ impl State {
                                         (name.clone(), Icon::Search)
                                     }
                                     ObjectKind::DraftTable { .. } => (
-                                        "Table1".into(),
+                                        self.table_draft_name(&object)
+                                            .map(str::to_owned)
+                                            .unwrap_or_else(|| tr(ui, "table-draft-unavailable")),
                                         if selected && self.table_draft_design_visible() {
                                             Icon::TableEdit
                                         } else {

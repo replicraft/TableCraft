@@ -79,6 +79,16 @@ pub(in crate::workspace) struct SaveDialog {
 }
 
 impl State {
+    pub(in crate::workspace) fn table_draft_name(&self, tab: &ObjectTab) -> Option<&str> {
+        if let Some(save) = &self.table_draft_save
+            && save.tab == *tab
+        {
+            return Some(&save.name);
+        }
+        self.table_draft_editor(tab)
+            .map(|editor| editor.save_name.as_str())
+    }
+
     pub fn can_save_table_draft(&self) -> bool {
         self.table_save_available
             && self.object_switch_ready()

@@ -29,7 +29,7 @@ fn unrelated_host_save_refusal_returns_the_exact_issued_request_to_naming() {
         .click_accesskit();
     harness.run_steps(1);
 
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     assert!(harness.state().state.table_draft_save_open());
     assert!(!harness.state().state.table_draft_save_pending());
     assert!(!harness.state().state.busy);
@@ -64,13 +64,13 @@ fn another_request_cannot_reset_the_existing_first_table_review_owner() {
 
     // Review may finish on its worker, but no later host frame has consumed it.
     // A second direct request must preserve that original pending capability.
-    let owner = harness.state().first_table.as_ref().unwrap();
+    let owner = harness.state().table_creation.as_ref().unwrap();
     let request_id = owner.request;
     let tab = owner.tab.clone();
     let revision = owner.revision;
     let generation = harness.state().generation;
     let snapshot = TableDraft::initial().snapshot("MustNotReplace").unwrap();
-    harness.state_mut().save_first_table(TableSaveRequest {
+    harness.state_mut().save_table_creation(TableSaveRequest {
         id: u64::MAX,
         tab: tab.clone(),
         snapshot,
@@ -78,7 +78,7 @@ fn another_request_cannot_reset_the_existing_first_table_review_owner() {
         property_revision: 0,
     });
 
-    let owner = harness.state().first_table.as_ref().unwrap();
+    let owner = harness.state().table_creation.as_ref().unwrap();
     assert_eq!(owner.request, request_id);
     assert_eq!(owner.tab, tab);
     assert_eq!(owner.revision, revision);
@@ -86,13 +86,13 @@ fn another_request_cannot_reset_the_existing_first_table_review_owner() {
     assert!(harness.state().state.table_draft_save_pending());
     assert!(matches!(
         harness.state().pending,
-        PendingOperation::FirstTableReview { request_id: current } if current == request_id
+        PendingOperation::TableCreationReview { request_id: current } if current == request_id
     ));
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
 
-    harness.state_mut().cancel_first_table_save(request_id);
-    assert!(harness.state().first_table.is_none());
+    harness.state_mut().cancel_table_creation_save(request_id);
+    assert!(harness.state().table_creation.is_none());
     assert!(!harness.state().state.table_draft_save_pending());
     assert_eq!(std::fs::read(&path).unwrap(), original);
 }

@@ -1,6 +1,7 @@
 //! Bounded object sessions move presentation state; they never clone native rows.
 mod layout;
 pub(super) mod memory;
+mod names;
 mod session;
 mod shortcuts;
 
@@ -650,7 +651,10 @@ impl State {
         {
             return false;
         }
-        let editor = super::table_draft::Editor::initial();
+        let Some(name) = names::suggested_table_name(self.database.as_ref().unwrap()) else {
+            return false;
+        };
+        let editor = super::table_draft::Editor::initial(name);
         let additional = editor.retained_bytes() + size_of::<Entry>() + size_of::<Session>();
         if self
             .object_bytes()

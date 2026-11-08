@@ -52,10 +52,10 @@ and desktop checks remain headless. Independent Jackcess reading qualifies only
 the observed generated structure; native Access open/save remains unqualified.
 The desktop starts a shared source-free `Table1` draft only after this successful
 guarded open. That draft has no runtime native table/row authority; its schema
-requires the separate reviewed persistence operation below. Record entry remains
-unimplemented. See [database creation](../ui/DATABASE_CREATION.md).
+requires the separate reviewed persistence operation below. Its raw pending record
+uses the distinct reviewed insertion continuation below. See [database creation](../ui/DATABASE_CREATION.md).
 
-## Reviewed first-table schema save
+## Reviewed table-creation schema save
 
 The shared UI can retain one raw pending record alongside an unsaved schema.
 Its handoff is presentation-owned: original field identities, schema/record
@@ -68,29 +68,50 @@ consuming row review/save still determines native admission. Desktop routes
 those services and retains requested transitions across their acknowledgments;
 it parses no record input and constructs no generated defaults.
 
-Opening a document reports `first_table_creation_available` alongside its exact
+Opening a document reports `table_creation_available` alongside its exact
 `document_revision`. With creation and offline editing enabled on a supported
-host, this checks the same immutable captured bytes against the engine’s complete
-canonical-blank predicate. It does not make a second full source copy, scan user
-records, open a draft or write the file. Unsupported/read-only sources report
-false; cancellation and resource failures remain errors. The revision-bound fact
-only enables explicit Create → Table. Fresh review and save still recheck the
-complete source. Ordinary and recovered Open remain inert until that command.
+host, runtime captures an internal `First` or `Added` profile from the immutable
+source. `First` requires the complete canonical blank. Otherwise `Added` checks
+the actual append-table source profile through the engine's bounded qualification.
+The caller receives an advisory boolean, not a profile selector or native action
+capability. Unlike the canonical-blank comparison, append availability captures a
+native image and checks existing user rows and primary membership under the same
+read operation's budgets. It neither builds a proposed table nor runs active
+content, opens a draft, holds a write lease or writes the file.
 
-With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can submit
-`Command::ReviewFirstTable` with a document revision and immutable
+The current `Added` profile requires exactly ten pages, one existing scalar user
+table at definition/DATA/root pages 7/8/9, eight catalog records, twenty-three
+inline map records, and the qualified system/header/catalog roles. Existing
+primary membership and DATA ownership must check completely. Original opaque
+property data and free gaps remain bytes to preserve; additional objects, external
+payload roles, indirect maps, other page layouts and a third-table addition are
+outside this profile. Proposed names/declarations and append capacity are checked
+later against the actual request. An unavailable advisory fact does not classify
+the database as corrupt. Structural/profile refusals report false; cancellation,
+resource exhaustion, I/O and construction failures remain errors. Read-only
+sources report false. The revision-bound fact enables only explicit Create →
+Table; ordinary and recovered Open do not themselves create a draft.
+
+With both `offline-edit` and `ace16-create`, the macOS/Linux/Windows host path can
+submit `Command::ReviewTableCreation` with a document revision and immutable
 `TableDraftSnapshot`. Runtime maps the initial AutoNumber primary ID and explicit
-Short Text (1–255 UTF-16 units), Number with an explicit Field Size, Large
-Integer, Currency, Yes/No and legacy Date/Time declarations into the native
-definition. The immutable snapshot also
-carries effective capacity, exact optional Required/AllowZeroLength policies and
-an explicit default mode. New ordinary authoring fields start with Required=false;
-Short Text starts with AllowZeroLength=true, following the documented UI defaults.
-Explicit omission remains available and is never reconstructed as false or true.
-No system clock, display format or inferred Number subtype changes these declarations.
-It captures the standard original image and qualifies the complete canonical
-blank-to-first-table plan. This admits neither arbitrary imported-file DDL nor
-record creation, field alteration or silent type inference.
+Short Text (1–255 UTF-16 units), Number with an explicit Field Size, Large Integer,
+Currency, Yes/No and legacy Date/Time declarations into the native definition.
+The immutable snapshot also carries effective capacity, exact optional
+Required/AllowZeroLength policies and an explicit default mode. New ordinary
+authoring fields start with Required=false; Short Text starts with
+AllowZeroLength=true, following the documented UI defaults. Explicit omission
+remains available and is never reconstructed as false or true. No system clock,
+display format or inferred Number subtype changes these declarations.
+
+Review uses the captured internal profile to qualify exactly the first-table or
+append-table operation against the current standard original image. It does not
+retry one operation as another after refusal. Document invalidation revokes the
+review; Save detects changed file content through complete original-image
+comparison. The advisory Open result cannot authorize Save. This admits neither
+arbitrary imported-file DDL nor record creation, field alteration, manual Design schemas or
+silent type inference. The two-table result does not make another AddTable command
+available automatically: a fresh Open must qualify its actual source profile.
 
 ### Initial-field property lowering
 
@@ -175,34 +196,46 @@ secondary keys, Random AutoNumber or arbitrary imported schemas. See
 and the [initial Number authoring contract](../ui/DATABASE_CREATION.md#number-field-size-and-decimal-declarations).
 No native Windows/Access or signed-zero comparison is established by these paths.
 
-The consuming `ReviewedFirstTable` retains the original content, exact owned
+The consuming `ReviewedTableCreation` retains the original content, exact owned
 native definition and the document's invalidation token. It also exposes an
-immutable `FirstTableReopen` witness containing the proposed complete AFTER bytes,
-table identity and original document/draft revisions. Those bytes are read-only
+immutable `CreatedTableReopen` witness containing the proposed complete AFTER bytes,
+table identity, expected schema-change kind and original document/draft revisions.
+Those bytes are read-only
 reopening evidence; the save path never accepts them as a replacement payload.
 The witness is issued during review and is not an acknowledged save receipt.
 
-`SaveWorker::start_first_table` uses the same nonreplaceable retained-resource
+`SaveWorker::start_table_creation` uses the same nonreplaceable retained-resource
 owner as row saves. It checks the invalidation token, opens one exclusive target,
 requires all reviewed original bytes and reconstructs the native schema operation
-against that descriptor. The adapter's distinct TCNT original-schema intent and
-V2 journal perform checked same-file resizing, recovery, retirement and cleanup.
+against that descriptor using the same captured `First` or `Added` profile.
+The adapter retains separate `StagedFirstTable` and `StagedAddTable` capabilities.
+TCNT remains canonical-blank initialization; TCAT binds the actual populated
+original and carries only the pinned TCNT 1–4 declaration-template grammar.
+The template's canonical header is not the append operation's source binding.
+Action dispatch chooses its decoder once, with no retry as another schema or row
+action. Each route uses checked V2 same-file resizing, complete native
+reconstruction, recovery, retirement and cleanup.
 Cancellation/invalidation participates in bounded native work; neither grants an
 implicit rollback, journal deletion or retry. Windows uses the separate
 local-NTFS flat-sidecar owner rather than the Unix directory-bundle cleanup
 contract; actual Windows execution remains unrun.
 
-Successful receipts carry `SaveSchemaChange::FirstTableCreated { column_count }`
-and `None` for both row counts. Receipts separately carry optional
+Successful receipts retain the selected action as
+`SaveSchemaChange::FirstTableCreated { column_count }` or
+`SaveSchemaChange::TableAdded { column_count }`, with `None` for both row counts.
+The new append fact does not relabel old first-table receipts or make a schema
+change into a record insertion. Receipts separately carry optional
 `SaveRetirementGuarantee` and `SaveCleanupDisposition` facts mapped from the actual
 adapter receipt. Unix removal and Windows retained artifacts remain distinct;
 neither is inferred from a native committed outcome. Desktop reports a retained
 private recovery journal in each locale and keeps that fact in revision-bound
-status after normal refresh or the first-table automatic acknowledgment/reopen.
-A different document cannot inherit it. The macOS runtime suite passes 125 tests and the desktop suite passes 81 tests
-in the current batch, including receipt/status handling. The new retained-journal
-preview passes its focused eight-locale/two-theme test. Windows x64 and ARM64
-desktop/service cross-checks pass; actual filesystem execution remains unrun.
+status after normal refresh or matching schema acknowledgment/reopen.
+A different document cannot inherit it. The historical first-table batch recorded
+125 passing macOS runtime tests and 81 desktop tests, including receipt/status
+handling, plus the focused eight-locale/two-theme retained-journal preview. Its
+Windows x64 and ARM64 desktop/service cross-checks were compilation evidence;
+actual filesystem execution remained unrun. Those counts do not qualify the
+later generic table-creation runtime changes.
 Recovery of a committed replacement retains the
 schema fact; an original-image rollback does not. Terminal phase, known outcome,
 resource state and available recovery/release actions remain independent of
@@ -211,7 +244,7 @@ native refusal. Typed classification preserves those facts through transparent
 native/intent/journal error layers.
 
 After an acknowledged matching schema receipt, the desktop explicitly submits
-`Command::OpenFirstTableSaved`. Normal bounded capture must equal the complete
+`Command::OpenTableCreated`. Normal bounded capture must equal the complete
 witness content before native qualification; mismatch refuses without an ordinary
 open fallback. This establishes fresh content, not inode identity or continued
 parent-namespace identity. The host checks the request's document/draft identities
@@ -219,11 +252,31 @@ and replaces the draft only after successful reopening; a reopen failure does no
 erase the acknowledged save. Pending user transitions remain bound to their
 original request while save/recovery/reopen completes.
 
-The Access adapter's five focused first-table tests pass locally on macOS.
-The current runtime and desktop suites above exercise connected integration and
-typed-classifier behavior; historical creation results remain separate evidence. Native Access comparison, Windows
-same-file filesystem-journal behavior and power-loss qualification remain unrun.
-See [the adapter contract](../access/writes/FIRST_TABLE_PERSISTENCE.md).
+The previously recorded five focused first-table adapter tests remain historical
+macOS evidence. The AddTable engine's seven candidate tests, three TCAT codec
+tests and four native journal integration tests subsequently passed locally.
+The subsequent accepted macOS headless host batch records 149 runtime, 111
+desktop, 99 Access-adapter and 427 shared-UI passing tests. Its connected desktop
+addition test creates Table1 and stores Score=17, invokes the actual Create →
+Table command for Table2, refuses a duplicate name without writing, accepts the
+corrected name, and completes reviewed same-file schema Save. The original raw
+`  Ada  ` input survives schema reopening and is inserted only by a separate
+reviewed record Save. The desktop revisits the original row, preserves unsaved
+SQL editor text and confirms both table catalog entries after a fresh Open.
+A subsequent focused extension uses that fresh host's SQL editor and Run query
+controls to read `17` from Table1 and the exact text `  Ada  ` from Table2.
+Separate adapter acceptance checks read both tables and preserve the original
+row/metadata bytes exactly. A third Create → Table stays unavailable because that
+resulting source is outside the current append profile. This is headless application interaction over real local
+files, not a native-window or Access comparison.
+
+All six configured target architectures also pass the current compilation checks.
+The Windows x64/ARM64 checks cover eighteen packages and exclude CLI/SQLite because
+the local MSVC C SDK is unavailable; they are not native Windows execution or a
+Windows CLI build. Native Access comparison, Windows same-file filesystem-journal
+behavior and power-loss qualification remain unrun. See the separate
+[first-table](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
+[append-table](../access/writes/ADD_TABLE_PERSISTENCE.md) adapter contracts.
 
 ## Session and task ownership
 
@@ -250,8 +303,8 @@ failure never retries a read or mutation or changes its recorded outcome.
 
 | Command | Owned response and scope |
 | --- | --- |
-| ReviewFirstTable | Source-bound consuming initial-schema review; no lease is held while presenting it |
-| OpenFirstTableSaved | Explicit expected-content capture after an acknowledged schema save; no mutation authority from the witness |
+| ReviewTableCreation | Source-bound consuming schema review using the source-captured First/Added profile; no lease is held while presenting it |
+| OpenTableCreated | Explicit expected-content capture after an acknowledged matching schema save; no mutation authority from the witness |
 | Open | Inert catalog, local-storage facts, format and captured absolute source path; a failed replacement clears the old session |
 | Page | One buffered table page with typed scalar/stored-field cells |
 | Describe | Field declarations, reader facts and inert field-property observations, without user-record scans |

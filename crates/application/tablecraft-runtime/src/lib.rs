@@ -31,6 +31,8 @@ pub use creation::{
     CreationReceipt, CreationReport, CreationRequest, CreationStartError, CreationStartFailure,
     CreationWorker,
 };
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+pub use editing::{CreatedTableReopen, ReviewedTableCreation};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     DeleteReview, DeleteTarget, EditDraft, EditError, EditInput, EditReview, EditTarget,
@@ -40,8 +42,6 @@ pub use editing::{
     SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport, SaveRetirementGuarantee,
     SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker, journal_path,
 };
-#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-pub use editing::{FirstTableReopen, ReviewedFirstTable};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
@@ -69,7 +69,7 @@ use std::path::PathBuf;
 #[cfg(any(feature = "ace16-create", feature = "offline-edit"))]
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use tablecraft_ace::FirstTableError;
+use tablecraft_ace::{AddTableError, FirstTableError};
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
 };
@@ -86,6 +86,9 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FirstTable(#[from] FirstTableError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    AddTable(#[from] AddTableError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved table contents changed before reopening")]
     SavedTableSourceChanged,
@@ -179,13 +182,13 @@ pub enum Command {
         witness: Arc<InsertRetryWitness>,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-    ReviewFirstTable {
+    ReviewTableCreation {
         document_revision: u64,
         snapshot: TableDraftSnapshot,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-    OpenFirstTableSaved {
-        witness: Arc<FirstTableReopen>,
+    OpenTableCreated {
+        witness: Arc<CreatedTableReopen>,
     },
     /// Reopen only an acknowledged creation whose fresh snapshot still matches
     /// the canonical blank image. This does not attest physical file identity.
@@ -328,8 +331,8 @@ pub struct Table {
 
 pub enum Response {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-    FirstTableReviewed {
-        capability: ReviewedFirstTable,
+    TableCreationReviewed {
+        capability: ReviewedTableCreation,
     },
     QueryDesignTable {
         target: QueryDesignTarget,
@@ -393,7 +396,7 @@ pub enum Response {
         source_path: PathBuf,
         /// Exact captured native source admission, tied to document_revision.
         /// This is not a draft or permission to bypass fresh review/save checks.
-        first_table_creation_available: bool,
+        table_creation_available: bool,
         title: String,
         format: String,
         tables: Vec<Table>,

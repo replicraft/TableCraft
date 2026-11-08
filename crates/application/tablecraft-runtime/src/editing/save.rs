@@ -201,7 +201,7 @@ pub struct SaveWorker;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
 impl SaveWorker {
     #[cfg(feature = "ace16-create")]
-    pub const fn supports_first_table() -> bool {
+    pub const fn supports_table_creation() -> bool {
         false
     }
 
@@ -235,11 +235,11 @@ impl SaveWorker {
         })
     }
     #[cfg(feature = "ace16-create")]
-    pub fn start_first_table(
+    pub fn start_table_creation(
         &self,
-        reviewed: super::ReviewedFirstTable,
+        reviewed: super::ReviewedTableCreation,
         _bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<super::ReviewedFirstTable>> {
+    ) -> Result<u64, SaveStartError<super::ReviewedTableCreation>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

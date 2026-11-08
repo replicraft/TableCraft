@@ -68,6 +68,7 @@ impl Desktop {
         request_id: u64,
         save_id: u64,
         database: Database,
+        table_creation_available: bool,
     ) {
         if !self
             .editing
@@ -84,6 +85,8 @@ impl Desktop {
             );
             return;
         };
+        self.state
+            .set_table_creation_available(target.document_revision, table_creation_available);
         self.filter = None;
         self.objects = Sessions::default();
         self.open_object(target);

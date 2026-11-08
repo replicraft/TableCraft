@@ -1,9 +1,14 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 mod deleting;
 #[cfg(feature = "ace16-create")]
-mod first_table;
+mod table_creation;
+#[cfg(all(
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+pub(crate) use table_creation::TableCreationProfile;
 #[cfg(feature = "ace16-create")]
-pub use first_table::{FirstTableReopen, ReviewedFirstTable};
+pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod draft;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]

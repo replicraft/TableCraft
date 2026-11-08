@@ -114,7 +114,7 @@ fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the
         canonical_blank_creation::source()
     );
 
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     assert_ne!(schema_bytes, canonical_blank_creation::source());
     review(&mut harness);
@@ -158,7 +158,7 @@ fn no_default_nullable_omission_commits_native_null_instead_of_hidden_text_or_em
         "design-default-value",
         "table-draft-property-absent",
     );
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
     assert!(harness.state().editing.insert_review.is_some());
@@ -188,7 +188,7 @@ fn required_no_default_omission_refuses_without_writes_and_keeps_hidden_input_fo
         "design-default-value",
         "table-draft-property-absent",
     );
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
     assert!(harness.state().editing.insert_review.is_none());
@@ -232,7 +232,7 @@ fn yes_no_checkbox_supplies_canonical_true_through_schema_save_review_and_native
         std::fs::read(&path).unwrap(),
         canonical_blank_creation::source()
     );
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     assert_eq!(
         harness
             .get_by_role_and_label(Role::TextInput, "Flag")
@@ -268,7 +268,7 @@ fn forbidden_zero_length_value_retains_schema_and_input_then_corrects_without_re
         "design-allow-zero-length",
         "table-draft-property-no",
     );
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     replace(&mut harness, Role::TextInput, "Name", "");
     review(&mut harness);
@@ -293,5 +293,5 @@ fn forbidden_zero_length_value_retains_schema_and_input_then_corrects_without_re
     assert_eq!(rows[0][0].text, "1");
     assert_eq!(rows[0][1].text, "Ada");
     assert!(!harness.state().state.has_unsaved_table_drafts());
-    assert!(!harness.state().state.can_create_first_table());
+    assert!(harness.state().state.can_create_table());
 }

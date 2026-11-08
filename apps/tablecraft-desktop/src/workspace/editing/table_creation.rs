@@ -6,26 +6,27 @@ use crate::workspace::{
 };
 use std::sync::Arc;
 use tablecraft_runtime::{
-    Command, FirstTableReopen, ReviewedFirstTable, SaveKnownOutcome, SaveOperation, SaveOutcome,
-    SaveReport, SaveSchemaChange, journal_path,
+    Command, CreatedTableReopen, ReviewedTableCreation, SaveKnownOutcome, SaveOperation,
+    SaveOutcome, SaveReport, SaveSchemaChange, journal_path,
 };
 use tablecraft_ui::{Database, EditSaveOutcome, ObjectTab, SaveCleanupNotice, TableSaveRequest};
 
-pub(in crate::workspace) struct FirstTableHost {
+pub(in crate::workspace) struct TableCreationHost {
     request: u64,
     tab: ObjectTab,
     revision: u64,
     table: String,
     columns: usize,
-    witness: Option<Arc<FirstTableReopen>>,
+    witness: Option<Arc<CreatedTableReopen>>,
+    expected_schema_change: Option<SaveSchemaChange>,
     restore: Option<WorkspaceRestore>,
     no_write: bool,
     cleanup: Option<SaveCleanupNotice>,
 }
 
 impl Desktop {
-    pub(in crate::workspace) fn save_first_table(&mut self, request: TableSaveRequest) {
-        if self.first_table.is_some() {
+    pub(in crate::workspace) fn save_table_creation(&mut self, request: TableSaveRequest) {
+        if self.table_creation.is_some() {
             // A duplicate or later request must not reset the operation already
             // owned by this host, including its pending save/recovery status.
             return;
@@ -51,34 +52,35 @@ impl Desktop {
             return;
         }
         let id = request.id;
-        self.first_table = Some(FirstTableHost {
+        self.table_creation = Some(TableCreationHost {
             request: id,
             revision: request.snapshot.revision(),
             table: request.snapshot.table_name().to_owned(),
             columns: request.snapshot.fields().len(),
             tab: request.tab.clone(),
             witness: None,
+            expected_schema_change: None,
             restore: Some(restore),
             no_write: true,
             cleanup: None,
         });
-        self.submit(Command::ReviewFirstTable {
+        self.submit(Command::ReviewTableCreation {
             document_revision: request.tab.target.document_revision,
             snapshot: request.snapshot,
         });
-        self.pending = PendingOperation::FirstTableReview { request_id: id };
+        self.pending = PendingOperation::TableCreationReview { request_id: id };
     }
 
-    pub(in crate::workspace) fn start_reviewed_first_table(
+    pub(in crate::workspace) fn start_reviewed_table_creation(
         &mut self,
         generation: u64,
-        capability: ReviewedFirstTable,
+        capability: ReviewedTableCreation,
     ) {
-        let Some(host) = self.first_table.as_mut() else {
+        let Some(host) = self.table_creation.as_mut() else {
             return;
         };
         if generation != self.generation
-            || !matches!(self.pending, PendingOperation::FirstTableReview { request_id } if request_id == host.request)
+            || !matches!(self.pending, PendingOperation::TableCreationReview { request_id } if request_id == host.request)
         {
             return;
         }
@@ -89,7 +91,7 @@ impl Desktop {
             || witness.table_name() != host.table
             || witness.column_count() != host.columns
         {
-            self.first_table_review_failed(
+            self.table_creation_review_failed(
                 request,
                 self.state.localizer.text("objects-open-refused"),
             );
@@ -99,13 +101,14 @@ impl Desktop {
         match self
             .editing
             .worker
-            .start_first_table(capability, journal_path(&path))
+            .start_table_creation(capability, journal_path(&path))
         {
             Ok(id) => {
+                host.expected_schema_change = Some(witness.expected_schema_change());
                 host.witness = Some(witness);
                 host.no_write = false;
                 self.editing.save = Some(ActiveSave {
-                    owner: SaveOwner::FirstTable,
+                    owner: SaveOwner::TableCreation,
                     id,
                     path,
                     table: host.table.clone(),
@@ -115,23 +118,23 @@ impl Desktop {
                 });
                 self.state.busy = true;
             }
-            Err(error) => self.first_table_review_failed(request, error.to_string()),
+            Err(error) => self.table_creation_review_failed(request, error.to_string()),
         }
     }
 
-    pub(in crate::workspace) fn first_table_review_failed(&mut self, id: u64, message: String) {
+    pub(in crate::workspace) fn table_creation_review_failed(&mut self, id: u64, message: String) {
         if self
-            .first_table
+            .table_creation
             .as_ref()
             .is_some_and(|host| host.request == id)
         {
-            self.first_table = None;
+            self.table_creation = None;
             self.state.fail_table_draft_save(id, message);
         }
     }
 
-    pub(super) fn first_table_save_report(&mut self, report: SaveReport) {
-        let Some(host) = &mut self.first_table else {
+    pub(super) fn table_creation_save_report(&mut self, report: SaveReport) {
+        let Some(host) = &mut self.table_creation else {
             return;
         };
         let request = host.request;
@@ -140,10 +143,8 @@ impl Desktop {
                 if matches!(
                     receipt.known,
                     SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified
-                ) && receipt.schema_change
-                    == Some(SaveSchemaChange::FirstTableCreated {
-                        column_count: host.columns,
-                    }) =>
+                ) && host.expected_schema_change.is_some()
+                    && receipt.schema_change == host.expected_schema_change =>
             {
                 let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
                     return;
@@ -153,8 +154,8 @@ impl Desktop {
                 }
                 host.cleanup = cleanup_notice(receipt);
                 self.editing.save = None;
-                self.submit(Command::OpenFirstTableSaved { witness });
-                self.pending = PendingOperation::FirstTableReopen {
+                self.submit(Command::OpenTableCreated { witness });
+                self.pending = PendingOperation::CreatedTableReopen {
                     request_id: request,
                 };
             }
@@ -166,7 +167,7 @@ impl Desktop {
             {
                 if self.editing.worker.acknowledge(report.id) {
                     self.editing.save = None;
-                    self.first_table = None;
+                    self.table_creation = None;
                     self.state.cancel_table_draft_save(request);
                     if let Some(database) = &self.state.database {
                         self.state
@@ -183,7 +184,7 @@ impl Desktop {
                 if no_write && failure.state.is_none() && self.editing.worker.acknowledge(report.id)
                 {
                     self.editing.save = None;
-                    self.first_table = None;
+                    self.table_creation = None;
                     self.state.fail_table_draft_save(request, message);
                 } else {
                     self.state.retain_table_draft_save_status(
@@ -200,7 +201,7 @@ impl Desktop {
                 let message = report_message(self, report.outcome);
                 if no_write && self.editing.worker.acknowledge(report.id) {
                     self.editing.save = None;
-                    self.first_table = None;
+                    self.table_creation = None;
                     self.state.fail_table_draft_save(request, message);
                 } else {
                     self.state
@@ -217,22 +218,32 @@ impl Desktop {
         }
     }
 
-    pub(in crate::workspace) fn finish_first_table_reopen(&mut self, id: u64, database: Database) {
-        let Some(mut host) = self.first_table.take() else {
+    pub(in crate::workspace) fn finish_table_creation_reopen(
+        &mut self,
+        id: u64,
+        database: Database,
+        table_creation_available: bool,
+    ) {
+        let Some(mut host) = self.table_creation.take() else {
             return;
         };
         if host.request != id {
-            self.first_table = Some(host);
+            self.table_creation = Some(host);
             return;
         }
         let Some(completion) = self.state.complete_table_draft_save(id, database) else {
-            self.first_table = Some(host);
-            self.first_table_reopen_failed(id, self.state.localizer.text("objects-open-refused"));
+            self.table_creation = Some(host);
+            self.table_creation_reopen_failed(
+                id,
+                self.state.localizer.text("objects-open-refused"),
+            );
             return;
         };
         if let Some(database) = &self.state.database {
+            let revision = database.document_revision;
             self.state
-                .set_save_cleanup(database.document_revision, host.cleanup);
+                .set_table_creation_available(revision, table_creation_available);
+            self.state.set_save_cleanup(revision, host.cleanup);
         }
         self.filter = None;
         self.objects = Sessions::default();
@@ -241,13 +252,13 @@ impl Desktop {
             self.restore_workspace_after_save(&host.table);
         }
         if completion.record_pending {
-            self.resume_after_first_table = completion.resume_transition;
+            self.resume_after_table_creation = completion.resume_transition;
             self.close_after_first_record = completion
                 .close_after_save
                 .then(|| completion.target.clone());
             self.open_object(completion.target);
         } else if completion.resume_transition {
-            self.resume_after_first_table = true;
+            self.resume_after_table_creation = true;
         } else if !completion.close_after_save {
             self.open_object(completion.target);
         } else if let Some(open) = self.state.active_object_load() {
@@ -255,9 +266,9 @@ impl Desktop {
         }
     }
 
-    pub(in crate::workspace) fn first_table_reopen_failed(&mut self, id: u64, message: String) {
+    pub(in crate::workspace) fn table_creation_reopen_failed(&mut self, id: u64, message: String) {
         if self
-            .first_table
+            .table_creation
             .as_ref()
             .is_some_and(|host| host.request == id)
         {
@@ -265,7 +276,7 @@ impl Desktop {
             report.push(' ');
             report.push_str(&message);
             if self
-                .first_table
+                .table_creation
                 .as_ref()
                 .is_some_and(|host| host.cleanup.is_some())
             {
@@ -282,9 +293,9 @@ impl Desktop {
         }
     }
 
-    pub(in crate::workspace) fn cancel_first_table_save(&mut self, id: u64) {
+    pub(in crate::workspace) fn cancel_table_creation_save(&mut self, id: u64) {
         if !self
-            .first_table
+            .table_creation
             .as_ref()
             .is_some_and(|host| host.request == id)
         {
@@ -292,27 +303,27 @@ impl Desktop {
         }
         if let Some(save) = &self.editing.save {
             self.editing.worker.cancel(save.id);
-        } else if matches!(self.pending, PendingOperation::FirstTableReview { .. }) {
+        } else if matches!(self.pending, PendingOperation::TableCreationReview { .. }) {
             self.worker.cancel();
-            self.first_table = None;
+            self.table_creation = None;
             self.pending = PendingOperation::Read;
             self.state.cancel_table_draft_save(id);
-        } else if matches!(self.pending, PendingOperation::FirstTableReopen { .. }) {
+        } else if matches!(self.pending, PendingOperation::CreatedTableReopen { .. }) {
             self.worker.cancel();
             self.pending = PendingOperation::Read;
-            self.first_table_reopen_failed(id, String::new());
+            self.table_creation_reopen_failed(id, String::new());
         }
     }
 
-    pub(in crate::workspace) fn cancel_active_first_table_save(&mut self) {
-        if let Some(host) = &self.first_table {
-            self.cancel_first_table_save(host.request);
+    pub(in crate::workspace) fn cancel_active_table_creation_save(&mut self) {
+        if let Some(host) = &self.table_creation {
+            self.cancel_table_creation_save(host.request);
         }
     }
 
-    pub(in crate::workspace) fn resolve_first_table_save(&mut self, id: u64, recover: bool) {
+    pub(in crate::workspace) fn resolve_table_creation_save(&mut self, id: u64, recover: bool) {
         if !self
-            .first_table
+            .table_creation
             .as_ref()
             .is_some_and(|host| host.request == id)
         {
@@ -350,9 +361,9 @@ impl Desktop {
         }
     }
 
-    pub(in crate::workspace) fn acknowledge_first_table_save(&mut self, id: u64) {
+    pub(in crate::workspace) fn acknowledge_table_creation_save(&mut self, id: u64) {
         if !self
-            .first_table
+            .table_creation
             .as_ref()
             .is_some_and(|host| host.request == id)
         {
@@ -365,7 +376,7 @@ impl Desktop {
         }
         if self.state.acknowledge_table_draft_save(id) {
             self.editing.save = None;
-            self.first_table = None;
+            self.table_creation = None;
         }
     }
 }
@@ -405,3 +416,6 @@ mod properties_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod numbers_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod addition_tests;

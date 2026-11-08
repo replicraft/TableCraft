@@ -7,12 +7,17 @@ use std::path::PathBuf;
 use tablecraft_builders::table::{DraftFieldType, TableDraft};
 use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
+mod addition;
 mod properties;
 
 fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
+    opened_source(&canonical_blank_creation::source())
+}
+
+fn opened_source(bytes: &[u8]) -> (tempfile::TempDir, PathBuf, Worker, u64) {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("new.accdb");
-    std::fs::write(&path, canonical_blank_creation::source()).unwrap();
+    std::fs::write(&path, bytes).unwrap();
     let worker = Worker::new(|| {});
     let Response::Opened {
         document_revision, ..
@@ -30,13 +35,13 @@ fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
     (directory, path, worker, document_revision)
 }
 
-fn reviewed(worker: &Worker, document_revision: u64) -> crate::ReviewedFirstTable {
+fn reviewed(worker: &Worker, document_revision: u64, table: &str) -> crate::ReviewedTableCreation {
     let mut draft = TableDraft::initial();
     draft.add_field(DraftFieldType::ShortText).unwrap();
-    let snapshot = draft.snapshot("Contacts").unwrap();
-    let Response::FirstTableReviewed { capability } = request(
+    let snapshot = draft.snapshot(table).unwrap();
+    let Response::TableCreationReviewed { capability } = request(
         worker,
-        Command::ReviewFirstTable {
+        Command::ReviewTableCreation {
             document_revision,
             snapshot,
         },
@@ -51,8 +56,12 @@ fn reviewed(worker: &Worker, document_revision: u64) -> crate::ReviewedFirstTabl
 fn actual_schema_save_has_no_row_counts_and_reopens_only_the_complete_expected_image() {
     let (_directory, path, reader, document_revision) = opened();
     let original = std::fs::read(&path).unwrap();
-    let capability = reviewed(&reader, document_revision);
+    let capability = reviewed(&reader, document_revision, "Contacts");
     let witness = capability.reopen_witness();
+    assert_eq!(
+        witness.expected_schema_change(),
+        SaveSchemaChange::FirstTableCreated { column_count: 2 }
+    );
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
     assert_eq!(witness.table_name(), "Contacts");
@@ -60,7 +69,7 @@ fn actual_schema_save_has_no_row_counts_and_reopens_only_the_complete_expected_i
 
     let saver = SaveWorker::new(|| {});
     let operation = saver
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap();
     let report = terminal(&saver);
     assert_eq!(report.id, operation);
@@ -84,7 +93,7 @@ fn actual_schema_save_has_no_row_counts_and_reopens_only_the_complete_expected_i
         document_revision: fresh_revision,
         tables,
         ..
-    } = request(&reader, Command::OpenFirstTableSaved { witness }).unwrap()
+    } = request(&reader, Command::OpenTableCreated { witness }).unwrap()
     else {
         panic!("expected guarded reopening");
     };
@@ -156,7 +165,7 @@ fn actual_schema_save_has_no_row_counts_and_reopens_only_the_complete_expected_i
 #[test]
 fn replacing_the_document_invalidates_review_without_writing_or_creating_a_journal() {
     let (_directory, path, reader, revision) = opened();
-    let capability = reviewed(&reader, revision);
+    let capability = reviewed(&reader, revision, "Contacts");
     request(
         &reader,
         Command::Open {
@@ -167,7 +176,7 @@ fn replacing_the_document_invalidates_review_without_writing_or_creating_a_journ
     .unwrap();
     let saver = SaveWorker::new(|| {});
     let rejected = saver
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap_err();
     assert_eq!(rejected.kind, SaveStartFailure::StaleDocument);
     assert!(rejected.into_reviewed().is_some());
@@ -182,13 +191,13 @@ fn replacing_the_document_invalidates_review_without_writing_or_creating_a_journ
 #[test]
 fn reopen_witness_does_not_accept_before_bytes_or_a_changed_after_image() {
     let (_directory, path, reader, revision) = opened();
-    let capability = reviewed(&reader, revision);
+    let capability = reviewed(&reader, revision, "Contacts");
     let witness = capability.reopen_witness();
     let other = Worker::new(|| {});
     assert!(matches!(
         request(
             &other,
-            Command::OpenFirstTableSaved {
+            Command::OpenTableCreated {
                 witness: witness.clone()
             }
         ),
@@ -196,7 +205,7 @@ fn reopen_witness_does_not_accept_before_bytes_or_a_changed_after_image() {
     ));
     let saver = SaveWorker::new(|| {});
     let operation = saver
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap();
     assert!(matches!(
         terminal(&saver).outcome,
@@ -207,7 +216,7 @@ fn reopen_witness_does_not_accept_before_bytes_or_a_changed_after_image() {
     *changed.last_mut().unwrap() ^= 1;
     std::fs::write(&path, &changed).unwrap();
     assert!(matches!(
-        request(&other, Command::OpenFirstTableSaved { witness }),
+        request(&other, Command::OpenTableCreated { witness }),
         Err(Error::SavedTableSourceChanged)
     ));
     assert_eq!(std::fs::read(&path).unwrap(), changed);
@@ -228,9 +237,9 @@ fn common_initial_fields_save_and_reopen_with_native_types_and_explicit_defaults
     ] {
         draft.add_field(kind).unwrap();
     }
-    let Response::FirstTableReviewed { capability } = request(
+    let Response::TableCreationReviewed { capability } = request(
         &reader,
-        Command::ReviewFirstTable {
+        Command::ReviewTableCreation {
             document_revision,
             snapshot: draft.snapshot("TypedFields").unwrap(),
         },
@@ -241,14 +250,14 @@ fn common_initial_fields_save_and_reopen_with_native_types_and_explicit_defaults
     let witness = capability.reopen_witness();
     let saver = SaveWorker::new(|| {});
     let operation = saver
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap();
     assert!(matches!(
         terminal(&saver).outcome,
         SaveOutcome::Saved { .. }
     ));
     assert!(saver.acknowledge(operation));
-    request(&reader, Command::OpenFirstTableSaved { witness }).unwrap();
+    request(&reader, Command::OpenTableCreated { witness }).unwrap();
     let Response::Details {
         fields,
         declared_rows,

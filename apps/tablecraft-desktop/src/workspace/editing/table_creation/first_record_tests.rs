@@ -24,7 +24,7 @@ fn original_table_close_waits_for_both_saves_and_the_fresh_record_revision() {
         .click_accesskit();
     harness.run_steps(2);
     name_and_confirm(&mut harness, "Contacts");
-    wait_for_bound_record(&mut harness);
+    wait_for_bound_record(&mut harness, "Contacts");
     assert!(harness.state().close_after_first_record.is_some());
     assert!(harness.state().state.active_object().is_some());
 
@@ -45,7 +45,7 @@ fn original_table_close_waits_for_both_saves_and_the_fresh_record_revision() {
 #[test]
 fn typed_unsaved_record_survives_schema_save_and_requires_its_own_reviewed_commit() {
     let (_directory, path, mut harness) = pending_record("table-draft-short-text", "Name", "Ada");
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     assert_ne!(schema_bytes, canonical_blank_creation::source());
     assert_eq!(
@@ -82,7 +82,7 @@ fn typed_unsaved_record_survives_schema_save_and_requires_its_own_reviewed_commi
 #[test]
 fn invalid_row_retains_input_and_the_saved_schema_then_corrects_without_recreating_table() {
     let (_directory, path, mut harness) = pending_record("table-draft-number", "Score", "oops");
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
     assert!(harness.state().editing.insert_review.is_none());
@@ -109,7 +109,7 @@ fn invalid_row_retains_input_and_the_saved_schema_then_corrects_without_recreati
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.rows.len(), 1);
     assert_eq!(data.rows[0][1].text, "42");
-    assert!(!harness.state().state.can_create_first_table());
+    assert!(harness.state().state.can_create_table());
 }
 
 #[test]
@@ -178,7 +178,7 @@ fn removed_initial_field_does_not_shift_surviving_input_across_both_native_saves
         canonical_blank_creation::source()
     );
 
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.columns.len(), 2);
     assert!(data.rows.is_empty());

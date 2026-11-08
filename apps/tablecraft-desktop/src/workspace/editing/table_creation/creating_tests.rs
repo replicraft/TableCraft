@@ -10,9 +10,7 @@ use egui_kittest::{
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveKnownOutcome, SaveOutcome, journal_path};
 use tablecraft_testkit::{
-    fixtures::access::{
-        canonical_blank_creation, canonical_initial_table_creation, mutation_fixture,
-    },
+    fixtures::access::{canonical_add_table, canonical_blank_creation, mutation_fixture},
     support::access::restart::stage_first_table,
 };
 use tablecraft_ui::ObjectKind;
@@ -24,8 +22,8 @@ fn show_create(harness: &mut Harness<'_, Desktop>) {
     harness.run_steps(2);
 }
 
-fn create_table(harness: &mut Harness<'_, Desktop>) {
-    assert!(harness.state().state.can_create_first_table());
+pub(super) fn create_table(harness: &mut Harness<'_, Desktop>) {
+    assert!(harness.state().state.can_create_table());
     show_create(harness);
     let button = harness.get_by_role_and_label(Role::Button, "Table");
     assert!(!button.accesskit_node().is_disabled());
@@ -46,7 +44,7 @@ fn create_table(harness: &mut Harness<'_, Desktop>) {
 fn opening_blank_is_inert_and_explicit_ribbon_table_saves_to_the_same_path() {
     let original = canonical_blank_creation::source();
     let (_directory, path, _, mut harness) = opened(original.clone());
-    assert!(harness.state().state.can_create_first_table());
+    assert!(harness.state().state.can_create_table());
     assert!(!harness.state().state.has_unsaved_table_drafts());
     assert!(harness.state().state.object_tabs().is_empty());
     assert_eq!(std::fs::read(&path).unwrap(), original);
@@ -55,13 +53,13 @@ fn opening_blank_is_inert_and_explicit_ribbon_table_saves_to_the_same_path() {
     add_named_field(&mut harness, "table-draft-short-text", "Name");
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
 
     start_save(&mut harness, "Contacts");
     finish_reads(&mut harness);
     assert!(!harness.state().editing.has_save());
     assert!(!harness.state().state.has_unsaved_table_drafts());
-    assert!(!harness.state().state.can_create_first_table());
+    assert!(harness.state().state.can_create_table());
     assert_eq!(harness.state().state.path, path.to_string_lossy());
     assert_ne!(std::fs::read(&path).unwrap(), original);
     drop(harness);
@@ -78,23 +76,21 @@ fn opening_blank_is_inert_and_explicit_ribbon_table_saves_to_the_same_path() {
         ["ID", "Name"]
     );
     assert!(data.rows.is_empty());
-    assert!(!reopened.state().state.can_create_first_table());
+    assert!(reopened.state().state.can_create_table());
 }
 
 #[test]
-fn readable_noncanonical_blank_and_populated_sources_keep_table_creation_disabled() {
+fn readable_unqualified_sources_and_completed_second_schema_keep_table_creation_disabled() {
     let mut noncanonical = canonical_blank_creation::source();
     *noncanonical.last_mut().unwrap() = 17;
-    let existing_ace16 =
-        canonical_initial_table_creation::source(canonical_initial_table_creation::Case::ShortText);
     for original in [
         noncanonical,
-        existing_ace16.bytes,
+        canonical_add_table::source().after,
         mutation_fixture::database(),
     ] {
         let (_directory, path, _, mut harness) = opened(original.clone());
         assert!(harness.state().state.database.is_some());
-        assert!(!harness.state().state.can_create_first_table());
+        assert!(!harness.state().state.can_create_table());
         let generation = harness.state().generation;
         show_create(&mut harness);
         let button = harness.get_by_role_and_label(Role::Button, "Table");
@@ -102,7 +98,7 @@ fn readable_noncanonical_blank_and_populated_sources_keep_table_creation_disable
         button.click_accesskit();
         harness.run_steps(2);
         assert!(!harness.state().state.has_unsaved_table_drafts());
-        assert!(harness.state().first_table.is_none());
+        assert!(harness.state().table_creation.is_none());
         assert_eq!(harness.state().generation, generation);
         assert_eq!(std::fs::read(&path).unwrap(), original);
         assert!(!journal_path(&path).exists());
@@ -117,7 +113,7 @@ fn rolled_back_blank_requires_explicit_create_after_recovery_acknowledgment() {
     let mut harness = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut harness);
     assert!(harness.state().state.recovery_prompt_open());
-    assert!(!harness.state().state.can_create_first_table());
+    assert!(!harness.state().state.can_create_table());
     harness
         .get_by_role_and_label(Role::Button, "Recover")
         .click_accesskit();
@@ -147,7 +143,7 @@ fn rolled_back_blank_requires_explicit_create_after_recovery_acknowledgment() {
     harness.run_steps(1);
     finish_reads(&mut harness);
     assert!(!harness.state().state.has_unsaved_table_drafts());
-    assert!(harness.state().state.can_create_first_table());
+    assert!(harness.state().state.can_create_table());
     create_table(&mut harness);
     assert_eq!(std::fs::read(&path).unwrap(), images.before);
 }

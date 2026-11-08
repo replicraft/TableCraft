@@ -74,7 +74,7 @@ fn issue_without_dispatch(harness: &mut Harness<'_, Desktop>) -> TableSaveReques
         "confirmation must not dispatch twice"
     );
     assert!(harness.state().state.table_draft_save_pending());
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     request
 }
 
@@ -95,7 +95,7 @@ fn file_new_field_declaration_ctrl_s_and_query_use_the_same_persisted_database()
     #[cfg(unix)]
     assert_eq!(std::fs::metadata(&path).unwrap().ino(), inode);
     assert!(!harness.state().editing.has_save());
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     assert!(!harness.state().state.has_unsaved_table_drafts());
     assert!(!journal_path(&path).exists());
     let data = harness.state().state.data.as_ref().unwrap();
@@ -259,11 +259,11 @@ fn cancelling_the_read_only_review_keeps_the_named_draft_and_original_file() {
     );
     harness.run_steps(2);
     let request = issue_without_dispatch(&mut harness);
-    harness.state_mut().save_first_table(request);
-    let request = harness.state().first_table.as_ref().unwrap().request;
-    harness.state_mut().cancel_first_table_save(request);
+    harness.state_mut().save_table_creation(request);
+    let request = harness.state().table_creation.as_ref().unwrap().request;
+    harness.state_mut().cancel_table_creation_save(request);
     harness.run_steps(3);
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     assert!(!harness.state().editing.has_save());
     assert!(!harness.state().state.table_draft_save_pending());
     assert!(harness.state().state.has_modified_table_drafts());
@@ -290,7 +290,7 @@ fn external_source_change_retains_the_draft_until_explicit_resource_release() {
     );
     harness.run_steps(2);
     let request = issue_without_dispatch(&mut harness);
-    harness.state_mut().save_first_table(request);
+    harness.state_mut().save_table_creation(request);
     let mut changed = std::fs::read(&path).unwrap();
     changed[1024] ^= 1;
     std::fs::write(&path, &changed).unwrap();
@@ -309,7 +309,7 @@ fn external_source_change_retains_the_draft_until_explicit_resource_release() {
     harness.run_steps(1);
     finish_reads(&mut harness);
     assert!(!harness.state().editing.has_save());
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     assert!(harness.state().state.has_modified_table_drafts());
     assert_eq!(std::fs::read(&path).unwrap(), changed);
     assert!(!journal_path(&path).exists());
@@ -342,7 +342,7 @@ fn saving_from_the_close_confirmation_resumes_the_original_file_open() {
     name_and_confirm(&mut harness, "Contacts");
     finish_reads(&mut harness);
     assert!(harness.state().deferred_draft_action.is_none());
-    assert!(harness.state().first_table.is_none());
+    assert!(harness.state().table_creation.is_none());
     assert!(!harness.state().state.has_unsaved_table_drafts());
     assert_eq!(
         harness

@@ -617,8 +617,7 @@ impl Preview {
                     // is not runtime qualification or native write permission.
                     let revision = self.state.database.as_ref().unwrap().document_revision;
                     self.state.table_save_available = true;
-                    self.state
-                        .set_first_table_creation_available(revision, true);
+                    self.state.set_table_creation_available(revision, true);
                     self.state.ribbon_tab = Tab::Create;
                 } else {
                     assert!(

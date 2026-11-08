@@ -9,9 +9,9 @@ use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
 fn persist(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, Vec<Field>) {
     let (directory, path, reader, document_revision) = opened();
-    let Response::FirstTableReviewed { capability } = request(
+    let Response::TableCreationReviewed { capability } = request(
         &reader,
-        Command::ReviewFirstTable {
+        Command::ReviewTableCreation {
             document_revision,
             snapshot: draft.snapshot("Properties").unwrap(),
         },
@@ -26,14 +26,14 @@ fn persist(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, Vec<Field>
     let witness = capability.reopen_witness();
     let saver = SaveWorker::new(|| {});
     let operation = saver
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap();
     assert!(matches!(
         terminal(&saver).outcome,
         SaveOutcome::Saved { .. }
     ));
     assert!(saver.acknowledge(operation));
-    request(&reader, Command::OpenFirstTableSaved { witness }).unwrap();
+    request(&reader, Command::OpenTableCreated { witness }).unwrap();
     let Response::Details {
         fields,
         declared_rows,
@@ -155,7 +155,7 @@ fn invalid_literal_or_native_expression_capacity_refuses_without_a_journal_or_wr
         assert!(
             request(
                 &reader,
-                Command::ReviewFirstTable {
+                Command::ReviewTableCreation {
                     document_revision,
                     snapshot: draft.snapshot("Properties").unwrap(),
                 }
@@ -174,13 +174,13 @@ fn invalid_literal_or_native_expression_capacity_refuses_without_a_journal_or_wr
         assert!(matches!(
             request(
                 &reader,
-                Command::ReviewFirstTable {
+                Command::ReviewTableCreation {
                     document_revision,
                     snapshot: draft.snapshot("Properties").unwrap(),
                 }
             )
             .unwrap(),
-            Response::FirstTableReviewed { .. }
+            Response::TableCreationReviewed { .. }
         ));
     }
 }

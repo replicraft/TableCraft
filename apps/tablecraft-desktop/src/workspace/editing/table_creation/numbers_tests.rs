@@ -75,7 +75,7 @@ fn all_number_sizes_save_exact_native_declarations_and_the_original_pending_reco
             std::fs::read(&path).unwrap(),
             canonical_blank_creation::source()
         );
-        save_schema_and_bind_record(&mut harness);
+        save_schema_and_bind_record(&mut harness, "Contacts");
         assert_eq!(
             harness
                 .get_by_role_and_label(Role::TextInput, "Value")
@@ -121,7 +121,7 @@ fn nonexact_decimal_input_refuses_review_without_writes_and_corrects_the_same_na
     select_number_properties(&mut harness, "table-draft-number-decimal");
     replace(&mut harness, Role::TextInput, "Precision", "6");
     replace(&mut harness, Role::TextInput, "Scale", "2");
-    save_schema_and_bind_record(&mut harness);
+    save_schema_and_bind_record(&mut harness, "Contacts");
     let schema_bytes = std::fs::read(&path).unwrap();
     review(&mut harness);
     assert!(harness.state().editing.insert_review.is_none());
@@ -163,7 +163,7 @@ fn replication_id_absent_or_null_defaults_and_explicit_null_never_use_hidden_raw
         choose_input(&mut harness, "Value", input_mode);
         select_number_properties(&mut harness, "table-draft-number-replication-id");
         choose(&mut harness, "design-default-value", default_key);
-        save_schema_and_bind_record(&mut harness);
+        save_schema_and_bind_record(&mut harness, "Contacts");
         let schema_bytes = std::fs::read(&path).unwrap();
         review(&mut harness);
         assert!(harness.state().editing.insert_review.is_some());

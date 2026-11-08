@@ -1,10 +1,10 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
-pub(super) mod first_table;
 mod inserting;
 #[cfg(test)]
 mod pasting;
 pub(super) mod recovery;
+pub(super) mod table_creation;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
 use inserting::retry::{InsertRetryContext, RetainedInsertRetry};
@@ -43,7 +43,7 @@ enum SaveOwner {
     Cell,
     Insert,
     Delete,
-    FirstTable,
+    TableCreation,
 }
 
 struct ActiveSave {
@@ -241,8 +241,8 @@ impl Desktop {
         if let Some(retry) = &mut save.insert_retry {
             retry.evidence.observe(report);
         }
-        if matches!(save.owner, SaveOwner::FirstTable) {
-            self.first_table_save_report(report);
+        if matches!(save.owner, SaveOwner::TableCreation) {
+            self.table_creation_save_report(report);
             return;
         }
         let outcome = match (save.owner, report.outcome) {
@@ -260,7 +260,7 @@ impl Desktop {
             SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
             SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
             SaveOwner::Delete => self.state.set_delete_save_outcome(report.id, outcome),
-            SaveOwner::FirstTable => {}
+            SaveOwner::TableCreation => {}
         }
     }
 
@@ -298,7 +298,7 @@ impl Desktop {
                     SaveOwner::Cell => self.state.begin_edit_resolution(id, next),
                     SaveOwner::Insert => self.state.begin_insert_resolution(id, next),
                     SaveOwner::Delete => self.state.begin_delete_resolution(id, next),
-                    SaveOwner::FirstTable => {}
+                    SaveOwner::TableCreation => {}
                 }
             }
             Err(error) => self.state.error = Some(error.to_string()),
@@ -356,7 +356,7 @@ impl Desktop {
             SaveOwner::Delete => {
                 self.state.close_delete();
             }
-            SaveOwner::FirstTable => {}
+            SaveOwner::TableCreation => {}
         }
         if refresh_after_ack {
             self.select_file(save.path);

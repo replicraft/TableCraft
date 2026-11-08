@@ -18,7 +18,7 @@ mod totals;
 use crate::file_dialog::{FileDialog, SelectedFile};
 use creating::Creating;
 use editing::Editing;
-use editing::first_table::FirstTableHost;
+use editing::table_creation::TableCreationHost;
 use std::path::PathBuf;
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
@@ -39,10 +39,10 @@ enum PendingOperation {
         path: PathBuf,
     },
     CreatedOpen,
-    FirstTableReview {
+    TableCreationReview {
         request_id: u64,
     },
-    FirstTableReopen {
+    CreatedTableReopen {
         request_id: u64,
     },
     Query {
@@ -150,8 +150,8 @@ pub(super) struct Desktop {
     selected_file: Option<SelectedFile>,
     creating: Creating,
     deferred_draft_action: Option<DeferredDraftAction>,
-    first_table: Option<FirstTableHost>,
-    resume_after_first_table: bool,
+    table_creation: Option<TableCreationHost>,
+    resume_after_table_creation: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
@@ -183,8 +183,8 @@ impl Desktop {
             selected_file: None,
             creating,
             deferred_draft_action: None,
-            first_table: None,
-            resume_after_first_table: false,
+            table_creation: None,
+            resume_after_table_creation: false,
             close_after_first_record: None,
             editing,
             recovery: None,
@@ -195,7 +195,7 @@ impl Desktop {
         };
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
-        app.state.table_save_available = SaveWorker::supports_first_table();
+        app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
@@ -219,7 +219,7 @@ impl Desktop {
         if self.state.table_draft_save_open()
             && !matches!(
                 &command,
-                Command::ReviewFirstTable { .. } | Command::OpenFirstTableSaved { .. }
+                Command::ReviewTableCreation { .. } | Command::OpenTableCreated { .. }
             )
         {
             return;
@@ -382,8 +382,8 @@ impl Desktop {
                 continue;
             }
             match result {
-                Ok(Response::FirstTableReviewed { capability }) => {
-                    self.start_reviewed_first_table(generation, capability);
+                Ok(Response::TableCreationReviewed { capability }) => {
+                    self.start_reviewed_table_creation(generation, capability);
                 }
                 Ok(Response::QueryDesignTable { target, metadata }) => {
                     self.publish_query_design_table(generation, target, metadata);
@@ -436,7 +436,7 @@ impl Desktop {
                 Ok(Response::Opened {
                     document_revision,
                     source_path,
-                    first_table_creation_available,
+                    table_creation_available,
                     title,
                     format,
                     tables,
@@ -469,8 +469,12 @@ impl Desktop {
                             })
                             .collect(),
                     };
-                    if let PendingOperation::FirstTableReopen { request_id } = self.pending {
-                        self.finish_first_table_reopen(request_id, database);
+                    if let PendingOperation::CreatedTableReopen { request_id } = self.pending {
+                        self.finish_table_creation_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                        );
                         continue;
                     }
                     if let PendingOperation::InsertRetry {
@@ -478,14 +482,17 @@ impl Desktop {
                         save_id,
                     } = self.pending
                     {
-                        self.finish_insert_retry(request_id, save_id, database);
+                        self.finish_insert_retry(
+                            request_id,
+                            save_id,
+                            database,
+                            table_creation_available,
+                        );
                         continue;
                     }
                     self.state.database = Some(database);
-                    self.state.set_first_table_creation_available(
-                        document_revision,
-                        first_table_creation_available,
-                    );
+                    self.state
+                        .set_table_creation_available(document_revision, table_creation_available);
                     self.recovery_opened(generation, document_revision);
                     self.state.dismiss_backstage();
                     if matches!(self.pending, PendingOperation::CreatedOpen) {
@@ -591,13 +598,13 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
-                    PendingOperation::FirstTableReview { request_id } => {
+                    PendingOperation::TableCreationReview { request_id } => {
                         let request_id = *request_id;
-                        self.first_table_review_failed(request_id, error.to_string());
+                        self.table_creation_review_failed(request_id, error.to_string());
                     }
-                    PendingOperation::FirstTableReopen { request_id } => {
+                    PendingOperation::CreatedTableReopen { request_id } => {
                         let request_id = *request_id;
-                        self.first_table_reopen_failed(request_id, error.to_string());
+                        self.table_creation_reopen_failed(request_id, error.to_string());
                     }
                     PendingOperation::Query { .. } => {
                         self.state.clear_query_run();
@@ -711,7 +718,7 @@ impl eframe::App for Desktop {
             {
                 self.close_object(tab);
             }
-            if std::mem::take(&mut self.resume_after_first_table) {
+            if std::mem::take(&mut self.resume_after_table_creation) {
                 self.resume_table_draft_action(ctx);
             }
         }
@@ -749,11 +756,13 @@ impl eframe::App for Desktop {
                 Action::AcknowledgeRecovery { operation_id } => {
                     self.acknowledge_reserved_recovery(operation_id)
                 }
-                Action::SaveTableDraft { request } => self.save_first_table(request),
-                Action::CancelTableDraftSave { id } => self.cancel_first_table_save(id),
-                Action::RecoverTableDraftSave { id } => self.resolve_first_table_save(id, true),
-                Action::ReleaseTableDraftSave { id } => self.resolve_first_table_save(id, false),
-                Action::AcknowledgeTableDraftSave { id } => self.acknowledge_first_table_save(id),
+                Action::SaveTableDraft { request } => self.save_table_creation(request),
+                Action::CancelTableDraftSave { id } => self.cancel_table_creation_save(id),
+                Action::RecoverTableDraftSave { id } => self.resolve_table_creation_save(id, true),
+                Action::ReleaseTableDraftSave { id } => self.resolve_table_creation_save(id, false),
+                Action::AcknowledgeTableDraftSave { id } => {
+                    self.acknowledge_table_creation_save(id)
+                }
                 Action::TableDraftsDiscarded => self.resume_table_draft_action(ui.ctx()),
                 Action::TableDraftDiscardCancelled => self.cancel_table_draft_action(),
                 Action::DescribeQueryDesign { request, table } => {
@@ -894,8 +903,8 @@ impl eframe::App for Desktop {
                 Action::ReleaseEditSave { save_id } => self.resolve_save(save_id, false),
                 Action::AcknowledgeEditSave { save_id } => self.acknowledge_save(save_id),
                 Action::Cancel => {
-                    if self.first_table.is_some() {
-                        self.cancel_active_first_table_save();
+                    if self.table_creation.is_some() {
+                        self.cancel_active_table_creation_save();
                         continue;
                     }
                     if self.creating.is_busy() {

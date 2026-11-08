@@ -1,0 +1,101 @@
+mod declaration;
+
+use super::{
+    CreatedTableReopen, ReviewedTableCreation, ReviewedTableCreationState, TableCreationProfile,
+};
+use crate::{
+    Error, Response,
+    controls::{SCOPE, budget, check},
+    document::Document,
+    editing::{EditError, ids::issue_id},
+};
+use bytes::Bytes;
+use std::sync::Arc;
+use tablecraft_ace::NativeImage;
+use tablecraft_builders::table::TableDraftSnapshot;
+use tablecraft_core::limits::{Resource, ResourceBudget};
+
+const REOPEN_COPY_CHUNK_BYTES: usize = 16 * 1024;
+
+impl Document {
+    pub(crate) fn review_table_creation(
+        &mut self,
+        document_revision: u64,
+        snapshot: &TableDraftSnapshot,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        let _span = tracing::debug_span!("application.review_table_creation").entered();
+        if document_revision != self.revision {
+            return Err(Error::StaleDocument);
+        }
+        if !self.source.editable_native() {
+            return Err(EditError::ReadOnlySource.into());
+        }
+        let profile = self.table_creation.ok_or(EditError::Unavailable)?;
+        let mut work = budget();
+        check(cancelled)?;
+        let definition = declaration::capture(snapshot, &mut work, cancelled)?;
+        let image = NativeImage::capture(&mut self.source, SCOPE, &mut work, cancelled)?;
+        let (expected, columns, definition) = match profile {
+            TableCreationProfile::First => {
+                let plan = image.plan_first_table(definition, &mut work, cancelled)?;
+                let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
+                (expected, plan.column_count(), plan.into_definition())
+            }
+            TableCreationProfile::Added => {
+                let plan = image.plan_add_table(definition, &mut work, cancelled)?;
+                let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
+                (expected, plan.column_count(), plan.into_definition())
+            }
+        };
+        work.charge_allocation(self.edits.path.as_os_str().len() as u64, 1)?;
+        work.charge_allocation(snapshot.table_name().len() as u64, 1)?;
+        let mut table = String::new();
+        table.try_reserve_exact(snapshot.table_name().len())?;
+        table.push_str(snapshot.table_name());
+        work.charge_allocation(1, size_of::<CreatedTableReopen>() as u64)?;
+        work.charge_allocation(1, size_of::<ReviewedTableCreationState>() as u64)?;
+        check(cancelled)?;
+        let reopen = Arc::new(CreatedTableReopen {
+            path: self.edits.path.clone(),
+            expected: Bytes::from(expected),
+            table,
+            columns,
+            document_revision,
+            draft_revision: snapshot.revision(),
+            schema_change: profile.schema_change(columns),
+        });
+        let capability = ReviewedTableCreation {
+            state: Box::new(ReviewedTableCreationState {
+                id: issue_id()?,
+                reopen,
+                original: self.edits.original.clone(),
+                definition,
+                profile,
+                valid: Arc::clone(&self.edits.valid),
+            }),
+        };
+        Ok(Response::TableCreationReviewed { capability })
+    }
+}
+
+// Expected AFTER is content evidence for reopening, never a save payload. The
+// consuming save reconstructs the selected operation under its exclusive lease.
+fn copy_expected(
+    after: &[u8],
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, Error> {
+    work.charge_allocation(after.len() as u64, 1)?;
+    let mut expected = Vec::new();
+    expected.try_reserve_exact(after.len())?;
+    for chunk in after.chunks(REOPEN_COPY_CHUNK_BYTES) {
+        check(cancelled)?;
+        work.charge(Resource::Steps, chunk.len() as u64)?;
+        expected.extend_from_slice(chunk);
+    }
+    Ok(expected)
+}
+
+#[cfg(test)]
+mod tests;

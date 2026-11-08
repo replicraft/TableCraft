@@ -63,9 +63,9 @@ fn saved_draft(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, SaveWo
     let (directory, path, worker, revision) = opened(&canonical_blank_creation::source());
     let snapshot = draft.snapshot("Items").unwrap();
     let columns = snapshot.fields().len();
-    let Response::FirstTableReviewed { capability } = request(
+    let Response::TableCreationReviewed { capability } = request(
         &worker,
-        Command::ReviewFirstTable {
+        Command::ReviewTableCreation {
             document_revision: revision,
             snapshot,
         },
@@ -76,7 +76,7 @@ fn saved_draft(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, SaveWo
     let witness = capability.reopen_witness();
     let saves = SaveWorker::new(|| {});
     let operation = saves
-        .start_first_table(capability, journal_path(&path))
+        .start_table_creation(capability, journal_path(&path))
         .unwrap();
     let report = terminal(&saves);
     let SaveOutcome::Saved { receipt } = report.outcome else {
@@ -95,7 +95,7 @@ fn saved_draft(draft: TableDraft) -> (tempfile::TempDir, PathBuf, Worker, SaveWo
     assert!(saves.acknowledge(operation));
     let Response::Opened {
         document_revision, ..
-    } = request(&worker, Command::OpenFirstTableSaved { witness }).unwrap()
+    } = request(&worker, Command::OpenTableCreated { witness }).unwrap()
     else {
         panic!("expected guarded native reopening of the actual saved schema");
     };

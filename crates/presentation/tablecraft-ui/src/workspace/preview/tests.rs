@@ -274,7 +274,7 @@ fn first_table_ready_preview_starts_without_a_draft_and_uses_the_actual_table_co
     );
     let preview = Preview::new(Scene::FirstTableReady);
     assert!(preview.state().mock_preview);
-    assert!(preview.state().can_create_first_table());
+    assert!(preview.state().can_create_table());
     assert!(preview.state().database.as_ref().unwrap().tables.is_empty());
     assert!(preview.state().data.is_none());
     assert!(preview.state().active_object().is_none());

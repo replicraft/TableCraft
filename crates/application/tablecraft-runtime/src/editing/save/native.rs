@@ -1,14 +1,14 @@
 //! The actual offline owner lives on this worker until released or diagnosed.
 mod apply;
 mod apply_delete;
-#[cfg(feature = "ace16-create")]
-mod apply_first_table;
 mod apply_insert;
+#[cfg(feature = "ace16-create")]
+mod apply_table_creation;
 mod outcomes;
 mod restart;
 
 #[cfg(feature = "ace16-create")]
-use self::apply_first_table::apply_first_table;
+use self::apply_table_creation::apply_table_creation;
 use self::{
     apply::apply,
     apply_delete::apply_delete,
@@ -20,7 +20,7 @@ use super::{
     SaveFailureKind, SaveOperation, SaveOutcome, SaveReport, SaveStartError, SaveStartFailure,
 };
 #[cfg(feature = "ace16-create")]
-use crate::editing::ReviewedFirstTable;
+use crate::editing::ReviewedTableCreation;
 use crate::{
     controls::budget,
     editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert},
@@ -37,7 +37,7 @@ use tablecraft_access::editing::offline::{Failure, OfflineWriteSession};
 
 enum Task {
     #[cfg(feature = "ace16-create")]
-    ApplyFirstTable(ReviewedFirstTable, PathBuf),
+    ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
@@ -81,7 +81,7 @@ pub struct SaveWorker {
 
 impl SaveWorker {
     #[cfg(feature = "ace16-create")]
-    pub const fn supports_first_table() -> bool {
+    pub const fn supports_table_creation() -> bool {
         true
     }
 
@@ -118,7 +118,7 @@ impl SaveWorker {
                 let cancelled = || owner.cancelled.load(Ordering::Acquire);
                 let operation = match &task {
                     #[cfg(feature = "ace16-create")]
-                    Task::ApplyFirstTable(..) => SaveOperation::Apply,
+                    Task::ApplyTableCreation(..) => SaveOperation::Apply,
                     Task::Apply(..) | Task::ApplyInsert(..) | Task::ApplyDelete(..) => {
                         SaveOperation::Apply
                     }
@@ -136,8 +136,8 @@ impl SaveWorker {
                 let mut work = budget();
                 let outcome = match task {
                     #[cfg(feature = "ace16-create")]
-                    Task::ApplyFirstTable(reviewed, bundle) => {
-                        apply_first_table(reviewed, bundle, &mut retained, &cancelled)
+                    Task::ApplyTableCreation(reviewed, bundle) => {
+                        apply_table_creation(reviewed, bundle, &mut retained, &cancelled)
                     }
                     Task::Apply(reviewed, bundle) => {
                         apply(reviewed, bundle, &mut retained, &cancelled)
@@ -218,13 +218,13 @@ impl SaveWorker {
     }
 
     #[cfg(feature = "ace16-create")]
-    pub fn start_first_table(
+    pub fn start_table_creation(
         &self,
-        reviewed: ReviewedFirstTable,
+        reviewed: ReviewedTableCreation,
         bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<ReviewedFirstTable>> {
+    ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
-        self.start_reviewed(reviewed, bundle, valid, Task::ApplyFirstTable)
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyTableCreation)
     }
 
     /// Explicitly attempt checked recovery of this source's reserved sibling.

@@ -120,19 +120,69 @@ The runtime compares the complete immutable captured source against the canonica
 blank under the read operation's budget and cancellation checks. It publishes an
 advisory availability fact bound to the opened document revision. The shared UI
 accepts that fact only for the matching revision and also requires the existing
-Save capability, no user tables and no conflicting draft, modal or operation.
+Save capability and no conflicting draft, modal or operation.
 Selecting the command changes only local draft state. It neither acquires a
 writable target nor creates a journal. Review still qualifies the original source
 and declarations; Save freshly rechecks the retained target before mutation.
 
-A readable noncanonical blank or a database with existing user tables keeps this
-command disabled. This does not restrict opening or reading those sources, and
-it does not authorize general table addition or schema changes. Table Design
-remains disabled. Microsoft's
+A readable noncanonical blank remains unavailable for creation. This does not
+restrict opening or reading it. The same command also supports the explicitly
+qualified populated source below. Table Design remains disabled. Microsoft's
 [Create a table and add fields](https://support.microsoft.com/en-us/access/create-a-table-and-add-fields)
-distinguishes Create > Table, which opens Datasheet view, from Create > Table
-Design, which opens Design view. The retained Datasheet and Design captures guide
-those separate surfaces; they do not capture activation of the Create command.
+documents Create > Table in an existing database, opening a new Datasheet. That
+workflow differs from Create > Table Design, which opens a fresh Design view.
+The retained Datasheet and Design captures guide those separate surfaces; they
+do not capture activation of the Create command.
+
+### Creating a second table
+
+Create > Table is enabled for a qualified one-table ACE 16 source with the
+supported catalog, allocation, row and primary-index layout. Qualification uses
+actual immutable captured bytes, not a filename, header version, remembered
+creator flag or the mere presence of one user table. See the
+[append-table source profile](../access/writes/ADD_TABLE_PERSISTENCE.md) for the
+native limits. Unqualified imported layouts, additional object/payload roles and
+a third table remain unavailable; ordinary supported reads are unaffected.
+
+The runtime publishes one table-creation availability fact for the opened source
+revision. Shared UI accepts only a matching fact and retains the same Save,
+busy, modal, draft and operation guards. Selecting Create changes presentation
+state only: no native plan, target lease, journal or file write occurs. Review
+selects the captured first-table or added-table profile internally. A caller does
+not choose that profile, and a failed action is never retried through another
+operation or decoder.
+
+The new draft suggests the first unused `TableN` name from the already loaded
+table and query names. For example, an existing `Table1` suggests `Table2`, while
+an unrelated `Items` table can leave `Table1` available. This bounded ASCII name
+scan is a presentation suggestion; it does not establish native collation
+semantics, reserve the name or replace authoritative native admission. The tab
+and Save prompt use the same proposed name, retained through locale/view changes
+and parking. Entering an existing name can therefore refuse at review; the prompt
+and exact raw field/record input remain available for correction, with source
+bytes and journal namespace unchanged.
+
+Successful schema Save preserves the old table and restores existing table tabs
+and unsaved SQL text. Restored objects use the new document revision and fresh
+reads; old row handles and cached native capabilities are not reused. A pending
+record for the new table still follows the separate Review/Apply continuation
+below. After the second schema is committed, the source fact disables another
+Create > Table because the current append profile does not admit a third table.
+
+A connected headless desktop scenario creates `Table1` with a record, opens an
+unsaved SQL query, creates `Table2`, refuses a duplicate `Table1` name without a
+write, corrects it and separately saves the retained first record. Fresh reads
+retain the original row and new row; old source/row bindings refuse reuse and
+both table tabs and SQL text survive. The affected local batch passes all 427
+shared UI, 111 desktop and 149 runtime tests. Six-target cross-checks compile these
+affected packages; native Windows/Linux execution and Access comparison remain
+unqualified. These current observations are separate from the historical counts
+elsewhere in this document.
+
+The focused desktop follow-up also runs actual SQL queries after dropping the
+original host and reopening the file. Its SQL editor reads the old value `17`
+from `Table1` and the exact inserted text `  Ada  ` from `Table2`, independently
+of the previous host's display caches.
 
 Fresh Table Design has its own key-selection workflow. Microsoft's
 [Table Designer procedure](https://support.microsoft.com/en-us/access/training/video-build-tables-with-the-table-designer)
@@ -407,16 +457,19 @@ above, within the sixteen-field ceiling. No records are authored by this operati
 The UI keeps the draft distinct from the persisted database while review and
 saving run; neither accepting the name nor closing the prompt proves a save.
 
-Runtime first qualifies the exact original canonical blank and declarations,
-then issues a consuming review. Its existing nonreplaceable SaveWorker acquires
-the target, compares all original bytes and rederives the native operation under
-that same retained descriptor. A distinct TCNT schema intent and checked V2
-journal resize the original file; the operation does not replace the path with a
-freshly created image. Unix finalization acknowledges retirement/removal barriers.
+Runtime qualifies the immutable source and declarations using the captured
+first-table or added-table profile, then issues a consuming review. Its existing
+nonreplaceable SaveWorker acquires the target, compares all original bytes and
+rederives the native operation under that same retained descriptor. First-table saves use a distinct TCNT schema
+intent. Added-table saves use the separate TCAT action with an original full-source
+binding and a closed declaration template. Each uses its checked V2 journal to
+resize the same original file; neither replaces the path with a freshly created
+image. Unix finalization acknowledges retirement/removal barriers.
 Windows acknowledges its write-through retirement rename and retains the intact
 retired artifact; the completion report distinguishes those namespace facts from
 native commitment and does not claim durable Windows deletion. See
-[first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md).
+[first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
+[second-table persistence](../access/writes/ADD_TABLE_PERSISTENCE.md).
 
 Definitions with a default on Byte, Integer, Single, Double, Decimal or GUID
 use closed `TCNT0004` intents, including an explicit NULL default on those target
@@ -430,9 +483,10 @@ before qualifying the original and replacement images. No intent permits executi
 an arbitrary default expression.
 
 Only an acknowledged committed/verified-replacement receipt with the matching
-schema count starts guarded reopening. Reopening compares the complete captured
+schema action and column count starts guarded reopening. Reopening compares the complete captured
 file against the expected content retained during review before native reading.
-The host also matches the original document, draft revision and table identity.
+The host matches the reviewed expected schema action as well as the original
+document, draft revision and table identity.
 An expected-content witness is not itself a save receipt or physical file identity.
 Only a successful reopen promotes the matching draft into the real catalog/table.
 A failed reopen preserves the known save fact and displays a separate failure.

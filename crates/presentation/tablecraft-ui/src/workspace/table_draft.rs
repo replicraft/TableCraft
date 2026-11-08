@@ -39,7 +39,7 @@ pub(super) enum CloseIntent {
 }
 
 impl Editor {
-    pub(super) fn initial() -> Self {
+    pub(super) fn initial(save_name: String) -> Self {
         Self {
             draft: TableDraft::initial(),
             design: design::Design::default(),
@@ -49,7 +49,7 @@ impl Editor {
             focus_add: true,
             save_requested: false,
             error: false,
-            save_name: "Table1".into(),
+            save_name,
             save_blocked: false,
             save_message: None,
         }

@@ -43,21 +43,21 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-            Command::ReviewFirstTable {
+            Command::ReviewTableCreation {
                 document_revision,
                 snapshot,
             } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_first_table(*document_revision, snapshot, cancelled),
+                .review_table_creation(*document_revision, snapshot, cancelled),
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-            Command::OpenFirstTableSaved { witness } => {
+            Command::OpenTableCreated { witness } => {
                 document = None;
                 document_revision = document_revision
                     .checked_add(1)
                     .ok_or(Error::RevisionExhausted)?;
                 let (opened, response) =
-                    Document::open_first_table_saved(witness, document_revision, cancelled)?;
+                    Document::open_table_created(witness, document_revision, cancelled)?;
                 document = Some(opened);
                 Ok(response)
             }
@@ -291,9 +291,9 @@ impl Worker {
                     #[cfg(feature = "offline-edit")]
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewFirstTable { .. } => "review_first_table",
+                    Command::ReviewTableCreation { .. } => "review_table_creation",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenFirstTableSaved { .. } => "open_first_table_saved",
+                    Command::OpenTableCreated { .. } => "open_table_created",
                     Command::Open { .. } => "open",
                     #[cfg(feature = "ace16-create")]
                     Command::OpenCreated { .. } => "open_created",

@@ -13,7 +13,6 @@ mod deleting;
 mod editing;
 mod filtering;
 mod find;
-mod first_table_availability;
 mod formatting;
 #[cfg(all(
     feature = "offline-edit",
@@ -35,6 +34,7 @@ mod restart;
 mod saved;
 mod schema;
 mod stored;
+mod table_creation_availability;
 mod text_policy;
 mod totals;
 
@@ -245,13 +245,13 @@ fn encrypted_open_reports_password_errors_and_allows_same_worker_retry() {
     let Response::Opened {
         tables,
         document_revision: _revision,
-        first_table_creation_available,
+        table_creation_available,
         ..
     } = request(&worker, open(&path, "public workflow password")).unwrap()
     else {
         panic!("expected authenticated database");
     };
-    assert!(!first_table_creation_available);
+    assert!(!table_creation_available);
     assert!(tables.iter().any(|table| table.name == "ROULETTE_TB"));
     #[cfg(feature = "offline-edit")]
     assert!(matches!(
@@ -369,7 +369,7 @@ fn explicit_cancel_discards_a_late_result() {
         Ok(Response::Opened {
             document_revision: 1,
             source_path: PathBuf::new(),
-            first_table_creation_available: false,
+            table_creation_available: false,
             title: String::new(),
             format: String::new(),
             tables: Vec::new(),
