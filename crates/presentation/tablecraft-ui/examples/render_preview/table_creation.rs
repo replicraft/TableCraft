@@ -59,9 +59,38 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
         return;
     }
 
-    add_design_field(harness, "table-draft-short-text", "Name");
+    if matches!(mode, "design-new-row" | "design-type-menu") {
+        harness
+            .get_by_role_and_label(
+                Role::TextInput,
+                &localizer.text("table-draft-design-new-name"),
+            )
+            .type_text("NewField");
+        harness.run_steps(LAYOUT_SETTLE_STEPS);
+        assert!(harness.state().state().has_unsaved_table_drafts());
+        assert!(harness.state().state().can_save_table_draft());
+        assert!(!harness.state().state().can_toggle_table_draft_primary_key());
+        if mode == "design-type-menu" {
+            harness
+                .get_by_role_and_label(
+                    Role::ComboBox,
+                    &localizer.text("table-draft-design-new-type"),
+                )
+                .click_accesskit();
+            harness.run();
+            assert!(
+                harness
+                    .get_by_role_and_label(Role::Button, &localizer.text("design-type-long-text"),)
+                    .accesskit_node()
+                    .is_disabled()
+            );
+        }
+        return;
+    }
+
+    add_design_field(harness, "design-type-short-text", "Name");
     if mode == "design-key" {
-        add_design_field(harness, "table-draft-number", "ActualKey");
+        add_design_field(harness, "design-type-number", "ActualKey");
         harness
             .get_by_role_and_label(Role::Button, "ActualKey")
             .click_accesskit();
@@ -147,18 +176,21 @@ fn add_design_field(harness: &mut Harness<'_, Preview>, kind: &str, name: &str) 
     let localizer = harness.state().state().localizer.clone();
     harness
         .get_by_role_and_label(
-            Role::Button,
-            &localizer.text("table-draft-design-add-field"),
+            Role::TextInput,
+            &localizer.text("table-draft-design-new-name"),
+        )
+        .type_text(name);
+    harness.run_steps(LAYOUT_SETTLE_STEPS);
+    harness
+        .get_by_role_and_label(
+            Role::ComboBox,
+            &localizer.text("table-draft-design-new-type"),
         )
         .click_accesskit();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     harness
         .get_by_role_and_label(Role::Button, &localizer.text(kind))
         .click_accesskit();
-    harness.run_steps(LAYOUT_SETTLE_STEPS);
-    harness
-        .get_by_role_and_label(Role::TextInput, &localizer.text("table-draft-field-name"))
-        .type_text(name);
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     harness.key_press(Key::Enter);
     harness.run_steps(LAYOUT_SETTLE_STEPS);

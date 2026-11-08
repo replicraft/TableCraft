@@ -91,3 +91,5 @@ design-size-large-number = 大きい数値
 design-size-eight-bytes = 8 バイト
 design-size-one-bit = 1 ビット
 design-carrier-help = 読み取り用の型のみです。ネイティブ フィールドの Access 表示型は提供されていません。
+
+design-type-lookup-wizard = ルックアップ ウィザード

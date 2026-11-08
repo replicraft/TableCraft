@@ -98,7 +98,7 @@ impl State {
             && self.active_object().is_some_and(|tab| {
                 self.table_draft_editor(&tab).is_some_and(|editor| {
                     !editor.save_blocked
-                        && !editor.draft.fields().is_empty()
+                        && (!editor.draft.fields().is_empty() || editor.new_field.has_name())
                         && !editor.properties.rejected()
                         && !editor.descriptions.rejected()
                 })
@@ -138,9 +138,9 @@ impl State {
         let Some(editor) = self.table_draft_editor_mut(&tab) else {
             return false;
         };
-        if editor.draft.fields().is_empty()
-            || editor.save_blocked
-            || !editor.commit_rename()
+        if editor.save_blocked
+            || !editor.commit_pending()
+            || editor.draft.fields().is_empty()
             || !editor.record.synchronize(&editor.draft)
             || editor.record.has_rejected_input()
             || editor.properties.rejected()
@@ -218,6 +218,7 @@ impl State {
                     && !editor.descriptions.rejected()
                     && !editor.record.has_rejected_input()
                     && editor.rename.is_none()
+                    && !editor.new_field.pending()
             })
     }
 
@@ -320,14 +321,14 @@ impl State {
         match &self.table_draft_close {
             Some(CloseIntent::Tab(tab)) => self.table_draft_editor(tab).is_some_and(|editor| {
                 !editor.save_blocked
-                    && !editor.draft.fields().is_empty()
+                    && (!editor.draft.fields().is_empty() || editor.new_field.has_name())
                     && !editor.properties.rejected()
                     && !editor.descriptions.rejected()
             }),
             Some(CloseIntent::All) => self.object_tabs().iter().any(|tab| {
                 self.table_draft_editor(tab).is_some_and(|editor| {
                     !editor.save_blocked
-                        && !editor.draft.fields().is_empty()
+                        && (!editor.draft.fields().is_empty() || editor.new_field.has_name())
                         && !editor.properties.rejected()
                         && !editor.descriptions.rejected()
                 })

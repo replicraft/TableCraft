@@ -1,4 +1,5 @@
 mod description;
+mod new_field;
 
 use crate::workspace::{
     Action, EditInput, InsertInput, State,
@@ -504,7 +505,7 @@ fn upper_grid_paint_is_clipped_before_properties_and_blank_space_is_inert_ruled_
                 .unwrap();
             let properties_top = harness.get_by_label("Field Properties").rect().top();
             let addition = harness
-                .get_by_role_and_label(Role::Button, "Add field")
+                .get_by_role_and_label(Role::TextInput, "New field name")
                 .rect();
             let colors = crate::theme::palette(&harness.ctx);
             let mut column_rules = 0;
@@ -627,7 +628,10 @@ fn foreground_type_menu_can_extend_below_the_clipped_grid_without_changing_the_d
             })
         })
         .unwrap();
-    assert!(text_clip.contains_rect(option));
+    assert!(
+        text_clip.contains_rect(option),
+        "option={option:?} clip={text_clip:?} properties_top={properties_top}"
+    );
     let editor = harness.state().0.table_draft.as_ref().unwrap();
     assert_eq!(editor.draft.fields()[1].id(), field);
     assert_eq!(editor.draft.fields()[1].kind(), DraftFieldType::ShortText);

@@ -91,3 +91,5 @@ design-size-large-number = 大数字
 design-size-eight-bytes = 8 字节
 design-size-one-bit = 1 位
 design-carrier-help = 仅显示读取类型；未提供原生字段的 Access 显示类型。
+
+design-type-lookup-wizard = 查阅向导

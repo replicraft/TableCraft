@@ -19,6 +19,9 @@ const PROPERTY_INPUT_MARGIN: egui::Margin = egui::Margin::symmetric(4, 2);
 /// Keep the active working controls visible when locale font metrics or the
 /// Decimal declaration adds rows. The caller still reserves the upper grid.
 pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
+    if editor.new_field.editing() {
+        return 0.0;
+    }
     let field = editor
         .draft
         .fields()
@@ -75,6 +78,10 @@ pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
 }
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor) {
+    if editor.new_field.editing() {
+        ui.label(tr(ui, "design-field-properties"));
+        return;
+    }
     ui.vertical_centered(|ui| ui.label(tr(ui, "design-field-properties")));
     ui.horizontal(|ui| {
         for (lookup, key) in [(false, "design-general"), (true, "design-lookup")] {

@@ -94,3 +94,6 @@ table-draft-description-invalid = 字段说明过长。
 table-draft-no-key-title = 没有主键
 table-draft-no-key-question = 尚未定义主键。是否创建自动编号主键？
 table-draft-no-key-failed = 无法添加主键。请保留当前设计或删除一个字段。
+
+table-draft-design-new-name = 新字段名称
+table-draft-design-new-type = 新字段数据类型

@@ -468,3 +468,53 @@ fn generated_primary_preflight_preserves_raw_allocations_and_refuses_exhausted_r
         vec![String::new(), "  exact 日本語  ".into()]
     );
 }
+
+#[test]
+fn exhausted_record_revision_refuses_typed_and_datasheet_additions_without_schema_changes() {
+    let mut preview = crate::preview::Preview::new(crate::preview::Scene::InitialTableDraft);
+    let mut state = std::mem::take(preview.state_mut());
+    // No render occurred: the shared append helper must first initialize the
+    // existing ID cell before reserving the ordinary field's row entry.
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let editor = state.table_draft.as_mut().unwrap();
+    assert!(editor.commit_rename());
+    let field = editor.draft.fields()[1].id();
+    assert!(editor.record.set_input(field, value("  retained 日本語  ")));
+    editor.record.revision = u64::MAX;
+    let before = editor.draft.snapshot("Table1").unwrap();
+    let inputs = editor.record.inputs(&before).unwrap();
+    let raw_pointer = editor.record.entries[1].text.as_ptr();
+    assert!(!state.add_table_draft_field(DraftFieldType::Number));
+    let editor = state.table_draft.as_ref().unwrap();
+    assert!(editor.draft.snapshot("Table1").unwrap() == before);
+    assert_eq!(editor.record.inputs(&before).unwrap(), inputs);
+    assert_eq!(editor.record.entries[1].text.as_ptr(), raw_pointer);
+    assert_eq!(editor.record.revision, u64::MAX);
+    assert!(editor.error);
+    assert!(editor.rename.is_none());
+
+    let mut harness = Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(
+            |ui, state: &mut (crate::State, Vec<crate::Action>)| state.1.extend(state.0.show(ui)),
+            (state, Vec::new()),
+        );
+    crate::configure(&harness.ctx);
+    harness.run_steps(3);
+    harness
+        .get_by_role_and_label(Role::Button, "Click to Add")
+        .click_accesskit();
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::Button, "Number")
+        .click_accesskit();
+    harness.run_steps(2);
+    let editor = harness.state().0.table_draft.as_ref().unwrap();
+    assert!(editor.draft.snapshot("Table1").unwrap() == before);
+    assert_eq!(editor.record.inputs(&before).unwrap(), inputs);
+    assert_eq!(editor.record.entries[1].text.as_ptr(), raw_pointer);
+    assert_eq!(editor.record.revision, u64::MAX);
+    assert!(editor.error);
+    assert!(editor.rename.is_none());
+    assert!(harness.state().1.is_empty());
+}

@@ -47,8 +47,9 @@ Microsoft documents separate [Table and Table Design workflows](https://support.
 The retained Design image shows an existing AutoNumber table, not fresh Design
 activation or its no-key prompt. Those command and confirmation semantics come
 from Microsoft's procedures; the implementation does not claim a captured prompt
-layout or complete Design parity. Manual creation in populated sources, imported
-ALTER, composite/text keys and general schema mutation remain unsupported.
+layout or complete Design parity. Qualified mixed-source manual creation uses
+the same reviewed native service; imported ALTER, composite/text keys and general
+schema mutation remain unsupported.
 
 The initial Datasheet's Click to Add gallery uses the
 [field-type reference boundaries](DATABASE_CREATION.md#click-to-add-reference-boundaries).
@@ -60,6 +61,24 @@ separate from the contextual Table Fields Ribbon's disabled field-management
 previews. The retained Windows captures do
 not show the expanded gallery; documented type choices and explicit subtype
 controls are not a claim of native menu or application-default parity.
+
+Design has its own inline blank Field Name/Data Type row, distinct from that
+Datasheet gallery. Its new-row and existing-field type selectors show the complete
+current menu: the six supported types remain callable, while Long Text,
+Date/Time Extended, AutoNumber, OLE Object, Hyperlink, Attachment, Calculated and
+Lookup Wizard remain disabled with unavailable tooltips. AutoNumber's protected
+existing field and the explicit automatic-ID Save decision are separate from
+this disabled authoring choice. No menu choice expands backend type support.
+
+Microsoft's [type/property reference](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties)
+and [Lookup Wizard procedure](https://support.microsoft.com/en-us/access/create-or-delete-a-lookup-field)
+support these distinctions and the wizard's place in the Design type list. The
+actual retained 1920×1165 Windows Design capture, reopened at unknown DPI, does
+not show that menu open. Its visible grid guides layout; complete menu appearance
+and Enter/Tab/Escape behavior remain adaptations awaiting native comparison.
+Pending first-field Save and invalid-name correction use the same checked draft,
+raw-input revision witnesses and reviewed save service; see
+[the inline Design contract](DATABASE_CREATION.md#fresh-manual-table-design).
 
 ## Font catalog and caption alignment — 5 November 2026
 

@@ -95,7 +95,8 @@ Existing destinations are never replaced. The new file opens with an unsaved
 layouts, including qualified mixed generated/manual/keyless tables. That is an implementation
 boundary; broader native growth and general schema changes remain in development.
 The draft suggests an unused `TableN` name. Names, supported types and bounded field
-properties can be edited in the initial table's Design view. Fields can also be
+properties can be edited in the initial table's Design view, with new fields
+entered directly in its blank Name/Type row. Fields can also be
 named in their headers, and a first record can be entered before saving the table.
 That record then uses a separate reviewed row save. Create → Table Design starts empty for canonical blank and qualified populated
 sources, with supported manual numeric keys or an explicit keyless save. General

@@ -91,3 +91,5 @@ design-size-large-number = 큰 숫자
 design-size-eight-bytes = 8바이트
 design-size-one-bit = 1비트
 design-carrier-help = 읽기용 형식만 표시됩니다. 네이티브 필드의 Access 표시 형식이 제공되지 않았습니다.
+
+design-type-lookup-wizard = 조회 마법사

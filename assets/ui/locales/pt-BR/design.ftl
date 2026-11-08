@@ -91,3 +91,5 @@ design-size-large-number = Número Grande
 design-size-eight-bytes = 8 bytes
 design-size-one-bit = 1 bit
 design-carrier-help = Apenas o tipo de leitura; o tipo de exibição do Access para o campo nativo não foi fornecido.
+
+design-type-lookup-wizard = Assistente de Pesquisa

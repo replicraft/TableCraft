@@ -25,6 +25,7 @@ pub(super) struct Editor {
     record: record::RowDraft,
     properties: Editors,
     descriptions: design::description::Editors,
+    new_field: design::new_field::NewField,
     rename: Option<rename::Rename>,
     focus_add: bool,
     save_requested: bool,
@@ -56,6 +57,7 @@ impl Editor {
             record: record::RowDraft::new(),
             properties: Editors::default(),
             descriptions: design::description::Editors::default(),
+            new_field: design::new_field::NewField::new(design),
             rename: None,
             focus_add: true,
             save_requested: false,
@@ -81,6 +83,63 @@ impl Editor {
         true
     }
 
+    pub(super) fn commit_pending(&mut self) -> bool {
+        self.commit_rename() && self.commit_new_field()
+    }
+
+    pub(super) fn commit_new_field(&mut self) -> bool {
+        if !self.new_field.pending() {
+            return true;
+        }
+        if self.new_field.rejected || self.new_field.name.is_empty() {
+            self.new_field.refuse();
+            self.error = true;
+            return false;
+        }
+        let Some(record_revision) = self.record.prepare_append(&self.draft) else {
+            self.new_field.refuse();
+            self.error = true;
+            return false;
+        };
+        let kind = self.new_field.kind;
+        let Ok(id) = self.draft.add_named_field(kind, &self.new_field.name) else {
+            self.new_field.refuse();
+            self.error = true;
+            return false;
+        };
+        self.record.append_prepared(id, kind, record_revision);
+        self.design.select(id);
+        self.new_field.committed();
+        self.error = false;
+        true
+    }
+
+    /// Reserve the row entry before publishing an automatically named field.
+    /// Initial typed callers may not have rendered/synchronized the ID yet.
+    fn add_field(&mut self, kind: DraftFieldType) -> bool {
+        if self.save_blocked || !self.commit_pending() {
+            return false;
+        }
+        if !self.record.synchronize(&self.draft) {
+            self.error = true;
+            return false;
+        }
+        let Some(record_revision) = self.record.prepare_append(&self.draft) else {
+            self.error = true;
+            return false;
+        };
+        let Ok(id) = self.draft.add_field(kind) else {
+            self.error = true;
+            return false;
+        };
+        self.record.append_prepared(id, kind, record_revision);
+        let field = self.draft.fields().last().unwrap();
+        self.rename = Some(rename::Rename::new(id, field.name().into()));
+        self.focus_add = false;
+        self.error = false;
+        true
+    }
+
     pub(in crate::workspace) fn view_available(&self) -> bool {
         !self.save_blocked
     }
@@ -95,6 +154,7 @@ impl Editor {
 
     pub(super) fn is_modified(&self) -> bool {
         self.draft.is_modified()
+            || self.new_field.pending()
             || self.record.is_modified()
             || self.properties.rejected()
             || self.descriptions.rejected()
@@ -114,6 +174,7 @@ impl Editor {
             + self.record.retained_bytes()
             + self.properties.retained_bytes()
             + self.descriptions.retained_bytes()
+            + self.new_field.retained_bytes()
             + self
                 .rename
                 .as_ref()
@@ -166,9 +227,6 @@ impl State {
             Some(grid::Event::DeleteField(field)) => {
                 self.request_table_draft_field_delete(field);
             }
-            Some(grid::Event::AddField(kind)) => {
-                self.add_table_draft_field(kind);
-            }
             Some(grid::Event::ChangeType(field, kind)) => {
                 self.set_table_draft_field_type(field, kind);
             }
@@ -197,26 +255,7 @@ impl State {
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
-        if editor.save_blocked || !editor.commit_rename() {
-            return false;
-        }
-        let Ok(id) = editor.draft.add_field(kind) else {
-            return false;
-        };
-        let name = editor
-            .draft
-            .fields()
-            .iter()
-            .find(|field| field.id() == id)
-            .unwrap()
-            .name();
-        if !editor.record.synchronize(&editor.draft) {
-            editor.error = true;
-            return false;
-        }
-        editor.rename = Some(rename::Rename::new(id, name.into()));
-        editor.focus_add = false;
-        true
+        editor.add_field(kind)
     }
 
     pub fn table_draft_revision(&self) -> Option<u64> {

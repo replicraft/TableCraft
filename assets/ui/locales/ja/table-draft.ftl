@@ -94,3 +94,6 @@ table-draft-description-invalid = フィールドの説明が長すぎます。
 table-draft-no-key-title = 主キーがありません
 table-draft-no-key-question = 主キーが定義されていません。オートナンバー型の主キーを作成しますか？
 table-draft-no-key-failed = 主キーを追加できませんでした。現在の設計を維持するか、フィールドを削除してください。
+
+table-draft-design-new-name = 新しいフィールド名
+table-draft-design-new-type = 新しいフィールドのデータ型

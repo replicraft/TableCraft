@@ -44,6 +44,10 @@ impl RowDraft {
     /// Reserve the new generated cell before its builder declaration changes.
     /// Existing raw Strings are moved, never cloned or reinterpreted.
     pub(super) fn prepare_generated_primary(&mut self, draft: &TableDraft) -> Option<u64> {
+        self.prepare_append(draft)
+    }
+
+    pub(super) fn prepare_append(&mut self, draft: &TableDraft) -> Option<u64> {
         if self.entries.len() != draft.fields().len()
             || !self
                 .entries
@@ -56,6 +60,22 @@ impl RowDraft {
         let revision = self.revision.checked_add(1)?;
         self.entries.try_reserve_exact(1).ok()?;
         Some(revision)
+    }
+
+    pub(super) fn append_prepared(
+        &mut self,
+        field: DraftFieldId,
+        kind: DraftFieldType,
+        revision: u64,
+    ) {
+        self.entries.push(Entry {
+            id: field,
+            kind,
+            choice: Choice::Omitted,
+            text: String::new(),
+            rejected: false,
+        });
+        self.revision = revision;
     }
 
     pub(super) fn prepend_generated_primary(&mut self, field: DraftFieldId, revision: u64) {

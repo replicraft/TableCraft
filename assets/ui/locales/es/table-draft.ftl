@@ -94,3 +94,6 @@ table-draft-description-invalid = La descripción del campo es demasiado larga.
 table-draft-no-key-title = Sin clave principal
 table-draft-no-key-question = No se ha definido una clave principal. ¿Crear una clave principal de Autonumeración?
 table-draft-no-key-failed = No se pudo agregar la clave principal. Conserve el diseño actual o libere un campo.
+
+table-draft-design-new-name = Nombre del nuevo campo
+table-draft-design-new-type = Tipo de datos del nuevo campo

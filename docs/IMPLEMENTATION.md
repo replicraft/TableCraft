@@ -1,5 +1,36 @@
 # Implementation status
 
+## Inline Table Design fields — 7 November 2026
+
+Table Design now accepts a field name and type directly in its first blank row.
+The shared builder validates and inserts the named declaration atomically;
+record-slot preparation happens before schema mutation. Duplicate, oversized or
+otherwise invalid input retains its raw name/type for correction. Save and view
+switches commit valid pending declarations, including the first field in an
+empty Design draft. Escape discards only the pending row. These keyboard details
+remain provisional until native Access comparison.
+
+The Design type list shows all fourteen native choices, including Lookup Wizard.
+Six ordinary types are implemented; the remaining choices are disabled with
+unavailable tooltips. Datasheet retains its separate Click to Add gallery.
+Pending input shares the existing raw-edit revision, so captured save, delete
+and discard witnesses cannot act on subsequently changed inputs. The connected
+desktop journey saves a corrected keyless declaration and its separate first
+record, then reopens and queries the actual native file.
+
+Accepted checks pass 39 builder, 152 runtime, 464 shared-UI and 119 desktop
+tests across the feature batches. The final full UI batch includes eight inline
+interaction tests, preserving dropdown ownership of Escape, Enter and Tab, and
+the foreground popup clipping case. Strict affected-package lint, five cross-target
+compilations, formatting, dependency and documentation checks pass; see the
+[platform audit](testing/CROSS_PLATFORM_AUDIT.md). Initial focus, popup-clipping
+and fixture-selection failures remain distinct from accepted runs in ignored
+logs, including the reproduced popup Enter failure before its guard was fixed.
+Current final logs use `.cache/gui-inline-design-final-qualified-*20261107.log`.
+Five final offscreen frames were inspected in light/dark and compact
+German/Korean layouts; see the [presentation record](ui/PRESENTATION_PREVIEW.md#inline-table-design-fields--7-november-2026).
+This adds no new native field type or Access/Windows/Linux qualification.
+
 ## Repeated manual/keyless Table Design — 7 November 2026
 
 Create → Table Design now works in the qualified populated append lineage too.

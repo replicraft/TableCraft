@@ -91,3 +91,5 @@ design-size-large-number = Large Number
 design-size-eight-bytes = 8 bytes
 design-size-one-bit = 1 bit
 design-carrier-help = Reader carrier only; the native field’s Access presentation type has not been supplied.
+
+design-type-lookup-wizard = Lookup Wizard

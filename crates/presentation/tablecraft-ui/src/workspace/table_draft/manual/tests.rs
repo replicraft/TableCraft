@@ -521,6 +521,13 @@ fn primary_ribbon_selection_follows_actual_field_and_keeps_protected_key_readonl
                 .toggled()
         };
         assert_eq!(toggled(&harness), Some(Toggled::False));
+        // Fresh Design focuses its blank declaration row. Select the actual
+        // existing field before asking Primary Key to operate on that row.
+        harness
+            .get_by_role_and_label(Role::Button, "Key")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(harness.state().0.can_toggle_table_draft_primary_key());
         harness
             .get_by_role_and_label(Role::Button, "Primary Key")
             .click_accesskit();

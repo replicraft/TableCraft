@@ -94,3 +94,6 @@ table-draft-description-invalid = 필드 설명이 너무 깁니다.
 table-draft-no-key-title = 기본 키 없음
 table-draft-no-key-question = 기본 키가 정의되지 않았습니다. 일련 번호 기본 키를 만들까요?
 table-draft-no-key-failed = 기본 키를 추가하지 못했습니다. 현재 디자인을 유지하거나 필드를 하나 제거하세요.
+
+table-draft-design-new-name = 새 필드 이름
+table-draft-design-new-type = 새 필드 데이터 형식

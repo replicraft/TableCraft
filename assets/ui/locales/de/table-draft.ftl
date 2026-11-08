@@ -94,3 +94,6 @@ table-draft-description-invalid = Die Feldbeschreibung ist zu lang.
 table-draft-no-key-title = Kein Primärschlüssel
 table-draft-no-key-question = Es ist kein Primärschlüssel definiert. Einen AutoWert-Primärschlüssel erstellen?
 table-draft-no-key-failed = Der Primärschlüssel konnte nicht hinzugefügt werden. Behalten Sie den Entwurf oder entfernen Sie ein Feld.
+
+table-draft-design-new-name = Name des neuen Felds
+table-draft-design-new-type = Datentyp des neuen Felds

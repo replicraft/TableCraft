@@ -1,5 +1,37 @@
 # Presentation preview
 
+## Inline Table Design fields — 7 November 2026
+
+The real blank Design row replaces the Design-only Add field gallery.
+`TABLECRAFT_PREVIEW_TABLE_COMMAND=design-new-row` types an uncommitted name;
+`design-type-menu` opens its actual type selector. Both accept the existing
+`first-table-ready` and `additional-table-ready` scenes. The renderer asserts
+the pending/disabled states and emits no native database actions. The existing
+Datasheet gallery remains separate.
+
+Five normal-host frames in ignored
+`.cache/ui-previews/inline-design-final-20261107/` were rendered and inspected:
+English light empty Design, English dark manual key and English light type list
+at 1280×820, 1×; German dark pending row and Korean light type list at 900×580
+logical points, 1.25× (1125×725 pixels). Rendering ran offscreen on macOS ARM64
+with Windows input emulation. No native application windows were opened.
+The flat popup shows implemented choices and disabled native choices, preserving
+selected and hover highlighting. One ComboBox-owned scroll area bounds the list;
+compact translated Ribbon overflow retains its existing horizontal scrolling.
+
+The actual private Windows/VirtualBox Design capture was reopened and inspected
+again: 1920×1165 pixels, unknown DPI. It establishes the upper Name/Type/Description
+grid and separate lower properties pane. It does not establish the dropdown,
+empty fresh Design, dark styling or exact Enter/Tab/Escape timing; those remain
+explicit visual/interaction adaptations pending native comparison. Lookup Wizard
+is a visible disabled workflow, not another implemented scalar type.
+
+The earlier `.cache/ui-previews/inline-design-initial-20261107/` render is failed
+exploratory evidence: a nested scroll area clipped the later type choices. It
+was removed, and the existing full-button clipping assertion passes unchanged.
+The final images are separate from those initial frames and do not qualify
+native Access schema behavior or Windows/Linux execution.
+
 ## Populated-table Design and capacity — 7 November 2026
 
 The three existing Design preview commands now also accept the

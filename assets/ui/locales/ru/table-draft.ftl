@@ -94,3 +94,6 @@ table-draft-description-invalid = Описание поля слишком дл�
 table-draft-no-key-title = Нет первичного ключа
 table-draft-no-key-question = Первичный ключ не определён. Создать первичный ключ типа «Счётчик»?
 table-draft-no-key-failed = Не удалось добавить первичный ключ. Сохраните текущую структуру или освободите место для поля.
+
+table-draft-design-new-name = Имя нового поля
+table-draft-design-new-type = Тип данных нового поля

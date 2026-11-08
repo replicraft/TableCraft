@@ -91,3 +91,5 @@ design-size-large-number = Große Zahl
 design-size-eight-bytes = 8 Bytes
 design-size-one-bit = 1 Bit
 design-carrier-help = Nur der Lesetyp; der Access-Anzeigetyp des nativen Feldes wurde nicht übermittelt.
+
+design-type-lookup-wizard = Nachschlage-Assistent

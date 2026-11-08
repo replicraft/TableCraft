@@ -178,7 +178,7 @@ fn raw_description_witness_invalidates_delete_and_discard_without_metadata_chang
             .as_mut()
             .unwrap()
             .properties
-            .record_description_edit()
+            .record_raw_edit()
     );
     assert_eq!(
         state.table_draft.as_ref().unwrap().draft.revision(),
@@ -198,7 +198,7 @@ fn raw_description_witness_invalidates_delete_and_discard_without_metadata_chang
             .as_mut()
             .unwrap()
             .properties
-            .record_description_edit()
+            .record_raw_edit()
     );
     assert!(!state.close_object(&tab));
     assert!(state.has_unsaved_table_drafts());

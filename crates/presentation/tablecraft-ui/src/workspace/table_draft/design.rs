@@ -1,8 +1,10 @@
 //! Editable initial declarations share the same unsaved model as Datasheet view.
 pub(in crate::workspace::table_draft) mod description;
+pub(super) mod new_field;
 pub(in crate::workspace::table_draft) mod properties;
 #[cfg(test)]
 mod tests;
+mod types;
 
 use super::{Editor, grid::Event, rename};
 use crate::localization::{message, tr};
@@ -22,21 +24,12 @@ const MIN_TYPE_WIDTH: f32 = 100.0;
 const MIN_DESCRIPTION_WIDTH: f32 = 100.0;
 const PROPERTIES_HEIGHT: f32 = 180.0;
 const MIN_PROPERTIES_HEIGHT: f32 = 100.0;
-// Header, generated ID, one ordinary field and the Add field row remain visible.
+// Header, generated ID, one ordinary field and the inline blank row remain visible.
 const MIN_GRID_ROWS: f32 = 4.0;
 const FOOTER_PADDING: f32 = 12.0;
 const KEY_SIZE: f32 = 12.0;
 const SELECTOR_HALF_WIDTH: f32 = 3.0;
 const SELECTOR_HALF_HEIGHT: f32 = 4.0;
-
-const TYPES: [(DraftFieldType, &str); 6] = [
-    (DraftFieldType::ShortText, "design-type-short-text"),
-    (DraftFieldType::Number, "design-type-number"),
-    (DraftFieldType::LargeInteger, "design-type-large-number"),
-    (DraftFieldType::Currency, "design-type-currency"),
-    (DraftFieldType::DateTime, "design-type-date-time"),
-    (DraftFieldType::YesNo, "design-type-yes-no"),
-];
 
 #[derive(Default)]
 pub(in crate::workspace) struct Design {
@@ -52,6 +45,10 @@ impl Design {
             active,
             ..Self::default()
         }
+    }
+
+    pub(super) fn select(&mut self, field: DraftFieldId) {
+        self.selected = Some(field);
     }
 
     pub(super) fn selected_field<'a>(&self, draft: &'a TableDraft) -> Option<&'a DraftField> {
@@ -112,7 +109,7 @@ impl State {
         let Some(editor) = &mut self.table_draft else {
             return false;
         };
-        if editor.save_blocked || !editor.commit_rename() {
+        if editor.save_blocked || !editor.commit_pending() {
             return false;
         }
         editor.design.active = design;
@@ -196,7 +193,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         .exact_size(footer_height(ui, editor))
         .show(ui, |ui| {
             ui.weak(tr(ui, "table-draft-design-input-help"));
-            if editor.error {
+            if editor.error || editor.new_field.rejected {
                 ui.colored_label(
                     ui.visuals().error_fg_color,
                     tr(ui, "table-draft-invalid-name"),
@@ -239,6 +236,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         .max_size(properties_limit)
         .show(ui, |ui| properties::show(ui, editor));
 
+    let mut new_field_commit = false;
     let mut rename_field = None;
     let mut rename_outcome = None;
     let grid_rect = ui.available_rect_before_wrap().intersect(ui.clip_rect());
@@ -339,6 +337,8 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     ));
                                 }
                                 if response.clicked() {
+                                    response.request_focus();
+                                    editor.new_field.deactivate();
                                     editor.design.selected = Some(field.id());
                                 }
                             });
@@ -367,6 +367,8 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                         )
                                     });
                                     if response.clicked() {
+                                        response.request_focus();
+                                        editor.new_field.deactivate();
                                         editor.design.selected = Some(field.id());
                                         rename_field = Some((field.id(), field.name().to_owned()));
                                     }
@@ -385,29 +387,16 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                         egui::ComboBox::from_id_salt(("draft_type", field.id()))
                                             .selected_text(tr(ui, type_key(field.kind())))
                                             .width(ui.available_width())
+                                            .height(types::menu_height(ui))
                                             .show_ui(ui, |ui| {
-                                                for (kind, key) in TYPES {
-                                                    if ui
-                                                        .add_enabled(
-                                                            !field.is_primary()
-                                                                || field
-                                                                    .supports_primary_type(kind),
-                                                            egui::Button::new(tr(ui, key))
-                                                                .selected(kind == field.kind()),
-                                                        )
-                                                        .on_disabled_hover_text(tr(
-                                                            ui,
-                                                            "ribbon-unavailable",
-                                                        ))
-                                                        .clicked()
-                                                    {
-                                                        editor.design.selected = Some(field.id());
-                                                        event = Some(Event::ChangeType(
-                                                            field.id(),
-                                                            kind,
-                                                        ));
-                                                        ui.close();
-                                                    }
+                                                if let Some(kind) =
+                                                    types::show(ui, field.kind(), |kind| {
+                                                        !field.is_primary()
+                                                            || field.supports_primary_type(kind)
+                                                    })
+                                                {
+                                                    event =
+                                                        Some(Event::ChangeType(field.id(), kind));
                                                 }
                                             })
                                             .response;
@@ -431,13 +420,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                             });
                             row.col(|ui| {
                                 crate::datasheet::grid_cell(ui, false);
-                                let available = editor.properties.description_edit_available();
+                                let available = editor.properties.raw_edit_available();
                                 let changed = ui
                                     .add_enabled_ui(available, |ui| {
                                         editor.descriptions.show(ui, field)
                                     })
                                     .inner;
-                                if changed && !editor.properties.record_description_edit() {
+                                if changed && !editor.properties.record_raw_edit() {
                                     editor.descriptions.reject(field.id());
                                 }
                             });
@@ -450,21 +439,25 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                         });
                         row.col(|ui| {
                             crate::datasheet::grid_cell(ui, false);
-                            ui.add_enabled_ui(
-                                editor.draft.fields().len() < MAX_DRAFT_FIELDS
-                                    && editor.rename.is_none(),
-                                |ui| {
-                                    ui.menu_button(tr(ui, "table-draft-design-add-field"), |ui| {
-                                        if let Some(kind) = super::gallery::show(ui) {
-                                            event = Some(Event::AddField(kind));
-                                        }
-                                    });
-                                },
-                            );
+                            let available = editor.draft.fields().len() < MAX_DRAFT_FIELDS
+                                && editor.rename.is_none()
+                                && editor.properties.raw_edit_available();
+                            ui.add_enabled_ui(available, |ui| {
+                                new_field_commit |=
+                                    editor.new_field.show_name(ui, &mut editor.properties);
+                            });
                         });
-                        for _ in 0..2 {
-                            row.col(|ui| crate::datasheet::grid_cell(ui, false));
-                        }
+                        row.col(|ui| {
+                            crate::datasheet::grid_cell(ui, false);
+                            let available = editor.draft.fields().len() < MAX_DRAFT_FIELDS
+                                && editor.rename.is_none()
+                                && editor.properties.raw_edit_available();
+                            ui.add_enabled_ui(available, |ui| {
+                                new_field_commit |=
+                                    editor.new_field.show_type(ui, &mut editor.properties);
+                            });
+                        });
+                        row.col(|ui| crate::datasheet::grid_cell(ui, false));
                     });
                 });
             if let Some(selector) = columns.first() {
@@ -503,6 +496,9 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         }
         None => {}
     }
+    if new_field_commit {
+        editor.commit_new_field();
+    }
     editor.descriptions.commit(&mut editor.draft);
     let requested = std::mem::take(&mut editor.save_requested);
     if event.is_none() && (save || requested && can_save) {
@@ -514,7 +510,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
 fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
     let font = egui::TextStyle::Body.resolve(ui.style());
     let mut keys = vec!["table-draft-design-input-help"];
-    if editor.error {
+    if editor.error || editor.new_field.rejected {
         keys.push("table-draft-invalid-name");
     }
     if editor.descriptions.rejected() {

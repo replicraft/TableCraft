@@ -39,7 +39,7 @@ impl State {
         let Some(editor) = self.table_draft_editor_mut(&tab) else {
             return false;
         };
-        if editor.save_blocked || editor.rename.is_some() {
+        if editor.save_blocked || editor.rename.is_some() || editor.new_field.pending() {
             return false;
         }
         let Some(declaration) = editor.draft.fields().iter().find(|declaration| {
@@ -91,6 +91,7 @@ impl State {
         };
         if editor.save_blocked
             || editor.rename.is_some()
+            || editor.new_field.pending()
             || editor.draft.revision() != confirmation.schema_revision
             || editor.record_revision() != confirmation.record_revision
             || editor.property_revision() != confirmation.property_revision

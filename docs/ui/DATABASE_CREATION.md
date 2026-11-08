@@ -218,6 +218,38 @@ invent an initial field. The user enters a field name and type in the upper grid
 The working Datasheet-to-Design switch remains distinct: it retains whatever
 fields and generated ID its existing draft already has.
 
+The first blank Design row contains an inline Field Name editor and a Data Type
+selector, rather than the Datasheet's Click to Add gallery. A pending name/type
+has no field ID until its checked declaration is committed. Enter in Field Name
+commits the current type (Short Text if unchanged); Tab moves to Data Type, and
+Enter or Tab there commits the selected type while its dropdown is closed.
+An open dropdown owns its keyboard input; Escape first closes it without
+discarding the pending declaration. A subsequent Escape cancels only that pending
+new row. These keyboard details are the current TableCraft interaction profile,
+not recorded native Access keyboard parity. The platform Save shortcut also
+commits a valid pending first field before checking whether the draft is empty
+and opening the table-name prompt.
+
+The new-row selector and existing field's Data Type menu share the same visible
+list. Short Text, Number, Large Number, Date/Time, Currency and Yes/No use the
+already supported declarations. Long Text, Date/Time Extended, AutoNumber, OLE
+Object, Hyperlink, Attachment, Calculated and Lookup Wizard remain visible,
+disabled, and explain that they are not available yet. This does not add storage
+types, computed-field execution or lookup authoring. The existing generated ID
+remains protected; the no-key Save question's explicit automatic-ID choice is a
+separate workflow.
+
+Duplicate or otherwise invalid bounded names keep their pending name/type for
+correction and do not open a Save prompt or publish a declaration. An oversized
+input attempt retains the last accepted raw name and marks refusal rather than
+silently truncating it into an accepted field. Named builder addition validates
+and reserves before mutation; record append is preflighted before the declaration
+changes. Refusal leaves existing field IDs and exact raw record text/modes intact.
+The pending editor shares the raw-edit revision clock used by property editors:
+name/type changes, rejected attempts and cancellation invalidate captured Save,
+Delete Field and discard witnesses. No view switch or confirmation bypasses the
+same revision checks, native review or consuming Save path.
+
 A selected ordinary Number field with Long Integer Field Size, Large Number or
 Currency can be chosen as the one manual primary key through the Primary Key
 Ribbon command. The selection retains its actual ordered field position; the
@@ -399,6 +431,15 @@ Allow Zero Length and Default Value, plus Precision and Scale for Decimal.
 Caption, validation rules/messages and Lookup authoring remain unavailable. The pane describes the
 current draft declaration, not an observation of already stored metadata.
 Existing persisted-table Design view remains read only.
+
+Microsoft's [data-type and field-property reference](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties)
+governs the type distinctions. The [Lookup Wizard procedure](https://support.microsoft.com/en-us/access/create-or-delete-a-lookup-field)
+places that choice in the Design Data Type list; displaying its disabled entry
+does not implement the wizard or its relationships. The retained 1920×1165
+Windows/VirtualBox Design image was reopened for this change, with unknown DPI.
+It shows the upper grid and blank rows, but no open type menu or active new-field
+keyboard sequence. Menu composition and the inline interaction remain documented
+adaptations, not an expanded-menu pixel match or native interaction qualification.
 
 Changing a draft field's type keeps its field identity and all pending record
 input exactly as entered, including Omitted/NULL modes and text hidden by those

@@ -5,10 +5,11 @@ impl State {
     pub fn table_draft_primary_key_selected(&self) -> bool {
         self.table_draft_design_visible()
             && self.table_draft.as_ref().is_some_and(|editor| {
-                editor
-                    .design
-                    .selected_field(&editor.draft)
-                    .is_some_and(|field| field.is_primary())
+                !editor.new_field.editing()
+                    && editor
+                        .design
+                        .selected_field(&editor.draft)
+                        .is_some_and(|field| field.is_primary())
             })
     }
 
@@ -26,6 +27,7 @@ impl State {
             return false;
         };
         if editor.save_blocked
+            || editor.new_field.editing()
             || editor.rename.is_some()
             || !editor.draft.is_design()
             || editor

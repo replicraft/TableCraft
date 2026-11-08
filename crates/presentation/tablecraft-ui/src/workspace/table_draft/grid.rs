@@ -22,7 +22,6 @@ const ADD_CHEVRON_HALF_HEIGHT: f32 = 1.5;
 pub(super) enum Event {
     Save,
     DeleteField(DraftFieldId),
-    AddField(DraftFieldType),
     ChangeType(DraftFieldId, DraftFieldType),
 }
 
@@ -234,24 +233,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
             });
     });
     if let Some(kind) = addition {
-        match editor.draft.add_field(kind) {
-            Ok(id) => {
-                let name = editor
-                    .draft
-                    .fields()
-                    .iter()
-                    .find(|field| field.id() == id)
-                    .unwrap()
-                    .name();
-                if !editor.record.synchronize(&editor.draft) {
-                    editor.error = true;
-                }
-                editor.rename = Some(super::rename::Rename::new(id, name.into()));
-                editor.focus_add = false;
-                editor.error = false;
-            }
-            Err(_) => editor.error = true,
-        }
+        editor.add_field(kind);
     }
     if let Some(rename) = rename {
         editor.rename = Some(super::rename::Rename::new(rename.0, rename.1));
