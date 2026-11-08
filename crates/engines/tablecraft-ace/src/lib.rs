@@ -37,6 +37,8 @@ pub use creation::{
     CreatedAddColumnError, DatabaseOptionsError, NativeDatabaseOptionsPlan,
     add_table_source_available, add_table_source_capabilities,
 };
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use creation::{CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError};
 mod encryption;
 mod error;
 mod format;

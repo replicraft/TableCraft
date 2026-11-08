@@ -5,6 +5,8 @@ pub(in crate::table) mod append;
 mod apply;
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod autonumber_counter;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) mod catalog_property;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod create_index_tests;
 mod data_ownership;

@@ -125,6 +125,7 @@ pub mod wide_properties;
 /// Independent empty-table ADD-column sources and SDK-observed expected layouts.
 pub mod canonical_add_column;
 pub mod canonical_created_add_column;
+pub mod canonical_created_default_zero;
 /// Independently authored complete canonical ACE source goldens.
 pub mod canonical_creation;
 
