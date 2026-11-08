@@ -1,4 +1,6 @@
 //! Source-free visual scenarios, without a runtime review, database or native save.
+#[path = "saved_sql/read_only_source.rs"]
+mod read_only_source;
 #[path = "saved_sql/status.rs"]
 mod status;
 use super::LAYOUT_SETTLE_STEPS;
@@ -17,11 +19,22 @@ const PROPOSED: &str = "select 43 as [Answer];\n";
 pub(super) fn is_mode(mode: &str) -> bool {
     matches!(
         mode,
-        "none" | "editor" | "dirty" | "read-only" | "close" | "close-unavailable" | "close-stale"
+        "none"
+            | "editor"
+            | "dirty"
+            | "read-only"
+            | "read-only-source"
+            | "close"
+            | "close-unavailable"
+            | "close-stale"
     ) || status::is_mode(mode)
 }
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
+    if mode == "read-only-source" {
+        read_only_source::prepare(harness);
+        return;
+    }
     let target = harness
         .state()
         .state()
@@ -78,7 +91,11 @@ fn assert_editor(harness: &Harness<'_, Preview>, mode: &str) {
     let state = harness.state().state();
     let label = state.localizer.text("query-title");
     let editor = harness.get_by_role_and_label(Role::MultilineTextInput, &label);
-    assert_eq!(editor.accesskit_node().is_disabled(), mode == "read-only");
+    assert!(!editor.accesskit_node().is_disabled());
+    assert_eq!(
+        editor.accesskit_node().data().is_read_only(),
+        mode == "read-only"
+    );
     assert_eq!(
         editor.value().as_deref(),
         Some(if mode == "dirty" { PROPOSED } else { ORIGINAL })
