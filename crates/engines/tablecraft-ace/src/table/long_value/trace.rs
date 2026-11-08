@@ -31,19 +31,24 @@ pub(in crate::table) fn read<R: NativeReadSource>(
 ) -> Result<Traced, InspectError> {
     let mut chunks = Vec::new();
     let value = read_with_trace(reader, descriptor, Some(&mut chunks))?;
-    let kind = if descriptor.is_empty() {
-        Kind::Null
-    } else {
-        match Definition::read(descriptor)?.tagged_length.get() & LENGTH_TYPE_MASK {
-            INLINE => Kind::Inline,
-            SINGLE_ROW => Kind::Single,
-            CHAINED => Kind::Chained,
-            _ => return Err(InspectError::Unsupported),
-        }
-    };
+    let kind = kind(descriptor)?;
     Ok(Traced {
         value,
         kind,
         chunks,
     })
+}
+
+/// Classify only the native carrier header, without following its references.
+/// Callers retain their own framing, budgets and semantic/source admission.
+pub(in crate::table) fn kind(descriptor: &[u8]) -> Result<Kind, InspectError> {
+    if descriptor.is_empty() {
+        return Ok(Kind::Null);
+    }
+    match Definition::read(descriptor)?.tagged_length.get() & LENGTH_TYPE_MASK {
+        INLINE => Ok(Kind::Inline),
+        SINGLE_ROW => Ok(Kind::Single),
+        CHAINED => Ok(Kind::Chained),
+        _ => Err(InspectError::Unsupported),
+    }
 }

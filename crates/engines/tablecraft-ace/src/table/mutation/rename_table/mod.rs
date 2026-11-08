@@ -1,4 +1,7 @@
 //! Source-qualified persisted catalog renaming, without dependency repair.
+mod creator_external;
+#[cfg(test)]
+mod creator_tests;
 #[cfg(test)]
 mod indexed_tests;
 mod indexes;
@@ -90,7 +93,7 @@ impl NativeTableRenameIdentity {
 
 /// An owning, unpublished native table rename with exact BEFORE/AFTER images.
 ///
-/// Both planners require explicit disabled Name AutoCorrect, one ordinary
+/// Every profile requires explicit disabled Name AutoCorrect, one ordinary
 /// local user table and a closed, dependency-free catalog. They do not repair
 /// NameMaps, saved queries, forms, macros, relationships or catalog indexes.
 /// The original table definition, data, native identities, timestamps and opaque
@@ -98,20 +101,24 @@ impl NativeTableRenameIdentity {
 /// the planner conservatively preserves its original bytes. No Access execution
 /// comparison is implied by independent byte-oracle qualification.
 /// Persistence requires the separately checked, profile-bound schema journal
-/// operation; the original and indexed profiles retain distinct intent versions.
+/// operation; inline, indexed and creator-external sources retain distinct intents.
 pub struct NativeTableRenamePlan {
     before: NativeImage,
     after: Vec<u8>,
     table: String,
     new_name: String,
     identity: NativeTableRenameIdentity,
-    indexes: source::IndexPolicy,
+    profile: source::SourceProfile,
 }
 
 impl NativeTableRenamePlan {
     /// Actual native admission purpose, retained independently of candidate bytes.
     pub(crate) fn has_indexed_admission(&self) -> bool {
-        self.indexes == source::IndexPolicy::RetainedInt32
+        self.profile == source::SourceProfile::RetainedInt32
+    }
+
+    pub(crate) fn uses_creator_external_source(&self) -> bool {
+        self.profile == source::SourceProfile::CreatorExternal
     }
 
     /// Actual original catalog spelling, independent of caller lookup spelling.
@@ -146,6 +153,14 @@ impl NativeTableRenamePlan {
 }
 
 impl NativeImage {
+    pub(crate) fn table_rename_uses_external_properties(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, TableRenameError> {
+        source::database_properties_external(self, budget, cancelled)
+    }
+
     /// Rename one qualified local table by changing its actual catalog Name.
     ///
     /// Exact spelling no-ops still perform complete source/dependency admission.
@@ -162,7 +177,7 @@ impl NativeImage {
         self.plan_table_rename_profile(
             table,
             new_name,
-            source::IndexPolicy::Unindexed,
+            source::SourceProfile::Unindexed,
             budget,
             cancelled,
         )
@@ -185,7 +200,26 @@ impl NativeImage {
         self.plan_table_rename_profile(
             table,
             new_name,
-            source::IndexPolicy::RetainedInt32,
+            source::SourceProfile::RetainedInt32,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Rename a creator-compatible table after an explicit external OFF option save.
+    /// Original V1/V2 planners retain their inline property languages. This profile
+    /// requires complete external-body ownership and safe constructor field facts.
+    pub fn plan_creator_table_rename(
+        self,
+        table: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeTableRenamePlan, TableRenameError> {
+        self.plan_table_rename_profile(
+            table,
+            new_name,
+            source::SourceProfile::CreatorExternal,
             budget,
             cancelled,
         )
@@ -195,14 +229,14 @@ impl NativeImage {
         self,
         table: &str,
         new_name: &str,
-        indexes: source::IndexPolicy,
+        profile: source::SourceProfile,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeTableRenamePlan, TableRenameError> {
         let _span = tracing::debug_span!("native.table.rename.plan").entered();
         self.require_standard_capture()?;
         validate_name(new_name, budget, cancelled)?;
-        let qualified = source::qualify(&self, table, new_name, indexes, budget, cancelled)?;
+        let qualified = source::qualify(&self, table, new_name, profile, budget, cancelled)?;
         let mut after = super::record_serialization::copy(self.as_bytes(), budget, cancelled)
             .map_err(source::serialization_error)?;
 
@@ -244,7 +278,7 @@ impl NativeImage {
             table: qualified.table,
             new_name: qualified.proposed,
             identity: qualified.identity,
-            indexes,
+            profile,
         })
     }
 }

@@ -1,5 +1,19 @@
 # Candidate Access fixtures
 
+## Creator external-OFF rename literals — 8 November 2026
+
+The repository-authored `canonical_creator_rename` fixture composes the existing
+independent explicit-OFF image builder with a literal catalog Name/footer and
+physical two-record repack. Nine creator originals cover keyless/manual/generated
+empty/populated tables and safe field metadata. It calls no native encoder or
+planner. Its source SHA-256 is `7c746dad3919a0252587d6c94accc52cd94c6c591a8f46aaf2c19f06af421e2c`.
+The separate [Python literal model and SDK observations](ACE16_CREATOR_RENAME_SOURCES.md)
+pin eight complete images over two SDK-written sources; all eight read-only SDK
+opens pass with exact names, OFF metadata and original table/index counts.
+Native V3 fixture comparisons and recovery tests remain unrun at this checkpoint.
+Microsoft Access rename/save behavior remains unqualified. No third-party fixture
+or source is copied.
+
 ## Independent persisted-table rename fixtures — 8 November 2026
 
 The shared raw `canonical_catalog_names::rename_pair` recipe independently builds

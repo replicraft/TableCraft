@@ -247,7 +247,7 @@ pub fn with_policies(mut bytes: Vec<u8>, policies: &[Policy]) -> Vec<u8> {
     bytes
 }
 
-fn attach_properties(bytes: &mut [u8], property_bytes: &[u8]) {
+pub(super) fn attach_properties(bytes: &mut [u8], property_bytes: &[u8]) {
     let before = bytes[4 * 4096..5 * 4096].to_vec();
     let mut catalog = records(&before);
     assert_eq!(&catalog[7][2..6], &7_u32.to_le_bytes());

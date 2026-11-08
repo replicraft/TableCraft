@@ -33,6 +33,42 @@ pub struct RecoverableNativeTableRenamePlan {
 }
 
 impl NativeImage {
+    /// Choose the retained explicit purpose from actual database-property storage.
+    /// A single external carrier selects creator V3; all other valid carriers
+    /// select indexed V2. The chosen constructor performs complete admission.
+    /// Failure never retries another profile or changes database options.
+    pub fn plan_recoverable_table_rename_for_source(
+        self,
+        table: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeTableRenamePlan, RecoverableTableRenameError> {
+        let _span =
+            tracing::debug_span!("native.table_rename.plan_recoverable_for_source").entered();
+        if self.table_rename_uses_external_properties(budget, cancelled)? {
+            self.plan_recoverable_creator_table_rename(table, new_name, budget, cancelled)
+        } else {
+            self.plan_recoverable_indexed_table_rename(table, new_name, budget, cancelled)
+        }
+    }
+
+    /// Bind the explicit external-OFF creator source as TCRN0003/profile3.
+    /// This neither changes database options nor widens the original two APIs.
+    pub fn plan_recoverable_creator_table_rename(
+        self,
+        table: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeTableRenamePlan, RecoverableTableRenameError> {
+        let _span = tracing::debug_span!("native.table_rename.plan_recoverable_creator").entered();
+        let plan = self.plan_creator_table_rename(table, new_name, budget, cancelled)?;
+        let intent = NativeTableRenameIntent::capture(&plan, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(RecoverableNativeTableRenamePlan { plan, intent })
+    }
+
     /// Seal the explicit unchanged-Int32-index profile using TCRN0002.
     ///
     /// The original recoverable API remains TCRN0001 and unindexed. This route

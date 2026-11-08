@@ -62,11 +62,14 @@ struct Identity {
 enum Profile {
     UnindexedV1,
     RetainedInt32V2,
+    CreatorExternalV3,
 }
 
 impl Profile {
     fn from_plan(plan: &NativeTableRenamePlan) -> Self {
-        if plan.has_indexed_admission() {
+        if plan.uses_creator_external_source() {
+            Self::CreatorExternalV3
+        } else if plan.has_indexed_admission() {
             Self::RetainedInt32V2
         } else {
             Self::UnindexedV1
@@ -193,6 +196,9 @@ impl NativeTableRenameIntent {
             }
             Profile::RetainedInt32V2 => {
                 image.plan_indexed_table_rename(self.table(), self.new_name(), budget, cancelled)
+            }
+            Profile::CreatorExternalV3 => {
+                image.plan_creator_table_rename(self.table(), self.new_name(), budget, cancelled)
             }
         }
     }

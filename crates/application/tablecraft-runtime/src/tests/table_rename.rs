@@ -7,7 +7,7 @@ use crate::{
 use tablecraft_core::values::Value;
 use tablecraft_testkit::{
     fixtures::access::{
-        canonical_catalog_names::rename_pair, canonical_indexed_rename,
+        canonical_catalog_names::rename_pair, canonical_creator_rename, canonical_indexed_rename,
         canonical_ordinary_indexed::Case,
     },
     support::access::retained_target::assert_retained_target_observation,
@@ -39,13 +39,15 @@ fn review(
 
 #[test]
 fn reviewed_rename_saves_the_independent_image_and_reopens_without_record_counts() {
-    for (header, indexed) in [
-        (5, None),
-        (6, None),
-        (5, Some(Case::UniqueManual)),
-        (6, Some(Case::CounterPrimary)),
-        (5, Some(Case::AliasHistory)),
-        (6, Some(Case::RetainedTree)),
+    for (header, indexed, creator) in [
+        (5, None, None),
+        (6, None, None),
+        (5, Some(Case::UniqueManual), None),
+        (6, Some(Case::CounterPrimary), None),
+        (5, Some(Case::AliasHistory), None),
+        (6, Some(Case::RetainedTree), None),
+        (5, None, Some(0)),
+        (5, None, Some(3)),
     ] {
         let mut pair = rename_pair(header, "Items", "Renamed Ω", true);
         if let Some(case) = indexed {
@@ -65,6 +67,15 @@ fn reviewed_rename_saves_the_independent_image_and_reopens_without_record_counts
                         .collect()
                 })
                 .collect();
+        }
+        if let Some(case) = creator {
+            let source = canonical_creator_rename::pair(
+                &canonical_creator_rename::originals()[case],
+                &pair.new_name,
+            );
+            pair.before = source.before;
+            pair.after = source.after;
+            pair.rows.clear();
         }
         let (directory, path, worker, revision) = opened(&pair.before);
         let (review, capability) = review(&worker, revision, &pair.old_name, &pair.new_name);

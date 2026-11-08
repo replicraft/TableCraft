@@ -3,6 +3,7 @@
 - [Focused schema save workflow results](results/schema-save-workflows-2026-11-08.json)
 
 - [Explicit database-option insertion reference](ACE16_DATABASE_OPTIONS_SOURCES.md)
+- [Creator external-OFF rename source evidence](ACE16_CREATOR_RENAME_SOURCES.md)
 - [Existing QueryDef fitting-expression reference](NATIVE_QUERYDEF_FITTING_SAVE.md)
 - [Adaptive encryption copy measurements](ADAPTIVE_ENCRYPTION_BENCHMARKS.md)
 - [Native snapshot and parallel decryption measurements](NATIVE_LIBRARY_REFACTORS.md)

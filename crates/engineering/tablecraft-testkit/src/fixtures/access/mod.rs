@@ -139,6 +139,7 @@ pub mod canonical_variable_creation;
 
 /// Independent catalog-name encoding sources and raw column-name control.
 pub mod canonical_catalog_names;
+pub mod canonical_creator_rename;
 pub mod canonical_database_options;
 pub mod canonical_indexed_rename;
 

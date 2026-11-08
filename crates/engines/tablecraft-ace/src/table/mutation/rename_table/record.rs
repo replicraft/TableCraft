@@ -16,12 +16,18 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const INLINE_TAG: u32 = 0x8000_0000;
 const INLINE_HEADER_BYTES: usize = 3 * size_of::<u32>();
 
+#[derive(Clone, Copy)]
+pub(super) enum Payload<'a> {
+    Absent,
+    Inline(&'a [u8]),
+    External(&'a super::creator_external::Binding),
+}
+
 pub(super) fn qualify_payloads(
     image: &NativeImage,
     schema: &TableSchema,
     origin: &NativeObjectOrigin,
-    database: bool,
-    database_properties: &[u8],
+    payload: Payload<'_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), TableRenameError> {
@@ -58,22 +64,28 @@ pub(super) fn qualify_payloads(
         if field.name.eq_ignore_ascii_case("Name") {
             continue;
         }
-        if !database || !field.name.eq_ignore_ascii_case("LvProp") {
+        if !field.name.eq_ignore_ascii_case("LvProp") {
             return Err(TableRenameError::Dependency);
         }
         let start = framed.offsets[field.variable];
         let end = framed.offsets[field.variable + 1];
         let value = &row[start..end];
-        let length =
-            u32::try_from(database_properties.len()).map_err(|_| InspectError::StructureLimit)?;
-        if value.len() != INLINE_HEADER_BYTES + database_properties.len()
-            || u32_at(value, 0)? != INLINE_TAG | length
-            || value[size_of::<u32>()..INLINE_HEADER_BYTES]
-                .iter()
-                .any(|byte| *byte != 0)
-            || value[INLINE_HEADER_BYTES..] != *database_properties
-        {
-            return Err(TableRenameError::Dependency);
+        match payload {
+            Payload::Absent => return Err(TableRenameError::Dependency),
+            Payload::External(binding) => binding.descriptor(value, reader.budget, cancelled)?,
+            Payload::Inline(properties) => {
+                let length =
+                    u32::try_from(properties.len()).map_err(|_| InspectError::StructureLimit)?;
+                if value.len() != INLINE_HEADER_BYTES + properties.len()
+                    || u32_at(value, 0)? != INLINE_TAG | length
+                    || value[size_of::<u32>()..INLINE_HEADER_BYTES]
+                        .iter()
+                        .any(|byte| *byte != 0)
+                    || value[INLINE_HEADER_BYTES..] != *properties
+                {
+                    return Err(TableRenameError::Dependency);
+                }
+            }
         }
     }
     Ok(())
@@ -179,4 +191,63 @@ fn verify(
         return Err(TableRenameError::Preservation);
     }
     Ok(())
+}
+
+/// Select an explicit planner from the real stored LvProp carrier only.
+/// This does not qualify its body, properties, dependencies or mutation scope.
+pub(super) fn database_properties_external(
+    image: &NativeImage,
+    schema: &TableSchema,
+    origin: &NativeObjectOrigin,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, TableRenameError> {
+    check(budget, cancelled)?;
+    let mut input = image.reader();
+    let mut reader = crate::format::reader::Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let page = reader.page(origin.page())?;
+    let (raw, start, end) = row_range(&page, usize::from(origin.slot()))?;
+    if raw & !OFFSET_MASK != 0 {
+        return Err(TableRenameError::Source);
+    }
+    let row = &page[start..end];
+    let framed = record_layout::parse(row, schema, reader.budget)?;
+    let mut property = None;
+    for column in schema.columns() {
+        reader.work(column.name().len())?;
+        if column.name().eq_ignore_ascii_case("LvProp") && property.replace(column).is_some() {
+            return Err(TableRenameError::Source);
+        }
+    }
+    let column = property.ok_or(TableRenameError::Source)?;
+    let field = &column.field;
+    if field.fixed
+        || column.native_type() != crate::format::data_type::OLE
+        || framed.count != schema.layout.max_columns
+        || framed.offsets.len() != schema.layout.variable_slots + 1
+        || field.number >= framed.count
+        || field.variable >= schema.layout.variable_slots
+    {
+        return Err(TableRenameError::Source);
+    }
+    if row[framed.mask_start + field.number / MASK_BITS] & (1 << (field.number % MASK_BITS)) == 0 {
+        check(reader.budget, cancelled)?;
+        return Ok(false);
+    }
+    let descriptor = row
+        .get(framed.offsets[field.variable]..framed.offsets[field.variable + 1])
+        .ok_or(TableRenameError::Source)?;
+    reader.work(descriptor.len())?;
+    let external = matches!(
+        crate::table::long_value::trace::kind(descriptor)?,
+        crate::table::long_value::trace::Kind::Single
+    );
+    check(reader.budget, cancelled)?;
+    Ok(external)
 }

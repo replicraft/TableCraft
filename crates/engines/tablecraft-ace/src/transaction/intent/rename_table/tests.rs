@@ -145,7 +145,7 @@ fn malformed_wire_refuses_before_name_allocation_and_does_not_change_action_fami
         assert_eq!(limits.remaining(Resource::Bytes), 0);
     }
     let mut future = raw.clone();
-    future[7] = b'3';
+    future[7] = b'4';
     assert!(matches!(
         NativeTableRenameIntent::decode(&future, &mut budget(), &|| false),
         Err(TableRenameIntentError::UnsupportedVersion)
@@ -491,7 +491,7 @@ fn version_profile_pairs_are_closed_and_v2_framing_refuses_before_allocating_nam
         assert_eq!(limits.remaining(Resource::Bytes), 0);
     }
     let mut unknown = raw;
-    unknown[..8].copy_from_slice(b"TCRN0003");
+    unknown[..8].copy_from_slice(b"TCRN0004");
     assert!(matches!(
         NativeTableRenameIntent::decode(&unknown, &mut budget(), &|| false),
         Err(TableRenameIntentError::UnsupportedVersion)
@@ -582,4 +582,181 @@ fn indexed_v2_stale_original_and_tampered_journal_after_publish_no_authority() {
         Err(NativeRecoveryQualificationError::ImageMismatch)
     ));
     assert_eq!(target.writes, 0);
+}
+
+#[test]
+fn creator_v3_wire_complete_images_and_same_checked_recovery_are_explicit() {
+    use tablecraft_testkit::fixtures::access::canonical_creator_rename;
+    for original in canonical_creator_rename::originals() {
+        let pair = canonical_creator_rename::pair(&original, "Inventory");
+        let build = || {
+            image(&pair.before)
+                .plan_recoverable_creator_table_rename("Items", "Inventory", &mut budget(), &|| {
+                    false
+                })
+                .unwrap()
+        };
+        let reviewed = build();
+        let mut literal = literal_request(&pair.before, "Items", "Inventory", b"TCRN0003", 3);
+        // The original helper authors the historical slot8 identity. The new
+        // independent creator ledger retains user slot7 and appends MSysDb8.
+        literal[72] = 7;
+        let encoded = reviewed.intent().encode(&mut budget(), &|| false).unwrap();
+        assert_eq!(encoded, literal);
+        assert_eq!(
+            decoded(&literal).encode(&mut budget(), &|| false).unwrap(),
+            literal
+        );
+        let fresh = reviewed
+            .requalify_with_budgets(image(&pair.before), &mut budget(), &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(fresh.before_bytes(), pair.before);
+        assert_eq!(fresh.after_bytes(), pair.after);
+        assert_recovery(&pair.before, &pair.after, &literal, build);
+    }
+}
+
+#[test]
+fn creator_v3_crossed_versions_and_captured_plan_purpose_never_fall_back() {
+    use tablecraft_testkit::fixtures::access::canonical_creator_rename;
+    let pair = canonical_creator_rename::pair(
+        &canonical_creator_rename::originals().remove(0),
+        "Inventory",
+    );
+    let build = || {
+        image(&pair.before)
+            .plan_recoverable_creator_table_rename("Items", "Inventory", &mut budget(), &|| false)
+            .unwrap()
+    };
+    let raw = build().intent().encode(&mut budget(), &|| false).unwrap();
+    for version in [b'1', b'2'] {
+        let mut crossed = raw.clone();
+        crossed[7] = version;
+        assert!(matches!(
+            NativeTableRenameIntent::decode(&crossed, &mut budget(), &|| false),
+            Err(TableRenameIntentError::UnsupportedProfile)
+        ));
+        crossed[12] = version - b'0';
+        let old = decoded(&crossed);
+        assert!(
+            old.reconstruct(image(&pair.before), &mut budget(), &|| false)
+                .is_err()
+        );
+    }
+    let mut forged = build();
+    forged.intent.profile = Profile::RetainedInt32V2;
+    assert!(
+        forged
+            .requalify_with_budgets(image(&pair.before), &mut budget(), &mut budget(), &|| false)
+            .is_err()
+    );
+    let mut future = raw;
+    future[7] = b'4';
+    assert!(matches!(
+        NativeTableRenameIntent::decode(&future, &mut budget(), &|| false),
+        Err(TableRenameIntentError::UnsupportedVersion)
+    ));
+}
+
+#[test]
+fn creator_v3_recovery_refuses_unrelated_replacement_or_changed_external_body() {
+    use tablecraft_testkit::fixtures::access::canonical_creator_rename;
+    let pair = canonical_creator_rename::pair(
+        &canonical_creator_rename::originals().remove(0),
+        "Inventory",
+    );
+    let reviewed = image(&pair.before)
+        .plan_recoverable_creator_table_rename("Items", "Inventory", &mut budget(), &|| false)
+        .unwrap();
+    let raw = reviewed.intent().encode(&mut budget(), &|| false).unwrap();
+    let mut replacement = pair.after.clone();
+    let end = replacement.len();
+    replacement[end - 4] = 1;
+    let mut target = Storage::new(pair.before.clone());
+    let mut journal = Storage::new(Vec::new());
+    drop(
+        journal::prepare_expected(
+            &mut target,
+            &mut journal,
+            &pair.before,
+            &replacement,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+    );
+    let checked = inspect_v1(&mut journal, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        qualify_native_table_rename_recovery(checked, decoded(&raw), SCOPE, &mut budget(), &|| {
+            false
+        }),
+        Err(NativeRecoveryQualificationError::ImageMismatch)
+    ));
+    assert_eq!(target.writes, 0);
+    let mut stale = pair.before.clone();
+    stale[end - 4] = 1;
+    assert!(
+        reviewed
+            .requalify_with_budgets(image(&stale), &mut budget(), &mut budget(), &|| false)
+            .is_err()
+    );
+}
+
+#[test]
+fn actual_database_carrier_selects_v2_or_v3_without_changing_frozen_constructors() {
+    use tablecraft_testkit::fixtures::access::canonical_creator_rename;
+    let inline = rename_pair(5, "Items", "Inventory", true);
+    let indexed =
+        canonical_indexed_rename::pair(5, IndexedCase::CounterPrimary, "Items", "Inventory");
+    let external = canonical_creator_rename::pair(
+        &canonical_creator_rename::originals().remove(0),
+        "Inventory",
+    );
+    for (before, after, magic, profile) in [
+        (&inline.before, &inline.after, b"TCRN0002", 2),
+        (&indexed.before, &indexed.after, b"TCRN0002", 2),
+        (&external.before, &external.after, b"TCRN0003", 3),
+    ] {
+        let selected = image(before)
+            .plan_recoverable_table_rename_for_source("Items", "Inventory", &mut budget(), &|| {
+                false
+            })
+            .unwrap();
+        assert_eq!(selected.after_bytes(), after);
+        let raw = selected.intent().encode(&mut budget(), &|| false).unwrap();
+        assert_eq!(&raw[..8], magic);
+        assert_eq!(u16::from_le_bytes(raw[12..14].try_into().unwrap()), profile);
+        selected
+            .requalify_with_budgets(image(before), &mut budget(), &mut budget(), &|| false)
+            .unwrap();
+    }
+    let mut enabled = external.before.clone();
+    let end = enabled.len();
+    enabled[end - 4] = 1;
+    assert!(matches!(
+        image(&enabled).plan_recoverable_table_rename_for_source(
+            "Items",
+            "Inventory",
+            &mut budget(),
+            &|| false
+        ),
+        Err(RecoverableTableRenameError::Rename(
+            TableRenameError::Dependency
+        ))
+    ));
+    assert!(
+        image(&external.before)
+            .plan_recoverable_table_rename_for_source("Items", "Inventory", &mut budget(), &|| true)
+            .is_err()
+    );
+    assert!(
+        image(&external.before)
+            .plan_recoverable_table_rename_for_source(
+                "Items",
+                "Inventory",
+                &mut ResourceBudget::new(0, 0, 0),
+                &|| false
+            )
+            .is_err()
+    );
 }

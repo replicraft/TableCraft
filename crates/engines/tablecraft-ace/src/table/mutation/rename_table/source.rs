@@ -52,9 +52,10 @@ pub(super) struct Qualified {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum IndexPolicy {
+pub(super) enum SourceProfile {
     Unindexed,
     RetainedInt32,
+    CreatorExternal,
 }
 
 impl Qualified {
@@ -75,7 +76,7 @@ pub(super) fn qualify(
     image: &NativeImage,
     requested: &str,
     proposed: &str,
-    indexes: IndexPolicy,
+    profile: SourceProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Qualified, TableRenameError> {
@@ -254,18 +255,44 @@ pub(super) fn qualify(
             return Err(TableRenameError::DuplicateName);
         }
     }
-    for origin in origins {
-        record::qualify_payloads(
+    let external = if profile == SourceProfile::CreatorExternal {
+        Some(super::creator_external::Binding::capture(
             image,
             &catalog_schema,
+            db,
             origin,
-            origin.object_id() == db.object_id(),
             properties.raw_bytes(),
             budget,
             cancelled,
-        )?;
+        )?)
+    } else {
+        None
+    };
+    for item in origins {
+        let payload = if item.object_id() == db.object_id() {
+            if let Some(external) = external.as_ref() {
+                record::Payload::External(external)
+            } else {
+                record::Payload::Inline(properties.raw_bytes())
+            }
+        } else if item.object_id() == origin.object_id() {
+            external
+                .as_ref()
+                .and_then(|binding| binding.user_properties())
+                .map_or(record::Payload::Absent, record::Payload::Inline)
+        } else {
+            record::Payload::Absent
+        };
+        record::qualify_payloads(image, &catalog_schema, item, payload, budget, cancelled)?;
     }
-    qualify_storage(image, identity, indexes, budget, cancelled)?;
+    qualify_storage(
+        image,
+        identity,
+        profile,
+        external.as_ref(),
+        budget,
+        cancelled,
+    )?;
     Ok(Qualified {
         table: copy_text(object.name().as_str(), budget, cancelled)?,
         proposed: copy_text(proposed, budget, cancelled)?,
@@ -275,7 +302,7 @@ pub(super) fn qualify(
     })
 }
 
-fn closed_catalog_geometry(
+pub(super) fn closed_catalog_geometry(
     schema: &TableSchema,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -345,7 +372,8 @@ fn find_role<'a>(
 fn qualify_storage(
     image: &NativeImage,
     identity: NativeTableRenameIdentity,
-    indexes: IndexPolicy,
+    profile: SourceProfile,
+    external: Option<&super::creator_external::Binding>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), TableRenameError> {
@@ -398,7 +426,7 @@ fn qualify_storage(
             return Err(TableRenameError::Source);
         }
         if schema.layout.physical_indexes != 0 || schema.layout.logical_indexes != 0 {
-            if origin.is_system() || matches!(indexes, IndexPolicy::Unindexed) {
+            if origin.is_system() || matches!(profile, SourceProfile::Unindexed) {
                 return Err(TableRenameError::Source);
             }
             super::indexes::qualify(image, &schema, reader.budget, cancelled)?;
@@ -476,10 +504,18 @@ fn qualify_storage(
                 for page in storage.pages {
                     global.require_allocated(&mut reader, page)?;
                 }
-                // All catalog LVAL fields are absent except the independently
-                // checked inline MSysDb properties. An allocated LVAL family or
-                // stale external candidate needs a separate ownership profile.
-                if !allocation::pages(&mut reader, reference)?.is_empty() {
+                // Original profiles require empty LVAL families. The explicit
+                // creator source admits exactly its checked external database
+                // property body and both exclusive column-map memberships.
+                let members = allocation::pages(&mut reader, reference)?;
+                if let Some(external) = external {
+                    external.members(
+                        schema.definition_page(),
+                        declaration.number,
+                        reference,
+                        &members,
+                    )?;
+                } else if !members.is_empty() {
                     return Err(TableRenameError::Source);
                 }
             }
@@ -604,4 +640,23 @@ pub(super) fn verify(
         }
     }
     Ok(())
+}
+
+pub(super) fn database_properties_external(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, TableRenameError> {
+    check(budget, cancelled)?;
+    image.require_standard_capture()?;
+    let database = find_role(image, "MSysDb", budget, cancelled)?;
+    let schema = inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        "MSysObjects",
+        budget,
+        cancelled,
+    )?;
+    closed_catalog_geometry(&schema, budget, cancelled)?;
+    record::database_properties_external(image, &schema, database, budget, cancelled)
 }

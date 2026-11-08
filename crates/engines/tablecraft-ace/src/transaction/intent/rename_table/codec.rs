@@ -8,9 +8,11 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC_V1: &[u8; 8] = b"TCRN0001";
 const MAGIC_V2: &[u8; 8] = b"TCRN0002";
+const MAGIC_V3: &[u8; 8] = b"TCRN0003";
 const PREFIX: &[u8; 4] = b"TCRN";
 const UNINDEXED_PROFILE: u16 = 1;
 const RETAINED_INT32_PROFILE: u16 = 2;
+const CREATOR_EXTERNAL_PROFILE: u16 = 3;
 const TOTAL_AT: usize = MAGIC_V1.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -56,6 +58,7 @@ pub(super) fn encode(
     let (magic, profile) = match intent.profile {
         Profile::UnindexedV1 => (MAGIC_V1, UNINDEXED_PROFILE),
         Profile::RetainedInt32V2 => (MAGIC_V2, RETAINED_INT32_PROFILE),
+        Profile::CreatorExternalV3 => (MAGIC_V3, CREATOR_EXTERNAL_PROFILE),
     };
     output.extend_from_slice(magic);
     output.extend_from_slice(&(length as u32).to_le_bytes());
@@ -92,6 +95,7 @@ pub(super) fn decode(
     let (profile, expected_profile) = match input.get(..MAGIC_V1.len()) {
         Some(magic) if magic == MAGIC_V1 => (Profile::UnindexedV1, UNINDEXED_PROFILE),
         Some(magic) if magic == MAGIC_V2 => (Profile::RetainedInt32V2, RETAINED_INT32_PROFILE),
+        Some(magic) if magic == MAGIC_V3 => (Profile::CreatorExternalV3, CREATOR_EXTERNAL_PROFILE),
         _ => return Err(TableRenameIntentError::UnsupportedVersion),
     };
     budget.charge(Resource::Steps, input.len() as u64)?;

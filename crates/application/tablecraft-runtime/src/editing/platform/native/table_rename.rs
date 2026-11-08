@@ -41,7 +41,7 @@ pub(in crate::editing) fn review(
         cancelled,
     )?;
     let plan =
-        image.plan_recoverable_indexed_table_rename(table, new_name, &mut work, cancelled)?;
+        image.plan_recoverable_table_rename_for_source(table, new_name, &mut work, cancelled)?;
 
     work.charge_allocation(plan.after_bytes().len() as u64, 1)?;
     let mut expected = Vec::new();

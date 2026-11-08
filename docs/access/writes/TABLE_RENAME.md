@@ -140,6 +140,41 @@ and changed fact with the review. Native work and source/image proof use separat
 cumulative budgets. No stored patch, ordinal, SQL text or arbitrary AFTER is
 replayed as authority.
 
+## Creator external-OFF profile checkpoint
+
+The separate `plan_creator_table_rename` and
+`plan_recoverable_creator_table_rename` APIs target the evidenced creator source
+after an explicit OFF option operation. Their native planner purpose is sealed as
+`TCRN0003`, profile 3, with the existing fixed-image checked V1 journal. Source
+admission directly checks the actual appended MSysDb slot 8, original user slot 7,
+LvProp owned/candidate map cells 16/17 and exact exclusive single external EOF
+body. It never strips that source into an earlier creator language as authority.
+
+The engine's `plan_recoverable_table_rename_for_source` selector frames the actual
+MSysDb record and resolves its native LvProp field through the record owner.
+The long-value owner classifies only the stored carrier header: single external
+selects V3, other valid carriers select V2. The chosen explicit constructor then
+performs complete admission exactly once. No failure is caught and retried; the
+original explicit APIs and retained reconstruction never use the selector.
+
+The initial ACE 16 source remains one table with ordinary scalar in-row fields,
+zero or one retained Int32 primary index, and a complete closed dependency graph.
+Safe constructor column properties are preserved byte-for-byte: native LONG_TEXT
+DefaultValue exactly `0`, BOOLEAN Required/AllowZeroLength using the reviewed
+carriers, and bounded native SHORT_TEXT Description. Description is inert even
+when its text mentions old names or functions. Unknown properties, groups,
+validation programs, references and other defaults refuse rather than execute.
+Shared ownership proof covers all real DATA/INDEX/TDEF/map/LVAL roles; all
+unmodified index and external-property bytes remain protected.
+
+[Eight independent literal AFTER images reopen through the SDK reader](../../testing/ACE16_CREATOR_RENAME_SOURCES.md).
+The native complete-image comparisons, V3 wire/recovery and frozen-profile
+regressions are authored but remain unrun at this checkpoint. This adds no
+adapter/runtime/GUI selection yet. Creator defaults stay unchanged, the explicit
+OFF operation remains separate, and V1/V2 retain their original inline admission
+and exact reconstruction. Multiple tables, add-table composition and native
+Microsoft Access save/timestamp behavior remain unqualified.
+
 ## Persistence and retained recovery
 
 `stage_reviewed_table_rename_with_budgets` produces a consuming schema stage;
