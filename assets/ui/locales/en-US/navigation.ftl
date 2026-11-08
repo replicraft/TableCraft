@@ -13,3 +13,6 @@ navigation-open = Open
 navigation-close-object = Close object
 navigation-sql-query = New SQL query
 navigation-sql-query-help = Open or activate the SQL query editor. This does not run a query.
+
+navigation-collapse-pane = Collapse navigation pane
+navigation-expand-pane = Expand navigation pane

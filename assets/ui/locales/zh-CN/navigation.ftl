@@ -13,3 +13,6 @@ navigation-open = 打开
 navigation-close-object = 关闭对象
 navigation-sql-query = 新建 SQL 查询
 navigation-sql-query-help = 打开或激活 SQL 查询编辑器。不会运行查询。
+
+navigation-collapse-pane = 折叠导航窗格
+navigation-expand-pane = 展开导航窗格

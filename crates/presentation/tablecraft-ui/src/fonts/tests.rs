@@ -1,6 +1,6 @@
 use super::*;
 use egui::{FontId, RawInput, RichText, Shape, TextEdit};
-use harfrust::{FontRef, ShapeOptions, ShaperData, UnicodeBuffer};
+use harfrust::{FontRef, ShapeOptions, ShaperData, Tag, UnicodeBuffer};
 use std::sync::Arc;
 
 #[test]
@@ -13,7 +13,11 @@ fn bundled_fallbacks_render_japanese_korean_and_simplified_chinese_glyphs() {
         let context = Context::default();
         configure(&context, locale);
         let mut output = context.run_ui(egui::RawInput::default(), |ui| {
-            for family in [FontFamily::Proportional, FontFamily::Monospace] {
+            for family in [
+                FontFamily::Proportional,
+                FontFamily::Monospace,
+                FontFamily::Name(BOLD_FAMILY.into()),
+            ] {
                 ui.fonts_mut(|fonts| {
                     // epaint 0.36.2 has_glyph compares face identity with
                     // the replacement face, producing false negatives
@@ -212,4 +216,102 @@ fn emoji_order_retains_other_faces_when_legacy_defaults_are_present_or_absent() 
         insert_emoji_fallback(&mut names);
         assert_eq!(names, expected);
     }
+}
+
+#[test]
+fn named_bold_family_selects_real_weight_and_retains_locale_fallbacks() {
+    for locale in Locale::ALL {
+        let context = Context::default();
+        configure(&context, locale);
+        let family = FontFamily::Name(BOLD_FAMILY.into());
+        let mut output = context.run_ui(RawInput::default(), |ui| {
+            ui.fonts_mut(|fonts| {
+                let characters = fonts.fonts.font(&family).characters().clone();
+                let definitions = fonts.definitions();
+                let names = &definitions.families[&family];
+                assert_eq!(names[0], "Selawik Bold");
+                assert_eq!(
+                    &names[1..],
+                    &definitions.families[&FontFamily::Proportional]
+                );
+
+                let latin_face = characters[&'A'].first().unwrap();
+                assert_eq!(latin_face, "Selawik Bold");
+                let data = &definitions.font_data[latin_face];
+                let face = FontRef::from_index(data.font.as_ref(), data.index).unwrap();
+                let weight = face
+                    .table_data(Tag::new(b"OS/2"))
+                    .unwrap()
+                    .read_at::<u16>(4)
+                    .unwrap();
+                assert_eq!(weight, 700, "selected actual face must have bold weight");
+
+                let regular = &definitions.font_data["Selawik"];
+                let regular_face =
+                    FontRef::from_index(regular.font.as_ref(), regular.index).unwrap();
+                assert_eq!(
+                    regular_face
+                        .table_data(Tag::new(b"OS/2"))
+                        .unwrap()
+                        .read_at::<u16>(4)
+                        .unwrap(),
+                    400
+                );
+                assert_eq!(characters[&'🦀'].first().unwrap(), "Noto Emoji");
+                for character in ['日', '한', '简'] {
+                    assert!(characters.contains_key(&character));
+                    assert_ne!(characters[&character].first().unwrap(), "Selawik Bold");
+                }
+            });
+            ui.label(RichText::new("Tables 日本 한글 简体 🦀").family(family.clone()));
+        });
+        let painted = output
+            .shapes
+            .iter()
+            .find_map(|shape| match &shape.shape {
+                Shape::Text(text) if text.galley.job.text == "Tables 日本 한글 简体 🦀" => {
+                    Some(&text.galley)
+                }
+                _ => None,
+            })
+            .expect("actual bold-family widget text");
+        assert_eq!(painted.job.sections[0].format.font_id.family, family);
+        assert!(!painted.rows[0].visuals.mesh.indices.is_empty());
+        output.textures_delta.clear();
+    }
+}
+
+#[test]
+fn cold_widget_uses_bold_after_the_deferred_font_installation() {
+    let context = Context::default();
+    let mut selections = Vec::new();
+    for expected in [
+        FontFamily::Proportional,
+        FontFamily::Name(BOLD_FAMILY.into()),
+    ] {
+        let mut output = context.run_ui(RawInput::default(), |ui| {
+            configure(ui.ctx(), Locale::EnUs);
+            let family = bold_family(ui);
+            selections.push(family.clone());
+            ui.label(RichText::new("Tables").family(family));
+        });
+        let painted = output
+            .shapes
+            .iter()
+            .find_map(|shape| match &shape.shape {
+                Shape::Text(text) if text.galley.job.text == "Tables" => Some(&text.galley),
+                _ => None,
+            })
+            .expect("actual cold-start group label");
+        assert_eq!(painted.job.sections[0].format.font_id.family, expected);
+        assert!(!painted.rows[0].visuals.mesh.indices.is_empty());
+        output.textures_delta.clear();
+    }
+    assert_eq!(
+        selections,
+        [
+            FontFamily::Proportional,
+            FontFamily::Name(BOLD_FAMILY.into()),
+        ]
+    );
 }

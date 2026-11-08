@@ -1478,3 +1478,41 @@ metadata scan, storage behavior or editing capability was added by this change.
 German Field Size terms follow Microsoft's [field-size reference](https://support.microsoft.com/de-de/access/set-the-field-size),
 which itself uses Byte, Integer, Long Integer, Single and Double. Other bundled
 translations remain subject to the existing native-speaker review boundary.
+
+## Navigation Pane grouping and restoration — 7 November 2026
+
+Tables and saved-query headings appear only when their category has an object
+matching the current search and system-object visibility setting. Matching is
+checked before expansion, so either matching category retains its reopening
+header when collapsed. Tables and Queries have independently collapsible headings
+and separate expansion state. Filtering, collapsing either category, or hiding
+and restoring the pane preserves selection, search text and both category states.
+Category transitions invalidate pending object-activation click pairing: a click
+before hiding rows cannot combine with one after restoration to open an object.
+These presentation actions issue no database commands.
+
+The All Objects heading and category labels align to the left. Latin category
+labels now use the actual Selawik Bold face, bundled unchanged from Microsoft's
+Selawik 1.01 release under `assets/ui/fonts`, alongside the existing regular face
+and OFL notice. `selawik-provenance.json` records source archive, file hashes and
+weight metadata. The existing CJK and monochrome emoji fallbacks remain regular;
+this change does not claim bold CJK glyphs or install a font into the operating
+system. It adds no dependency.
+
+The expanded pane has a localized Collapse button. A collapsed pane keeps a
+24-point logical-width strip with a localized, keyboard-accessible Expand button,
+so restoration is available to the mouse as well as the existing F11 shortcut.
+The same modal and object-switch guards apply. The hidden pane stays outside the
+F6 pane cycle. Microsoft's [Navigation Pane contract](https://support.microsoft.com/en-us/access/use-the-navigation-pane)
+documents its Shutter Bar Open/Close button and F11; the collapsed strip geometry
+is a TableCraft adaptation because no corresponding collapsed Access capture is
+retained.
+
+The actual retained expanded Datasheet reference was reopened at 1920 × 1141
+pixels: Windows Access inside VirtualBox, display scale unknown. It supports the
+compact left-aligned pane/category composition, not the collapsed strip's exact
+appearance. The accepted headless batch passes 434 shared-UI tests and 111 desktop
+tests, with strict all-target/all-feature UI/desktop lint. Earlier counts and
+renders remain historical checkpoints. Offscreen render observations belong to
+[the presentation record](PRESENTATION_PREVIEW.md); these results do not qualify
+native Windows/Linux interaction, DPI or font rendering.

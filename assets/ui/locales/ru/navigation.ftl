@@ -13,3 +13,6 @@ navigation-open = Открыть
 navigation-close-object = Закрыть объект
 navigation-sql-query = Новый SQL-запрос
 navigation-sql-query-help = Открыть или активировать редактор SQL-запросов. Запрос не выполняется.
+
+navigation-collapse-pane = Свернуть область навигации
+navigation-expand-pane = Развернуть область навигации

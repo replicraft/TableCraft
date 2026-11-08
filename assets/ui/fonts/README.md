@@ -1,13 +1,18 @@
-# Selawik regular
+# Selawik regular and bold
 
-Unmodified `selawk.ttf` from Microsoft's official [Selawik 1.01 release](https://github.com/microsoft/Selawik/releases/tag/1.01), asset `Selawik_Release.zip`.
+Unmodified `selawk.ttf` and `selawkb.ttf` from Microsoft's official [Selawik 1.01 release](https://github.com/microsoft/Selawik/releases/tag/1.01), asset `Selawik_Release.zip`.
 
 Copyright 2015 Microsoft Corporation. Reserved Font Name: Selawik. Distributed
 under the [SIL Open Font License 1.1](OFL-Selawik.txt). The embedded font is part of the
 shared UI theme; the host provides an About/licenses view. Egui's default fonts
 remain as fallbacks. No font conversion or glyph modification was performed.
 
-SHA-256 (`selawk.ttf`): `e9d98518d8ac2817782a9a382430463a2e0793ea68350b695bb727d9a830ee1c`.
+Exact archive and asset sizes/hashes are pinned in
+[the Selawik provenance](selawik-provenance.json). The bold face identifies itself
+as Selawik Bold, Version 1.01, with OS/2 weight 700. Its named UI family uses
+that actual face for Latin text and retains the regular proportional family
+as fallback, including the same emoji and regional CJK coverage. Those fallback
+faces remain regular; this does not provide bold CJK or emoji.
 
 ## Noto CJK fallbacks
 

@@ -4,7 +4,9 @@ mod inventory;
 pub use inventory::{FontFamilies, FontInventoryError};
 
 use crate::Locale;
-use egui::{Context, FontData, FontDefinitions, FontFamily, Id};
+use egui::{Context, FontData, FontDefinitions, FontFamily, Id, Ui};
+
+pub(crate) const BOLD_FAMILY: &str = "Selawik Bold";
 
 const SELAWIK: &str = "Selawik";
 const NOTO_JAPANESE: &str = "Noto Sans JP";
@@ -30,6 +32,10 @@ pub fn configure(ctx: &Context, locale: Locale) {
         (
             SELAWIK,
             include_bytes!("../../../../assets/ui/fonts/selawk.ttf").as_slice(),
+        ),
+        (
+            BOLD_FAMILY,
+            include_bytes!("../../../../assets/ui/fonts/selawkb.ttf").as_slice(),
         ),
         (
             NOTO_JAPANESE,
@@ -65,8 +71,28 @@ pub fn configure(ctx: &Context, locale: Locale) {
         fallback.extend(preferred.iter().map(|name| (*name).to_owned()));
     }
 
+    let mut bold_fallback = fonts.families[&FontFamily::Proportional].clone();
+    bold_fallback.insert(0, BOLD_FAMILY.to_owned());
+    fonts
+        .families
+        .insert(FontFamily::Name(BOLD_FAMILY.into()), bold_fallback);
+
     ctx.set_fonts(fonts);
     ctx.data_mut(|data| data.insert_temp(cache_id, locale));
+}
+
+/// Select the bold face once egui has applied the installed definitions.
+pub(crate) fn bold_family(ui: &Ui) -> FontFamily {
+    let family = FontFamily::Name(BOLD_FAMILY.into());
+    let installed = ui.fonts(|fonts| fonts.definitions().families.contains_key(&family));
+    if installed {
+        family
+    } else {
+        // set_fonts installs definitions on the next pass. A cold host can draw
+        // its first widget before that pass; the selection is checked again on
+        // each render so the initial proportional face is never cached.
+        FontFamily::Proportional
+    }
 }
 
 fn insert_emoji_fallback(fallback: &mut Vec<String>) {

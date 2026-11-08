@@ -1,0 +1,43 @@
+{
+  "upstream": "https://github.com/microsoft/Selawik/releases/tag/1.01",
+  "archive": {
+    "url": "https://github.com/microsoft/Selawik/releases/download/1.01/Selawik_Release.zip",
+    "bytes": 530652,
+    "sha256": "3f62c51e05e3b5a1e6241cf92a371f0be2ea1183aa87b30718bbd40832a8d423"
+  },
+  "assets": [
+    {
+      "file": "selawk.ttf",
+      "bytes": 44224,
+      "sha256": "e9d98518d8ac2817782a9a382430463a2e0793ea68350b695bb727d9a830ee1c"
+    },
+    {
+      "file": "selawkb.ttf",
+      "bytes": 44068,
+      "sha256": "f0db5e174a90e0956ad7d2844bdca1d5e6da92ec65b2c04e57ba9b180668c904"
+    },
+    {
+      "file": "OFL-Selawik.txt",
+      "bytes": 4509,
+      "sha256": "77b7c2506d4efb22e09c8ccf10159f4956eab3ef7c007fef95de136bcf45300c"
+    }
+  ],
+  "family": "Selawik",
+  "font_version": "Version 1.01",
+  "faces": [
+    {
+      "file": "selawk.ttf",
+      "style": "Regular",
+      "weight": 400
+    },
+    {
+      "file": "selawkb.ttf",
+      "style": "Bold",
+      "postscript_name": "Selawik-Bold",
+      "weight": 700
+    }
+  ],
+  "copyright": "Copyright 2015 Microsoft Corporation; Reserved Font Name Selawik",
+  "license": "SIL Open Font License 1.1",
+  "modifications": "None; original release TrueType bytes."
+}

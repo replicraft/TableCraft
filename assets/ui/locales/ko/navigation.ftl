@@ -13,3 +13,6 @@ navigation-open = 열기
 navigation-close-object = 개체 닫기
 navigation-sql-query = 새 SQL 쿼리
 navigation-sql-query-help = SQL 쿼리 편집기를 열거나 활성화합니다. 쿼리를 실행하지 않습니다.
+
+navigation-collapse-pane = 탐색 창 축소
+navigation-expand-pane = 탐색 창 확장

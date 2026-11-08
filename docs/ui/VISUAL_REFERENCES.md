@@ -431,3 +431,37 @@ Two additional Microsoft images were opened for Ribbon coverage:
 The [Ribbon inventory](RIBBON.md) records current groups and remaining
 qualification. An older crop or documented command name does not establish a
 complete modern Ribbon match.
+
+## Navigation Pane headings and collapsed restoration — 7 November 2026
+
+The actual private `Bildschirmfoto_2026-10-28_12-07-35.png` was reopened at
+1920 × 1141 pixels. It shows Windows Access in VirtualBox with unknown display
+scale: an expanded left Navigation Pane, a compact search box, a left-aligned
+Tables category with its chevron at the right and one table row. It contains no
+collapsed Navigation Pane state, dark theme or CJK heading comparison.
+
+Current presentation uses left-aligned headings and the real Selawik Bold face
+for Latin category text. The original Microsoft 1.01 font bytes and their source,
+hashes, weight and OFL notice remain under root `assets/ui/fonts`; regular CJK and
+monochrome emoji fallbacks are retained. This establishes bundled-font provenance,
+not native Access font identity or bold CJK coverage. No system font installation
+or new dependency is involved.
+
+Zero-match categories disappear after the current search/system filter, while a
+matching collapsed Tables or Queries category retains its header. Each category
+has independent expansion state. Both states, selected object and search text
+survive hiding/restoring the pane. Category transitions invalidate pending object
+activation, so clicks cannot pair across hidden/restored rows. Microsoft's
+[Navigation Pane procedure](https://support.microsoft.com/en-us/access/use-the-navigation-pane)
+documents both Shutter Bar Open/Close and F11, and describes omitting unmatched
+search groups. TableCraft's localized Collapse/Expand controls retain existing
+modal/action guards and issue no database commands. The 24-point logical-width
+collapsed restoration strip is an explicit adaptation, not captured native pixel
+parity. Its offscreen appearance is recorded separately in
+[presentation review](PRESENTATION_PREVIEW.md).
+
+The accepted batch passes 434 shared-UI and 111 desktop tests plus strict
+all-target/all-feature lint for both packages. Earlier captured counts and image
+observations above remain checkpoints. No native app window was opened for this
+follow-up; Windows/Linux execution and cross-platform DPI/font behavior remain
+unqualified.

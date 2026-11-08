@@ -7,7 +7,7 @@ use super::focus::{self, Pane};
 use super::objects::{ObjectKind, ObjectTarget};
 use super::{Action, State, ribbon::Icon};
 use crate::localization::tr;
-use egui::{RichText, ScrollArea, TextEdit, Ui};
+use egui::{ScrollArea, TextEdit, Ui};
 
 const SEARCH_HEIGHT: f32 = 28.0;
 const SEARCH_ICON_SIZE: f32 = 16.0;
@@ -18,10 +18,17 @@ impl State {
     pub(super) fn navigation(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if !self.navigation_visible() {
             self.navigation_clicks = activation::Clicks::default();
+            if group::collapsed(
+                ui,
+                self.object_switch_ready() && !self.inline_insert_active(),
+            ) {
+                self.toggle_navigation();
+            }
             return;
         }
         let mut clicks = std::mem::take(&mut self.navigation_clicks);
         let mut selected_object = None;
+        let mut collapse_navigation = false;
         let enter_pressed =
             ui.input(|input| input.key_pressed(egui::Key::Enter) && input.modifiers.is_none());
         egui::Panel::left("navigation")
@@ -32,9 +39,7 @@ impl State {
                     ui.disable();
                 }
                 ui.add_space(5.0);
-                let heading = tr(ui, "navigation-all-objects");
-                ui.add(egui::Label::new(RichText::new(&heading).strong().size(15.0)).truncate())
-                    .on_hover_text(heading);
+                collapse_navigation = group::heading(ui, self.object_switch_ready());
                 let search_label = tr(ui, "navigation-search-objects");
                 let search = ui.add_sized(
                     [ui.available_width(), SEARCH_HEIGHT],
@@ -74,6 +79,7 @@ impl State {
                             .map(|database| database.document_revision),
                         filter: self.filter.clone(),
                         show_system: self.show_system,
+                        expansion: group::expansion(ui),
                         publication: self.focus_publication,
                         ready: self.object_switch_ready(),
                     },
@@ -84,7 +90,17 @@ impl State {
                     ScrollArea::vertical()
                         .id_salt(("navigation_objects", db.document_revision))
                         .show(ui, |ui| {
-                            if group::tables(ui) {
+                            let visible_table = db.tables.iter().any(|table| {
+                                (self.show_system || !table.system)
+                                    && table.name.to_lowercase().contains(&filter)
+                            });
+                            let visible_query = db.queries.iter().any(|query| {
+                                (self.show_system || !query.system)
+                                    && query.name.to_lowercase().contains(&filter)
+                            });
+                            // Membership is determined before expansion: a collapsed
+                            // category must keep the header that reopens its rows.
+                            if visible_table && group::tables(ui) {
                                 for table in &db.tables {
                                     if (!self.show_system && table.system)
                                         || !table.name.to_lowercase().contains(&filter)
@@ -160,68 +176,72 @@ impl State {
                                     );
                                 }
                             }
-                            ui.separator();
-                            ui.label(RichText::new(tr(ui, "navigation-queries")).strong());
-                            for query in &db.queries {
-                                if (!self.show_system && query.system)
-                                    || !query.name.to_lowercase().contains(&filter)
-                                {
-                                    continue;
-                                }
-                                let target = ObjectTarget {
-                                    document_revision: db.document_revision,
-                                    kind: ObjectKind::SavedQuery {
-                                        object_id: query.object_id,
-                                        name: query.name.clone(),
-                                    },
-                                };
-                                let selected =
-                                    self.selected_navigation_object() == Some(target.clone());
-                                ui.push_id(
-                                    ("query", db.document_revision, query.object_id),
-                                    |ui| {
-                                        ui.add_enabled_ui(!self.busy, |ui| {
-                                            let response = row::show(
-                                                ui,
-                                                Icon::Search,
-                                                &query.name,
-                                                selected,
-                                                query.system.then_some(system_label.as_str()),
-                                            );
-                                            focus::register(
-                                                ui,
-                                                Pane::Navigation,
-                                                &response,
-                                                selected,
-                                            );
-                                            response.context_menu(|ui| {
-                                                if ui
-                                                    .add_enabled(
-                                                        self.can_open_object(&target),
-                                                        egui::Button::new(tr(
-                                                            ui,
-                                                            "navigation-open",
-                                                        )),
-                                                    )
-                                                    .clicked()
+                            if visible_query && visible_table {
+                                ui.separator();
+                            }
+                            let queries_expanded = visible_query && group::queries(ui);
+                            if queries_expanded {
+                                for query in &db.queries {
+                                    if (!self.show_system && query.system)
+                                        || !query.name.to_lowercase().contains(&filter)
+                                    {
+                                        continue;
+                                    }
+                                    let target = ObjectTarget {
+                                        document_revision: db.document_revision,
+                                        kind: ObjectKind::SavedQuery {
+                                            object_id: query.object_id,
+                                            name: query.name.clone(),
+                                        },
+                                    };
+                                    let selected =
+                                        self.selected_navigation_object() == Some(target.clone());
+                                    ui.push_id(
+                                        ("query", db.document_revision, query.object_id),
+                                        |ui| {
+                                            ui.add_enabled_ui(!self.busy, |ui| {
+                                                let response = row::show(
+                                                    ui,
+                                                    Icon::Search,
+                                                    &query.name,
+                                                    selected,
+                                                    query.system.then_some(system_label.as_str()),
+                                                );
+                                                focus::register(
+                                                    ui,
+                                                    Pane::Navigation,
+                                                    &response,
+                                                    selected,
+                                                );
+                                                response.context_menu(|ui| {
+                                                    if ui
+                                                        .add_enabled(
+                                                            self.can_open_object(&target),
+                                                            egui::Button::new(tr(
+                                                                ui,
+                                                                "navigation-open",
+                                                            )),
+                                                        )
+                                                        .clicked()
+                                                    {
+                                                        actions.push(Action::OpenObject {
+                                                            target: target.clone(),
+                                                        });
+                                                        ui.close();
+                                                    }
+                                                });
+                                                if response.clicked() {
+                                                    selected_object = Some(target.clone());
+                                                }
+                                                if clicks.opened(ui, &response, enter_pressed)
+                                                    && self.can_open_object(&target)
                                                 {
-                                                    actions.push(Action::OpenObject {
-                                                        target: target.clone(),
-                                                    });
-                                                    ui.close();
+                                                    actions.push(Action::OpenObject { target });
                                                 }
                                             });
-                                            if response.clicked() {
-                                                selected_object = Some(target.clone());
-                                            }
-                                            if clicks.opened(ui, &response, enter_pressed)
-                                                && self.can_open_object(&target)
-                                            {
-                                                actions.push(Action::OpenObject { target });
-                                            }
-                                        });
-                                    },
-                                );
+                                        },
+                                    );
+                                }
                             }
                         });
                 } else {
@@ -230,6 +250,9 @@ impl State {
             });
         clicks.finish(ui);
         self.navigation_clicks = clicks;
+        if collapse_navigation {
+            self.toggle_navigation();
+        }
         if let Some(target) = selected_object {
             self.select_navigation_object(target);
         }

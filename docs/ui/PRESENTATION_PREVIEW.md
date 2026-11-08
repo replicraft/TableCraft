@@ -1,5 +1,37 @@
 # Presentation preview
 
+## Navigation Pane polish — 7 November 2026
+
+Five final normal-host frames were rendered and inspected under ignored
+`.cache/ui-previews/navigation-final-20261107/`. English light/dark additional-table
+drafts use 1280×820 pixels at 1×; German light and Korean dark use 900×580 logical
+points at 1.25× (1125×725 pixels). A fifth English dark Datasheet frame uses the
+actual Collapse control, leaving the localized Expand button in a 24-point strip.
+All rendering was windowless on macOS ARM64 with Windows input emulation.
+
+The frames show left-aligned All Objects, compact category headings, no empty
+Queries category and the shorter save instruction. Latin category text uses the
+unmodified Selawik Bold face; regular CJK/emoji fallbacks remain regular. Compact
+translated Ribbons retain horizontal scrolling. The renderer's
+`TABLECRAFT_PREVIEW_NAVIGATION_COLLAPSED=true` option is restricted to Datasheet
+and cannot combine with other interaction workflows.
+
+The actual retained 1920×1141 Windows/VirtualBox Datasheet reference was reopened;
+its scale is unknown. It supports the expanded pane composition. No collapsed
+Navigation Pane or dark Access capture is retained, so those remain adaptations.
+Earlier `navigation-polish-20261107` frames are superseded: they exposed a
+centered All Objects heading before the corrected left-layout and painted
+alignment assertion. The final five frames above were all inspected.
+
+The accepted headless batch passes all 434 shared-UI and 111 desktop tests,
+strict all-target/all-feature lint, and Windows x64/ARM64 runtime/desktop
+compilation checks. Category expansion is independent for Tables and Queries;
+keyboard/accessibility collapse and restore invalidate a pending object click
+pair, preventing an unintended Open after restoring a group. Selection and typed
+row identity remain intact. Initial selector failures and corrected results are
+retained separately under `.cache/platform-refresh-*20261107.log`. None of these
+checks establishes native Windows/Linux interaction, DPI or Access parity.
+
 ## Additional-table workflow — 7 November 2026
 
 The resource-free `additional-table-ready` scene contains loaded `Table1`

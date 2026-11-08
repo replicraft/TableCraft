@@ -13,3 +13,6 @@ navigation-open = 開く
 navigation-close-object = オブジェクトを閉じる
 navigation-sql-query = 新しいSQLクエリ
 navigation-sql-query-help = SQLクエリエディターを開くかアクティブにします。クエリは実行しません。
+
+navigation-collapse-pane = ナビゲーション ウィンドウを折りたたむ
+navigation-expand-pane = ナビゲーション ウィンドウを展開する

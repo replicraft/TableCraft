@@ -1,4 +1,5 @@
 //! Object opening pairs only live rows from an unchanged Navigation Pane.
+use super::group;
 use crate::workspace::click;
 use egui::{Key, Modifiers, Popup, Response, Ui};
 
@@ -15,6 +16,7 @@ pub(super) struct Scope {
     pub revision: Option<u64>,
     pub filter: String,
     pub show_system: bool,
+    pub expansion: group::Expansion,
     pub publication: u64,
     pub ready: bool,
 }

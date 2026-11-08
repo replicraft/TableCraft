@@ -3,6 +3,8 @@
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
 mod initial_properties;
+#[path = "render_preview/navigation.rs"]
+mod navigation;
 #[path = "render_preview/table_creation.rs"]
 mod table_creation;
 
@@ -69,6 +71,24 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
     }
     let gallery_suffix = if field_gallery { "-field-gallery" } else { "" };
+    let navigation_collapsed =
+        match setting("TABLECRAFT_PREVIEW_NAVIGATION_COLLAPSED", "false")?.as_str() {
+            "false" => false,
+            "true" => true,
+            _ => {
+                return Err(
+                    io::Error::other("navigation-collapsed setting must be true or false").into(),
+                );
+            }
+        };
+    if navigation_collapsed && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("collapsed navigation rendering requires datasheet").into());
+    }
+    let navigation_suffix = if navigation_collapsed {
+        "-navigation-collapsed"
+    } else {
+        ""
+    };
     let initial_edit = setting("TABLECRAFT_PREVIEW_INITIAL_EDIT", "none")?;
     let initial_suffix = match initial_edit.as_str() {
         "none" => "",
@@ -138,6 +158,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     };
     let interaction_count = usize::from(!ribbon_suffix.is_empty())
+        + usize::from(navigation_collapsed)
         + usize::from(focus_steps != 0)
         + usize::from(font_search.is_some())
         + usize::from(field_gallery)
@@ -246,9 +267,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if !table_suffix.is_empty() {
             table_creation::create(&mut harness, table_command == "save-name");
         }
+        if navigation_collapsed {
+            navigation::collapse(&mut harness);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

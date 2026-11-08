@@ -13,3 +13,6 @@ navigation-open = Öffnen
 navigation-close-object = Objekt schließen
 navigation-sql-query = Neue SQL-Abfrage
 navigation-sql-query-help = SQL-Abfrageeditor öffnen oder aktivieren. Dabei wird keine Abfrage ausgeführt.
+
+navigation-collapse-pane = Navigationsbereich minimieren
+navigation-expand-pane = Navigationsbereich erweitern
