@@ -44,7 +44,12 @@ fn cli_exact_numeric_zero_null_noop_and_empty_saves_preserve_all_companions() {
         );
         assert!(output.stderr.is_empty());
         let expected = format!(
-            "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Matched rows\t{}\n\
+                Changed rows\t{}\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             case.matched(),
             case.changed()
         );
@@ -171,7 +176,18 @@ fn cli_small_integer_literal_zero_assigns_to_wider_fields_without_carrier_expres
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            output.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Matched rows\t1\n",
+                "Changed rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!journal.exists());
 

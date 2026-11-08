@@ -99,7 +99,18 @@ fn retained_index_cli_commits_eighteen_literal_images_and_reads_targets() {
                 String::from_utf8_lossy(&output.stderr)
             );
             assert!(output.stderr.is_empty());
-            assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+            assert_eq!(
+                output.stdout,
+                concat!(
+                    "Transaction\tCommitted\n",
+                    "Matched rows\t1\n",
+                    "Changed rows\t1\n",
+                    "Journal namespace\tRetired\n",
+                    "Retirement guarantee\tCaptured-parent barrier\n",
+                    "Journal cleanup\tRemoved\n",
+                )
+                .as_bytes()
+            );
             assert_eq!(fs::read(&path).unwrap(), expected);
             assert!(!journal.exists());
             assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
@@ -162,9 +173,25 @@ fn generated_id_refuses_while_manual_indexed_id_updates_and_empty_selections_com
                     );
                     assert!(output.stderr.is_empty());
                     let report = if predicate == "[Id]=1" {
-                        b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n".as_slice()
+                        concat!(
+                            "Transaction\tCommitted\n",
+                            "Matched rows\t1\n",
+                            "Changed rows\t1\n",
+                            "Journal namespace\tRetired\n",
+                            "Retirement guarantee\tCaptured-parent barrier\n",
+                            "Journal cleanup\tRemoved\n",
+                        )
+                        .as_bytes()
                     } else {
-                        b"Transaction\tCommitted\nMatched rows\t0\nChanged rows\t0\nJournal namespace\tRetired and synchronized\n".as_slice()
+                        concat!(
+                            "Transaction\tCommitted\n",
+                            "Matched rows\t0\n",
+                            "Changed rows\t0\n",
+                            "Journal namespace\tRetired\n",
+                            "Retirement guarantee\tCaptured-parent barrier\n",
+                            "Journal cleanup\tRemoved\n",
+                        )
+                        .as_bytes()
                     };
                     assert_eq!(output.stdout, report);
                 }

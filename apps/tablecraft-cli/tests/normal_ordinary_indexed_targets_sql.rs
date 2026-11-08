@@ -73,7 +73,12 @@ fn ordinary_indexed_cli_publishes_twenty_four_literal_outcomes_and_exact_rows() 
             };
             let expected_rows = rows(&case.final_rows);
             let report = format!(
-                "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t{}\n\
+                    Changed rows\t{}\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
                 case.updates.len(),
                 case.changed_rows
             );

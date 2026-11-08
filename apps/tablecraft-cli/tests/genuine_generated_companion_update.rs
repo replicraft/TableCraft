@@ -41,7 +41,12 @@ fn cli_explicit_score_updates_commit_exact_counter_default_deleted_and_index_byt
         );
         assert!(output.stderr.is_empty());
         let expected = format!(
-            "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Matched rows\t{}\n\
+                Changed rows\t{}\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             case.matched(),
             case.changed()
         );

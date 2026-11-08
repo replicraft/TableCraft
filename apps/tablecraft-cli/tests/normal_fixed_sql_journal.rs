@@ -45,7 +45,18 @@ fn normal_fixed_sql_cli_publishes_twelve_complete_literal_images() {
                     String::from_utf8_lossy(&output.stderr)
                 );
                 assert!(output.stderr.is_empty());
-                assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+                assert_eq!(
+                    output.stdout,
+                    concat!(
+                        "Transaction\tCommitted\n",
+                        "Matched rows\t1\n",
+                        "Changed rows\t1\n",
+                        "Journal namespace\tRetired\n",
+                        "Retirement guarantee\tCaptured-parent barrier\n",
+                        "Journal cleanup\tRemoved\n",
+                    )
+                    .as_bytes()
+                );
                 assert_eq!(fs::read(&path).unwrap(), case.expected);
                 assert!(!journal.exists());
                 assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
@@ -96,7 +107,18 @@ fn normal_fixed_empty_batch_selection_keeps_complete_source_bytes() {
         String::from_utf8_lossy(&output.stderr)
     );
     assert!(output.stderr.is_empty());
-    assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t0\nChanged rows\t0\nJournal namespace\tRetired and synchronized\n");
+    assert_eq!(
+        output.stdout,
+        concat!(
+            "Transaction\tCommitted\n",
+            "Matched rows\t0\n",
+            "Changed rows\t0\n",
+            "Journal namespace\tRetired\n",
+            "Retirement guarantee\tCaptured-parent barrier\n",
+            "Journal cleanup\tRemoved\n",
+        )
+        .as_bytes()
+    );
     assert_eq!(fs::read(&path).unwrap(), case.before);
     assert!(!journal.exists());
     assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);

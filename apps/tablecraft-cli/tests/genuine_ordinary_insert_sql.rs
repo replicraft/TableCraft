@@ -24,12 +24,21 @@ fn cli_insert_and_follow_on_noop_use_shared_normal_services_and_exact_rows() {
             (
                 "journal-insert",
                 "INSERT INTO Sentinel ([ID], Marker, Bytes) VALUES (24, 'new', NULL)",
-                "Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Inserted rows\t1\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
             ),
             (
                 "journal-update",
                 "UPDATE Sentinel SET Marker='new' WHERE [ID]=24",
-                "Transaction\tCommitted\nMatched rows\t1\nChanged rows\t0\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t1\n\
+                    Changed rows\t0\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
             ),
         ] {
             let output = Command::new(env!("CARGO_BIN_EXE_tablecraft"))

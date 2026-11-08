@@ -27,14 +27,24 @@ fn cli_grow_then_delete_preserves_hidden_bytes_and_reads_zero_live_rows() {
                 "journal-update",
                 "UPDATE Sentinel SET Marker='aaaaaaaaaaaaaaaaaaa' WHERE [ID]=23",
                 &case.before,
-                "Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t1\n\
+                    Changed rows\t1\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
                 "ID\tMarker\tBytes\n23\t\"\"\"aaaaaaaaaaaaaaaaaaa\"\"\"\t0xc700ff\n",
             ),
             (
                 "journal-delete",
                 "DELETE FROM Sentinel WHERE [ID]=23",
                 &case.after,
-                "Transaction\tCommitted\nMatched rows\t1\nDeleted rows\t1\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t1\n\
+                    Deleted rows\t1\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
                 "ID\tMarker\tBytes\n",
             ),
         ] {

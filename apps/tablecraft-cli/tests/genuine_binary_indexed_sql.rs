@@ -46,7 +46,14 @@ fn cli_null_binary_insert_retires_exact_image_and_reads_nullable_presence() {
         assert!(output.stderr.is_empty());
         assert_eq!(
             output.stdout,
-            b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n"
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
         );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!bundle.exists());

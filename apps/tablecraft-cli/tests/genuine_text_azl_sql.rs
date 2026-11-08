@@ -41,7 +41,17 @@ fn cli_explicit_property_inserts_read_null_vs_empty_and_retire_source_relative_n
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            output.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after_bytes());
         assert!(!bundle.exists());
         let query = format!(
@@ -84,7 +94,18 @@ fn cli_explicit_property_inserts_read_null_vs_empty_and_retire_source_relative_n
             String::from_utf8_lossy(&empty.stderr)
         );
         assert!(empty.stderr.is_empty());
-        assert_eq!(empty.stdout, b"Transaction\tCommitted\nMatched rows\t0\nDeleted rows\t0\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            empty.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Matched rows\t0\n",
+                "Deleted rows\t0\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after_bytes());
         assert!(!bundle.exists());
         assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);

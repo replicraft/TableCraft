@@ -37,7 +37,18 @@ fn genuine_retained_numeric_cli_saves_eight_complete_images_and_reads_every_mark
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            output.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Matched rows\t1\n",
+                "Changed rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!journal.exists());
         let select = format!("SELECT [ID],Marker FROM {}", case.table);

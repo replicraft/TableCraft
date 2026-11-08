@@ -40,9 +40,18 @@ fn cli_indexed_deletes_use_actual_sql_and_preserve_exact_images_through_empty_fo
                 String::from_utf8_lossy(&output.stderr)
             );
             assert!(output.stderr.is_empty());
-            assert_eq!(output.stdout, format!(
-                "Transaction\tCommitted\nMatched rows\t{removed}\nDeleted rows\t{removed}\nJournal namespace\tRetired and synchronized\n"
-            ).as_bytes());
+            assert_eq!(
+                output.stdout,
+                format!(
+                    "Transaction\tCommitted\n\
+                    Matched rows\t{removed}\n\
+                    Deleted rows\t{removed}\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n"
+                )
+                .as_bytes()
+            );
             assert_eq!(fs::read(&path).unwrap(), case.after);
             assert!(!bundle.exists());
             let read = Command::new(env!("CARGO_BIN_EXE_tablecraft"))

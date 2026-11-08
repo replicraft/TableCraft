@@ -45,7 +45,12 @@ fn cli_retires_external_null_values_without_invented_binary_literals() {
         );
         assert!(output.stderr.is_empty());
         let expected = format!(
-            "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Matched rows\t{}\n\
+                Changed rows\t{}\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             usize::from(case.recipe != "empty-group"),
             case.changed
         );

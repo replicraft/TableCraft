@@ -60,7 +60,17 @@ fn explicit_cli_declaration_creates_then_generates_one_exact_row_in_both_column_
             String::from_utf8_lossy(&inserted.stderr)
         );
         assert!(inserted.stderr.is_empty());
-        assert_eq!(inserted.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            inserted.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(
             fs::read(&path).unwrap(),
             sources.bytes(5, "increment-zero-inserted")

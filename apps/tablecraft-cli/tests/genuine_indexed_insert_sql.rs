@@ -57,7 +57,17 @@ fn cli_successive_indexed_inserts_match_literal_single_batch_images_and_rows() {
                 String::from_utf8_lossy(&output.stderr)
             );
             assert!(output.stderr.is_empty());
-            assert_eq!(output.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+            assert_eq!(
+                output.stdout,
+                concat!(
+                    "Transaction\tCommitted\n",
+                    "Inserted rows\t1\n",
+                    "Journal namespace\tRetired\n",
+                    "Retirement guarantee\tCaptured-parent barrier\n",
+                    "Journal cleanup\tRemoved\n",
+                )
+                .as_bytes()
+            );
             assert_eq!(fs::read(&path).unwrap(), *expected);
             assert!(!bundle.exists());
             commits += 1;

@@ -82,11 +82,21 @@ fn cli_numeric_null_insert_and_signed_nullable_deletes_retire_exact_whole_images
         );
         assert!(output.stderr.is_empty());
         let expected = if case.operation == "insert" {
-            "Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n".to_owned()
+            "Transaction\tCommitted\n\
+                Inserted rows\t1\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n"
+                .to_owned()
         } else {
             let count = sources::ordinals(case.recipe, false).len();
             format!(
-                "Transaction\tCommitted\nMatched rows\t{count}\nDeleted rows\t{count}\nJournal namespace\tRetired and synchronized\n"
+                "Transaction\tCommitted\n\
+                    Matched rows\t{count}\n\
+                    Deleted rows\t{count}\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n"
             )
         };
         assert_eq!(output.stdout, expected.as_bytes());

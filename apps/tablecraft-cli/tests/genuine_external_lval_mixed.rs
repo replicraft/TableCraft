@@ -47,7 +47,18 @@ fn cli_external_mixed_null_and_text_saves_have_exact_files_receipts_and_readback
             );
             assert!(output.stderr.is_empty());
             let changed = fixture::changed_rows(case);
-            assert_eq!(output.stdout, format!("Transaction\tCommitted\nMatched rows\t{changed}\nChanged rows\t{changed}\nJournal namespace\tRetired and synchronized\n").as_bytes());
+            assert_eq!(
+                output.stdout,
+                format!(
+                    "Transaction\tCommitted\n\
+                Matched rows\t{changed}\n\
+                Changed rows\t{changed}\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n"
+                )
+                .as_bytes()
+            );
             assert_eq!(fs::read(&path).unwrap(), case.after);
             assert!(!bundle.exists());
             let output = CLI.run(&["query", "run", "SELECT [ID], IsNull([Memo]) AS MemoMissing, Len([Memo]) AS MemoLength, IsNull([Blob]) AS BlobMissing FROM Items", "--database", path.to_str().unwrap()]);

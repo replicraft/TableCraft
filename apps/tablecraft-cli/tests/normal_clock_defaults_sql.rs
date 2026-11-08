@@ -68,7 +68,17 @@ fn journal_insert_saves_twelve_exact_images_and_reads_back_literal_civil_values(
             String::from_utf8_lossy(&saved.stderr)
         );
         assert!(saved.stderr.is_empty());
-        assert_eq!(saved.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            saved.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!bundle.exists());
         let read = Command::new(env!("CARGO_BIN_EXE_tablecraft"))

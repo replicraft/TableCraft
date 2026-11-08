@@ -71,7 +71,18 @@ fn dynamic_inline_cli_commits_ten_literal_images_and_reads_exact_rows() {
                 String::from_utf8_lossy(&output.stderr)
             );
             assert!(output.stderr.is_empty());
-            assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+            assert_eq!(
+                output.stdout,
+                concat!(
+                    "Transaction\tCommitted\n",
+                    "Matched rows\t1\n",
+                    "Changed rows\t1\n",
+                    "Journal namespace\tRetired\n",
+                    "Retirement guarantee\tCaptured-parent barrier\n",
+                    "Journal cleanup\tRemoved\n",
+                )
+                .as_bytes()
+            );
             assert_eq!(fs::read(&path).unwrap(), expected);
             assert!(!journal.exists());
             assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);

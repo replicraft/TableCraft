@@ -96,9 +96,21 @@ fn finalize_confirms_original_or_replacement_without_replaying_the_edit() {
         );
         assert!(output.stderr.is_empty());
         let expected_report: &[u8] = if committed {
-            b"Verified image\tReplacement\nJournal namespace\tRetired and synchronized\n"
+            concat!(
+                "Verified image\tReplacement\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
         } else {
-            b"Verified image\tOriginal\nJournal namespace\tRetired and synchronized\n"
+            concat!(
+                "Verified image\tOriginal\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
         };
         assert_eq!(output.stdout, expected_report);
         assert_eq!(fs::read(&database).unwrap(), expected);

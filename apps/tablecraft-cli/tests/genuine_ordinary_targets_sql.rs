@@ -70,7 +70,12 @@ fn genuine_cli_commits_ten_literal_images_and_reads_exact_physical_row_order() {
             assert_eq!(hash(after), case.after_digest.unwrap());
             let expected_rows = rows(&case.final_rows);
             let report = format!(
-                "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t{}\n\
+                    Changed rows\t{}\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
                 usize::from(!case.empty),
                 case.changed_rows
             );

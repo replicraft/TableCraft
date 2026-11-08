@@ -38,7 +38,17 @@ fn cli_explicit_scalar_promotions_publish_exact_whole_images_and_retained_scalar
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            output.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!bundle.exists());
         let query = format!(

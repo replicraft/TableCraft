@@ -47,14 +47,23 @@ fn cli_fresh_create_then_normal_insert_and_delete_match_literal_images_and_rows(
             "journal-insert",
             "INSERT INTO Items ([Id], [Score]) VALUES (2, 20)",
             &expected.inserted,
-            "Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Inserted rows\t1\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             "Id\tScore\n1\t10\n2\t20\n",
         ),
         (
             "journal-delete",
             "DELETE FROM Items WHERE [Id]=2",
             &expected.deleted,
-            "Transaction\tCommitted\nMatched rows\t1\nDeleted rows\t1\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Matched rows\t1\n\
+                Deleted rows\t1\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             "Id\tScore\n1\t10\n",
         ),
     ] {

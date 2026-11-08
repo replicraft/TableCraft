@@ -72,7 +72,12 @@ fn genuine_property_lval_cli_saves_and_reads_twelve_literal_images() {
     for case in cases.iter().filter(|case| case.after.is_some()) {
         let after = case.after.as_ref().unwrap();
         let report = format!(
-            "Transaction\tCommitted\nMatched rows\t{}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+            "Transaction\tCommitted\n\
+                Matched rows\t{}\n\
+                Changed rows\t{}\n\
+                Journal namespace\tRetired\n\
+                Retirement guarantee\tCaptured-parent barrier\n\
+                Journal cleanup\tRemoved\n",
             usize::from(!case.empty),
             case.changed_rows
         );

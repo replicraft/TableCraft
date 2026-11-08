@@ -90,7 +90,12 @@ fn ordinary_fitted_cli_saves_and_reads_eighteen_literal_sql_images() {
             let expected = case.expected.as_ref().unwrap();
             let expected_matched = usize::from(recipe != Recipe::EmptyGroups);
             let report = format!(
-                "Transaction\tCommitted\nMatched rows\t{expected_matched}\nChanged rows\t{}\nJournal namespace\tRetired and synchronized\n",
+                "Transaction\tCommitted\n\
+                    Matched rows\t{expected_matched}\n\
+                    Changed rows\t{}\n\
+                    Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n",
                 case.changed,
             );
             let root = tempfile::tempdir().unwrap();

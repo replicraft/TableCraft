@@ -38,7 +38,17 @@ fn cli_preserves_literal_leading_feff_and_queries_its_actual_character() {
             String::from_utf8_lossy(&written.stderr)
         );
         assert!(written.stderr.is_empty());
-        assert_eq!(written.stdout, b"Transaction\tCommitted\nInserted rows\t1\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            written.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Inserted rows\t1\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!bundle.exists());
 

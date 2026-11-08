@@ -41,7 +41,18 @@ fn cli_retained_numeric_original_noop_preserves_complete_image_and_readback() {
             String::from_utf8_lossy(&output.stderr)
         );
         assert!(output.stderr.is_empty());
-        assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t0\nJournal namespace\tRetired and synchronized\n");
+        assert_eq!(
+            output.stdout,
+            concat!(
+                "Transaction\tCommitted\n",
+                "Matched rows\t1\n",
+                "Changed rows\t0\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
+        );
         assert_eq!(fs::read(&path).unwrap(), case.after);
         assert!(!journal.exists());
 

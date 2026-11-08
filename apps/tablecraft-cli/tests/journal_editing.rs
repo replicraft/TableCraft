@@ -100,7 +100,18 @@ fn journal_update_commits_complete_image_and_retires_active_bundle() {
         String::from_utf8_lossy(&output.stderr)
     );
     assert!(output.stderr.is_empty());
-    assert_eq!(output.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+    assert_eq!(
+        output.stdout,
+        concat!(
+            "Transaction\tCommitted\n",
+            "Matched rows\t1\n",
+            "Changed rows\t1\n",
+            "Journal namespace\tRetired\n",
+            "Retirement guarantee\tCaptured-parent barrier\n",
+            "Journal cleanup\tRemoved\n",
+        )
+        .as_bytes()
+    );
     assert_eq!(fs::read(&database).unwrap(), after);
     assert!(!journal.exists());
 }
@@ -237,9 +248,21 @@ fn recover_update_uses_real_pending_and_committed_pairs_then_retires_them() {
         );
         assert!(output.stderr.is_empty());
         let expected_report: &[u8] = if committed {
-            b"Recovery\tCommitted\nJournal namespace\tRetired and synchronized\n"
+            concat!(
+                "Recovery\tCommitted\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
         } else {
-            b"Recovery\tRolledBack\nJournal namespace\tRetired and synchronized\n"
+            concat!(
+                "Recovery\tRolledBack\n",
+                "Journal namespace\tRetired\n",
+                "Retirement guarantee\tCaptured-parent barrier\n",
+                "Journal cleanup\tRemoved\n",
+            )
+            .as_bytes()
         };
         assert_eq!(output.stdout, expected_report);
         let (before, after) = images();

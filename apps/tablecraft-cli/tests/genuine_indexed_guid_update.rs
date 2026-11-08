@@ -41,7 +41,18 @@ fn save(case: &Case, score_first: Option<bool>) {
     );
     assert!(output.stderr.is_empty());
     let count = case.changed_rows();
-    assert_eq!(output.stdout, format!("Transaction\tCommitted\nMatched rows\t{count}\nChanged rows\t{count}\nJournal namespace\tRetired and synchronized\n").as_bytes());
+    assert_eq!(
+        output.stdout,
+        format!(
+            "Transaction\tCommitted\n\
+        Matched rows\t{count}\n\
+        Changed rows\t{count}\n\
+        Journal namespace\tRetired\n\
+        Retirement guarantee\tCaptured-parent barrier\n\
+        Journal cleanup\tRemoved\n"
+        )
+        .as_bytes()
+    );
     let expected = if score_first.is_some() {
         case.composite_after()
     } else {

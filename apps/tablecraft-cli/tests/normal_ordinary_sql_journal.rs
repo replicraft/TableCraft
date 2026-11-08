@@ -40,7 +40,12 @@ fn committed(before: &[u8], expected: &[u8], sql: &str, matched: usize, changed:
     );
     assert!(output.stderr.is_empty());
     let report = format!(
-        "Transaction\tCommitted\nMatched rows\t{matched}\nChanged rows\t{changed}\nJournal namespace\tRetired and synchronized\n"
+        "Transaction\tCommitted\n\
+            Matched rows\t{matched}\n\
+            Changed rows\t{changed}\n\
+            Journal namespace\tRetired\n\
+            Retirement guarantee\tCaptured-parent barrier\n\
+            Journal cleanup\tRemoved\n"
     );
     assert_eq!(output.stdout, report.as_bytes());
     assert_eq!(fs::read(&path).unwrap(), expected);
@@ -214,7 +219,18 @@ fn created_database_supports_normal_journal_update_and_rows_readback() {
         String::from_utf8_lossy(&updated.stderr)
     );
     assert!(updated.stderr.is_empty());
-    assert_eq!(updated.stdout, b"Transaction\tCommitted\nMatched rows\t1\nChanged rows\t1\nJournal namespace\tRetired and synchronized\n");
+    assert_eq!(
+        updated.stdout,
+        concat!(
+            "Transaction\tCommitted\n",
+            "Matched rows\t1\n",
+            "Changed rows\t1\n",
+            "Journal namespace\tRetired\n",
+            "Retirement guarantee\tCaptured-parent barrier\n",
+            "Journal cleanup\tRemoved\n",
+        )
+        .as_bytes()
+    );
     assert_eq!(fs::read(&path).unwrap(), expected);
     assert!(!journal.exists());
 

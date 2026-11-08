@@ -62,7 +62,10 @@ fn cli_text_cardinality_retires_literal_images_and_reads_exact_live_counts() {
         assert_eq!(
             output.stdout,
             format!(
-                "Transaction\tCommitted\n{counts}Journal namespace\tRetired and synchronized\n"
+                "Transaction\tCommitted\n\
+                    {counts}Journal namespace\tRetired\n\
+                    Retirement guarantee\tCaptured-parent barrier\n\
+                    Journal cleanup\tRemoved\n"
             )
             .as_bytes()
         );
