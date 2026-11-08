@@ -92,7 +92,15 @@ pub(super) fn candidate(
         budget,
         cancelled,
     )?;
-    if native.header() != before.catalog().header()
+    let original_header = before.catalog().header();
+    let updated_header = native.header();
+    // Page count is derived from physical EOF, not a changed stored header byte.
+    // The complement proof above already preserves the complete original header.
+    if updated_header.format() != original_header.format()
+        || updated_header.page_size() != original_header.page_size()
+        || updated_header.subversion() != original_header.subversion()
+        || updated_header.encoded_pages() != original_header.encoded_pages()
+        || original_header.page_count().checked_add(1) != Some(updated_header.page_count())
         || native.origins().len() != before.catalog().origins().len() + 1
     {
         return Err(DatabaseOptionsError::Preservation);
