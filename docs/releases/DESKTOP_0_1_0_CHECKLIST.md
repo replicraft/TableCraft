@@ -20,14 +20,25 @@ Access editing.
   after output-only temporary commands remain open. Keep unimplemented KeyTips
   explicit; the retained Home capture supplies no command-letter assignments.
   See [Ribbon coverage](../ui/RIBBON.md).
-- [ ] **Complete the new ACCDB workflow.** Blank ACE 16 publication and the
-  separately identified initial `Table1` draft are implemented. Finish the
-  table-name/Save workflow through a genuine same-file schema operation and
-  recovery, then replace the draft with a freshly read persisted table. Failed
-  or cancelled saves must retain the draft; discard/cancel and host transitions
-  must not lose it silently. Keep platform/filesystem guarantees explicit and
-  qualify actual Windows execution separately. See
-  [database creation](../ui/DATABASE_CREATION.md).
+- [x] **Implement and headlessly verify the new ACCDB workflow.** Blank ACE 16
+  publication, the separate initial `Table1` draft, table naming, consuming schema
+  review and same-file journaled Save/recovery are implemented. Acknowledged
+  completion triggers guarded fresh reopening before draft promotion. Pending
+  records use a separate reviewed insertion Save; they are not invented by schema
+  creation. Connected headless tests cover discard/cancel, stale replies, retained
+  outcomes, repeated Create → Table and fresh queries over saved records. These
+  checks complete the implementation/headless gate, not platform shipping or
+  Microsoft Access compatibility qualification. See
+  [database creation](../ui/DATABASE_CREATION.md) and the
+  [runtime contract](../application/RUNTIME.md).
+- [ ] **Qualify creation and schema Save on native Windows.** The Windows runtime
+  and desktop paths compile, but cross-compilation is not execution of local-NTFS
+  publication, sharing/ACL rules, retained-journal retirement or same-file
+  Save/reopen. Record the corresponding real-host cancellation/failure/recovery
+  outcomes and packaged runtime behavior before claiming Windows qualification.
+  Retain the actual platform guarantees; an intact retired Windows journal is
+  distinct from Unix removal. Native window checks remain suspended until
+  explicitly authorized, and this checklist does not resume them.
 - [ ] **Record the release's supported browser profile.** Match the
   [desktop guide](../ui/DESKTOP.md), [compatibility matrix](../COMPATIBILITY.md)
   and release notes to the actual build. Retain snapshot/work limits, inert
@@ -40,7 +51,11 @@ Access editing.
   NULL/stored-field presentation, SQL result provenance, schema visits,
   cancellation/errors and object close/reopen. Check source hashes before/after.
   Preserve independent-fixture evidence separately from native Access comparison.
-  Existing observations are in [the presentation record](../ui/PRESENTATION_PREVIEW.md).
+  Existing headless real-file cases already cover multi-page navigation/Find with
+  unchanged source bytes and fresh queries after database creation; these use
+  repository-authored native fixtures. They do not close this combined release
+  journey over the registered original ACCDB/MDB corpus. Existing observations are
+  in [the presentation record](../ui/PRESENTATION_PREVIEW.md).
 - [ ] **Keep write limits visible and tested.** Identify the compiled platform
   capabilities and qualified UPDATE/INSERT/DELETE profiles in the build.
   Preserve explicit review/apply, consuming source-bound receipts, journal and
