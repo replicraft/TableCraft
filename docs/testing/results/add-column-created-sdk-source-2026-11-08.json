@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Independent Jackcess public ADD LONG on empty generated-primary creator-lineage sources; no native Microsoft Access execution",
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862"
+  },
+  "reproduction": {
+    "source": "docs/testing/CreatedTableColumnOracle.java",
+    "sha256": "b605fff68c9bac57b1b070ae519fb55cafe1c5701dd0fb1615737103033c68a9",
+    "operation": "ColumnBuilder(newName, DataType.LONG).addToTable(table)",
+    "optional_operation": "ColumnBuilder(newName, DataType.LONG).putProperty(DefaultValue, DataType.MEMO, 0).addToTable(table)",
+    "fresh_copy_required": true,
+    "expression_evaluation": false,
+    "independent_reopen": true,
+    "original_bytes_checked_unchanged": true,
+    "status": "Public reproduction harness executed against all three original sources on fresh copies; complete AFTER hashes match recorded original probes"
+  },
+  "observations": [
+    {
+      "case": "existing-inline-default-zero",
+      "provenance": "CLI-created generated primary + independently authored native17 MR2 inline property from registered EmptySeven fixture, constant7 changed to0 in donor bag; exact native constructor equality pending new SOURCE gate",
+      "source_donor": {
+        "path": ".cache/ace16-native-creation-defaults-next-20261101/qualification-first/source-export-first/h5-empty-seven-before.accdb",
+        "sha256": "12eea57af9e978ba3571c08446d79d9a068045443ca5545ef5247696b16292d7"
+      },
+      "before_sha256": "6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808",
+      "after_sha256": "cc340fbd9f841d37169ab6e7b0be63e4704cbfc6f169fd59939f804a824e54d5",
+      "before_bytes": 40960,
+      "after_bytes": 40960,
+      "changed_pages": [
+        7
+      ],
+      "sdk_stdout": "Id\tLONG\ttrue\tnull\nScore\tLONG\tfalse\t0\nExtra\tLONG\tfalse\tnull\nRows\t0\nIndexes\t1\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\n",
+      "new_default": "Absent",
+      "whole_after_oracle": "Independent raw MR2 source plus appended TD equals complete SDK AFTER; native candidate check passed in root focused batch",
+      "public_harness_replay": "PASS: fresh copy, fresh read-only reopen, complete AFTER hash, original bytes unchanged",
+      "public_harness_stdout": "Id\tLONG\ttrue\tnull\nScore\tLONG\tfalse\t0\nExtra\tLONG\tfalse\tnull\nRows\t0\nIndexes\t1\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\nBeforeSHA256\t6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808\nAfterSHA256\tcc340fbd9f841d37169ab6e7b0be63e4704cbfc6f169fd59939f804a824e54d5\n"
+    },
+    {
+      "case": "fourteen-mixed-scalar-fields",
+      "provenance": "Independent literal native metadata matching retained canonical_initial_table_creation::Case::Mixed; generated-primary envelope inherited from CLI-owned original",
+      "before_sha256": "98f4c344e2a616a7b5b6fa73143fc92322fa61c5f80cd706f8e920e7f3ff6d47",
+      "after_sha256": "426adf5f2e5ffab6392f665b84e3d0e4773314c197b98b7a53f5b79dd1cbf6ec",
+      "before_bytes": 40960,
+      "after_bytes": 40960,
+      "changed_pages": [
+        7
+      ],
+      "sdk_stdout": "Id\tLONG\ttrue\tnull\nFlag\tBOOLEAN\tfalse\tnull\nByteValue\tBYTE\tfalse\tnull\nShortValue\tINT\tfalse\tnull\nLongValue\tLONG\tfalse\tnull\nLargeValue\tBIG_INT\tfalse\tnull\nMoney\tMONEY\tfalse\tnull\nSingleValue\tFLOAT\tfalse\tnull\nDoubleValue\tDOUBLE\tfalse\tnull\nDateValue\tSHORT_DATE_TIME\tfalse\tnull\nGuidValue\tGUID\tfalse\tnull\nTextValue\tTEXT\tfalse\tnull\nBinaryValue\tBINARY\tfalse\tnull\nDecimalValue\tNUMERIC\tfalse\tnull\nExtra\tLONG\tfalse\tnull\nRows\t0\nIndexes\t1\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\n",
+      "new_default": "Absent",
+      "whole_after_oracle": "Complete independent raw AFTER equals SDK AFTER; native candidate check passed in root focused batch",
+      "public_harness_replay": "PASS: fresh copy, fresh read-only reopen, complete AFTER hash, original bytes unchanged",
+      "public_harness_stdout": "Id\tLONG\ttrue\tnull\nFlag\tBOOLEAN\tfalse\tnull\nByteValue\tBYTE\tfalse\tnull\nShortValue\tINT\tfalse\tnull\nLongValue\tLONG\tfalse\tnull\nLargeValue\tBIG_INT\tfalse\tnull\nMoney\tMONEY\tfalse\tnull\nSingleValue\tFLOAT\tfalse\tnull\nDoubleValue\tDOUBLE\tfalse\tnull\nDateValue\tSHORT_DATE_TIME\tfalse\tnull\nGuidValue\tGUID\tfalse\tnull\nTextValue\tTEXT\tfalse\tnull\nBinaryValue\tBINARY\tfalse\tnull\nDecimalValue\tNUMERIC\tfalse\tnull\nExtra\tLONG\tfalse\tnull\nRows\t0\nIndexes\t1\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\nBeforeSHA256\t98f4c344e2a616a7b5b6fa73143fc92322fa61c5f80cd706f8e920e7f3ff6d47\nAfterSHA256\t426adf5f2e5ffab6392f665b84e3d0e4773314c197b98b7a53f5b79dd1cbf6ec\n"
+    },
+    {
+      "case": "new-field-default-zero",
+      "before_sha256": "6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808",
+      "after_sha256": "1f3bb5bd37de1978587a233cc98da7a71b5f7262619180f1a2b548534f825bef",
+      "before_bytes": 40960,
+      "after_bytes": 45056,
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_pages": 1,
+      "new_default": "Explicit constant 0",
+      "candidate_admission": "Not admitted; target property allocation exceeds definition-only envelope",
+      "required_followup": "Separate original target property declaration, catalog/LVAL/map ownership and allocation proof, independent complete AFTER and journal/recovery qualification",
+      "public_harness_replay": "PASS: fresh copy, fresh read-only reopen, complete AFTER hash, original bytes unchanged",
+      "public_harness_stdout": "Id\tLONG\ttrue\tnull\nScore\tLONG\tfalse\t0\nExtra\tLONG\tfalse\t0\nRows\t0\nIndexes\t1\nCreated\t1899-12-30T00:00\nUpdated\t1899-12-30T00:00\nBeforeSHA256\t6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808\nAfterSHA256\t1f3bb5bd37de1978587a233cc98da7a71b5f7262619180f1a2b548534f825bef\n"
+    }
+  ],
+  "fixture_owners": [
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_created_add_column.rs",
+      "sha256": "22f38dda2202dd7ae28b159b719724a6b30cf13356cc915ab624e22a02ec583b"
+    },
+    {
+      "path": "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_initial_table_creation.rs",
+      "sha256": "c32b6866520575db19ca93ad55b804bc511f878fe14028e69dd5d23c6c1ce393"
+    }
+  ],
+  "verification": {
+    "generated_primary_candidate_tests": 7,
+    "old_keyless_candidate_tests": 5,
+    "status": "PASS reported by root coordinated batch; TCAC0002 intent/runtime extension tests authored separately, pending next batch at this checkpoint"
+  },
+  "limits": [
+    "Empty canonical header-5 ACE2016 generated-primary source only; no qualification for Jet3/Jet4/other ACE profiles",
+    "New ordinary nullable LONG has no default in admitted candidate",
+    "Unknown/external property storage, populated tables, broader indexes and noncanonical layouts refuse",
+    "All SDK-observed dates are zero dates: 1899-12-30T00:00; nonzero date/native timestamp-update semantics unqualified",
+    "SDK read/save/reopen is independent-reader evidence, not native Microsoft Access compatibility or GUI behavior",
+    "No JAR, third-party database, generated class file or private image is committed"
+  ]
+}

@@ -11055,3 +11055,36 @@ and observed record framing without production codecs or copied SDK database
 bytes. It does not include the SDK source's system indexes. The
 [reference contract](NATIVE_QUERYDEF_FITTING_SAVE.md) separates this byte oracle
 from native producer, source ownership, recovery and Access qualification.
+
+## Empty generated-primary saved-column ADD reference — 8 November 2026
+
+The [generated-primary SDK record](results/add-column-created-sdk-source-2026-11-08.json)
+pins two independent complete source/AFTER pairs using the previously reviewed
+Jackcess 5.0.4 JAR (Apache-2.0, SHA-256
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
+An original CLI-created generated-primary envelope plus the existing independent
+inline MR2 default fixture supplies the default-zero source; it is not an SDK-created
+source or a recorded native GUI save. Its source hash is
+`6a17e6cf803d42e10a5bc7f240852ae44c69fd2b10d451e75379d9166aacd808`;
+SDK ADD AFTER is
+`cc340fbd9f841d37169ab6e7b0be63e4704cbfc6f169fd59939f804a824e54d5`.
+The independently authored fourteen-field Mixed source is
+`98f4c344e2a616a7b5b6fa73143fc92322fa61c5f80cd706f8e920e7f3ff6d47`;
+SDK AFTER is
+`426adf5f2e5ffab6392f665b84e3d0e4773314c197b98b7a53f5b79dd1cbf6ec`.
+Both retain 40,960 bytes and change only definition page 7. Independent raw whole
+AFTER images and seven source-qualified candidate tests pass. Existing keys,
+field types, inline default zero and zero catalog dates remain intact.
+
+The original [reproduction harness](CreatedTableColumnOracle.java) performs explicit
+ADD on a fresh copy with expression evaluation disabled, reopens the copy read-only
+and checks that original bytes remain unchanged. The record distinguishes the
+original executed private probes from this subsequently authored public harness.
+No database, JAR or generated class file is copied into the repository.
+
+An explicit new-field default zero is a separate boundary: SDK AFTER hash
+`1f3bb5bd37de1978587a233cc98da7a71b5f7262619180f1a2b548534f825bef`
+grows to 45,056 bytes, changes pages 3, 4 and 7, and adds property LVAL page 10.
+The admitted definition-only candidate does not author that target property.
+Native Access execution, nonzero timestamp behavior, populated alteration,
+broader file profiles and GUI column-save behavior remain unqualified by this record.

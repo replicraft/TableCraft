@@ -93,3 +93,22 @@ to reinterpret retained requests during recovery. Three new V2 wire/recovery
 cases and an expanded runtime save/reopen case are authored for the next batch;
 execution remains pending. This is not general populated-table alteration or
 GUI default authoring.
+
+## Independent generated-primary SDK observations
+
+The [source/provenance record](../../testing/results/add-column-created-sdk-source-2026-11-08.json)
+separates whole-image SDK observations from native candidate and normal-save
+qualification. The existing inline-default-zero source and the fourteen-field
+Mixed source both yield the complete independently authored AFTER when a nullable
+LONG with an absent new default is appended. Only page 7 changes; file length,
+primary root, allocation, catalog properties and zero native dates remain exact.
+The raw fixture owns original bytes independently of the production serializer.
+
+Explicitly declaring default zero on the new field is a different SDK operation:
+it changes catalog and allocation pages and grows the file by one property LVAL
+page. It is outside both current source-qualified candidate target declarations.
+A future target-property operation needs an explicit original declaration and
+complete property-storage/allocation preservation and recovery proof. Existing
+default-zero preservation does not authorize inventing a new field default or
+enabling the ordinary GUI Number-field workflow. All observed SDK dates are
+`1899-12-30T00:00`; this does not qualify native Access timestamp changes.
