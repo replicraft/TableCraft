@@ -53,6 +53,20 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .review_table_rename(*document_revision, table, new_name, cancelled),
             #[cfg(feature = "offline-edit")]
+            Command::InspectQuerySqlDraft { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_query_sql_draft(target, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::ReviewQuerySql {
+                target,
+                original_sql,
+                proposed_sql,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_query_sql(target, original_sql, proposed_sql, cancelled),
+            #[cfg(feature = "offline-edit")]
             Command::ReviewQueryLiteralExpression {
                 target,
                 expected,
@@ -391,6 +405,10 @@ impl Worker {
                 let operation = match &request.command {
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewTableRename { .. } => "review_table_rename",
+                    #[cfg(feature = "offline-edit")]
+                    Command::InspectQuerySqlDraft { .. } => "inspect_query_sql_draft",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReviewQuerySql { .. } => "review_query_sql",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewQueryLiteralExpression { .. } => "review_query_expression",
                     #[cfg(feature = "offline-edit")]

@@ -47,6 +47,11 @@ mod query_parameters;
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
+mod query_sql;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
 mod query_update;
 mod repaint;
 #[cfg(all(

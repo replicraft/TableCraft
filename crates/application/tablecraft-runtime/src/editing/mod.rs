@@ -7,6 +7,7 @@ mod query_action;
 mod query_delete;
 mod query_expression;
 mod query_insert;
+mod query_sql;
 mod query_update;
 mod replacing;
 mod save;
@@ -32,6 +33,7 @@ pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{QueryExpressionReopen, QueryExpressionReview, ReviewedQueryExpression};
 pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
+pub use query_sql::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 pub use replacing::ReplaceError;
 pub use save::{

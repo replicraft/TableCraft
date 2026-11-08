@@ -49,6 +49,8 @@ pub use editing::{
     SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure, SaveWorker,
     TableRenameReopen, TableRenameReview, journal_path,
 };
+#[cfg(feature = "offline-edit")]
+pub use editing::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
@@ -93,6 +95,9 @@ pub enum Error {
     #[cfg(feature = "offline-edit")]
     #[error("saved query contents changed before reopening")]
     QueryExpressionSourceChanged,
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    QuerySqlEdit(#[from] QuerySqlEditError),
     #[cfg(feature = "offline-edit")]
     #[error(transparent)]
     TableRename(#[from] tablecraft_ace::RecoverableTableRenameError),
@@ -217,6 +222,16 @@ pub enum Command {
         document_revision: u64,
         table: String,
         new_name: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    InspectQuerySqlDraft {
+        target: SavedQueryTarget,
+    },
+    #[cfg(feature = "offline-edit")]
+    ReviewQuerySql {
+        target: SavedQueryTarget,
+        original_sql: String,
+        proposed_sql: String,
     },
     #[cfg(feature = "offline-edit")]
     ReviewQueryLiteralExpression {
@@ -419,6 +434,15 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(feature = "offline-edit")]
+    QuerySqlDraft {
+        draft: QuerySqlDraft,
+    },
+    #[cfg(feature = "offline-edit")]
+    QuerySqlReviewed {
+        review: QuerySqlReview,
+        capability: ReviewedQueryExpression,
+    },
     #[cfg(feature = "offline-edit")]
     QueryExpressionReviewed {
         review: QueryExpressionReview,

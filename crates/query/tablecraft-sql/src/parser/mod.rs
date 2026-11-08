@@ -11,6 +11,7 @@ mod definition;
 mod diagnostic;
 mod expression;
 mod identifiers;
+mod integer_projection;
 mod lex;
 mod limits;
 mod parameters;
@@ -77,6 +78,7 @@ pub fn parse_select(source: &str, limits: ParseLimits) -> Result<ParsedSelect, P
 pub struct ParsedQuery {
     source: String,
     statement_end: usize,
+    integer_projection_spelling: Option<std::ops::Range<usize>>,
     query: crate::query::Query,
 }
 impl ParsedQuery {
@@ -91,6 +93,18 @@ impl ParsedQuery {
     /// Without a final terminator this is the complete original source.
     pub fn statement_source(&self) -> &str {
         &self.source[..self.statement_end]
+    }
+
+    /// Original canonical nonnegative Int32 spelling in a sole literal projection.
+    ///
+    /// This lexical observation admits only SELECT [ALL] integer AS identifier
+    /// with an optional terminator. Parentheses, signs, leading zeros, decimal,
+    /// exponent and radix spelling return None even when their lowered syntax
+    /// has the same integer value. It supplies no binding or native edit authority.
+    pub fn canonical_integer_projection_spelling(&self) -> Option<&str> {
+        self.integer_projection_spelling
+            .as_ref()
+            .map(|range| &self.source[range.clone()])
     }
 
     /// Owned query syntax; no binding or execution has occurred.
@@ -110,6 +124,7 @@ pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, Par
     limits.check_input(source)?;
     let dialect = access::AccessDialect;
     let tokens = limits.check_tokens(source, lex::tokens(source, &dialect)?)?;
+    let integer_projection_spelling = integer_projection::spelling(source, &tokens);
     let statement_end = tokens
         .last()
         .filter(|token| token.token == Token::SemiColon)
@@ -123,6 +138,7 @@ pub fn parse_query(source: &str, limits: ParseLimits) -> Result<ParsedQuery, Par
     Ok(ParsedQuery {
         source: source.to_owned(),
         statement_end,
+        integer_projection_spelling,
         query,
     })
 }

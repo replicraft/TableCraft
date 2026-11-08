@@ -402,7 +402,9 @@ impl Desktop {
                 continue;
             }
             match result {
-                Ok(Response::QueryExpressionReviewed { .. })
+                Ok(Response::QuerySqlDraft { .. })
+                | Ok(Response::QuerySqlReviewed { .. })
+                | Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
