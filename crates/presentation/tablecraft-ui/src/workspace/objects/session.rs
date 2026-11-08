@@ -38,7 +38,7 @@ pub(super) enum Session {
         error: Option<String>,
     },
     Saved {
-        state: SavedQueryState,
+        state: Box<SavedQueryState>,
         error: Option<String>,
     },
     Sql {
@@ -66,7 +66,7 @@ impl Session {
                 error: None,
             },
             ObjectKind::SavedQuery { .. } => Self::Saved {
-                state: SavedQueryState::default(),
+                state: Box::default(),
                 error: None,
             },
             ObjectKind::Sql => Self::Sql {
@@ -96,7 +96,7 @@ impl Session {
                 error: state.error.take(),
             },
             ObjectKind::SavedQuery { .. } => Self::Saved {
-                state: mem::take(&mut state.saved_query),
+                state: Box::new(mem::take(&mut state.saved_query)),
                 error: state.error.take(),
             },
             ObjectKind::Sql => Self::Sql {
@@ -150,7 +150,7 @@ impl Session {
                 state: saved,
                 error,
             } => {
-                state.saved_query = saved;
+                state.saved_query = *saved;
                 state.saved_query.active = true;
                 state.view = DocumentView::Query;
                 state.error = error;
