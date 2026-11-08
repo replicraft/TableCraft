@@ -10,6 +10,7 @@ use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 mod addition;
 mod capacity;
 mod manual;
+mod number_source;
 mod properties;
 
 fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
