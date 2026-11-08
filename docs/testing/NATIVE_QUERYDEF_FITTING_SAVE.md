@@ -3,8 +3,9 @@
 On 8 November 2026, an original Jackcess 5.0.4 fixture retained one native SELECT
 while its stored projection changed from `42` to `43`. The complete independent
 raw AFTER image equals the complete SDK-produced AFTER image. This establishes
-an expression-only byte oracle for future native save work; **TableCraft has no
-QueryDef persistence producer or normal save/recovery route from this evidence**.
+an expression-only byte oracle. The engine now has an unpublished candidate
+planner for the closed profile below; **no normal QueryDef save/recovery route
+is supplied by this evidence or candidate**.
 Native Microsoft Access save/reopen remains unrun.
 
 [The observation record](results/querydef-fitting-expression-2026-11-08.json)
@@ -67,9 +68,43 @@ eligibility witnesses. The private SDK pair retains the real system indexes;
 no complete database bytes are tracked. Fixture provenance is recorded in
 [FIXTURES.md](FIXTURES.md#existing-querydef-fitting-expression-reference).
 
-## Required proof before a native save
+## Unpublished native candidate checkpoint
 
-A future engine-owned operation must first qualify the actual catalog query,
+With the native engine's `journal` feature, the sealed
+`NativeImage::plan_query_literal_expression` returns an owning
+`NativeQueryExpressionPlan`. It retains complete BEFORE/AFTER images, original
+name/native ID and expected/replacement literal. It has no journal preparation,
+recovery intent, filesystem publication, adapter, runtime or GUI save consumer.
+
+The initial source profile is unencoded ACE 16 code 5/subversion zero with one
+saved query and five fragments, the observed `Answer` alias, and a source-free
+canonical nonnegative Int32 decimal literal. Replacement must have the same
+UTF-16 payload length. Parameters, other expressions/aliases, multiple query
+objects, compiled/cache/property/owner payloads, unknown catalog carriers,
+forwarded/deleted rows and unqualified storage refuse. The full seventeen-field
+catalog must explicitly represent nullable query bodies; a shortened catalog
+does not establish their absence. Exact no-ops undergo the same qualification.
+
+The planner checks complete original catalog/query index membership using the
+retained index checker. It checks native DATA/definition/index/map/LVAL roles
+against the complete local catalog, global-free polarity and live LVAL links.
+It replaces only the direct inline Memo payload and checks the entire byte
+complement. A fresh complete candidate capture repeats semantic/storage/index
+qualification and must resolve the same physical span, name and native ID.
+Neither stored query functions nor active content execute.
+
+A new raw nine-page fixture supplies full nullable catalog carriers and distinct
+represented map cells while retaining the independent one-byte AFTER. Focused
+cases cover that complete image, no-op/source qualification, literal/original/
+capacity refusals, another table's DATA claim, cancellation and exhausted budgets.
+An explicit ignored SDK test pins the reference BEFORE/AFTER hashes. At this
+checkpoint these newly authored Rust cases are **unrun**; formatter and source
+review do not establish a passing candidate or broader source eligibility.
+
+## Required proof before a normal native save
+
+The candidate requires the following source qualification; broader native saves
+must retain and extend it. An engine-owned operation must first qualify the actual catalog query,
 complete selected fragments, original inline Memo framing and physical owners.
 It must retain the exact signed native ID, Tables parent, original name and
 properties. This fixture does not supply a complete audit for hostile sources,
@@ -97,7 +132,7 @@ comparison; ACE owns storage qualification. Saving must retain declared
 parameters, query-callable expression syntax and definition ownership without
 binding parameter values, scanning sources or changing external/named/domain
 namespaces. The constant-only reference does not qualify those broader shapes.
-General Save/Save As, new QueryDef creation and cross-profile qualification
+Normal Save/Save As, new QueryDef creation and cross-profile qualification
 remain separate implementation work. Creating a query in an existing SDK source
 also inserts catalog/fragment records and maintains three native indexes; the
 one-byte save observation does not remove that requirement. The current

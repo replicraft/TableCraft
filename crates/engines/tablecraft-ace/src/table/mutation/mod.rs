@@ -187,3 +187,6 @@ mod storage_scope;
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub(in crate::table) mod map_changes;
+
+#[cfg(feature = "journal")]
+pub(crate) mod query_expression;

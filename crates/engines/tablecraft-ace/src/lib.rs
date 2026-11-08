@@ -19,6 +19,8 @@ mod queries;
 pub use queries::{
     QueryAttribute, SavedQueryDefinition, SavedQueryRow, read_saved_query_definition,
 };
+#[cfg(feature = "journal")]
+pub use queries::{NativeQueryExpressionPlan, QueryExpressionError};
 mod constraints;
 #[cfg(feature = "ace16-create")]
 mod creation;
