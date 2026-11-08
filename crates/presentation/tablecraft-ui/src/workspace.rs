@@ -14,6 +14,7 @@ pub(crate) mod focus;
 mod home;
 pub(crate) mod insertion;
 mod navigation;
+pub(crate) mod number_column;
 mod objects;
 pub mod preview;
 mod query;
@@ -47,6 +48,10 @@ pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
 pub use navigation::rename::TableRenameRequest;
+pub use number_column::{
+    NumberColumnInspectionError, NumberColumnRequest, NumberColumnSaveCommand,
+    NumberColumnSaveIdentity,
+};
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
 pub use query::parameters::{ParameterInput, ParameterSpec};
@@ -107,6 +112,19 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    ReviewNumberColumn {
+        request: NumberColumnRequest,
+    },
+    RetryNumberColumnInspection {
+        tab: ObjectTab,
+    },
+    CancelNumberColumnReview {
+        request_id: u64,
+    },
+    NumberColumnSave {
+        identity: NumberColumnSaveIdentity,
+        command: NumberColumnSaveCommand,
+    },
     /// Cancel an issued table-rename review before a save is accepted.
     CancelTableRenameReview {
         /// Exact naming request whose review should be cancelled.
@@ -378,6 +396,10 @@ pub struct State {
     query_parameters: Option<query::parameters::scratch::Session>,
     query_action: Option<query::actions::review::Session>,
     table_rename: Option<navigation::rename::Rename>,
+    /// Host opt-in remains false until the checked schema-reopen controller is connected.
+    pub number_column_available: bool,
+    number_column: number_column::Model,
+    number_column_status: Option<number_column::Status>,
     /// Host can review and persist native table renames; false for synthetic hosts.
     pub table_rename_available: bool,
     table_selection: Selection,
@@ -860,6 +882,7 @@ impl State {
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
+        self.number_column_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);

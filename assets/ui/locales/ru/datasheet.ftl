@@ -74,3 +74,9 @@ datasheet-no-filter = Без фильтра
 
 datasheet-filtered = Отфильтровано
 datasheet-page-tools = Инструменты страниц
+
+# Saved-table Number field review and checked reopen.
+datasheet-number-inspecting = Проверяется возможность добавления числового поля…
+datasheet-number-reviewing = Проверяется новое числовое поле…
+datasheet-number-reopening = Сохранённая таблица открывается повторно…
+datasheet-number-retry-inspection = Повторить проверку возможности добавления поля

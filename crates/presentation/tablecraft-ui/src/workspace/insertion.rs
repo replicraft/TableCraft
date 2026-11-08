@@ -220,7 +220,7 @@ impl State {
     }
 
     pub fn can_insert_row(&self, target: &InsertTarget) -> bool {
-        if self.has_modified_saved_query_sql() {
+        if self.has_modified_saved_query_sql() || self.number_column_open() {
             return false;
         }
 
@@ -351,7 +351,7 @@ impl State {
     }
 
     pub fn can_apply_insert(&self, review_id: u64) -> bool {
-        if self.has_modified_saved_query_sql() {
+        if self.has_modified_saved_query_sql() || self.number_column_open() {
             return false;
         }
 

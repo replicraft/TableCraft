@@ -101,6 +101,11 @@ impl State {
                     });
             });
         }
+        let number_context = self.number_column_render_context();
+        let (number_tab, number_presentation) = match number_context {
+            Some((tab, presentation)) => (Some(tab), Some(presentation)),
+            None => (None, None),
+        };
         let insert_target = self.current_insert_target();
         let occurrence = self.current_find_occurrence();
         let data = match self.view {
@@ -140,6 +145,7 @@ impl State {
                 selection,
                 pane,
                 datasheet::Features {
+                    number_column: number_presentation,
                     sort_header,
                     insert_target,
                     inline_insert: if self
@@ -156,9 +162,13 @@ impl State {
                     occurrence,
                 },
             );
+            if let Some(tab) = number_tab {
+                self.apply_number_column_header(&tab, output.number_column);
+            }
             actions.extend(output.actions);
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);
+            self.number_column_inspection_status(ui, actions);
         } else if self.view == DocumentView::Query {
             Frame::new().inner_margin(10).show(ui, |ui| {
                 ui.weak(tr(

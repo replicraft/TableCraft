@@ -2,6 +2,7 @@
 mod layout;
 pub(super) mod memory;
 mod names;
+mod ownership;
 mod saved_sql;
 mod saved_sql_close;
 mod saved_sql_lifecycle;
@@ -14,7 +15,7 @@ use super::{DocumentView, State};
 use session::{Entry, Session};
 use std::sync::atomic::{AtomicU64, Ordering};
 
-const MAX_OBJECTS: usize = 16;
+pub(in crate::workspace) const MAX_OBJECTS: usize = 16;
 pub(in crate::workspace) const MAX_RETAINED_BYTES: usize = 64 * 1024 * 1024;
 static NEXT_OBJECT_ID: AtomicU64 = AtomicU64::new(0);
 
@@ -386,6 +387,10 @@ impl State {
     }
 
     pub(super) fn object_switch_ready(&self) -> bool {
+        !self.number_column_open() && self.object_switch_ready_without_number_column()
+    }
+
+    pub(super) fn object_switch_ready_without_number_column(&self) -> bool {
         !self.busy
             && !self.saved_query_sql_close_open()
             && self.table_draft_close.is_none()

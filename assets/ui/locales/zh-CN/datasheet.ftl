@@ -74,3 +74,9 @@ datasheet-no-filter = 无筛选
 
 datasheet-filtered = 已筛选
 datasheet-page-tools = 页面工具
+
+# Saved-table Number field review and checked reopen.
+datasheet-number-inspecting = 正在检查能否添加数字字段…
+datasheet-number-reviewing = 正在检查新的数字字段…
+datasheet-number-reopening = 正在重新打开已保存的表…
+datasheet-number-retry-inspection = 重新检查字段添加条件

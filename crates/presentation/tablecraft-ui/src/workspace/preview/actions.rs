@@ -48,6 +48,10 @@ impl Preview {
             return;
         }
         match action {
+            Action::ReviewNumberColumn { .. } | Action::RetryNumberColumnInspection { .. } => {
+                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+            }
+            Action::CancelNumberColumnReview { .. } | Action::NumberColumnSave { .. } => {}
             Action::RetryInsert { save_id } => {
                 // Illustrate a refused synthetic read; this host has no witness,
                 // database source or native capability to reopen.

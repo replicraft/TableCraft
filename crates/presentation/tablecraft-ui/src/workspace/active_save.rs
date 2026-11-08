@@ -4,15 +4,24 @@ use super::{Action, ObjectKind, State};
 #[derive(Default)]
 pub(super) struct PendingSave {
     saved_query_tab: Option<u64>,
+    number_column_tab: Option<u64>,
 }
 
 impl State {
     /// Presentation availability; native authority is issued by the host review.
     pub fn can_save_active_object(&self) -> bool {
-        self.can_save_table_draft() || self.can_review_saved_query_sql()
+        self.can_save_table_draft()
+            || self.can_review_saved_query_sql()
+            || self.can_review_number_column()
     }
 
     pub(in crate::workspace) fn queue_active_save(&mut self) -> bool {
+        if let Some(tab) = self.active_object()
+            && self.can_edit_number_column_name(&tab)
+        {
+            self.active_save.number_column_tab = Some(tab.id);
+            return true;
+        }
         if self.can_save_table_draft() {
             return self.queue_table_draft_save();
         }
@@ -34,7 +43,10 @@ impl State {
     pub(in crate::workspace) fn consume_active_save_shortcut(&mut self, context: &egui::Context) {
         let saved_sql_editor_ready =
             self.can_edit_saved_query_sql() && !self.saved_query_sql_pending();
-        if (self.can_save_active_object() || saved_sql_editor_ready)
+        let number_header_ready = self
+            .active_object()
+            .is_some_and(|tab| self.can_edit_number_column_name(&tab));
+        if (self.can_save_active_object() || saved_sql_editor_ready || number_header_ready)
             && context.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::S))
         {
             self.queue_active_save();
@@ -42,6 +54,14 @@ impl State {
     }
 
     pub(in crate::workspace) fn finish_active_save(&mut self, actions: &mut Vec<Action>) {
+        if let Some(expected) = self.active_save.number_column_tab.take() {
+            if self.active_object().is_some_and(|tab| tab.id == expected)
+                && let Some(request) = self.number_column_review_request()
+            {
+                actions.push(Action::ReviewNumberColumn { request });
+            }
+            return;
+        }
         let Some(expected_tab) = self.active_save.saved_query_tab.take() else {
             return;
         };

@@ -74,3 +74,9 @@ datasheet-no-filter = フィルターなし
 
 datasheet-filtered = フィルター適用済み
 datasheet-page-tools = ページ ツール
+
+# Saved-table Number field review and checked reopen.
+datasheet-number-inspecting = 数値型フィールドを追加できるか確認しています…
+datasheet-number-reviewing = 新しい数値型フィールドを確認しています…
+datasheet-number-reopening = 保存したテーブルを開き直しています…
+datasheet-number-retry-inspection = フィールドの追加可否を再確認
