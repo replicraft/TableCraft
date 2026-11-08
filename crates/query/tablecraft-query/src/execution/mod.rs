@@ -18,8 +18,9 @@ mod editing;
 mod inserting;
 mod mutation;
 pub use inserting::{
-    InsertError, local_insert_table, plan_insert, plan_insert_with_omissions,
-    plan_insert_with_omissions_and_options, plan_insert_with_options,
+    InsertError, PreparedInsertSelect, PreparedOmittingInsertSelect, local_insert_table,
+    plan_insert, plan_insert_with_omissions, plan_insert_with_omissions_and_options,
+    plan_insert_with_options, prepare_insert_select, prepare_insert_select_with_omissions,
 };
 pub use mutation::MutationOptions;
 mod execute;
@@ -38,6 +39,7 @@ mod multivalue;
 mod numeric_arithmetic;
 mod options;
 mod parameters;
+pub(crate) use parameters::validate_insert_parameters;
 mod progressive;
 pub use progressive::{StreamError, StreamSummary};
 mod relation;

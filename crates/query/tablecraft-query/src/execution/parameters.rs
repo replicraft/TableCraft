@@ -1,7 +1,15 @@
 //! Shared strict typed parameter binding for retrieval and frozen mutations.
-use super::{Runtime, context::ParameterValue};
-use crate::{QueryError, binding::Parameter};
-use tablecraft_core::{limits::Resource, values::Value};
+use super::{ExecutionOptions, Runtime, context::ParameterValue};
+use crate::{
+    QueryError,
+    binding::{Parameter, ValuesSource, bind_declared_parameters},
+    discovery::DiscoveryState,
+};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
+use tablecraft_sql::query::Query;
 
 impl<'a> Runtime<'a, '_> {
     pub(super) fn bind_parameters(
@@ -63,4 +71,31 @@ impl<'a> Runtime<'a, '_> {
         }
         Ok(())
     }
+}
+
+/// Root input errors precede any append schema-discovery row reads. The source
+/// here cannot service relation metadata or scans; only declarations are bound.
+pub(crate) fn validate_insert_parameters<'a>(
+    query: &Query,
+    supplied: &'a [(&str, Value)],
+    options: ExecutionOptions<'a>,
+    budget: &mut ResourceBudget,
+) -> Result<(), QueryError> {
+    let never_cancelled = || false;
+    let cancelled = options.cancelled.unwrap_or(&never_cancelled);
+    let source = ValuesSource;
+    let declarations = bind_declared_parameters(&query.parameters, &source, budget, cancelled)?;
+    let discovery = DiscoveryState::new(false);
+    let mut runtime = Runtime {
+        owner: crate::external_sources::SourceNamespace::Root,
+        numeric_scratch: Vec::new(),
+        repeatable_dynamic: false,
+        source: &source,
+        external_sources: Vec::new(),
+        discovery: &discovery,
+        parameters: Vec::new(),
+        options,
+        budget,
+    };
+    runtime.bind_parameters(&declarations, supplied, true)
 }

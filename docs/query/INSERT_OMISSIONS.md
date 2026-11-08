@@ -25,8 +25,9 @@ qualifying default, or may reject it. The query layer does not substitute NULL,
 parse a stored expression or apply a Required exception. Supplied carriers still
 obey the existing checked integral-to-Int32 assignment law, nullable NULL law and
 exact remaining carrier descriptors. No additional coercions, ambient clock,
-DEFAULT VALUES, INSERT SELECT, parameter, UDF or external-source capability is
-introduced.
+DEFAULT VALUES, parameter, UDF or external-source capability is introduced by
+these original VALUES entrypoints. Separate [INSERT SELECT staging](INSERT_SELECT.md)
+uses the real batch contracts and preserves the same presence distinction.
 
 Six new neutral controls passed on their first actual run alongside all nine
 existing complete-INSERT controls. They cover NULL versus omission, positional

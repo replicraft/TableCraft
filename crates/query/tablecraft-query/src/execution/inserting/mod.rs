@@ -1,4 +1,4 @@
-//! One VALUES row: complete or explicit omission intent, with one backend finish.
+//! VALUES and complete SELECT staging retain original insertion intent.
 use crate::{MutationOptions, QueryError, execution::editing::assignment::stored_value};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::{InsertableTable, OmittingInsertableTable};
@@ -7,7 +7,13 @@ use thiserror::Error;
 
 #[cfg(test)]
 mod omissions_tests;
+mod select;
 mod shape;
+mod target;
+pub use select::{
+    PreparedInsertSelect, PreparedOmittingInsertSelect, prepare_insert_select,
+    prepare_insert_select_with_omissions,
+};
 #[cfg(test)]
 mod tests;
 mod values;

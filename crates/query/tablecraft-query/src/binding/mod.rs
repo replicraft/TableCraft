@@ -6,7 +6,9 @@ use crate::{
     plan::{PreparedBody, Slot},
 };
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
-use tablecraft_sql::query::{Query, Statement};
+use tablecraft_sql::query::{
+    Crosstab, InsertSource, Parameter as SqlParameter, Query, ReadQuery, Statement,
+};
 
 mod aliases;
 mod arrays;
@@ -36,7 +38,7 @@ pub(crate) use inserting::{BoundInsertValues, ValuesSource, bind_insert_values};
 mod mutation_scalar;
 mod named;
 mod parameters;
-pub(crate) use parameters::Parameter;
+pub(crate) use parameters::{Parameter, bind_declared_parameters};
 pub use parameters::{ParameterType, resolve_parameter_type};
 mod projection;
 mod relation;
@@ -194,11 +196,66 @@ pub(crate) fn prepare_stage<'a>(
     cancelled: Option<&'a dyn Fn() -> bool>,
     options: StageOptions,
 ) -> Result<Preparation, QueryError> {
-    let _span = tracing::debug_span!("query.bind").entered();
-    if !matches!(query.statement, Statement::Read(_) | Statement::Crosstab(_)) {
+    let body = match &query.statement {
+        Statement::Read(read) => BorrowedBody::Read(read),
+        Statement::Crosstab(crosstab) => BorrowedBody::Crosstab(crosstab),
+        _ => return Err(QueryError::Unsupported),
+    };
+    prepare_body(
+        &query.parameters,
+        body,
+        source,
+        materialized,
+        budget,
+        cancelled,
+        options,
+    )
+}
+
+pub(crate) fn prepare_insert_stage<'a>(
+    query: &Query,
+    source: &'a dyn Source,
+    materialized: &'a [crate::discovery::Materialized<'a>],
+    budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
+    cancelled: Option<&'a dyn Fn() -> bool>,
+    options: StageOptions,
+) -> Result<Preparation, QueryError> {
+    let Statement::Insert(insert) = &query.statement else {
+        return Err(QueryError::Unsupported);
+    };
+    let InsertSource::Query(read) = &insert.source else {
+        return Err(QueryError::Unsupported);
+    };
+    if insert.external.is_some() {
         return Err(QueryError::Unsupported);
     }
-    if query.parameters.len() > MAX_PARAMETERS {
+    prepare_body(
+        &query.parameters,
+        BorrowedBody::Read(read),
+        source,
+        materialized,
+        budget,
+        cancelled,
+        options,
+    )
+}
+
+enum BorrowedBody<'a> {
+    Read(&'a ReadQuery),
+    Crosstab(&'a Crosstab),
+}
+
+fn prepare_body<'a>(
+    parameters: &[SqlParameter],
+    body: BorrowedBody<'_>,
+    source: &'a dyn Source,
+    materialized: &'a [crate::discovery::Materialized<'a>],
+    budget: Option<&'a mut tablecraft_core::limits::ResourceBudget>,
+    cancelled: Option<&'a dyn Fn() -> bool>,
+    options: StageOptions,
+) -> Result<Preparation, QueryError> {
+    let _span = tracing::debug_span!("query.bind").entered();
+    if parameters.len() > MAX_PARAMETERS {
         return Err(QueryError::StructureLimit);
     }
     let mut binder = Binder {
@@ -230,16 +287,15 @@ pub(crate) fn prepare_stage<'a>(
     };
     let result = (|| {
         binder.seed_external_sources(options.external_sources)?;
-        binder.parameters = binder.bind_parameters(&query.parameters)?;
+        binder.parameters = binder.bind_parameters(parameters)?;
         binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
-        let body = match &query.statement {
-            Statement::Read(read) => {
+        let body = match body {
+            BorrowedBody::Read(read) => {
                 let mut read = binder.read(read, &[], 1)?;
                 projection::prune(&mut read, &mut binder)?;
                 PreparedBody::Read(read)
             }
-            Statement::Crosstab(cross) => PreparedBody::Crosstab(binder.crosstab(cross)?),
-            _ => return Err(QueryError::Unsupported),
+            BorrowedBody::Crosstab(cross) => PreparedBody::Crosstab(binder.crosstab(cross)?),
         };
         Ok(body)
     })();
@@ -265,6 +321,7 @@ pub(crate) fn prepare_stage<'a>(
         Err(error) => Err(error),
     }
 }
+
 fn resolve(
     field: &tablecraft_sql::select::FieldReference,
     slots: &[Slot],

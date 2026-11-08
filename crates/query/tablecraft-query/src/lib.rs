@@ -47,7 +47,8 @@ pub use execution::{
     ExecutionOptions, ExpressionQueryResult, QueryLimits, QueryResult, StreamError, StreamSummary,
 };
 pub use execution::{
-    InsertError, local_insert_table, plan_insert, plan_insert_with_omissions,
-    plan_insert_with_omissions_and_options, plan_insert_with_options,
+    InsertError, PreparedInsertSelect, PreparedOmittingInsertSelect, local_insert_table,
+    plan_insert, plan_insert_with_omissions, plan_insert_with_omissions_and_options,
+    plan_insert_with_options, prepare_insert_select, prepare_insert_select_with_omissions,
 };
 pub use source::Source;

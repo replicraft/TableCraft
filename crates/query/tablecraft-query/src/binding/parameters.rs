@@ -1,6 +1,6 @@
 use super::Binder;
-use crate::{OutputType, QueryError, profile::SOURCE_SCHEMA_POLICY};
-use tablecraft_core::values::Value;
+use crate::{OutputType, QueryError, Source, profile::SOURCE_SCHEMA_POLICY};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{ScalarType, SchemaName, TypeDescriptor};
 use tablecraft_sql::query::DataType;
@@ -86,6 +86,21 @@ impl Binder<'_> {
         }
         Ok(parameters)
     }
+}
+
+/// Bind only original declarations, without relation metadata or row access.
+/// The actual allocations and declaration traversal consume the caller's pool.
+pub(crate) fn bind_declared_parameters<'a>(
+    declarations: &[tablecraft_sql::query::Parameter],
+    source: &'a dyn Source,
+    budget: &'a mut ResourceBudget,
+    cancelled: &'a dyn Fn() -> bool,
+) -> Result<Vec<Parameter>, QueryError> {
+    super::mutation_parameters::admit(declarations, Some(budget), cancelled)?;
+    let mut binder = Binder::mutation(source);
+    binder.budget = Some(budget);
+    binder.cancelled = Some(cancelled);
+    binder.bind_parameters(declarations)
 }
 
 /// Resolve a parsed Access declaration using the same rules as query binding.
