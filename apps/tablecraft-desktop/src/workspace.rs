@@ -29,8 +29,8 @@ use tablecraft_runtime::{
 };
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
-    ObjectKind, ObjectTarget, QueryDesignRequest, RecordTarget, SavedQuery, SavedQueryTarget,
-    Schema, State, Table, TotalSpec, TotalsTarget,
+    ObjectKind, ObjectTarget, QueryDesignRequest, RecordTarget, SavedQuery, SavedQuerySqlRequest,
+    SavedQueryTarget, Schema, State, Table, TotalSpec, TotalsTarget,
 };
 use zeroize::Zeroize;
 
@@ -130,6 +130,10 @@ enum PendingOperation {
     SavedRun {
         target: SavedQueryTarget,
         request_id: u64,
+    },
+    SavedSqlInspection {
+        request_id: u64,
+        request: SavedQuerySqlRequest,
     },
     Record {
         target: RecordTarget,
@@ -402,9 +406,12 @@ impl Desktop {
                 continue;
             }
             match result {
-                Ok(Response::QuerySqlDraft { .. })
-                | Ok(Response::QuerySqlReviewed { .. })
+                Ok(Response::QuerySqlDraft { draft }) => {
+                    self.publish_saved_query_sql(generation, draft);
+                }
+                Ok(Response::QuerySqlReviewed { .. })
                 | Ok(Response::QueryExpressionReviewed { .. })
+                | Ok(Response::DatabaseOptionsReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
@@ -715,6 +722,13 @@ impl Desktop {
                     | PendingOperation::FindPage { request_id, .. } => {
                         self.state.fail_find(*request_id, error.to_string());
                     }
+                    PendingOperation::SavedSqlInspection {
+                        request_id,
+                        request,
+                    } => {
+                        self.state
+                            .fail_saved_query_sql(*request_id, request, error.to_string());
+                    }
                     PendingOperation::SavedInspection { target, request_id }
                     | PendingOperation::SavedRun { target, request_id } => {
                         self.state
@@ -947,6 +961,9 @@ impl eframe::App for Desktop {
                 }),
                 Action::CloseContents { request_id } => self.close_contents(request_id),
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
+                Action::SavedQuerySqlClose { result } => {
+                    self.finish_saved_query_sql_close(result, ui.ctx());
+                }
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }
@@ -1070,6 +1087,16 @@ impl eframe::App for Desktop {
                             PendingOperation::Record { request_id, .. } => {
                                 self.state.fail_record_navigation(
                                     *request_id,
+                                    self.state.localizer.text("shell-operation-cancelled"),
+                                );
+                            }
+                            PendingOperation::SavedSqlInspection {
+                                request_id,
+                                request,
+                            } => {
+                                self.state.fail_saved_query_sql(
+                                    *request_id,
+                                    request,
                                     self.state.localizer.text("shell-operation-cancelled"),
                                 );
                             }

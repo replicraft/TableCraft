@@ -1,4 +1,6 @@
 //! Saved-query dispatch and owned DTO adaptation only.
+mod sql;
+
 use super::{Desktop, PendingOperation};
 use tablecraft_runtime::{
     Command, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
@@ -84,7 +86,8 @@ impl Desktop {
             object_id: target.object_id,
             name: target.name,
         };
-        self.state.set_saved_query_details(
+        let selected = target.clone();
+        if self.state.set_saved_query_details(
             request_id,
             target,
             parameters
@@ -96,7 +99,9 @@ impl Desktop {
                     nullable: parameter.nullable,
                 })
                 .collect(),
-        );
+        ) {
+            self.inspect_saved_query_sql(selected);
+        }
     }
 }
 

@@ -19,14 +19,21 @@ impl Desktop {
             drop(action);
             return None;
         }
-        if self.state.table_draft_save_open() || self.state.table_draft_field_delete_open() {
+        if self.state.table_draft_save_open()
+            || self.state.table_draft_field_delete_open()
+            || self.state.saved_query_sql_close_open()
+        {
             drop(action);
             return None;
         }
-        if !self.state.has_modified_table_drafts() {
+        let confirmation = if self.state.has_modified_saved_query_sql() {
+            self.state.request_saved_query_sql_close_all()
+        } else if self.state.has_modified_table_drafts() {
+            self.state.request_table_draft_discard()
+        } else {
             return Some(action);
-        }
-        if !self.state.request_table_draft_discard() {
+        };
+        if !confirmation {
             drop(action);
             return None;
         }
@@ -39,12 +46,11 @@ impl Desktop {
         let Some(action) = self.deferred_draft_action.take() else {
             return;
         };
-        // Confirmation is only a host transition after the shared draft owner
-        // has actually discarded its modified state.
-        if self.state.has_modified_table_drafts() {
-            drop(action);
+        // Each decision resolves one exact owner. Retain the transition while
+        // another saved SQL or table draft still needs its own confirmation.
+        let Some(action) = self.guard_table_draft_action(action) else {
             return;
-        }
+        };
 
         match action {
             DeferredDraftAction::Open(command) => self.open_request(*command),
@@ -69,11 +75,12 @@ impl Desktop {
         if self.deferred_draft_action.is_some()
             || self.state.table_draft_save_open()
             || self.state.table_draft_field_delete_open()
+            || self.state.saved_query_sql_close_open()
         {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             return;
         }
-        if self.state.has_modified_table_drafts() {
+        if self.state.has_modified_table_drafts() || self.state.has_modified_saved_query_sql() {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             let _ = self.guard_table_draft_action(DeferredDraftAction::CloseWindow);
         }
