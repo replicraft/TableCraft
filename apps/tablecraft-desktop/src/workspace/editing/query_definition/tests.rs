@@ -1,10 +1,11 @@
 //! Real host capability composition; complete bytes remain independently authored.
+mod guards;
 mod interaction;
 mod workspace;
 
 use super::*;
 use crate::workspace::test_support::{finish_reads, finish_save, opened};
-use egui_kittest::Harness;
+use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_runtime::{SaveFailureKind, SaveQueryChange};
 use tablecraft_testkit::fixtures::access::saved_queries::fitting_select::storage_pair;
 use tablecraft_ui::{ObjectKind, ObjectTarget};
@@ -23,7 +24,7 @@ fn open_query(harness: &mut Harness<'_, Desktop>) {
     };
     harness.state_mut().open_object(target);
     finish_reads(harness);
-    harness.state_mut().state.saved_query_sql_edit_available = true;
+    assert!(harness.state().state.saved_query_sql_edit_available);
 }
 
 fn query(harness: &mut Harness<'_, Desktop>) {
@@ -34,6 +35,27 @@ fn query(harness: &mut Harness<'_, Desktop>) {
             .state
             .set_saved_query_sql_text(" select  43 as [Answer];\n".into())
     );
+}
+
+fn take_review_response(
+    harness: &Harness<'_, Desktop>,
+) -> (u64, QuerySqlReview, ReviewedQueryExpression) {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    loop {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "SQL review did not finish"
+        );
+        if let Some((generation, result)) = harness.state().worker.poll() {
+            let tablecraft_runtime::Response::QuerySqlReviewed { review, capability } =
+                result.unwrap()
+            else {
+                panic!("expected the exact saved SQL runtime review");
+            };
+            return (generation, review, capability);
+        }
+        std::thread::yield_now();
+    }
 }
 
 #[test]
@@ -93,22 +115,7 @@ fn stale_target_release_preserves_dirty_original_and_proposed_text_without_retry
     harness.state_mut().save_query_definition(request);
     // Observe the genuine runtime review before the host consumes it, making
     // the stale-original precondition deterministic rather than a worker race.
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
-    let (generation, review, capability) = loop {
-        assert!(
-            std::time::Instant::now() < deadline,
-            "SQL review did not finish"
-        );
-        if let Some((generation, result)) = harness.state().worker.poll() {
-            let tablecraft_runtime::Response::QuerySqlReviewed { review, capability } =
-                result.unwrap()
-            else {
-                panic!("expected the exact saved SQL runtime review");
-            };
-            break (generation, review, capability);
-        }
-        std::thread::yield_now();
-    };
+    let (generation, review, capability) = take_review_response(&harness);
     let mut changed = before;
     *changed.last_mut().unwrap() ^= 1;
     std::fs::write(&path, &changed).unwrap();
@@ -171,6 +178,13 @@ fn failed_witness_reopen_keeps_saved_terminal_facts_and_all_dirty_text() {
     harness.state_mut().save_query_definition(request);
     let report = finish_save(&mut harness);
     assert!(matches!(report.outcome, SaveOutcome::Saved { .. }));
+    // Only the terminal envelope is substituted to exercise retained cleanup
+    // presentation. No retained-artifact filesystem qualification is inferred.
+    let mut envelope = report;
+    if let SaveOutcome::Saved { receipt } = &mut envelope.outcome {
+        receipt.cleanup = Some(tablecraft_runtime::SaveCleanupDisposition::RetainedArtifact);
+    }
+    harness.state_mut().editing.save.as_mut().unwrap().report = Some(envelope);
     let mut changed = after;
     *changed.last_mut().unwrap() ^= 1;
     std::fs::write(&path, &changed).unwrap();
@@ -225,6 +239,27 @@ fn failed_witness_reopen_keeps_saved_terminal_facts_and_all_dirty_text() {
     );
     assert!(!harness.state().editing.has_save());
     assert!(harness.state().state.has_modified_saved_query_sql());
+    let saved_warning = harness
+        .state()
+        .state
+        .localizer
+        .text("editing-save-completed");
+    assert!(
+        harness
+            .state()
+            .state
+            .error
+            .as_ref()
+            .unwrap()
+            .contains(&saved_warning)
+    );
+    harness.run_steps(1);
+    let cleanup = harness
+        .state()
+        .state
+        .localizer
+        .text("editing-save-retained-private-journal");
+    harness.get_by_label(&cleanup);
 }
 
 #[test]

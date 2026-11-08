@@ -21,7 +21,7 @@ fn finish(desktop: &mut Desktop, context: &egui::Context) {
 }
 
 #[test]
-fn opening_saved_query_inspects_sql_without_executing_editing_or_changing_bytes() {
+fn opening_saved_query_inspects_sql_without_executing_or_changing_bytes() {
     let [original, _] = storage_pair();
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("saved.accdb");
@@ -47,16 +47,15 @@ fn opening_saved_query_inspects_sql_without_executing_editing_or_changing_bytes(
         eligibility,
         SavedQuerySqlEligibility::QualifiedConstantSelect
     );
-    assert!(!desktop.state.can_edit_saved_query_sql());
+    assert!(desktop.state.can_edit_saved_query_sql());
     assert!(!desktop.state.can_review_saved_query_sql());
     assert!(!desktop.state.has_modified_saved_query_sql());
     assert!(desktop.state.query_data.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
 
-    // Exercise host transition protection explicitly while production editing
-    // remains disabled until its consuming save worker is connected.
-    desktop.state.saved_query_sql_edit_available = true;
+    // Opening a qualified editor does not change the file. A subsequent user
+    // edit must still survive a cancelled document transition.
     assert!(
         desktop
             .state

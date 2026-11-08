@@ -7,7 +7,7 @@ use tablecraft_runtime::{
     SaveReport, journal_path,
 };
 use tablecraft_ui::{
-    Database, SaveCleanupNotice, SavedQuerySqlRequest, SavedQuerySqlSaveCommand,
+    Database, EditSaveOutcome, SaveCleanupNotice, SavedQuerySqlRequest, SavedQuerySqlSaveCommand,
     SavedQuerySqlSaveIdentity, SavedQuerySqlSaveOperation,
 };
 
@@ -101,6 +101,9 @@ impl Desktop {
         &mut self,
         request: SavedQuerySqlRequest,
     ) {
+        if self.editing.has_save() || !self.state.saved_query_sql_request_current(&request) {
+            return;
+        }
         self.save_query_definition(request);
         if let Some(host) = &mut self.editing.query_definition {
             host.close_after_save = true;
@@ -583,8 +586,8 @@ impl Desktop {
                 self.close_object(tab);
             }
             self.resume_after_query_definition = true;
-        } else {
-            self.load_active_object(0);
+        } else if let Some(open) = self.state.active_object_load() {
+            self.load_object(open);
         }
     }
 
@@ -616,6 +619,38 @@ impl Desktop {
         ) {
             return false;
         }
+        let read_error = host
+            .status
+            .and_then(|identity| self.state.saved_query_sql_reopen_error(identity))
+            .filter(|message| !message.is_empty())
+            .map_or_else(
+                || self.state.localizer.text("objects-memory-limit"),
+                str::to_owned,
+            );
+        // These are historical acknowledged facts. A failed fresh read cannot
+        // turn them into rollback/original claims or mark the visible text saved.
+        let warning =
+            host.terminal.map(
+                |outcome| match save_outcome(&self.state.localizer, outcome) {
+                    EditSaveOutcome::Saved(message)
+                    | EditSaveOutcome::Failed(message)
+                    | EditSaveOutcome::Cancelled(message)
+                    | EditSaveOutcome::Retained { message, .. } => message,
+                },
+            );
+        let warning = match warning {
+            Some(message) => format!("{message}\n{read_error}"),
+            None => read_error,
+        };
+        let revision = self
+            .state
+            .database
+            .as_ref()
+            .map(|database| database.document_revision);
+        if let (Some(revision), Some(cleanup)) = (revision, host.cleanup) {
+            self.state.set_save_cleanup(revision, Some(cleanup));
+        }
+        self.state.error = Some(warning);
         if let Some(status) = host.status {
             self.state.clear_saved_query_sql_save(status);
         }
