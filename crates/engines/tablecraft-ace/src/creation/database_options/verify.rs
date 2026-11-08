@@ -13,7 +13,7 @@ use crate::{
         layout::RECORD_COUNT_OFFSET,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{row_count, row_range},
-        row::{ROW_COUNT_OFFSET, slot_offset},
+        row::{OFFSET_MASK, ROW_COUNT_OFFSET, slot_offset},
     },
     header::check,
     inspect_catalog, inspect_database_properties,
@@ -167,8 +167,8 @@ pub(super) fn candidate(
     {
         return Err(DatabaseOptionsError::Preservation);
     }
-    let (flags, start, end) = row_range(page, 0)?;
-    if flags != 0
+    let (raw_slot, start, end) = row_range(page, 0)?;
+    if raw_slot & !OFFSET_MASK != 0
         || end != PAGE_BYTES
         || end - start != properties::ENCODED_BYTES
         || page[start..end] != *properties.raw_bytes()
