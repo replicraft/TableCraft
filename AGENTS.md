@@ -439,6 +439,15 @@ Preserve original fixture bytes and perform mutation experiments on copies.
 Do not execute active database content implicitly. Keep private data,
 credentials and machine-specific paths out of commits.
 
+Work in large, coherent batches before running test gates. Do not run tests or
+repeat whole suites after each small change. Verify the completed batch together;
+use focused reruns to diagnose failures, then return to batching. Commit small,
+logical chunks while building the batch; tests do not need to pass or run before
+each commit. Accumulate several commits, test them together, and make focused
+follow-up commits for failures. State which checks remain unrun. Do not hold a
+growing working tree solely to wait for validation. Formatting and review remain
+required before committing.
+
 Run applicable formatting, lint, test and build checks from the development
 guide. Report unavailable environments and unrun checks accurately. A native
 Access compatibility claim requires actual Access comparison evidence; a
