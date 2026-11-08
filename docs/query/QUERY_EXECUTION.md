@@ -61,7 +61,9 @@ VALUES has no input field scope; destination policy arrays refuse, and no hidden
 retrieval or additional function family is enabled. Legacy APIs keep their
 original evaluator, limits and declaration refusal. The native consumer selects
 complete or original-presence intent once from real metadata. Runtime/GUI INSERT
-dispatch is not yet added, and native writer qualifications are unchanged.
+dispatch is not yet added, and native writer qualifications are unchanged. See
+the [reviewed INSERT contract](../access/writes/REVIEWED_INSERTS.md) for complete
+native family requalification and retained staging.
 
 The opt-in [presence-bearing INSERT planner](INSERT_OMISSIONS.md) shares that
 metadata binder and evaluator while preserving `Supplied(Value)` versus

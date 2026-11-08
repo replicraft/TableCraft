@@ -1,4 +1,5 @@
 //! One original binding chooses exactly one physical planner and journal family.
+mod requalify;
 use super::NativeEofInsertIntent;
 use crate::{
     EditError, NativeEditPlan, NativeImage, PreparedResizableNativeEdit,

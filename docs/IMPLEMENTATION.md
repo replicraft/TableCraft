@@ -1,5 +1,39 @@
 # Implementation status
 
+## Reviewed INSERT planning and fresh proof — 8 November 2026
+
+INSERT VALUES now has explicit typed parameter APIs with independent query/native
+allowances. Its binder/runtime retain declaration provenance without introducing
+input fields or hidden retrieval. Complete and original-presence materialization
+share the existing stored assignment laws; supplied NULL never becomes omission.
+Legacy entrypoints retain their evaluator, limits and parameter refusal.
+
+Fresh native requalification now covers all five INSERT families, retaining exact
+TCNA1/2/3/4/5/6 identity, complete images/counts and source binding. Clock plans use
+the captured civil input without another provider read. Deterministic defaults
+rebuild from the identical original source. Access staging retains the same locked
+session, receipts and fixed/resizable journal route, with no journal before apply.
+The [reviewed INSERT contract](access/writes/REVIEWED_INSERTS.md) records scope and
+independent raw oracles, including a local clock fixture separate from pending
+source18/native/SDK qualification.
+
+The final selected query batch passes 101 units, eight legacy editing tests,
+22 batch UPDATE tests and five VALUE-parameter tests. Access units pass 121;
+selected native requalification tests pass 16 with two existing corpus-dependent
+cases ignored. Runtime passes 175 plus its diagnostic test. Native staging checks
+all families, default/NULL distinctions and both growth paths against independent
+complete AFTER images; growing sources use the actual 255-slot limit and a
+represented free EOF page. Initial fixture/expectation/compile failures remain in
+ignored logs. Strict affected-package lint, minimal builds, Windows/Linux runtime
+library compilation, unsupported FreeBSD lint, formatting, dependency boundaries
+and documentation links pass. No native app window was launched.
+
+The desktop SQL editor still does not dispatch INSERT. Next is its typed runtime
+review/save capability and append confirmation through the existing shared action
+owner, reporting inserted rows without inventing matched-old-row counts. INSERT
+SELECT, broader expression contexts and full generated/default composition remain
+separate work; no native format/profile compatibility is newly claimed here.
+
 ## GUI-reviewed SQL DELETE — 8 November 2026
 
 Scratch Run now routes qualified local DELETE through runtime-issued typed

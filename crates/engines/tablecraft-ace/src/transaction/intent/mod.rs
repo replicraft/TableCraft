@@ -23,6 +23,7 @@ pub use delete::{
 };
 
 mod insert;
+mod insert_requalification;
 pub use insert::{
     NativeInsertIntent, QualifiedNativeInsertRecovery, RecoverableNativeInsertPlan,
     qualify_native_insert_recovery,

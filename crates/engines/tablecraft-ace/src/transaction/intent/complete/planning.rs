@@ -1,4 +1,5 @@
 //! One complete original request dialect with source-derived durable geometry.
+mod requalify;
 use super::NativeCompleteInsertIntent;
 use crate::{
     EditError, NativeEditPlan, NativeImage, PreparedNativeEdit, PreparedNativeUpdate, RowInsert,

@@ -1,4 +1,5 @@
 //! Normal insertion planning and the existing fixed-length durable prepare path.
+mod requalify;
 use super::{NativeClockInsertIntent, NativeIntentError};
 use crate::NativeOmittedInsertIntent;
 use crate::transaction::intent::RecoverableEditError;

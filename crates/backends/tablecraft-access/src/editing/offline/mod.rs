@@ -12,6 +12,7 @@ mod insert;
 mod plan;
 mod recovery;
 mod reviewed_delete;
+mod reviewed_insert;
 mod reviewed_update;
 mod table;
 mod update;

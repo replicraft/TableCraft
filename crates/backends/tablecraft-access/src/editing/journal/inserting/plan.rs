@@ -1,8 +1,9 @@
 //! Closed actual INSERT families; omitted presence never becomes a TCNA1 body.
 use tablecraft_ace::{
-    NativeIntentError, PreparedNativeEdit, PreparedNativeUpdate, RecoverableNativeClockInsertPlan,
-    RecoverableNativeCompleteInsertPlan, RecoverableNativeEofInsertPlan,
-    RecoverableNativeInsertPlan, RecoverableNativeOmittedInsertPlan,
+    NativeImage, NativeIntentError, NativeRecoveryQualificationError, PreparedNativeEdit,
+    PreparedNativeUpdate, RecoverableNativeClockInsertPlan, RecoverableNativeCompleteInsertPlan,
+    RecoverableNativeEofInsertPlan, RecoverableNativeInsertPlan,
+    RecoverableNativeOmittedInsertPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
@@ -23,6 +24,35 @@ pub enum NativeJournalInsertPlan {
 }
 
 impl NativeJournalInsertPlan {
+    /// Requalify the same selected TCNA family against one fresh complete source.
+    /// Captured clock input remains in its original intent; no provider is sampled.
+    /// Neither native/proof pool is reset and no journal is created.
+    pub fn requalify_with_budgets(
+        self,
+        fresh: NativeImage,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeRecoveryQualificationError> {
+        match self {
+            Self::CompleteTyped(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::CompleteTyped),
+            Self::Complete(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::Complete),
+            Self::AllocateEof(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::AllocateEof),
+            Self::Omitted(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::Omitted),
+            Self::Clock(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::Clock),
+        }
+    }
+
     /// Complete original source bytes, not a storage capability.
     pub fn before_bytes(&self) -> &[u8] {
         match self {

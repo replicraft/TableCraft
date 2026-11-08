@@ -88,6 +88,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 - [Fresh qualification of reviewed UPDATE plans](writes/REVIEWED_UPDATES.md)
 - [Fresh qualification of reviewed DELETE plans](writes/REVIEWED_DELETES.md)
+- [Fresh qualification of reviewed INSERT plans](writes/REVIEWED_INSERTS.md)
 
 - [Fresh native Int32 database creation and publication](writes/FRESH_DATABASE_CREATION.md)
 - [Same-file first-table persistence and recovery](writes/FIRST_TABLE_PERSISTENCE.md)

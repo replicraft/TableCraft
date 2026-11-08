@@ -1,4 +1,5 @@
 //! Normal insertion planning and the existing fixed-length durable prepare path.
+mod requalify;
 use super::NativeInsertIntent;
 use crate::transaction::intent::RecoverableEditError;
 use crate::{EditError, NativeEditPlan, NativeImage, PreparedNativeEdit, RowInsert, header::check};

@@ -242,3 +242,95 @@ pub fn inserted(source: &Source, supplied_null: bool) -> Option<(Vec<u8>, Vec<Ve
     ]);
     Some((bytes, rows))
 }
+
+/// Native17 ordinary Int32/DATE source with one literal Now() default.
+/// This local mechanics fixture is separate from the source18 native/SDK corpus.
+pub fn clock_source() -> Vec<u8> {
+    let mut bytes = native17::source(original::source(original::Case::One).bytes);
+    // Independent source definition: column 1 is a fixed eight-byte DATE at 4.
+    bytes[7 * 4096 + 88] = 8;
+    put16(&mut bytes, 7 * 4096 + 111, 8);
+    let mut row = 2_u16.to_le_bytes().to_vec();
+    row.extend(1_i32.to_le_bytes());
+    row.extend(0_f64.to_le_bytes());
+    row.push(3);
+    let mut page = data_page(7, &[(0, row)]);
+    put16(&mut page, 2, 4065);
+    bytes[8 * 4096..9 * 4096].copy_from_slice(&page);
+    let bag = property_bag(Some("Now()"), None).unwrap();
+    attach(&mut bytes, &bag);
+    bytes
+}
+
+/// Independent literal append to the local two-column clock source.
+/// The expected DATE bits are supplied as data, with no clock or native codec.
+pub fn clock_inserted(before: &[u8], id: i32, date_bits: u64) -> Vec<u8> {
+    let mut after = before.to_vec();
+    let page = &mut after[8 * 4096..9 * 4096];
+    let count = word(page, 12);
+    let end = word(page, 14 + 2 * (count - 1));
+    let start = end - 15;
+    let mut row = 2_u16.to_le_bytes().to_vec();
+    row.extend(id.to_le_bytes());
+    row.extend(date_bits.to_le_bytes());
+    row.push(3);
+    page[start..end].copy_from_slice(&row);
+    put16(page, 14 + 2 * count, u16::try_from(start).unwrap());
+    put16(page, 12, u16::try_from(count + 1).unwrap());
+    put16(
+        page,
+        2,
+        u16::try_from(start - (14 + 2 * (count + 1))).unwrap(),
+    );
+    after[7 * 4096 + 16..7 * 4096 + 20]
+        .copy_from_slice(&u32::try_from(count + 1).unwrap().to_le_bytes());
+    after
+}
+
+/// Ordinary native17 source whose 255 live DATA slots force a represented EOF.
+/// Slot saturation is distinct from unused payload bytes; no native planner is used.
+pub fn slot_saturated_source() -> Vec<u8> {
+    let mut before = native17::source(original::source(original::Case::One).bytes);
+    let rows = (1_i32..=255)
+        .map(|id| {
+            let mut row = 2_u16.to_le_bytes().to_vec();
+            row.extend(id.to_le_bytes());
+            row.extend((id * 10).to_le_bytes());
+            row.push(3);
+            (0, row)
+        })
+        .collect::<Vec<_>>();
+    let mut page = data_page(7, &rows);
+    put16(&mut page, 2, 767);
+    before[8 * 4096..9 * 4096].copy_from_slice(&page);
+    before[7 * 4096 + 16..7 * 4096 + 20].copy_from_slice(&255_u32.to_le_bytes());
+
+    // Represented global free map page1/row0 grants only future page9.
+    let global = word(&before[4096..2 * 4096], 14);
+    before[4096 + global + 6] = 2;
+    // Table candidate page3/row7 no longer offers slot-saturated page8.
+    let candidate = word(&before[3 * 4096..4 * 4096], 14 + 2 * 7);
+    before[3 * 4096 + candidate + 6] = 0;
+    before
+}
+
+/// Independent literal EOF insertion of row (256,2560) into the saturated source.
+pub fn slot_saturated_inserted(before: &[u8]) -> Vec<u8> {
+    assert_eq!(before.len(), 9 * 4096);
+    let mut after = before.to_vec();
+    after[7 * 4096 + 16..7 * 4096 + 20].copy_from_slice(&256_u32.to_le_bytes());
+    let global = word(&before[4096..2 * 4096], 14);
+    after[4096 + global + 6] = 0;
+    for slot in [3, 7] {
+        let map = word(&before[3 * 4096..4 * 4096], 14 + 2 * slot);
+        after[3 * 4096 + map + 6] |= 2;
+    }
+    let mut row = 2_u16.to_le_bytes().to_vec();
+    row.extend(256_i32.to_le_bytes());
+    row.extend(2560_i32.to_le_bytes());
+    row.push(3);
+    let mut page = data_page(7, &[(0, row)]);
+    put16(&mut page, 2, 4069);
+    after.extend(page);
+    after
+}
