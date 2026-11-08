@@ -34,10 +34,11 @@ pub(super) fn apply_query_update(
         return SaveOutcome::Failed(no_session(SaveFailureKind::Resource));
     };
     let mut native = budget();
-    let session = match OfflineWriteSession::open(&reviewed.path, SCOPE, &mut native, &cancel) {
-        Ok(session) => session,
-        Err(error) => return failed_open(&error),
-    };
+    let session =
+        match OfflineWriteSession::open(&reviewed.target.path, SCOPE, &mut native, &cancel) {
+            Ok(session) => session,
+            Err(error) => return failed_open(&error),
+        };
     let staged = match session.stage_reviewed_update_with_budgets(
         reviewed.plan,
         &mut native,

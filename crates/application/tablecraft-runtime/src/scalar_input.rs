@@ -1,9 +1,15 @@
 //! Shared exact typed text input; no SQL parsing or implicit carrier selection.
-#[cfg(feature = "offline-edit")]
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
 mod declared;
 mod hint;
 use crate::{Error, display::Presentation};
-#[cfg(feature = "offline-edit")]
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
 pub(crate) use declared::parse as parse_declared;
 pub use hint::InputHint;
 use tablecraft_core::values::{Double, ExtendedDateTime, Guid, LegacyDateTime, Single, Value};

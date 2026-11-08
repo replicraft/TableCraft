@@ -665,6 +665,13 @@ continue to use actual schema/native values, independently of the hint tag.
 
 ## Reviewed SQL UPDATE actions
 
+The platform predicate is applied at the module boundary: common review facts,
+capability getters and inspected-source checks live in `editing/query_update.rs`,
+while native planning and the explicit unsupported-host response have separate
+implementations. This removes repeated per-import/per-field guards without
+expanding native save support beyond macOS, Linux and Windows. A FreeBSD library
+compile checks the unsupported branch; it does not qualify FreeBSD native editing.
+
 With `offline-edit`, `ReviewQueryUpdate` accepts an opaque `InspectedQuery` from
 this exact open document. It rechecks both the private source identity and the
 document revision before parsing the immutable SQL. The current local batch
