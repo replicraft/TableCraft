@@ -1,7 +1,7 @@
 //! TextEdit cannot insert an invalid UTF-8/UTF-16 name, including undo or IME.
 use super::super::bounded_name;
 use egui::{TextBuffer, text::CharIndex};
-use std::ops::Range;
+use std::{any::TypeId, ops::Range};
 use tablecraft_builders::table::MAX_DRAFT_NAME_BYTES;
 
 pub(super) struct NameBuffer {
@@ -40,6 +40,10 @@ impl NameBuffer {
 }
 
 impl TextBuffer for NameBuffer {
+    fn type_id(&self) -> TypeId {
+        TypeId::of::<Self>()
+    }
+
     fn is_mutable(&self) -> bool {
         true
     }

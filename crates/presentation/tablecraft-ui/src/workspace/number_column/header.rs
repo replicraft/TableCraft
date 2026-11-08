@@ -135,7 +135,7 @@ fn name_editor(
         }
     }
     let label = tr(ui, "table-draft-field-name");
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, enabled, label));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, enabled, &label));
     if !enabled {
         return None;
     }

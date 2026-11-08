@@ -1,10 +1,7 @@
 //! Real header widgets emit only an exact naming review, never a native write.
 use crate::{Action, Data, Database, ObjectKind, ObjectTarget, State, Table};
 use egui::{Key, accesskit::Role};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 
 fn state(available: bool) -> State {
     let mut state = State {
@@ -64,6 +61,7 @@ fn host_support_and_positive_source_fact_are_independent_header_gates() {
         assert!(
             harness
                 .get_by_role_and_label(Role::Button, "Click to Add")
+                .accesskit_node()
                 .is_disabled()
         );
         assert!(harness.state().1.is_empty());
@@ -86,6 +84,7 @@ fn host_support_and_positive_source_fact_are_independent_header_gates() {
             assert!(
                 harness
                     .get_by_role_and_label(Role::Button, "Click to Add")
+                    .accesskit_node()
                     .is_disabled()
             );
         } else {
@@ -114,11 +113,13 @@ fn saved_number_header_keeps_stored_schema_inert_and_ctrl_s_captures_final_text(
     assert!(
         !harness
             .get_by_role_and_label(Role::Button, "Number")
+            .accesskit_node()
             .is_disabled()
     );
     assert!(
         harness
             .get_by_role_and_label(Role::Button, "Currency")
+            .accesskit_node()
             .is_disabled()
     );
     harness
