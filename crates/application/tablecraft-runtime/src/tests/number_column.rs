@@ -1,5 +1,6 @@
 //! Shared runtime Number service consumes exact native Required(false)/zero proof.
 mod availability;
+mod inserting;
 
 use super::{open, request, stored::opened, terminal};
 use crate::{
