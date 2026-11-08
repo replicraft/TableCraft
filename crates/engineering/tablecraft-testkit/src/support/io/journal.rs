@@ -5,11 +5,14 @@ use tablecraft_io::{IoError, journal::DurableStorage};
 /// Byte storage with write-call accounting and explicit no-op test barriers.
 /// This models the journal protocol, never power-loss or filesystem durability.
 pub struct MemoryStorage {
+    /// Complete bytes and cursor position, exposed for independent corruption controls.
     pub bytes: Cursor<Vec<u8>>,
+    /// Number of write calls, including writes that leave image bytes unchanged.
     pub writes: usize,
 }
 
 impl MemoryStorage {
+    /// Start with caller-owned bytes and no observed write calls.
     pub fn new(bytes: Vec<u8>) -> Self {
         Self {
             bytes: Cursor::new(bytes),
@@ -41,7 +44,7 @@ impl Write for MemoryStorage {
     }
 }
 
-impl DurableMemoryStorage for MemoryStorage {
+impl DurableStorage for MemoryStorage {
     fn storage_len(&mut self) -> Result<u64, IoError> {
         Ok(self.bytes.get_ref().len() as u64)
     }
