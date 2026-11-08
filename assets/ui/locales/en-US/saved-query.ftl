@@ -60,3 +60,4 @@ saved-query-sql-source-changed = The saved definition changed. Your SQL draft wa
 saved-query-save-retry-reopen = Retry reopening
 saved-query-save-return-draft = Return to SQL draft
 saved-query-read-cancellation-requested = Cancellation requested. Waiting for the database read to stop.
+saved-query-sql-read-only = Read-only SQL definition. You can select and copy the SQL.

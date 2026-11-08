@@ -19,7 +19,8 @@ fn readable_sql_remains_visible_when_native_writing_is_unavailable() {
     harness.run_steps(2);
     let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
     assert_eq!(editor.value().as_deref(), Some(sql));
-    assert!(editor.accesskit_node().is_disabled());
+    assert!(!editor.accesskit_node().is_disabled());
+    assert!(editor.accesskit_node().data().is_read_only());
     assert!(!harness.state().0.can_save_active_object());
     harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
     harness.run_steps(1);
@@ -32,12 +33,9 @@ fn inert_sql_is_visible_but_host_opt_in_is_required_for_editing_and_save() {
     let (state, _) = inspected_state(false);
     let mut harness = harness(state);
     harness.run_steps(2);
-    assert!(
-        harness
-            .get_by_role_and_label(Role::MultilineTextInput, "SQL query")
-            .accesskit_node()
-            .is_disabled()
-    );
+    let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
+    assert!(!editor.accesskit_node().is_disabled());
+    assert!(editor.accesskit_node().data().is_read_only());
     assert!(
         harness
             .get_all_by_role_and_label(Role::Button, "Save")
@@ -172,5 +170,113 @@ fn saved_sql_layout_uses_a_bounded_viewport_and_keeps_text_unchanged() {
         .expect("the actual saved SQL is painted through its bounded editor");
     assert!(clip.height() <= super::MAX_SQL_EDITOR_HEIGHT + 2.0);
     assert_eq!(harness.state().0.saved_query_sql().unwrap().1, exact);
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn readonly_source_sql_allows_complete_selection_copy_and_rejects_text_mutations_or_save() {
+    let (mut state, target) = inspected_state(true);
+    let pending = state.begin_saved_query_sql_inspection(target, 22).unwrap();
+    let sql = "SELECT [Id], [Description] FROM [Items] WHERE [Description] = 'Résumé 日本語';";
+    assert!(state.set_saved_query_sql_inspection(
+        22,
+        &pending,
+        Some(sql.into()),
+        SavedQuerySqlEligibility::Unavailable
+    ));
+    let revision = state.saved_query_sql().unwrap().2;
+    let mut harness = harness(state);
+    harness.run_steps(2);
+    let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
+    assert!(editor.accesskit_node().data().is_read_only());
+    for action in [
+        egui::accesskit::Action::SetValue,
+        egui::accesskit::Action::ReplaceSelectedText,
+    ] {
+        assert!(!editor.accesskit_node().data().supports_action(action));
+    }
+    editor.focus();
+    harness.run_steps(1);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::MultilineTextInput, "SQL query")
+            .accesskit_node()
+            .is_focused()
+    );
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
+    harness.event(Event::Copy);
+    harness.run_steps(1);
+    assert!(
+        harness
+            .output()
+            .platform_output
+            .commands
+            .iter()
+            .any(|command| matches!(command, egui::OutputCommand::CopyText(text) if text == sql))
+    );
+    harness.event(Event::Paste("SELECT 99 AS Answer".into()));
+    harness.event(Event::Text("replacement".into()));
+    harness.key_press(Key::Backspace);
+    harness.run_steps(1);
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    let (original, proposed, current_revision, _) = harness.state().0.saved_query_sql().unwrap();
+    assert_eq!(original, sql);
+    assert_eq!(proposed, sql);
+    assert_eq!(current_revision, revision);
+    assert!(!harness.state().0.saved_query_sql_dirty());
+    assert!(!harness.state().0.can_save_active_object());
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn long_readonly_source_sql_wraps_in_the_bounded_vertical_view_and_copies_its_suffix() {
+    let (mut state, target) = inspected_state(true);
+    let pending = state.begin_saved_query_sql_inspection(target, 23).unwrap();
+    let sql = format!(
+        "SELECT [Id], [Description] FROM [Items] WHERE [Description] = '{} 日本語 suffix';",
+        "long description ".repeat(100)
+    );
+    assert!(state.set_saved_query_sql_inspection(
+        23,
+        &pending,
+        Some(sql.clone()),
+        SavedQuerySqlEligibility::Unavailable
+    ));
+    let mut harness = harness(state);
+    harness.run_steps(2);
+    let editor = harness.get_by_role_and_label(Role::MultilineTextInput, "SQL query");
+    let (galley, clip) = harness
+        .output()
+        .shapes
+        .iter()
+        .find_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) if text.galley.job.text == sql => {
+                Some((&text.galley, shape.clip_rect))
+            }
+            _ => None,
+        })
+        .expect("actual readonly SQL text is painted");
+    assert!(galley.job.wrap.max_width.is_finite());
+    assert!(
+        galley.rows.len() > 1,
+        "one long SQL line wraps to available width"
+    );
+    assert!(galley.size().x <= editor.rect().width());
+    assert!(clip.height() <= super::MAX_SQL_EDITOR_HEIGHT + 2.0);
+    editor.focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
+    harness.event(Event::Copy);
+    harness.run_steps(1);
+    assert!(
+        harness
+            .output()
+            .platform_output
+            .commands
+            .iter()
+            .any(|command| matches!(command, egui::OutputCommand::CopyText(text) if text == &sql))
+    );
+    assert_eq!(harness.state().0.saved_query_sql().unwrap().1, sql);
     assert!(harness.state().1.is_empty());
 }

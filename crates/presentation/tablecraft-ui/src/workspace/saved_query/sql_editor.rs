@@ -5,7 +5,7 @@ use crate::workspace::{
     focus::{self, Pane},
     query::parameters::copy_text,
 };
-use egui::{RichText, TextEdit, Ui};
+use egui::{Id, Response, RichText, TextBuffer, TextEdit, Ui};
 use std::borrow::Cow;
 use tablecraft_builders::query::MAX_DESIGN_TEXT_BYTES;
 
@@ -73,18 +73,24 @@ impl State {
                             MAX_DESIGN_TEXT_BYTES,
                         );
                     }
-                    let response = ui
-                        .add_enabled(
-                            editable,
-                            TextEdit::multiline(&mut text)
-                                .id(editor_id)
-                                .code_editor()
-                                .desired_rows(5)
-                                .desired_width(f32::INFINITY)
-                                .char_limit(crate::text_input::MAX_EDITOR_SCALARS),
-                        )
-                        .labelled_by(label.id)
-                        .on_disabled_hover_text(tr(ui, "ribbon-unavailable"));
+                    let response = if editable {
+                        sql_text_edit(ui, &mut text, editor_id)
+                    } else {
+                        // Immutable TextBuffer keeps selection, focus and Copy,
+                        // while insertion/deletion remain no-ops in egui itself.
+                        let mut read_only = text.as_str();
+                        sql_text_edit(ui, &mut read_only, editor_id)
+                    }
+                    .labelled_by(label.id);
+                    ui.ctx().accesskit_node_builder(response.id, |node| {
+                        if editable {
+                            node.clear_read_only();
+                        } else {
+                            node.set_read_only();
+                            node.remove_action(egui::accesskit::Action::SetValue);
+                            node.remove_action(egui::accesskit::Action::ReplaceSelectedText);
+                        }
+                    });
                     if response.changed() && editable {
                         self.set_saved_query_sql_text(text);
                     }
@@ -92,6 +98,9 @@ impl State {
                     focus::register(ui, Pane::Document, &response, true);
                 });
         });
+        if !editable {
+            ui.weak(tr(ui, "saved-query-sql-read-only"));
+        }
         if self.saved_query_sql_dirty() {
             ui.label(
                 RichText::new(tr(ui, "saved-query-sql-unsaved"))
@@ -105,6 +114,17 @@ impl State {
             });
         }
     }
+}
+
+fn sql_text_edit(ui: &mut Ui, text: &mut dyn TextBuffer, id: Id) -> Response {
+    ui.add(
+        TextEdit::multiline(text)
+            .id(id)
+            .code_editor()
+            .desired_rows(5)
+            .desired_width(f32::INFINITY)
+            .char_limit(crate::text_input::MAX_EDITOR_SCALARS),
+    )
 }
 
 #[cfg(test)]
