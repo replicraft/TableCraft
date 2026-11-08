@@ -1,7 +1,7 @@
 //! Exact native EOF reconstruction over the same immutable inspected V2 record.
 use super::{
-    NativeIntentError, NativeRecoveryQualificationError, NativeUpdateBody, NativeUpdateIntent,
-    NativeUpdateProfile, qualified_recovery::equal_image,
+    NativeIntentError, NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
+    qualified_recovery::equal_image,
 };
 use crate::{NativeImage, format::page::PAGE_BYTES, header::check};
 use std::io::Cursor;
@@ -61,26 +61,20 @@ pub fn qualify_native_allocation_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedNativeAllocationRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.allocation_recovery.qualify").entered();
     check(budget, cancelled)?;
-    let (profile, body) = intent.into_body();
-    let (
-        NativeUpdateProfile::Ace16OrdinaryEofAllocation,
-        NativeUpdateBody::EofAllocation(original),
-    ) = (profile, body)
-    else {
+    if intent.profile() != NativeUpdateProfile::Ace16OrdinaryEofAllocation {
         return Err(NativeIntentError::UnsupportedProfile.into());
-    };
+    }
     if checked.before_bytes().len().checked_add(PAGE_BYTES) != Some(checked.after_bytes().len()) {
         return Err(NativeRecoveryQualificationError::ImageMismatch);
     }
-    original.verify_before(checked.before_bytes(), budget, cancelled)?;
+    intent.verify_before(checked.before_bytes(), budget, cancelled)?;
     let image = NativeImage::capture(
         &mut Cursor::new(checked.before_bytes()),
         scope,
         budget,
         cancelled,
     )?;
-    let groups = original.borrowed_groups(budget, cancelled)?;
-    let plan = image.plan_ordinary_eof_updates(original.table(), &groups, budget, cancelled)?;
+    let plan = super::update_rebuild::rebuild_verified_binding(image, &intent, budget, cancelled)?;
     if plan.before_bytes().len().checked_add(PAGE_BYTES) != Some(plan.after_bytes().len()) {
         return Err(NativeRecoveryQualificationError::ImageMismatch);
     }

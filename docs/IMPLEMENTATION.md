@@ -1,5 +1,20 @@
 # Implementation status
 
+## Fresh native UPDATE requalification — 8 November 2026
+
+Normal recoverable UPDATE plans can now consume a fresh native image and prove
+that the complete BEFORE, independently reconstructed AFTER and changed count
+reproduce the reviewed operation. The original typed intent remains unchanged;
+SQL is not replayed. Shared reconstruction also serves the existing generic/V2
+recovery routes while preserving their framing and Jet 4's specialized path.
+
+Nine focused cases pass across all ten current mutation profiles, including the
+two opt-in pinned owned-growth/EOF cases. Default engine units pass 1,286 with
+260 ignored and qualified recovery passes 125 with 279 ignored. These counts
+remain distinct from selected opt-in execution and native Access evidence.
+See the [contract and verification scope](access/writes/REVIEWED_UPDATES.md).
+The API preserves current writer eligibility; GUI SQL UPDATE remains unfinished.
+
 ## Connected scratch SQL parameter prompts — 8 November 2026
 
 Desktop Run now inspects declared scratch parameters through the runtime's

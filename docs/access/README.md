@@ -86,6 +86,8 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 
 ## Writes
 
+- [Fresh qualification of reviewed UPDATE plans](writes/REVIEWED_UPDATES.md)
+
 - [Fresh native Int32 database creation and publication](writes/FRESH_DATABASE_CREATION.md)
 - [Same-file first-table persistence and recovery](writes/FIRST_TABLE_PERSISTENCE.md)
 - [Append-only table creation, repeated additions and recovery](writes/ADD_TABLE_PERSISTENCE.md)

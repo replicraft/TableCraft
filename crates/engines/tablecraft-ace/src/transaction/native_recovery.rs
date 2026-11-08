@@ -77,155 +77,49 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<QualifiedNativeRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.update_recovery.qualify").entered();
-    let (profile, body) = intent.into_body();
-    let qualified = match (profile, body) {
-        (NativeUpdateProfile::Jet4Int32, NativeUpdateBody::Int32(original)) => Qualified::Jet4(
-            qualify_jet4_int32_recovery(checked, original, scope, budget, cancelled)?,
-        ),
-        (NativeUpdateProfile::Ace16BeforeChangeInt32, NativeUpdateBody::Int32(original)) => {
-            check(budget, cancelled)?;
-            original.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let plan = image.plan_before_change_int32_updates(
-                original.table(),
-                original.column(),
-                original.updates(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(
-                plan.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
-            check(budget, cancelled)?;
-            Qualified::BeforeChange(checked)
+    let profile = intent.profile();
+    if profile == NativeUpdateProfile::Jet4Int32 {
+        let (_, NativeUpdateBody::Int32(original)) = intent.into_body() else {
+            return Err(super::NativeIntentError::UnsupportedProfile.into());
+        };
+        let qualified = qualify_jet4_int32_recovery(checked, original, scope, budget, cancelled)?;
+        return Ok(QualifiedNativeRecovery {
+            qualified: Qualified::Jet4(qualified),
+        });
+    }
+    if profile == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+        return Err(super::NativeIntentError::UnsupportedProfile.into());
+    }
+
+    check(budget, cancelled)?;
+    intent.verify_before(checked.before_bytes(), budget, cancelled)?;
+    let image = NativeImage::capture(
+        &mut Cursor::new(checked.before_bytes()),
+        scope,
+        budget,
+        cancelled,
+    )?;
+    let plan = super::update_rebuild::rebuild_verified_binding(image, &intent, budget, cancelled)?;
+    equal_image(
+        plan.before_bytes(),
+        checked.before_bytes(),
+        budget,
+        cancelled,
+    )?;
+    equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
+    check(budget, cancelled)?;
+    let qualified = match profile {
+        NativeUpdateProfile::Ace16BeforeChangeInt32
+        | NativeUpdateProfile::Ace16BeforeChangeFixed => Qualified::BeforeChange(checked),
+        NativeUpdateProfile::Ace16OrdinaryFixed
+        | NativeUpdateProfile::Ace16OrdinaryIeeeFixed
+        | NativeUpdateProfile::Ace16OrdinaryScalarFixed
+        | NativeUpdateProfile::Ace16OrdinaryGuidFixed
+        | NativeUpdateProfile::Ace16OrdinaryFitted
+        | NativeUpdateProfile::Ace16OrdinaryOwnedGrowth => Qualified::Ordinary(checked),
+        NativeUpdateProfile::Jet4Int32 | NativeUpdateProfile::Ace16OrdinaryEofAllocation => {
+            return Err(super::NativeIntentError::UnsupportedProfile.into());
         }
-        (NativeUpdateProfile::Ace16BeforeChangeFixed, NativeUpdateBody::Fixed(original)) => {
-            check(budget, cancelled)?;
-            original.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan = image.plan_before_change_fixed_updates(
-                original.table(),
-                &groups,
-                budget,
-                cancelled,
-            )?;
-            equal_image(
-                plan.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
-            check(budget, cancelled)?;
-            Qualified::BeforeChange(checked)
-        }
-        (
-            NativeUpdateProfile::Ace16OrdinaryFixed
-            | NativeUpdateProfile::Ace16OrdinaryIeeeFixed
-            | NativeUpdateProfile::Ace16OrdinaryScalarFixed
-            | NativeUpdateProfile::Ace16OrdinaryGuidFixed,
-            NativeUpdateBody::Fixed(original),
-        ) => {
-            check(budget, cancelled)?;
-            original.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan = if profile == NativeUpdateProfile::Ace16OrdinaryGuidFixed {
-                image.plan_ordinary_guid_updates(original.table(), &groups, budget, cancelled)?
-            } else if profile == NativeUpdateProfile::Ace16OrdinaryScalarFixed {
-                image.plan_ordinary_scalar_updates(original.table(), &groups, budget, cancelled)?
-            } else if profile == NativeUpdateProfile::Ace16OrdinaryIeeeFixed {
-                image.plan_ordinary_ieee_updates(original.table(), &groups, budget, cancelled)?
-            } else {
-                image.plan_ordinary_fixed_updates(original.table(), &groups, budget, cancelled)?
-            };
-            equal_image(
-                plan.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
-            check(budget, cancelled)?;
-            Qualified::Ordinary(checked)
-        }
-        (NativeUpdateProfile::Ace16OrdinaryFitted, NativeUpdateBody::Fitted(original)) => {
-            check(budget, cancelled)?;
-            original.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan =
-                image.plan_ordinary_fitted_updates(original.table(), &groups, budget, cancelled)?;
-            equal_image(
-                plan.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
-            check(budget, cancelled)?;
-            Qualified::Ordinary(checked)
-        }
-        (
-            NativeUpdateProfile::Ace16OrdinaryOwnedGrowth,
-            NativeUpdateBody::OwnedGrowth(original),
-        ) => {
-            check(budget, cancelled)?;
-            original.verify_before(checked.before_bytes(), budget, cancelled)?;
-            let image = NativeImage::capture(
-                &mut Cursor::new(checked.before_bytes()),
-                scope,
-                budget,
-                cancelled,
-            )?;
-            let groups = original.borrowed_groups(budget, cancelled)?;
-            let plan = image.plan_ordinary_owned_growth_updates(
-                original.table(),
-                &groups,
-                budget,
-                cancelled,
-            )?;
-            // OwnedOnly uses the unchanged fixed-length V1 journal protocol.
-            // A physical planner must not return a larger or shorter image.
-            if plan.after_bytes().len() != plan.before_bytes().len() {
-                return Err(super::NativeIntentError::UnsupportedProfile.into());
-            }
-            equal_image(
-                plan.before_bytes(),
-                checked.before_bytes(),
-                budget,
-                cancelled,
-            )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
-            check(budget, cancelled)?;
-            Qualified::Ordinary(checked)
-        }
-        _ => return Err(super::NativeIntentError::UnsupportedProfile.into()),
     };
     Ok(QualifiedNativeRecovery { qualified })
 }

@@ -10,6 +10,8 @@ pub use intent::{
 #[cfg(feature = "journal")]
 mod native_recovery;
 #[cfg(feature = "journal")]
+mod update_rebuild;
+#[cfg(feature = "journal")]
 pub use native_recovery::{QualifiedNativeRecovery, qualify_native_update_recovery};
 #[cfg(feature = "journal")]
 mod qualified_recovery;

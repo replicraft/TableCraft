@@ -11,7 +11,7 @@ use thiserror::Error;
 
 const COMPARE_BLOCK_BYTES: usize = 64 * 1024;
 
-/// Failure before a checked journal gains normal Jet4 recovery capability.
+/// Failure before a reviewed plan or checked journal gains native update authority.
 /// Refusal changes no target bytes; an already-interrupted target still requires
 /// recovery or diagnosis. Persisted intent and journal contents are not permission.
 #[derive(Debug, Error)]
@@ -22,7 +22,7 @@ pub enum NativeRecoveryQualificationError {
     /// Original intent framing/profile/before-image binding is not qualified.
     #[error(transparent)]
     Intent(#[from] NativeIntentError),
-    /// The original source/requests fail the existing ordinary Jet4 write gates.
+    /// The original source/requests fail the selected normal native write gates.
     #[error(transparent)]
     Edit(#[from] EditError),
     /// The original first-table request failed closed framing or source binding.
@@ -41,8 +41,8 @@ pub enum NativeRecoveryQualificationError {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddTable(#[from] AddTableError),
-    /// A complete journal image differs from the independently rebuilt plan.
-    #[error("journal images differ from the qualified original native edit")]
+    /// A complete image or change count differs from the independently rebuilt plan.
+    #[error("complete images differ from the qualified original native edit")]
     ImageMismatch,
 }
 
