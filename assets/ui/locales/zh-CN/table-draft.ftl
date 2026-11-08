@@ -87,3 +87,6 @@ table-draft-number-precision = 精度
 table-draft-number-scale = 小数位数
 table-draft-number-invalid-decimal = 精度必须为 1–28，小数位数必须为 0 到精度。保存前请更正这两个值。
 table-draft-number-guid-default = 复制 ID 尚不支持字面量默认值。请选择其他模式；已输入的文本会保留。
+
+table-draft-design-description = { $field } 的说明
+table-draft-description-invalid = 字段说明过长。

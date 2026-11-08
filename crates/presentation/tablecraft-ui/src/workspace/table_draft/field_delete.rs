@@ -117,6 +117,7 @@ impl State {
             return false;
         }
         editor.record.remove_prepared(position, record_revision);
+        editor.descriptions.remove(confirmation.field);
         editor
             .properties
             .remove_prepared(property_position, property_revision);

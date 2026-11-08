@@ -101,12 +101,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         "design" => "-initial-design",
         "design-type" => "-initial-design-type",
         "design-properties" => "-initial-design-properties",
+        "design-description" => "-initial-design-description",
         "design-default" => "-initial-design-default",
         "design-number-size" => "-initial-design-number-size",
         "design-decimal" => "-initial-design-decimal",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties, design-default, design-number-size or design-decimal",
+                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties, design-description, design-default, design-number-size or design-decimal",
             )
             .into());
         }
@@ -366,6 +367,7 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
         "design"
             | "design-type"
             | "design-properties"
+            | "design-description"
             | "design-default"
             | "design-number-size"
             | "design-decimal"
@@ -403,6 +405,9 @@ fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
         }
         if matches!(mode, "design-properties" | "design-default") {
             initial_properties::edit(harness, mode == "design-default");
+        }
+        if mode == "design-description" {
+            initial_properties::description(harness);
         }
         if number {
             initial_numbers::edit(harness, mode == "design-number-size");

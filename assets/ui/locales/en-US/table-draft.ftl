@@ -87,3 +87,6 @@ table-draft-number-precision = Precision
 table-draft-number-scale = Scale
 table-draft-number-invalid-decimal = Precision must be 1–28 and scale must be 0–precision. Correct both values before saving.
 table-draft-number-guid-default = Literal defaults for Replication ID are not available yet. Choose another default mode; the entered text is retained.
+
+table-draft-design-description = Description for { $field }
+table-draft-description-invalid = The field description is too long.

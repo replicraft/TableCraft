@@ -87,3 +87,6 @@ table-draft-number-precision = Genauigkeit
 table-draft-number-scale = Skalierung
 table-draft-number-invalid-decimal = Die Genauigkeit muss 1–28 und die Skalierung 0 bis zur Genauigkeit betragen. Korrigieren Sie beide Werte vor dem Speichern.
 table-draft-number-guid-default = Literale Standardwerte für Replikations-ID sind noch nicht verfügbar. Wählen Sie einen anderen Modus; der eingegebene Text bleibt erhalten.
+
+table-draft-design-description = Beschreibung für { $field }
+table-draft-description-invalid = Die Feldbeschreibung ist zu lang.

@@ -1,5 +1,34 @@
 # Presentation preview
 
+## Description authoring — 7 November 2026
+
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=design-description` drives the existing draft
+widgets: add/name a Short Text field, retain a pending first record, enter Design
+and edit both ordinary and generated-ID Description cells. It checks exact
+accessible text, revision changes and the pending record across a Datasheet
+round trip, then returns to Design. It opens neither a Save prompt nor a database.
+
+Four normal-host frames were rendered and inspected under ignored
+`.cache/ui-previews/descriptions-20261107/`: English light/dark at 1280×820 pixels
+and 1×, German light/Korean dark at 900×580 logical points and 1.25×
+(1125×725 pixels). Rendering was windowless on macOS ARM64 with Windows input
+emulation. Both descriptions are visible in the upper grid. The synthetic
+metadata `Generated identifier` and `  Résumé 日本語 Now()  ` are example data,
+not untranslated interface messages. Compact Ribbons remain horizontally
+scrollable; the lower property pane retains its independent scrolling.
+
+The actual 1920×1165 Windows/VirtualBox Design capture was reopened; its display
+scale is unknown. It establishes the upper Description column, separate property
+sheet and help area. It shows an existing AutoNumber table with empty descriptions,
+not a fresh manual Design workflow or editing keyboard behavior. Dark styling
+and multiline-cell interaction remain adaptations; no native Access Enter/key
+navigation parity is claimed. Generated-ID structure is still protected, and
+Create → Table Design remains a separate unfinished workflow.
+
+All 437 shared-UI tests pass, including the localized light/dark oversized-paste
+and stale-witness cases. Native save/readback, recovery and first-row insertion
+are separate service/engine evidence; offscreen frames do not establish them.
+
 ## Navigation Pane polish — 7 November 2026
 
 Five final normal-host frames were rendered and inspected under ignored

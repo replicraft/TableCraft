@@ -87,3 +87,6 @@ table-draft-number-precision = Точность
 table-draft-number-scale = Масштаб
 table-draft-number-invalid-decimal = Точность должна быть от 1 до 28, а масштаб — от 0 до точности. Исправьте оба значения перед сохранением.
 table-draft-number-guid-default = Литеральные значения по умолчанию для кода репликации пока недоступны. Выберите другой режим; введённый текст сохранится.
+
+table-draft-design-description = Описание поля { $field }
+table-draft-description-invalid = Описание поля слишком длинное.

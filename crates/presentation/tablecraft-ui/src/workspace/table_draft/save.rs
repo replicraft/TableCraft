@@ -94,8 +94,11 @@ impl State {
             && self.object_switch_ready()
             && !self.creation_is_pending()
             && self.active_object().is_some_and(|tab| {
-                self.table_draft_editor(&tab)
-                    .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected())
+                self.table_draft_editor(&tab).is_some_and(|editor| {
+                    !editor.save_blocked
+                        && !editor.properties.rejected()
+                        && !editor.descriptions.rejected()
+                })
             })
     }
 
@@ -137,6 +140,7 @@ impl State {
             || !editor.record.synchronize(&editor.draft)
             || editor.record.has_rejected_input()
             || editor.properties.rejected()
+            || editor.descriptions.rejected()
         {
             return false;
         }
@@ -207,6 +211,7 @@ impl State {
                 editor.record.revision() == save.record_revision
                     && editor.property_revision() == save.property_revision
                     && !editor.properties.rejected()
+                    && !editor.descriptions.rejected()
                     && !editor.record.has_rejected_input()
                     && editor.rename.is_none()
             })
@@ -309,12 +314,17 @@ impl State {
             return false;
         }
         match &self.table_draft_close {
-            Some(CloseIntent::Tab(tab)) => self
-                .table_draft_editor(tab)
-                .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected()),
+            Some(CloseIntent::Tab(tab)) => self.table_draft_editor(tab).is_some_and(|editor| {
+                !editor.save_blocked
+                    && !editor.properties.rejected()
+                    && !editor.descriptions.rejected()
+            }),
             Some(CloseIntent::All) => self.object_tabs().iter().any(|tab| {
-                self.table_draft_editor(tab)
-                    .is_some_and(|editor| !editor.save_blocked && !editor.properties.rejected())
+                self.table_draft_editor(tab).is_some_and(|editor| {
+                    !editor.save_blocked
+                        && !editor.properties.rejected()
+                        && !editor.descriptions.rejected()
+                })
             }),
             None => false,
         }

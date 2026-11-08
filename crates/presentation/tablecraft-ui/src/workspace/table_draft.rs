@@ -23,6 +23,7 @@ pub(super) struct Editor {
     pub(in crate::workspace) design: design::Design,
     record: record::RowDraft,
     properties: Editors,
+    descriptions: design::description::Editors,
     rename: Option<rename::Rename>,
     focus_add: bool,
     save_requested: bool,
@@ -45,6 +46,7 @@ impl Editor {
             design: design::Design::default(),
             record: record::RowDraft::new(),
             properties: Editors::default(),
+            descriptions: design::description::Editors::default(),
             rename: None,
             focus_add: true,
             save_requested: false,
@@ -86,6 +88,7 @@ impl Editor {
         self.draft.is_modified()
             || self.record.is_modified()
             || self.properties.rejected()
+            || self.descriptions.rejected()
             || self.rename.as_ref().is_some_and(|rename| {
                 rename.rejected
                     || self
@@ -101,6 +104,7 @@ impl Editor {
             + self.draft.retained_bytes()
             + self.record.retained_bytes()
             + self.properties.retained_bytes()
+            + self.descriptions.retained_bytes()
             + self
                 .rename
                 .as_ref()

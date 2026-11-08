@@ -87,3 +87,6 @@ table-draft-number-precision = Precisión
 table-draft-number-scale = Escala
 table-draft-number-invalid-decimal = La precisión debe ser de 1 a 28 y la escala de 0 a la precisión. Corrija ambos valores antes de guardar.
 table-draft-number-guid-default = Los valores predeterminados literales de Id. de replicación aún no están disponibles. Elija otro modo; el texto introducido se conserva.
+
+table-draft-design-description = Descripción de { $field }
+table-draft-description-invalid = La descripción del campo es demasiado larga.

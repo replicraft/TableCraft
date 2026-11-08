@@ -417,6 +417,18 @@ non-NULL GUID default boundary.
 | Required | No or Yes. New ordinary fields start with explicit No. |
 | Allow Zero Length | Short Text only: Yes or No. New Short Text starts with explicit Yes. |
 | Default Value | Type default, No default, NULL or a typed literal constant. The generated ID has none of these editable properties. |
+| Description | Exact inert text in the upper Design grid, including the generated ID. The current authoring profile permits at most 255 UTF-16 code units. |
+
+Microsoft places field descriptions in the upper Design grid and specifies a
+[255-character maximum](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/description-property-access).
+TableCraft conservatively counts UTF-16 code units; supplementary characters use
+two units. This boundary is not a verified native Access Unicode-counting claim.
+Whitespace and Unicode remain exact, and text such as `Now()` is descriptive
+metadata rather than a formula. The typed builder/native APIs distinguish absent
+Description from present-empty text. Clearing a nonempty GUI description removes
+the property; an untouched present-empty declaration is preserved. Rejected
+oversized input does not truncate into a different saved description. Aggregate
+native inline-property/catalog capacity is checked independently during review.
 
 Microsoft documents [Required's default No and AutoNumber exclusion](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/required-property-access).
 Its [AllowZeroLength contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/allowzerolength-property)
@@ -493,7 +505,14 @@ native commitment and does not claim durable Windows deletion. See
 [first-table persistence](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
 [second-table persistence](../access/writes/ADD_TABLE_PERSISTENCE.md).
 
-Definitions with a default on Byte, Integer, Single, Double, Decimal or GUID
+Definitions with any present Description use closed `TCNT0005` intents, including
+present-empty descriptions. Added-table actions use `TCAT0003` for the ten-page
+source partition or `TCAT0004` for the repeated thirteen-through-sixty-one-page
+partition, each with a `TCNT0005` declaration template. Legacy `TCAT0001/2`
+continue admitting only their original `TCNT0001–4` templates and original
+resource ceilings. Description does not change source geometry or save authority.
+
+Without Description, definitions with a default on Byte, Integer, Single, Double, Decimal or GUID
 use closed `TCNT0004` intents, including an explicit NULL default on those target
 families. Otherwise explicit Required or Allow Zero Length policies select
 `TCNT0003`, retaining presence independently from true/false. Policy-free

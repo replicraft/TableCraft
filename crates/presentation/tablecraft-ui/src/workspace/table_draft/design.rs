@@ -1,4 +1,5 @@
 //! Editable initial declarations share the same unsaved model as Datasheet view.
+pub(in crate::workspace::table_draft) mod description;
 pub(in crate::workspace::table_draft) mod properties;
 #[cfg(test)]
 mod tests;
@@ -165,7 +166,8 @@ pub(super) fn type_key(kind: DraftFieldType) -> &'static str {
 }
 
 pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<Event> {
-    if !editor.record.synchronize(&editor.draft) {
+    if !editor.record.synchronize(&editor.draft) || !editor.descriptions.synchronize(&editor.draft)
+    {
         ui.colored_label(ui.visuals().error_fg_color, tr(ui, "insertion-input-limit"));
         return None;
     }
@@ -179,6 +181,12 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                 ui.colored_label(
                     ui.visuals().error_fg_color,
                     tr(ui, "table-draft-invalid-name"),
+                );
+            }
+            if editor.descriptions.rejected() {
+                ui.colored_label(
+                    ui.visuals().error_fg_color,
+                    tr(ui, "table-draft-description-invalid"),
                 );
             }
             if editor.properties.rejected() {
@@ -397,13 +405,15 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                             });
                             row.col(|ui| {
                                 crate::datasheet::grid_cell(ui, false);
-                                let mut description = String::new();
-                                ui.add_enabled(
-                                    false,
-                                    egui::TextEdit::singleline(&mut description)
-                                        .desired_width(ui.available_width()),
-                                )
-                                .on_disabled_hover_text(tr(ui, "ribbon-unavailable"));
+                                let available = editor.properties.description_edit_available();
+                                let changed = ui
+                                    .add_enabled_ui(available, |ui| {
+                                        editor.descriptions.show(ui, field)
+                                    })
+                                    .inner;
+                                if changed && !editor.properties.record_description_edit() {
+                                    editor.descriptions.reject(field.id());
+                                }
                             });
                         });
                     }
@@ -467,6 +477,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
         }
         None => {}
     }
+    editor.descriptions.commit(&mut editor.draft);
     let requested = std::mem::take(&mut editor.save_requested);
     if event.is_none() && (save || requested && can_save) {
         event = Some(Event::Save);
@@ -479,6 +490,9 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
     let mut keys = vec!["table-draft-design-input-help"];
     if editor.error {
         keys.push("table-draft-invalid-name");
+    }
+    if editor.descriptions.rejected() {
+        keys.push("table-draft-description-invalid");
     }
     if editor.properties.rejected() {
         keys.push("table-draft-property-invalid");

@@ -87,3 +87,6 @@ table-draft-number-precision = 精度
 table-draft-number-scale = 小数点以下桁数
 table-draft-number-invalid-decimal = 精度は 1～28、小数点以下桁数は 0～精度の範囲で指定します。保存する前に両方の値を修正してください。
 table-draft-number-guid-default = レプリケーション ID のリテラル既定値はまだ利用できません。別のモードを選択してください。入力したテキストは保持されます。
+
+table-draft-design-description = { $field } の説明
+table-draft-description-invalid = フィールドの説明が長すぎます。

@@ -87,3 +87,6 @@ table-draft-number-precision = 전체 자릿수
 table-draft-number-scale = 소수 자릿수
 table-draft-number-invalid-decimal = 전체 자릿수는 1~28, 소수 자릿수는 0~전체 자릿수여야 합니다. 저장 전에 두 값을 수정하세요.
 table-draft-number-guid-default = 복제 ID의 리터럴 기본값은 아직 사용할 수 없습니다. 다른 모드를 선택하세요. 입력한 텍스트는 유지됩니다.
+
+table-draft-design-description = { $field }의 설명
+table-draft-description-invalid = 필드 설명이 너무 깁니다.

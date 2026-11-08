@@ -90,6 +90,13 @@ fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the
     choose_input(&mut harness, "Name", "Omitted");
     let generation = harness.state().generation;
     select_properties(&mut harness, "Name");
+    let description = field_label(&harness, "table-draft-design-description", "Name");
+    replace(
+        &mut harness,
+        Role::MultilineTextInput,
+        &description,
+        "  Résumé 日本語 Now()  ",
+    );
     replace(&mut harness, Role::TextInput, "Field Size", "12");
     choose(&mut harness, "design-required", "table-draft-property-yes");
     choose(
@@ -118,7 +125,15 @@ fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the
     let schema_bytes = std::fs::read(&path).unwrap();
     assert_ne!(schema_bytes, canonical_blank_creation::source());
     review(&mut harness);
-    assert!(harness.state().editing.insert_review.is_some());
+    assert!(
+        harness.state().editing.insert_review.is_some(),
+        "review failed: {:?}; visible messages: {:?}",
+        harness.state().state.error,
+        harness
+            .get_all_by_role(Role::Label)
+            .filter_map(|node| node.value())
+            .collect::<Vec<_>>()
+    );
     assert_eq!(std::fs::read(&path).unwrap(), schema_bytes);
     apply_and_acknowledge(&mut harness);
     let data = harness.state().state.data.as_ref().unwrap();
@@ -144,6 +159,9 @@ fn property_controls_persist_native_metadata_and_omitted_first_row_uses_only_the
     ));
     assert!(
         matches!(property(&fields[1], "DefaultValue"), FieldPropertyValue::Text(text) if text == "\"Guest\"")
+    );
+    assert!(
+        matches!(property(&fields[1], "Description"), FieldPropertyValue::Text(text) if text == "  Résumé 日本語 Now()  ")
     );
 }
 

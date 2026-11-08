@@ -1,5 +1,45 @@
 # Implementation status
 
+## Native field-description authoring — 7 November 2026
+
+The initial/new table's Design grid now edits Description for ordinary fields
+and the protected generated ID. Shared builders retain exact optional Unicode
+text, revision checks and allocation accounting. Runtime lowers the immutable
+snapshot into native metadata; desktop adds no schema logic. Clearing GUI text
+removes the property, while typed APIs distinguish absent from present-empty.
+The conservative authoring bound is 255 UTF-16 units, independently of aggregate
+catalog/property capacity. See [the authoring contract](ui/DATABASE_CREATION.md#supported-field-properties).
+
+Native creation writes inert flags-1/Text-10 MR2 values. Closed TCNT5 and TCAT3/4
+intents preserve those original declarations through same-file schema save and
+cold recovery without enlarging older grammars or ceilings. An actual desktop
+save/first-record test exposed the generated INSERT classifier's closed property
+list; its narrow Description admission now retains malformed/duplicate/policy
+refusals. The connected test saves the schema, separately reviews/applies the
+original omitted record, then reads the stored default and Description back.
+Fresh runtime checks also preserve all original descriptions through two further
+table additions. This does not implement imported-field ALTER or manual/keyless
+Create → Table Design.
+
+The accepted batch passes 30 builder, 150 runtime, 437 shared-UI and 111 desktop
+tests; 82 selected native creation tests (one ignored), 13 first-table intent,
+seven append-intent and four generated-mode tests also pass. The selected native
+recovery target passes 111 cases with 260 explicitly ignored cases, including
+both new Description cold-recovery scenarios. Creation-only tests, runtime
+creation-only compilation, six affected packages' strict all-target/all-feature
+lint, and Windows x64/ARM64 runtime/desktop compilation pass. This is not a full
+workspace test run or native Windows/Linux execution.
+
+Four light/dark and compact translated offscreen frames were inspected; see
+[the presentation record](ui/PRESENTATION_PREVIEW.md#description-authoring--7-november-2026).
+Read-only Jackcess observations of three generated schema candidates preserve
+all file hashes and exact descriptions, with their narrower scope recorded in
+[the result](testing/results/ace16-description-independent-reader-2026-11-07.json).
+Initial feature-gate, selector, stale-default-assertion, negative-fixture and lint
+failures remain separate from accepted runs under ignored
+`.cache/gui-description-*20261107.log` paths. The real first-row refusal and its
+correction are retained there too. None establishes native Access parity.
+
 ## Repeated table creation — 7 November 2026
 
 Repeated creation extends the qualified ACE 16 append ledger from one

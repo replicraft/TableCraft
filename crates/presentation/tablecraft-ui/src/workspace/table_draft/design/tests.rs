@@ -1,3 +1,5 @@
+mod description;
+
 use crate::workspace::{
     Action, EditInput, InsertInput, State,
     preview::{Preview, Scene},

@@ -63,6 +63,19 @@ impl DefaultChoice {
 }
 
 impl Editors {
+    pub(in crate::workspace::table_draft) fn description_edit_available(&self) -> bool {
+        self.revision.checked_add(1).is_some()
+    }
+
+    pub(in crate::workspace::table_draft) fn record_description_edit(&mut self) -> bool {
+        // The widget preflights this revision before receiving any input.
+        let Some(revision) = self.revision.checked_add(1) else {
+            return false;
+        };
+        self.revision = revision;
+        true
+    }
+
     pub(in crate::workspace::table_draft) fn revision(&self) -> u64 {
         self.revision
     }
