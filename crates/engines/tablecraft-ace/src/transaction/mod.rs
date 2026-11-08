@@ -9,6 +9,13 @@ pub use intent::{
 };
 #[cfg(feature = "journal")]
 pub use intent::{
+    NativeQueryExpressionEditsIntent, PreparedQueryExpressionEdits,
+    QualifiedQueryExpressionEditsRecovery, QueryExpressionEditIntent,
+    QueryExpressionEditsIntentError, RecoverableNativeQueryExpressionEditsPlan,
+    qualify_native_query_expression_edits_recovery,
+};
+#[cfg(feature = "journal")]
+pub use intent::{
     NativeQueryExpressionIntent, PreparedQueryExpression, QualifiedQueryExpressionRecovery,
     QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
     RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
