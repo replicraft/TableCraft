@@ -1,3 +1,4 @@
+mod active_save;
 mod backstage;
 mod chrome;
 mod click;
@@ -163,6 +164,9 @@ pub enum Action {
     Page {
         table: String,
         offset: u32,
+    },
+    ReviewSavedQuerySql {
+        request: SavedQuerySqlRequest,
     },
     InspectSavedQuery {
         target: SavedQueryTarget,
@@ -393,6 +397,7 @@ pub struct State {
     /// Host lifecycle readiness; native eligibility alone never enables editing.
     pub saved_query_sql_edit_available: bool,
     saved_query: saved_query::SavedQueryState,
+    active_save: active_save::PendingSave,
     saved_query_sql_close: Option<saved_query::SqlCloseConfirmation>,
     selected_field: usize,
     design_focus_pending: Option<schema::PaneEntry>,
@@ -743,7 +748,7 @@ impl State {
         let mut actions = Vec::new();
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
-        self.consume_table_draft_save_shortcut(ui.ctx());
+        self.consume_active_save_shortcut(ui.ctx());
         let modal_open = self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
             || self.insert_continuation_pending()
@@ -824,6 +829,7 @@ impl State {
                 }
             });
         });
+        self.finish_active_save(&mut actions);
         self.new_record_shortcut(ui, &mut actions);
         self.finish_ribbon_paste(ui, &actions);
         self.finish_paste(ui.ctx(), &mut actions, paste_receipt);

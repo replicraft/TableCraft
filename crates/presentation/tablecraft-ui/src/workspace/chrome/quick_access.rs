@@ -55,13 +55,13 @@ pub(super) fn show(
                 actions.push(Action::ChooseFile);
             }
         }
-        // Only the shared first-table save intent is enabled here. Existing native
-        // edits still use their consuming review; there is no document undo history.
+        // The caller resolves Save for the active object. Native authority still
+        // requires consuming review; there is no document undo history.
         for (visible, key, help, icon) in [
             (
                 visibility.save,
                 "ribbon-save",
-                "shell-save-unavailable",
+                "ribbon-unavailable",
                 Icon::Save,
             ),
             (

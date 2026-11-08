@@ -51,3 +51,7 @@ saved-query-close-discard = 放弃
 saved-query-close-cancel = 取消
 saved-query-close-unavailable = 当前无法保存此查询。
 saved-query-close-stale = 查询草稿已更改。请取消并重新关闭。
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = 有未保存的更改。请先保存再运行此查询。
+saved-query-sql-source-changed = 已保存的定义发生了变化。您的 SQL 草稿已保留。

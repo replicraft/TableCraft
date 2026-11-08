@@ -51,3 +51,7 @@ saved-query-close-discard = Не сохранять
 saved-query-close-cancel = Отмена
 saved-query-close-unavailable = Этот запрос сейчас нельзя сохранить.
 saved-query-close-stale = Черновик запроса изменился. Отмените действие и закройте его снова.
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = Есть несохранённые изменения. Сохраните запрос перед выполнением.
+saved-query-sql-source-changed = Сохранённое определение изменилось. Ваш черновик SQL сохранён.

@@ -51,3 +51,7 @@ saved-query-close-discard = 저장 안 함
 saved-query-close-cancel = 취소
 saved-query-close-unavailable = 현재 이 쿼리를 저장할 수 없습니다.
 saved-query-close-stale = 쿼리 초안이 변경되었습니다. 취소한 후 다시 닫으세요.
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = 저장하지 않은 변경 사항이 있습니다. 이 쿼리를 실행하기 전에 저장하세요.
+saved-query-sql-source-changed = 저장된 정의가 변경되었습니다. SQL 초안은 유지됩니다.

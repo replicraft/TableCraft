@@ -51,3 +51,7 @@ saved-query-close-discard = 破棄
 saved-query-close-cancel = キャンセル
 saved-query-close-unavailable = このクエリは現在保存できません。
 saved-query-close-stale = クエリの下書きが変更されました。キャンセルして、もう一度閉じてください。
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = 未保存の変更があります。このクエリを実行する前に保存してください。
+saved-query-sql-source-changed = 保存済みの定義が変更されました。SQL の下書きは保持されています。

@@ -51,3 +51,7 @@ saved-query-close-discard = Verwerfen
 saved-query-close-cancel = Abbrechen
 saved-query-close-unavailable = Diese Abfrage kann derzeit nicht gespeichert werden.
 saved-query-close-stale = Der Abfrageentwurf wurde geändert. Brechen Sie ab und schließen Sie ihn erneut.
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = Ungespeicherte Änderungen. Speichern Sie vor dem Ausführen dieser Abfrage.
+saved-query-sql-source-changed = Die gespeicherte Definition wurde geändert. Ihr SQL-Entwurf wurde beibehalten.

@@ -66,10 +66,10 @@ impl State {
                             ui,
                             &t,
                             open_available,
-                            self.can_save_table_draft(),
+                            self.can_save_active_object(),
                             actions,
                         ) {
-                            self.queue_table_draft_save();
+                            self.queue_active_save();
                         }
                         ui.add_space(12.0);
                     }

@@ -2,6 +2,7 @@
 mod editor;
 mod prompt;
 mod sql;
+mod sql_editor;
 
 pub(super) use sql::Confirmation as SqlCloseConfirmation;
 pub use sql::{

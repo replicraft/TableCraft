@@ -418,17 +418,6 @@ impl State {
         editor.save_requested = true;
         true
     }
-
-    pub(in crate::workspace) fn consume_table_draft_save_shortcut(
-        &mut self,
-        context: &egui::Context,
-    ) {
-        if self.can_save_table_draft()
-            && context.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::S))
-        {
-            self.queue_table_draft_save();
-        }
-    }
 }
 
 impl SaveDialog {

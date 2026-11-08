@@ -51,3 +51,7 @@ saved-query-close-discard = Descartar
 saved-query-close-cancel = Cancelar
 saved-query-close-unavailable = No se puede guardar esta consulta actualmente.
 saved-query-close-stale = El borrador de la consulta ha cambiado. Cancele y vuelva a cerrarlo.
+
+# Saved query SQL editor.
+saved-query-sql-unsaved = Cambios sin guardar. Guarde antes de ejecutar esta consulta.
+saved-query-sql-source-changed = La definición guardada ha cambiado. Se ha conservado su borrador SQL.

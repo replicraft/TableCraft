@@ -1,4 +1,4 @@
-//! Typed parameter entry displays runtime declarations without interpreting SQL.
+//! Source-bound SQL presentation and typed parameters never interpret query text.
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
 use crate::workspace::{Action, State, diagnostics};
@@ -24,6 +24,7 @@ impl State {
         let idle = !self.busy && self.saved_query.pending.is_none();
         let object_id = target.object_id;
         let document_revision = target.document_revision;
+        self.saved_query_sql_editor(ui);
         if let Some(error) = &self.saved_query.error {
             let id = ui.make_persistent_id(("saved_query_error", document_revision, object_id));
             diagnostics::show(ui, id, error);
@@ -57,7 +58,9 @@ impl State {
             }
         });
         if self.saved_query.data.is_some()
-            && (self.saved_query.pending.is_some() || self.saved_query.error.is_some())
+            && (self.saved_query.pending.is_some()
+                || self.saved_query.error.is_some()
+                || self.saved_query_sql_dirty())
         {
             ui.small(tr(ui, "saved-query-previous-results"));
         }
