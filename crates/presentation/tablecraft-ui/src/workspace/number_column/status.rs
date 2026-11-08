@@ -1,6 +1,8 @@
 //! Resource-free status facts keyed to the actual Number-column save actor.
+mod preparation;
 use super::{NumberColumnRequest, Phase};
 use crate::workspace::{EditSaveOutcome, State};
+pub use preparation::PreparedNumberColumnSave;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct NumberColumnSaveIdentity {

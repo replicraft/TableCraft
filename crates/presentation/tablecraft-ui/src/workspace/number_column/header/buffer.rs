@@ -43,6 +43,7 @@ impl TextBuffer for NameBuffer {
     fn is_mutable(&self) -> bool {
         true
     }
+
     fn as_str(&self) -> &str {
         &self.text
     }

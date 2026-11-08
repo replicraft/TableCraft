@@ -28,14 +28,15 @@ pub use workspace::{
     FindScope, FindSpan, FindTarget, InitialRecord, InputHint, InsertDraft, InsertField,
     InsertInput, InsertRetryPermission, InsertReview, InsertTarget, NumberColumnInspectionError,
     NumberColumnRequest, NumberColumnSaveCommand, NumberColumnSaveIdentity, ObjectKind, ObjectOpen,
-    ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, QueryActionEffect, QueryActionKind,
-    QueryActionReview, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
-    RecoveryOutcome, ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice,
-    SavedQuery, SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
-    SavedQuerySqlError, SavedQuerySqlRequest, SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity,
-    SavedQuerySqlSaveOperation, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
-    TableDraftSaveCompletion, TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec,
-    TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
+    ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, PreparedNumberColumnSave,
+    QueryActionEffect, QueryActionKind, QueryActionReview, QueryDesignCompletion,
+    QueryDesignRequest, QueryDesignTarget, RecordTarget, RecoveryOutcome, ReplaceFindRequest,
+    RowOrdinalError, RowOrdinals, SaveCleanupNotice, SavedQuery, SavedQuerySqlCloseDecision,
+    SavedQuerySqlCloseResult, SavedQuerySqlEligibility, SavedQuerySqlError, SavedQuerySqlRequest,
+    SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity, SavedQuerySqlSaveOperation,
+    SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table, TableDraftSaveCompletion,
+    TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
+    TotalsField, TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

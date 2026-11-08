@@ -184,17 +184,19 @@ impl Desktop {
             return;
         }
         let path = capability.source_path().to_path_buf();
+        let Some(prepared) =
+            self.state
+                .prepare_number_column_save(&host.request, generation, review.id)
+        else {
+            return;
+        };
         match self
             .editing
             .worker
             .start_number_column(capability, journal_path(&path))
         {
             Ok(save_id) => {
-                let identity = NumberColumnSaveIdentity {
-                    request_id: generation,
-                    review_id: review.id,
-                    save_id,
-                };
+                let identity = prepared.bind(save_id);
                 self.editing.save = Some(ActiveSave {
                     owner: SaveOwner::NumberColumn,
                     id: save_id,
@@ -207,28 +209,12 @@ impl Desktop {
                 let host = self.editing.number_column.as_mut().unwrap();
                 host.identity = Some(identity);
                 host.witness = Some(witness);
-                if !self.state.bind_number_column_save(
-                    &host.request,
-                    generation,
-                    review.id,
-                    save_id,
-                ) || !self.state.begin_number_column_save_status(identity)
-                {
-                    // Retain the actual accepted worker and owner on any invariant
-                    // failure; never drop a running actor or invent completion.
-                    self.editing.worker.cancel(save_id);
-                    self.state.error = Some(self.state.localizer.text("objects-open-refused"));
-                }
                 self.state.busy = true;
             }
             Err(error) => {
+                drop(prepared);
                 let message = error.to_string();
                 drop(error.into_reviewed());
-                self.state.release_number_column_accepted_review(
-                    &self.editing.number_column.as_ref().unwrap().request,
-                    generation,
-                    review.id,
-                );
                 self.number_column_review_failed(generation, message);
             }
         }

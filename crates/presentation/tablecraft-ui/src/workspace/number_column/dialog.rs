@@ -110,6 +110,7 @@ impl State {
             }
         }
     }
+
     fn number_column_review_dialog(&mut self, context: &Context, actions: &mut Vec<Action>) {
         let Some((_, _, _, super::Phase::Reviewing { request_id })) = self.number_column.draft()
         else {

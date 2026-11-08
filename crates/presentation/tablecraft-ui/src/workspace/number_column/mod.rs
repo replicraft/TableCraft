@@ -9,7 +9,7 @@ mod state;
 mod status;
 
 pub(super) use status::Status;
-pub use status::{NumberColumnSaveCommand, NumberColumnSaveIdentity};
+pub use status::{NumberColumnSaveCommand, NumberColumnSaveIdentity, PreparedNumberColumnSave};
 
 use super::{ObjectKind, ObjectTab};
 use tablecraft_builders::table::{MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};

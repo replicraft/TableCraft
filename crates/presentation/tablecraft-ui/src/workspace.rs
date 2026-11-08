@@ -50,7 +50,7 @@ pub use insertion::{
 pub use navigation::rename::TableRenameRequest;
 pub use number_column::{
     NumberColumnInspectionError, NumberColumnRequest, NumberColumnSaveCommand,
-    NumberColumnSaveIdentity,
+    NumberColumnSaveIdentity, PreparedNumberColumnSave,
 };
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
