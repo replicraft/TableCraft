@@ -39,6 +39,7 @@ fn receipt(known: SaveKnownOutcome) -> SaveReceipt {
         matched_rows: Some(1),
         changed_rows: Some(1),
         schema_change: None,
+        query_change: None,
         retirement: None,
         cleanup: None,
     }

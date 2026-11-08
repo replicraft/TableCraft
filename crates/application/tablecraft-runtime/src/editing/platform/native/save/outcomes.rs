@@ -2,13 +2,13 @@
 use super::RetainedOwner;
 use crate::editing::save::{
     SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
-    SaveOutcome, SavePhase, SaveReceipt, SaveRetirementGuarantee, SaveSchemaChange,
-    SaveSessionState,
+    SaveOutcome, SavePhase, SaveQueryChange, SaveReceipt, SaveRetirementGuarantee,
+    SaveSchemaChange, SaveSessionState,
 };
 use std::error::Error as StdError;
 use tablecraft_access::editing::offline::{
-    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, OpenError, Phase, Receipt,
-    SchemaChange, SessionState, VerifiedImage,
+    Cause, CompletionKind, Failure, KnownOutcome, OfflineWriteSession, OpenError, Phase,
+    QueryChange, Receipt, SchemaChange, SessionState, VerifiedImage,
 };
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
@@ -16,8 +16,9 @@ use tablecraft_ace::{
     FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
-    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameError,
-    TableRenameIntentError,
+    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
+    QueryExpressionError, QueryExpressionIntentError, QueryExpressionRecoveryError,
+    RecoverableQueryExpressionError, TableRenameError, TableRenameIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -117,6 +118,9 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
             SchemaChange::TableAdded { column_count } => {
                 SaveSchemaChange::TableAdded { column_count }
             }
+        }),
+        query_change: value.query_change().map(|change| match change {
+            QueryChange::ExpressionSaved => SaveQueryChange::ExpressionSaved,
         }),
         retirement: value.retirement().map(|retirement| match retirement {
             RetirementGuarantee::CapturedParentBarrier => {
@@ -219,6 +223,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
+            Cause::QueryExpressionIntent(error) => query_expression_intent_failure(error),
+            Cause::QueryExpressionQualification(error) => query_expression_recovery_failure(error),
             Cause::Prepare(error) | Cause::Recovery(error) => journal_failure(error),
             Cause::Io(error) => io_failure(error),
             #[cfg(feature = "ace16-create")]
@@ -242,6 +248,18 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<TableRenameIntentError>() {
         return rename_intent_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<QueryExpressionError>() {
+        return query_expression_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<QueryExpressionIntentError>() {
+        return query_expression_intent_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<QueryExpressionRecoveryError>() {
+        return query_expression_recovery_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<RecoverableQueryExpressionError>() {
+        return query_expression_planning_failure(error);
     }
     if let Some(error) = error.downcast_ref::<NativeIntentError>() {
         return intent_failure(error);
@@ -312,6 +330,42 @@ fn qualification_failure(error: &NativeRecoveryQualificationError) -> Option<Sav
         #[cfg(feature = "ace16-create")]
         NativeRecoveryQualificationError::AddTableIntent(error) => add_table_intent_failure(error),
         _ => None,
+    }
+}
+
+fn query_expression_failure(error: &QueryExpressionError) -> Option<SaveFailureKind> {
+    match error {
+        QueryExpressionError::Inspect(error) => inspection_failure(error),
+        _ => None,
+    }
+}
+
+fn query_expression_intent_failure(error: &QueryExpressionIntentError) -> Option<SaveFailureKind> {
+    match error {
+        QueryExpressionIntentError::Inspect(error) => inspection_failure(error),
+        QueryExpressionIntentError::Binding(error) => intent_failure(error),
+        _ => None,
+    }
+}
+
+fn query_expression_recovery_failure(
+    error: &QueryExpressionRecoveryError,
+) -> Option<SaveFailureKind> {
+    match error {
+        QueryExpressionRecoveryError::Inspect(error) => inspection_failure(error),
+        QueryExpressionRecoveryError::Intent(error) => query_expression_intent_failure(error),
+        QueryExpressionRecoveryError::Expression(error) => query_expression_failure(error),
+        QueryExpressionRecoveryError::Proof(error) => qualification_failure(error),
+    }
+}
+
+fn query_expression_planning_failure(
+    error: &RecoverableQueryExpressionError,
+) -> Option<SaveFailureKind> {
+    match error {
+        RecoverableQueryExpressionError::Inspect(error) => inspection_failure(error),
+        RecoverableQueryExpressionError::Intent(error) => query_expression_intent_failure(error),
+        RecoverableQueryExpressionError::Expression(error) => query_expression_failure(error),
     }
 }
 

@@ -75,6 +75,12 @@ pub enum SaveSchemaChange {
     TableAdded { column_count: usize },
 }
 
+/// Acknowledged query-definition facts, separate from table schema and rows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SaveQueryChange {
+    ExpressionSaved,
+}
+
 /// Acknowledged namespace retirement, separate from the native data result.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveRetirementGuarantee {
@@ -96,6 +102,7 @@ pub struct SaveReceipt {
     pub matched_rows: Option<usize>,
     pub changed_rows: Option<usize>,
     pub schema_change: Option<SaveSchemaChange>,
+    pub query_change: Option<SaveQueryChange>,
     pub retirement: Option<SaveRetirementGuarantee>,
     pub cleanup: Option<SaveCleanupDisposition>,
 }

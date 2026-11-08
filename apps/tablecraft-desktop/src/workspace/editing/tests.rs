@@ -237,6 +237,7 @@ fn release_failure_preserves_completed_receipt_without_promoting_it_to_current_o
             matched_rows: Some(3),
             changed_rows: Some(2),
             schema_change: None,
+            query_change: None,
             retirement: None,
             cleanup: None,
         }),
@@ -295,6 +296,7 @@ fn released_resources_keep_current_and_prior_receipt_facts_distinct() {
                     matched_rows: None,
                     changed_rows: None,
                     schema_change: None,
+                    query_change: None,
                     retirement: None,
                     cleanup: None,
                 }),
@@ -341,6 +343,7 @@ fn retained_private_artifact_is_reported_from_typed_cleanup_independently_of_dat
         matched_rows: None,
         changed_rows: None,
         schema_change: None,
+        query_change: None,
         retirement: Some(tablecraft_runtime::SaveRetirementGuarantee::NtfsWriteThroughRename),
         cleanup: Some(SaveCleanupDisposition::RetainedArtifact),
     };

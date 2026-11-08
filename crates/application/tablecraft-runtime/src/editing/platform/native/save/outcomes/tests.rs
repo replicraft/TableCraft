@@ -376,3 +376,82 @@ fn table_rename_intent_and_recovery_keep_typed_terminal_facts() {
         NativeRecoveryQualificationError::TableRenameIntent,
     );
 }
+
+#[test]
+fn query_expression_wrappers_preserve_cancel_resource_and_nonresource_classification() {
+    let intents: [SchemaInspection<QueryExpressionIntentError>; 2] = [
+        ("inspect", QueryExpressionIntentError::Inspect),
+        ("binding", |error| {
+            QueryExpressionIntentError::Binding(NativeIntentError::Inspect(error))
+        }),
+    ];
+    for (layer, wrap) in intents {
+        for (sample, inspection, expected) in inspections() {
+            assert_eq!(
+                resource_failure(&wrap(inspection())),
+                expected,
+                "{layer}: {sample}"
+            );
+            assert_eq!(
+                resource_failure(&Cause::QueryExpressionIntent(wrap(inspection()))),
+                expected,
+                "cause {layer}: {sample}"
+            );
+        }
+    }
+    let recoveries: [SchemaInspection<QueryExpressionRecoveryError>; 4] = [
+        ("inspect", QueryExpressionRecoveryError::Inspect),
+        ("intent", |error| {
+            QueryExpressionRecoveryError::Intent(QueryExpressionIntentError::Inspect(error))
+        }),
+        ("expression", |error| {
+            QueryExpressionRecoveryError::Expression(QueryExpressionError::Inspect(error))
+        }),
+        ("proof", |error| {
+            QueryExpressionRecoveryError::Proof(NativeRecoveryQualificationError::Inspect(error))
+        }),
+    ];
+    for (layer, wrap) in recoveries {
+        for (sample, inspection, expected) in inspections() {
+            assert_eq!(
+                resource_failure(&wrap(inspection())),
+                expected,
+                "{layer}: {sample}"
+            );
+            assert_eq!(
+                resource_failure(&Cause::QueryExpressionQualification(wrap(inspection()))),
+                expected,
+                "cause {layer}: {sample}"
+            );
+        }
+    }
+    let planning: [SchemaInspection<RecoverableQueryExpressionError>; 3] = [
+        ("inspect", RecoverableQueryExpressionError::Inspect),
+        ("intent", |error| {
+            RecoverableQueryExpressionError::Intent(QueryExpressionIntentError::Inspect(error))
+        }),
+        ("expression", |error| {
+            RecoverableQueryExpressionError::Expression(QueryExpressionError::Inspect(error))
+        }),
+    ];
+    for (layer, wrap) in planning {
+        for (sample, inspection, expected) in inspections() {
+            assert_eq!(
+                resource_failure(&wrap(inspection())),
+                expected,
+                "{layer}: {sample}"
+            );
+        }
+    }
+    assert_eq!(resource_failure(&QueryExpressionError::Source), None);
+    assert_eq!(
+        resource_failure(&QueryExpressionIntentError::InvalidRecord),
+        None
+    );
+    assert_eq!(
+        resource_failure(&QueryExpressionRecoveryError::Proof(
+            NativeRecoveryQualificationError::ImageMismatch,
+        )),
+        None
+    );
+}
