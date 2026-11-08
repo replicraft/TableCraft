@@ -1,8 +1,9 @@
 //! Exact Number declarations through real retained V2 target/journal owners.
 use super::{SCOPE, budget, open};
 use crate::editing::offline::{
-    Cause, CompletionKind, SchemaChange, SessionState, VerifiedImage, plan::MutationIntent,
-    test_support::assert_completion,
+    Cause, CompletionKind, SchemaChange, SessionState, VerifiedImage,
+    plan::MutationIntent,
+    test_support::{assert_completion, assert_staged_read_state},
 };
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
@@ -48,7 +49,7 @@ fn all_number_declarations_commit_exact_sdk_images_with_schema_only_receipts() {
             .unwrap();
         assert_eq!((staged.table(), staged.column()), (table, column));
         assert!(!bundle.exists());
-        assert_eq!(fs::read(&path).unwrap(), before);
+        assert_staged_read_state(&path, &before);
 
         let (owner, receipt) = staged.apply(&bundle, &mut budget(), &|| false).unwrap();
         assert_completion(&receipt);
