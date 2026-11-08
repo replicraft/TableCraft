@@ -25,3 +25,5 @@ fn type_change_revision_exhaustion_refuses_without_changing_any_draft_state() {
     assert_eq!(draft.next_field, next_field);
     assert_eq!(draft.modified, modified);
 }
+
+mod named;

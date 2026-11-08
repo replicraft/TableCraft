@@ -122,7 +122,7 @@ introduction. The target map includes implemented and prospective owners across
 | `formats/` | `tablecraft-formats`: working inert Access package/template codecs; future `tablecraft-project`: paused native `.tcraft` serialization and internal migrations |
 | `application/` | `tablecraft-forms`: control bindings, form layout, validation and events; `tablecraft-reports`: sections, grouping, pagination and export; `tablecraft-macros`: Access visual/embedded/table data macros; `tablecraft-automation`: reusable macro/action/event host contracts independent of VBA; `tablecraft-python`: CPython/PyO3 host, versioned Python API, project environments and lifecycle; `tablecraft-edit`: future reusable typed application mutations, changesets, semantic diffs and validation coordination; `tablecraft-runtime`: application sessions, navigation, canonical commands/events and host implementations |
 | `collaboration/` | `tablecraft-crdt`: causal/conflict semantics and deterministic merge logic; `tablecraft-p2p`: transport, discovery and peer sessions; `tablecraft-sync`: replication orchestration, durable state, replay and projection |
-| `presentation/` | `tablecraft-display`: working renderer-neutral regional formatting, options and typed scalar facts, shared directly by runtime/UI/desktop; `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: headless query-design drafts and SQL conversion; form/report builders remain prospective; `tablecraft-render`: reusable headless layout, measurement and print primitives |
+| `presentation/` | `tablecraft-display`: working renderer-neutral regional formatting, options and typed scalar facts, shared directly by runtime/UI/desktop; `tablecraft-ui`: shared widgets, styling and accessibility; `tablecraft-builders`: headless query/table drafts and checked SQL conversion; form/report builders remain prospective; `tablecraft-render`: reusable headless layout, measurement and print primitives |
 | `security/` | `tablecraft-security`: trust, authorization, identity and secret-handling contracts |
 | `interfaces/` | `tablecraft-mcp`: thin rmcp-based protocol adapter over authorized shared services; application state stays with its owners |
 | `extensibility/` | `tablecraft-plugins`: capability-scoped plugin hosting |
@@ -156,6 +156,14 @@ or application host dependency. Shared UI widgets render the draft; runtime owns
 native metadata and explicit query execution. Higher-level form/report builder
 composition remains prospective, and form/report runtime behavior stays with its
 application-domain owners.
+
+`tablecraft-builders::table` owns bounded unsaved schema declarations, stable
+local field identities, generated-ID protection, explicit manual keys, typed
+field properties and validated immutable snapshots. Named-field insertion
+validates and reserves storage before publishing one field and one revision;
+a rejected name cannot leave an intermediate generated field. These identities
+never identify native records. Shared UI owns raw editing buffers and local
+record preparation; runtime owns consuming native schema reviews and saves.
 
 [VBA scope](VBA_COMPATIBILITY.md) retains existing-project preservation and inert
 dependency detection. VBA execution, authoring, editor/debugger, VBA-specific

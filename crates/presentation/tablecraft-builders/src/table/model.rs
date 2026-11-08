@@ -149,6 +149,52 @@ impl TableDraft {
             }
             suffix += 1;
         };
+        self.insert_field(kind, name, next_revision, next_field)
+    }
+
+    /// Add one explicitly named ordinary field as an atomic draft mutation.
+    /// Invalid names, duplicate names and exhausted identities leave the draft
+    /// unchanged; no temporary generated name or intermediate field is published.
+    pub fn add_named_field(
+        &mut self,
+        kind: DraftFieldType,
+        name: &str,
+    ) -> Result<DraftFieldId, TableDraftError> {
+        if kind == DraftFieldType::AutoNumberIncrement {
+            return Err(TableDraftError::ProtectedField);
+        }
+        if self.fields.len() >= MAX_DRAFT_FIELDS {
+            return Err(TableDraftError::Limit);
+        }
+        if !valid_name(name)
+            || self
+                .fields
+                .iter()
+                .any(|field| field.name.eq_ignore_ascii_case(name))
+        {
+            return Err(TableDraftError::InvalidName);
+        }
+        let next_revision = self.revision.checked_add(1).ok_or(TableDraftError::Limit)?;
+        let next_field = self
+            .next_field
+            .checked_add(1)
+            .ok_or(TableDraftError::Limit)?;
+        let mut owned = String::new();
+        owned
+            .try_reserve_exact(name.len())
+            .map_err(|_| TableDraftError::Allocation)?;
+        owned.push_str(name);
+
+        self.insert_field(kind, owned, next_revision, next_field)
+    }
+
+    fn insert_field(
+        &mut self,
+        kind: DraftFieldType,
+        name: String,
+        next_revision: u64,
+        next_field: u64,
+    ) -> Result<DraftFieldId, TableDraftError> {
         self.fields
             .try_reserve_exact(1)
             .map_err(|_| TableDraftError::Allocation)?;
