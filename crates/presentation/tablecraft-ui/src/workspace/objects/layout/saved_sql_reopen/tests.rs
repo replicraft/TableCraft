@@ -505,3 +505,116 @@ fn other_dirty_review_authority_invalidates_without_changing_its_text_revision()
     assert!(!state.matches_saved_query_sql_review(30, &old_review, 71));
     assert!(state.saved_query_sql_dirty());
 }
+
+#[test]
+fn foreign_draft_in_another_owner_refuses_without_taking_either_buffer() {
+    let mut state = state();
+    let owner = open_sql(
+        &mut state,
+        target(9, "Q"),
+        "SELECT 42 AS Answer",
+        Some("SELECT 43 AS Answer".into()),
+    );
+    let request = review(&mut state);
+    let other = open_sql(
+        &mut state,
+        target(10, "Other"),
+        "SELECT 50 AS Answer",
+        Some("SELECT 51 AS Answer".into()),
+    );
+    open_sql(
+        &mut state,
+        target(11, "Parameters"),
+        "SELECT 60 AS Answer",
+        Some("SELECT 61 AS Answer".into()),
+    );
+    let foreign = state.saved_query.sql.take().unwrap();
+    assert!(state.activate_object(&other));
+    // Inject an existing draft from another query, without changing its binding.
+    state.saved_query.sql = Some(foreign);
+    let foreign_buffers = state
+        .saved_query
+        .sql
+        .as_ref()
+        .unwrap()
+        .rebind_buffer_identity();
+    assert!(state.activate_object(&owner));
+    let owner_buffers = state
+        .saved_query
+        .sql
+        .as_ref()
+        .unwrap()
+        .rebind_buffer_identity();
+    let before = state.object_tabs();
+    assert!(!state.can_rebind_saved_query_sql_layout(&request));
+    let database = fresh(&state);
+    assert!(!state.resolve_saved_query_sql_review_after_reopen(3, &request, 70, database));
+    assert_eq!(state.object_tabs(), before);
+    assert_eq!(
+        state
+            .saved_query
+            .sql
+            .as_ref()
+            .unwrap()
+            .rebind_buffer_identity(),
+        owner_buffers
+    );
+    assert!(state.activate_object(&other));
+    assert_eq!(
+        state
+            .saved_query
+            .sql
+            .as_ref()
+            .unwrap()
+            .rebind_buffer_identity(),
+        foreign_buffers
+    );
+    assert_eq!(state.saved_query_sql().unwrap().1, "SELECT 61 AS Answer");
+}
+
+#[test]
+fn wrong_non_saved_destination_slot_refuses_before_any_owned_take() {
+    let mut state = state();
+    let owner = open_sql(
+        &mut state,
+        target(9, "Q"),
+        "SELECT 42 AS Answer",
+        Some("SELECT 43 AS Answer".into()),
+    );
+    let request = review(&mut state);
+    let table = state
+        .prepare_object_open(crate::workspace::objects::tests::table("A"))
+        .unwrap()
+        .tab;
+    assert!(state.activate_object(&owner));
+    let before = state.object_tabs();
+    let buffers = state
+        .saved_query
+        .sql
+        .as_ref()
+        .unwrap()
+        .rebind_buffer_identity();
+    let database = fresh(&state);
+    let mut prepared = capture::prepare(&mut state, &request, &database).unwrap();
+    let entry = prepared
+        .objects
+        .entries
+        .iter_mut()
+        .find(|entry| entry.tab.id == table.id)
+        .unwrap();
+    entry.session = Some(crate::workspace::objects::session::Session::empty(
+        &ObjectKind::Sql,
+    ));
+    assert!(!publication::publish(&mut state, prepared, database));
+    assert_eq!(state.object_tabs(), before);
+    assert_eq!(
+        state
+            .saved_query
+            .sql
+            .as_ref()
+            .unwrap()
+            .rebind_buffer_identity(),
+        buffers
+    );
+    assert!(state.matches_saved_query_sql_review(3, &request, 70));
+}

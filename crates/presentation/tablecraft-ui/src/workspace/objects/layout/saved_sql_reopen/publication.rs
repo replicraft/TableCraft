@@ -1,5 +1,5 @@
 //! Collect all typed source/destination slots before the infallible move.
-use super::{capture::Prepared, catalog};
+use super::{boundary, capture::Prepared, catalog};
 use crate::workspace::ObjectKind;
 use crate::{
     Database,
@@ -34,6 +34,7 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
         .is_none_or(|old| old.document_revision != old_revision)
         || objects.entries.len() != state.objects.entries.len()
         || objects.active != state.objects.active
+        || !boundary::staged(state, &objects, &active)
         || !objects
             .entries
             .iter()

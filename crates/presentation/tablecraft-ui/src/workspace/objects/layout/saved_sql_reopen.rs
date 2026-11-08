@@ -1,5 +1,6 @@
 //! Atomic UI publication after an explicitly host-proven query-only replacement.
 mod admission;
+mod boundary;
 mod capture;
 mod catalog;
 mod publication;
@@ -46,6 +47,7 @@ impl State {
             })
             .count();
         target_count == 1
+            && boundary::current(self)
             && self.objects.revision == Some(database.document_revision)
             && !self.objects.entries.is_empty()
             && self.objects.entries.len() <= MAX_OBJECTS
