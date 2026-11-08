@@ -167,6 +167,7 @@ impl Desktop {
                 .release_number_column_review(&host.request, generation);
             self.editing.number_column = None;
             self.state.busy = false;
+            self.restore_number_column_close_after_refusal();
             return;
         }
         let witness = capability.reopen_witness();
@@ -255,6 +256,7 @@ impl Desktop {
         self.editing.number_column = None;
         self.state.error = Some(message);
         self.state.busy = false;
+        self.restore_number_column_close_after_refusal();
     }
 
     pub(in crate::workspace) fn cancel_number_column_review(&mut self, request_id: u64) {

@@ -80,6 +80,17 @@ impl Desktop {
     }
 
     pub(super) fn activate_object(&mut self, tab: ObjectTab) {
+        if self.state.active_object().as_ref() == Some(&tab) {
+            return;
+        }
+        if self.state.number_column_open() {
+            if self.state.can_request_number_column_transition(&tab) {
+                let _ = self.guard_table_draft_action(
+                    super::table_drafts::DeferredDraftAction::ActivateObject(tab),
+                );
+            }
+            return;
+        }
         if self.editing.has_save()
             || !self.state.can_activate_object(&tab)
             || !self.reserve_filter_parking()
@@ -100,6 +111,14 @@ impl Desktop {
     }
 
     pub(super) fn close_object(&mut self, tab: ObjectTab) {
+        if self.state.number_column_open() {
+            if self.state.can_request_number_column_transition(&tab) {
+                let _ = self.guard_table_draft_action(
+                    super::table_drafts::DeferredDraftAction::CloseObject(tab),
+                );
+            }
+            return;
+        }
         if self.editing.has_save() || !self.state.can_close_object(&tab) {
             return;
         }

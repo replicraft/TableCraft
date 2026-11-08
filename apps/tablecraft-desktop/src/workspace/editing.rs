@@ -306,6 +306,9 @@ impl Desktop {
     }
 
     pub(super) fn cancel_current_save(&mut self) {
+        if self.cancel_current_number_column_operation() {
+            return;
+        }
         if self.cancel_query_definition_operation() {
             return;
         }

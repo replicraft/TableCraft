@@ -1,4 +1,5 @@
 //! Retain a requested host transition while shared UI confirms draft disposal.
+mod number_column;
 use super::Desktop;
 use egui::{Context, ViewportCommand};
 use tablecraft_runtime::Command;
@@ -8,6 +9,8 @@ pub(super) enum DeferredDraftAction {
     Open(Box<Command>),
     Create(CreationRequest),
     CloseWindow,
+    CloseObject(tablecraft_ui::ObjectTab),
+    ActivateObject(tablecraft_ui::ObjectTab),
 }
 
 impl Desktop {
@@ -26,6 +29,7 @@ impl Desktop {
             drop(action);
             return None;
         }
+        let action = self.defer_number_column_transition(action)?;
         let confirmation = if self.state.has_modified_saved_query_sql() {
             self.state.request_saved_query_sql_close_all()
         } else if self.state.has_modified_table_drafts() {
@@ -56,6 +60,16 @@ impl Desktop {
             DeferredDraftAction::Open(command) => self.open_request(*command),
             DeferredDraftAction::Create(request) => self.create_database(request),
             DeferredDraftAction::CloseWindow => context.send_viewport_cmd(ViewportCommand::Close),
+            DeferredDraftAction::CloseObject(original) => {
+                if let Some(tab) = self.number_column_transition_tab(&original) {
+                    self.close_object(tab);
+                }
+            }
+            DeferredDraftAction::ActivateObject(original) => {
+                if let Some(tab) = self.number_column_transition_tab(&original) {
+                    self.activate_object(tab);
+                }
+            }
         }
     }
 
@@ -80,7 +94,10 @@ impl Desktop {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             return;
         }
-        if self.state.has_modified_table_drafts() || self.state.has_modified_saved_query_sql() {
+        if self.state.has_modified_table_drafts()
+            || self.state.has_modified_saved_query_sql()
+            || self.state.number_column_open()
+        {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             let _ = self.guard_table_draft_action(DeferredDraftAction::CloseWindow);
         }

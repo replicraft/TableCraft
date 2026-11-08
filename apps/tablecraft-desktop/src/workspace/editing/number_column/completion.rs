@@ -48,6 +48,20 @@ fn reopen_facts(outcome: SaveOutcome) -> Result<(bool, Option<SaveReceipt>), ()>
 }
 
 impl Desktop {
+    pub(in crate::workspace) fn cancel_current_number_column_operation(&mut self) -> bool {
+        let Some(host) = &self.editing.number_column else {
+            return false;
+        };
+        if let Some(identity) = host.identity {
+            self.state.cancel_number_column_operation(identity);
+            self.number_column_save_command(identity, NumberColumnSaveCommand::Cancel);
+        } else {
+            let id = host.request_id;
+            self.cancel_number_column_review(id);
+        }
+        true
+    }
+
     pub(in crate::workspace) fn note_number_column_cancellation(&mut self, save_id: u64) {
         if let Some(host) = self.editing.number_column.as_mut().filter(|host| {
             host.identity
@@ -195,6 +209,7 @@ impl Desktop {
             self.state
                 .release_number_column_save(&host.request, identity);
             self.editing.number_column = None;
+            self.restore_number_column_close_after_refusal();
         }
     }
 
@@ -291,6 +306,7 @@ impl Desktop {
         self.state.busy = false;
         self.pending = PendingOperation::Read;
         self.editing.number_column = None;
+        self.resume_after_number_column = true;
         self.editing.clear_review();
         self.clear_query_parameters();
         if let Some(open) = self.state.active_object_load() {

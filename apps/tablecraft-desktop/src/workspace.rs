@@ -188,6 +188,7 @@ pub(super) struct Desktop {
     table_rename: Option<TableRenameHost>,
     resume_after_table_creation: bool,
     resume_after_query_definition: bool,
+    resume_after_number_column: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
@@ -224,6 +225,7 @@ impl Desktop {
             table_rename: None,
             resume_after_table_creation: false,
             resume_after_query_definition: false,
+            resume_after_number_column: false,
             close_after_first_record: None,
             editing,
             recovery: None,
@@ -876,7 +878,8 @@ impl eframe::App for Desktop {
             }
             let table_transition = std::mem::take(&mut self.resume_after_table_creation);
             let query_transition = std::mem::take(&mut self.resume_after_query_definition);
-            if table_transition || query_transition {
+            let number_transition = std::mem::take(&mut self.resume_after_number_column);
+            if table_transition || query_transition || number_transition {
                 self.resume_table_draft_action(ctx);
             }
         }
@@ -1029,6 +1032,9 @@ impl eframe::App for Desktop {
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
                 Action::SavedQuerySqlClose { result } => {
                     self.finish_saved_query_sql_close(result, ui.ctx());
+                }
+                Action::NumberColumnClose { result } => {
+                    self.finish_number_column_close(result, ui.ctx())
                 }
                 Action::ReviewNumberColumn { request } => self.save_number_column(request),
                 Action::RetryNumberColumnInspection { tab } => {
