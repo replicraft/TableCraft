@@ -47,7 +47,7 @@ pub(crate) fn build(
     let mut placement = Plan::new();
     // The submitted order is part of this new plan purpose. Original key/order
     // and source ordinals are independent; do not silently sort physical writes.
-    for request in 0..edits.len() {
+    for (request, edit) in edits.iter().enumerate() {
         check(budget, cancelled)?;
         budget.charge(Resource::Steps, roots.selected.len() as u64)?;
         let root = roots
@@ -61,7 +61,7 @@ pub(crate) fn build(
         let unchanged = record::replace(
             &schema,
             &root.final_record.data,
-            edits[request].expected,
+            edit.expected,
             budget,
             cancelled,
         )
@@ -72,7 +72,7 @@ pub(crate) fn build(
         let record = record::replace(
             &schema,
             &root.final_record.data,
-            edits[request].replacement,
+            edit.replacement,
             budget,
             cancelled,
         )
