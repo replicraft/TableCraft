@@ -1,4 +1,5 @@
 //! Source-free visual scenarios, without a runtime review, database or native save.
+#[path = "saved_sql/status.rs"]
 mod status;
 use super::LAYOUT_SETTLE_STEPS;
 use egui::{Shape, accesskit::Role};
