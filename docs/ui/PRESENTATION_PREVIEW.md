@@ -23,7 +23,7 @@ navigation collapse button share the same label. The renderer now selects the
 upper Ribbon command from the matching accessible buttons; the corrected frame
 passes. This changes only the resource-free interaction selector.
 
-The actual private datasheet reference, a 1920×1165 Windows/VirtualBox capture
+The actual private datasheet reference, a 1920×1141 Windows/VirtualBox capture
 with unknown scale, was reopened for the tab, navigation and grid composition.
 It does not depict Create → Table or the Save As dialog. Their workflow follows
 the [creation contract](DATABASE_CREATION.md); dialog styling and dark mode remain

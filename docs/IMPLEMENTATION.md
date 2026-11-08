@@ -1,14 +1,53 @@
 # Implementation status
 
+## Repeated table creation — 7 November 2026
+
+Repeated creation extends the qualified ACE 16 append ledger from one
+existing user table to one through eighteen, with at most nineteen after the next
+save. It still requires the closed catalog/allocation layout and each table's
+qualified definition, single DATA page and primary root. Existing data, row/index
+membership and opaque bytes remain part of native source qualification. A
+nineteen-table source cannot accept another append in this current base-zero
+global FREE bitmap profile. Nineteen is not an Access file-format table limit:
+adding table twenty needs qualified global FREE bitmap extension and broader
+native growth. UI object-session limits remain separate; arbitrary imported DDL
+and general ALTER are not admitted.
+
+The existing runtime-selected profile and reviewed SaveWorker route remain in
+use. Create → Table, shared `TableN` suggestions, duplicate-name correction,
+retained SQL/table tabs and separate first-record Review/Apply do not gain a
+second path. The updated acceptance scenarios create tables three and four,
+insert each first record separately, reopen a fresh host and query all four
+saved tables. Independent source fixtures cover two populated tables, eighteen
+existing tables and the nineteen-table capacity refusal.
+
+The current local batch passes 19 engine candidate/advisory cases, five TCAT
+intent cases, six native V2 recovery cases, 19 offline adapter tests, all 149
+runtime tests and all 111 desktop tests. The connected headless desktop scenario creates tables
+three and four through the shared service, separately inserts their first records
+and queries all four tables after dropping the original host. Strict lint passes
+for the selected six packages' library/test targets with all features. Windows
+x64 and ARM64 all-target/all-feature checks pass for runtime and desktop,
+including the new tests and dependencies. This is not a refreshed full-workspace
+cross-target result or native Windows/Linux execution.
+
+An initial desktop batch exposed a test fixture that correctly failed automatic
+row browsing: its owned DATA map claimed a page beyond EOF. The readable source
+that refuses writes now uses the established primary-key corruption fixture;
+bad DATA-map refusal remains covered separately. The original failure and
+completed follow-ups remain in ignored `.cache/gui-repeated-*-20261107.log`
+files. The earlier two-table evidence below retains its own scope; neither batch
+establishes native Access parity. See [the working scope](ui/DATABASE_CREATION.md#creating-a-second-table).
+
 ## Qualified second-table creation — 7 November 2026
 
-Create → Table now opens an unsaved Datasheet draft for either the canonical
-blank or a qualified existing one-table ACE 16 source. Runtime publishes a
-revision-bound source fact; creation review and the consuming save still validate
+At this checkpoint, Create → Table opened an unsaved Datasheet draft for either
+the canonical blank or a qualified existing one-table ACE 16 source. Runtime
+publishes a revision-bound source fact; creation review and the consuming save still validate
 the exact source, declarations and original bytes. A successful added-table
 receipt and complete-image reopen preserve the existing table while giving the
 new table fresh source/row identities. A third table, unqualified layouts and
-arbitrary imported database DDL remain unavailable.
+arbitrary imported database DDL remained unavailable at that checkpoint.
 
 The draft and Save prompt share a suggested unused `TableN` name from the loaded
 table/query names. This is presentation guidance, not native collation or save

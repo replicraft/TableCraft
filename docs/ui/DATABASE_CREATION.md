@@ -136,13 +136,19 @@ do not capture activation of the Create command.
 
 ### Creating a second table
 
-Create > Table is enabled for a qualified one-table ACE 16 source with the
-supported catalog, allocation, row and primary-index layout. Qualification uses
-actual immutable captured bytes, not a filename, header version, remembered
-creator flag or the mere presence of one user table. See the
+The qualified append workflow now supports repeated creation. Its source ledger
+admits one through eighteen existing user tables and at most nineteen after an
+append, while retaining the supported catalog,
+allocation, single-DATA-page and primary-index layout for every table. These
+limits describe the current base-zero global FREE bitmap profile, not an Access
+file-format table limit. Adding table twenty requires qualified extension of the
+global FREE bitmap and broader native growth; that work remains unfinished.
+Qualification uses actual immutable captured bytes, not a filename, header
+version, remembered creator flag or the mere number of user tables. See the
 [append-table source profile](../access/writes/ADD_TABLE_PERSISTENCE.md) for the
-native limits. Unqualified imported layouts, additional object/payload roles and
-a third table remain unavailable; ordinary supported reads are unaffected.
+native limits. Unqualified imported layouts and additional object/payload roles
+remain unavailable; ordinary supported reads are unaffected. UI object-session
+and other resource limits continue to apply independently.
 
 The runtime publishes one table-creation availability fact for the opened source
 revision. Shared UI accepts only a matching fact and retains the same Save,
@@ -166,23 +172,39 @@ Successful schema Save preserves the old table and restores existing table tabs
 and unsaved SQL text. Restored objects use the new document revision and fresh
 reads; old row handles and cached native capabilities are not reused. A pending
 record for the new table still follows the separate Review/Apply continuation
-below. After the second schema is committed, the source fact disables another
-Create > Table because the current append profile does not admit a third table.
+below. In the repeated ledger, a successful qualifying append can leave Create >
+Table available for another table. At nineteen user tables the native capacity
+fact disables further creation without preparing another schema operation.
 
-A connected headless desktop scenario creates `Table1` with a record, opens an
-unsaved SQL query, creates `Table2`, refuses a duplicate `Table1` name without a
-write, corrects it and separately saves the retained first record. Fresh reads
-retain the original row and new row; old source/row bindings refuse reuse and
-both table tabs and SQL text survive. The affected local batch passes all 427
-shared UI, 111 desktop and 149 runtime tests. Six-target cross-checks compile these
-affected packages; native Windows/Linux execution and Access comparison remain
-unqualified. These current observations are separate from the historical counts
-elsewhere in this document.
+At the completed second-table checkpoint, a connected headless desktop scenario
+created `Table1` with a record, opened an unsaved SQL query, created `Table2`,
+refused a duplicate `Table1` name without a write, corrected it and separately saved the retained first record. Fresh reads
+retained the original row and new row; old source/row bindings refused reuse and
+both table tabs and SQL text survived. That local batch passed all 427 shared UI,
+111 desktop and 149 runtime tests. Corresponding six-target cross-checks
+compiled those affected packages; native Windows/Linux execution and Access
+comparison remain unqualified. Those observations do not establish a pass for
+the repeated-creation extension.
 
 The focused desktop follow-up also runs actual SQL queries after dropping the
 original host and reopening the file. Its SQL editor reads the old value `17`
 from `Table1` and the exact inserted text `  Ada  ` from `Table2`, independently
 of the previous host's display caches.
+
+The updated repeated-creation scenarios retain those duplicate-name, raw-input,
+SQL and stale-handle checks, then create `Table3` and `Table4` through the same
+actual command and separately reviewed schema/record saves. A fresh host queries
+all four tables. Runtime tests reuse one SaveWorker across the repeated schemas
+and records, while availability checks distinguish the populated two-table
+source, eighteen-table source and valid sixty-four-page nineteen-table refusal.
+The completed repeated-creation batch passes all 149 runtime and 111 desktop
+tests, plus 19 engine candidate/advisory, five TCAT, six native V2 and 19 offline
+adapter cases. Strict library/test lint passes for the selected six packages with
+all features. Windows x64/ARM64 runtime and desktop all-target/all-feature checks
+include the new tests and dependencies. These are scoped headless/compile results,
+not a full-workspace cross-target refresh, native Windows/Linux execution or
+Access comparison. The [current implementation record](../IMPLEMENTATION.md#repeated-table-creation--7-november-2026)
+separates the initial failed fixture case and corrected passing batch.
 
 Fresh Table Design has its own key-selection workflow. Microsoft's
 [Table Designer procedure](https://support.microsoft.com/en-us/access/training/video-build-tables-with-the-table-designer)

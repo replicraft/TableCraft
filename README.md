@@ -91,8 +91,9 @@ packaging remain in development. Interrupted TableCraft saves have an explicit
 File → New → Blank database creates an unencrypted ACE 16 ACCDB. Windows
 creation uses local NTFS and still requires runtime qualification.
 Existing destinations are never replaced. The new file opens with an unsaved
-`Table1` draft. Create → Table also adds a second table to a qualified existing
-one-table ACE 16 source; other layouts and a third table remain unavailable.
+`Table1` draft. Create → Table can repeatedly add tables within qualified ACE 16
+layouts, currently through nineteen user tables. That is an implementation
+boundary; broader native growth and general schema changes remain in development.
 The draft suggests an unused `TableN` name. Names, supported types and bounded field
 properties can be edited in the initial table's Design view. Fields can also be
 named in their headers, and a first record can be entered before saving the table.
