@@ -9,15 +9,15 @@ use super::{
 use crate::CreatedTableReopen;
 #[cfg(all(
     feature = "offline-edit",
-    any(target_os = "macos", target_os = "linux", windows)
-))]
-use crate::editing::DocumentEdits;
-#[cfg(all(
-    feature = "offline-edit",
     feature = "ace16-create",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 use crate::editing::TableCreationProfile;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+use crate::editing::state::DocumentEdits;
 #[cfg(feature = "ace16-create")]
 use crate::{CreationOutcome, CreationReport};
 #[cfg(feature = "offline-edit")]

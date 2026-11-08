@@ -1,6 +1,12 @@
 //! Explicit normal native editing; drafts never hold an offline file lease.
 mod deleting;
 mod query_update;
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
+#[path = "state/native.rs"]
+pub(crate) mod state;
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
+#[path = "state/unsupported.rs"]
+pub(crate) mod state;
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 #[cfg(feature = "ace16-create")]
 mod table_creation;
@@ -36,21 +42,10 @@ pub use save::{
 };
 
 use crate::{Cell, scalar_input::InputHint};
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use bytes::Bytes;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use std::sync::{
-    Arc,
-    atomic::{AtomicBool, Ordering},
-};
 use std::{
     ffi::OsString,
     path::{Path, PathBuf},
 };
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use tablecraft_ace::RecoverableNativeEditPlan;
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use tablecraft_core::values::Value;
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct EditTarget {
@@ -88,49 +83,7 @@ pub struct EditReview {
 /// A real normal native plan. Only a successful source-bound review can issue it.
 /// It is consumed by SaveWorker, never fabricated from a presentation DTO.
 pub struct ReviewedEdit {
-    state: Box<ReviewedState>,
-}
-
-struct ReviewedState {
-    path: PathBuf,
-    target: EditTarget,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    replacement: Value,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    plan: RecoverableNativeEditPlan,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    valid: Arc<AtomicBool>,
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-pub(crate) struct DocumentEdits {
-    path: PathBuf,
-    original: Bytes,
-    valid: Arc<AtomicBool>,
-    draft: Option<(u64, EditTarget)>,
-    insert_draft: Option<(u64, InsertTarget)>,
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-impl DocumentEdits {
-    pub(crate) fn new(path: PathBuf, original: Bytes) -> Self {
-        Self {
-            path,
-            original,
-            valid: Arc::new(AtomicBool::new(true)),
-            draft: None,
-            insert_draft: None,
-        }
-    }
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-impl Drop for DocumentEdits {
-    fn drop(&mut self) {
-        self.valid.store(false, Ordering::Release);
-    }
+    state: Box<state::ReviewedState>,
 }
 
 /// Reserved durable sibling used by the desktop host and restart guard.

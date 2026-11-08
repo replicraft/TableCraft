@@ -3,13 +3,13 @@
 mod native;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub use native::SaveWorker;
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
+mod unsupported;
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
+pub use unsupported::SaveWorker;
 
 use super::ReviewedEdit;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-use super::{ReviewedDelete, ReviewedInsert, ReviewedQueryUpdate};
 use std::fmt;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-use std::path::PathBuf;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveOperation {
@@ -194,96 +194,3 @@ impl<T> fmt::Display for SaveStartError<T> {
 }
 
 impl<T> std::error::Error for SaveStartError<T> {}
-
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-pub struct SaveWorker;
-
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-impl SaveWorker {
-    #[cfg(feature = "ace16-create")]
-    pub const fn supports_table_creation() -> bool {
-        false
-    }
-
-    pub fn new(_repaint: impl Fn() + Send + Sync + 'static) -> Self {
-        Self
-    }
-    pub fn start(&self, reviewed: ReviewedEdit, _bundle: PathBuf) -> Result<u64, SaveStartError> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(reviewed),
-        })
-    }
-    pub fn start_insert(
-        &self,
-        reviewed: ReviewedInsert,
-        _bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<ReviewedInsert>> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(reviewed),
-        })
-    }
-    pub fn start_delete(
-        &self,
-        reviewed: ReviewedDelete,
-        _bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<ReviewedDelete>> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(reviewed),
-        })
-    }
-    pub fn start_query_update(
-        &self,
-        reviewed: ReviewedQueryUpdate,
-        _bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<ReviewedQueryUpdate>> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(reviewed),
-        })
-    }
-    #[cfg(feature = "ace16-create")]
-    pub fn start_table_creation(
-        &self,
-        reviewed: super::ReviewedTableCreation,
-        _bundle: PathBuf,
-    ) -> Result<u64, SaveStartError<super::ReviewedTableCreation>> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(reviewed),
-        })
-    }
-    pub fn poll(&self) -> Option<SaveReport> {
-        None
-    }
-    pub fn cancel(&self, _id: u64) -> bool {
-        false
-    }
-    pub fn acknowledge(&self, _id: u64) -> bool {
-        false
-    }
-    pub fn start_reserved_recovery(&self, source: PathBuf) -> Result<u64, SaveStartError<PathBuf>> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: Some(source),
-        })
-    }
-
-    pub fn recover(&self, _id: u64) -> Result<u64, SaveStartError> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: None,
-        })
-    }
-    pub fn release(&self, _id: u64) -> Result<u64, SaveStartError> {
-        Err(SaveStartError {
-            kind: SaveStartFailure::UnsupportedPlatform,
-            reviewed: None,
-        })
-    }
-    pub fn is_busy(&self) -> bool {
-        false
-    }
-}

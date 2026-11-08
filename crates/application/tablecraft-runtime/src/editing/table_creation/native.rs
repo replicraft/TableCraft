@@ -1,8 +1,7 @@
 mod declaration;
 
-use super::{
-    CreatedTableReopen, ReviewedTableCreation, ReviewedTableCreationState, TableCreationProfile,
-};
+use super::{CreatedTableReopen, ReviewedTableCreation};
+use crate::editing::SaveSchemaChange;
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -10,12 +9,37 @@ use crate::{
     editing::{EditError, ids::issue_id},
 };
 use bytes::Bytes;
-use std::sync::Arc;
-use tablecraft_ace::NativeImage;
+use std::sync::{Arc, atomic::AtomicBool};
+use tablecraft_ace::{FirstTableDefinition, NativeImage};
 use tablecraft_builders::table::TableDraftSnapshot;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const REOPEN_COPY_CHUNK_BYTES: usize = 16 * 1024;
+
+pub(in crate::editing) struct State {
+    pub(in crate::editing) id: u64,
+    pub(in crate::editing) reopen: Arc<CreatedTableReopen>,
+    pub(in crate::editing) original: Bytes,
+    pub(in crate::editing) definition: FirstTableDefinition,
+    pub(in crate::editing) valid: Arc<AtomicBool>,
+    pub(in crate::editing) profile: TableCreationProfile,
+}
+
+/// Captured from the current document's source qualification, never caller input.
+#[derive(Clone, Copy)]
+pub(crate) enum TableCreationProfile {
+    First,
+    Added,
+}
+
+impl TableCreationProfile {
+    pub(in crate::editing) fn schema_change(self, column_count: usize) -> SaveSchemaChange {
+        match self {
+            Self::First => SaveSchemaChange::FirstTableCreated { column_count },
+            Self::Added => SaveSchemaChange::TableAdded { column_count },
+        }
+    }
+}
 
 impl Document {
     pub(crate) fn review_table_creation(
@@ -54,7 +78,7 @@ impl Document {
         table.try_reserve_exact(snapshot.table_name().len())?;
         table.push_str(snapshot.table_name());
         work.charge_allocation(1, size_of::<CreatedTableReopen>() as u64)?;
-        work.charge_allocation(1, size_of::<ReviewedTableCreationState>() as u64)?;
+        work.charge_allocation(1, size_of::<State>() as u64)?;
         check(cancelled)?;
         let reopen = Arc::new(CreatedTableReopen {
             path: self.edits.path.clone(),
@@ -66,7 +90,7 @@ impl Document {
             schema_change: profile.schema_change(columns),
         });
         let capability = ReviewedTableCreation {
-            state: Box::new(ReviewedTableCreationState {
+            state: Box::new(State {
                 id: issue_id()?,
                 reopen,
                 original: self.edits.original.clone(),

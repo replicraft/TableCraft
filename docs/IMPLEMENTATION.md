@@ -28,11 +28,13 @@ Six offscreen frames were inspected; no native window was launched. The
 new warning remains an adaptation, not a screenshot-qualified Access replica.
 Native Access and non-macOS execution remain separate qualification work.
 
-The preceding platform cleanup groups UPDATE's native/unsupported implementation
-behind module guards. Common facts and inspected-source checks remain shared;
-FreeBSD's unsupported editing branch compiles under strict lint without expanding
-its native save support. Next query work includes declared action parameters,
-append/DELETE actions and the remaining native schema/query-definition workflows.
+Platform selection now also groups insertion, deletion, table creation, retained
+editing state and the unsupported save worker behind module guards. Shared
+presentation facts, accessors and terminal outcomes remain available on every
+compiled host; native planning and filesystem ownership remain in the selected
+implementation. This is an organizational change, not new platform support.
+Next query work includes declared action parameters, append/DELETE actions and
+the remaining native schema/query-definition workflows.
 
 ## Runtime-reviewed SQL UPDATE saves — 8 November 2026
 

@@ -1,18 +1,18 @@
 //! Source-bound table creation review; no file lease is held for presentation.
+use super::SaveSchemaChange;
+use bytes::Bytes;
+use std::{
+    path::{Path, PathBuf},
+    sync::Arc,
+};
+
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod native;
-
-use super::SaveSchemaChange;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-use crate::{Error, Response, document::Document};
-use bytes::Bytes;
+#[path = "table_creation/unsupported.rs"]
+mod native;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use std::sync::atomic::AtomicBool;
-use std::{path::Path, path::PathBuf, sync::Arc};
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use tablecraft_ace::FirstTableDefinition;
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-use tablecraft_builders::table::TableDraftSnapshot;
+pub(crate) use native::TableCreationProfile;
 
 /// Complete expected content for a fresh snapshot after an acknowledged save.
 /// This grants no mutation, retry, file cleanup or physical identity authority.
@@ -59,38 +59,7 @@ impl CreatedTableReopen {
 /// Issued only after complete source and native declaration admission.
 /// The consuming worker reconstructs the same operation against its held file.
 pub struct ReviewedTableCreation {
-    pub(super) state: Box<ReviewedTableCreationState>,
-}
-
-pub(super) struct ReviewedTableCreationState {
-    pub(super) id: u64,
-    pub(super) reopen: Arc<CreatedTableReopen>,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    pub(super) original: Bytes,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    pub(super) definition: FirstTableDefinition,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    pub(super) valid: Arc<AtomicBool>,
-    #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-    pub(super) profile: TableCreationProfile,
-}
-
-/// Captured from the current document's source qualification, never caller input.
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[derive(Clone, Copy)]
-pub(crate) enum TableCreationProfile {
-    First,
-    Added,
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-impl TableCreationProfile {
-    pub(super) fn schema_change(self, column_count: usize) -> SaveSchemaChange {
-        match self {
-            Self::First => SaveSchemaChange::FirstTableCreated { column_count },
-            Self::Added => SaveSchemaChange::TableAdded { column_count },
-        }
-    }
+    pub(super) state: Box<native::State>,
 }
 
 impl ReviewedTableCreation {
@@ -104,17 +73,5 @@ impl ReviewedTableCreation {
 
     pub fn reopen_witness(&self) -> Arc<CreatedTableReopen> {
         Arc::clone(&self.state.reopen)
-    }
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-impl Document {
-    pub(crate) fn review_table_creation(
-        &mut self,
-        _document_revision: u64,
-        _snapshot: &TableDraftSnapshot,
-        _cancelled: &dyn Fn() -> bool,
-    ) -> Result<Response, Error> {
-        Err(super::EditError::UnsupportedPlatform.into())
     }
 }
