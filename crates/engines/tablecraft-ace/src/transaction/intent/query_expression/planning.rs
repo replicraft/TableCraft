@@ -112,7 +112,7 @@ impl RecoverableNativeQueryExpressionPlan {
         self.intent
             .verify_before(fresh.as_bytes(), proof, cancelled)?;
         let plan = self.intent.reconstruct(fresh, native, cancelled)?;
-        self.intent.verify_plan(&plan, proof, cancelled)?;
+        self.intent.verify_plan(&plan, native, cancelled)?;
         equal_image(plan.before_bytes(), self.before_bytes(), proof, cancelled)?;
         equal_image(plan.after_bytes(), self.after_bytes(), proof, cancelled)?;
         check(proof, cancelled)?;
