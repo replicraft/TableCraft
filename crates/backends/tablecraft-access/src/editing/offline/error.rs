@@ -4,7 +4,7 @@ use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
-    FirstTableError, FirstTableIntentError,
+    DefaultZeroAddColumnIntentError, FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError, QueryExpressionIntentError,
@@ -66,6 +66,10 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddColumnIntent(AddColumnIntentError),
+    /// Explicit-zero declaration, source or resizable reconstruction failed.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    DefaultZeroAddColumnIntent(DefaultZeroAddColumnIntentError),
     /// This retained capability does not permit the requested transition.
     #[error("offline session state does not permit this operation")]
     InvalidState,

@@ -251,3 +251,6 @@ fn malformed_tcac_records_never_fall_back_to_another_action_decoder() {
         ));
     }
 }
+
+#[path = "default_zero_tests.rs"]
+mod default_zero_tests;
