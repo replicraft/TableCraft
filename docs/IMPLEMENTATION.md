@@ -19,15 +19,20 @@ copy follow-up passes eight native parallel cases, eight CLI encryption cases an
 strict engine/CLI lint without repeating the unchanged application suites.
 Packaging checks pass 19 cases. Windows/Linux engine and exact host memory-module
 cross-checks pass on x64 and ARM64; full CLI cross-builds need missing SQLite C
-cross-compilers. Native Windows/Access execution remains unqualified. End-to-end
-benchmark records are being consolidated separately.
+cross-compilers. Native Windows/Access execution remains unqualified. [End-to-end benchmark records](testing/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
+552 samples across 96 workloads and complete decoded-output comparisons. Wall
+time is noisy and overlapped packaging metadata work; the report makes no
+universal or isolated-crypto speedup claim.
 
 [Persisted table rename](access/writes/TABLE_RENAME.md) now connects the native
 plan and original recovery intent through shared offline services to navigation
 and desktop saves. Its unindexed, single-table, Name AutoCorrect OFF source
 profile does not admit current ordinary creator layouts. Broader creator/indexed
 qualification, explicit database options and remaining saved table/column CRUD
-are still required. No general CRUD completion is claimed. Web and the broader
+are still required. An explicit retained-index rename planner is now checkpointed
+with independent fixtures, but compilation/qualification is pending. It remains
+unpublished and outside the existing journal/UI admission; frozen TCRN0001 stays
+unindexed. No general CRUD completion is claimed. Web and the broader
 coordinated localization pass remain later delivery gates.
 
 ## Native library refactors — 8 November 2026

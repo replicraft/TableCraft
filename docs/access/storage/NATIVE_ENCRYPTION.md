@@ -343,8 +343,10 @@ success reaches the unchanged synchronization/no-clobber publication. This
 large verification batch passes, including the eight native parallel cases,
 eight CLI encryption cases, failure/cancellation checks and large-file round
 trips. The envelope-copy follow-up also passes those focused cases and strict
-engine/CLI lint. End-to-end measurements are being consolidated; no final
-streaming speedup or native Access compatibility claim is made here. Existing Agile integrity
+engine/CLI lint. [End-to-end measurements](../../testing/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
+all samples and decoded-output checks. Severe wall-time variance and concurrent
+packaging metadata work limit causal speedup claims; native Access compatibility
+is not established by these measurements. Existing Agile integrity
 HMAC authentication remains unimplemented.
 
 ### Explicit parallel Agile removal
