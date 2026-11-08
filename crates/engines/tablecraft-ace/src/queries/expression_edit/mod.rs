@@ -15,14 +15,16 @@ use thiserror::Error;
 /// Refusal from the separate native topology-preserving expression profile.
 #[derive(Debug, Error)]
 pub enum QueryExpressionEditsError {
+    /// Native inspection, resource accounting or cancellation failed.
     #[error(transparent)]
     Inspect(#[from] InspectError),
+    /// The source, payload carriers or physical placement are outside this profile.
     #[error("native SELECT expression source or storage is unsupported")]
     Source,
+    /// A requested fragment or SELECT topology failed semantic admission.
     #[error("native SELECT expression request or fragment topology is unsupported")]
     Definition,
-    #[error("native SELECT expression storage capacity is unsupported")]
-    Capacity,
+    /// The complete candidate failed identity, ownership or preservation checks.
     #[error("native SELECT expression preservation proof failed")]
     Preservation,
 }
@@ -35,9 +37,13 @@ impl From<LimitError> for QueryExpressionEditsError {
 
 /// One exact original native expression slot; no ROW address or final bytes.
 pub struct QueryFragmentExpressionEdit<'a> {
+    /// Existing projection or WHERE fragment attribute.
     pub attribute: QueryAttribute,
+    /// Exact opaque native Order bytes, independent of physical ROW placement.
     pub order: [u8; size_of::<u32>()],
+    /// Exact original expression required for source-bound matching.
     pub expected: &'a str,
+    /// Proposed expression metadata; this operation does not execute it.
     pub replacement: &'a str,
 }
 
@@ -50,6 +56,7 @@ pub struct OwnedQueryFragmentExpressionEdit {
 }
 
 impl OwnedQueryFragmentExpressionEdit {
+    /// Borrow the sealed original semantic request without cloning its text.
     pub fn as_request(&self) -> QueryFragmentExpressionEdit<'_> {
         QueryFragmentExpressionEdit {
             attribute: self.attribute,
