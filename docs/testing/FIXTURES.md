@@ -82,6 +82,18 @@ pins every image, source, checker and JAR. No third-party database fixture or
 implementation is copied. These are independent read observations, not native
 Access mutation, indexed lookup, first-insertion, recovery or platform evidence.
 
+## Repository-authored database-option insertion reference
+
+The [explicit OFF reference](ACE16_DATABASE_OPTIONS_SOURCES.md) uses two fresh
+TableCraft-created originals and original repository-authored Java/Python recipes.
+The reviewed Jackcess artifact retains its existing Apache-2.0 provenance; no
+third-party database or implementation source is copied. SDK role/property writes,
+their earlier missing-role failure and an independently authored complete-image
+model are pinned in the [result record](results/ace16-database-options-sdk-reference-2026-11-08.json).
+Generated input/output databases and compiled helper artifacts remain ignored.
+The evidence does not qualify a native writer, NameMap behavior, enabled settings,
+Windows Access, recovery, frontend saves or composition with add-table/rename.
+
 ## Repository-authored append-table fixture
 
 `tablecraft-testkit::fixtures::access::canonical_add_table` independently builds

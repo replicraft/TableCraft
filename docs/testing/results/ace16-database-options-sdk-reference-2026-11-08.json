@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "status": "SDK_WRITTEN_EXPLICIT_OFF_ROLE_INSERTION_AND_INDEPENDENT_COMPLETE_IMAGE_MATCH",
+  "scope": "Engineering reference over fresh copies of two current creator outputs; not a normal native writer or Microsoft Access execution.",
+  "sdk": {
+    "path": ".cache/ace16-preserved-fixed-scalars-java-compile-first-20261031/inputs/jackcess-5.0.4.jar",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "maintained_helper": {
+    "path": "docs/testing/ace16_database_options/InsertOptions.java",
+    "sha256": "0a5187a964e1b708af833ec277153c735acf2bb7f53c3d651ccb290b5d172043"
+  },
+  "independent_model": {
+    "path": "docs/testing/ace16_database_options/model.py",
+    "sha256": "40b77d77a6545e01665557a89023800c50b18c0f7c701863c0f709c4579960cb"
+  },
+  "first_helper": {
+    "first_source": ".cache/database-options-sdk-20261108/first-source/InsertOptions.java",
+    "first_sha256": "f16cce5fdc631aed28811b6a32784f521d5889a0694cc5b2bfa6ff5e67304761",
+    "maintained_source": "docs/testing/ace16_database_options/InsertOptions.java",
+    "maintained_sha256": "0a5187a964e1b708af833ec277153c735acf2bb7f53c3d651ccb290b5d172043"
+  },
+  "initial_runs": [
+    {
+      "kind": "keyless",
+      "mode": "missing-role-save",
+      "original": ".cache/database-options-sdk-20261108/creator-keyless.accdb",
+      "original_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "target": ".cache/database-options-sdk-20261108/keyless-missing-role-save.accdb",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Exception in thread \"main\" java.lang.IllegalStateException: PropertyMaps cannot be saved without a row id\n\tat com.healthmarketscience.jackcess.impl.PropertyMaps$Handler.save(PropertyMaps.java:307)\n\tat com.healthmarketscience.jackcess.impl.PropertyMaps.save(PropertyMaps.java:169)\n\tat com.healthmarketscience.jackcess.impl.PropertyMapImpl.save(PropertyMapImpl.java:296)\n\tat InsertOptions.main(InsertOptions.java:55)\n",
+      "after_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "original_unchanged": true
+    },
+    {
+      "kind": "keyless",
+      "mode": "insert-off",
+      "original": ".cache/database-options-sdk-20261108/creator-keyless.accdb",
+      "original_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "target": ".cache/database-options-sdk-20261108/keyless-insert-off.accdb",
+      "exit": 0,
+      "stdout": "role\t251658244\t251658242\t2\t-2147483648\nroles\t1\nproperty\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nproperty\tPerform Name AutoCorrect\tLONG\ttrue\t0\ntable\tItems\t2\t0\t0\n",
+      "stderr": "",
+      "after_sha256": "361f69e37742b405c3eeb0317aad71019a01a67ccb35d2287a07aa9b52f36793",
+      "original_unchanged": true
+    },
+    {
+      "kind": "primary",
+      "mode": "missing-role-save",
+      "original": ".cache/database-options-sdk-20261108/creator-primary.accdb",
+      "original_sha256": "2d8efb98d5b0f3b4f87747c0c1cc137c000d833a5946c57456d6f7c52bd8db1e",
+      "target": ".cache/database-options-sdk-20261108/primary-missing-role-save.accdb",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Exception in thread \"main\" java.lang.IllegalStateException: PropertyMaps cannot be saved without a row id\n\tat com.healthmarketscience.jackcess.impl.PropertyMaps$Handler.save(PropertyMaps.java:307)\n\tat com.healthmarketscience.jackcess.impl.PropertyMaps.save(PropertyMaps.java:169)\n\tat com.healthmarketscience.jackcess.impl.PropertyMapImpl.save(PropertyMapImpl.java:296)\n\tat InsertOptions.main(InsertOptions.java:55)\n",
+      "after_sha256": "2d8efb98d5b0f3b4f87747c0c1cc137c000d833a5946c57456d6f7c52bd8db1e",
+      "original_unchanged": true
+    },
+    {
+      "kind": "primary",
+      "mode": "insert-off",
+      "original": ".cache/database-options-sdk-20261108/creator-primary.accdb",
+      "original_sha256": "2d8efb98d5b0f3b4f87747c0c1cc137c000d833a5946c57456d6f7c52bd8db1e",
+      "target": ".cache/database-options-sdk-20261108/primary-insert-off.accdb",
+      "exit": 0,
+      "stdout": "role\t251658244\t251658242\t2\t-2147483648\nroles\t1\nproperty\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nproperty\tPerform Name AutoCorrect\tLONG\ttrue\t0\ntable\tItems\t2\t0\t1\n",
+      "stderr": "",
+      "after_sha256": "7eca6fe359c955dad016965e8089f9b9f41c9c2e0513d5befd31e3f761af05c0",
+      "original_unchanged": true
+    }
+  ],
+  "one_call_runs": [
+    {
+      "kind": "keyless",
+      "original_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "after_sha256": "098d9af7fb89b4b336382aba70e3055b1340a5e8a94db3cd47b2f3b59cfa43ed",
+      "exit": 0,
+      "stdout": "serialized-properties\t152\t4d523200700000008000360054007200610063006b0020004e0061006d00650020004100750074006f0043006f0072007200650063007400200049006e0066006f00300050006500720066006f0072006d0020004e0061006d00650020004100750074006f0043006f00720072006500630074002400000000000600000000000c00010400000400000000000c0001040100040000000000\nrole\t251658244\t251658242\t2\t-2147483648\nroles\t1\nproperty\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nproperty\tPerform Name AutoCorrect\tLONG\ttrue\t0\ntable\tItems\t2\t0\t0\n",
+      "stderr": ""
+    },
+    {
+      "kind": "primary",
+      "original_sha256": "2d8efb98d5b0f3b4f87747c0c1cc137c000d833a5946c57456d6f7c52bd8db1e",
+      "after_sha256": "b85c11809f19fcc9e64ff3eb003ee4c900488e471a60101e7a63f5f8921421d0",
+      "exit": 0,
+      "stdout": "serialized-properties\t152\t4d523200700000008000360054007200610063006b0020004e0061006d00650020004100750074006f0043006f0072007200650063007400200049006e0066006f00300050006500720066006f0072006d0020004e0061006d00650020004100750074006f0043006f00720072006500630074002400000000000600000000000c00010400000400000000000c0001040100040000000000\nrole\t251658244\t251658242\t2\t-2147483648\nroles\t1\nproperty\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nproperty\tPerform Name AutoCorrect\tLONG\ttrue\t0\ntable\tItems\t2\t0\t1\n",
+      "stderr": ""
+    }
+  ],
+  "complete_image_checks": [
+    {
+      "kind": "keyless",
+      "source_path": ".cache/database-options-sdk-20261108/creator-keyless.accdb",
+      "source_bytes": 36864,
+      "source_sha256": "a75a6160bd6507c11fad247dae8e854e1eab83db262bfab258034921bcdc74d1",
+      "after_path": ".cache/database-options-sdk-20261108/keyless-insert-complete-off.accdb",
+      "after_bytes": 40960,
+      "after_sha256": "098d9af7fb89b4b336382aba70e3055b1340a5e8a94db3cd47b2f3b59cfa43ed",
+      "independent_expected_sha256": "098d9af7fb89b4b336382aba70e3055b1340a5e8a94db3cd47b2f3b59cfa43ed",
+      "byte_differences": 0,
+      "changed_pages": [
+        2,
+        3,
+        4,
+        9
+      ],
+      "unrelated_user_pages_unchanged": true
+    },
+    {
+      "kind": "primary",
+      "source_path": ".cache/database-options-sdk-20261108/creator-primary.accdb",
+      "source_bytes": 40960,
+      "source_sha256": "2d8efb98d5b0f3b4f87747c0c1cc137c000d833a5946c57456d6f7c52bd8db1e",
+      "after_path": ".cache/database-options-sdk-20261108/primary-insert-complete-off.accdb",
+      "after_bytes": 45056,
+      "after_sha256": "b85c11809f19fcc9e64ff3eb003ee4c900488e471a60101e7a63f5f8921421d0",
+      "independent_expected_sha256": "b85c11809f19fcc9e64ff3eb003ee4c900488e471a60101e7a63f5f8921421d0",
+      "byte_differences": 0,
+      "changed_pages": [
+        2,
+        3,
+        4,
+        10
+      ],
+      "unrelated_user_pages_unchanged": true
+    }
+  ],
+  "limitations": [
+    "Only explicit LONG/DDL zero is qualified; enabled-value and NameMap semantics are not inferred.",
+    "SDK preferred inline ceiling is 64 bytes; the observed 152-byte map uses an external LVAL page.",
+    "A missing-role property save fails rather than creating MSysDb implicitly.",
+    "Two-stage insertion then property save retains relocated/deleted catalog slots; one-call complete insertion retains nine ordinary slots.",
+    "No native TableCraft option planner, journal, runtime, GUI, Windows Access or add-table composition is qualified by these observations."
+  ],
+  "creator_binary": {
+    "path": ".cache/cargo-backend-20261102/debug/tablecraft",
+    "sha256": "d42527245d28cee607c7cbf49f90e8f88931b008ad3afd32de381f100bd23d02",
+    "commands": [
+      [
+        "create",
+        ".cache/database-options-sdk-20261108/creator-keyless.accdb",
+        "--table",
+        "Items",
+        "--column",
+        "Id",
+        "--column",
+        "Score"
+      ],
+      [
+        "create",
+        ".cache/database-options-sdk-20261108/creator-primary.accdb",
+        "--table",
+        "Items",
+        "--column",
+        "Id",
+        "--column",
+        "Score",
+        "--primary-key",
+        "Id",
+        "PrimaryKey",
+        "--incrementing",
+        "Id"
+      ]
+    ]
+  }
+}
