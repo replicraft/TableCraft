@@ -1,25 +1,29 @@
 //! Closed single-row VALUES syntax, checked before metadata or scalar evaluation.
 use crate::{
     QueryError,
-    profile::{MAX_BIND_BYTES, MAX_BIND_NODES, MAX_TEXT_BYTES, SOURCE_SCHEMA_POLICY},
+    profile::{
+        MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, MAX_TEXT_BYTES, SOURCE_SCHEMA_POLICY,
+    },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::evaluation::EvalLimits;
 use tablecraft_sql::{
-    query::{Insert, InsertSource, Query, Statement},
+    query::{Insert, InsertSource, Parameter, Query, Statement},
     select::{Expression, FunctionArgument},
 };
 
 /// Resolve closed local INSERT VALUES syntax without opening or scanning a source.
-/// Requires one complete VALUES row; SELECT, parameters, external targets,
-/// identity reads, field/object references and user functions remain refused.
+/// Requires one VALUES row; SELECT, external targets, identity reads,
+/// source fields and user functions remain refused. Declared parameter names
+/// require explicit admission; the consuming planner validates their values.
 pub fn local_insert_table<'a>(
     query: &'a Query,
     require_field_list: bool,
+    allow_parameters: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a str, QueryError> {
-    let insert = values(query)?;
+    let insert = values(query, allow_parameters)?;
     if require_field_list && insert.fields.is_empty() {
         return Err(QueryError::Unsupported);
     }
@@ -27,17 +31,34 @@ pub fn local_insert_table<'a>(
         return Err(QueryError::Unsupported);
     };
 
+    if query.parameters.len() > MAX_PARAMETERS {
+        return Err(QueryError::StructureLimit);
+    }
+    for declaration in &query.parameters {
+        if declaration.name.as_str().len() > SOURCE_SCHEMA_POLICY.max_name_bytes {
+            return Err(QueryError::StructureLimit);
+        }
+    }
+
     let mut nodes = 0;
     let mut bytes = 0;
     for expression in expressions {
-        expression_shape(expression, 1, &mut nodes, &mut bytes, budget, cancelled)?;
+        expression_shape(
+            expression,
+            allow_parameters.then_some(query.parameters.as_slice()),
+            1,
+            &mut nodes,
+            &mut bytes,
+            budget,
+            cancelled,
+        )?;
     }
 
     Ok(insert.target.as_str())
 }
 
-pub(super) fn values(query: &Query) -> Result<&Insert, QueryError> {
-    if !query.parameters.is_empty() {
+pub(super) fn values(query: &Query, allow_parameters: bool) -> Result<&Insert, QueryError> {
+    if !allow_parameters && !query.parameters.is_empty() {
         return Err(QueryError::Unsupported);
     }
 
@@ -60,6 +81,7 @@ pub(super) fn values(query: &Query) -> Result<&Insert, QueryError> {
 
 fn expression_shape(
     expression: &Expression,
+    parameters: Option<&[Parameter]>,
     depth: usize,
     nodes: &mut usize,
     bytes: &mut usize,
@@ -92,9 +114,36 @@ fn expression_shape(
     }
 
     let mut child = |expression: &Expression| {
-        expression_shape(expression, depth + 1, nodes, bytes, budget, cancelled)
+        expression_shape(
+            expression,
+            parameters,
+            depth + 1,
+            nodes,
+            bytes,
+            budget,
+            cancelled,
+        )
     };
     match expression {
+        Expression::Field(field) if field.qualifier.is_none() => {
+            let parameters = parameters.ok_or(QueryError::Unsupported)?;
+            for declaration in parameters {
+                if cancelled() {
+                    return Err(QueryError::Cancelled);
+                }
+                budget.charge(
+                    Resource::Steps,
+                    (field.name.as_str().len() + declaration.name.as_str().len()) as u64,
+                )?;
+                if SOURCE_SCHEMA_POLICY
+                    .names
+                    .equals(field.name.as_str(), declaration.name.as_str())
+                {
+                    return Ok(());
+                }
+            }
+            Err(QueryError::UnknownName)
+        }
         Expression::Null
         | Expression::Boolean(_)
         | Expression::Integer(_)

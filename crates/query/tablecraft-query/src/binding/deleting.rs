@@ -44,33 +44,8 @@ pub(crate) fn bind_delete(
         super::mutation_parameters::admit(&query.parameters, Some(budget), cancelled)?;
     }
 
-    let mut binder = Binder {
-        inherited_read_depth: 0,
-        pending_named_depth: 0,
-        next_relation_occurrence: 0,
-        binding_depth: Default::default(),
-        aliases: Default::default(),
-        budget: None,
-        cancelled: None,
-        source,
-        external_sources: Vec::new(),
-        external_providers: Vec::new(),
-        materialized: &[],
-        discover: false,
-        reference_year: None,
-        declared_arithmetic: false,
-        pending_schema: None,
-        parameters: Vec::new(),
-        parameter_scope: Vec::new(),
-        retrieval: false,
-        mutation_scalar: true,
-        collection_criteria: false,
-        active_queries: Vec::new(),
-        owner: crate::external_sources::SourceNamespace::Root,
-        nodes: 0,
-        policy_visits: 0,
-        bytes: 0,
-    };
+    let mut binder = Binder::mutation(source);
+
     binder.parameters = binder.bind_parameters(&query.parameters)?;
     binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
 

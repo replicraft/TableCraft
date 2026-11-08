@@ -1,4 +1,5 @@
 //! Normal INSERT retains complete values or explicit original field presence.
+use super::NativeMutationOptions;
 use crate::editing::{
     NativeEditError,
     journal::{self, NativeJournalInsertPlan, NativeJournalInserter},
@@ -25,13 +26,15 @@ pub enum RecoverableInsertError {
     Plan(#[from] InsertError<journal::Error>),
 }
 
-/// Reject external sources, SELECT, parameters and unsupported shape before open.
+/// Reject external sources, SELECT and unsupported shape before open.
+/// Parameter syntax requires explicit admission; typed values are checked later.
 pub fn local_insert_table<'a>(
     query: &'a Query,
+    allow_parameters: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<&'a str, QueryError> {
-    tablecraft_query::local_insert_table(query, false, budget, cancelled)
+    tablecraft_query::local_insert_table(query, false, allow_parameters, budget, cancelled)
 }
 
 /// Bind supplied expressions once and retain omitted fields through native finish.
@@ -41,7 +44,7 @@ pub fn plan_recoverable_insert(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeJournalInsertPlan, RecoverableInsertError> {
-    let table = local_insert_table(query, budget, cancelled)?;
+    let table = local_insert_table(query, false, budget, cancelled)?;
     let inserter = NativeJournalInserter::new(image, table, budget, cancelled)?;
     plan_bound(inserter, query, budget, cancelled)
 }
@@ -55,7 +58,7 @@ pub fn plan_recoverable_insert_with_clock(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeJournalInsertPlan, RecoverableInsertError> {
-    let table = local_insert_table(query, budget, cancelled)?;
+    let table = local_insert_table(query, false, budget, cancelled)?;
     let inserter =
         NativeJournalInserter::new(image, table, budget, cancelled)?.with_clock(provider);
     plan_bound(inserter, query, budget, cancelled)
@@ -87,3 +90,75 @@ where
         )?)
     }
 }
+
+/// Review explicit typed VALUES with an independent query allowance. The optional
+/// clock authorizes only source-qualified needed omitted defaults, never SQL calls.
+/// Complete and omission intent are selected structurally before evaluation.
+pub fn plan_recoverable_insert_with_options(
+    image: NativeImage,
+    query: &Query,
+    native: &mut ResourceBudget,
+    query_budget: &mut ResourceBudget,
+    options: NativeMutationOptions<'_>,
+    clock: Option<&dyn Clock>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeJournalInsertPlan, RecoverableInsertError> {
+    let table = local_insert_table(query, true, query_budget, cancelled)?;
+    let inserter = NativeJournalInserter::new(image, table, native, cancelled)?;
+    match clock {
+        Some(provider) => plan_bound_with_options(
+            inserter.with_clock(provider),
+            query,
+            native,
+            query_budget,
+            options,
+            cancelled,
+        ),
+        None => plan_bound_with_options(inserter, query, native, query_budget, options, cancelled),
+    }
+}
+
+fn plan_bound_with_options<I>(
+    inserter: I,
+    query: &Query,
+    native: &mut ResourceBudget,
+    query_budget: &mut ResourceBudget,
+    options: NativeMutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeJournalInsertPlan, RecoverableInsertError>
+where
+    I: OmittingInsertableTable<Error = journal::Error, Plan = NativeJournalInsertPlan>,
+{
+    let Statement::Insert(insert) = &query.statement else {
+        return Err(QueryError::Unsupported.into());
+    };
+    let omitted = !insert.fields.is_empty() && insert.fields.len() < inserter.columns().len();
+    let options = tablecraft_query::MutationOptions {
+        parameters: Some(options.parameters),
+        collation: Some(options.collation),
+        collation_resolver: Some(options.resolver),
+        text_collations: &[],
+    };
+    if omitted {
+        Ok(tablecraft_query::plan_insert_with_omissions_and_options(
+            inserter,
+            query,
+            query_budget,
+            native,
+            options,
+            cancelled,
+        )?)
+    } else {
+        Ok(tablecraft_query::plan_insert_with_options(
+            inserter,
+            query,
+            query_budget,
+            native,
+            options,
+            cancelled,
+        )?)
+    }
+}
+
+#[cfg(test)]
+mod tests;

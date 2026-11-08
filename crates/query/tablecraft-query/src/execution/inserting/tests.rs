@@ -1,5 +1,9 @@
 use super::*;
 use std::cell::Cell;
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 use tablecraft_expressions::EvalError;
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
 
@@ -169,7 +173,9 @@ fn select_parameters_fields_identity_and_calls_are_closed_before_finish() {
     ] {
         let parsed = query(sql);
         let calls = Cell::new(0);
-        assert!(local_insert_table(parsed.query(), false, &mut budget(), &|| false).is_err());
+        assert!(
+            local_insert_table(parsed.query(), false, false, &mut budget(), &|| false).is_err()
+        );
         assert!(
             plan_insert(
                 Target::ordinary(&calls),

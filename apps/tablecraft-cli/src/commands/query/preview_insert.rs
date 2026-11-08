@@ -94,8 +94,14 @@ pub(super) fn run(args: Arguments, _password: Option<&str>) -> Result<String, Er
         .map_err(Error::Native)?;
     let query = tablecraft_sql::parse_query(&args.sql, tablecraft_sql::ParseLimits::default())
         .map_err(Error::Parse)?;
-    tablecraft_query::local_insert_table(query.query(), args.incrementing, &mut budget, &|| false)
-        .map_err(Error::Query)?;
+    tablecraft_query::local_insert_table(
+        query.query(),
+        args.incrementing,
+        false,
+        &mut budget,
+        &|| false,
+    )
+    .map_err(Error::Query)?;
     let mode = if args.incrementing {
         ScalarInsertMode::Incrementing
     } else {

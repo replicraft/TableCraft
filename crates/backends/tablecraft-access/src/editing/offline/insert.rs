@@ -27,8 +27,8 @@ pub struct OfflineTableInserter {
 
 /// Qualified insertion with its count available before durable effects.
 pub struct StagedInsert {
-    session: OfflineWriteSession,
-    plan: NativeJournalInsertPlan,
+    pub(super) session: OfflineWriteSession,
+    pub(super) plan: NativeJournalInsertPlan,
 }
 
 impl StagedInsert {
@@ -133,7 +133,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_insert").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_insert_table(query, budget, cancelled).map_err(|error| {
+            sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
                 Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
             })?;
             let slot = self.slot_mut()?;
@@ -171,7 +171,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_insert").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_insert_table(query, budget, cancelled).map_err(|error| {
+            sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
                 Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
             })?;
             let slot = self.slot_mut()?;

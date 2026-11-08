@@ -30,7 +30,7 @@ pub fn local_guard_table<'q>(
         Statement::Update(_) => sql::local_update_table(query),
         Statement::Delete(_) => sql_delete::local_delete_table(query),
         Statement::Insert(_) => {
-            tablecraft_query::local_insert_table(query, false, budget, cancelled)
+            tablecraft_query::local_insert_table(query, false, false, budget, cancelled)
         }
         _ => Err(QueryError::Unsupported),
     }

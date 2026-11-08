@@ -53,6 +53,16 @@ All nine neutral INSERT checks passed on their first run, followed by 78 query
 library and 16 existing editing integration tests. Strict checks for five packages and minimal checks for four libraries also pass;
 native mutation and publication qualification remain separate.
 
+The explicit `plan_insert_with_options` and
+`plan_insert_with_omissions_and_options` APIs add strict declared parameter inputs
+and independent query/backend pools to the same one-row VALUES profile. Original
+NULL versus omission and generated field-list restrictions remain explicit.
+VALUES has no input field scope; destination policy arrays refuse, and no hidden
+retrieval or additional function family is enabled. Legacy APIs keep their
+original evaluator, limits and declaration refusal. The native consumer selects
+complete or original-presence intent once from real metadata. Runtime/GUI INSERT
+dispatch is not yet added, and native writer qualifications are unchanged.
+
 The opt-in [presence-bearing INSERT planner](INSERT_OMISSIONS.md) shares that
 metadata binder and evaluator while preserving `Supplied(Value)` versus
 `Omitted` in complete backend schema order. Explicit field lists may omit ordinary

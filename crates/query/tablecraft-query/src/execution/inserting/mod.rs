@@ -1,10 +1,7 @@
 //! One VALUES row: complete or explicit omission intent, with one backend finish.
-use crate::{QueryError, execution::editing::assignment::stored_value};
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
-use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
+use crate::{MutationOptions, QueryError, execution::editing::assignment::stored_value};
+use tablecraft_core::limits::ResourceBudget;
+use tablecraft_db::{InsertableTable, OmittingInsertableTable};
 use tablecraft_sql::query::Query;
 use thiserror::Error;
 
@@ -40,23 +37,8 @@ pub fn plan_insert<E: InsertableTable>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<E::Plan, InsertError<E::Error>> {
     let _span = tracing::debug_span!("query.insert.values_plan").entered();
-    let staged = values::prepare(&editor, query, false, budget, cancelled)?;
-    let width = staged.len();
-
-    budget
-        .charge_allocation(width as u64, size_of::<Value>() as u64)
-        .map_err(QueryError::from)?;
-    let mut values = Vec::new();
-    values
-        .try_reserve_exact(width)
-        .map_err(|_| QueryError::Allocation)?;
-    for value in staged {
-        values::check(budget, cancelled)?;
-        values.push(value.ok_or(QueryError::Width)?);
-    }
-
-    budget.charge(Resource::Rows, 1).map_err(QueryError::from)?;
-    values::check(budget, cancelled)?;
+    let staged = values::prepare(&editor, query, false, None, budget, cancelled)?;
+    let values = values::complete(staged, budget, cancelled)?;
 
     editor
         .plan_insert(values, budget, cancelled)
@@ -73,26 +55,53 @@ pub fn plan_insert_with_omissions<E: OmittingInsertableTable>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<E::Plan, InsertError<E::Error>> {
     let _span = tracing::debug_span!("query.insert.omission_plan").entered();
-    let staged = values::prepare(&editor, query, true, budget, cancelled)?;
+    let staged = values::prepare(&editor, query, true, None, budget, cancelled)?;
 
-    budget
-        .charge_allocation(staged.len() as u64, size_of::<InsertValue>() as u64)
-        .map_err(QueryError::from)?;
-    let mut intent = Vec::new();
-    intent
-        .try_reserve_exact(staged.len())
-        .map_err(|_| QueryError::Allocation)?;
-    for value in staged {
-        values::check(budget, cancelled)?;
-        intent.push(match value {
-            Some(value) => InsertValue::Supplied(value),
-            None => InsertValue::Omitted,
-        });
-    }
-
-    budget.charge(Resource::Rows, 1).map_err(QueryError::from)?;
-    values::check(budget, cancelled)?;
+    let intent = values::presence(staged, budget, cancelled)?;
     editor
         .plan_insert_with_omissions(intent, budget, cancelled)
+        .map_err(InsertError::Backend)
+}
+
+/// Evaluate one VALUES row with strict typed inputs and an independent backend
+/// allowance. All written expressions succeed before the consuming finish.
+pub fn plan_insert_with_options<E: InsertableTable>(
+    editor: E,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    options: MutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<E::Plan, InsertError<E::Error>> {
+    let _span = tracing::debug_span!("query.insert.values_plan").entered();
+    let staged = values::prepare(
+        &editor,
+        query,
+        false,
+        Some(options),
+        query_budget,
+        cancelled,
+    )?;
+    let output = values::complete(staged, query_budget, cancelled)?;
+    editor
+        .plan_insert(output, backend_budget, cancelled)
+        .map_err(InsertError::Backend)
+}
+
+/// Evaluate one VALUES row with strict typed inputs and an independent backend
+/// allowance. All written expressions succeed before the consuming finish.
+pub fn plan_insert_with_omissions_and_options<E: OmittingInsertableTable>(
+    editor: E,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    options: MutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<E::Plan, InsertError<E::Error>> {
+    let _span = tracing::debug_span!("query.insert.values_plan").entered();
+    let staged = values::prepare(&editor, query, true, Some(options), query_budget, cancelled)?;
+    let output = values::presence(staged, query_budget, cancelled)?;
+    editor
+        .plan_insert_with_omissions(output, backend_budget, cancelled)
         .map_err(InsertError::Backend)
 }

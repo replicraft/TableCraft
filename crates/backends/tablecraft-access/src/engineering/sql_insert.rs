@@ -23,6 +23,7 @@ pub fn preview_insert(
     let table = tablecraft_query::local_insert_table(
         query,
         mode == ScalarInsertMode::Incrementing,
+        false,
         budget,
         cancelled,
     )?;
@@ -44,6 +45,7 @@ pub fn preview_insert_with_omissions(
     let table = tablecraft_query::local_insert_table(
         query,
         mode == ScalarInsertMode::Incrementing,
+        false,
         budget,
         cancelled,
     )?;
@@ -66,6 +68,7 @@ pub fn preview_insert_with_omissions_and_clock(
     let table = tablecraft_query::local_insert_table(
         query,
         mode == ScalarInsertMode::Incrementing,
+        false,
         budget,
         cancelled,
     )?;

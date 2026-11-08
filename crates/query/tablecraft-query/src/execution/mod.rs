@@ -17,7 +17,10 @@ pub use deleting::{DeleteError, DeletePlan, plan_delete, plan_delete_with_option
 mod editing;
 mod inserting;
 mod mutation;
-pub use inserting::{InsertError, local_insert_table, plan_insert, plan_insert_with_omissions};
+pub use inserting::{
+    InsertError, local_insert_table, plan_insert, plan_insert_with_omissions,
+    plan_insert_with_omissions_and_options, plan_insert_with_options,
+};
 pub use mutation::MutationOptions;
 mod execute;
 pub use editing::{

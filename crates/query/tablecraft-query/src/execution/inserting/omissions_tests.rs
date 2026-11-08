@@ -1,6 +1,12 @@
 //! Original presence is observable at the sole consuming backend finish.
+mod options;
 use super::*;
 use std::cell::Cell;
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
+use tablecraft_db::InsertValue;
 use tablecraft_expressions::EvalError;
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
 
@@ -8,6 +14,7 @@ struct Target<'a> {
     columns: Vec<Column>,
     calls: &'a Cell<usize>,
     companions: bool,
+    backend_steps: u64,
 }
 
 enum Finished {
@@ -29,6 +36,7 @@ impl<'a> Target<'a> {
             columns,
             calls,
             companions,
+            backend_steps: 0,
         }
     }
 }
@@ -60,9 +68,12 @@ impl InsertableTable for Target<'_> {
     fn plan_insert(
         self,
         values: Vec<Value>,
-        _: &mut ResourceBudget,
+        budget: &mut ResourceBudget,
         _: &dyn Fn() -> bool,
     ) -> Result<Finished, std::io::Error> {
+        budget
+            .charge(Resource::Steps, self.backend_steps)
+            .map_err(std::io::Error::other)?;
         self.calls.set(self.calls.get() + 1);
         Ok(Finished::Complete(values))
     }
@@ -72,9 +83,12 @@ impl OmittingInsertableTable for Target<'_> {
     fn plan_insert_with_omissions(
         self,
         values: Vec<InsertValue>,
-        _: &mut ResourceBudget,
+        budget: &mut ResourceBudget,
         _: &dyn Fn() -> bool,
     ) -> Result<Finished, std::io::Error> {
+        budget
+            .charge(Resource::Steps, self.backend_steps)
+            .map_err(std::io::Error::other)?;
         self.calls.set(self.calls.get() + 1);
         Ok(Finished::Presence(values))
     }

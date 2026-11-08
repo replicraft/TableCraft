@@ -13,7 +13,7 @@ pub use deleting::{
 #[cfg(feature = "journal")]
 pub use inserting::{
     RecoverableInsertError, local_insert_table, plan_recoverable_insert,
-    plan_recoverable_insert_with_clock,
+    plan_recoverable_insert_with_clock, plan_recoverable_insert_with_options,
 };
 
 #[cfg(feature = "journal")]

@@ -26,7 +26,7 @@ pub(super) fn prepare(
         .map_err(Error::Native)?;
     let query = tablecraft_sql::parse_query(&args.sql, tablecraft_sql::ParseLimits::default())
         .map_err(Error::Parse)?;
-    sql::local_insert_table(query.query(), budget, &|| false).map_err(Error::Shape)?;
+    sql::local_insert_table(query.query(), false, budget, &|| false).map_err(Error::Shape)?;
     Ok(query)
 }
 
