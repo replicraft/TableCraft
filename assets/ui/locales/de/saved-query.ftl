@@ -55,3 +55,7 @@ saved-query-close-stale = Der Abfrageentwurf wurde geändert. Brechen Sie ab und
 # Saved query SQL editor.
 saved-query-sql-unsaved = Ungespeicherte Änderungen. Speichern Sie vor dem Ausführen dieser Abfrage.
 saved-query-sql-source-changed = Die gespeicherte Definition wurde geändert. Ihr SQL-Entwurf wurde beibehalten.
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = Erneut öffnen
+saved-query-save-return-draft = Zum SQL-Entwurf zurückkehren

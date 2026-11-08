@@ -55,3 +55,7 @@ saved-query-close-stale = The query draft has changed. Cancel and close it again
 # Saved query SQL editor.
 saved-query-sql-unsaved = Unsaved changes. Save before running this query.
 saved-query-sql-source-changed = The saved definition changed. Your SQL draft was kept.
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = Retry reopening
+saved-query-save-return-draft = Return to SQL draft

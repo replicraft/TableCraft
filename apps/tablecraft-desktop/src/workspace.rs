@@ -967,6 +967,9 @@ impl eframe::App for Desktop {
                 Action::ReviewSavedQuerySql { .. } => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
+                Action::SavedQuerySqlSave { .. } => {
+                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }

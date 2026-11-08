@@ -203,6 +203,9 @@ impl State {
             count.add(update.retained_bytes()?);
         }
         count.add(self.saved_query.retained_bytes()?);
+        if let Some(status) = &self.saved_query_sql_save {
+            count.add(status.retained_bytes()?);
+        }
         if let Some(confirmation) = &self.saved_query_sql_close {
             count.add(confirmation.retained_bytes()?);
         }

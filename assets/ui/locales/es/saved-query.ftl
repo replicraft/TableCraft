@@ -55,3 +55,7 @@ saved-query-close-stale = El borrador de la consulta ha cambiado. Cancele y vuel
 # Saved query SQL editor.
 saved-query-sql-unsaved = Cambios sin guardar. Guarde antes de ejecutar esta consulta.
 saved-query-sql-source-changed = La definición guardada ha cambiado. Se ha conservado su borrador SQL.
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = Reintentar apertura
+saved-query-save-return-draft = Volver al borrador SQL

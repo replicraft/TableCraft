@@ -351,7 +351,8 @@ impl State {
     }
 
     pub fn edit_save_pending(&self) -> bool {
-        self.insert_save_pending()
+        self.saved_query_sql_save_open()
+            || self.insert_save_pending()
             || self.delete_save_pending()
             || matches!(
                 &self.edit,

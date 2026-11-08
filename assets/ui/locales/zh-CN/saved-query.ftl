@@ -55,3 +55,7 @@ saved-query-close-stale = 查询草稿已更改。请取消并重新关闭。
 # Saved query SQL editor.
 saved-query-sql-unsaved = 有未保存的更改。请先保存再运行此查询。
 saved-query-sql-source-changed = 已保存的定义发生了变化。您的 SQL 草稿已保留。
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = 重试重新打开
+saved-query-save-return-draft = 返回 SQL 草稿

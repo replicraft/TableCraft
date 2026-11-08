@@ -280,6 +280,8 @@ impl Preview {
             }
             Action::ReviewSavedQuerySql { request } => self.refuse_saved_sql_save(request),
             Action::SavedQuerySqlClose { result } => self.finish_saved_sql_close(result),
+            // This synthetic host never owns a native save or read-reopen witness.
+            Action::SavedQuerySqlSave { .. } => {}
             Action::InspectSavedQuery { target } => self.inspect_saved(target),
             Action::RunSavedQuery { target, parameters } => {
                 if self.state.can_run_saved_query(&target, &parameters) {

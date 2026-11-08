@@ -24,6 +24,7 @@ pub(crate) mod ribbon;
 mod row_identity;
 mod save_display;
 mod saved_query;
+mod saved_query_save;
 mod schema;
 mod table_draft;
 pub(crate) mod totals;
@@ -57,6 +58,9 @@ pub use save_display::SaveCleanupNotice;
 pub use saved_query::{
     SavedQuery, SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
     SavedQuerySqlError, SavedQuerySqlRequest, SavedQueryTarget,
+};
+pub use saved_query_save::{
+    SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity, SavedQuerySqlSaveOperation,
 };
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 pub use table_draft::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
@@ -149,6 +153,10 @@ pub enum Action {
     },
     AcknowledgeTableDraftSave {
         id: u64,
+    },
+    SavedQuerySqlSave {
+        identity: SavedQuerySqlSaveIdentity,
+        command: SavedQuerySqlSaveCommand,
     },
     SavedQuerySqlClose {
         result: SavedQuerySqlCloseResult,
@@ -399,6 +407,7 @@ pub struct State {
     saved_query: saved_query::SavedQueryState,
     active_save: active_save::PendingSave,
     saved_query_sql_close: Option<saved_query::SqlCloseConfirmation>,
+    saved_query_sql_save: Option<saved_query_save::SaveStatus>,
     selected_field: usize,
     design_focus_pending: Option<schema::PaneEntry>,
     pane_focus_entry: Option<focus::Entry>,
@@ -749,7 +758,8 @@ impl State {
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_active_save_shortcut(ui.ctx());
-        let modal_open = self.table_draft_save.is_some()
+        let modal_open = self.saved_query_sql_save_open()
+            || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
             || self.insert_continuation_pending()
             || self.table_draft_close.is_some()
@@ -849,6 +859,7 @@ impl State {
         self.query_design_dialog(ui.ctx(), &mut actions);
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
+        self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);

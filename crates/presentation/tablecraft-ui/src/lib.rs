@@ -31,9 +31,10 @@ pub use workspace::{
     QueryActionReview, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
     RecoveryOutcome, ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice,
     SavedQuery, SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
-    SavedQuerySqlError, SavedQuerySqlRequest, SavedQueryTarget, Schema, SortSpec, SortTarget,
-    State, Table, TableDraftSaveCompletion, TableRenameRequest, TableSaveRequest, TotalAggregate,
-    TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
+    SavedQuerySqlError, SavedQuerySqlRequest, SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity,
+    SavedQuerySqlSaveOperation, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
+    TableDraftSaveCompletion, TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec,
+    TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

@@ -55,3 +55,7 @@ saved-query-close-stale = 쿼리 초안이 변경되었습니다. 취소한 후 
 # Saved query SQL editor.
 saved-query-sql-unsaved = 저장하지 않은 변경 사항이 있습니다. 이 쿼리를 실행하기 전에 저장하세요.
 saved-query-sql-source-changed = 저장된 정의가 변경되었습니다. SQL 초안은 유지됩니다.
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = 다시 열기
+saved-query-save-return-draft = SQL 초안으로 돌아가기

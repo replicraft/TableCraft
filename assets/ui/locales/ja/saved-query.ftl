@@ -55,3 +55,7 @@ saved-query-close-stale = クエリの下書きが変更されました。キャ
 # Saved query SQL editor.
 saved-query-sql-unsaved = 未保存の変更があります。このクエリを実行する前に保存してください。
 saved-query-sql-source-changed = 保存済みの定義が変更されました。SQL の下書きは保持されています。
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = 再度開く
+saved-query-save-return-draft = SQL の下書きに戻る

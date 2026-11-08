@@ -55,3 +55,7 @@ saved-query-close-stale = Черновик запроса изменился. О
 # Saved query SQL editor.
 saved-query-sql-unsaved = Есть несохранённые изменения. Сохраните запрос перед выполнением.
 saved-query-sql-source-changed = Сохранённое определение изменилось. Ваш черновик SQL сохранён.
+
+# Saved query save-status read-only reopening.
+saved-query-save-retry-reopen = Повторить открытие
+saved-query-save-return-draft = Вернуться к черновику SQL
