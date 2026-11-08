@@ -13,7 +13,6 @@ type Inspection = fn() -> InspectError;
 type WrappedInspection = fn(InspectError) -> Cause;
 type WrappedJournal = fn(JournalError) -> Cause;
 type InspectionSample = (&'static str, Inspection, Option<SaveFailureKind>);
-#[cfg(feature = "ace16-create")]
 type SchemaInspection<E> = (&'static str, fn(InspectError) -> E);
 
 fn limit() -> LimitError {
@@ -49,7 +48,6 @@ fn inspections() -> [InspectionSample; 5] {
     ]
 }
 
-#[cfg(feature = "ace16-create")]
 fn assert_schema_inspection_layers<E: StdError + 'static>(
     wrappers: &[SchemaInspection<E>],
     cause: fn(E) -> Cause,
@@ -358,4 +356,23 @@ fn a_later_recovery_failure_cannot_establish_no_writes_for_the_original_apply() 
         let later = SaveReport { operation, ..apply };
         assert!(!later.stopped_before_target_writes());
     }
+}
+
+#[test]
+fn table_rename_intent_and_recovery_keep_typed_terminal_facts() {
+    assert_schema_inspection_layers(
+        &[("native rename", TableRenameError::Inspect)],
+        |error| Cause::Qualification(NativeRecoveryQualificationError::Rename(error)),
+        NativeRecoveryQualificationError::Rename,
+    );
+    assert_schema_inspection_layers(
+        &[
+            ("rename intent", TableRenameIntentError::Inspect),
+            ("rename binding", |error| {
+                TableRenameIntentError::Binding(NativeIntentError::Inspect(error))
+            }),
+        ],
+        Cause::TableRenameIntent,
+        NativeRecoveryQualificationError::TableRenameIntent,
+    );
 }

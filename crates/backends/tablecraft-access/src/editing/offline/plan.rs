@@ -5,13 +5,15 @@ use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{AddTablePlan, FirstTablePlan, NativeAddTableIntent, NativeFirstTableIntent};
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeUpdateIntent, PreparedNativeUpdate,
-    RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeTableRenameIntent, NativeUpdateIntent,
+    PreparedNativeUpdate, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
+    RecoverableNativeTableRenamePlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 pub(super) enum MutationPlan {
+    TableRename(RecoverableNativeTableRenamePlan),
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
     Insert(NativeJournalInsertPlan),
@@ -28,6 +30,10 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            Self::TableRename(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::TableRenameIntent),
             Self::Update(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -56,6 +62,12 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
         let prepared = match self {
+            Self::TableRename(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
             Self::Update(plan) => plan.prepare_update(target, journal, budget, cancelled),
             Self::Delete(plan) => plan
                 .prepare(target, journal, budget, cancelled)
@@ -86,6 +98,7 @@ impl MutationPlan {
 }
 
 pub(super) enum MutationIntent {
+    TableRename(NativeTableRenameIntent),
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
@@ -102,6 +115,9 @@ pub(super) enum MutationIntent {
 impl MutationIntent {
     pub(super) fn schema_change(&self) -> Option<SchemaChange> {
         match self {
+            Self::TableRename(intent) => {
+                (intent.table() != intent.new_name()).then_some(SchemaChange::TableRenamed)
+            }
             #[cfg(feature = "ace16-create")]
             Self::FirstTable(intent) => Some(SchemaChange::FirstTableCreated {
                 column_count: intent.column_count(),
@@ -121,6 +137,12 @@ impl MutationIntent {
     ) -> Result<Self, Cause> {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
+        if raw.starts_with(b"TCRN") {
+            return NativeTableRenameIntent::decode(raw, budget, cancelled)
+                .map(Self::TableRename)
+                .map_err(Cause::TableRenameIntent);
+        }
+
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAT") {
             return NativeAddTableIntent::decode(raw, budget, cancelled)

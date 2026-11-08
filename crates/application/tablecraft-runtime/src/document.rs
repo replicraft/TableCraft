@@ -72,6 +72,27 @@ pub(super) struct Document {
 
 impl Document {
     #[cfg(feature = "offline-edit")]
+    pub(super) fn open_table_renamed(
+        witness: &crate::TableRenameReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            #[cfg(feature = "ace16-create")]
+            Error::CreatedSourceChanged => Error::RenamedTableSourceChanged,
+            Error::SourceChanged => Error::RenamedTableSourceChanged,
+            error => error,
+        })
+    }
+
+    #[cfg(feature = "offline-edit")]
     pub(super) fn open_insert_original(
         witness: &InsertRetryWitness,
         revision: u64,

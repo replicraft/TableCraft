@@ -5,6 +5,7 @@ mod apply_insert;
 mod apply_query_action;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
+mod apply_table_rename;
 mod outcomes;
 mod restart;
 
@@ -15,6 +16,7 @@ use self::{
     apply_delete::apply_delete,
     apply_insert::apply_insert,
     apply_query_action::apply_query_action,
+    apply_table_rename::apply_table_rename,
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
 };
@@ -27,7 +29,7 @@ use crate::{
     controls::action_recovery_budget,
     editing::{
         ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-        ReviewedQueryUpdate, platform::query_action::Plan,
+        ReviewedQueryUpdate, ReviewedTableRename, platform::query_action::Plan,
     },
 };
 use std::{
@@ -44,6 +46,7 @@ enum Task {
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
+    ApplyTableRename(ReviewedTableRename, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
     ApplyQueryUpdate(ReviewedQueryUpdate, PathBuf),
@@ -88,6 +91,10 @@ pub struct SaveWorker {
 }
 
 impl SaveWorker {
+    pub const fn supports_table_rename() -> bool {
+        true
+    }
+
     #[cfg(feature = "ace16-create")]
     pub const fn supports_table_creation() -> bool {
         true
@@ -128,6 +135,7 @@ impl SaveWorker {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
                     Task::Apply(..)
+                    | Task::ApplyTableRename(..)
                     | Task::ApplyInsert(..)
                     | Task::ApplyDelete(..)
                     | Task::ApplyQueryInsert(..)
@@ -148,6 +156,9 @@ impl SaveWorker {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(reviewed, bundle) => {
                         apply_table_creation(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::ApplyTableRename(reviewed, bundle) => {
+                        apply_table_rename(reviewed, bundle, &mut retained, &cancelled)
                     }
                     Task::Apply(reviewed, bundle) => {
                         apply(reviewed, bundle, &mut retained, &cancelled)
@@ -305,6 +316,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyTableCreation)
+    }
+
+    /// Consume the exact lease-free rename reviewed by the current document.
+    pub fn start_table_rename(
+        &self,
+        reviewed: ReviewedTableRename,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedTableRename>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyTableRename)
     }
 
     /// Explicitly attempt checked recovery of this source's reserved sibling.

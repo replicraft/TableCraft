@@ -15,7 +15,8 @@ use tablecraft_ace::{
     AddTableError, AddTableIntentError, CreateDatabaseError, FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
-    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
+    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameError,
+    TableRenameIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -107,6 +108,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         matched_rows: value.matched_rows(),
         changed_rows: value.changed_rows(),
         schema_change: value.schema_change().map(|change| match change {
+            SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
             }
@@ -214,6 +216,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::Native(error) => inspection_failure(error),
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
+            Cause::TableRenameIntent(error) => rename_intent_failure(error),
             Cause::Prepare(error) | Cause::Recovery(error) => journal_failure(error),
             Cause::Io(error) => io_failure(error),
             #[cfg(feature = "ace16-create")]
@@ -229,6 +232,12 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<NativeRecoveryQualificationError>() {
         return qualification_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<TableRenameError>() {
+        return rename_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<TableRenameIntentError>() {
+        return rename_intent_failure(error);
     }
     if let Some(error) = error.downcast_ref::<NativeIntentError>() {
         return intent_failure(error);
@@ -273,6 +282,8 @@ fn intent_failure(error: &NativeIntentError) -> Option<SaveFailureKind> {
 
 fn qualification_failure(error: &NativeRecoveryQualificationError) -> Option<SaveFailureKind> {
     match error {
+        NativeRecoveryQualificationError::Rename(error) => rename_failure(error),
+        NativeRecoveryQualificationError::TableRenameIntent(error) => rename_intent_failure(error),
         NativeRecoveryQualificationError::Inspect(error)
         | NativeRecoveryQualificationError::Edit(EditError::Inspect(error)) => {
             inspection_failure(error)
@@ -288,6 +299,21 @@ fn qualification_failure(error: &NativeRecoveryQualificationError) -> Option<Sav
         NativeRecoveryQualificationError::AddTable(error) => add_table_failure(error),
         #[cfg(feature = "ace16-create")]
         NativeRecoveryQualificationError::AddTableIntent(error) => add_table_intent_failure(error),
+        _ => None,
+    }
+}
+
+fn rename_failure(error: &TableRenameError) -> Option<SaveFailureKind> {
+    match error {
+        TableRenameError::Inspect(error) => inspection_failure(error),
+        _ => None,
+    }
+}
+
+fn rename_intent_failure(error: &TableRenameIntentError) -> Option<SaveFailureKind> {
+    match error {
+        TableRenameIntentError::Inspect(error) => inspection_failure(error),
+        TableRenameIntentError::Binding(error) => intent_failure(error),
         _ => None,
     }
 }

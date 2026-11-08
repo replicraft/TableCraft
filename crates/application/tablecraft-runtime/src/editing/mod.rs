@@ -9,6 +9,7 @@ mod replacing;
 mod save;
 #[cfg(feature = "ace16-create")]
 mod table_creation;
+mod table_rename;
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[path = "platform/native/mod.rs"]
@@ -34,6 +35,7 @@ pub use save::{
 };
 #[cfg(feature = "ace16-create")]
 pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
+pub use table_rename::{ReviewedTableRename, TableRenameReopen, TableRenameReview};
 
 use crate::{Cell, scalar_input::InputHint};
 use std::{

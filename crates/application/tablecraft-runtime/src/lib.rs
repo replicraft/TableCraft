@@ -39,10 +39,10 @@ pub use editing::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, QueryDeleteReview, QueryInsertReview, QueryUpdateReview, ReplaceError,
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-    ReviewedQueryUpdate, SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind,
-    SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt, SaveReport,
-    SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState, SaveStartError, SaveStartFailure,
-    SaveWorker, journal_path,
+    ReviewedQueryUpdate, ReviewedTableRename, SaveCleanupDisposition, SaveCompletion, SaveFailure,
+    SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveReceipt,
+    SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState, SaveStartError,
+    SaveStartFailure, SaveWorker, TableRenameReopen, TableRenameReview, journal_path,
 };
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
@@ -82,6 +82,12 @@ use zeroize::Zeroize;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    TableRename(#[from] tablecraft_ace::RecoverableTableRenameError),
+    #[cfg(feature = "offline-edit")]
+    #[error("renamed table contents changed before reopening")]
+    RenamedTableSourceChanged,
     #[cfg(feature = "offline-edit")]
     #[error("original insertion source changed before reopening")]
     InsertOriginalSourceChanged,
@@ -189,6 +195,16 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(feature = "offline-edit")]
+    ReviewTableRename {
+        document_revision: u64,
+        table: String,
+        new_name: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    OpenTableRenamed {
+        witness: Arc<TableRenameReopen>,
+    },
     /// Read-only guarded reopening; hosts separately decide whether retry is safe.
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
@@ -366,6 +382,11 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(feature = "offline-edit")]
+    TableRenameReviewed {
+        review: TableRenameReview,
+        capability: ReviewedTableRename,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     TableCreationReviewed {
         capability: ReviewedTableCreation,

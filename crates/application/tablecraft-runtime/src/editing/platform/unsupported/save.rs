@@ -4,13 +4,17 @@ use crate::editing::ReviewedTableCreation;
 use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryInsert,
-    ReviewedQueryUpdate,
+    ReviewedQueryUpdate, ReviewedTableRename,
 };
 use std::path::PathBuf;
 
 pub struct SaveWorker;
 
 impl SaveWorker {
+    pub const fn supports_table_rename() -> bool {
+        false
+    }
+
     #[cfg(feature = "ace16-create")]
     pub const fn supports_table_creation() -> bool {
         false
@@ -88,6 +92,17 @@ impl SaveWorker {
         reviewed: ReviewedTableCreation,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    pub fn start_table_rename(
+        &self,
+        reviewed: ReviewedTableRename,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedTableRename>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

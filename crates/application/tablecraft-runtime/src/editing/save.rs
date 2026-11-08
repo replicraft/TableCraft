@@ -69,6 +69,7 @@ pub enum SaveCompletion {
 /// Acknowledged schema facts are separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveSchemaChange {
+    TableRenamed,
     FirstTableCreated { column_count: usize },
     TableAdded { column_count: usize },
 }

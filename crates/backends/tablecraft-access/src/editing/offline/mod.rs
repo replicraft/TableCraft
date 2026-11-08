@@ -11,6 +11,7 @@ mod first_table;
 mod insert;
 mod plan;
 mod recovery;
+mod rename;
 mod reviewed_delete;
 mod reviewed_insert;
 mod reviewed_update;
@@ -27,6 +28,7 @@ pub use error::{Cause, Failure, OpenError, Phase};
 #[cfg(feature = "ace16-create")]
 pub use first_table::StagedFirstTable;
 pub use insert::{OfflineTableInserter, StagedInsert};
+pub use rename::StagedTableRename;
 pub use table::OfflineTableEditor;
 pub use update::StagedUpdate;
 
@@ -72,6 +74,8 @@ pub enum KnownOutcome {
 /// Acknowledged schema change, separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SchemaChange {
+    /// An existing table changed its catalog name without changing row identity.
+    TableRenamed,
     /// A new empty table was appended while retaining existing database objects.
     TableAdded {
         /// Number of explicitly declared fields in the added table.

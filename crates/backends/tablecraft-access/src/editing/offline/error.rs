@@ -3,7 +3,9 @@ use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError};
-use tablecraft_ace::{InspectError, NativeIntentError, NativeRecoveryQualificationError};
+use tablecraft_ace::{
+    InspectError, NativeIntentError, NativeRecoveryQualificationError, TableRenameIntentError,
+};
 use tablecraft_io::{
     IoError,
     journal::{
@@ -92,6 +94,9 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddTableIntent(AddTableIntentError),
+    /// Table-rename intent framing or encoding failed without decoder fallback.
+    #[error(transparent)]
+    TableRenameIntent(TableRenameIntentError),
     /// Original typed intent framing/binding or encoding failed.
     #[error(transparent)]
     Intent(NativeIntentError),

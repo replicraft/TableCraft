@@ -52,6 +52,11 @@ mod saved;
 mod schema;
 mod stored;
 mod table_creation_availability;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod table_rename;
 mod text_policy;
 mod totals;
 
