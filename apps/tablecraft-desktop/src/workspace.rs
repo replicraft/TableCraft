@@ -34,7 +34,7 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
-    QueryUpdateReview {
+    QueryActionReview {
         request_id: u64,
     },
     Read,
@@ -423,6 +423,9 @@ impl Desktop {
                 Ok(Response::QueryUpdateReviewed { review, capability }) => {
                     self.publish_query_update_review(generation, review, capability);
                 }
+                Ok(Response::QueryDeleteReviewed { review, capability }) => {
+                    self.publish_query_delete_review(generation, review, capability);
+                }
                 Ok(Response::DeleteReviewed { review, capability }) => {
                     self.publish_delete_review(generation, review, capability);
                 }
@@ -598,8 +601,8 @@ impl Desktop {
                     columns,
                     rows,
                 }) => {
-                    if let PendingOperation::QueryUpdateReview { request_id } = &self.pending {
-                        self.cancel_query_update_review(*request_id);
+                    if let PendingOperation::QueryActionReview { request_id } = &self.pending {
+                        self.cancel_query_action_review(*request_id);
                         continue;
                     }
                     if let PendingOperation::Contents { request_id, .. } = &self.pending {
@@ -623,9 +626,9 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
-                    PendingOperation::QueryUpdateReview { request_id } => {
+                    PendingOperation::QueryActionReview { request_id } => {
                         let request_id = *request_id;
-                        self.fail_query_update_review(request_id, error.to_string());
+                        self.fail_query_action_review(request_id, error.to_string());
                     }
                     PendingOperation::QueryInspection { request_id } => {
                         let request_id = *request_id;
@@ -905,9 +908,9 @@ impl eframe::App for Desktop {
                 Action::RunSavedQuery { target, parameters } => {
                     self.run_saved_query(target, parameters);
                 }
-                Action::ApplyQueryUpdate { review_id } => self.apply_query_update(review_id),
-                Action::CancelQueryUpdateReview { request_id } => {
-                    self.cancel_query_update_review(request_id);
+                Action::ApplyQueryAction { review_id } => self.apply_query_action(review_id),
+                Action::CancelQueryActionReview { request_id } => {
+                    self.cancel_query_action_review(request_id);
                 }
                 Action::Query => self.inspect_query_parameters(),
                 Action::RunParameterizedQuery {

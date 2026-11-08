@@ -1,12 +1,12 @@
 //! Unsupported hosts retain the public review boundary without native save authority.
-use super::QueryUpdateTarget;
+use crate::editing::query_action::QueryActionTarget;
 use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     editing::EditError,
 };
 
 pub(in crate::editing) struct State {
-    pub(in crate::editing) target: QueryUpdateTarget,
+    pub(in crate::editing) target: QueryActionTarget,
 }
 
 pub(super) fn review(

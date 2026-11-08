@@ -27,12 +27,12 @@ pub use workspace::{
     FilterSelectionTarget, FilterTarget, FindDirection, FindMatch, FindPosition, FindRequest,
     FindScope, FindSpan, FindTarget, InitialRecord, InputHint, InsertDraft, InsertField,
     InsertInput, InsertRetryPermission, InsertReview, InsertTarget, ObjectKind, ObjectOpen,
-    ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, QueryDesignCompletion,
-    QueryDesignRequest, QueryDesignTarget, QueryUpdateReview, RecordTarget, RecoveryOutcome,
-    ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice, SavedQuery,
-    SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table, TableDraftSaveCompletion,
-    TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
-    TotalsTarget, WorkspaceLayout,
+    ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, QueryActionEffect, QueryActionKind,
+    QueryActionReview, QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget,
+    RecoveryOutcome, ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice,
+    SavedQuery, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
+    TableDraftSaveCompletion, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData,
+    TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
 };
 
 #[cfg(test)]

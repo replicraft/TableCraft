@@ -5,20 +5,23 @@ use egui::{Key, accesskit::Role};
 use egui_kittest::{Harness, kittest::Queryable};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveFailureKind, SaveOutcome};
-use tablecraft_testkit::fixtures::access::mutation_fixture;
+use tablecraft_testkit::fixtures::access::{
+    canonical_creation, canonical_native17_creation, mutation_fixture,
+};
 use tablecraft_testkit::support::access::retained_target::assert_retained_target_observation;
 use tablecraft_ui::{ObjectKind, ObjectTarget};
 
 const UPDATE: &str = "UPDATE Items SET Score=Score+7 WHERE Id>=2";
 
-fn opened() -> (
+fn opened(
+    original: Vec<u8>,
+) -> (
     tempfile::TempDir,
     std::path::PathBuf,
     Vec<u8>,
     Harness<'static, Desktop>,
 ) {
-    let (directory, path, original, mut harness) =
-        test_support::opened(mutation_fixture::database());
+    let (directory, path, original, mut harness) = test_support::opened(original);
     let revision = harness
         .state()
         .state
@@ -45,12 +48,12 @@ fn run(harness: &mut Harness<'_, Desktop>, sql: &str) {
     finish_reads(harness);
 }
 
-fn reviewed(harness: &mut Harness<'_, Desktop>) -> u64 {
-    run(harness, UPDATE);
+fn reviewed(harness: &mut Harness<'_, Desktop>, sql: &str) -> u64 {
+    run(harness, sql);
     let (id, _) = harness
         .state()
         .editing
-        .query_update_review
+        .query_action_review
         .as_ref()
         .expect("runtime native review");
     *id
@@ -58,7 +61,7 @@ fn reviewed(harness: &mut Harness<'_, Desktop>) -> u64 {
 
 #[test]
 fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_reexecution() {
-    let (_directory, path, original, mut harness) = opened();
+    let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
     let rows = harness
         .state()
         .state
@@ -67,7 +70,7 @@ fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_re
         .unwrap()
         .rows
         .as_ptr();
-    let declined = reviewed(&mut harness);
+    let declined = reviewed(&mut harness, UPDATE);
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
     assert_eq!(
@@ -85,9 +88,9 @@ fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_re
         .get_by_role_and_label(Role::Button, "No")
         .click_accesskit();
     harness.run_steps(2);
-    harness.state_mut().apply_query_update(declined);
+    harness.state_mut().apply_query_action(declined);
     assert!(!harness.state().editing.has_save());
-    assert!(harness.state().editing.query_update_review.is_none());
+    assert!(harness.state().editing.query_action_review.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert_eq!(
         harness
@@ -101,7 +104,7 @@ fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_re
         rows
     );
 
-    reviewed(&mut harness);
+    reviewed(&mut harness, UPDATE);
     harness
         .get_by_role_and_label(Role::Button, "Yes")
         .click_accesskit();
@@ -110,7 +113,7 @@ fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_re
     assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
         if receipt.matched_rows == Some(2) && receipt.changed_rows == Some(2)));
     assert!(harness.state().editing.has_save());
-    assert!(harness.state().state.query_update_dialog_open());
+    assert!(harness.state().state.query_action_dialog_open());
     harness
         .get_by_role_and_label(Role::Button, "Close")
         .click_accesskit();
@@ -147,44 +150,49 @@ fn no_preserves_previous_results_and_yes_saves_once_then_restores_sql_without_re
 
 #[test]
 fn stale_source_apply_retains_resources_until_explicit_release_and_acknowledgment() {
-    let (_directory, path, mut changed, mut harness) = opened();
-    reviewed(&mut harness);
-    *changed.last_mut().unwrap() ^= 1;
-    std::fs::write(&path, &changed).unwrap();
-    harness
-        .get_by_role_and_label(Role::Button, "Yes")
-        .click_accesskit();
-    harness.run_steps(1);
-    let report = finish_save(&mut harness);
-    assert!(matches!(report.outcome, SaveOutcome::Failed(failure)
-        if failure.kind == SaveFailureKind::SourceChanged && failure.can_release && !failure.can_recover));
-    assert_retained_target_observation(&path, &changed);
-    assert!(!journal_path(&path).exists());
-    assert!(harness.state().editing.has_save());
-    harness.state_mut().acknowledge_save(report.id);
-    assert!(harness.state().editing.has_save());
-    harness
-        .get_by_role_and_label(Role::Button, "Release save resources")
-        .click_accesskit();
-    harness.run_steps(1);
-    let released = finish_save(&mut harness);
-    assert!(matches!(released.outcome, SaveOutcome::Released { .. }));
-    assert_ne!(released.id, report.id);
-    harness
-        .get_by_role_and_label(Role::Button, "Close")
-        .click_accesskit();
-    harness.run_steps(2);
-    assert!(!harness.state().editing.has_save());
-    assert_eq!(std::fs::read(path).unwrap(), changed);
+    for (source, sql) in [
+        (mutation_fixture::database(), UPDATE),
+        (delete_source(), "DELETE FROM Items WHERE Id>=63"),
+    ] {
+        let (_directory, path, mut changed, mut harness) = opened(source);
+        reviewed(&mut harness, sql);
+        *changed.last_mut().unwrap() ^= 1;
+        std::fs::write(&path, &changed).unwrap();
+        harness
+            .get_by_role_and_label(Role::Button, "Yes")
+            .click_accesskit();
+        harness.run_steps(1);
+        let report = finish_save(&mut harness);
+        assert!(matches!(report.outcome, SaveOutcome::Failed(failure)
+            if failure.kind == SaveFailureKind::SourceChanged && failure.can_release && !failure.can_recover));
+        assert_retained_target_observation(&path, &changed);
+        assert!(!journal_path(&path).exists());
+        assert!(harness.state().editing.has_save());
+        harness.state_mut().acknowledge_save(report.id);
+        assert!(harness.state().editing.has_save());
+        harness
+            .get_by_role_and_label(Role::Button, "Release save resources")
+            .click_accesskit();
+        harness.run_steps(1);
+        let released = finish_save(&mut harness);
+        assert!(matches!(released.outcome, SaveOutcome::Released { .. }));
+        assert_ne!(released.id, report.id);
+        harness
+            .get_by_role_and_label(Role::Button, "Close")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(!harness.state().editing.has_save());
+        assert_eq!(std::fs::read(path).unwrap(), changed);
+    }
 }
 
 #[test]
 fn unsupported_actions_never_open_value_prompts_or_write() {
     for sql in [
-        "DELETE FROM Items WHERE Id=1",
+        "DELETE FROM Items AS i, Items AS j WHERE i.Id=j.Id",
         "INSERT INTO Items (Id,Score) VALUES (4,40)",
     ] {
-        let (_directory, path, original, mut harness) = opened();
+        let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
         let rows = harness
             .state()
             .state
@@ -208,7 +216,7 @@ fn unsupported_actions_never_open_value_prompts_or_write() {
             std::thread::yield_now();
         }
         harness.run_steps(2);
-        assert!(harness.state().editing.query_update_review.is_none());
+        assert!(harness.state().editing.query_action_review.is_none());
         assert!(!harness.state().editing.has_save());
         assert!(
             harness
@@ -228,7 +236,7 @@ fn unsupported_actions_never_open_value_prompts_or_write() {
         );
         assert_eq!(std::fs::read(&path).unwrap(), original);
         assert!(!journal_path(&path).exists());
-        if harness.state().state.query_update_dialog_open() {
+        if harness.state().state.query_action_dialog_open() {
             harness.key_press(Key::Escape);
             harness.run_steps(2);
         }
@@ -237,28 +245,21 @@ fn unsupported_actions_never_open_value_prompts_or_write() {
 
 #[test]
 fn declared_update_prompts_precede_review_and_save_the_confirmed_values_once() {
-    let (_directory, path, original, mut harness) = opened();
+    let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
     let sql = "PARAMETERS [Increment] LONG, [Chosen] LONG; UPDATE Items SET Score=Score+[Increment] WHERE Id=[Chosen]";
     run(&mut harness, sql);
     assert!(harness.state().query_parameters.is_some());
-    assert!(harness.state().editing.query_update_review.is_none());
+    assert!(harness.state().editing.query_action_review.is_none());
     assert!(!harness.state().editing.has_save());
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
 
     for (name, value) in [("Increment", "7"), ("Chosen", "2")] {
-        harness.get_by_role_and_label(Role::TextInput, name).focus();
-        harness.run_steps(1);
-        harness.event(egui::Event::Text(value.into()));
-        harness.run_steps(1);
-        harness
-            .get_by_role_and_label(Role::Button, "OK")
-            .click_accesskit();
-        harness.run_steps(2);
+        confirm_parameter(&mut harness, name, value);
     }
     finish_reads(&mut harness);
     assert!(harness.state().query_parameters.is_none());
-    assert!(harness.state().editing.query_update_review.is_some());
+    assert!(harness.state().editing.query_action_review.is_some());
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert_eq!(
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
@@ -287,24 +288,112 @@ fn declared_update_prompts_precede_review_and_save_the_confirmed_values_once() {
 }
 
 #[test]
-fn cancelling_an_update_parameter_prompt_preserves_results_and_never_reviews() {
-    let (_directory, path, original, mut harness) = opened();
-    run(
-        &mut harness,
-        "PARAMETERS [Value] LONG; UPDATE Items SET Score=[Value] WHERE Id=1",
-    );
-    assert!(harness.state().query_parameters.is_some());
+fn cancelling_action_parameter_prompts_preserves_results_and_never_reviews() {
+    for (source, sql) in [
+        (
+            mutation_fixture::database(),
+            "PARAMETERS [Value] LONG; UPDATE Items SET Score=[Value] WHERE Id=1",
+        ),
+        (
+            delete_source(),
+            "PARAMETERS [Value] LONG; DELETE FROM Items WHERE Id=[Value]",
+        ),
+    ] {
+        let (_directory, path, original, mut harness) = opened(source);
+        run(&mut harness, sql);
+        assert!(harness.state().query_parameters.is_some());
+        harness
+            .get_by_role_and_label(Role::Button, "Cancel")
+            .click_accesskit();
+        harness.run_steps(2);
+        assert!(harness.state().query_parameters.is_none());
+        assert!(harness.state().editing.query_action_review.is_none());
+        assert!(!harness.state().editing.has_save());
+        assert_eq!(
+            harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+            "99"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), original);
+        assert!(!journal_path(&path).exists());
+    }
+}
+
+fn delete_source() -> Vec<u8> {
+    canonical_native17_creation::source(
+        canonical_creation::source(canonical_creation::Case::Boundary).bytes,
+    )
+}
+
+fn confirm_parameter(harness: &mut Harness<'_, Desktop>, name: &str, value: &str) {
+    harness.get_by_role_and_label(Role::TextInput, name).focus();
+    harness.run_steps(1);
+    harness.event(egui::Event::Text(value.into()));
+    harness.run_steps(1);
     harness
-        .get_by_role_and_label(Role::Button, "Cancel")
+        .get_by_role_and_label(Role::Button, "OK")
         .click_accesskit();
     harness.run_steps(2);
-    assert!(harness.state().query_parameters.is_none());
-    assert!(harness.state().editing.query_update_review.is_none());
-    assert!(!harness.state().editing.has_save());
+}
+
+#[test]
+fn typed_delete_no_preserves_original_and_yes_commits_literal_images_without_reexecution() {
+    let (_directory, path, original, mut harness) = opened(delete_source());
+    let sql = "PARAMETERS [Minimum] LONG, [Maximum] LONG; DELETE FROM Items WHERE Id BETWEEN [Minimum] AND [Maximum]";
+    for accept in [false, true] {
+        run(&mut harness, sql);
+        assert!(harness.state().query_parameters.is_some());
+        assert!(harness.state().editing.query_action_review.is_none());
+        for (name, value) in [("Minimum", "63"), ("Maximum", "64")] {
+            confirm_parameter(&mut harness, name, value);
+        }
+        finish_reads(&mut harness);
+        assert!(matches!(
+            harness.state().editing.query_action_review.as_ref(),
+            Some((_, ReviewedAction::Delete(_)))
+        ));
+        assert!(!harness.state().editing.has_save());
+        assert_eq!(std::fs::read(&path).unwrap(), original);
+        assert!(!journal_path(&path).exists());
+        assert_eq!(
+            harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+            "99"
+        );
+        harness
+            .get_by_role_and_label(Role::Button, if accept { "Yes" } else { "No" })
+            .click_accesskit();
+        harness.run_steps(2);
+        if !accept {
+            assert!(harness.state().editing.query_action_review.is_none());
+            assert!(!harness.state().editing.has_save());
+            assert_eq!(std::fs::read(&path).unwrap(), original);
+            continue;
+        }
+        let report = finish_save(&mut harness);
+        assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
+            if receipt.matched_rows == Some(2) && receipt.changed_rows == Some(2)));
+        harness
+            .get_by_role_and_label(Role::Button, "Close")
+            .click_accesskit();
+        harness.run_steps(1);
+        finish_reads(&mut harness);
+    }
+
+    // Independent source-layout oracle: keep all payload bytes and change only
+    // the two original DATA root tombstones and the definition's live count.
+    let mut expected = original.clone();
+    for slot in [62, 63] {
+        let offset = 8 * 4096 + 14 + slot * 2;
+        let word = u16::from_le_bytes(original[offset..offset + 2].try_into().unwrap());
+        expected[offset..offset + 2].copy_from_slice(&(word | 0xc000).to_le_bytes());
+    }
+    expected[7 * 4096 + 16..7 * 4096 + 20].copy_from_slice(&62_u32.to_le_bytes());
+    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert!(!journal_path(&path).exists());
+    assert_eq!(harness.state().state.sql, sql);
+    assert!(harness.state().state.query_data.is_none());
+    run(&mut harness, "SELECT Count(*) AS Remaining FROM Items");
     assert_eq!(
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
-        "99"
+        "62"
     );
-    assert_eq!(std::fs::read(&path).unwrap(), original);
-    assert!(!journal_path(&path).exists());
 }

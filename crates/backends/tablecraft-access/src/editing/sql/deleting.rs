@@ -30,11 +30,7 @@ pub enum RecoverableDeleteError {
 }
 
 /// Check the local action before opening a target or reading native records.
-pub fn local_delete_table(query: &Query) -> Result<&str, QueryError> {
-    local_table(query, false)
-}
-
-fn local_table(query: &Query, allow_parameters: bool) -> Result<&str, QueryError> {
+pub fn local_delete_table(query: &Query, allow_parameters: bool) -> Result<&str, QueryError> {
     let Statement::Delete(delete) = &query.statement else {
         return Err(QueryError::Unsupported);
     };
@@ -61,7 +57,7 @@ pub fn plan_recoverable_delete(
     collation: Option<&dyn Collation>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DeletePlan<RecoverableNativeDeletePlan>, RecoverableDeleteError> {
-    let table = local_delete_table(query)?;
+    let table = local_delete_table(query, false)?;
     let editor = NativeJournalEditor::new(image, table, budget, cancelled)?;
     Ok(tablecraft_query::plan_delete(
         editor, query, budget, collation, cancelled,
@@ -79,7 +75,7 @@ pub fn plan_recoverable_delete_with_options(
     options: NativeMutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<DeletePlan<RecoverableNativeDeletePlan>, RecoverableDeleteError> {
-    let table = local_table(query, true)?;
+    let table = local_delete_table(query, true)?;
     let schema = comparison::schema(&image, table, native, cancelled)?;
     let editor = NativeJournalEditor::new(image, table, native, cancelled)?;
     let policies = comparison::align(&schema, editor.snapshot().columns(), native, cancelled)?;

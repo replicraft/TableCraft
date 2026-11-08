@@ -2,7 +2,7 @@
 mod apply;
 mod apply_delete;
 mod apply_insert;
-mod apply_query_update;
+mod apply_query_action;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
 mod outcomes;
@@ -14,7 +14,7 @@ use self::{
     apply::apply,
     apply_delete::apply_delete,
     apply_insert::apply_insert,
-    apply_query_update::apply_query_update,
+    apply_query_action::apply_query_action,
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
 };
@@ -24,8 +24,11 @@ use super::{
 #[cfg(feature = "ace16-create")]
 use crate::editing::ReviewedTableCreation;
 use crate::{
-    controls::update_recovery_budget,
-    editing::{ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryUpdate},
+    controls::action_recovery_budget,
+    editing::{
+        ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryUpdate,
+        query_action::native::Plan,
+    },
 };
 use std::{
     panic::{AssertUnwindSafe, catch_unwind},
@@ -44,6 +47,7 @@ enum Task {
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
     ApplyQueryUpdate(ReviewedQueryUpdate, PathBuf),
+    ApplyQueryDelete(ReviewedQueryDelete, PathBuf),
     Restart(PathBuf, PathBuf),
     Recover,
     Release,
@@ -125,6 +129,7 @@ impl SaveWorker {
                     Task::Apply(..)
                     | Task::ApplyInsert(..)
                     | Task::ApplyDelete(..)
+                    | Task::ApplyQueryDelete(..)
                     | Task::ApplyQueryUpdate(..) => SaveOperation::Apply,
                     Task::Restart(..) | Task::Recover => SaveOperation::Recover,
                     Task::Release => SaveOperation::Release,
@@ -152,7 +157,26 @@ impl SaveWorker {
                         apply_delete(reviewed, bundle, &mut retained, &cancelled)
                     }
                     Task::ApplyQueryUpdate(reviewed, bundle) => {
-                        apply_query_update(reviewed, bundle, &mut retained, &cancelled)
+                        let reviewed = *reviewed.state;
+                        apply_query_action(
+                            reviewed.target,
+                            Plan::Update(reviewed.plan),
+                            reviewed.valid,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
+                    }
+                    Task::ApplyQueryDelete(reviewed, bundle) => {
+                        let reviewed = *reviewed.state;
+                        apply_query_action(
+                            reviewed.target,
+                            Plan::Delete(reviewed.plan),
+                            reviewed.valid,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
                     }
                     Task::Restart(source, bundle) => {
                         restart(source, bundle, &mut retained, &cancelled)
@@ -162,7 +186,7 @@ impl SaveWorker {
                             // Recovery includes complete journal image validation and
                             // fresh native reconstruction, separately from the normal
                             // native planning allowance used before an initial write.
-                            let mut work = update_recovery_budget();
+                            let mut work = action_recovery_budget();
                             finish(
                                 session.recover_pending(&mut work, &cancelled),
                                 &mut retained,
@@ -238,6 +262,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryUpdate>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryUpdate)
+    }
+
+    /// Consume one unlocked SQL DELETE review through the same retained save owner.
+    pub fn start_query_delete(
+        &self,
+        reviewed: ReviewedQueryDelete,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQueryDelete>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryDelete)
     }
 
     #[cfg(feature = "ace16-create")]

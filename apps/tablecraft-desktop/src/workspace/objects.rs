@@ -289,7 +289,7 @@ impl Desktop {
         })
     }
 
-    pub(super) fn restore_workspace_after_query_update(&mut self) -> bool {
+    pub(super) fn restore_workspace_after_query_action(&mut self) -> bool {
         self.restore_workspace_after_save_preferring(ObjectKind::Sql)
     }
 

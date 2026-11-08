@@ -1,5 +1,39 @@
 # Implementation status
 
+## GUI-reviewed SQL DELETE — 8 November 2026
+
+Scratch Run now routes qualified local DELETE through runtime-issued typed
+parameters, lease-free native review, explicit Yes/No and the existing consuming
+save worker. UPDATE and DELETE share bounded review preparation, phase budgets,
+UI decisions and save/recovery orchestration. Their public capabilities, native
+plans and TCNA/TCND intents remain distinct. Save does not reevaluate SQL or
+parameters. Fresh successful reopen restores the SQL draft and clears obsolete
+results without rerunning the action.
+
+Shared UI retains the expected operation and original SQL/input witness, refusing
+wrong-kind effects and invalid counts. Desktop privately retains typed capability
+variants and compares operation, source revision and table before publication.
+No/Cancel preserves original bytes and prior results; accepted outcomes retain
+one resource owner through source drift, release and terminal acknowledgment.
+Eight `query-actions.ftl` catalogs replace the UPDATE-only section. Native saved
+actions, joined/external targets, action-record previews and append/INSERT remain
+separate work; native writer qualifications are unchanged.
+
+Final gates pass 175 runtime tests plus its diagnostic test, 133 desktop tests,
+507 shared UI tests and 116 Access adapter units. Real DELETE tests compare
+independent complete native-17 AFTER bytes, reopen remaining membership and
+retain locks on source-drift refusal. Strict affected-package lint, minimal builds,
+Windows/Linux shared-library compilation and strict lint of FreeBSD's unsupported
+runtime branch pass. The initial malformed-input assertion failure and corrected
+run remain in ignored logs. No native app window was launched.
+
+Six current offscreen frames were inspected across light/dark, English/German/
+Japanese and 1×/1.25×/2× layouts, including UPDATE regression coverage. These
+warnings remain adaptations because no corresponding Access warning capture is
+retained; [the visual record](ui/PRESENTATION_PREVIEW.md#reviewed-sql-delete-and-shared-actions--8-november-2026)
+distinguishes headless/compilation evidence from native Windows/Access parity.
+Next: reviewed append/INSERT queries using the same explicit action lifecycle.
+
 ## Reviewed DELETE planning and fresh proof — 8 November 2026
 
 The neutral DELETE planner now accepts complete typed parameters and actual field

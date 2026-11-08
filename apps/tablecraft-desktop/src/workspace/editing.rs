@@ -3,7 +3,7 @@ mod deleting;
 mod inserting;
 #[cfg(test)]
 mod pasting;
-mod query_update;
+mod query_action;
 pub(super) mod recovery;
 pub(super) mod table_creation;
 use super::{Desktop, PendingOperation, objects::Sessions};
@@ -13,8 +13,8 @@ use std::{path::PathBuf, sync::Arc};
 use tablecraft_runtime::{
     Command, EditDraft as RuntimeDraft, EditInput as RuntimeInput, EditReview as RuntimeReview,
     EditTarget as RuntimeTarget, InspectedQuery, ReviewedDelete, ReviewedEdit, ReviewedInsert,
-    ReviewedQueryUpdate, SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind,
-    SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
+    SaveCleanupDisposition, SaveCompletion, SaveFailure, SaveFailureKind, SaveKnownOutcome,
+    SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
 use tablecraft_ui::{
     EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs,
@@ -26,13 +26,13 @@ pub(super) struct Editing {
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
-    query_update_review: Option<(u64, ReviewedQueryUpdate)>,
-    query_update_pending: Option<(u64, Arc<InspectedQuery>)>,
+    query_action_review: Option<(u64, query_action::ReviewedAction)>,
+    query_action_pending: Option<(u64, Arc<InspectedQuery>)>,
     save: Option<ActiveSave>,
     insert_retry: Option<RetainedInsertRetry>,
     refresh: Option<(u64, String, u32)>,
     refresh_cleanup: Option<SaveCleanupNotice>,
-    refresh_query_update: bool,
+    refresh_query_action: bool,
 }
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
@@ -48,7 +48,7 @@ enum SaveOwner {
     Insert,
     Delete,
     TableCreation,
-    QueryUpdate,
+    QueryAction,
 }
 
 struct ActiveSave {
@@ -68,13 +68,13 @@ impl Editing {
             review: None,
             insert_review: None,
             delete_review: None,
-            query_update_review: None,
-            query_update_pending: None,
+            query_action_review: None,
+            query_action_pending: None,
             save: None,
             insert_retry: None,
             refresh: None,
             refresh_cleanup: None,
-            refresh_query_update: false,
+            refresh_query_action: false,
         }
     }
 
@@ -85,15 +85,15 @@ impl Editing {
     pub(super) fn clear_refresh(&mut self) {
         self.refresh = None;
         self.refresh_cleanup = None;
-        self.refresh_query_update = false;
+        self.refresh_query_action = false;
     }
 
     pub(super) fn clear_review(&mut self) {
         self.review = None;
         self.insert_review = None;
         self.delete_review = None;
-        self.query_update_review = None;
-        self.query_update_pending = None;
+        self.query_action_review = None;
+        self.query_action_pending = None;
     }
 
     pub(super) fn clear_insert_retry(&mut self) {
@@ -271,8 +271,8 @@ impl Desktop {
             SaveOwner::Cell => self.state.set_edit_save_outcome(report.id, outcome),
             SaveOwner::Insert => self.state.set_insert_save_outcome(report.id, outcome),
             SaveOwner::Delete => self.state.set_delete_save_outcome(report.id, outcome),
-            SaveOwner::QueryUpdate => {
-                self.state.set_query_update_save_outcome(report.id, outcome);
+            SaveOwner::QueryAction => {
+                self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
         }
@@ -297,8 +297,8 @@ impl Desktop {
             return;
         };
         if save.id != id
-            || matches!(save.owner, SaveOwner::QueryUpdate)
-                && !self.state.can_resolve_query_update_save(id, recover)
+            || matches!(save.owner, SaveOwner::QueryAction)
+                && !self.state.can_resolve_query_action_save(id, recover)
         {
             return;
         }
@@ -315,8 +315,8 @@ impl Desktop {
                     SaveOwner::Cell => self.state.begin_edit_resolution(id, next),
                     SaveOwner::Insert => self.state.begin_insert_resolution(id, next),
                     SaveOwner::Delete => self.state.begin_delete_resolution(id, next),
-                    SaveOwner::QueryUpdate => {
-                        self.state.begin_query_update_resolution(id, next);
+                    SaveOwner::QueryAction => {
+                        self.state.begin_query_action_resolution(id, next);
                     }
                     SaveOwner::TableCreation => {}
                 }
@@ -332,8 +332,8 @@ impl Desktop {
         if matches!(save.owner, SaveOwner::Insert) && !self.state.can_acknowledge_insert_save(id) {
             return;
         }
-        if matches!(save.owner, SaveOwner::QueryUpdate)
-            && !self.state.can_acknowledge_query_update_save(id)
+        if matches!(save.owner, SaveOwner::QueryAction)
+            && !self.state.can_acknowledge_query_action_save(id)
         {
             return;
         }
@@ -381,8 +381,8 @@ impl Desktop {
             SaveOwner::Delete => {
                 self.state.close_delete();
             }
-            SaveOwner::QueryUpdate => {
-                self.state.acknowledge_query_update_save(id);
+            SaveOwner::QueryAction => {
+                self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
         }
@@ -393,7 +393,7 @@ impl Desktop {
                 self.retain_workspace_restore(restore);
             }
             self.editing.refresh = Some((self.generation, save.table, save.offset));
-            self.editing.refresh_query_update = matches!(save.owner, SaveOwner::QueryUpdate);
+            self.editing.refresh_query_action = matches!(save.owner, SaveOwner::QueryAction);
             self.editing.refresh_cleanup = match save.report.map(|report| report.outcome) {
                 Some(SaveOutcome::Saved { receipt }) => cleanup_notice(receipt),
                 _ => None,
@@ -427,8 +427,8 @@ impl Desktop {
                 self.state
                     .set_save_cleanup(database.document_revision, cleanup);
             }
-            let restored = if std::mem::take(&mut self.editing.refresh_query_update) {
-                self.restore_workspace_after_query_update()
+            let restored = if std::mem::take(&mut self.editing.refresh_query_action) {
+                self.restore_workspace_after_query_action()
             } else {
                 self.restore_workspace_after_save(&table)
             };

@@ -3,7 +3,7 @@ use crate::{
     Error, InspectedQuery, ParameterInput, Response, display::Presentation, document::Document,
     query::parameters,
 };
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 #[path = "query_update/native.rs"]
@@ -25,12 +25,6 @@ pub struct QueryUpdateReview {
 /// Its native plan and invalidation token cannot be constructed by a host.
 pub struct ReviewedQueryUpdate {
     pub(super) state: Box<platform::State>,
-}
-
-pub(super) struct QueryUpdateTarget {
-    pub(super) path: PathBuf,
-    pub(super) document_revision: u64,
-    pub(super) table: String,
 }
 
 impl ReviewedQueryUpdate {

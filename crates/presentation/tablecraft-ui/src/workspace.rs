@@ -45,7 +45,7 @@ pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
-pub use query::actions::update::QueryUpdateReview;
+pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
 pub use query::parameters::{ParameterInput, ParameterSpec};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
@@ -98,10 +98,10 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
-    ApplyQueryUpdate {
+    ApplyQueryAction {
         review_id: u64,
     },
-    CancelQueryUpdateReview {
+    CancelQueryActionReview {
         request_id: u64,
     },
     BeginRecovery {
@@ -347,7 +347,7 @@ pub struct State {
     query_pending: Option<PendingSql>,
     query_sql_revision: u64,
     query_parameters: Option<query::parameters::scratch::Session>,
-    query_update: Option<query::actions::update::Session>,
+    query_action: Option<query::actions::review::Session>,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -671,7 +671,7 @@ impl State {
         self.file_picker_available
             && !self.busy
             && !self.table_draft_field_delete_open()
-            && !self.query_update_dialog_open()
+            && !self.query_action_dialog_open()
     }
 
     fn query_ready(&self) -> bool {
@@ -683,7 +683,7 @@ impl State {
             && self.database.is_some()
             && !self.busy
             && self.query_parameters.is_none()
-            && !self.query_update_dialog_open()
+            && !self.query_action_dialog_open()
             && !self.sql.trim().is_empty()
     }
 
@@ -703,7 +703,7 @@ impl State {
     pub fn show(&mut self, ui: &mut Ui) -> Vec<Action> {
         self.synchronize_objects();
         self.validate_query_parameter_acquisition();
-        self.validate_query_update();
+        self.validate_query_action();
         self.refresh_display();
         self.refresh_edit_display();
         self.refresh_delete_display();
@@ -725,7 +725,7 @@ impl State {
             || self.contents_request_id().is_some()
             || self.edit_dialog_open()
             || self.parameter_prompt_open()
-            || self.query_update_dialog_open()
+            || self.query_action_dialog_open()
             || self.zoom_dialog_open();
         self.prepare_ribbon_display(ui, modal_open);
         self.begin_ribbon_keyboard(ui, modal_open);
@@ -782,7 +782,7 @@ impl State {
         }
         let modal_open = modal_open
             || self.parameter_prompt_open()
-            || self.query_update_dialog_open()
+            || self.query_action_dialog_open()
             || self.zoom_dialog_open();
         self.begin_pane_focus(ui, modal_open || self.find_window_open());
         ui.add_enabled_ui(!modal_open, |ui| {
@@ -808,7 +808,7 @@ impl State {
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.scratch_parameter_dialog(ui.ctx(), &mut actions);
-        self.query_update_dialog(ui.ctx(), &mut actions);
+        self.query_action_dialog(ui.ctx(), &mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
@@ -817,7 +817,7 @@ impl State {
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);
         if !self.parameter_prompt_open()
-            && !self.query_update_dialog_open()
+            && !self.query_action_dialog_open()
             && !self.zoom_dialog_open()
             && !self.find_window_open()
             && self.table_draft_save.is_none()

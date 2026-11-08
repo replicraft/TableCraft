@@ -60,12 +60,12 @@ impl State {
         self.saved_query_prompt_open() || self.scratch_parameter_prompt_open()
     }
 
-    pub(in crate::workspace) fn take_query_update_origin(
+    pub(in crate::workspace) fn take_query_action_origin(
         &mut self,
         inspection_id: u64,
         sql: &str,
         inputs: &Vec<ParameterInput>,
-    ) -> Option<crate::workspace::query::actions::update::Origin> {
+    ) -> Option<crate::workspace::query::actions::review::Origin> {
         if !self.can_run_parameterized_query(inspection_id, sql, inputs) {
             return None;
         }
@@ -73,7 +73,7 @@ impl State {
         let Phase::Ready(body) = session.phase else {
             unreachable!("checked confirmed scratch parameters")
         };
-        Some(crate::workspace::query::actions::update::Origin {
+        Some(crate::workspace::query::actions::review::Origin {
             sql: session.sql,
             sql_revision: session.sql_revision,
             object: session.object,
@@ -95,7 +95,7 @@ impl State {
     /// Admit a fresh Run intent before a host captures or clears any state.
     pub fn can_inspect_query_parameters(&self) -> bool {
         self.query_ready()
-            && !self.query_update_dialog_open()
+            && !self.query_action_dialog_open()
             && self.query_sql_revision().is_some()
             && self.active_object().is_some_and(|tab| {
                 tab.target.kind == ObjectKind::Sql

@@ -2,9 +2,9 @@
 
 The scratch SQL object separates the editable draft from the text that produced
 its displayed results. Explicit Run uses runtime-owned statement classification:
-retrieval uses the read query service, while qualified local UPDATE enters a
-separate review and confirmation workflow. Editing the draft, selecting a cached
-result view or switching object tabs does not execute SQL.
+retrieval uses the read query service, while qualified local UPDATE and DELETE
+enter a separate review and confirmation workflow. Editing the draft, selecting
+a cached result view or switching object tabs does not execute SQL.
 
 Scratch and saved retrieval execution share the runtime's
 [query context](../application/RUNTIME.md#read-query-execution-context): lazy local
@@ -13,43 +13,64 @@ sequence, unsecured CurrentUser metadata and an explicit English Error catalog.
 Those providers do not authorize writes, select database collation or turn
 display formatting into SQL conversion policy. Declared scratch parameters use
 the [shared runtime parameter service](../application/RUNTIME.md#scratch-query-parameter-service)
-and the same staged dialog controls as saved queries. Local UPDATE uses the
-reviewed action service described below. Other action kinds, DDL and native
-saved-definition editing remain unfinished.
+and the same staged dialog controls as saved queries. Local UPDATE and DELETE
+use the reviewed action service described below. Append/INSERT, other action
+kinds, DDL and native saved-definition editing remain unfinished.
 
-## Reviewed local UPDATE
+## Reviewed local UPDATE and DELETE
 
 Run inspects the actual statement, acquires any declared typed parameters, then
-requests a source-bound runtime UPDATE review. Desktop does not parse SQL or reinterpret a failed read as a write. The
-shared confirmation displays the actual target table, matched records and records
-with effective changes. Yes applies the reviewed operation; No/Escape before
-acceptance drops the lease-free review and preserves prior results, SQL and selection.
-The dialog states that database changes have no Undo. Microsoft's
+requests its source-bound runtime review. Desktop does not parse SQL or
+reinterpret a failed read as a write. UPDATE confirmation displays matched
+records and records with effective changes. DELETE confirmation displays matched
+records and the native plan's deleted-root count. DELETE removes whole records;
+it does not clear selected field values or erase retained payload bytes.
+
+The shared `QueryActionReview` carries a typed UPDATE or DELETE effect. The
+presentation owner captures the expected `QueryActionKind` when review begins
+and rejects a mismatched effect. Plain display facts never select a native save
+operation: desktop retains a distinct consuming runtime capability for each kind.
+The shared `query-actions.ftl` section provides common decision/save controls and
+operation-specific titles, effects and confirmation text in every UI language.
+
+Yes applies the reviewed operation. No/Escape before acceptance drops the
+lease-free review and preserves prior results, SQL and selection. Both warnings
+state that database changes have no Undo. Microsoft's
 [update-query workflow](https://support.microsoft.com/en-us/access/create-and-run-an-update-query)
-documents explicit confirmation and the absence of Undo; no corresponding local
-warning capture is retained, so the dialog layout remains an adaptation.
+documents confirmation and no Undo. Its
+[DELETE statement contract](https://support.microsoft.com/en-us/access/delete-statement)
+describes whole-record deletion and no Undo, while the
+[screen-reader query workflow](https://support.microsoft.com/en-us/accessibility/access/use-a-screen-reader-to-create-a-query-in-access-desktop-databases)
+documents confirmation of the number of rows before deletion. The
+[delete-query guide](https://support.microsoft.com/en-us/access/create-and-run-a-delete-query)
+also describes inspecting records selected by the same criteria. The current
+warning shows reviewed counts; it does not add a separate action-result preview.
+No corresponding local warning capture is retained, so both dialog layouts remain
+adaptations rather than verified Access replicas.
 
 The original scratch inspection's SQL allocation, edit revision, tab/document
 identity, publication witness and fully confirmed parameter inputs transfer into
-the action session. They are not recaptured from mutable UI state. An incomplete
-prompt or altered input envelope cannot enter review. Stale/duplicate callbacks cannot replace an
-accepted review. After the save worker accepts the opaque runtime capability,
-Cancel/Escape requests cancellation rather than dropping ownership. Retained
-failures use the existing Recover/Release controls; all terminal outcomes require
-acknowledgment from the same save owner.
+one shared action session. They are not recaptured from mutable UI state. An
+incomplete prompt or altered input envelope cannot enter review. Stale or duplicate
+callbacks cannot replace an accepted review. After the save worker accepts the
+opaque runtime capability, Cancel/Escape requests cancellation rather than
+dropping ownership. Retained failures use the existing Recover/Release controls;
+all terminal outcomes require acknowledgment from the same save owner.
 
 After acknowledged success, the host reopens the actual source and restores the
-SQL tab/draft, clearing obsolete query snapshots. It never reruns UPDATE to refresh
-results and never publishes affected counts as query rows. Query results do not
-gain native row handles. Synthetic preview scenes use the same controls but only
-canned DTOs and explicit mock outcomes; no database capability is present.
+SQL tab/draft, clearing obsolete query snapshots. It never reruns the action to
+refresh results and never publishes affected counts as query rows. Query results
+do not gain native row handles. Synthetic preview scenes use the same controls
+but only canned DTOs and explicit mock outcomes; no database capability is present.
 
-The existing native writer qualifications still apply. This does not enable older
-ACE writers, encrypted/package editing, joined/external
-targets or additional expression contexts. Unsupported action/DDL kinds stop after
-inspection without a write; unsupported UPDATE shapes fail before confirmation.
-Evaluated LIKE still needs a supplied mode and is not enabled by this UI route.
-See the [runtime contract](../application/RUNTIME.md#reviewed-sql-update-actions).
+Existing native writer qualifications still apply. This does not enable older
+write profiles, encrypted/package editing, joined/external targets, cascades or
+additional expression contexts. Unsupported action/DDL kinds stop after
+inspection without a write; unsupported UPDATE/DELETE shapes fail before
+confirmation. Evaluated LIKE still needs a supplied mode and is not enabled by
+this UI route. See the runtime contracts for
+[UPDATE](../application/RUNTIME.md#reviewed-sql-update-actions) and
+[DELETE](../application/RUNTIME.md#reviewed-sql-delete-actions).
 
 ## Declared scratch parameters
 
@@ -69,8 +90,8 @@ Input is literal data. VALUE declarations require a chosen concrete carrier;
 NULL is separate from text. Type, length and precision validation remains owned
 by runtime/query services. Unknown column names do not invent prompts, and this
 flow does not add transitive named-query parameter propagation. Qualified local
-UPDATE uses these same prompts before its separate Yes/No confirmation; other
-action kinds retain their explicit refusal.
+UPDATE and DELETE use these same prompts before their separate Yes/No
+confirmation; other action kinds retain their explicit refusal.
 
 Acquisition captures the exact SQL tab, document, edit revision, text and focus
 publication. SQL A→B→A changes, tab/source replacement and stale replies cannot

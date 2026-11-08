@@ -25,7 +25,7 @@ fn typed_delete_context_selects_original_rows_and_legacy_api_still_refuses_decla
     )
     .unwrap();
     assert!(matches!(
-        local_delete_table(parsed.query()),
+        local_delete_table(parsed.query(), false),
         Err(QueryError::Unsupported)
     ));
     let image =

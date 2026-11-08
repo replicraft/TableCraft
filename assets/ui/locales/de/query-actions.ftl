@@ -1,0 +1,15 @@
+# Reviewed SQL actions; runtime owns native writes.
+query-action-update-title = Aktualisierungsabfrage
+query-action-update-reviewing = Aktualisierungsabfrage wird geprüft…
+query-action-table = Tabelle: { $table }
+query-action-matched = Gefundene Datensätze: { $count }
+query-action-update-changed = Datensätze mit tatsächlichen Änderungen: { $count }
+query-action-update-confirmation = Diese geprüften Änderungen auf die ursprüngliche Datenbank anwenden?
+query-action-no-undo = Dieser Vorgang kann nicht rückgängig gemacht werden.
+query-action-yes = Ja
+query-action-no = Nein
+query-action-invalid-review = Die geprüfte Aktion stimmt nicht mehr mit diesem SQL-Entwurf überein.
+query-action-delete-title = Löschabfrage
+query-action-delete-reviewing = Löschabfrage wird geprüft…
+query-action-delete-deleted = Zu löschende Datensätze: { $count }
+query-action-delete-confirmation = Diese geprüften Datensätze dauerhaft aus der ursprünglichen Datenbank löschen?

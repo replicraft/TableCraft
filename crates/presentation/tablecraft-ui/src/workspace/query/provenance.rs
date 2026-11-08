@@ -60,7 +60,7 @@ impl State {
             return false;
         };
         self.clear_query_parameter_acquisition();
-        self.close_query_update();
+        self.close_query_action();
         self.sql = sql;
         self.query_sql_revision = revision;
         true
@@ -71,7 +71,7 @@ impl State {
             return false;
         };
         self.clear_query_parameter_acquisition();
-        self.close_query_update();
+        self.close_query_action();
         self.query_sql_revision = revision;
         true
     }

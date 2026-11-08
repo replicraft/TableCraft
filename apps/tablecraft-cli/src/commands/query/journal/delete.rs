@@ -30,7 +30,7 @@ pub(super) fn prepare(
         .map_err(Error::Native)?;
     let query = tablecraft_sql::parse_query(&args.sql, tablecraft_sql::ParseLimits::default())
         .map_err(Error::Parse)?;
-    sql::local_delete_table(query.query()).map_err(Error::Shape)?;
+    sql::local_delete_table(query.query(), false).map_err(Error::Shape)?;
     let collation = args
         .collation
         .map(|policy| TextCollation::from(policy).build())

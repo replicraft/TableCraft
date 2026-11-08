@@ -82,7 +82,7 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_delete").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_delete_table(query).map_err(|error| {
+            sql::local_delete_table(query, false).map_err(|error| {
                 Cause::DeletePlanning(sql::RecoverableDeleteError::Shape(error))
             })?;
             let slot = self.slot_mut()?;

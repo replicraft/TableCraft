@@ -19,7 +19,7 @@ impl Desktop {
     }
 
     pub(super) fn release_stale_query_parameters(&mut self) {
-        self.release_stale_query_update_review();
+        self.release_stale_query_action_review();
         if self.query_parameters.as_ref().is_some_and(|inspected| {
             !self
                 .state
@@ -115,7 +115,7 @@ impl Desktop {
                 self.pending = PendingOperation::Read;
                 return;
             }
-            QueryOperation::Read | QueryOperation::Update => {}
+            QueryOperation::Read | QueryOperation::Update | QueryOperation::Delete => {}
         }
 
         let specs = parameters
@@ -179,8 +179,11 @@ impl Desktop {
         }
 
         let target = Arc::clone(&inspected.target);
-        if target.operation() == QueryOperation::Update {
-            self.begin_query_update_from_parameters(inspection_id, target, parameters);
+        if matches!(
+            target.operation(),
+            QueryOperation::Update | QueryOperation::Delete
+        ) {
+            self.begin_query_action_from_parameters(inspection_id, target, parameters);
             return;
         }
         if target.operation() != QueryOperation::Read {

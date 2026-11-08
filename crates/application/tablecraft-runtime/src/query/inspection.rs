@@ -24,6 +24,7 @@ const ARC_COUNTERS: usize = 2;
 pub enum QueryOperation {
     Read,
     Update,
+    Delete,
     Unsupported,
 }
 
@@ -32,10 +33,10 @@ impl QueryOperation {
         match statement {
             Statement::Read(_) | Statement::Crosstab(_) => Self::Read,
             Statement::Update(_) => Self::Update,
-            Statement::Definition(_)
-            | Statement::MakeTable(_)
-            | Statement::Insert(_)
-            | Statement::Delete(_) => Self::Unsupported,
+            Statement::Delete(_) => Self::Delete,
+            Statement::Definition(_) | Statement::MakeTable(_) | Statement::Insert(_) => {
+                Self::Unsupported
+            }
         }
     }
 }

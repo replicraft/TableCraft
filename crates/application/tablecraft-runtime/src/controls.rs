@@ -3,14 +3,14 @@
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
-mod update;
+mod action;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
-pub(crate) use update::{
-    update_persistence_budget, update_proof_budget, update_query_budget, update_recovery_budget,
-    update_review_budget,
+pub(crate) use action::{
+    action_persistence_budget, action_proof_budget, action_query_budget, action_recovery_budget,
+    action_review_budget,
 };
 
 use super::Error;

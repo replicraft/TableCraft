@@ -1,0 +1,15 @@
+# Reviewed SQL actions; runtime owns native writes.
+query-action-update-title = Update query
+query-action-update-reviewing = Reviewing the update query…
+query-action-table = Table: { $table }
+query-action-matched = Records matched: { $count }
+query-action-update-changed = Records with effective changes: { $count }
+query-action-update-confirmation = Apply these reviewed changes to the original database?
+query-action-no-undo = Undo is not available for this operation.
+query-action-yes = Yes
+query-action-no = No
+query-action-invalid-review = The action review no longer matches this SQL draft.
+query-action-delete-title = Delete query
+query-action-delete-reviewing = Reviewing the delete query…
+query-action-delete-deleted = Records to delete: { $count }
+query-action-delete-confirmation = Permanently delete these reviewed records from the original database?

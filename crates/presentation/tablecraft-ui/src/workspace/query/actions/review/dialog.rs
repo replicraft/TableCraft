@@ -1,5 +1,5 @@
-//! Compact UPDATE warning adaptation; no native warning capture is retained.
-use super::{Phase, Report};
+//! Compact action warning adaptation; no native warning capture is retained.
+use super::{Phase, QueryActionEffect, QueryActionKind, Report};
 use crate::localization::{message, tr};
 use crate::workspace::{Action, EditSaveOutcome, State, diagnostics, save_display};
 use egui::{Id, Ui};
@@ -10,20 +10,20 @@ const VIEWPORT_MARGIN: f32 = 80.0;
 const INNER_MARGIN: i8 = 12;
 
 impl State {
-    pub(in crate::workspace) fn query_update_dialog(
+    pub(in crate::workspace) fn query_action_dialog(
         &mut self,
         context: &egui::Context,
         actions: &mut Vec<Action>,
     ) {
-        self.validate_query_update();
-        let can_apply = self.query_update.as_ref().is_some_and(|session| {
+        self.validate_query_action();
+        let can_apply = self.query_action.as_ref().is_some_and(|session| {
             if let Phase::Review { review, .. } = &session.phase {
-                self.can_apply_query_update(review.id)
+                self.can_apply_query_action(review.id)
             } else {
                 false
             }
         });
-        let Some(session) = &mut self.query_update else {
+        let Some(session) = &mut self.query_action else {
             return;
         };
         let mut close = false;
@@ -31,23 +31,23 @@ impl State {
         let mut cancel_review = None;
         let frame =
             egui::Frame::popup(&context.style_of(context.theme())).inner_margin(INNER_MARGIN);
-        let response = egui::Modal::new(Id::new("query_update_review"))
+        let response = egui::Modal::new(Id::new("query_action_review"))
             .frame(frame)
             .show(context, |ui| {
                 ui.set_width(
                     (context.content_rect().width() - VIEWPORT_MARGIN)
                         .clamp(DIALOG_MIN_WIDTH, DIALOG_MAX_WIDTH),
                 );
-                ui.strong(tr(ui, "query-update-title"));
+                ui.strong(tr(ui, session.kind.title_key()));
                 ui.separator();
                 match &mut session.phase {
                     Phase::Reviewing { request_id, error } => {
                         if let Some(error) = error {
-                            report(ui, "query_update_review_error", error);
+                            report(ui, "query_action_review_error", error);
                         } else {
                             ui.horizontal(|ui| {
                                 ui.spinner();
-                                ui.label(tr(ui, "query-update-reviewing"));
+                                ui.label(tr(ui, session.kind.reviewing_key()));
                             });
                         }
                         ui.separator();
@@ -65,36 +65,40 @@ impl State {
                     } => {
                         ui.label(message(
                             ui,
-                            "query-update-table",
+                            "query-action-table",
                             &[("table", review.table.clone())],
                         ));
                         ui.label(message(
                             ui,
-                            "query-update-matched",
-                            &[("count", review.matched_rows.to_string())],
+                            "query-action-matched",
+                            &[("count", review.effect.matched_rows().to_string())],
                         ));
-                        ui.label(message(
-                            ui,
-                            "query-update-changed",
-                            &[("count", review.changed_rows.to_string())],
-                        ));
-                        ui.label(tr(ui, "query-update-confirmation"));
-                        ui.small(tr(ui, "query-update-no-undo"));
+                        let (effect_key, affected) = match review.effect {
+                            QueryActionEffect::Update { changed_rows, .. } => {
+                                ("query-action-update-changed", changed_rows)
+                            }
+                            QueryActionEffect::Delete { deleted_rows, .. } => {
+                                ("query-action-delete-deleted", deleted_rows)
+                            }
+                        };
+                        ui.label(message(ui, effect_key, &[("count", affected.to_string())]));
+                        ui.label(tr(ui, session.kind.confirmation_key()));
+                        ui.small(tr(ui, "query-action-no-undo"));
                         if let Some(error) = error {
-                            report(ui, "query_update_apply_error", error);
+                            report(ui, "query_action_apply_error", error);
                         }
                         ui.separator();
                         ui.horizontal(|ui| {
                             if ui
                                 .add_enabled(
                                     can_apply,
-                                    egui::Button::new(tr(ui, "query-update-yes")),
+                                    egui::Button::new(tr(ui, "query-action-yes")),
                                 )
                                 .clicked()
                             {
                                 apply = Some(review.id);
                             }
-                            let no = ui.button(tr(ui, "query-update-no"));
+                            let no = ui.button(tr(ui, "query-action-no"));
                             if *focus_no {
                                 no.request_focus();
                                 *focus_no = false;
@@ -163,14 +167,14 @@ impl State {
             }
         }
         if let Some(request_id) = cancel_review {
-            actions.push(Action::CancelQueryUpdateReview { request_id });
+            actions.push(Action::CancelQueryActionReview { request_id });
         }
         if close {
-            self.close_query_update();
+            self.close_query_action();
         } else if let Some(review_id) = apply
-            && self.can_apply_query_update(review_id)
+            && self.can_apply_query_action(review_id)
         {
-            actions.push(Action::ApplyQueryUpdate { review_id });
+            actions.push(Action::ApplyQueryAction { review_id });
         }
     }
 }
@@ -207,6 +211,29 @@ fn report(ui: &mut Ui, id: &str, report: &Report) {
         Report::Message(message) => diagnostics::show(ui, ui.id().with(id), message),
         Report::Limit => {
             ui.label(tr(ui, "objects-memory-limit"));
+        }
+    }
+}
+
+impl QueryActionKind {
+    fn title_key(self) -> &'static str {
+        match self {
+            Self::Update => "query-action-update-title",
+            Self::Delete => "query-action-delete-title",
+        }
+    }
+
+    fn reviewing_key(self) -> &'static str {
+        match self {
+            Self::Update => "query-action-update-reviewing",
+            Self::Delete => "query-action-delete-reviewing",
+        }
+    }
+
+    fn confirmation_key(self) -> &'static str {
+        match self {
+            Self::Update => "query-action-update-confirmation",
+            Self::Delete => "query-action-delete-confirmation",
         }
     }
 }

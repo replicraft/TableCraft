@@ -666,24 +666,24 @@ continue to use actual schema/native values, independently of the hint tag.
 ## Reviewed SQL UPDATE actions
 
 The platform predicate is applied at the module boundary: common review facts,
-capability getters and inspected-source checks live in `editing/query_update.rs`,
-while native planning and the explicit unsupported-host response have separate
-implementations. This removes repeated per-import/per-field guards without
+capability getters and inspected-source checks live in the typed
+`editing/query_update.rs` and `editing/query_delete.rs` services. Native preparation
+is shared in `editing/query_action/native.rs`; each operation retains its own
+sealed plan and explicit unsupported-host response. This removes repeated per-import/per-field guards without
 expanding native save support beyond macOS, Linux and Windows. A FreeBSD library
 compile checks the unsupported branch; it does not qualify FreeBSD native editing.
 
 With `offline-edit`, `ReviewQueryUpdate` accepts an opaque `InspectedQuery` from
-this exact open document and explicit literal `ParameterInput` envelopes. It rechecks both the private source identity and the
-document revision before parsing the immutable SQL. The current local batch
-UPDATE shape uses the existing native journal editor and original-row query
+this exact open document and explicit literal `ParameterInput` envelopes. It
+rechecks both the private source identity and the document revision before parsing
+the immutable SQL. The current local batch UPDATE shape uses the existing native journal editor and original-row query
 planner: every SET expression is evaluated before one consuming native finish.
 Declared parameters use the shared strict input service before native image
 capture or source construction. Envelope checks, typed conversion and review
 presentation share one cumulative presentation allowance. Joined/external targets
 and unsupported expression contexts remain refused rather than being substituted
-or ignored. Evaluated LIKE
-still requires a supplied wildcard mode and is refused in this action route;
-it does not silently assume ANSI-89 for an ANSI-92 database.
+or ignored. Evaluated LIKE still requires a supplied wildcard mode and is refused
+in this action route; it does not silently assume ANSI-89 for an ANSI-92 database.
 
 Review returns `QueryUpdateReview` display facts (table, document revision,
 matched and effectively changed rows, review identifier) plus a separate opaque
@@ -707,7 +707,7 @@ the actual session for explicit release, and later failures use the existing
 journal recovery/terminal receipt lifecycle. Busy/stale admission returns the
 original capability; cancellation requests never fabricate rollback.
 
-The runtime supplies finite phase allowances in `controls/update.rs`:
+The runtime supplies finite phase allowances in `controls/action.rs`:
 
 - Query binding, evaluation and complete request materialization: 16 MiB,
   10,000 row charges and one million work steps, independently from native work.
@@ -739,8 +739,64 @@ save worker. Before acceptance, No/Escape releases staging while preserving
 prior results. After acceptance, cancellation is request-only and terminal
 reports survive view changes until acknowledgment. Successful fresh-open restores
 the SQL tab/draft and clears obsolete result snapshots without rerunning UPDATE.
-Other action kinds, append/DELETE, native QueryDef persistence and DDL remain
+The same shared presentation owner also handles the distinct DELETE service
+below. Append/INSERT, other action kinds, native QueryDef persistence and DDL remain
 roadmap work; disabled or unsupported routes never gain authority by classification.
+
+## Reviewed SQL DELETE actions
+
+With `offline-edit`, `ReviewQueryDelete` accepts the exact issued `InspectedQuery`
+and explicit literal parameter inputs. It rechecks private source identity and
+document revision before processing inputs or native records. Declarations and
+typed values use the same strict parameter service as UPDATE; SQL-looking text
+remains literal. Closed local DELETE shape admission and the existing native
+writer gates still apply. This is whole-record deletion, separate from clearing
+field values with UPDATE and from the single-row browser deletion review.
+
+The Access adapter aligns actual stored-field policies to the original scalar
+snapshot and supplies its native resolver to predicate evaluation. Query work
+pays complete typed binding, original-row predicates and selected handles; native
+work pays capture, schema/alignment and the consuming native finish. Every
+predicate must succeed before that finish, including for an empty selection.
+Unsupported targets, expressions, comparison policies and required programs fail
+explicitly. No source path stored in SQL authorizes an external open or edit.
+
+Review returns `QueryDeleteReview` facts (table, document revision, matched rows,
+deleted roots and review identifier) plus a separate opaque `ReviewedQueryDelete`.
+Review retains no exclusive file lease or journal. The shared GUI
+`QueryActionReview` wraps its display effect as DELETE, while UPDATE carries its
+own effect. The expected operation is captured before review; a wrong-kind reply
+cannot replace the current decision. UI facts are not native save authority.
+
+`SaveWorker::start_query_delete` consumes only the DELETE capability through the
+same nonreplaceable save owner as other edits. Native save orchestration is
+shared in `editing/save/native/apply_query_action.rs`, with distinct typed UPDATE
+and DELETE plans and staging methods. It checks source validity, opens the target
+exclusively and invokes
+`stage_reviewed_delete_with_budgets` against that retained descriptor. Fresh
+complete BEFORE, original TCND binding, independent normal native reconstruction
+and complete AFTER/count equality precede journal setup. Save does not replay
+SQL, rebind parameters or recapture a UI ordinal. The existing retained session
+owns failures, recovery, release, receipts and terminal acknowledgment. A source
+change cannot silently turn into a newly evaluated DELETE.
+
+The phase allowances described for [UPDATE](#reviewed-sql-update-actions) apply
+unchanged: query, native review, fresh proof and persistence are distinct finite
+pools, and retained/restart recovery uses its explicit finite envelope. Empty
+operations retain source/action qualification rather than bypassing admission.
+This does not expand native formats, index families, macro/cascade execution,
+encrypted editing or package editing.
+
+Desktop Run uses `QueryOperation::Delete`, acquires all confirmed parameters,
+then requests this review and shows the shared operation-specific Yes/No warning.
+Before acceptance, No/Escape preserves the prior results and original SQL. After
+acceptance, cancellation is request-only; actual resource owners and terminal
+outcomes survive view changes until acknowledgment. Successful acknowledgment
+freshly opens the database, restores the SQL draft/tab and discards obsolete
+snapshots without executing DELETE again. Native saved action definitions and
+DELETE query-designer mode remain separate unfinished work. See the
+[sealed native contract](../access/writes/REVIEWED_DELETES.md) and
+[shared scratch workflow](../ui/SQL_WORKSPACE.md#reviewed-local-update-and-delete).
 
 ## Reviewed offline row insertion
 
@@ -1321,9 +1377,10 @@ input conversion, then uses the ordinary shared query executor and context.
 A same-numbered revision from another worker is insufficient. Reopening a
 source invalidates its earlier target.
 
-Inspection also retains `QueryOperation::{Read, Update, Unsupported}` from the
-actual parsed statement. SELECT/UNION and crosstab syntax classify as Read; UPDATE
-has its own class; other action/definition kinds remain Unsupported. Classification
+Inspection also retains `QueryOperation::{Read, Update, Delete, Unsupported}`
+from the actual parsed statement. SELECT/UNION and crosstab syntax classify as
+Read; UPDATE and DELETE have distinct classes; other action/definition kinds
+remain Unsupported. Classification
 is inert metadata, not binding success or write permission. A string literal
 containing UPDATE stays a read query. Hosts must dispatch by this fact rather
 than parsing SQL themselves or retrying failed reads as writes. The connected
@@ -1340,8 +1397,9 @@ parameters through shared UI staging, then execute the exact retained target.
 Parameterless SQL continues from the same explicit Run after inert inspection.
 Desktop owns DTO/request routing and the runtime target's lifetime; query parsing,
 parameter conversion and execution remain in runtime/query services. The
-classified UPDATE route uses the same confirmed parameter acquisition before
-reviewed action confirmation; only the sealed plan survives into save. Other action
+classified UPDATE and DELETE routes use the same confirmed parameter acquisition
+before reviewed action confirmation; only the sealed native plan survives into
+save. Other action
 kinds and persisted query definitions remain unsupported. See the
 [scratch workspace contract](../ui/SQL_WORKSPACE.md#declared-scratch-parameters).
 

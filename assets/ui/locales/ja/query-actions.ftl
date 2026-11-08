@@ -1,0 +1,15 @@
+# Reviewed SQL actions; runtime owns native writes.
+query-action-update-title = 更新クエリ
+query-action-update-reviewing = 更新クエリを確認しています…
+query-action-table = テーブル: { $table }
+query-action-matched = 一致したレコード数: { $count }
+query-action-update-changed = 実際に変更されるレコード数: { $count }
+query-action-update-confirmation = 確認した変更を元のデータベースに適用しますか？
+query-action-no-undo = この操作は元に戻せません。
+query-action-yes = はい
+query-action-no = いいえ
+query-action-invalid-review = 確認した操作が現在の SQL 下書きと一致しなくなりました。
+query-action-delete-title = 削除クエリ
+query-action-delete-reviewing = 削除クエリを確認しています…
+query-action-delete-deleted = 削除するレコード数: { $count }
+query-action-delete-confirmation = 確認したレコードを元のデータベースから完全に削除しますか？

@@ -1,4 +1,4 @@
-//! Reviewed SQL UPDATE decisions bound to the original scratch acquisition.
+//! Reviewed SQL action decisions bound to the original scratch acquisition.
 //! No retained Access warning capture exists; dialog layout is an adaptation.
 mod dialog;
 
@@ -9,12 +9,57 @@ use crate::workspace::{DocumentView, EditSaveOutcome, ObjectTab, State};
 
 const MAX_REPORT_BYTES: usize = 4096;
 
-pub struct QueryUpdateReview {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QueryActionKind {
+    Update,
+    Delete,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QueryActionEffect {
+    Update {
+        matched_rows: usize,
+        changed_rows: usize,
+    },
+    Delete {
+        matched_rows: usize,
+        deleted_rows: usize,
+    },
+}
+
+impl QueryActionEffect {
+    pub fn kind(self) -> QueryActionKind {
+        match self {
+            Self::Update { .. } => QueryActionKind::Update,
+            Self::Delete { .. } => QueryActionKind::Delete,
+        }
+    }
+
+    fn valid(self) -> bool {
+        match self {
+            Self::Update {
+                matched_rows,
+                changed_rows,
+            } => changed_rows <= matched_rows,
+            Self::Delete {
+                matched_rows,
+                deleted_rows,
+            } => deleted_rows == matched_rows,
+        }
+    }
+
+    fn matched_rows(self) -> usize {
+        match self {
+            Self::Update { matched_rows, .. } | Self::Delete { matched_rows, .. } => matched_rows,
+        }
+    }
+}
+
+pub struct QueryActionReview {
     pub id: u64,
     pub document_revision: u64,
     pub table: String,
-    pub matched_rows: usize,
-    pub changed_rows: usize,
+    pub effect: QueryActionEffect,
 }
 
 pub(in crate::workspace) struct Origin {
@@ -40,6 +85,7 @@ impl Origin {
 
 pub(in crate::workspace) struct Session {
     origin: Origin,
+    kind: QueryActionKind,
     phase: Phase,
 }
 
@@ -50,7 +96,7 @@ enum Phase {
     },
     Review {
         request_id: u64,
-        review: QueryUpdateReview,
+        review: QueryActionReview,
         error: Option<Report>,
         focus_no: bool,
     },
@@ -118,21 +164,23 @@ impl Session {
 
 impl State {
     /// Transfer the original inspection witness, rather than recapturing a draft.
-    pub fn begin_query_update_review(
+    pub fn begin_query_action_review(
         &mut self,
         inspection_id: u64,
         sql: &str,
         request_id: u64,
         parameters: Vec<ParameterInput>,
+        kind: QueryActionKind,
     ) -> bool {
-        if request_id == 0 || self.query_update.is_some() {
+        if request_id == 0 || self.query_action.is_some() {
             return false;
         }
-        let Some(origin) = self.take_query_update_origin(inspection_id, sql, &parameters) else {
+        let Some(origin) = self.take_query_action_origin(inspection_id, sql, &parameters) else {
             return false;
         };
-        self.query_update = Some(Session {
+        self.query_action = Some(Session {
             origin,
+            kind,
             phase: Phase::Reviewing {
                 request_id,
                 error: None,
@@ -141,42 +189,43 @@ impl State {
         true
     }
 
-    pub fn query_update_review_current(&self, request_id: u64, sql: &str) -> bool {
-        self.query_update.as_ref().is_some_and(|session| {
+    pub fn query_action_review_current(&self, request_id: u64, sql: &str) -> bool {
+        self.query_action.as_ref().is_some_and(|session| {
             session.origin.sql == sql && session.origin.current(self)
                 && matches!(&session.phase, Phase::Reviewing { request_id: expected, .. } | Phase::Review { request_id: expected, .. } if *expected == request_id)
         })
     }
 
-    pub fn set_query_update_review(&mut self, request_id: u64, review: QueryUpdateReview) -> bool {
-        let accepts = self.query_update.as_ref().is_some_and(|session| {
+    pub fn set_query_action_review(&mut self, request_id: u64, review: QueryActionReview) -> bool {
+        let accepts = self.query_action.as_ref().is_some_and(|session| {
             session.origin.current(self)
                 && matches!(session.phase, Phase::Reviewing { request_id: expected, .. } if expected == request_id)
         });
         if !accepts {
             return false;
         }
-        let valid = self.query_update.as_ref().is_some_and(|session| {
+        let valid = self.query_action.as_ref().is_some_and(|session| {
             review.id != 0
                 && review.document_revision == session.origin.object.target.document_revision
                 && !review.table.is_empty()
-                && review.changed_rows <= review.matched_rows
+                && review.effect.kind() == session.kind
+                && review.effect.valid()
         });
         if !valid {
-            self.fail_query_update_review(
+            self.fail_query_action_review(
                 request_id,
-                self.localizer.text("query-update-invalid-review"),
+                self.localizer.text("query-action-invalid-review"),
             );
             return false;
         }
         if !self.admit_object_bytes(Some(review.table.capacity())) {
-            self.fail_query_update_review(request_id, self.localizer.text("objects-memory-limit"));
+            self.fail_query_action_review(request_id, self.localizer.text("objects-memory-limit"));
             return false;
         }
         let session = self
-            .query_update
+            .query_action
             .as_mut()
-            .expect("checked UPDATE review owner");
+            .expect("checked action review owner");
         session.phase = Phase::Review {
             request_id,
             review,
@@ -186,8 +235,8 @@ impl State {
         true
     }
 
-    pub fn fail_query_update_review(&mut self, request_id: u64, message: String) {
-        let replaced = match &self.query_update {
+    pub fn fail_query_action_review(&mut self, request_id: u64, message: String) {
+        let replaced = match &self.query_action {
             Some(Session {
                 phase:
                     Phase::Reviewing {
@@ -198,48 +247,48 @@ impl State {
             }) if *expected == request_id => error.as_ref().map_or(0, Report::retained_bytes),
             _ => return,
         };
-        let report = self.normalize_update_report(message, replaced);
+        let report = self.normalize_action_report(message, replaced);
         if let Some(Session {
             phase: Phase::Reviewing { error, .. },
             ..
-        }) = &mut self.query_update
+        }) = &mut self.query_action
         {
             *error = Some(report);
         }
     }
 
-    pub fn can_apply_query_update(&self, review_id: u64) -> bool {
-        !self.busy && self.query_update.as_ref().is_some_and(|session| {
+    pub fn can_apply_query_action(&self, review_id: u64) -> bool {
+        !self.busy && self.query_action.as_ref().is_some_and(|session| {
             session.origin.current(self)
                 && matches!(&session.phase, Phase::Review { review, .. } if review.id == review_id)
         })
     }
 
-    pub fn fail_query_update_apply(&mut self, review_id: u64, message: String) {
-        let replaced = match &self.query_update {
+    pub fn fail_query_action_apply(&mut self, review_id: u64, message: String) {
+        let replaced = match &self.query_action {
             Some(Session {
                 phase: Phase::Review { review, error, .. },
                 ..
             }) if review.id == review_id => error.as_ref().map_or(0, Report::retained_bytes),
             _ => return,
         };
-        let report = self.normalize_update_report(message, replaced);
+        let report = self.normalize_action_report(message, replaced);
         if let Some(Session {
             phase: Phase::Review { error, .. },
             ..
-        }) = &mut self.query_update
+        }) = &mut self.query_action
         {
             *error = Some(report);
         }
     }
 
-    pub fn begin_query_update_save(&mut self, review_id: u64, save_id: u64) -> bool {
-        if save_id == 0 || !self.can_apply_query_update(review_id) {
+    pub fn begin_query_action_save(&mut self, review_id: u64, save_id: u64) -> bool {
+        if save_id == 0 || !self.can_apply_query_action(review_id) {
             return false;
         }
-        self.query_update
+        self.query_action
             .as_mut()
-            .expect("checked UPDATE review owner")
+            .expect("checked action review owner")
             .phase = Phase::Saving {
             save_id,
             cancel_requested: false,
@@ -248,12 +297,12 @@ impl State {
         true
     }
 
-    pub fn set_query_update_save_outcome(
+    pub fn set_query_action_save_outcome(
         &mut self,
         save_id: u64,
         outcome: EditSaveOutcome,
     ) -> bool {
-        let replaced = match &self.query_update {
+        let replaced = match &self.query_action {
             Some(Session {
                 phase: Phase::Saving {
                     save_id: expected, ..
@@ -272,7 +321,7 @@ impl State {
             _ => return false,
         };
         let mut report_refused = false;
-        let mut normalize = |message| match self.normalize_update_report(message, replaced) {
+        let mut normalize = |message| match self.normalize_action_report(message, replaced) {
             Report::Message(message) => message,
             Report::Limit => {
                 report_refused = true;
@@ -293,9 +342,9 @@ impl State {
             EditSaveOutcome::Cancelled(message) => EditSaveOutcome::Cancelled(normalize(message)),
             EditSaveOutcome::Failed(message) => EditSaveOutcome::Failed(normalize(message)),
         };
-        self.query_update
+        self.query_action
             .as_mut()
-            .expect("checked UPDATE save owner")
+            .expect("checked action save owner")
             .phase = Phase::Finished {
             save_id,
             outcome,
@@ -304,7 +353,7 @@ impl State {
         true
     }
 
-    fn normalize_update_report(&self, message: String, replaced_bytes: usize) -> Report {
+    fn normalize_action_report(&self, message: String, replaced_bytes: usize) -> Report {
         let available = self
             .object_bytes()
             .and_then(|bytes| bytes.checked_sub(replaced_bytes))
@@ -318,8 +367,8 @@ impl State {
         }
     }
 
-    pub fn begin_query_update_resolution(&mut self, save_id: u64, operation_id: u64) -> bool {
-        let Some(session) = &mut self.query_update else {
+    pub fn begin_query_action_resolution(&mut self, save_id: u64, operation_id: u64) -> bool {
+        let Some(session) = &mut self.query_action else {
             return false;
         };
         if operation_id == 0
@@ -335,14 +384,14 @@ impl State {
         true
     }
 
-    pub fn query_update_save_id(&self) -> Option<u64> {
-        match &self.query_update.as_ref()?.phase {
+    pub fn query_action_save_id(&self) -> Option<u64> {
+        match &self.query_action.as_ref()?.phase {
             Phase::Saving { save_id, .. } | Phase::Finished { save_id, .. } => Some(*save_id),
             Phase::Reviewing { .. } | Phase::Review { .. } => None,
         }
     }
 
-    pub fn request_query_update_save_cancellation(&mut self, save_id: u64) -> bool {
+    pub fn request_query_action_save_cancellation(&mut self, save_id: u64) -> bool {
         if let Some(Session {
             phase:
                 Phase::Saving {
@@ -351,7 +400,7 @@ impl State {
                     ..
                 },
             ..
-        }) = &mut self.query_update
+        }) = &mut self.query_action
             && *expected == save_id
         {
             *cancel_requested = true;
@@ -360,53 +409,53 @@ impl State {
         false
     }
 
-    pub fn can_resolve_query_update_save(&self, save_id: u64, recover: bool) -> bool {
-        matches!(&self.query_update,
+    pub fn can_resolve_query_action_save(&self, save_id: u64, recover: bool) -> bool {
+        matches!(&self.query_action,
             Some(Session { phase: Phase::Finished { save_id: expected,
                 outcome: EditSaveOutcome::Retained { can_recover, can_release, .. }, .. }, .. })
                 if *expected == save_id && if recover { *can_recover } else { *can_release })
     }
 
-    pub fn can_acknowledge_query_update_save(&self, save_id: u64) -> bool {
-        self.query_update.as_ref().is_some_and(|session| {
+    pub fn can_acknowledge_query_action_save(&self, save_id: u64) -> bool {
+        self.query_action.as_ref().is_some_and(|session| {
             matches!(&session.phase, Phase::Finished { save_id: expected, outcome, .. }
                 if *expected == save_id && !matches!(outcome, EditSaveOutcome::Retained { .. }))
         })
     }
 
-    pub fn query_update_dialog_open(&self) -> bool {
-        self.query_update.is_some()
+    pub fn query_action_dialog_open(&self) -> bool {
+        self.query_action.is_some()
     }
 
-    pub fn query_update_save_pending(&self) -> bool {
-        self.query_update.as_ref().is_some_and(Session::pending)
+    pub fn query_action_save_pending(&self) -> bool {
+        self.query_action.as_ref().is_some_and(Session::pending)
     }
 
     /// Clear a terminal display only after the host acknowledges its save owner.
-    pub fn acknowledge_query_update_save(&mut self, save_id: u64) -> bool {
-        if !self.can_acknowledge_query_update_save(save_id) {
+    pub fn acknowledge_query_action_save(&mut self, save_id: u64) -> bool {
+        if !self.can_acknowledge_query_action_save(save_id) {
             return false;
         }
-        self.query_update = None;
+        self.query_action = None;
         true
     }
 
-    pub fn close_query_update(&mut self) -> bool {
-        if self.query_update_save_pending() {
+    pub fn close_query_action(&mut self) -> bool {
+        if self.query_action_save_pending() {
             return false;
         }
-        self.query_update = None;
+        self.query_action = None;
         true
     }
 
-    pub(in crate::workspace) fn validate_query_update(&mut self) {
-        if self.query_update.as_ref().is_some_and(|session| {
+    pub(in crate::workspace) fn validate_query_action(&mut self) {
+        if self.query_action.as_ref().is_some_and(|session| {
             matches!(
                 session.phase,
                 Phase::Reviewing { .. } | Phase::Review { .. }
             ) && !session.origin.current(self)
         }) {
-            self.query_update = None;
+            self.query_action = None;
         }
     }
 }

@@ -1,5 +1,44 @@
 # Presentation preview
 
+## Reviewed SQL DELETE and shared actions — 8 November 2026
+
+The production presentation now shares one typed action owner for UPDATE and
+DELETE. Three new resource-free scenes (`query-delete-review`,
+`query-delete-saving`, `query-delete-result`) join the historical UPDATE scenes.
+Scene IDs for earlier captures are unchanged. The headless scene test exercises
+104 scenes across eight languages and two themes (1,664 combinations); this is
+layout/execution coverage, not inspection of 1,664 image exports.
+
+Six normal-host offscreen frames in ignored
+`.cache/ui-previews/query-delete-20261108/` were rendered and inspected on macOS
+ARM64 with Windows input emulation:
+
+| Surface | Locale/theme | Logical size | Scale |
+| --- | --- | --- | --- |
+| DELETE review | en-US/light | 1280 × 820 | 1× |
+| DELETE review | de/dark | 900 × 580 | 1.25× |
+| DELETE review | ja/light | 900 × 580 | 2× |
+| DELETE saving | en-US/dark | 1280 × 820 | 1× |
+| DELETE mock result | de/dark | 900 × 580 | 1.25× |
+| UPDATE review regression | en-US/light | 1280 × 820 | 1× |
+
+Titles, matched/deleted counts, explicit confirmation, no-Undo text and Yes/No
+remain visible without clipping. No initially has focus. Pending and terminal
+frames retain their cancellation/acknowledgment controls; prior results remain
+behind the modal. The actual retained compact Microsoft parameter image was
+reopened during implementation. It does not establish DELETE warning geometry;
+no matching Access warning capture is available. These warnings remain documented
+adaptations, with behavior references in the [SQL workspace](SQL_WORKSPACE.md#reviewed-local-update-and-delete).
+
+The shared UI gate passes 507 tests and desktop passes 133. Connected DELETE
+checks exercise typed prompts, No, Yes, independent complete AFTER bytes, source
+drift/release and fresh SQL-tab reopen without action replay. Runtime passes 175
+plus its diagnostic test; adapter units pass 116. Strict affected-package lint,
+minimal builds, Windows/Linux shared-library compilation and unsupported FreeBSD
+runtime lint pass. Initial failures/corrected runs remain in `.cache/gui-delete-*`.
+No native windows or Access processes were launched, and these observations do
+not establish native Windows/Access parity.
+
 ## Reviewed SQL UPDATE — 8 November 2026
 
 `query-update-review`, `query-update-saving` and `query-update-result` use the

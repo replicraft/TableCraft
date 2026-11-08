@@ -1,9 +1,10 @@
 # Fresh qualification of reviewed native DELETEs
 
-This is a working engine/adapter boundary for reviewing SQL before taking an
-exclusive offline lease. The desktop SQL editor does not yet dispatch DELETE;
-its runtime command, shared confirmation and consuming save route remain work
-for the next application slice. Existing single-row GUI deletion is separate.
+This engine/adapter boundary now supplies the runtime and desktop SQL DELETE
+workflow. SQL and typed parameters are reviewed before an exclusive offline lease
+is acquired. The shared action warning requires explicit confirmation, and save
+consumes the sealed candidate without reevaluating SQL. Existing single-row GUI
+deletion remains a separate service.
 
 ## Original-row query selection
 
@@ -57,6 +58,39 @@ ready state. The target remains locked until explicit release. Hosts must review
 before acquiring this lease and retain all accepted-save outcomes through view
 changes, just as the [UPDATE service](REVIEWED_UPDATES.md) already does.
 
+## Runtime and shared confirmation
+
+`ReviewQueryDelete` accepts an immutable inspected query from the same open
+runtime document and literal typed inputs. Source identity, document revision,
+input limits and declaration constraints are checked before native capture and
+record processing. The response separates `QueryDeleteReview` display facts from
+the opaque `ReviewedQueryDelete` capability. No exclusive lease or journal is
+held while the user considers the warning.
+
+UPDATE and DELETE share one presentation session and its parameter/SQL witness,
+confirmation, bounded diagnostics, cancellation and terminal-outcome lifecycle.
+The expected operation is retained with the original witness; a wrong-kind effect
+cannot enter or replace the decision. Desktop retains distinct native capability
+variants and routes them to their corresponding consuming save methods. UI counts
+and operation labels cannot construct a native candidate or choose another action.
+
+`SaveWorker::start_query_delete` checks the capability's current document/source
+and uses the fresh staging boundary above. Before acceptance, No/Escape releases
+review without changing the database or prior query results. After acceptance,
+cancellation requests preserve the real save/recovery owner until terminal
+acknowledgment. Successful acknowledgment reopens the actual source, restores the
+SQL tab/draft and clears stale snapshots without executing DELETE again.
+
+Microsoft's [DELETE statement](https://support.microsoft.com/en-us/access/delete-statement)
+documents whole-record deletion, retained table structure and no Undo. Its
+[screen-reader workflow](https://support.microsoft.com/en-us/accessibility/access/use-a-screen-reader-to-create-a-query-in-access-desktop-databases)
+documents confirmation of the selected row count before deletion. The
+[delete-query guide](https://support.microsoft.com/en-us/access/create-and-run-a-delete-query)
+also describes inspecting the records selected by the same criteria. The current
+GUI warning shows counts and no-Undo text; it does not implement a separate action
+record-preview mode. See the [runtime contract](../../application/RUNTIME.md#reviewed-sql-delete-actions)
+and [SQL workspace](../../ui/SQL_WORKSPACE.md#reviewed-local-update-and-delete).
+
 ## Evidence and limits
 
 The engine tests use the existing independent native-17 canonical Boundary source.
@@ -74,5 +108,7 @@ fixture was initially rejected as active content; the correction selected an
 already qualified source and did not weaken native gates.
 
 These observations do not establish Windows/Access execution parity or qualify a
-new format/profile. No DELETE warning capture is retained; the eventual warning
-must be documented as an adaptation until native visual evidence exists.
+new format/profile. No DELETE warning capture is retained; the current warning
+is an adaptation until native visual evidence exists. Joined/external DELETE,
+broader predicate contexts, native saved-action persistence and full older-profile
+CRUD remain separate roadmap work.

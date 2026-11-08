@@ -9,7 +9,7 @@ use crate::{
 
 impl Preview {
     pub(super) fn dispatch(&mut self, action: Action) {
-        let save_owner = self.state.query_update_save_pending()
+        let save_owner = self.state.query_action_save_pending()
             || matches!(
                 self.state.edit,
                 Some(EditDialog::Saving { .. } | EditDialog::Finished { .. })
@@ -41,7 +41,7 @@ impl Preview {
             return;
         }
 
-        if self.query_update_save_action(&action)
+        if self.query_action_save_action(&action)
             || self.deletion_save_action(&action)
             || self.insertion_save_action(&action)
         {
@@ -235,12 +235,12 @@ impl Preview {
                     self.state.set_schema(fixtures::schema(&table));
                 }
             }
-            Action::ApplyQueryUpdate { review_id } => self.mock_apply_query_update(review_id),
-            Action::CancelQueryUpdateReview { request_id } => {
-                self.mock_cancel_query_update_review(request_id);
+            Action::ApplyQueryAction { review_id } => self.mock_apply_query_action(review_id),
+            Action::CancelQueryActionReview { request_id } => {
+                self.mock_cancel_query_action_review(request_id);
             }
             Action::Query => {
-                if self.mock_review_query_update().is_some() {
+                if self.mock_review_query_action().is_some() {
                     return;
                 }
                 self.mock_open_object(ObjectTarget {

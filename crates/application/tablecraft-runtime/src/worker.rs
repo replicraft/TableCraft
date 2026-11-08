@@ -263,6 +263,11 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .run_query(target, parameters, clock.as_ref(), cancelled),
             #[cfg(feature = "offline-edit")]
+            Command::ReviewQueryDelete { target, parameters } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_query_delete(target, parameters, cancelled),
+            #[cfg(feature = "offline-edit")]
             Command::ReviewQueryUpdate { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -361,6 +366,8 @@ impl Worker {
                     Command::InspectQuery { .. } => "inspect_query",
                     #[cfg(feature = "offline-edit")]
                     Command::ReviewQueryUpdate { .. } => "review_query_update",
+                    #[cfg(feature = "offline-edit")]
+                    Command::ReviewQueryDelete { .. } => "review_query_delete",
                     Command::RunQuery { .. } => "run_query",
                     Command::InspectSavedQuery { .. } => "inspect_saved_query",
                     Command::RunSavedQuery { .. } => "run_saved_query",

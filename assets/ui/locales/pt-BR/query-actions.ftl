@@ -1,0 +1,15 @@
+# Reviewed SQL actions; runtime owns native writes.
+query-action-update-title = Consulta de atualização
+query-action-update-reviewing = Revisando a consulta de atualização…
+query-action-table = Tabela: { $table }
+query-action-matched = Registros correspondentes: { $count }
+query-action-update-changed = Registros com alterações efetivas: { $count }
+query-action-update-confirmation = Aplicar estas alterações revisadas ao banco de dados original?
+query-action-no-undo = Não é possível desfazer esta operação.
+query-action-yes = Sim
+query-action-no = Não
+query-action-invalid-review = A ação revisada não corresponde mais a este rascunho SQL.
+query-action-delete-title = Consulta de exclusão
+query-action-delete-reviewing = Revisando a consulta de exclusão…
+query-action-delete-deleted = Registros a excluir: { $count }
+query-action-delete-confirmation = Excluir permanentemente estes registros revisados do banco de dados original?

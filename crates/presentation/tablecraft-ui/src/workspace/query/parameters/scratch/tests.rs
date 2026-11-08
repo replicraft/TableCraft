@@ -1,5 +1,6 @@
 //! Scratch acquisition retains the exact editor witness and previous results.
 use super::*;
+use crate::QueryActionKind;
 use crate::workspace::query::{
     provenance::ResultOrigin,
     tests::{harness, result, state},
@@ -412,12 +413,13 @@ fn update_handoff_requires_final_confirmation_and_moves_original_sql_and_inputs(
         .sql
         .as_ptr();
     let rows = harness.state().0.query_data.as_ref().unwrap().rows.as_ptr();
-    assert!(
-        !harness
-            .state_mut()
-            .0
-            .begin_query_update_review(INSPECTION, sql, 42, Vec::new())
-    );
+    assert!(!harness.state_mut().0.begin_query_action_review(
+        INSPECTION,
+        sql,
+        42,
+        Vec::new(),
+        QueryActionKind::Update
+    ));
     harness
         .get_by_role_and_label(Role::TextInput, "First")
         .focus();
@@ -431,12 +433,13 @@ fn update_handoff_requires_final_confirmation_and_moves_original_sql_and_inputs(
         panic!("the second parameter must still need confirmation");
     };
     let unconfirmed = copy_inputs(&body.draft).unwrap();
-    assert!(
-        !harness
-            .state_mut()
-            .0
-            .begin_query_update_review(INSPECTION, sql, 42, unconfirmed)
-    );
+    assert!(!harness.state_mut().0.begin_query_action_review(
+        INSPECTION,
+        sql,
+        42,
+        unconfirmed,
+        QueryActionKind::Update
+    ));
     harness
         .get_by_role_and_label(Role::TextInput, "Second")
         .focus();
@@ -463,7 +466,7 @@ fn update_handoff_requires_final_confirmation_and_moves_original_sql_and_inputs(
     let origin = harness
         .state_mut()
         .0
-        .take_query_update_origin(INSPECTION, sql, &confirmed)
+        .take_query_action_origin(INSPECTION, sql, &confirmed)
         .unwrap();
     assert_eq!(origin.sql.as_ptr(), original_sql);
     assert_eq!(origin.parameters.as_ptr(), original_inputs);
@@ -502,35 +505,39 @@ fn update_handoff_rejects_changed_confirmed_inputs_and_stale_prompt_identity() {
             4 => altered.clear(),
             _ => unreachable!(),
         }
-        assert!(
-            !harness
-                .state_mut()
-                .0
-                .begin_query_update_review(INSPECTION, sql, 42, altered)
-        );
+        assert!(!harness.state_mut().0.begin_query_action_review(
+            INSPECTION,
+            sql,
+            42,
+            altered,
+            QueryActionKind::Update
+        ));
         assert!(harness.state().0.query_parameters.is_some());
-        assert!(!harness.state().0.query_update_dialog_open());
+        assert!(!harness.state().0.query_action_dialog_open());
         assert_previous(&harness, rows, sql);
     }
-    assert!(!harness.state_mut().0.begin_query_update_review(
+    assert!(!harness.state_mut().0.begin_query_action_review(
         INSPECTION + 1,
         sql,
         42,
         copy_inputs(&confirmed).unwrap(),
+        QueryActionKind::Update
     ));
-    assert!(!harness.state_mut().0.begin_query_update_review(
+    assert!(!harness.state_mut().0.begin_query_action_review(
         INSPECTION,
         sql,
         0,
         copy_inputs(&confirmed).unwrap(),
+        QueryActionKind::Update
     ));
     harness.state_mut().0.bump_focus_publication();
-    assert!(
-        !harness
-            .state_mut()
-            .0
-            .begin_query_update_review(INSPECTION, sql, 42, confirmed)
-    );
-    assert!(!harness.state().0.query_update_dialog_open());
+    assert!(!harness.state_mut().0.begin_query_action_review(
+        INSPECTION,
+        sql,
+        42,
+        confirmed,
+        QueryActionKind::Update
+    ));
+    assert!(!harness.state().0.query_action_dialog_open());
     assert_previous(&harness, rows, sql);
 }
