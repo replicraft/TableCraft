@@ -122,6 +122,7 @@ pub mod secondary_index;
 /// Independent Wide-MR2 declarations shared by native and adapter fixtures.
 pub mod wide_properties;
 
+/// Independent empty-table ADD-column sources and SDK-observed expected layouts.
 pub mod canonical_add_column;
 /// Independently authored complete canonical ACE source goldens.
 pub mod canonical_creation;

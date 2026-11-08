@@ -30,45 +30,37 @@ fn hash(bytes: &[u8]) -> String {
         .collect()
 }
 
+fn checked_empty_columns(bytes: &[u8], table: &str, names: &[&str]) {
+    let captured = image(bytes);
+    let scope = captured.catalog().catalog().scope();
+    let checked = check_table(&mut captured.reader(), scope, table, &mut budget(), &|| {
+        false
+    })
+    .unwrap();
+    assert_eq!(checked.rows(), 0);
+    assert!(checked.indexes().is_empty());
+    assert_eq!(
+        checked
+            .schema()
+            .columns()
+            .iter()
+            .map(|field| field.name())
+            .collect::<Vec<_>>(),
+        names,
+    );
+    assert!(
+        read_table(&mut captured.reader(), scope, table, &mut budget(), &|| {
+            false
+        })
+        .unwrap()
+        .rows()
+        .is_empty()
+    );
+}
+
 fn source_gate(source: &canonical_add_column::Source, name: &str) {
-    for (bytes, names) in [
-        (&source.before, vec!["Id", "Score"]),
-        (&source.after, vec!["Id", "Score", name]),
-    ] {
-        let captured = image(bytes);
-        let scope = captured.catalog().catalog().scope();
-        let checked = check_table(
-            &mut captured.reader(),
-            scope,
-            "Items",
-            &mut budget(),
-            &|| false,
-        )
-        .unwrap();
-        assert_eq!(checked.rows(), 0);
-        assert!(checked.indexes().is_empty());
-        assert_eq!(
-            checked
-                .schema()
-                .columns()
-                .iter()
-                .map(|field| field.name())
-                .collect::<Vec<_>>(),
-            names,
-        );
-        assert!(
-            read_table(
-                &mut captured.reader(),
-                scope,
-                "Items",
-                &mut budget(),
-                &|| false
-            )
-            .unwrap()
-            .rows()
-            .is_empty()
-        );
-    }
+    checked_empty_columns(&source.before, "Items", &["Id", "Score"]);
+    checked_empty_columns(&source.after, "Items", &["Id", "Score", name]);
 }
 
 #[test]
@@ -102,6 +94,61 @@ fn unicode_column_names_use_the_same_source_roles_and_exact_independent_tail() {
         .unwrap();
     assert_eq!(candidate.after_bytes(), source.after);
     assert_eq!(candidate.table(), "Items");
+}
+
+#[test]
+fn decoded_user_names_and_the_sixteen_field_boundary_are_structural() {
+    let raw = canonical_creation::source(canonical_creation::Case::Named);
+    let mut before = canonical_native17_creation::source(raw.bytes);
+    before[7 * 4096 + 16..7 * 4096 + 20].fill(0);
+    let empty = canonical_add_column::source("Extra").before;
+    before[8 * 4096..9 * 4096].copy_from_slice(&empty[8 * 4096..9 * 4096]);
+    let expected = canonical_add_column::append(&before, "New column");
+    checked_empty_columns(&before, "People Stats", &["Person Id", "Score Δ"]);
+    checked_empty_columns(
+        &expected,
+        "People Stats",
+        &["Person Id", "Score Δ", "New column"],
+    );
+    let candidate = image(&before)
+        .prepare_add_int32_column_candidate("People Stats", "New column", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(candidate.table(), "People Stats");
+    assert_eq!(candidate.after_bytes(), expected);
+
+    let mut before = empty;
+    let mut names = vec!["Id".to_owned(), "Score".to_owned()];
+    for count in 3..=15 {
+        let name = format!("C{count}");
+        before = canonical_add_column::append(&before, &name);
+        names.push(name);
+    }
+    let expected = canonical_add_column::append(&before, "Last");
+    checked_empty_columns(
+        &before,
+        "Items",
+        &names.iter().map(String::as_str).collect::<Vec<_>>(),
+    );
+    names.push("Last".into());
+    checked_empty_columns(
+        &expected,
+        "Items",
+        &names.iter().map(String::as_str).collect::<Vec<_>>(),
+    );
+    let candidate = image(&before)
+        .prepare_add_int32_column_candidate("Items", "Last", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(candidate.column_count(), 16);
+    assert_eq!(candidate.after_bytes(), expected);
+    assert!(matches!(
+        image(candidate.after_bytes()).prepare_add_int32_column_candidate(
+            "Items",
+            "Over limit",
+            &mut budget(),
+            &|| false
+        ),
+        Err(AddColumnError::Source)
+    ));
 }
 
 #[test]
