@@ -6,6 +6,8 @@ use tablecraft_ui::{
     ObjectKind, ObjectTarget, SavedQuerySqlCloseDecision, SavedQuerySqlEligibility,
 };
 
+mod stale;
+
 fn finish(desktop: &mut Desktop, context: &egui::Context) {
     let mut frame = eframe::Frame::_new_kittest();
     let deadline = Instant::now() + Duration::from_secs(10);

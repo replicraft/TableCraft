@@ -4,6 +4,25 @@ The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
 reserved active journal through the shared runtime owner. Opening and rendering
 its prompt make no changes; recovery requires an explicit action.
 
+## Saved SQL inspection and draft ownership — 8 November 2026
+
+Opening a saved query now follows parameter inspection with inert runtime SQL
+inspection. The current native writer can qualify an existing constant SELECT;
+other definitions remain unavailable for SQL editing. Inspection neither runs the
+query nor issues a write capability. The desktop keeps SQL editing disabled while
+the consuming save/recovery/reopen workflow is being connected.
+
+Shared presentation state retains exact original and proposed SQL per object,
+including parked tabs. Close decisions bind to the actual object and text revision;
+stale callbacks cannot discard or resolve a newer draft. Open, Create and window
+close retain their requested transition while each dirty object is confirmed.
+Unrelated mutations are blocked while saved SQL is dirty because the current
+workspace preference restore does not retain those drafts across a source change.
+
+The saved SQL editor and its close prompt are visual adaptations: no retained
+Access capture exists for those surfaces. Headless checks for this connected
+slice are pending; earlier saved-query read/execution checks remain separate.
+
 ## Inline new-record draft — 7 November 2026
 
 New row and the admitted new-record shortcut now enter a source-bound draft in
