@@ -232,7 +232,9 @@ fn assert_status(
     if mode == "unchanged-cancelled" {
         assert_painted_in(
             harness,
-            &state.localizer.text("editing-cancellation-requested"),
+            &state
+                .localizer
+                .text("saved-query-read-cancellation-requested"),
             modal,
         );
     }

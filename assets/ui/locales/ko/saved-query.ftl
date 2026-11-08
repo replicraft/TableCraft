@@ -59,3 +59,4 @@ saved-query-sql-source-changed = 저장된 정의가 변경되었습니다. SQL 
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = 다시 열기
 saved-query-save-return-draft = SQL 초안으로 돌아가기
+saved-query-read-cancellation-requested = 취소를 요청했습니다. 데이터베이스 읽기가 중지될 때까지 기다리는 중입니다.

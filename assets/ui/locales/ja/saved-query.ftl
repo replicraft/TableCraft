@@ -59,3 +59,4 @@ saved-query-sql-source-changed = 保存済みの定義が変更されました�
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = 再度開く
 saved-query-save-return-draft = SQL の下書きに戻る
+saved-query-read-cancellation-requested = キャンセルを要求しました。データベースの読み取りが停止するまでお待ちください。

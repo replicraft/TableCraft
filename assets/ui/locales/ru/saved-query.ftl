@@ -59,3 +59,4 @@ saved-query-sql-source-changed = Сохранённое определение �
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = Повторить открытие
 saved-query-save-return-draft = Вернуться к черновику SQL
+saved-query-read-cancellation-requested = Запрошена отмена. Ожидание завершения чтения базы данных.

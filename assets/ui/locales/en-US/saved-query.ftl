@@ -59,3 +59,4 @@ saved-query-sql-source-changed = The saved definition changed. Your SQL draft wa
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = Retry reopening
 saved-query-save-return-draft = Return to SQL draft
+saved-query-read-cancellation-requested = Cancellation requested. Waiting for the database read to stop.

@@ -59,3 +59,4 @@ saved-query-sql-source-changed = A definição salva mudou. Seu rascunho SQL foi
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = Tentar reabrir
 saved-query-save-return-draft = Voltar ao rascunho SQL
+saved-query-read-cancellation-requested = Cancelamento solicitado. Aguardando a leitura do banco de dados parar.

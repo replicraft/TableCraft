@@ -222,6 +222,8 @@ fn native_status_dialog_emits_exact_cancel_identity_without_a_cell_edit_dialog()
     assert!(
         matches!(harness.state().1.as_slice(), [Action::SavedQuerySqlSave { identity: actual, command: SavedQuerySqlSaveCommand::Cancel }] if *actual == identity)
     );
+    harness.run_steps(1);
+    harness.get_by_label("Cancellation requested. Waiting for the database read to stop.");
     assert!(harness.state().0.saved_query_sql_save_open());
 }
 

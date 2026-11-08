@@ -36,7 +36,7 @@ impl State {
                             ui.spinner();
                             ui.label(tr(ui, "saved-query-working"));
                             if matches!(status.phase, Phase::Reopening { cancelled: true }) {
-                                ui.label(tr(ui, "editing-cancellation-requested"));
+                                ui.label(tr(ui, "saved-query-read-cancellation-requested"));
                             }
                         }
                         Phase::Saving {

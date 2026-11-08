@@ -59,3 +59,4 @@ saved-query-sql-source-changed = 已保存的定义发生了变化。您的 SQL 
 # Saved query save-status read-only reopening.
 saved-query-save-retry-reopen = 重试重新打开
 saved-query-save-return-draft = 返回 SQL 草稿
+saved-query-read-cancellation-requested = 已请求取消。正在等待数据库读取停止。
