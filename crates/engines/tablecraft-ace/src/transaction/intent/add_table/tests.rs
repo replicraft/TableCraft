@@ -8,7 +8,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::fixtures::access::canonical_add_table;
+use tablecraft_testkit::fixtures::access::{canonical_add_table, canonical_repeated_add_table};
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(10_000_000, 100_000, 10_000_000)
@@ -132,7 +132,7 @@ fn outer_framing_and_nested_version_pairs_refuse_before_decoded_allocation() {
     for case in 0..11 {
         let mut raw = original.clone();
         match case {
-            0 => raw[7] = b'3',
+            0 => raw[7] = b'5',
             1 => raw[12] = 2,
             2 => raw[14] = 1,
             3 => raw[16..24].copy_from_slice(&28672_u64.to_le_bytes()),
@@ -246,8 +246,6 @@ fn source_capture_encoding_and_decoding_keep_work_allocation_and_cancel_limits()
 
 #[test]
 fn repeated_v2_has_disjoint_length_grammar_and_preserves_the_four_template_versions() {
-    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
-
     for existing in [2, 3, 6, 18] {
         let before = canonical_repeated_add_table::with_existing_tables(existing).before;
         for version in 1..=4 {
@@ -346,8 +344,6 @@ fn repeated_v2_has_disjoint_length_grammar_and_preserves_the_four_template_versi
 #[test]
 fn repeated_v2_rejects_future_nested_templates_wrong_profiles_and_trailing_bytes_before_allocation()
 {
-    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
-
     let before = canonical_repeated_add_table::source().before;
     let raw = NativeAddTableIntent::new(definition(1), &before, &mut budget(), &|| false)
         .unwrap()
@@ -356,7 +352,7 @@ fn repeated_v2_rejects_future_nested_templates_wrong_profiles_and_trailing_bytes
     for case in 0..5 {
         let mut corrupt = raw.clone();
         match case {
-            0 => corrupt[7] = b'3',
+            0 => corrupt[7] = b'5',
             1 => corrupt[12] = 1,
             2 => corrupt[64 + 7] = b'5',
             3 => corrupt[64 + 12] = 4,
@@ -383,4 +379,133 @@ fn repeated_v2_rejects_future_nested_templates_wrong_profiles_and_trailing_bytes
         NativeAddTableIntent::decode(&raw, &mut budget(), &|| true),
         Err(AddTableIntentError::Inspect(InspectError::Cancelled))
     ));
+}
+
+fn described_definition(text: &str) -> FirstTableDefinition {
+    let columns = [
+        CreateColumn::new("Id", ScalarType::Int32)
+            .with_primary_key("PrimaryId")
+            .unwrap()
+            .with_incrementing_autonumber()
+            .unwrap(),
+        CreateColumn::short_text("Name", 20)
+            .unwrap()
+            .with_description(text)
+            .unwrap(),
+    ];
+    FirstTableDefinition::capture("More", &columns, &mut budget(), &|| false).unwrap()
+}
+
+fn described_literal(before: &[u8], text: &str, repeated: bool) -> Vec<u8> {
+    let mut nested = template(1);
+    nested[..8].copy_from_slice(b"TCNT0005");
+    nested[12..14].copy_from_slice(&5_u16.to_le_bytes());
+    nested[90] = 32;
+    nested.extend((text.len() as u16).to_le_bytes());
+    nested.extend(text.as_bytes());
+    let nested_length = nested.len() as u32;
+    nested[8..12].copy_from_slice(&nested_length.to_le_bytes());
+    let mut raw = literal(before, 1);
+    raw.truncate(64);
+    raw[..8].copy_from_slice(if repeated { b"TCAT0004" } else { b"TCAT0003" });
+    raw[12..14].copy_from_slice(&(if repeated { 4_u16 } else { 3_u16 }).to_le_bytes());
+    raw[16..24].copy_from_slice(&(before.len() as u64).to_le_bytes());
+    raw[56..60].copy_from_slice(&nested_length.to_le_bytes());
+    raw.extend(nested);
+    let length = raw.len() as u32;
+    raw[8..12].copy_from_slice(&length.to_le_bytes());
+    raw
+}
+
+#[test]
+fn described_outer_versions_keep_source_partitions_and_exact_original_template_text() {
+    let boundary = "🗃".repeat(127) + "x";
+    for repeated in [false, true] {
+        let before = if repeated {
+            canonical_repeated_add_table::source().before
+        } else {
+            canonical_add_table::source().before
+        };
+        for text in ["", "Résumé", boundary.as_str()] {
+            let raw = NativeAddTableIntent::new(
+                described_definition(text),
+                &before,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap()
+            .encode(&mut budget(), &|| false)
+            .unwrap();
+            let expected = described_literal(&before, text, repeated);
+            assert_eq!(raw, expected);
+            let decoded =
+                NativeAddTableIntent::decode(&expected, &mut budget(), &|| false).unwrap();
+            decoded
+                .verify_before(&before, &mut budget(), &|| false)
+                .unwrap();
+            let columns = decoded
+                .definition
+                .borrowed_columns(&mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(columns[0].description(), None);
+            assert_eq!(columns[1].description(), Some(text));
+            assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), expected);
+        }
+    }
+}
+
+#[test]
+fn legacy_outer_languages_refuse_described_templates_and_described_outer_requires_tcnt5() {
+    for repeated in [false, true] {
+        let before = if repeated {
+            canonical_repeated_add_table::source().before
+        } else {
+            canonical_add_table::source().before
+        };
+        let described = described_literal(&before, "", repeated);
+        let mut legacy = described.clone();
+        legacy[..8].copy_from_slice(if repeated { b"TCAT0002" } else { b"TCAT0001" });
+        legacy[12..14].copy_from_slice(&(if repeated { 2_u16 } else { 1_u16 }).to_le_bytes());
+        assert!(matches!(
+            NativeAddTableIntent::decode(
+                &legacy,
+                &mut ResourceBudget::new(0, 0, 10_000_000),
+                &|| false
+            ),
+            Err(AddTableIntentError::UnsupportedVersion)
+        ));
+        for case in 0..4 {
+            let mut corrupt = described.clone();
+            match case {
+                0 => corrupt[12] = if repeated { 3 } else { 4 },
+                1 => corrupt[16..24]
+                    .copy_from_slice(&(if repeated { 40960_u64 } else { 53248_u64 }).to_le_bytes()),
+                2 => corrupt[64 + 7] = b'4',
+                3 => corrupt[64 + 12] = 4,
+                _ => unreachable!(),
+            }
+            assert!(
+                matches!(
+                    NativeAddTableIntent::decode(
+                        &corrupt,
+                        &mut ResourceBudget::new(0, 0, 10_000_000),
+                        &|| false
+                    ),
+                    Err(AddTableIntentError::UnsupportedVersion
+                        | AddTableIntentError::UnsupportedProfile
+                        | AddTableIntentError::InvalidRecord)
+                ),
+                "case {case}"
+            );
+        }
+    }
+    let mut oversized_old = vec![0; 21_313];
+    oversized_old[..8].copy_from_slice(b"TCAT0002");
+    let mut entry_only = ResourceBudget::new(0, 0, 1);
+    assert!(matches!(
+        NativeAddTableIntent::decode(&oversized_old, &mut entry_only, &|| false),
+        Err(AddTableIntentError::InvalidRecord)
+    ));
+    assert_eq!(entry_only.remaining(Resource::Steps), 0);
+    assert_eq!(entry_only.remaining(Resource::Bytes), 0);
 }

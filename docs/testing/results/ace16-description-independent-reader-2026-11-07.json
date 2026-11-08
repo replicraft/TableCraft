@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "date": "2026-11-07",
+  "host": "macOS ARM64",
+  "scope": "Independent read-only observations of TableCraft-produced Description metadata in one-, two- and three-table ACE16 candidate images. Not independent producer bytes, journal execution, insertion, native Access save/reopen or platform durability.",
+  "reader": {
+    "path": ".cache/tablecraft-fixtures/jackcess-5.0.4.jar",
+    "bytes": 1407244,
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "program": {
+    "path": "docs/testing/ace16_table_addition/ReadDescriptions.java",
+    "bytes": 3931,
+    "sha256": "4ee39b8428cc86517572e1dbb73be333c85343e1040eb071e8d62c321b67950e"
+  },
+  "exporter": {
+    "path": ".cache/description-independent-20261107/export.rs",
+    "bytes": 2683,
+    "sha256": "65f82fe298e9ad076edfc1ff932c4cc1825ef8fe587dbab1ae6195fbc0ae6bd9"
+  },
+  "producer_sources": [
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/column.rs",
+      "bytes": 11730,
+      "sha256": "65b782b7da8e7cb467850c82d394f4c26bc965deba42f237c58919fe92f5695a"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/properties.rs",
+      "bytes": 11953,
+      "sha256": "8611cb0ffe07f3d7124a9eadf83805378e841f3418b50b36923bb43e05bc4470"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/input.rs",
+      "bytes": 3056,
+      "sha256": "377834e4b8086f2efea717b7a2419d9ef187365923b7cd9ee3aae487669d66a8"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/first_table/model.rs",
+      "bytes": 7354,
+      "sha256": "087ea69648083d1901ffd8f7e31f7cb762e56be4405f431d90d6b6af95ba79de"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/add_table/audit/properties.rs",
+      "bytes": 9456,
+      "sha256": "f69da6b64d1f8c6ec4a286c91ed1314849be3177b00092c0bead09112a869172"
+    }
+  ],
+  "java_version": "openjdk version \"21.0.8\" 2025-07-15 LTS\nOpenJDK Runtime Environment Temurin-21.0.8+9 (build 21.0.8+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.8+9 (build 21.0.8+9-LTS, mixed mode, sharing)\n",
+  "images": [
+    {
+      "path": ".cache/description-independent-20261107/images/1-tables.accdb",
+      "bytes": 40960,
+      "sha256": "2721dfbbf9cf7d05fa4fc2fd750b8923d9e7743be4134db02b73b8088e25835a",
+      "tables": 1,
+      "stdout": "V2016 [VERSION_2016] [Properties] descriptions=exact empty=present absent=absent rows=0\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/description-independent-20261107/images/2-tables.accdb",
+      "bytes": 53248,
+      "sha256": "3c165a1352ba9ba023a0a4be8f9bbdd4a153a9d3d4ea700015095aa3f80f3171",
+      "tables": 2,
+      "stdout": "V2016 [VERSION_2016] [Properties, Second] descriptions=exact empty=present absent=absent rows=0\n",
+      "unchanged_after_reader": true
+    },
+    {
+      "path": ".cache/description-independent-20261107/images/3-tables.accdb",
+      "bytes": 65536,
+      "sha256": "7ae88a7802f198f16b265b560aab08db8a15cae4f67d7528ce595187201cdc99",
+      "tables": 3,
+      "stdout": "V2016 [VERSION_2016] [Properties, Second, Third] descriptions=exact empty=present absent=absent rows=0\n",
+      "unchanged_after_reader": true
+    }
+  ]
+}

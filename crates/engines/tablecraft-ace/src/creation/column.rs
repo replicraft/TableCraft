@@ -4,6 +4,7 @@ use tablecraft_core::values::Value;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const SHORT_LIMIT: usize = 255;
+const DESCRIPTION_UNITS: usize = 255;
 
 /// One borrowed native declaration for fresh database creation.
 ///
@@ -13,6 +14,7 @@ const SHORT_LIMIT: usize = 255;
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
     name: &'a str,
+    description: Option<&'a str>,
     declaration: Declaration,
     required: Option<bool>,
     allow_zero_length: Option<bool>,
@@ -58,6 +60,7 @@ impl<'a> CreateColumn<'a> {
     pub const fn new(name: &'a str, scalar: ScalarType) -> Self {
         Self {
             name,
+            description: None,
             declaration: Declaration::Fixed(scalar),
             required: None,
             allow_zero_length: None,
@@ -77,6 +80,7 @@ impl<'a> CreateColumn<'a> {
         declaration.validate()?;
         Ok(Self {
             name,
+            description: None,
             declaration,
             required: None,
             allow_zero_length: None,
@@ -93,6 +97,7 @@ impl<'a> CreateColumn<'a> {
         declaration.validate()?;
         Ok(Self {
             name,
+            description: None,
             declaration,
             required: None,
             allow_zero_length: None,
@@ -106,6 +111,7 @@ impl<'a> CreateColumn<'a> {
     pub const fn decimal(name: &'a str, constraints: DecimalConstraints) -> Self {
         Self {
             name,
+            description: None,
             declaration: Declaration::Decimal(constraints),
             required: None,
             allow_zero_length: None,
@@ -113,6 +119,26 @@ impl<'a> CreateColumn<'a> {
             primary_key_name: None,
             incrementing: false,
         }
+    }
+
+    /// Retain inert descriptive text, including present-empty text. The current
+    /// constructive profile counts at most 255 UTF-16 units, without normalization.
+    pub fn with_description(mut self, description: &'a str) -> Result<Self, CreateDatabaseError> {
+        if description
+            .encode_utf16()
+            .take(DESCRIPTION_UNITS + 1)
+            .count()
+            > DESCRIPTION_UNITS
+        {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        self.description = Some(description);
+        Ok(self)
+    }
+
+    /// Exact optional descriptive metadata; an empty description is still present.
+    pub const fn description(self) -> Option<&'a str> {
+        self.description
     }
 
     /// Author the exact Boolean Required policy; omission stays distinct from false.

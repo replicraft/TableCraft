@@ -1,5 +1,24 @@
 # Candidate Access fixtures
 
+## Description creation: independent-reader observations
+
+The [Description checker](ace16_table_addition/ReadDescriptions.java) reads three
+TableCraft-produced ACE 16 candidate images containing one, two and three tables.
+It observes exact Unicode/whitespace descriptions, a 255-UTF-16-unit boundary
+including a supplementary character, present-empty versus absent descriptions,
+native types, generated-ID/primary metadata, empty row counts and complete table
+inventories. Reviewed Jackcess 5.0.4 opens each file read-only; hashes are unchanged
+after reading. No third-party database fixture or implementation is copied.
+
+The [result](results/ace16-description-independent-reader-2026-11-07.json) pins
+the JAR, maintained checker, producer sources, ignored exporter and all three
+images. Exported bytes and logs remain in ignored
+`.cache/description-independent-20261107/`. These are independent observations of
+production-generated candidates, not independently authored complete AFTER byte
+oracles, normal journal execution, native Access save/reopen or platform
+durability. A separate literal MR2 byte golden in the engine's Description tests
+checks the property writer independently of its reader and encoding constants.
+
 ## Repository-authored repeated table additions
 
 `tablecraft-testkit::fixtures::access::canonical_repeated_add_table` independently

@@ -165,3 +165,6 @@ fn first_table_recovery_refuses_changed_requests_and_unqualified_after_images_wi
 
 #[path = "first_table/policies.rs"]
 mod policies;
+
+#[path = "first_table/descriptions.rs"]
+mod descriptions;

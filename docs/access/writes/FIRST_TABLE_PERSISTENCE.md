@@ -11,7 +11,15 @@ field and primary-index names and declarations. Ordinary companions retain exact
 optional Required and AllowZeroLength policies: absent, explicitly false and
 explicitly true remain distinct. AllowZeroLength applies only to sized Short Text.
 The first field is an Increment Int32 primary key; its policies and defaults
-remain protected. Native constructive admission remains authoritative. The
+remain protected. Description is separate inert metadata and is permitted on the
+primary field too. It retains absence versus present-empty text without trimming
+or normalization. The constructive profile conservatively counts at most 255
+UTF-16 units, following Microsoft's documented [255-character Description limit](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/description-property-access);
+that counting choice is not native supplementary-character parity evidence.
+The MR2 property uses declaration flag 1, Text type 10 and exact UTF-16 bytes.
+Description does not execute expressions, grant a default or constrain rows.
+Complete inline-property and catalog-page capacity checks remain independent of
+the per-field limit. Native constructive admission remains authoritative. The
 current operation creates an empty table; entered records, broader generated
 value handling and other schema operations require their own qualified routes.
 
@@ -36,7 +44,8 @@ the existing retained filesystem journal pair and native V2 resizable journal:
 1. Encode the original schema intent before creating the fresh bundle: `TCNT0001`
    when defaults and policies are absent, `TCNT0002` for checked constant defaults
    without policies, `TCNT0003` when an explicit field policy is present, or
-   `TCNT0004` for any default on a newly supported Number/GUID target.
+   `TCNT0004` for any default on a newly supported Number/GUID target. An explicit
+   Description, including an empty one, selects `TCNT0005` instead.
 2. Prepare the complete checked BEFORE/AFTER transaction against the same target.
 3. Commit the native resize/write operation once.
 4. Retire the acknowledged journal and follow the actual platform cleanup policy,
@@ -92,6 +101,19 @@ reject defaults on those targets, even NULL: their original constructor did not
 accept them, so recovery cannot silently enlarge their closed language. Version 4
 without a wider-target default refuses.
 
+Description-bearing `TCNT0005` uses construction profile 5 and requires at least
+one present Description. It retains the same canonical BEFORE binding, declared
+field types and optional policies/defaults as the wider profile. Bit 5 (`0x20`)
+marks Description presence; immediately after that field's exact name, a
+little-endian u16 UTF-8 byte length and exact description bytes precede any
+constant default payload. A zero byte length is present-empty, not absence.
+Description is also allowed on the generated primary; its Required,
+AllowZeroLength and default restrictions remain unchanged. Invalid UTF-8,
+over-limit UTF-16 length, missing Description presence, unknown flags and
+version/profile mismatches refuse. Original TCNT1–4 encodings, closed grammars,
+record ceilings and reconstruction remain unchanged; they cannot acquire the new
+presence bit or a larger record merely because version 5 exists.
+
 These schema-intent changes do not widen the existing TCNA5 clock envelope.
 It retains nested TCNA2 only: construction and recoverable planning reject wider
 original supplied carriers before native qualification or clock callbacks, and
@@ -111,7 +133,7 @@ retain the existing 255-UTF-16-unit ceiling. These are checked constructive rule
 not native Access parity evidence for every floating-point boundary.
 
 The eight-byte per-field header retains its existing layout. Profile 3 uses its
-flags byte as follows (V4 preserves these policy bits):
+flags byte as follows (V4 and V5 preserve these policy bits):
 
 | Bit | Meaning |
 | --- | --- |
@@ -122,7 +144,7 @@ flags byte as follows (V4 preserves these policy bits):
 | 4 | AllowZeroLength is true; valid only when bit 3 is set |
 
 A present policy with its value bit clear is explicitly false. Unknown bits,
-value bits without presence, any flags on the generated primary, AllowZeroLength
+value bits without presence, any flags on the generated primary in V1–4, AllowZeroLength
 on a non-Text field, mismatched version/profile pairs and profile 3 records with
 no policies refuse. Profile 4 requires a wider-target default instead of requiring
 a policy. Profiles 1 and 2 retain their narrower flag rules. Constant

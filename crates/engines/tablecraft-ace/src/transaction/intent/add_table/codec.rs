@@ -1,6 +1,7 @@
-//! Distinct source-bound action over exactly pinned TCNT1–4 declaration templates.
+//! Distinct source-bound actions with closed legacy or described declaration templates.
 use super::super::first_table::{
-    MAX_DECLARATION_TEMPLATE_BYTES, decode_declaration_template, encode_declaration_template,
+    LEGACY_MAX_DECLARATION_TEMPLATE_BYTES, MAX_DECLARATION_TEMPLATE_BYTES,
+    decode_declaration_template, encode_declaration_template,
 };
 use super::{AddTableIntentError, BeforeBinding, NativeAddTableIntent};
 use crate::{FirstTableDefinition, InspectError, format::page::PAGE_BYTES, header::check};
@@ -8,9 +9,13 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCAT0001";
 const REPEATED_MAGIC: &[u8; 8] = b"TCAT0002";
+const DESCRIBED_MAGIC: &[u8; 8] = b"TCAT0003";
+const REPEATED_DESCRIBED_MAGIC: &[u8; 8] = b"TCAT0004";
 const PREFIX: &[u8; 4] = b"TCAT";
 const PROFILE: u16 = 1;
 const REPEATED_PROFILE: u16 = 2;
+const DESCRIBED_PROFILE: u16 = 3;
+const REPEATED_DESCRIBED_PROFILE: u16 = 4;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -21,6 +26,7 @@ const NESTED_LENGTH_AT: usize = BINDING_AT + BINDING_BYTES;
 const RESERVED_AT: usize = NESTED_LENGTH_AT + size_of::<u32>();
 const HEADER_BYTES: usize = RESERVED_AT + size_of::<u32>();
 const NESTED_MAGIC: &[u8; 8] = b"TCNT0001";
+const DESCRIBED_NESTED_MAGIC: &[u8; 8] = b"TCNT0005";
 const NESTED_TOTAL_AT: usize = NESTED_MAGIC.len();
 const NESTED_PROFILE_AT: usize = NESTED_TOTAL_AT + size_of::<u32>();
 const NESTED_FLAGS_AT: usize = NESTED_PROFILE_AT + size_of::<u16>();
@@ -42,6 +48,7 @@ const BEFORE_BYTES: u64 = PROFILE_SOURCE_PAGES * PAGE_BYTES as u64;
 const REPEATED_MIN_PAGES: u64 = 13;
 const REPEATED_MAX_PAGES: u64 = 61;
 const REPEATED_PAGE_STEP: u64 = 3;
+const LEGACY_MAX_RECORD_BYTES: usize = HEADER_BYTES + LEGACY_MAX_DECLARATION_TEMPLATE_BYTES;
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + MAX_DECLARATION_TEMPLATE_BYTES;
 
 pub(super) fn accepts_before_length(length: u64) -> bool {
@@ -64,15 +71,21 @@ fn version_for_length(length: u64) -> Option<(&'static [u8; 8], u16)> {
     }
 }
 
-fn pin_template(raw: &[u8]) -> Result<(), AddTableIntentError> {
-    if !(NESTED_HEADER_BYTES..=MAX_DECLARATION_TEMPLATE_BYTES).contains(&raw.len()) {
+fn pin_template(raw: &[u8], described: bool) -> Result<(), AddTableIntentError> {
+    let maximum = if described {
+        MAX_DECLARATION_TEMPLATE_BYTES
+    } else {
+        LEGACY_MAX_DECLARATION_TEMPLATE_BYTES
+    };
+    if !(NESTED_HEADER_BYTES..=maximum).contains(&raw.len()) {
         return Err(AddTableIntentError::InvalidRecord);
     }
-    let expected = match &raw[..NESTED_MAGIC.len()] {
-        b"TCNT0001" => 1_u16,
-        b"TCNT0002" => 2,
-        b"TCNT0003" => 3,
-        b"TCNT0004" => 4,
+    let expected = match (&raw[..NESTED_MAGIC.len()], described) {
+        (b"TCNT0001", false) => 1_u16,
+        (b"TCNT0002", false) => 2,
+        (b"TCNT0003", false) => 3,
+        (b"TCNT0004", false) => 4,
+        (b"TCNT0005", true) => 5,
         _ => return Err(AddTableIntentError::UnsupportedVersion),
     };
     let profile = u16::from_le_bytes(raw[NESTED_PROFILE_AT..NESTED_FLAGS_AT].try_into().unwrap());
@@ -98,7 +111,14 @@ pub(super) fn encode(
     let (magic, profile) =
         version_for_length(before_length).ok_or(AddTableIntentError::BeforeMismatch)?;
     let nested = encode_declaration_template(definition, budget, cancelled)?;
-    pin_template(&nested)?;
+    let described = nested.starts_with(DESCRIBED_NESTED_MAGIC);
+    pin_template(&nested, described)?;
+    let (magic, profile) = match (profile, described) {
+        (PROFILE, true) => (DESCRIBED_MAGIC, DESCRIBED_PROFILE),
+        (REPEATED_PROFILE, true) => (REPEATED_DESCRIBED_MAGIC, REPEATED_DESCRIBED_PROFILE),
+        (_, false) => (magic, profile),
+        _ => return Err(AddTableIntentError::UnsupportedProfile),
+    };
     let total = HEADER_BYTES
         .checked_add(nested.len())
         .filter(|length| *length <= MAX_RECORD_BYTES)
@@ -136,7 +156,13 @@ pub(super) fn decode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeAddTableIntent, AddTableIntentError> {
     check(budget, cancelled)?;
-    if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&raw.len()) {
+    let described = raw.starts_with(DESCRIBED_MAGIC) || raw.starts_with(REPEATED_DESCRIBED_MAGIC);
+    let maximum = if described {
+        MAX_RECORD_BYTES
+    } else {
+        LEGACY_MAX_RECORD_BYTES
+    };
+    if !(HEADER_BYTES..=maximum).contains(&raw.len()) {
         return Err(AddTableIntentError::InvalidRecord);
     }
     budget
@@ -145,6 +171,8 @@ pub(super) fn decode(
     let expected_profile = match &raw[..MAGIC.len()] {
         magic if magic == MAGIC => PROFILE,
         magic if magic == REPEATED_MAGIC => REPEATED_PROFILE,
+        magic if magic == DESCRIBED_MAGIC => DESCRIBED_PROFILE,
+        magic if magic == REPEATED_DESCRIBED_MAGIC => REPEATED_DESCRIBED_PROFILE,
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 AddTableIntentError::UnsupportedVersion
@@ -163,7 +191,14 @@ pub(super) fn decode(
     if total != raw.len()
         || raw[FLAGS_AT..BEFORE_AT] != [0; size_of::<u16>()]
         || raw[RESERVED_AT..HEADER_BYTES] != [0; size_of::<u32>()]
-        || version_for_length(before_length).is_none_or(|(_, profile)| profile != expected_profile)
+        || version_for_length(before_length).is_none_or(|(_, profile)| {
+            let expected_source_profile = if described {
+                expected_profile - (DESCRIBED_PROFILE - PROFILE)
+            } else {
+                expected_profile
+            };
+            profile != expected_source_profile
+        })
         || nested_length != raw.len() - HEADER_BYTES
     {
         return Err(AddTableIntentError::InvalidRecord);
@@ -172,7 +207,7 @@ pub(super) fn decode(
     budget
         .charge(Resource::Steps, NESTED_HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
-    pin_template(nested)?;
+    pin_template(nested, described)?;
     let definition = decode_declaration_template(nested, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(NativeAddTableIntent {

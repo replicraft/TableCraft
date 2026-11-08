@@ -43,7 +43,15 @@ programs are never executed or skipped to admit a mutation.
 The request currently uses the existing owned `FirstTableDefinition`: an empty
 schema with an explicitly requested Int32 Increment primary followed by supported
 scalar fields, typed constant defaults and optional Required/AllowZeroLength
-policies. This does not stand in for manual Design view or schemas without a
+policies. Optional Description is retained independently on ordinary fields and
+the generated primary, including the difference between absent and present-empty.
+It is inert text, with no trimming, normalization or expression evaluation. The
+constructive profile conservatively counts up to 255 UTF-16 units against
+Microsoft's [255-character Description contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/description-property-access).
+MR2 stores exact UTF-16 text with flags 1 and native Text type 10. Aggregate
+inline-property and catalog-page capacity still refuse independently; several
+individually valid descriptions need not fit one candidate catalog page.
+This does not stand in for manual Design view or schemas without a
 primary key. Names use the catalog's owning comparison policy; this first profile
 refuses non-ASCII table-name ambiguity rather than inventing locale equivalence.
 A conflicting existing name refuses before a candidate is published.
@@ -69,7 +77,8 @@ and map gaps. Independent proof reconstructs the complete new definition,
 empty DATA/root pages and native17 catalog row, checks the old-byte edit envelope,
 and decodes actual field/index/map metadata. Defaults are projected from actual
 stored expressions through the independent constant projector with no clock.
-Policies retain exact presence and Boolean values. Canonical literal spelling,
+Policies retain exact presence and Boolean values. Description is checked as exact
+inert text with its own presence, carrier and declaration flags. Canonical literal spelling,
 strict property framing and independently computed record lengths prevent padding
 from enlarging the permitted edit range into an old opaque gap.
 
@@ -91,21 +100,29 @@ qualifies the source again and checks the real requested name/schema.
 ## Original intent and V2 journal
 
 `AddTablePlan::encode_intent` retains the complete actual BEFORE binding and
-original schema using two disjoint closed action versions:
+original schema using four disjoint closed action versions:
 
-| Action | Profile | Original image length |
-| --- | ---: | --- |
-| `TCAT0001` | 1 | Exactly ten pages; original bytes, framing and source semantics retained |
-| `TCAT0002` | 2 | Thirteen through 61 pages, in three-page steps |
+| Action | Profile | Original image length | Declaration template |
+| --- | ---: | --- | --- |
+| `TCAT0001` | 1 | Exactly ten pages; original source semantics retained | TCNT1–4 only |
+| `TCAT0002` | 2 | Thirteen through 61 pages, in three-page steps | TCNT1–4 only |
+| `TCAT0003` | 3 | Exactly ten pages | TCNT5 only; at least one Description |
+| `TCAT0004` | 4 | Thirteen through 61 pages, in three-page steps | TCNT5 only; at least one Description |
 
-Capture chooses the version from the exact source length; that is wire framing,
+Capture chooses the version from Description presence and exact source length; that is wire framing,
 not native source authority. A version/profile/length mismatch refuses before
 decoded ownership allocation. Neither action can be downgraded or retried as the
-other. Both independently pin nested TCNT versions/profiles 1–4. That record is
-only a declaration template: its canonical-blank header never identifies or
-authorizes the actual source. Original TCNT1–4 standalone behavior remains
-unchanged. Unknown action/template versions and mismatched profiles refuse
-without decoder fallback.
+other. TCAT1/2 preserve their original nested TCNT1–4 grammar and original record
+ceilings. Description-bearing TCAT3/4 pin nested TCNT5 instead; a new action
+cannot disguise an older template, nor can an older action acquire Description
+or its larger record allowance. The nested record is only a declaration template:
+its canonical-blank header never identifies or authorizes the actual source.
+Standalone TCNT1–4 behavior remains unchanged. TCNT5 retains exact optional
+Description bytes, including present-empty, through original declaration ownership
+and fresh native reconstruction; see [first-table intent framing](FIRST_TABLE_PERSISTENCE.md#typed-completion-and-recovery).
+Unknown action/template versions and mismatched profiles refuse without decoder
+fallback. The new description actions use the same source partitions and native
+qualification; they do not expand allocation, catalog or table-count capacity.
 
 `AddTablePlan::prepare` consumes the checked plan through
 `prepare_resizable_expected`, comparing the complete expected BEFORE and keeping

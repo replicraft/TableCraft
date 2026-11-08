@@ -12,6 +12,7 @@ use tablecraft_core::{
 
 struct Column {
     name: String,
+    description: Option<String>,
     declaration: Declaration,
     default: Option<Value>,
     required: Option<bool>,
@@ -71,6 +72,10 @@ impl FirstTableDefinition {
             check(budget, cancelled)?;
             retained.push(Column {
                 name: copy_name(column.name(), budget)?,
+                description: column
+                    .description()
+                    .map(|text| copy_name(text, budget))
+                    .transpose()?,
                 declaration: column.declaration(),
                 required: column.required(),
                 allow_zero_length: column.allow_zero_length(),
@@ -171,6 +176,10 @@ impl FirstTableDefinition {
             };
             let borrowed = match &column.default {
                 Some(value) => borrowed.with_default_literal(value)?,
+                None => borrowed,
+            };
+            let borrowed = match &column.description {
+                Some(description) => borrowed.with_description(description)?,
                 None => borrowed,
             };
             columns.push(borrowed);

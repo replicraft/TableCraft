@@ -41,7 +41,7 @@ pub enum FirstTableIntentError {
 
 /// Original owned declarations and full-source binding for TCNT0001/profile 1,
 /// default-bearing TCNT0002/profile 2, explicit-policy TCNT0003/profile 3 or
-/// wider-target-default TCNT0004/profile 4.
+/// wider-target-default TCNT0004/profile 4, or described TCNT0005/profile 5.
 /// Decoding this record supplies no native write, recovery or absence authority.
 pub struct NativeFirstTableIntent {
     definition: FirstTableDefinition,
@@ -51,6 +51,7 @@ pub struct NativeFirstTableIntent {
 
 /// Bound on the shared closed declaration template, not an AddTable source.
 pub(super) const MAX_DECLARATION_TEMPLATE_BYTES: usize = codec::MAX_RECORD_BYTES;
+pub(super) const LEGACY_MAX_DECLARATION_TEMPLATE_BYTES: usize = codec::LEGACY_MAX_RECORD_BYTES;
 
 pub(super) fn encode_declaration_template(
     definition: &FirstTableDefinition,

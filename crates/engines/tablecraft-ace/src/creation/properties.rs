@@ -13,6 +13,7 @@ const NAME_LIST: u16 = 0x80;
 const COLUMN_VALUES: u16 = 1;
 const PROPERTY_BOOLEAN: u8 = 1;
 const PROPERTY_MEMO: u8 = 12;
+const PROPERTY_TEXT: u8 = 10;
 const PROPERTY_DDL: u8 = 1;
 const BLOCK_HEADER: usize = size_of::<u32>() + size_of::<u16>();
 const GROUP_NAME_HEADER: usize = size_of::<u32>();
@@ -23,6 +24,7 @@ const INLINE_FLAG: u32 = 0x8000_0000;
 const REQUIRED: &str = "Required";
 const ALLOW_EMPTY: &str = "AllowZeroLength";
 const DEFAULT_VALUE: &str = "DefaultValue";
+const DESCRIPTION: &str = "Description";
 
 pub(super) struct Prepared<'a> {
     columns: Columns<'a>,
@@ -30,6 +32,7 @@ pub(super) struct Prepared<'a> {
     required: bool,
     allow_empty: bool,
     default_value: bool,
+    description: bool,
 }
 
 fn add(length: usize, extra: usize) -> Result<usize, CreateDatabaseError> {
@@ -60,6 +63,7 @@ pub(super) fn capture<'a>(
     let mut required = false;
     let mut allow_empty = false;
     let mut default_value = false;
+    let mut description = false;
     let mut groups = 0;
     let mut length = SIGNATURE.len() + BLOCK_HEADER;
     for position in 0..columns.count() {
@@ -74,19 +78,27 @@ pub(super) fn capture<'a>(
             .transpose()?;
         let boolean_entries =
             usize::from(field_required.is_some()) + usize::from(field_empty.is_some());
-        if boolean_entries == 0 && literal.is_none() {
+        let text = columns.description(position);
+        if boolean_entries == 0 && literal.is_none() && text.is_none() {
             continue;
         }
         groups += 1;
         required |= field_required.is_some();
         allow_empty |= field_empty.is_some();
         default_value |= literal.is_some();
+        description |= text.is_some();
         let label = name_length(columns.name(position), budget, cancelled)?;
         length = add(length, BLOCK_HEADER + GROUP_NAME_HEADER)?;
         length = add(length, label)?;
         length = add(length, boolean_entries * BOOLEAN_ENTRY)?;
         if let Some(literal) = literal {
             length = add(length, VALUE_HEADER + literal.payload_bytes())?;
+        }
+        if let Some(text) = text {
+            length = add(
+                length,
+                VALUE_HEADER + name_length(text, budget, cancelled)? - size_of::<u16>(),
+            )?;
         }
         for row in 0..rows.count() {
             check(budget, cancelled)?;
@@ -113,6 +125,9 @@ pub(super) fn capture<'a>(
     if default_value {
         length = add(length, name_length(DEFAULT_VALUE, budget, cancelled)?)?;
     }
+    if description {
+        length = add(length, name_length(DESCRIPTION, budget, cancelled)?)?;
+    }
     // A whole catalog page is a stricter bound than the format's integer widths.
     if add(length, INLINE_HEADER)? > crate::format::page::PAGE_BYTES {
         return Err(CreateDatabaseError::PageCapacity);
@@ -124,6 +139,7 @@ pub(super) fn capture<'a>(
         required,
         allow_empty,
         default_value,
+        description,
     }))
 }
 
@@ -182,6 +198,18 @@ impl Writer<'_, '_> {
         Ok(())
     }
 
+    fn description(&mut self, index: usize, text: &str) -> Result<(), CreateDatabaseError> {
+        let bytes = name_length(text, self.budget, self.cancelled)? - size_of::<u16>();
+        self.short(VALUE_HEADER + bytes)?;
+        self.put(&[PROPERTY_DDL, PROPERTY_TEXT])?;
+        self.short(index)?;
+        self.short(bytes)?;
+        for unit in text.encode_utf16() {
+            self.put(&unit.to_le_bytes())?;
+        }
+        Ok(())
+    }
+
     fn boolean(&mut self, index: usize, value: bool) -> Result<(), CreateDatabaseError> {
         self.short(BOOLEAN_ENTRY)?;
         self.put(&[PROPERTY_DDL, PROPERTY_BOOLEAN])?;
@@ -221,6 +249,11 @@ impl Prepared<'_> {
         } else {
             0
         };
+        let description_length = if self.description {
+            name_length(DESCRIPTION, budget, cancelled)?
+        } else {
+            0
+        };
         let mut writer = Writer {
             bytes,
             at: 0,
@@ -230,7 +263,9 @@ impl Prepared<'_> {
         writer.put(&(INLINE_FLAG | self.length as u32).to_le_bytes())?;
         writer.put(&[0; 2 * size_of::<u32>()])?;
         writer.put(SIGNATURE)?;
-        writer.long(BLOCK_HEADER + required_length + empty_length + default_length)?;
+        writer.long(
+            BLOCK_HEADER + required_length + empty_length + default_length + description_length,
+        )?;
         writer.put(&NAME_LIST.to_le_bytes())?;
         if self.required {
             writer.name(REQUIRED, required_length)?;
@@ -241,6 +276,9 @@ impl Prepared<'_> {
         if self.default_value {
             writer.name(DEFAULT_VALUE, default_length)?;
         }
+        if self.description {
+            writer.name(DESCRIPTION, description_length)?;
+        }
         for position in 0..self.columns.count() {
             check(writer.budget, cancelled)?;
             let (required, empty) = self.columns.policies(position);
@@ -250,7 +288,8 @@ impl Prepared<'_> {
                 .default_literal(position)
                 .map(|value| Literal::capture(value, writer.budget, cancelled))
                 .transpose()?;
-            if boolean_count == 0 && literal.is_none() {
+            let description = self.columns.description(position);
+            if boolean_count == 0 && literal.is_none() && description.is_none() {
                 continue;
             }
             let name = self.columns.name(position);
@@ -259,8 +298,19 @@ impl Prepared<'_> {
             let default_bytes = literal
                 .as_ref()
                 .map_or(0, |value| VALUE_HEADER + value.payload_bytes());
-            writer
-                .long(BLOCK_HEADER + group_name + boolean_count * BOOLEAN_ENTRY + default_bytes)?;
+            let description_bytes = match description {
+                Some(text) => {
+                    VALUE_HEADER + name_length(text, writer.budget, cancelled)? - size_of::<u16>()
+                }
+                None => 0,
+            };
+            writer.long(
+                BLOCK_HEADER
+                    + group_name
+                    + boolean_count * BOOLEAN_ENTRY
+                    + default_bytes
+                    + description_bytes,
+            )?;
             writer.put(&COLUMN_VALUES.to_le_bytes())?;
             writer.long(group_name)?;
             writer.name(name, label)?;
@@ -273,6 +323,12 @@ impl Prepared<'_> {
             if let Some(literal) = literal {
                 let index = usize::from(self.required) + usize::from(self.allow_empty);
                 writer.default(index, &literal)?;
+            }
+            if let Some(text) = description {
+                let index = usize::from(self.required)
+                    + usize::from(self.allow_empty)
+                    + usize::from(self.default_value);
+                writer.description(index, text)?;
             }
         }
         if writer.at != writer.bytes.len() {

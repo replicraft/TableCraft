@@ -108,7 +108,7 @@ fn policy_v3_refuses_noncanonical_flags_primary_policies_wrong_carriers_and_down
         );
     }
     let mut unknown = original;
-    unknown[7] = b'5';
+    unknown[7] = b'6';
     assert!(matches!(
         NativeFirstTableIntent::decode(&unknown, &mut budget(), &|| false),
         Err(FirstTableIntentError::UnsupportedVersion)

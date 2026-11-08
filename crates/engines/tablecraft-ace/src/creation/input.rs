@@ -24,6 +24,13 @@ impl<'a> Columns<'a> {
         }
     }
 
+    pub fn description(self, position: usize) -> Option<&'a str> {
+        match self {
+            Self::Int32(_) => None,
+            Self::Values(columns) => columns[position].description(),
+        }
+    }
+
     pub fn scalar(self, position: usize) -> ScalarType {
         self.declaration(position).scalar()
     }

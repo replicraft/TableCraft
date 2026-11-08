@@ -13,6 +13,7 @@ use tablecraft_core::{
 const DDL_FLAGS: u8 = 1;
 const BOOLEAN: u8 = 1;
 const MEMO: u8 = 12;
+const TEXT: u8 = 10;
 
 pub(super) fn verify(
     image: &NativeImage,
@@ -75,6 +76,7 @@ pub(super) fn verify(
         let mut required = None;
         let mut allow_empty = None;
         let mut default = None;
+        let mut description = None;
         for property in group.properties() {
             check(budget, cancelled)?;
             if property.flags() != DDL_FLAGS {
@@ -97,6 +99,16 @@ pub(super) fn verify(
                         return Err(AddTableError::Preservation);
                     }
                     allow_empty = Some(value);
+                }
+                "Description" if description.is_none() && property.native_type() == TEXT => {
+                    let actual = property.text()?;
+                    budget
+                        .charge(Resource::Steps, actual.len() as u64)
+                        .map_err(crate::InspectError::from)?;
+                    if Some(actual) != declaration.description() {
+                        return Err(AddTableError::Preservation);
+                    }
+                    description = Some(actual);
                 }
                 "DefaultValue" if default.is_none() && property.native_type() == MEMO => {
                     let expected = declaration
@@ -143,6 +155,7 @@ pub(super) fn verify(
         if required != declaration.required()
             || allow_empty != declaration.allow_zero_length()
             || default.as_ref() != declaration.default_literal()
+            || description != declaration.description()
         {
             return Err(AddTableError::Preservation);
         }
@@ -151,7 +164,8 @@ pub(super) fn verify(
         check(budget, cancelled)?;
         let expected = column.required().is_some()
             || column.allow_zero_length().is_some()
-            || column.default_literal().is_some();
+            || column.default_literal().is_some()
+            || column.description().is_some();
         if seen[position] != expected {
             return Err(AddTableError::Preservation);
         }
@@ -175,7 +189,8 @@ fn expected_length(
     let default = columns
         .iter()
         .any(|column| column.default_literal().is_some());
-    if !required && !allow_empty && !default {
+    let description = columns.iter().any(|column| column.description().is_some());
+    if !required && !allow_empty && !default && !description {
         return Ok(0);
     }
     // MR2 signature and one dictionary block. Names are length-prefixed UTF16.
@@ -184,6 +199,7 @@ fn expected_length(
         ("Required", required),
         ("AllowZeroLength", allow_empty),
         ("DefaultValue", default),
+        ("Description", description),
     ] {
         if present {
             budget
@@ -200,7 +216,7 @@ fn expected_length(
             .default_literal()
             .map(|value| Literal::capture(value, budget, cancelled))
             .transpose()?;
-        if booleans == 0 && literal.is_none() {
+        if booleans == 0 && literal.is_none() && column.description().is_none() {
             continue;
         }
         budget
@@ -209,6 +225,12 @@ fn expected_length(
         length += 6 + 4 + 2 + column.name().encode_utf16().count() * 2 + booleans * 9;
         if let Some(literal) = literal {
             length += 8 + literal.payload_bytes();
+        }
+        if let Some(description) = column.description() {
+            budget
+                .charge(Resource::Steps, description.len() as u64)
+                .map_err(crate::InspectError::from)?;
+            length += 8 + description.encode_utf16().count() * 2;
         }
     }
     Ok(length)

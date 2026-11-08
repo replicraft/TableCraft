@@ -39,9 +39,10 @@ pub enum AddTableIntentError {
     BeforeMismatch,
 }
 
-/// Exact original schema and complete source binding for TCAT0001/TCAT0002.
+/// Exact original schema and complete source binding for TCAT0001 through TCAT0004.
 /// TCAT1 binds exactly ten pages; TCAT2 binds thirteen through sixty-one pages
-/// in three-page steps. These disjoint wire bounds grant no native role authority.
+/// in three-page steps. TCAT3/4 retain those respective source partitions but
+/// require described TCNT5 templates. These wire bounds grant no native role authority.
 /// Its nested TCNT record is only a closed declaration template. The template's
 /// canonical-blank header never identifies or authorizes this operation's source.
 /// Neither capture nor decode qualifies native mutation, journaling or recovery.

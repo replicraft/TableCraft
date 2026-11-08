@@ -4,13 +4,13 @@ use std::{cell::Cell, io::Cursor};
 use tablecraft_ace::{
     AddTableError, AddTableIntentError, AddTablePlan, CreateColumn, CreateDatabaseError,
     FirstTableDefinition, InspectError, NativeAddTableIntent, NativeImage, NativeIntentError,
-    NativeRecoveryQualificationError, QualifiedAddTableRecovery, qualify_native_add_table_recovery,
-    read_table,
+    NativeRecoveryQualificationError, PropertyGroupKind, QualifiedAddTableRecovery,
+    inspect_table_properties, qualify_native_add_table_recovery, read_table,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_io::journal::{RecoveryOutcome, V2State, inspect_v2, prepare_resizable_expected};
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::fixtures::access::canonical_add_table;
+use tablecraft_testkit::fixtures::access::{canonical_add_table, canonical_repeated_add_table};
 
 fn definition() -> FirstTableDefinition {
     definition_named("More")
@@ -264,7 +264,7 @@ fn add_table_refuses_mismatched_target_requests_source_and_complete_images_befor
 fn add_table_qualification_charges_all_pools_and_cancellation_retains_same_journal() {
     let source = canonical_add_table::source();
     assert_qualification_controls(&source.before, &source.after, "More");
-    let repeated = tablecraft_testkit::fixtures::access::canonical_repeated_add_table::source();
+    let repeated = canonical_repeated_add_table::source();
     assert_qualification_controls(&repeated.before, &repeated.after, "Third");
 }
 
@@ -346,8 +346,6 @@ fn assert_qualification_controls(before: &[u8], after: &[u8], table: &str) {
 
 #[test]
 fn repeated_v2_journal_commit_and_interrupted_growth_recovery_preserve_two_original_rows() {
-    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
-
     let source = canonical_repeated_add_table::source();
     let raw = plan_named(&source.before, "Third")
         .encode_intent(&mut budget(), &|| false)
@@ -417,8 +415,6 @@ fn repeated_v2_journal_commit_and_interrupted_growth_recovery_preserve_two_origi
 
 #[test]
 fn repeated_v2_recovery_refuses_altered_original_or_replacement_and_cannot_downgrade_to_v1() {
-    use tablecraft_testkit::fixtures::access::canonical_repeated_add_table;
-
     let source = canonical_repeated_add_table::source();
     let original = plan_named(&source.before, "Third")
         .encode_intent(&mut budget(), &|| false)
@@ -462,4 +458,112 @@ fn repeated_v2_recovery_refuses_altered_original_or_replacement_and_cannot_downg
         NativeAddTableIntent::decode(&downgraded, &mut budget(), &|| false),
         Err(AddTableIntentError::InvalidRecord)
     ));
+}
+
+#[test]
+fn described_append_actions_recover_only_exact_tcnt5_requests_in_both_source_partitions() {
+    for repeated in [false, true] {
+        let before = if repeated {
+            canonical_repeated_add_table::source().before
+        } else {
+            canonical_add_table::source().before
+        };
+        let table = if repeated { "Third" } else { "More" };
+        let columns = [
+            CreateColumn::new("Id", ScalarType::Int32)
+                .with_primary_key("PrimaryId")
+                .unwrap()
+                .with_incrementing_autonumber()
+                .unwrap()
+                .with_description("")
+                .unwrap(),
+            CreateColumn::short_text("Name", 20)
+                .unwrap()
+                .with_description("Résumé 🗃 help")
+                .unwrap(),
+        ];
+        let definition =
+            FirstTableDefinition::capture(table, &columns, &mut budget(), &|| false).unwrap();
+        let plan =
+            NativeImage::capture(&mut Cursor::new(&before), scope(), &mut budget(), &|| false)
+                .unwrap()
+                .plan_add_table(definition, &mut budget(), &|| false)
+                .unwrap();
+        let raw = plan.encode_intent(&mut budget(), &|| false).unwrap();
+        assert_eq!(&raw[..8], if repeated { b"TCAT0004" } else { b"TCAT0003" });
+        let after = plan.after_bytes().to_vec();
+        assert_eq!(&after[7 * 4096..before.len()], &before[7 * 4096..]);
+        let properties = inspect_table_properties(
+            &mut Cursor::new(&after),
+            scope(),
+            table,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        for (field, wanted) in [("Id", ""), ("Name", "Résumé 🗃 help")] {
+            let actual = properties
+                .group(PropertyGroupKind::Column, field)
+                .unwrap()
+                .get("Description")
+                .unwrap();
+            assert_eq!(actual.native_type(), 10);
+            assert_eq!(actual.text().unwrap(), wanted);
+        }
+        for committed in [false, true] {
+            let mut target = Target::new(before.clone());
+            let mut journal = pending(&before, &after);
+            if committed {
+                let original_plan = NativeImage::capture(
+                    &mut Cursor::new(&before),
+                    scope(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap()
+                .plan_add_table(
+                    FirstTableDefinition::capture(table, &columns, &mut budget(), &|| false)
+                        .unwrap(),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                // A real commit, not a forged marker, establishes the cold state.
+                journal = Storage::new(Vec::new());
+                original_plan
+                    .prepare(&mut target, &mut journal, &mut budget(), &|| false)
+                    .unwrap()
+                    .commit(&mut budget(), &|| false)
+                    .unwrap();
+            }
+            let mut cold = Storage::new(journal.bytes.get_ref().clone());
+            let checked = qualify(&mut cold, &raw, &mut budget(), &|| false).unwrap();
+            assert_eq!(
+                checked
+                    .recover(&mut target, &mut budget(), &|| false)
+                    .unwrap(),
+                if committed {
+                    RecoveryOutcome::Committed
+                } else {
+                    RecoveryOutcome::RolledBack
+                }
+            );
+            assert_eq!(
+                target.storage.bytes.get_ref(),
+                if committed { &after } else { &before }
+            );
+        }
+        let mut changed = raw.clone();
+        *changed.last_mut().unwrap() = b'x';
+        let mut journal = pending(&before, &after);
+        let writes = journal.writes;
+        let error = qualify(&mut journal, &changed, &mut budget(), &|| false)
+            .err()
+            .expect("changed description cannot authorize unchanged AFTER");
+        assert!(matches!(
+            error,
+            NativeRecoveryQualificationError::ImageMismatch
+        ));
+        assert_eq!(journal.writes, writes);
+    }
 }
