@@ -3,29 +3,43 @@ use super::*;
 use crate::workspace::test_support::{self, finish_reads, finish_save};
 use egui::{Key, accesskit::Role};
 use egui_kittest::{Harness, kittest::Queryable};
-use tablecraft_testkit::fixtures::access::canonical_catalog_names::rename_pair;
+use tablecraft_testkit::fixtures::access::{
+    canonical_catalog_names::rename_pair, canonical_indexed_rename,
+    canonical_ordinary_indexed::Case,
+};
 
 #[test]
 fn closed_navigation_rename_saves_once_and_reselects_without_reopening_table() {
-    let source = rename_pair(6, "Items", "雪 Customers", true);
-    let (_directory, path, _before, mut harness) = test_support::opened(source.before);
-    let report = save_rename(&mut harness);
-    assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
+    for indexed in [None, Some(Case::CounterPrimary), Some(Case::RetainedTree)] {
+        let (before, after) = match indexed {
+            Some(case) => {
+                let source = canonical_indexed_rename::pair(6, case, "Items", "雪 Customers");
+                (source.before, source.after)
+            }
+            None => {
+                let source = rename_pair(6, "Items", "雪 Customers", true);
+                (source.before, source.after)
+            }
+        };
+        let (_directory, path, _before, mut harness) = test_support::opened(before);
+        let report = save_rename(&mut harness);
+        assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
         if receipt.schema_change == Some(SaveSchemaChange::TableRenamed)
             && receipt.matched_rows.is_none() && receipt.changed_rows.is_none()));
-    assert!(harness.state().editing.has_save());
-    harness
-        .get_by_role_and_label(Role::Button, "Close")
-        .click_accesskit();
-    harness.run_steps(1);
-    finish_reads(&mut harness);
-    assert_eq!(std::fs::read(path).unwrap(), source.after);
-    assert!(!harness.state().editing.has_save());
-    assert!(!harness.state().state.table_rename_open());
-    assert!(harness.state().state.object_tabs().is_empty());
-    assert!(harness.state().state.data.is_none());
-    assert!(matches!(harness.state().state.selected_navigation_object(),
+        assert!(harness.state().editing.has_save());
+        harness
+            .get_by_role_and_label(Role::Button, "Close")
+            .click_accesskit();
+        harness.run_steps(1);
+        finish_reads(&mut harness);
+        assert_eq!(std::fs::read(path).unwrap(), after);
+        assert!(!harness.state().editing.has_save());
+        assert!(!harness.state().state.table_rename_open());
+        assert!(harness.state().state.object_tabs().is_empty());
+        assert!(harness.state().state.data.is_none());
+        assert!(matches!(harness.state().state.selected_navigation_object(),
         Some(ObjectTarget { kind: ObjectKind::Table { name }, .. }) if name == "雪 Customers"));
+    }
 }
 
 #[test]
