@@ -676,47 +676,62 @@ fn translated_file_rail_labels_fit_without_elision_in_both_themes() {
 #[test]
 fn localized_options_dropdowns_expose_their_setting_labels_without_changing_values() {
     for locale in [Locale::De, Locale::Ja] {
-        let mut preview = Preview::new(Scene::Options);
-        let mut state = std::mem::take(preview.state_mut());
-        state.localizer = Localizer::new(locale).unwrap();
-        state.formatting.system_locale = Some("en-US".into());
-        let formatting = state.formatting.clone();
-        let localizer = state.localizer.clone();
-        let original_rows = state.data.as_ref().unwrap().rows.as_ptr();
-        let mut harness = Harness::builder()
-            .with_size(egui::vec2(1000.0, 820.0))
-            .build_ui_state(
+        for size in [egui::vec2(1280.0, 820.0), egui::vec2(900.0, 720.0)] {
+            let mut preview = Preview::new(Scene::Options);
+            let mut state = std::mem::take(preview.state_mut());
+            state.localizer = Localizer::new(locale).unwrap();
+            state.formatting.system_locale = Some("en-US".into());
+            let formatting = state.formatting.clone();
+            let localizer = state.localizer.clone();
+            let original_rows = state.data.as_ref().unwrap().rows.as_ptr();
+            let mut harness = Harness::builder().with_size(size).build_ui_state(
                 |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
                 (state, Vec::new()),
             );
-        crate::configure(&harness.ctx);
-        harness.run();
+            crate::configure(&harness.ctx);
+            harness.run();
+            let modal = harness
+                .ctx
+                .memory(|memory| memory.area_rect(egui::Id::new("application_options")))
+                .expect("the real Options dialog is presented");
+            let viewport = harness.ctx.viewport_rect();
+            assert!(
+                viewport.contains_rect(modal),
+                "{locale:?}: modal={modal:?}, viewport={viewport:?}"
+            );
+            let close = localizer.text("backstage-close");
+            let buttons = harness
+                .query_all_by_role_and_label(Role::Button, &close)
+                .filter(|button| modal.contains_rect(button.rect()))
+                .collect::<Vec<_>>();
+            assert_eq!(buttons.len(), 1, "one Close belongs to the Options dialog");
+            assert!(!buttons[0].accesskit_node().is_disabled());
 
-        for key in [
-            "settings-language",
-            "settings-date-format",
-            "settings-time-format",
-            "settings-currency-format",
-        ] {
-            let label = localizer.text(key);
-            let control = harness.get_by_role_and_label(Role::ComboBox, label.as_str());
-            assert!(!control.accesskit_node().is_disabled());
-            assert!(control.accesskit_node().labelled_by().next().is_some());
+            for key in [
+                "settings-language",
+                "settings-date-format",
+                "settings-time-format",
+                "settings-currency-format",
+            ] {
+                let label = localizer.text(key);
+                let control = harness.get_by_role_and_label(Role::ComboBox, label.as_str());
+                assert!(!control.accesskit_node().is_disabled());
+                assert!(control.accesskit_node().labelled_by().next().is_some());
+            }
+            assert_eq!(harness.state().0.localizer.locale(), locale);
+            assert_eq!(harness.state().0.formatting, formatting);
+            assert_eq!(
+                harness.state().0.data.as_ref().unwrap().rows.as_ptr(),
+                original_rows
+            );
+            assert!(harness.state().1.is_empty());
+            assert_eq!(
+                harness.state().0.localizer.diagnostics(),
+                Default::default()
+            );
         }
-        assert_eq!(harness.state().0.localizer.locale(), locale);
-        assert_eq!(harness.state().0.formatting, formatting);
-        assert_eq!(
-            harness.state().0.data.as_ref().unwrap().rows.as_ptr(),
-            original_rows
-        );
-        assert!(harness.state().1.is_empty());
-        assert_eq!(
-            harness.state().0.localizer.diagnostics(),
-            Default::default()
-        );
     }
 }
-
 #[test]
 fn about_exposes_the_exact_bundled_emoji_license_in_every_locale_without_actions() {
     for locale in Locale::ALL {

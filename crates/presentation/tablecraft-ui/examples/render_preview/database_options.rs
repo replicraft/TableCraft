@@ -73,6 +73,17 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             .text("database-options-current-database");
         harness.get_by_label(&label).click();
         settle(harness);
+        // Verify the actual category interaction before any direct illustrative
+        // state setup. A foreground close modal must not conceal a missed click
+        // that left the General pane in the background.
+        let modal = area(harness, "application_options");
+        let state_key = if matches!(mode, "unknown" | "refused") {
+            "database-options-state-unknown"
+        } else {
+            "database-options-state-missing"
+        };
+        painted(harness, state_key, modal);
+        button(harness, "backstage-close", false, modal);
     }
     if matches!(mode, "close" | "review" | "returned") {
         let state = harness.state_mut().state_mut();
@@ -117,6 +128,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         harness.state().state().localizer.diagnostics(),
         Default::default()
     );
+    // A fitting front confirmation must not hide a broken underlying Options
+    // dialog. Both retained owners must fit whenever both are presented.
+    if harness.state().state().options_dialog_open() {
+        area(harness, "application_options");
+    }
     match mode {
         "close" => {
             let modal = area(harness, "database_options_close_objects");
@@ -178,7 +194,8 @@ fn area(harness: &Harness<'_, Preview>, id: &str) -> egui::Rect {
         .expect("actual Options modal area");
     assert!(
         harness.ctx.viewport_rect().contains_rect(modal),
-        "{id} fits the viewport"
+        "{id} rect={modal:?} must fit viewport={:?}",
+        harness.ctx.viewport_rect()
     );
     modal
 }
