@@ -7,6 +7,8 @@ mod deleting;
 #[cfg(feature = "ace16-create")]
 mod field_addition;
 #[cfg(feature = "ace16-create")]
+mod field_drop;
+#[cfg(feature = "ace16-create")]
 mod field_rename;
 mod inserting;
 #[cfg(feature = "ace16-create")]
@@ -44,6 +46,11 @@ pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 pub use field_addition::{
     FieldAdditionAvailability, FieldAdditionOutcomeError, FieldAdditionReopenFacts,
     FieldAdditionReview, ReviewedFieldAddition,
+};
+#[cfg(feature = "ace16-create")]
+pub use field_drop::{
+    FieldDropOutcomeError, FieldDropReopenFacts, FieldDropReview, FieldDropSourceInspection,
+    FieldDroppedReopen, ReviewedFieldDrop,
 };
 #[cfg(feature = "ace16-create")]
 pub use field_rename::{

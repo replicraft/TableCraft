@@ -55,6 +55,11 @@ pub use editing::{
     SaveStartError, SaveStartFailure, SaveWorker, TableRenameReopen, TableRenameReview,
     journal_path,
 };
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+pub use editing::{
+    FieldDropOutcomeError, FieldDropReopenFacts, FieldDropReview, FieldDropSourceInspection,
+    FieldDroppedReopen, ReviewedFieldDrop,
+};
 #[cfg(feature = "offline-edit")]
 pub use editing::{
     QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview, ReviewedQuerySql,
@@ -159,6 +164,22 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FieldRenameSource(#[from] tablecraft_ace::FieldRenameError),
+    /// Source-only DROP inspection refused outside an explicit unsupported leaf.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldDropSource(#[from] tablecraft_ace::FieldDropError),
+    /// Exact original native field name/number does not match the current source.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved-field DROP target is no longer current")]
+    StaleFieldDropTarget,
+    /// Original request, native source or complete DROP reconstruction failed.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldDropIntent(#[from] tablecraft_ace::FieldDropIntentError),
+    /// Complete checked DROP replacement differs from the accepted read witness.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved-field DROP image changed before reopening")]
+    FieldDroppedSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("native field identity no longer matches the selected target")]
     StaleFieldRenameTarget,
@@ -321,6 +342,24 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
         witness: Arc<InsertRetryWitness>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewFieldDrop {
+        document_revision: u64,
+        table: String,
+        column: String,
+        native_number: usize,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenFieldDropped {
+        witness: Arc<FieldDroppedReopen>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    InspectFieldDropSource {
+        document_revision: u64,
+        table: String,
+        column: String,
+        native_number: usize,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewFieldRename {
@@ -573,6 +612,15 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FieldDropReviewed {
+        review: FieldDropReview,
+        capability: ReviewedFieldDrop,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FieldDropSourceInspected {
+        inspection: FieldDropSourceInspection,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     FieldRenameReviewed {

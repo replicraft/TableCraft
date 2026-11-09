@@ -8,6 +8,8 @@ mod apply_delete;
 #[cfg(feature = "ace16-create")]
 mod apply_field_addition;
 #[cfg(feature = "ace16-create")]
+mod apply_field_drop;
+#[cfg(feature = "ace16-create")]
 mod apply_field_rename;
 mod apply_insert;
 mod apply_query_action;
@@ -41,8 +43,8 @@ use crate::editing::save::{
 };
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
-    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldRename,
-    ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
+    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -75,6 +77,8 @@ enum Task {
     ApplyFieldAddition(ReviewedFieldAddition, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyFieldRename(ReviewedFieldRename, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyFieldDrop(ReviewedFieldDrop, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
@@ -134,6 +138,12 @@ impl SaveWorker {
 
     /// Whether this host can consume native full-SQL review capabilities.
     pub const fn supports_query_sql() -> bool {
+        true
+    }
+
+    /// Whether this host can consume actual native saved-field DROP reviews.
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_field_drop() -> bool {
         true
     }
 
@@ -206,7 +216,8 @@ impl SaveWorker {
                     Task::ApplyAddColumn(..)
                     | Task::ApplyNumberColumn(..)
                     | Task::ApplyFieldAddition(..)
-                    | Task::ApplyFieldRename(..) => SaveOperation::Apply,
+                    | Task::ApplyFieldRename(..)
+                    | Task::ApplyFieldDrop(..) => SaveOperation::Apply,
                     Task::ApplyQueryExpression(..)
                     | Task::ApplyQuerySql(..)
                     | Task::Apply(..)
@@ -237,6 +248,15 @@ impl SaveWorker {
                     }
                     Task::ApplyQuerySql(reviewed, bundle) => {
                         apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyFieldDrop(reviewed, bundle) => {
+                        self::apply_field_drop::apply_field_drop(
+                            reviewed,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
                     }
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyFieldRename(reviewed, bundle) => {
@@ -453,6 +473,17 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryExpression>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryExpression)
+    }
+
+    /// Consume one exact DROP review; absent targets never become no-op saves.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_field_drop(
+        &self,
+        reviewed: ReviewedFieldDrop,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedFieldDrop>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyFieldDrop)
     }
 
     /// Consume the exact original-field rename review once.

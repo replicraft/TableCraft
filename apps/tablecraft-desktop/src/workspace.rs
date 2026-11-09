@@ -465,6 +465,8 @@ impl Desktop {
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
+                | Ok(Response::FieldDropReviewed { .. })
+                | Ok(Response::FieldDropSourceInspected { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));

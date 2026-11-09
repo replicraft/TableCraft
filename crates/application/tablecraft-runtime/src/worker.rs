@@ -130,6 +130,43 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewFieldDrop {
+                document_revision,
+                table,
+                column,
+                native_number,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_field_drop(*document_revision, table, column, *native_number, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenFieldDropped { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_field_dropped(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::InspectFieldDropSource {
+                document_revision,
+                table,
+                column,
+                native_number,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_field_drop_source(
+                    *document_revision,
+                    table,
+                    column,
+                    *native_number,
+                    cancelled,
+                ),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::ReviewFieldRename {
                 document_revision,
                 table,
@@ -529,9 +566,15 @@ impl Worker {
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewFieldRename { .. } => "review_field_rename",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewFieldDrop { .. } => "review_field_drop",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::OpenFieldRenamed { .. } => "open_field_renamed",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::OpenFieldDropped { .. } => "open_field_dropped",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::InspectFieldRenameSource { .. } => "inspect_field_rename_source",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::InspectFieldDropSource { .. } => "inspect_field_drop_source",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::InspectFieldAdditionAvailability { .. } => {
                         "inspect_field_addition_source"
