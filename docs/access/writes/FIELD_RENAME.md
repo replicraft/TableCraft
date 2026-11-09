@@ -88,7 +88,10 @@ Other action families/versions are never tried after a refusal. The retained
 Access adapter has a separate staging and recovery route, with schema-only
 receipts. Its file-based checks and consuming runtime save/witness cases pass in
 the [service record](../../../tests/results/schema/field-schema-services-2026-11-09.json).
-Normal GUI interaction and publication remain the next integration boundary.
+The normal [saved-field GUI workflow](../../ui/FIELD_RENAME.md) now consumes
+that route for the same bounded source/name profile, including Design selection
+and checked replacement publication. Unequal-width names and broader source
+families remain unsupported; GUI availability does not widen native admission.
 
 ## Evidence and verification status
 
