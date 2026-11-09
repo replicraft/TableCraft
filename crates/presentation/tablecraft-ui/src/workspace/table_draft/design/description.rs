@@ -1,6 +1,7 @@
 //! Retained bounded Description cells; the builder owns accepted metadata.
 use crate::localization::{message, tr};
 use egui::Ui;
+use std::borrow::Cow;
 use tablecraft_builders::table::{
     DraftField, DraftFieldId, MAX_DRAFT_DESCRIPTION_BYTES, MAX_DRAFT_DESCRIPTION_UNITS, TableDraft,
 };
@@ -86,11 +87,11 @@ impl Editors {
             .iter_mut()
             .find(|entry| entry.field == field.id())?;
         let id = ui.make_persistent_id(("draft_field_description", field.id()));
-        let original = entry.text.clone();
+        let mut text = Cow::Borrowed(entry.text.as_str());
         let rejected = crate::text_input::reject_events_with_limits(
             ui,
             id,
-            &original,
+            text.as_ref(),
             MAX_DRAFT_DESCRIPTION_BYTES,
             MAX_DRAFT_DESCRIPTION_UNITS,
         );
@@ -101,7 +102,7 @@ impl Editors {
         );
         // One visible row retains multiline input exactly rather than replacing
         // pasted whitespace. The containing Design cell owns clipping/height.
-        let output = egui::TextEdit::multiline(&mut entry.text)
+        let output = egui::TextEdit::multiline(&mut text)
             .id(id)
             .desired_rows(1)
             .desired_width(ui.available_width())
@@ -117,13 +118,15 @@ impl Editors {
         crate::theme::input_border(ui, &response);
         let changed = rejected || response.changed();
         if rejected
-            || entry.text.len() > MAX_DRAFT_DESCRIPTION_BYTES
-            || entry.text.encode_utf16().count() > MAX_DRAFT_DESCRIPTION_UNITS
+            || text.len() > MAX_DRAFT_DESCRIPTION_BYTES
+            || text.encode_utf16().count() > MAX_DRAFT_DESCRIPTION_UNITS
         {
-            entry.text = original;
             entry.rejected = true;
             entry.pending = false;
         } else if response.changed() {
+            if let Cow::Owned(text) = text {
+                entry.text = text;
+            }
             entry.rejected = false;
             entry.pending = true;
         }

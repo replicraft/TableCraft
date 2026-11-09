@@ -14,6 +14,8 @@ struct DeleteMenuWitness {
 
 impl State {
     pub(super) fn select_menu(&mut self, ui: &mut Ui) {
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let enabled = self.can_select_record();
         let response = command_menu(
@@ -53,7 +55,7 @@ impl State {
         refresh: Option<Action>,
         actions: &mut Vec<Action>,
     ) {
-        let t = self.localizer.clone();
+        let t = &self.localizer;
         let response = command_menu_inline(
             ui,
             Icon::Refresh,
@@ -89,7 +91,7 @@ impl State {
     }
 
     pub(super) fn delete_menu(&self, ui: &mut Ui, actions: &mut Vec<Action>) {
-        let t = self.localizer.clone();
+        let t = &self.localizer;
         let current = self
             .current_delete_target()
             .map(|target| DeleteMenuWitness {
@@ -121,7 +123,13 @@ impl State {
             let captured = ui.data_mut(|data| {
                 let captured = data
                     .get_temp::<DeleteMenuWitness>(witness_id)
+                    // Popup opening captures a stable exact owner, then context storage and the
+                    // current-frame validation need separate owned witnesses; later selection
+                    // changes must not retarget the open menu.
                     .unwrap_or_else(|| current.clone());
+                // Popup opening captures a stable exact owner, then context storage and the
+                // current-frame validation need separate owned witnesses; later selection
+                // changes must not retarget the open menu.
                 data.insert_temp(witness_id, captured.clone());
                 captured
             });
@@ -145,6 +153,8 @@ impl State {
     }
 
     pub(super) fn zoom_menu(&mut self, ui: &mut Ui) {
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let enabled = self.can_zoom_cell();
         let response = command_menu(

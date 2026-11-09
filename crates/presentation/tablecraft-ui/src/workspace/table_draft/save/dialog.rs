@@ -2,6 +2,7 @@ use super::{NEXT_SAVE_REQUEST, Ordering, Phase, SaveDialog, State, TableSaveRequ
 use crate::Action;
 use crate::localization::tr;
 use egui::{Context, Id, Modal, TextEdit};
+use std::borrow::Cow;
 use tablecraft_builders::table::{MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
 
 const NAME_WIDTH: f32 = 280.0;
@@ -36,33 +37,33 @@ impl State {
             let confirm_from_name = naming
                 && ui.memory(|memory| memory.has_focus(input_id))
                 && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
-            let original = save.name.clone();
+            let mut edited_name = Cow::Borrowed(save.name.as_str());
             let rejected = crate::text_input::reject_events_with_limits(
                 ui,
                 input_id,
-                &original,
+                edited_name.as_ref(),
                 MAX_DRAFT_NAME_BYTES,
                 MAX_DRAFT_NAME_UNITS,
             );
             let name = ui
                 .add_enabled(
                     naming,
-                    TextEdit::singleline(&mut save.name)
+                    TextEdit::singleline(&mut edited_name)
                         .id(input_id)
                         .desired_width(NAME_WIDTH),
                 )
                 .labelled_by(label.id);
             if rejected
-                || save.name.len() > MAX_DRAFT_NAME_BYTES
-                || save
-                    .name
+                || edited_name.len() > MAX_DRAFT_NAME_BYTES
+                || edited_name
                     .encode_utf16()
                     .take(MAX_DRAFT_NAME_UNITS + 1)
                     .count()
                     > MAX_DRAFT_NAME_UNITS
             {
-                save.name = original;
                 save.error = Some(tr(ui, "table-draft-invalid-table-name"));
+            } else if let Cow::Owned(name) = edited_name {
+                save.name = name;
             }
             if naming && save.focus_name {
                 name.request_focus();
@@ -219,6 +220,9 @@ impl State {
         };
         let id = previous + 1;
         if let Some(editor) = self.table_draft_editor_mut(&save.tab) {
+            // the retained command or exact-owner witness needs its own captured identity after
+            // this render/dispatch; keep the original catalog, input or owner available for the
+            // later checks in this operation.
             editor.save_name = save.name.clone();
         }
         save.phase = Phase::Issued;
@@ -227,6 +231,9 @@ impl State {
         actions.push(Action::SaveTableDraft {
             request: TableSaveRequest {
                 id,
+                // TableSaveRequest needs its own captured identity after this render/dispatch;
+                // keep the original catalog, input or owner available for the later checks in
+                // this operation.
                 tab: save.tab.clone(),
                 snapshot,
                 record_revision: save.record_revision,

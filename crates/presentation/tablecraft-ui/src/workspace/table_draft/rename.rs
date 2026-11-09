@@ -4,6 +4,7 @@ use egui::{
     Ui,
     text::{CCursor, CCursorRange},
 };
+use std::borrow::Cow;
 use tablecraft_builders::table::{DraftFieldId, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
 
 const HORIZONTAL_PADDING: f32 = 2.0;
@@ -49,15 +50,15 @@ impl Rename {
                 || input.consume_key(egui::Modifiers::NONE, egui::Key::Tab);
             (cancel, commit)
         });
-        let original = self.name.clone();
+        let mut edited_name = Cow::Borrowed(self.name.as_str());
         let rejected = crate::text_input::reject_events_with_limits(
             ui,
             input_id,
-            &original,
+            edited_name.as_ref(),
             MAX_DRAFT_NAME_BYTES,
             MAX_DRAFT_NAME_UNITS,
         );
-        let mut output = egui::TextEdit::singleline(&mut self.name)
+        let mut output = egui::TextEdit::singleline(&mut edited_name)
             .id(input_id)
             .desired_width(ui.available_width())
             .event_filter(egui::EventFilter {
@@ -74,12 +75,14 @@ impl Rename {
             egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, ui.is_enabled(), &label)
         });
         if rejected
-            || self.name.len() > MAX_DRAFT_NAME_BYTES
-            || self.name.encode_utf16().count() > MAX_DRAFT_NAME_UNITS
+            || edited_name.len() > MAX_DRAFT_NAME_BYTES
+            || edited_name.encode_utf16().count() > MAX_DRAFT_NAME_UNITS
         {
-            self.name = original;
             self.rejected = true;
         } else if response.changed() {
+            if let Cow::Owned(name) = edited_name {
+                self.name = name;
+            }
             self.rejected = false;
         }
         if self.focus {

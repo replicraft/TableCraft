@@ -2,6 +2,7 @@
 use super::{Action, State, backstage::Backstage, diagnostics, ribbon::Icon};
 use crate::{localization::tr, theme::palette};
 use egui::{Frame, Margin, TextEdit, Ui};
+use std::borrow::Cow;
 
 const MAX_DESTINATION_BYTES: usize = 4096;
 
@@ -83,6 +84,8 @@ impl State {
         self.creation.issued = Some(self.creation.sequence);
         Some(CreationRequest {
             id: self.creation.sequence,
+            // CreationRequest retains the destination independently of the still-rendered
+            // creation naming state, allowing exact in-flight request ownership.
             destination: self.creation.destination.clone(),
         })
     }
@@ -182,11 +185,11 @@ impl State {
                 let name_label = tr(ui, "creation-file-name");
                 ui.label(&name_label);
                 let input_id = ui.make_persistent_id("creation_destination");
-                let original = self.creation.destination.clone();
+                let mut destination = Cow::Borrowed(self.creation.destination.as_str());
                 let rejected = crate::text_input::reject_events_with_limits(
                     ui,
                     input_id,
-                    &original,
+                    destination.as_ref(),
                     MAX_DESTINATION_BYTES,
                     MAX_DESTINATION_BYTES,
                 );
@@ -196,7 +199,7 @@ impl State {
                 }
                 let response = ui.add_enabled(
                     self.creation_available && !self.busy && self.creation.pending.is_none(),
-                    TextEdit::singleline(&mut self.creation.destination)
+                    TextEdit::singleline(&mut destination)
                         .id(input_id)
                         .desired_width(400.0)
                         .char_limit(MAX_DESTINATION_BYTES),
@@ -206,10 +209,12 @@ impl State {
                 });
                 if response.changed() {
                     self.creation.issued = None;
-                    if self.creation.destination.len() > MAX_DESTINATION_BYTES {
-                        self.creation.destination = original;
+                    if destination.len() > MAX_DESTINATION_BYTES {
                         self.creation.path_too_long = true;
                     } else {
+                        if let Cow::Owned(destination) = destination {
+                            self.creation.destination = destination;
+                        }
                         // Host validation still owns absolute path and native
                         // selection identity. A basename alone selects no folder.
                         self.creation.selected = self.creation.destination.contains(['/', '\\']);

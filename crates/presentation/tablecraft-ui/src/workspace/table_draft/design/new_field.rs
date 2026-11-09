@@ -2,6 +2,7 @@
 use super::{properties::editor::Editors, type_key, types};
 use crate::localization::tr;
 use egui::{Key, Modifiers, Ui, WidgetInfo, WidgetType};
+use std::borrow::Cow;
 use tablecraft_builders::table::{DraftFieldType, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -97,15 +98,15 @@ impl NewField {
                 declaration_keys && input.consume_key(Modifiers::NONE, Key::Tab),
             )
         });
-        let original = self.name.clone();
+        let mut name = Cow::Borrowed(self.name.as_str());
         let rejected = crate::text_input::reject_events_with_limits(
             ui,
             id,
-            &original,
+            name.as_ref(),
             MAX_DRAFT_NAME_BYTES,
             MAX_DRAFT_NAME_UNITS,
         );
-        let response = egui::TextEdit::singleline(&mut self.name)
+        let response = egui::TextEdit::singleline(&mut name)
             .id(id)
             .desired_width(ui.available_width())
             .margin(egui::Margin::symmetric(2, 1))
@@ -122,12 +123,14 @@ impl NewField {
         if rejected || response.changed() {
             if !editors.record_raw_edit()
                 || rejected
-                || self.name.len() > MAX_DRAFT_NAME_BYTES
-                || self.name.encode_utf16().count() > MAX_DRAFT_NAME_UNITS
+                || name.len() > MAX_DRAFT_NAME_BYTES
+                || name.encode_utf16().count() > MAX_DRAFT_NAME_UNITS
             {
-                self.name = original;
                 self.rejected = true;
             } else {
+                if let Cow::Owned(name) = name {
+                    self.name = name;
+                }
                 self.rejected = false;
             }
         }

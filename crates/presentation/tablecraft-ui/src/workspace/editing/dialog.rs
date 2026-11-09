@@ -171,6 +171,9 @@ impl State {
                     {
                         actions.push(Action::ReviewEdit {
                             draft_id: draft.id,
+                            // The review action owns the proposed text while the dialog keeps
+                            // the entered value for rendering/retry; the consuming native
+                            // review captures that input.
                             input: input.clone(),
                         });
                     }
@@ -244,13 +247,14 @@ impl State {
 }
 
 fn target_label(ui: &mut egui::Ui, target: &EditTarget) {
+    let row = (u64::from(target.parent_ordinal) + 1).to_string();
     ui.label(message(
         ui,
         "editing-target",
         &[
             ("table", target.table.as_str()),
             ("column", target.column.as_str()),
-            ("row", (u64::from(target.parent_ordinal) + 1).to_string()),
+            ("row", row.as_str()),
         ],
     ));
 }
