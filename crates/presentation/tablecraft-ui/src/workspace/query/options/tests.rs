@@ -2,7 +2,7 @@ use super::*;
 use crate::workspace::query::tests::{harness, result, state};
 use crate::{Action, Locale, Localizer, Theme};
 use egui::Key;
-use egui_kittest::kittest::{NodeT, Queryable};
+use egui_kittest::kittest::Queryable;
 
 fn limits() -> QueryRunLimits {
     QueryRunLimits {

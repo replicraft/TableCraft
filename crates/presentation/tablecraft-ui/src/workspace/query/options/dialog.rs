@@ -104,7 +104,7 @@ fn snapshot_field(ui: &mut Ui, key: &str, value: &mut u32) {
         [NUMBER_WIDTH, ui.spacing().interact_size.y],
         DragValue::new(value).range(1..=u32::MAX),
     );
-    response.widget_info(|| WidgetInfo::labeled(WidgetType::DragValue, true, label));
+    response.widget_info(|| WidgetInfo::labeled(WidgetType::DragValue, true, &label));
     ui.end_row();
 }
 
@@ -126,7 +126,7 @@ fn pool_row(ui: &mut Ui, key: &str, pool: &mut QueryPoolLimits, rows: bool) {
                 [NUMBER_WIDTH, ui.spacing().interact_size.y],
                 DragValue::new(value).range(1..=u64::MAX),
             );
-            response.widget_info(|| WidgetInfo::labeled(WidgetType::DragValue, true, accessible));
+            response.widget_info(|| WidgetInfo::labeled(WidgetType::DragValue, true, &accessible));
         } else {
             ui.label("—");
         }
