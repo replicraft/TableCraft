@@ -4,6 +4,7 @@ __pycache__/
 .codesight/
 .DS_Store
 /.cache/
+/.codex/
 
 /dist/
 
