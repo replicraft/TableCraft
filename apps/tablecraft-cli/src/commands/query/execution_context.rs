@@ -10,7 +10,7 @@ use tablecraft_expressions::{
 use tablecraft_query::{ExecutionOptions, QueryError, source::CollationResolver};
 
 pub(super) fn with_context<T, E: From<Error>>(
-    controls: &Controls,
+    controls: &Controls<'_>,
     collation: Option<&dyn Collation>,
     resolver: Option<&dyn CollationResolver>,
     operation: impl FnOnce(ExecutionOptions<'_>) -> Result<T, E>,
@@ -34,7 +34,7 @@ pub(super) fn with_context<T, E: From<Error>>(
         limits: controls.execution_limits,
         error_messages: Some(&error_messages),
         access_session: Some(AccessSessionContext::unsecured()),
-        case_locale: controls.case_locale.as_ref(),
+        case_locale: controls.case_locale,
         clock: Some(&clock),
         random: Some(&random),
         year_window: controls.year_window,

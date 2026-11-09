@@ -26,7 +26,7 @@ impl RunArgs {
         )
     }
 
-    pub(in crate::commands::query) fn controls(&self) -> retrieval::Controls {
+    pub(in crate::commands::query) fn controls(&self) -> retrieval::Controls<'_> {
         retrieval::Controls {
             binding_depth: self.binding_depth,
             declared_integral: self.declared_integral,
@@ -47,7 +47,7 @@ impl RunArgs {
             reference_year: self.reference_year,
             first_day_of_week: self.first_day_of_week,
             first_week_of_year: self.first_week_of_year,
-            case_locale: self.case_locale.clone(),
+            case_locale: self.case_locale.as_ref(),
             clock: self.clock,
             random_seed: self.random_seed,
         }

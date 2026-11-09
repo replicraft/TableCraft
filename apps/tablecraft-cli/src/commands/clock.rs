@@ -41,7 +41,7 @@ impl Clock for HostClock {
             .map_err(|_| EvalError::ClockUnavailable)?;
         let instant =
             Timestamp::try_from(SystemTime::now()).map_err(|_| EvalError::ClockUnavailable)?;
-        reading(instant.to_zoned(zone.clone()).datetime())
+        reading(zone.to_datetime(instant))
     }
 }
 fn reading(value: DateTime) -> Result<ClockReading, EvalError> {

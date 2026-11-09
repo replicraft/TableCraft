@@ -14,7 +14,8 @@ use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::parsing::DateTextFormat;
 use tablecraft_expressions::functions::{
-    dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
+    dates::TwoDigitYearWindow,
+    text::{casing::CaseLocale, code_page::CharacterCodePage},
 };
 use tablecraft_query::{
     BindingDepth, ExpressionQueryResult, QueryLimits, Source,
@@ -73,7 +74,7 @@ pub(super) struct NativeInput<'a> {
     pub native_text_bytes: Option<u32>,
 }
 
-pub(super) struct Controls {
+pub(super) struct Controls<'a> {
     pub binding_depth: BindingDepth,
     pub declared_integral: bool,
     pub max_text_bytes: Option<usize>,
@@ -81,7 +82,7 @@ pub(super) struct Controls {
     pub execution_limits: QueryLimits,
     pub comparison_limits: ComparisonArgs,
     pub random_seed: u32,
-    pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
+    pub case_locale: Option<&'a CaseLocale>,
     pub clock: Option<tablecraft_expressions::functions::dates::clock::ClockReading>,
     pub collation: Option<TextCollation>,
     pub text_policy: super::text_policy::Args,
@@ -98,7 +99,7 @@ pub(super) struct Controls {
 pub(super) fn run(
     input: Input<'_>,
     raw: &[String],
-    controls: Controls,
+    controls: Controls<'_>,
     native_input: Option<NativeInput<'_>>,
     sqlite: Option<&Path>,
 ) -> Result<String, Error> {
@@ -318,7 +319,7 @@ fn execute(
     query: &Query,
     source: &dyn Source,
     bindings: &[(&str, Value)],
-    controls: &Controls,
+    controls: &Controls<'_>,
     collation: Option<&dyn Collation>,
     collation_resolver: Option<&dyn CollationResolver>,
 ) -> Result<ExpressionQueryResult, Error> {
