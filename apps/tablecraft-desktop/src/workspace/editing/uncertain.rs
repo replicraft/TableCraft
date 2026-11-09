@@ -17,6 +17,7 @@ impl Desktop {
         let owner = save.owner;
         let acknowledged = match owner {
             SaveOwner::FieldRename => self.acknowledge_uncertain_field_rename(id),
+            SaveOwner::TableDrop => self.acknowledge_uncertain_table_drop(id),
             SaveOwner::FieldDrop => self.acknowledge_uncertain_field_drop(id),
             SaveOwner::FieldAddition => self.acknowledge_uncertain_field_addition(id),
             SaveOwner::QueryDefinition => self.acknowledge_uncertain_query_definition(id),

@@ -39,6 +39,15 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    TableDropInspection {
+        request_id: u64,
+    },
+    TableDropReview {
+        request_id: u64,
+    },
+    TableDropReopen {
+        request_id: u64,
+    },
     DatabaseOptionsInspection {
         revision: u64,
         request_id: u64,
@@ -282,6 +291,7 @@ impl Desktop {
         app.state.field_addition_available = SaveWorker::supports_field_addition();
         app.state.field_rename_available = SaveWorker::supports_field_rename();
         app.state.field_drop_available = SaveWorker::supports_field_drop();
+        app.state.table_drop_available = SaveWorker::supports_table_drop();
         app.state.database_options_available = SaveWorker::supports_database_options();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.find_available = true;
@@ -472,8 +482,13 @@ impl Desktop {
         self.retire_field_addition_inspection_publications();
         self.retire_field_rename_inspection();
         self.retire_field_drop_inspection();
+        self.retire_table_drop_inspection();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
+                if self.owns_table_drop_inspection(generation) {
+                    self.finish_superseded_table_drop_inspection(generation, result);
+                    continue;
+                }
                 if self.state.pending_field_drop_inspection_id() == Some(generation) {
                     self.finish_superseded_field_drop_inspection(generation, result);
                     continue;
@@ -509,6 +524,12 @@ impl Desktop {
                 }
                 Ok(Response::DatabaseOptionsReviewed { review, capability }) => {
                     self.start_reviewed_database_options(generation, review, capability)
+                }
+                Ok(Response::TableDropSourceInspected { inspection }) => {
+                    self.publish_table_drop_inspection(generation, inspection);
+                }
+                Ok(Response::TableDropReviewed { review, capability }) => {
+                    self.start_reviewed_table_drop(generation, review, capability);
                 }
                 Ok(Response::FieldDropSourceInspected { inspection }) => {
                     self.publish_field_drop_inspection(generation, inspection);
@@ -636,6 +657,15 @@ impl Desktop {
                     };
                     if let PendingOperation::DatabaseOptionsReopen { request_id } = self.pending {
                         self.finish_database_options_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
+                    if let PendingOperation::TableDropReopen { request_id } = self.pending {
+                        self.finish_table_drop_reopen(
                             request_id,
                             database,
                             table_creation_available,
@@ -1069,6 +1099,17 @@ impl eframe::App for Desktop {
                 Action::DatabaseOptionsSave { identity, command } => {
                     self.database_options_save_command(identity, command)
                 }
+                Action::InspectTableDrop { request } => self.inspect_table_drop_source(request),
+                Action::DeleteTable { request } => self.save_table_drop(request),
+                Action::CancelTableDropInspection { request_id } => {
+                    self.cancel_table_drop_inspection(request_id)
+                }
+                Action::CancelTableDropReview { request_id } => {
+                    self.cancel_table_drop_review(request_id)
+                }
+                Action::TableDropSave { identity, command } => {
+                    self.table_drop_save_command(identity, command)
+                }
                 Action::InspectFieldDrop { target } => self.inspect_field_drop_source(target),
                 Action::ReviewFieldDrop { request } => self.save_field_drop(request),
                 Action::CancelFieldDropInspection { request_id } => {
@@ -1165,6 +1206,10 @@ impl eframe::App for Desktop {
                         self.state.clear_query_run();
                         self.clear_query_parameters();
                         match &self.pending {
+                            PendingOperation::TableDropInspection { request_id } => {
+                                self.state.interrupt_table_drop_inspection(*request_id);
+                                self.pending = PendingOperation::Read;
+                            }
                             PendingOperation::FieldDropInspection { request_id } => {
                                 self.state.interrupt_field_drop_inspection_id(*request_id);
                                 self.pending = PendingOperation::Read;

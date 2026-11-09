@@ -6,7 +6,7 @@ use crate::workspace::{Desktop, filtering::RestoreFilter};
 use std::sync::Arc;
 use tablecraft_runtime::{
     AddedColumnReopen, Command, FieldDroppedReopen, FieldRenamedReopen, SaveOutcome, SaveReceipt,
-    SaveReport,
+    SaveReport, TableDroppedReopen,
 };
 use tablecraft_ui::SaveCleanupNotice;
 
@@ -29,6 +29,7 @@ pub(super) enum FieldOperation {
     Addition,
     Rename,
     Drop,
+    TableDrop,
 }
 
 pub(super) struct FieldReplacementFacts {
@@ -43,6 +44,7 @@ impl FieldOperation {
             (Self::Addition, SaveOwner::FieldAddition)
                 | (Self::Rename, SaveOwner::FieldRename)
                 | (Self::Drop, SaveOwner::FieldDrop)
+                | (Self::TableDrop, SaveOwner::TableDrop)
         )
     }
 
@@ -51,6 +53,15 @@ impl FieldOperation {
             Self::Addition => {
                 outcome
                     .field_addition_reopen_facts()
+                    .ok()
+                    .map(|facts| FieldReplacementFacts {
+                        replacement: facts.replacement,
+                        completed: facts.completed,
+                    })
+            }
+            Self::TableDrop => {
+                outcome
+                    .table_drop_reopen_facts()
                     .ok()
                     .map(|facts| FieldReplacementFacts {
                         replacement: facts.replacement,
@@ -133,6 +144,7 @@ impl Desktop {
             FieldOperation::Addition => self.editing.field_addition = None,
             FieldOperation::Rename => self.editing.field_rename = None,
             FieldOperation::Drop => self.editing.field_drop = None,
+            FieldOperation::TableDrop => self.editing.table_drop = None,
         }
         self.resume_after_field_schema = true;
         self.editing.clear_review();
@@ -149,6 +161,7 @@ impl Desktop {
             FieldReadWitness::Addition(witness) => Command::OpenColumnAdded { witness },
             FieldReadWitness::Rename(witness) => Command::OpenFieldRenamed { witness },
             FieldReadWitness::Drop(witness) => Command::OpenFieldDropped { witness },
+            FieldReadWitness::TableDrop(witness) => Command::OpenTableDropped { witness },
         };
         request_read(command, &self.worker, &mut self.state)
     }
@@ -158,4 +171,5 @@ pub(super) enum FieldReadWitness {
     Addition(Arc<AddedColumnReopen>),
     Rename(Arc<FieldRenamedReopen>),
     Drop(Arc<FieldDroppedReopen>),
+    TableDrop(Arc<TableDroppedReopen>),
 }

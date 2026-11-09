@@ -20,6 +20,17 @@ impl Desktop {
                 let id = *request_id;
                 self.database_options_reopen_failed(id, error.to_string());
             }
+            PendingOperation::TableDropInspection { .. } => {
+                self.table_drop_inspection_failed(generation, error.to_string());
+            }
+            PendingOperation::TableDropReview { request_id } => {
+                let id = *request_id;
+                self.table_drop_review_failed(id, error.to_string());
+            }
+            PendingOperation::TableDropReopen { request_id } => {
+                let id = *request_id;
+                self.table_drop_reopen_failed(id, error.to_string());
+            }
             PendingOperation::FieldDropInspection { .. } => {
                 self.field_drop_inspection_failed(generation, error.to_string());
             }
