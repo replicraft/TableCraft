@@ -58,11 +58,12 @@ pub(crate) fn show(ui: &mut Ui, presentation: &Presentation) -> Option<Event> {
             .desired_width(ui.available_width())
             .margin(egui::vec2(HORIZONTAL_PADDING, VERTICAL_PADDING)),
     );
+    let name_label = tr(ui, "field-rename-name");
     response.widget_info(|| {
         egui::WidgetInfo::labeled(
             egui::WidgetType::TextEdit,
             presentation.enabled,
-            tr(ui, "field-rename-name"),
+            &name_label,
         )
     });
     if presentation.focus && presentation.enabled {

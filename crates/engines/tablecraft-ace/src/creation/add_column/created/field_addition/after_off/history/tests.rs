@@ -112,11 +112,11 @@ fn noncanonical_dictionary_refuses_and_erased_definition_tail_requires_full_repl
     ));
     let (_, start, _) = row_range(page, count - 1).unwrap();
     let name = PROPERTY_PAGE as usize * PAGE_BYTES + start + FIRST_DICTIONARY_NAME_BYTE;
-    assert_eq!(before[name], b'R');
+    assert_eq!(before[name], b'D');
     // Existing declaration capture requires exact canonical property keys.
     // This refusal must stay at that source guard rather than be normalized.
     let mut dictionary = before.clone();
-    dictionary[name] = b'r';
+    dictionary[name] = b'd';
     let observed =
         inspect_database_properties(&mut Cursor::new(&dictionary), SCOPE, &mut budget(), &|| {
             false

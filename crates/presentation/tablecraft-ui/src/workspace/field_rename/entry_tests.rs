@@ -107,30 +107,25 @@ fn saved_design_name_cell_uses_actual_number_and_keeps_declarations_readonly() {
     let mut harness = harness(state);
     // The declared type is an inert label, not the draft-table type picker.
     harness.get_by_role_and_label(Role::Label, "Number");
-    let update = harness
-        .output()
-        .platform_output
-        .accesskit_update
-        .as_ref()
-        .expect("actual property accessibility update");
-    let property_label = update
-        .nodes
-        .iter()
-        .find_map(|(id, node)| {
-            (node.role() == Role::Label && node.value() == Some("Default Value")).then_some(*id)
+    // A settled frame need not emit another incremental AccessKit update.
+    // Query the harness's actual retained tree, as other widget tests do.
+    let property_label = harness.state().0.localizer.text("design-default-value");
+    let property_value = harness
+        .get_all_by_role(Role::Label)
+        .find(|value| {
+            let node = value.accesskit_node();
+            node.value().as_deref() == Some("0")
+                && node
+                    .labelled_by()
+                    .any(|label| label.value().as_deref() == Some(property_label.as_str()))
         })
-        .expect("actual default property label");
-    let property_value = update
-        .nodes
-        .iter()
-        .find_map(|(_, node)| {
-            (node.role() == Role::Label
-                && node.value() == Some("0")
-                && node.labelled_by().contains(&property_label))
-            .then_some(node)
-        })
-        .expect("actual inert default property value");
-    assert!(!property_value.supports_action(egui::accesskit::Action::SetValue));
+        .expect("actual inert default property value with its own label");
+    assert!(
+        !property_value
+            .accesskit_node()
+            .data()
+            .supports_action(egui::accesskit::Action::SetValue)
+    );
     choose_rename(&mut harness, "Score");
     assert_inspection(&harness);
     let field = &harness.state().0.schema.as_ref().unwrap().fields[0];
