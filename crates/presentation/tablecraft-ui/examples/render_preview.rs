@@ -97,17 +97,25 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         ""
     };
-    let field_addition = setting("TABLECRAFT_PREVIEW_NUMBER_COLUMN", "none")?;
+    let legacy_number = setting("TABLECRAFT_PREVIEW_NUMBER_COLUMN", "none")?;
+    let field_mode = setting("TABLECRAFT_PREVIEW_FIELD_ADDITION", "none")?;
+    if legacy_number != "none" && field_mode != "none" {
+        return Err(io::Error::other("choose one field-addition preview setting").into());
+    }
+    let legacy = field_mode == "none";
+    let field_addition = if legacy { legacy_number } else { field_mode };
     if !field_addition::is_mode(&field_addition) {
-        return Err(io::Error::other("unknown Number column preview mode").into());
+        return Err(io::Error::other("unknown field-addition preview mode").into());
     }
     if field_addition != "none" && scenes != [Scene::Datasheet] {
-        return Err(io::Error::other("Number column preview requires datasheet").into());
+        return Err(io::Error::other("field-addition preview requires datasheet").into());
     }
     let field_addition_suffix = if field_addition == "none" {
         String::new()
-    } else {
+    } else if legacy {
         format!("-number-{field_addition}")
+    } else {
+        format!("-field-addition-{field_addition}")
     };
     let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
     if !saved_sql::is_mode(&saved_sql) {

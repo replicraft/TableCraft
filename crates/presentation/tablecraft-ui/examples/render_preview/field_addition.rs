@@ -1,4 +1,4 @@
-//! Source-free saved Number presentation, without a database or runtime review.
+//! Source-free saved-field presentation, without a database or native review.
 //!
 //! The retained datasheet image informs the trailing header. No expanded menu,
 //! naming or close capture exists; these scenes verify an adaptation, not Access
@@ -12,26 +12,44 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
+use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
 use tablecraft_ui::{Data, ObjectKind, preview::Preview};
 
 const INSPECTION_ID: u64 = 810;
+const PRESENTATION_REQUEST_ID: u64 = 814;
 
 pub(super) fn is_mode(mode: &str) -> bool {
     returned::is_mode(mode)
         || matches!(
             mode,
-            "none" | "menu" | "name" | "close" | "close-unavailable"
+            "none"
+                | "menu"
+                | "name"
+                | "close"
+                | "close-unavailable"
+                | "text-menu"
+                | "text-name"
+                | "text-close"
+                | "text-close-unavailable"
+                | "text-review"
         )
 }
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
+    let text = mode.starts_with("text-");
+    let mode = mode.strip_prefix("text-").unwrap_or(mode);
+    let kind = if text {
+        FieldAdditionKind::ShortText
+    } else {
+        FieldAdditionKind::Number
+    };
     let tab = harness
         .state()
         .state()
         .active_object()
         .expect("datasheet owner");
     let ObjectKind::Table { name } = &tab.target.kind else {
-        panic!("Number preview requires a saved table");
+        panic!("field preview requires a saved table");
     };
     {
         let state = harness.state_mut().state_mut();
@@ -52,7 +70,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 .begin_field_addition_inspection(&tab, INSPECTION_ID)
                 .is_ok()
         );
-        assert!(state.set_field_addition_availability(&tab, INSPECTION_ID, true, false));
+        assert!(state.set_field_addition_availability(&tab, INSPECTION_ID, true, text));
     }
     settle(harness);
     let label = harness
@@ -64,9 +82,13 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     assert!(!header.accesskit_node().is_disabled());
     header.click_accesskit();
     settle(harness);
-    let number_label = harness.state().state().localizer.text("table-draft-number");
-    let number = harness.get_by_role_and_label(Role::Button, &number_label);
-    assert!(!number.accesskit_node().is_disabled());
+    let choice_key = match kind {
+        FieldAdditionKind::Number => "table-draft-number",
+        FieldAdditionKind::ShortText => "table-draft-short-text",
+    };
+    let choice_label = harness.state().state().localizer.text(choice_key);
+    let choice = harness.get_by_role_and_label(Role::Button, &choice_label);
+    assert!(!choice.accesskit_node().is_disabled());
     if mode == "menu" {
         for key in [
             "table-draft-number",
@@ -77,20 +99,38 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             let button = harness.get_by_role_and_label(Role::Button, &label);
             assert_eq!(
                 button.accesskit_node().is_disabled(),
-                key != "table-draft-number"
+                key != "table-draft-number" && !(text && key == "table-draft-short-text")
             );
             assert_painted_in(harness, &label, harness.ctx.viewport_rect());
         }
         assert!(!harness.state().state().field_addition_open());
     } else {
-        number.click_accesskit();
+        choice.click_accesskit();
         settle(harness);
         let state = harness.state().state();
         assert_eq!(state.field_addition_name().unwrap().1, "Field1");
+        assert_eq!(
+            state.field_addition_declaration(),
+            Some(FieldAdditionDeclaration::ui_default(kind))
+        );
         let label = state.localizer.text("table-draft-field-name");
         let editor = harness.get_by_role_and_label(Role::TextInput, &label);
         assert!(!editor.accesskit_node().is_disabled());
         assert_eq!(editor.value().as_deref(), Some("Field1"));
+        if mode == "review" {
+            let request = harness
+                .state()
+                .state()
+                .field_addition_review_request()
+                .expect("exact typed name snapshot");
+            let state = harness.state_mut().state_mut();
+            assert!(state.begin_field_addition_review(&request, PRESENTATION_REQUEST_ID));
+            state.busy = true;
+            assert!(state.field_addition_request_current(&request, PRESENTATION_REQUEST_ID));
+            assert!(!state.can_review_field_addition());
+            settle(harness);
+            assert_review(harness, choice_key);
+        }
         if returned::is_mode(mode) {
             returned::prepare(harness, mode);
         }
@@ -127,7 +167,7 @@ fn assert_close(harness: &Harness<'_, Preview>, unavailable: bool) {
     let modal = harness
         .ctx
         .memory(|memory| memory.area_rect(egui::Id::new("field_addition_close")))
-        .expect("the actual Number confirmation owns a retained area");
+        .expect("the actual field confirmation owns a retained area");
     assert!(harness.ctx.viewport_rect().contains_rect(modal));
     assert_painted_in(
         harness,
@@ -147,7 +187,7 @@ fn assert_close(harness: &Harness<'_, Preview>, unavailable: bool) {
         assert_eq!(
             buttons.len(),
             1,
-            "one {key} belongs to the actual Number modal"
+            "one {key} belongs to the actual field modal"
         );
         assert_eq!(buttons[0].accesskit_node().is_disabled(), disabled, "{key}");
         assert_painted_in(harness, &label, modal);
@@ -168,5 +208,30 @@ fn assert_painted_in(harness: &Harness<'_, Preview>, label: &str, owner: egui::R
                     .contains_rect(egui::Rect::from_min_size(text.pos, text.galley.size()))
         }),
         "expected text painted completely inside its owner: {label}"
+    );
+}
+
+fn assert_review(harness: &Harness<'_, Preview>, choice_key: &str) {
+    let state = harness.state().state();
+    let modal = harness
+        .ctx
+        .memory(|memory| memory.area_rect(egui::Id::new("field_addition_review")))
+        .expect("actual field review modal owns its area");
+    assert!(harness.ctx.viewport_rect().contains_rect(modal));
+    for key in [
+        choice_key,
+        "datasheet-field-reviewing",
+        "editing-request-cancellation",
+    ] {
+        assert_painted_in(harness, &state.localizer.text(key), modal);
+    }
+    let cancel = state.localizer.text("editing-request-cancellation");
+    let button = harness.get_by_role_and_label(Role::Button, &cancel);
+    assert!(!button.accesskit_node().is_disabled());
+    assert!(modal.contains_rect(button.rect()));
+    assert_eq!(state.field_addition_name().unwrap().1, "Field1");
+    assert!(
+        state.field_addition_save_status().is_none(),
+        "no synthetic native save actor is invented"
     );
 }
