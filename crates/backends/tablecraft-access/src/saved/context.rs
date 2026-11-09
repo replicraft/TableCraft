@@ -67,16 +67,17 @@ impl<'a> Context<'a> {
     }
     fn parsing(&mut self, bytes: usize) -> Result<(), SavedSelectError> {
         self.check()?;
-        self.budget.charge(
-            Resource::Steps,
-            bytes as u64 + self.limits.max_tokens as u64,
-        )?;
+        // Every nontrivia Access token consumes at least one UTF8 source byte.
+        // Hash-operator splitting uses separate existing bytes; the tokenizer
+        // emits no counted EOF. Keep actual parser limits unchanged while paying
+        // only the input-bounded token allowance for each small native fragment.
+        let tokens = self.limits.max_tokens.min(bytes);
+        self.budget
+            .charge(Resource::Steps, bytes as u64 + tokens as u64)?;
         // An AST/name allowance, not an allocator quota for the upstream parser.
         // Its temporary allocations have independent byte/token/depth ceilings.
-        self.budget.charge_allocation(
-            self.limits.max_tokens as u64,
-            size_of::<Expression>() as u64,
-        )?;
+        self.budget
+            .charge_allocation(tokens as u64, size_of::<Expression>() as u64)?;
         self.budget
             .charge_allocation(bytes as u64, PARSED_TEXT_COPIES)?;
         Ok(())
@@ -274,6 +275,93 @@ mod tests {
         assert!(matches!(
             context.name("Valid"),
             Err(SavedSelectError::Limit(_))
+        ));
+    }
+
+    #[test]
+    fn two_sets_of_96_short_fragments_keep_one_bounded_pool_and_report_logical_cost() {
+        const ALLOWANCE: u64 = 16 * 1024 * 1024;
+        let mut budget = ResourceBudget::new(ALLOWANCE, 1_000, 1_000_000);
+        let mut context = Context::new(&mut budget, &|| false, ParseLimits::default());
+        let mut projections = context.reserve::<Projection>(192).unwrap();
+        for _ in 0..2 {
+            for column in 0..96 {
+                let mut projection = context.projection(&column.to_string()).unwrap();
+                let name = context.name(&format!("Other{column}")).unwrap();
+                let Projection::Expression { alias, .. } = &mut projection else {
+                    panic!("literal projection remains an expression");
+                };
+                *alias = Some(name);
+                projections.push(projection);
+            }
+        }
+        let charged = ALLOWANCE - context.budget.remaining(Resource::Bytes);
+        let alias_bytes = projections
+            .iter()
+            .map(|projection| {
+                let Projection::Expression { alias, .. } = projection else {
+                    unreachable!()
+                };
+                alias.as_ref().unwrap().as_str().len()
+            })
+            .sum::<usize>();
+        let retained = projections.capacity() * size_of::<Projection>() + alias_bytes;
+        assert_eq!(projections.len(), 192);
+        assert_eq!(context.limits, ParseLimits::default());
+        assert!(charged < ALLOWANCE);
+        eprintln!(
+            "saved_context_budget expression_size={} projection_size={} charged_bytes={} retained_projection_logical_bytes={} alias_utf8_bytes={} parser_peak_heap=unmeasured",
+            size_of::<Expression>(),
+            size_of::<Projection>(),
+            charged,
+            retained,
+            alias_bytes
+        );
+    }
+
+    #[test]
+    fn source_byte_token_bound_keeps_expression_acceptance_and_caller_token_limits() {
+        let limits = ParseLimits::default();
+        for text in [
+            "42",
+            "1+2*3",
+            "((1))",
+            "'é''🦀'",
+            "#2026-11-08#>=1",
+            "Nz(,1)",
+            "[a] IN (1,2,NULL)",
+            "1 BETWEEN 0 AND 2",
+            "NOT ([a] IS NULL)",
+            "EXISTS (SELECT 1)",
+            "[p].[Id]",
+            "1 --comment\n+2",
+        ] {
+            let baseline = parse_expression(text, limits).unwrap();
+            let bounded = parse_expression(
+                text,
+                ParseLimits {
+                    max_tokens: limits.max_tokens.min(text.len()),
+                    ..limits
+                },
+            )
+            .unwrap();
+            assert_eq!(baseline, bounded);
+        }
+        let mut budget = ResourceBudget::new(16 * 1024 * 1024, 1_000, 1_000_000);
+        let mut context = Context::new(
+            &mut budget,
+            &|| false,
+            ParseLimits {
+                max_tokens: 2,
+                ..limits
+            },
+        );
+        assert!(matches!(
+            context.expression("1+2"),
+            Err(SavedSelectError::Parse(ParseError {
+                kind: ParseErrorKind::Limit,
+                ..
+            }))
         ));
     }
 }
