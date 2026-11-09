@@ -42,7 +42,7 @@ impl State {
                     ui.label(message(
                         ui,
                         "field-drop-confirm",
-                        &[("column", draft.target.column.as_str().into())],
+                        &[("column", draft.target.column.as_str())],
                     ));
                     ui.label(tr(ui, "field-drop-data-loss"));
                     ui.separator();

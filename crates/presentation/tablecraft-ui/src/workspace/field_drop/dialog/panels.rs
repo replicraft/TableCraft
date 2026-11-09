@@ -60,7 +60,7 @@ impl State {
                 ui.label(message(
                     ui,
                     "field-drop-pending",
-                    &[("column", target.column.as_str().into())],
+                    &[("column", target.column.as_str())],
                 ));
                 ui.small(tr(ui, "field-drop-pending-help"));
             });

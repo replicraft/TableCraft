@@ -68,7 +68,7 @@ impl Editors {
         let label = message(
             ui,
             "table-draft-design-description",
-            &[("field", field.name().into())],
+            &[("field", field.name())],
         );
         ui.ctx()
             .accesskit_node_builder(response.id, |node| node.set_label(label));
@@ -97,7 +97,7 @@ impl Editors {
         let label = message(
             ui,
             "table-draft-design-description",
-            &[("field", field.name().into())],
+            &[("field", field.name())],
         );
         // One visible row retains multiline input exactly rather than replacing
         // pasted whitespace. The containing Design cell owns clipping/height.

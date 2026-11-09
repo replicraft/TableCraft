@@ -50,8 +50,8 @@ impl State {
                     ui,
                     "field-rename-close-question",
                     &[
-                        ("table", table.as_str().into()),
-                        ("column", close.target.column.as_str().into()),
+                        ("table", table.as_str()),
+                        ("column", close.target.column.as_str()),
                     ],
                 ));
             }
@@ -115,12 +115,12 @@ impl State {
                 ui.label(message(
                     ui,
                     "field-rename-original",
-                    &[("column", target.column.as_str().into())],
+                    &[("column", target.column.as_str())],
                 ));
                 ui.label(message(
                     ui,
                     "field-rename-proposed",
-                    &[("column", proposed.into())],
+                    &[("column", proposed)],
                 ));
             }
             ui.separator();
@@ -365,7 +365,7 @@ impl State {
                     ui.label(message(
                         ui,
                         "field-rename-proposed",
-                        &[("column", warning.proposed_name.into())],
+                        &[("column", warning.proposed_name)],
                     ));
                     if !unchanged {
                         if let Some(outcome) = warning.outcome {

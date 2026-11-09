@@ -232,7 +232,7 @@ impl State {
                                         crate::localization::message(
                                             ui,
                                             "field-drop-pending",
-                                            &[("column", field.name.as_str().into())],
+                                            &[("column", field.name.as_str())],
                                         )
                                     });
                                     let response = grid::cell(

@@ -44,7 +44,7 @@ impl State {
                 ui.label(message(
                     ui,
                     "datasheet-field-close-question",
-                    &[("table", table.as_str().into()), ("column", column.into())],
+                    &[("table", table.as_str()), ("column", column)],
                 ));
             }
             if !current {

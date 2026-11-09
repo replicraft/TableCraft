@@ -41,8 +41,8 @@ impl State {
                             ui,
                             "field-drop-close-question",
                             &[
-                                ("table", table.as_str().into()),
-                                ("column", close.target.column.as_str().into()),
+                                ("table", table.as_str()),
+                                ("column", close.target.column.as_str()),
                             ],
                         ));
                     }

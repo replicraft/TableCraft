@@ -1,3 +1,5 @@
+mod borrowed_arguments;
+
 use super::*;
 use fluent_syntax::{ast, parser};
 use std::collections::{BTreeMap, BTreeSet};

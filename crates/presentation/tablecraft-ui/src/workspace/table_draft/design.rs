@@ -380,7 +380,7 @@ pub(super) fn show(
                                     let label = message(
                                         ui,
                                         "table-draft-design-name",
-                                        &[("field", field.name().into())],
+                                        &[("field", field.name())],
                                     );
                                     response.widget_info(|| {
                                         WidgetInfo::labeled(
@@ -410,7 +410,7 @@ pub(super) fn show(
                                     let label = message(
                                         ui,
                                         "table-draft-design-type",
-                                        &[("field", field.name().into())],
+                                        &[("field", field.name())],
                                     );
                                     if defer_existing {
                                         let response = activation::type_proxy(

@@ -87,7 +87,7 @@ fn total_cell(
     let label = message(
         ui,
         "totals-column",
-        &[("column", field.column.name.clone())],
+        &[("column", field.column.name.as_str())],
     );
     let enabled = row.enabled && !row.pending && (!field.aggregates.is_empty() || spec.is_some());
     let response = ui

@@ -17,11 +17,7 @@ pub(super) fn show(ui: &mut Ui, field: &DraftField, editable: bool) -> Option<Co
         ui.make_persistent_id(("draft_field_header", field.id())),
         egui::Sense::click(),
     );
-    let options = message(
-        ui,
-        "table-draft-field-options",
-        &[("field", field.name().into())],
-    );
+    let options = message(ui, "table-draft-field-options", &[("field", field.name())]);
     response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), field.name()));
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_role(egui::accesskit::Role::ColumnHeader);

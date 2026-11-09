@@ -66,7 +66,7 @@ pub(crate) fn show(
         response = response.on_hover_text(message(
             ui,
             "field-drop-pending",
-            &[("column", column.name.as_str().into())],
+            &[("column", column.name.as_str())],
         ));
     }
     entry_menu(

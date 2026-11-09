@@ -313,7 +313,7 @@ fn render_rows(
                                         let description = message(
                                             ui,
                                             "datasheet-field-name",
-                                            &[("name", column.name.clone())],
+                                            &[("name", column.name.as_str())],
                                         );
                                         ui.ctx().accesskit_node_builder(label.id, |node| {
                                             node.set_description(description);
@@ -645,7 +645,7 @@ fn column_header(
         let name = message(
             ui,
             "datasheet-column-menu",
-            &[("column", column.name.clone())],
+            &[("column", column.name.as_str())],
         );
         response
             .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), name.clone()));
@@ -967,24 +967,25 @@ fn cell_with_occurrence(
             );
         });
     }
-    let accessible_label = match &context {
+    let row_number = row.to_string();
+    let accessible_label = match context.as_deref() {
         Some(context) => message(
             ui,
             "datasheet-cell-details",
             &[
-                ("column", column.to_owned()),
-                ("row", row.to_string()),
-                ("text", text.to_owned()),
-                ("context", context.clone()),
+                ("column", column),
+                ("row", row_number.as_str()),
+                ("text", text),
+                ("context", context),
             ],
         ),
         None => message(
             ui,
             "datasheet-cell-context",
             &[
-                ("column", column.to_owned()),
-                ("row", row.to_string()),
-                ("text", text.to_owned()),
+                ("column", column),
+                ("row", row_number.as_str()),
+                ("text", text),
             ],
         ),
     };

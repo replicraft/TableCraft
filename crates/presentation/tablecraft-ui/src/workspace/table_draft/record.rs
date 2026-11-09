@@ -319,11 +319,7 @@ impl RowDraft {
         };
         let mut checked = selected.unwrap_or(false);
         let hint = tr(ui, entry.choice.key());
-        let label = message(
-            ui,
-            "table-draft-record-field",
-            &[("field", field.name().into())],
-        );
+        let label = message(ui, "table-draft-record-field", &[("field", field.name())]);
         let (segment, _) = ui.allocate_exact_size(
             egui::vec2(width, ui.available_height()),
             egui::Sense::hover(),
@@ -403,11 +399,7 @@ impl RowDraft {
                         [width, ui.available_height()],
                         egui::TextEdit::singleline(&mut text).id(id).hint_text(hint),
                     );
-                    let label = message(
-                        ui,
-                        "table-draft-record-field",
-                        &[("field", field.name().into())],
-                    );
+                    let label = message(ui, "table-draft-record-field", &[("field", field.name())]);
                     response
                         .widget_info(|| WidgetInfo::labeled(WidgetType::TextEdit, true, &label));
                     if response.changed() && !rejected {
@@ -467,11 +459,7 @@ impl RowDraft {
                     ],
                     stroke,
                 );
-                let mode_label = message(
-                    ui,
-                    "insertion-field-input",
-                    &[("field", field.name().into())],
-                );
+                let mode_label = message(ui, "insertion-field-input", &[("field", field.name())]);
                 menu.widget_info(|| WidgetInfo::labeled(WidgetType::Button, true, &mode_label));
                 if self.entries[position].rejected {
                     response.on_hover_text(tr(ui, "insertion-input-limit"));

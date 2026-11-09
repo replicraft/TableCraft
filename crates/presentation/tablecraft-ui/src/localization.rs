@@ -253,10 +253,11 @@ pub(crate) fn tr(ui: &egui::Ui, id: &str) -> String {
     for_context(ui.ctx()).text(id)
 }
 
-pub(crate) fn message(ui: &egui::Ui, id: &str, values: &[(&str, String)]) -> String {
+/// Format caller-owned or borrowed arguments without retaining their text.
+pub(crate) fn message<S: AsRef<str>>(ui: &egui::Ui, id: &str, values: &[(&str, S)]) -> String {
     let mut arguments = FluentArgs::new();
     for (name, value) in values {
-        arguments.set(*name, value.as_str());
+        arguments.set(*name, value.as_ref());
     }
     for_context(ui.ctx()).format(id, &arguments)
 }
