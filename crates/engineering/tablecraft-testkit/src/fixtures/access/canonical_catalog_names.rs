@@ -156,38 +156,8 @@ pub fn rename_pair(header: u8, old_name: &str, new_name: &str, populated: bool) 
     } else {
         canonical_creation::Case::Empty
     });
-    let image = |name: &str| {
-        let mut bytes = original.bytes.clone();
-        let mut payload = Vec::new();
-        if name.starts_with('\u{feff}') {
-            // Literal catalog escape: BOM marker, uncompressed mode, original units.
-            payload.extend_from_slice(&[0xff, 0xfe, 0]);
-        }
-        payload.extend(name.encode_utf16().flat_map(u16::to_le_bytes));
-        bytes[4 * 4096..5 * 4096].copy_from_slice(&catalog_page(&payload));
-        let mut bytes = canonical_native17_creation::source(bytes);
-        let page = &bytes[4 * 4096..5 * 4096];
-        let mut records = Vec::new();
-        let mut end = 4096;
-        for slot in 0..8 {
-            let at = 14 + 2 * slot;
-            let start = usize::from(u16::from_le_bytes(page[at..at + 2].try_into().unwrap()));
-            records.push(page[start..end].to_vec());
-            end = start;
-        }
-        records.insert(
-            7,
-            database_properties::native17_database_record(
-                &database_properties::name_auto_correct_disabled(),
-            ),
-        );
-        bytes[4 * 4096..5 * 4096].copy_from_slice(&canonical_native17_creation::packed(2, records));
-        put32(&mut bytes, 2 * 4096 + 16, 9);
-        bytes[20] = header;
-        bytes
-    };
-    let before = image(old_name);
-    let mut after = image(new_name);
+    let before = named_image(header, old_name, &original.bytes);
+    let mut after = named_image(header, new_name, &original.bytes);
     let slot = 4 * 4096 + 14 + 2 * 8;
     let old_start = 4 * 4096
         + usize::from(u16::from_le_bytes(
@@ -208,6 +178,48 @@ pub fn rename_pair(header: u8, old_name: &str, new_name: &str, populated: bool) 
         after,
         rows: original.rows,
     }
+}
+
+/// Author the first invalid stored-name width without weakening the valid rename factory.
+/// This malformed source is for refusal checks, never a qualified original or AFTER.
+pub fn overlong_name_source(header: u8, name: &str) -> Vec<u8> {
+    assert!(matches!(header, 5 | 6));
+    assert_eq!(name.encode_utf16().count(), 65);
+    let original = canonical_creation::source(canonical_creation::Case::Empty);
+    named_image(header, name, &original.bytes)
+}
+
+fn named_image(header: u8, name: &str, original: &[u8]) -> Vec<u8> {
+    // NO_CLONE: Each independent raw oracle image is mutated separately from the retained
+    // original; borrowing or shared immutable storage cannot supply these authored bytes.
+    let mut bytes = original.to_vec();
+    let mut payload = Vec::new();
+    if name.starts_with('\u{feff}') {
+        // Literal catalog escape: BOM marker, uncompressed mode, original units.
+        payload.extend_from_slice(&[0xff, 0xfe, 0]);
+    }
+    payload.extend(name.encode_utf16().flat_map(u16::to_le_bytes));
+    bytes[4 * 4096..5 * 4096].copy_from_slice(&catalog_page(&payload));
+    let mut bytes = canonical_native17_creation::source(bytes);
+    let page = &bytes[4 * 4096..5 * 4096];
+    let mut records = Vec::new();
+    let mut end = 4096;
+    for slot in 0..8 {
+        let at = 14 + 2 * slot;
+        let start = usize::from(u16::from_le_bytes(page[at..at + 2].try_into().unwrap()));
+        records.push(page[start..end].to_vec());
+        end = start;
+    }
+    records.insert(
+        7,
+        database_properties::native17_database_record(
+            &database_properties::name_auto_correct_disabled(),
+        ),
+    );
+    bytes[4 * 4096..5 * 4096].copy_from_slice(&canonical_native17_creation::packed(2, records));
+    put32(&mut bytes, 2 * 4096 + 16, 9);
+    bytes[20] = header;
+    bytes
 }
 
 /// Author an inert catalog with one retired variable slot carrying opaque bytes.

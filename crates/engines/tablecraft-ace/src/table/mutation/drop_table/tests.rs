@@ -4,7 +4,7 @@ use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::{CatalogScope, ObjectKind};
 use tablecraft_testkit::fixtures::access::{
-    canonical_creator_rename,
+    canonical_catalog_names, canonical_creator_rename,
     canonical_ordinary_indexed::Case,
     canonical_table_drop::{self as raw, Pair},
 };
@@ -154,9 +154,9 @@ fn absent_or_system_targets_are_errors_and_ascii_lookup_keeps_actual_spelling() 
     assert_eq!(plan.after_bytes(), pair.after);
 
     let overlong = "x".repeat(65);
-    let invalid = raw::unindexed(5, &overlong, false);
+    let invalid = canonical_catalog_names::overlong_name_source(5, &overlong);
     assert!(matches!(
-        capture(&invalid.before).plan_table_drop(&overlong, &mut budget(), &|| false),
+        capture(&invalid).plan_table_drop(&overlong, &mut budget(), &|| false),
         Err(TableDropError::Source)
     ));
 }
