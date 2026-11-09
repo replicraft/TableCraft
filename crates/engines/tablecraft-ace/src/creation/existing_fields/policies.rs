@@ -1,5 +1,5 @@
 //! Closed inert field-property reconstruction, independent of target authoring.
-use super::CreatedAddColumnError;
+use crate::CreatedAddColumnError;
 use crate::{
     EditError, InspectError, PropertyGroupKind, TableProperties, TableSchema, header::check,
     table::mutation::insert_defaults::proof_literal,
@@ -15,15 +15,15 @@ const TEXT: u8 = 10;
 const MEMO: u8 = 12;
 
 #[derive(Default)]
-pub(super) struct Properties<'a> {
+pub(in crate::creation) struct Properties<'a> {
     seen: bool,
-    pub(super) required: Option<bool>,
-    pub(super) allow_empty: Option<bool>,
-    pub(super) default: Option<Value>,
-    pub(super) description: Option<&'a str>,
+    pub(in crate::creation) required: Option<bool>,
+    pub(in crate::creation) allow_empty: Option<bool>,
+    pub(in crate::creation) default: Option<Value>,
+    pub(in crate::creation) description: Option<&'a str>,
 }
 
-pub(super) fn capture<'a>(
+pub(in crate::creation) fn capture<'a>(
     schema: &TableSchema,
     properties: &'a TableProperties,
     budget: &mut ResourceBudget,

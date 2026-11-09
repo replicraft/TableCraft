@@ -200,3 +200,12 @@ mod selected_source;
 pub use selected_source::{
     FieldAdditionSourceAvailability, FieldAdditionSourceError, FieldAdditionSourcePurpose,
 };
+
+impl From<crate::creation::properties::BodyError> for FieldAdditionError {
+    fn from(error: crate::creation::properties::BodyError) -> Self {
+        match error {
+            crate::creation::properties::BodyError::Declaration(error) => Self::Declaration(error),
+            crate::creation::properties::BodyError::Inspect(error) => Self::Inspect(error),
+        }
+    }
+}

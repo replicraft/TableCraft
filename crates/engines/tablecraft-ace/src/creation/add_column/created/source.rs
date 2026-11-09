@@ -1,6 +1,7 @@
 //! Prove actual complete canonical generated-primary sources, not creator history.
 use super::super::{super::profile, common};
-use super::{CreatedAddColumnError, declarations};
+use super::CreatedAddColumnError;
+use crate::creation::existing_fields as declarations;
 use crate::{
     FileFormat, FirstTableDefinition, IndexCheckStatus, NativeImage, TableCheck, check_table,
     create_ace16_database, header::check,

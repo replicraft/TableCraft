@@ -1,5 +1,5 @@
 use super::{FieldRenameError as Error, NativeFieldRenameIdentity, source, verify};
-use crate::{InspectError, NativeImage, header::check};
+use crate::{InspectError, NativeImage, header::check, table::mutation::saved_field::Observed};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const COPY_BYTES: usize = 16 * 1024;
@@ -40,7 +40,7 @@ impl NativeFieldRenameCandidate {
 
     /// Original native table/column identity captured by the real parsers.
     pub const fn identity(&self) -> NativeFieldRenameIdentity {
-        self.source.observed.identity
+        NativeFieldRenameIdentity::from_observed(self.source.observed.identity)
     }
 
     /// Exact-spelling no-ops still qualify the complete original source.
@@ -60,7 +60,11 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeFieldRenameIdentity, Error> {
         self.check_field_history_name_auto_correct_off_source(budget, cancelled)?;
-        Ok(source::Observed::capture(self, table, column, budget, cancelled)?.identity)
+        Ok(NativeFieldRenameIdentity::from_observed(
+            Observed::capture(self, table, column, budget, cancelled)
+                .map_err(Error::from)?
+                .identity,
+        ))
     }
 
     /// Prepare a separate same-width non-key Number/Short Text field rename.

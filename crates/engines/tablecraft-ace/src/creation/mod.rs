@@ -14,12 +14,14 @@ mod database_options;
 pub(crate) use database_options::FieldHistoryOffSource;
 mod defaults;
 mod definition;
+#[cfg(feature = "journal")]
+pub(crate) mod existing_fields;
 mod first_table;
 mod input;
 mod multiple;
 mod primary;
 mod profile;
-mod properties;
+pub(crate) mod properties;
 mod record;
 mod request;
 mod stored_text;

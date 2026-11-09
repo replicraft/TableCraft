@@ -12,6 +12,19 @@ pub struct NativeFieldRenameIdentity {
 }
 
 impl NativeFieldRenameIdentity {
+    pub(super) const fn from_observed(
+        value: crate::table::mutation::saved_field::Identity,
+    ) -> Self {
+        Self {
+            object: value.object,
+            native_table: value.native_table,
+            definition: value.definition,
+            number: value.number,
+            column_id: value.column_id,
+            name_units: value.name_units,
+        }
+    }
+
     /// Caller-scoped native table identity from this immutable original image.
     pub const fn object_id(self) -> ObjectId {
         self.object

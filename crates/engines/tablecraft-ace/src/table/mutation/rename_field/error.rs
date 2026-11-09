@@ -33,3 +33,12 @@ impl From<LimitError> for FieldRenameError {
         Self::Inspect(error.into())
     }
 }
+
+impl From<crate::table::mutation::saved_field::Error> for FieldRenameError {
+    fn from(error: crate::table::mutation::saved_field::Error) -> Self {
+        match error {
+            crate::table::mutation::saved_field::Error::Inspect(error) => Self::Inspect(error),
+            crate::table::mutation::saved_field::Error::Source => Self::Source,
+        }
+    }
+}

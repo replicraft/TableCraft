@@ -1,7 +1,7 @@
 //! Reuse native declarations, MR2 serialization and both property placement owners.
 use super::{FieldAdditionError as Error, FieldAdditionTarget, verify};
 use crate::{
-    CreateColumn, InspectError, NativeImage, TableCheck,
+    CreateColumn, NativeImage, TableCheck,
     creation::add_column::property_preservation,
     creation::{
         build,
@@ -14,8 +14,6 @@ use crate::{
     table::mutation::catalog_property,
 };
 use tablecraft_core::limits::ResourceBudget;
-
-const INLINE_DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 
 fn presence(
     columns: &[CreateColumn<'_>],
@@ -101,34 +99,6 @@ pub(super) fn canonical(
     Ok(build::build(&request, budget, cancelled)?)
 }
 
-pub(super) fn property_body(
-    columns: &[CreateColumn<'_>],
-    order: Order,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, Error> {
-    let prepared = properties::capture(
-        Columns::Values(columns),
-        Rows::Values(&[]),
-        budget,
-        cancelled,
-    )?
-    .ok_or(Error::Preservation)?
-    .with_order(order)?;
-    let length = prepared.inline_length();
-    budget
-        .charge_allocation(length as u64, 1)
-        .map_err(InspectError::from)?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| InspectError::Allocation)?;
-    bytes.resize(length, 0);
-    prepared.write_inline(&mut bytes, budget, cancelled)?;
-    bytes.drain(..INLINE_DESCRIPTOR_BYTES);
-    Ok(bytes)
-}
-
 pub(super) struct Addition<'a, 'columns> {
     pub checked: &'a TableCheck,
     pub columns: &'a [CreateColumn<'columns>],
@@ -161,7 +131,9 @@ pub(super) fn append(
         cancelled,
     )?;
     verify::definition(before, &after, checked, column, target, budget, cancelled)?;
-    let body = property_body(columns, order, budget, cancelled)?;
+    let body = properties::encode_body(columns, order, budget, cancelled)
+        .map_err(Error::from)?
+        .ok_or(Error::Preservation)?;
     if external {
         let change =
             catalog_property::compose_repeated(before, checked.schema(), body, budget, cancelled)?;

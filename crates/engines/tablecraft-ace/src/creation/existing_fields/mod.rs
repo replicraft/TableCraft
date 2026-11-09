@@ -1,5 +1,7 @@
 //! Reconstruct only the existing constructive declarations and inert properties.
-use super::{CreatedAddColumnError, properties};
+pub(in crate::creation) mod policies;
+
+use crate::CreatedAddColumnError;
 use crate::{
     CreateColumn, FirstTableDefinition, NativeColumn, NativeImage, TableCheck, format::data_type,
     format::layout::UNICODE_COMPRESSION_FLAG, header::check, inspect_table_properties,
@@ -7,7 +9,7 @@ use crate::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 
-pub(super) fn capture(
+pub(crate) fn capture(
     image: &NativeImage,
     checked: &TableCheck,
     budget: &mut ResourceBudget,
@@ -16,7 +18,7 @@ pub(super) fn capture(
     capture_with_compression(image, checked, false, budget, cancelled)
 }
 
-pub(super) fn capture_field_addition(
+pub(crate) fn capture_field_addition(
     image: &NativeImage,
     checked: &TableCheck,
     budget: &mut ResourceBudget,
@@ -46,7 +48,7 @@ fn capture_with_compression(
     if !properties.raw_bytes().is_empty() {
         crate::properties::framing::validate(&properties, budget, cancelled)?;
     }
-    let policies = properties::capture(schema, &properties, budget, cancelled)?;
+    let policies = policies::capture(schema, &properties, budget, cancelled)?;
     budget
         .charge_allocation(
             schema.columns().len() as u64,

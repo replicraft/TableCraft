@@ -66,7 +66,9 @@ pub(super) fn append<P: ProvedImage>(
         budget,
         cancelled,
     )?;
-    let body = build::property_body(&columns, order, budget, cancelled)?;
+    let body = crate::creation::properties::encode_body(&columns, order, budget, cancelled)
+        .map_err(FieldAdditionError::from)?
+        .ok_or(FieldAdditionError::Preservation)?;
     let change = catalog_property::compose_fitted_at_origin(
         image,
         source.checked.schema(),

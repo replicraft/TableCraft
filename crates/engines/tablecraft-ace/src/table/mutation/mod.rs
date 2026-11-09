@@ -75,6 +75,8 @@ mod rename_table;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod requests;
 mod rows;
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+mod saved_field;
 #[cfg(feature = "journal")]
 pub use rename_table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 

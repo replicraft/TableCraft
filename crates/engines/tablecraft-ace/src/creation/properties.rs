@@ -1,4 +1,6 @@
 //! Explicit creation field policies/defaults, sized before image allocation.
+#[cfg(feature = "journal")]
+use super::CreateColumn;
 use super::{
     CreateDatabaseError,
     defaults::Literal,
@@ -11,7 +13,9 @@ use tablecraft_schema::{FieldConstraints, ScalarType};
 #[cfg(feature = "journal")]
 mod order;
 #[cfg(feature = "journal")]
-pub(super) use order::{Order, PropertyName};
+pub(crate) use order::Order;
+#[cfg(feature = "journal")]
+pub(super) use order::PropertyName;
 
 const SIGNATURE: &[u8; 4] = b"MR2\0";
 const NAME_LIST: u16 = 0x80;
@@ -474,4 +478,45 @@ impl Prepared<'_> {
         check(writer.budget, cancelled)?;
         Ok(())
     }
+}
+
+#[cfg(feature = "journal")]
+pub(crate) enum BodyError {
+    Declaration(CreateDatabaseError),
+    Inspect(InspectError),
+}
+
+#[cfg(feature = "journal")]
+pub(crate) fn encode_body(
+    columns: &[CreateColumn<'_>],
+    order: Order,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<Vec<u8>>, BodyError> {
+    let Some(prepared) = capture(
+        Columns::Values(columns),
+        Rows::Values(&[]),
+        budget,
+        cancelled,
+    )
+    .map_err(BodyError::Declaration)?
+    else {
+        return Ok(None);
+    };
+    let prepared = prepared.with_order(order).map_err(BodyError::Declaration)?;
+    let length = prepared.inline_length();
+    budget
+        .charge_allocation(length as u64, 1)
+        .map_err(InspectError::from)
+        .map_err(BodyError::Inspect)?;
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(length)
+        .map_err(|_| BodyError::Inspect(InspectError::Allocation))?;
+    bytes.resize(length, 0);
+    prepared
+        .write_inline(&mut bytes, budget, cancelled)
+        .map_err(BodyError::Declaration)?;
+    bytes.drain(..INLINE_HEADER);
+    Ok(Some(bytes))
 }

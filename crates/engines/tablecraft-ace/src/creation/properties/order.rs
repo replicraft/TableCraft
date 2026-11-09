@@ -25,7 +25,7 @@ impl PropertyName {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(in crate::creation) struct Order {
+pub(crate) struct Order {
     names: [PropertyName; PROPERTY_COUNT],
     count: usize,
 }
@@ -40,7 +40,7 @@ impl Order {
 
     /// Capture only known dictionary keys after the complete framing proof.
     /// This records order and never qualifies values or the source image.
-    pub(in crate::creation) fn capture(
+    pub(crate) fn capture(
         properties: &TableProperties,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,

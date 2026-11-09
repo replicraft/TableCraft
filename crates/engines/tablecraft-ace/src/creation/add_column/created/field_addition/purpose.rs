@@ -59,7 +59,12 @@ impl NativeImage {
         if properties.object_id() != schema.object_id() || properties.name() != schema.name() {
             return Err(InspectError::Malformed.into());
         }
-        let policies = super::super::properties::capture(&schema, &properties, budget, cancelled)?;
+        let policies = crate::creation::existing_fields::policies::capture(
+            &schema,
+            &properties,
+            budget,
+            cancelled,
+        )?;
         for policy in policies {
             check(budget, cancelled)?;
             if policy.required == Some(true)
