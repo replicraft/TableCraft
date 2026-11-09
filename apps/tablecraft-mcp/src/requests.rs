@@ -132,6 +132,7 @@ struct TableCreation<'a> {
     document_revision: u64,
     table: &'a str,
     initial_autonumber: Option<bool>,
+    add_incrementing_primary_key: Option<bool>,
     #[serde(borrow)]
     fields: Vec<Field<'a>>,
 }
@@ -417,7 +418,13 @@ pub(super) fn schema(operation: &str) -> Option<Map<String, Value>> {
         "review_field_rename" => schemars::schema_for!(FieldRename<'_>),
         "review_query_sql" => schemars::schema_for!(QuerySql<'_>),
         "review_query_expression" => schemars::schema_for!(Expression<'_>),
-        "save_status" | "cancel_save" | "recover_save" | "release_save" | "acknowledge_save" => {
+        "save_status"
+        | "cancel_save"
+        | "recover_save"
+        | "release_save"
+        | "acknowledge_save"
+        | "retry_insert"
+        | "discard_insert_retry" => {
             schemars::schema_for!(Save)
         }
         "creation_status"
@@ -489,9 +496,13 @@ pub(super) fn validate(operation: &str, arguments: &Value) -> Result<(), String>
         "review_field_rename" => check::<FieldRename<'_>>(arguments),
         "review_query_sql" => check::<QuerySql<'_>>(arguments),
         "review_query_expression" => check::<Expression<'_>>(arguments),
-        "save_status" | "cancel_save" | "recover_save" | "release_save" | "acknowledge_save" => {
-            check::<Save>(arguments)
-        }
+        "save_status"
+        | "cancel_save"
+        | "recover_save"
+        | "release_save"
+        | "acknowledge_save"
+        | "retry_insert"
+        | "discard_insert_retry" => check::<Save>(arguments),
         "creation_status"
         | "cancel_creation"
         | "acknowledge_creation"

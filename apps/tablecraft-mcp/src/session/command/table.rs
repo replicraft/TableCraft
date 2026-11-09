@@ -113,6 +113,11 @@ pub(super) fn snapshot(args: &Value) -> Result<TableDraftSnapshot, String> {
                 .map_err(|error| error.to_string())?;
         }
     }
+    if arg::boolean(args, "add_incrementing_primary_key", false)? {
+        draft
+            .add_incrementing_primary_key()
+            .map_err(|error| error.to_string())?;
+    }
     draft
         .snapshot(arg::text(args, "table")?)
         .map_err(|error| error.to_string())
@@ -130,21 +135,132 @@ mod tests {
             ("absent", DraftDefaultMode::Absent),
             ("null", DraftDefaultMode::Null),
         ] {
-            let captured = snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": mode}]})).unwrap();
+            let captured = snapshot(&json!({
+                "table": "T",
+                "fields": [{
+                    "name": "Score",
+                    "kind": "number",
+                    "default_mode": mode
+                }]
+            }))
+            .unwrap();
             assert_eq!(captured.fields()[1].default_mode(), &expected);
-            assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": mode, "default_literal": "0"}]})).is_err());
+            assert!(
+                snapshot(&json!({
+                    "table": "T",
+                    "fields": [{
+                        "name": "Score",
+                        "kind": "number",
+                        "default_mode": mode,
+                        "default_literal": "0"
+                    }]
+                }))
+                .is_err()
+            );
         }
-        let literal = snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": "literal", "default_literal": " 42 "}]})).unwrap();
+        let literal = snapshot(&json!({
+            "table": "T",
+            "fields": [{
+                "name": "Score",
+                "kind": "number",
+                "default_mode": "literal",
+                "default_literal": " 42 "
+            }]
+        }))
+        .unwrap();
         assert_eq!(
             literal.fields()[1].default_mode(),
             &DraftDefaultMode::Literal(" 42 ".into())
         );
-        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": "literal"}]})).is_err());
+        assert!(
+            snapshot(&json!({
+                "table": "T",
+                "fields": [{
+                    "name": "Score",
+                    "kind": "number",
+                    "default_mode": "literal"
+                }]
+            }))
+            .is_err()
+        );
     }
 
     #[test]
     fn half_declared_decimal_constraints_are_refused_instead_of_ignoring_scale() {
-        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Amount", "kind": "number", "number_size": "decimal", "scale": 2}]})).is_err());
-        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Amount", "kind": "number", "number_size": "decimal", "precision": 10}]})).is_err());
+        assert!(
+            snapshot(&json!({
+                "table": "T",
+                "fields": [{
+                    "name": "Amount",
+                    "kind": "number",
+                    "number_size": "decimal",
+                    "scale": 2
+                }]
+            }))
+            .is_err()
+        );
+        assert!(
+            snapshot(&json!({
+                "table": "T",
+                "fields": [{
+                    "name": "Amount",
+                    "kind": "number",
+                    "number_size": "decimal",
+                    "precision": 10
+                }]
+            }))
+            .is_err()
+        );
+    }
+}
+
+#[cfg(test)]
+mod design_primary_tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn design_confirmation_adds_the_same_collision_safe_generated_primary_field() {
+        let captured = snapshot(&json!({
+            "table": "T",
+            "initial_autonumber": false,
+            "add_incrementing_primary_key": true,
+            "fields": [{
+                "name": "ID",
+                "kind": "number"
+            }]
+        }))
+        .unwrap();
+        assert_eq!(captured.fields()[0].name(), "ID1");
+        assert_eq!(
+            captured.fields()[0].kind(),
+            DraftFieldType::AutoNumberIncrement
+        );
+        assert!(captured.fields()[0].is_primary());
+        assert!(captured.fields()[0].is_protected());
+        assert_eq!(captured.fields()[1].name(), "ID");
+        assert!(!captured.fields()[1].is_primary());
+        assert!(
+            snapshot(&json!({
+                "table": "T",
+                "initial_autonumber": true,
+                "add_incrementing_primary_key": true,
+                "fields": []
+            }))
+            .is_err()
+        );
+        assert!(
+            snapshot(&json!({
+                "table": "T",
+                "initial_autonumber": false,
+                "add_incrementing_primary_key": true,
+                "fields": [{
+                    "name": "Manual",
+                    "kind": "number",
+                    "primary": true
+                }]
+            }))
+            .is_err()
+        );
     }
 }

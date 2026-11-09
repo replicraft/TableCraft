@@ -15,17 +15,32 @@ fn reserved_pending_and_committed_journals_recover_actual_images_and_preserve_ac
         let images = restart::stage(&path, &journal, committed);
         let mut session = Session::new().unwrap();
         let started = session
-            .execute("start_reserved_recovery", json!({"path": path}))
+            .execute(
+                "start_reserved_recovery",
+                json!({
+                    "path": path
+                }),
+            )
             .unwrap();
         let id = started["save_id"].as_u64().unwrap();
         assert!(
             session
-                .execute("start_reserved_recovery", json!({"path": path}))
+                .execute(
+                    "start_reserved_recovery",
+                    json!({
+                        "path": path
+                    })
+                )
                 .is_err()
         );
         assert!(
             session
-                .execute("save_status", json!({"save_id": id + 1000}))
+                .execute(
+                    "save_status",
+                    json!({
+                        "save_id": id + 1000
+                    })
+                )
                 .is_err()
         );
         let report = terminal(&mut session, id);
@@ -38,16 +53,31 @@ fn reserved_pending_and_committed_journals_recover_actual_images_and_preserve_ac
         assert_eq!(
             report,
             session
-                .execute("save_status", json!({"save_id": id}))
+                .execute(
+                    "save_status",
+                    json!({
+                        "save_id": id
+                    })
+                )
                 .unwrap()
         );
         assert!(
             session
-                .execute("release_save", json!({"save_id": id}))
+                .execute(
+                    "release_save",
+                    json!({
+                        "save_id": id
+                    })
+                )
                 .is_err()
         );
         let result = session
-            .execute("acknowledge_save", json!({"save_id": id}))
+            .execute(
+                "acknowledge_save",
+                json!({
+                    "save_id": id
+                }),
+            )
             .unwrap();
         assert_eq!(result["replacement"], committed);
         assert_eq!(result["reopened"], true);
@@ -62,7 +92,16 @@ fn reserved_pending_and_committed_journals_recover_actual_images_and_preserve_ac
             }
         );
         assert!(!journal.exists());
-        let rows = session.execute("read_rows", json!({"document_revision": session.revision.unwrap(), "table": "Items", "offset": 0})).unwrap();
+        let rows = session
+            .execute(
+                "read_rows",
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Items",
+                    "offset": 0
+                }),
+            )
+            .unwrap();
         assert_eq!(
             rows["rows"][0][1]["text"],
             if committed { "17" } else { "10" }
@@ -80,7 +119,12 @@ fn malformed_reserved_artifact_retains_real_release_permissions_and_rejects_fabr
     std::fs::write(&journal, b"malformed reserved entry").unwrap();
     let mut session = Session::new().unwrap();
     let started = session
-        .execute("start_reserved_recovery", json!({"path": path}))
+        .execute(
+            "start_reserved_recovery",
+            json!({
+                "path": path
+            }),
+        )
         .unwrap();
     let id = started["save_id"].as_u64().unwrap();
     let report = terminal(&mut session, id);
@@ -94,35 +138,65 @@ fn malformed_reserved_artifact_retains_real_release_permissions_and_rejects_fabr
     ] {
         assert!(
             session
-                .execute(operation, json!({"save_id": id + 1000}))
+                .execute(
+                    operation,
+                    json!({
+                        "save_id": id + 1000
+                    })
+                )
                 .is_err()
         );
     }
     assert_eq!(
         session
-            .execute("save_status", json!({"save_id": id}))
+            .execute(
+                "save_status",
+                json!({
+                    "save_id": id
+                })
+            )
             .unwrap(),
         report
     );
     assert!(
         session
-            .execute("acknowledge_save", json!({"save_id": id}))
+            .execute(
+                "acknowledge_save",
+                json!({
+                    "save_id": id
+                })
+            )
             .is_err()
     );
     assert!(session.saves.is_busy());
     let released = session
-        .execute("release_save", json!({"save_id": id}))
+        .execute(
+            "release_save",
+            json!({
+                "save_id": id
+            }),
+        )
         .unwrap();
     let next = released["save_id"].as_u64().unwrap();
     assert_ne!(next, id);
     assert!(
         session
-            .execute("save_status", json!({"save_id": id}))
+            .execute(
+                "save_status",
+                json!({
+                    "save_id": id
+                })
+            )
             .is_err()
     );
     let report = terminal(&mut session, next);
     assert_eq!(report["outcome"]["kind"], "released");
-    let acknowledged = session.execute("acknowledge_save", json!({"save_id": next}));
+    let acknowledged = session.execute(
+        "acknowledge_save",
+        json!({
+            "save_id": next
+        }),
+    );
     assert!(
         !session.saves.is_busy(),
         "actual worker ACK releases the retained owner"
@@ -148,19 +222,43 @@ fn explicit_save_cancellation_keeps_the_real_report_and_never_infers_rollback_fr
     let original = mutation_fixture::database();
     let (_directory, path, mut session) = opened(&original);
     let revision = session.revision.unwrap();
-    let draft = session.execute("begin_edit", json!({"document_revision": revision, "table": "Items", "column": "Score", "parent_ordinal": 0})).unwrap();
+    let draft = session
+        .execute(
+            "begin_edit",
+            json!({
+                "document_revision": revision,
+                "table": "Items",
+                "column": "Score",
+                "parent_ordinal": 0
+            }),
+        )
+        .unwrap();
     let review = session
         .execute(
             "review_edit",
-            json!({"document_revision": revision, "draft_id": draft["draft_id"], "text": "17"}),
+            json!({
+                "document_revision": revision,
+                "draft_id": draft["draft_id"],
+                "text": "17"
+            }),
         )
         .unwrap();
     let started = session
-        .execute("apply_edit", json!({"review_id": review["review_id"]}))
+        .execute(
+            "apply_edit",
+            json!({
+                "review_id": review["review_id"]
+            }),
+        )
         .unwrap();
     let mut id = started["save_id"].as_u64().unwrap();
     let cancellation = session
-        .execute("cancel_save", json!({"save_id": id}))
+        .execute(
+            "cancel_save",
+            json!({
+                "save_id": id
+            }),
+        )
         .unwrap();
     assert!(cancellation["cancellation_requested"].is_boolean());
     assert_eq!(
@@ -177,7 +275,14 @@ fn explicit_save_cancellation_keeps_the_real_report_and_never_infers_rollback_fr
             None
         };
         if let Some(operation) = operation {
-            let continued = session.execute(operation, json!({"save_id": id})).unwrap();
+            let continued = session
+                .execute(
+                    operation,
+                    json!({
+                        "save_id": id
+                    }),
+                )
+                .unwrap();
             id = continued["save_id"].as_u64().unwrap();
             report = terminal(&mut session, id);
         }
@@ -187,11 +292,25 @@ fn explicit_save_cancellation_keeps_the_real_report_and_never_infers_rollback_fr
     if report["outcome"]["kind"] == "saved" && report["outcome"]["receipt"]["known"] == "Committed"
     {
         acknowledge(&mut session, id, &path);
-        let rows = session.execute("read_rows", json!({"document_revision": session.revision.unwrap(), "table": "Items", "offset": 0})).unwrap();
+        let rows = session
+            .execute(
+                "read_rows",
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Items",
+                    "offset": 0
+                }),
+            )
+            .unwrap();
         assert_eq!(rows["rows"][0][1]["text"], "17");
     } else {
         // Consume only the real terminal envelope; it may certify original or
         // keep unknown/reopen restrictions. A cancellation Boolean certifies neither.
-        let _ = session.execute("acknowledge_save", json!({"save_id": id}));
+        let _ = session.execute(
+            "acknowledge_save",
+            json!({
+                "save_id": id
+            }),
+        );
     }
 }

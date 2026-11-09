@@ -18,7 +18,10 @@ fn number_and_explicit_text_field_addition_use_real_declarations_and_independent
         let inspection = session
             .execute(
                 "inspect_field_addition",
-                json!({"document_revision": revision, "table": "Table1"}),
+                json!({
+                    "document_revision": revision,
+                    "table": "Table1"
+                }),
             )
             .unwrap();
         assert_eq!(
@@ -30,9 +33,21 @@ fn number_and_explicit_text_field_addition_use_real_declarations_and_independent
             true
         );
         let request = if text {
-            json!({"document_revision": revision, "table": "Table1", "column": "Label", "kind": "short_text", "max_utf16_units": 80, "unicode_compression": false})
+            json!({
+                "document_revision": revision,
+                "table": "Table1",
+                "column": "Label",
+                "kind": "short_text",
+                "max_utf16_units": 80,
+                "unicode_compression": false
+            })
         } else {
-            json!({"document_revision": revision, "table": "Table1", "column": "Score", "kind": "number"})
+            json!({
+                "document_revision": revision,
+                "table": "Table1",
+                "column": "Score",
+                "kind": "number"
+            })
         };
         crate::requests::validate("review_field_addition", &request).unwrap();
         let review = session.execute("review_field_addition", request).unwrap();
@@ -43,7 +58,10 @@ fn number_and_explicit_text_field_addition_use_real_declarations_and_independent
         let metadata = session
             .execute(
                 "describe_table",
-                json!({"document_revision": session.revision.unwrap(), "table": "Table1"}),
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Table1"
+                }),
             )
             .unwrap();
         let field = metadata["fields"]
@@ -67,10 +85,31 @@ fn native_field_rename_preserves_true_identity_and_uses_the_complete_expected_im
         let [before, expected] = saved_field_rename::pair(case);
         let (_directory, path, mut session) = opened(&before);
         let revision = session.revision.unwrap();
-        let inspection = session.execute("inspect_field_rename", json!({"document_revision": revision, "table": "Table1", "column": original, "native_number": 1})).unwrap();
+        let inspection = session
+            .execute(
+                "inspect_field_rename",
+                json!({
+                    "document_revision": revision,
+                    "table": "Table1",
+                    "column": original,
+                    "native_number": 1
+                }),
+            )
+            .unwrap();
         assert_eq!(inspection["source_eligible"], true);
         assert_eq!(inspection["same_width_ascii_utf16_units"], 5);
-        let review = session.execute("review_field_rename", json!({"document_revision": revision, "table": "Table1", "column": original, "native_number": 1, "new_name": replacement})).unwrap();
+        let review = session
+            .execute(
+                "review_field_rename",
+                json!({
+                    "document_revision": revision,
+                    "table": "Table1",
+                    "column": original,
+                    "native_number": 1,
+                    "new_name": replacement
+                }),
+            )
+            .unwrap();
         assert_eq!(review["changed"], true);
         assert_eq!(std::fs::read(&path).unwrap(), before);
         let id = save(&mut session, "apply_field_rename", review);
@@ -79,7 +118,10 @@ fn native_field_rename_preserves_true_identity_and_uses_the_complete_expected_im
         let metadata = session
             .execute(
                 "describe_table",
-                json!({"document_revision": session.revision.unwrap(), "table": "Table1"}),
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Table1"
+                }),
             )
             .unwrap();
         let fields = metadata["fields"].as_array().unwrap();
@@ -102,14 +144,20 @@ fn closed_empty_table_drop_requires_actual_inspection_and_reopens_exact_catalog_
             session
                 .execute(
                     "review_table_drop",
-                    json!({"document_revision": revision, "table": name})
+                    json!({
+                        "document_revision": revision,
+                        "table": name
+                    })
                 )
                 .is_err()
         );
         let inspection = session
             .execute(
                 "inspect_table_drop",
-                json!({"document_revision": revision, "table": name}),
+                json!({
+                    "document_revision": revision,
+                    "table": name
+                }),
             )
             .unwrap();
         assert_eq!(inspection["source_eligible"], true);
@@ -117,7 +165,10 @@ fn closed_empty_table_drop_requires_actual_inspection_and_reopens_exact_catalog_
         let review = session
             .execute(
                 "review_table_drop",
-                json!({"document_revision": revision, "table": name}),
+                json!({
+                    "document_revision": revision,
+                    "table": name
+                }),
             )
             .unwrap();
         assert_eq!(review["native_id"], inspection["native_id"]);
