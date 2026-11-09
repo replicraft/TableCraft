@@ -40,7 +40,7 @@ pub(super) fn with_selected<T>(
         .and_then(|count| count.checked_sub(1))
         .ok_or(InspectError::Malformed)?;
     let updates = [Selected(ordinal)];
-    let roots = record_roots::capture(image, &catalog, &updates, budget, cancelled)?;
+    let roots = record_roots::capture(image, catalog, &updates, budget, cancelled)?;
     let root = roots.selected.first().ok_or(EditError::Preservation)?;
     if roots.selected.len() != 1 || root.reference != reference(origin.page(), origin.slot()) {
         return Err(EditError::Preservation);

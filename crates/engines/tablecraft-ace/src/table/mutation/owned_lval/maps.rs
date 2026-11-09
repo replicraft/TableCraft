@@ -19,6 +19,13 @@ const INDIRECT_MAP: u8 = 1;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table::mutation) enum Family {
+    #[cfg_attr(
+        not(feature = "ace16-write-preview"),
+        allow(
+            dead_code,
+            reason = "Normal property writes use only the LVAL family; preview retains ordinary-page placement."
+        )
+    )]
     Ordinary,
     LongValue,
 }

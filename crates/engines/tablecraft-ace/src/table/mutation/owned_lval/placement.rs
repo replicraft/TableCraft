@@ -417,19 +417,45 @@ pub(in crate::table::mutation) fn append_existing_lval(
     }
     let mut plan = Plan::new(image, schema.definition_page(), maps);
     let index = plan.append(image, Family::LongValue, body, budget, cancelled)?;
-    if plan.length != image.as_bytes().len()
+    if plan.original_length != image.as_bytes().len()
+        || plan.length != plan.original_length
         || !plan.maps.edits.is_empty()
         || plan.pages.len() != 1
         || plan.appended.len() != 1
         || plan.attempts.len() != 1
         || !plan.attempts[0].fitted
         || plan.attempts[0].page != page
+        || plan.attempts[0].family != Family::LongValue
+        || plan.attempts[0].bytes != body.len()
     {
         return Err(EditError::Preservation);
     }
-    let reference = plan.appended[index].reference;
+    let appended = &plan.appended[index];
+    let expected_start = start + end - body.len();
+    let expected_end = start + end;
+    if appended.family != Family::LongValue
+        || appended.range != (expected_start..expected_end)
+        || appended.reference
+            != reference(
+                page,
+                u8::try_from(count).map_err(|_| InspectError::Malformed)?,
+            )
+    {
+        return Err(EditError::Preservation);
+    }
+    let reference = appended.reference;
     let changed = plan.pages.pop().ok_or(EditError::Preservation)?;
-    if changed.number != page || changed.family != Family::LongValue {
+    budget
+        .charge(Resource::Steps, (original.len() + body.len()) as u64)
+        .map_err(InspectError::from)?;
+    if changed.number != page
+        || changed.family != Family::LongValue
+        || changed.before != original
+        || changed
+            .after
+            .get(expected_start - start..expected_end - start)
+            != Some(body)
+    {
         return Err(EditError::Preservation);
     }
     Ok(ExistingLvalAppend {
