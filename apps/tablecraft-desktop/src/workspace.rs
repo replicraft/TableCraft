@@ -49,6 +49,15 @@ enum PendingOperation {
     DatabaseOptionsReopen {
         request_id: u64,
     },
+    FieldDropInspection {
+        request_id: u64,
+    },
+    FieldDropReview {
+        request_id: u64,
+    },
+    FieldDropReopen {
+        request_id: u64,
+    },
     FieldRenameInspection {
         request_id: u64,
     },
@@ -266,6 +275,7 @@ impl Desktop {
         app.state.table_rename_available = SaveWorker::supports_table_rename();
         app.state.field_addition_available = SaveWorker::supports_field_addition();
         app.state.field_rename_available = SaveWorker::supports_field_rename();
+        app.state.field_drop_available = SaveWorker::supports_field_drop();
         app.state.database_options_available = SaveWorker::supports_database_options();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.find_available = true;
@@ -451,8 +461,13 @@ impl Desktop {
         self.retire_database_options_inspection_publication();
         self.retire_field_addition_inspection_publications();
         self.retire_field_rename_inspection();
+        self.retire_field_drop_inspection();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
+                if self.state.pending_field_drop_inspection_id() == Some(generation) {
+                    self.finish_superseded_field_drop_inspection(generation, result);
+                    continue;
+                }
                 if self.state.pending_field_rename_inspection_id() == Some(generation) {
                     self.finish_superseded_field_rename_inspection(generation, result);
                     continue;
@@ -475,8 +490,6 @@ impl Desktop {
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
-                | Ok(Response::FieldDropReviewed { .. })
-                | Ok(Response::FieldDropSourceInspected { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
@@ -486,6 +499,12 @@ impl Desktop {
                 }
                 Ok(Response::DatabaseOptionsReviewed { review, capability }) => {
                     self.start_reviewed_database_options(generation, review, capability)
+                }
+                Ok(Response::FieldDropSourceInspected { inspection }) => {
+                    self.publish_field_drop_inspection(generation, inspection);
+                }
+                Ok(Response::FieldDropReviewed { review, capability }) => {
+                    self.start_reviewed_field_drop(generation, review, capability);
                 }
                 Ok(Response::FieldRenameSourceInspected { inspection }) => {
                     self.publish_field_rename_inspection(generation, inspection);
@@ -604,6 +623,15 @@ impl Desktop {
                     };
                     if let PendingOperation::DatabaseOptionsReopen { request_id } = self.pending {
                         self.finish_database_options_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
+                    if let PendingOperation::FieldDropReopen { request_id } = self.pending {
+                        self.finish_field_drop_reopen(
                             request_id,
                             database,
                             table_creation_available,
@@ -1016,14 +1044,18 @@ impl eframe::App for Desktop {
                 Action::DatabaseOptionsSave { identity, command } => {
                     self.database_options_save_command(identity, command)
                 }
-                Action::InspectFieldDrop { .. }
-                | Action::ReviewFieldDrop { .. }
-                | Action::CancelFieldDropInspection { .. }
-                | Action::CancelFieldDropReview { .. }
-                | Action::FieldDropSave { .. }
-                | Action::FieldDropClose { .. } => {
-                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                Action::InspectFieldDrop { target } => self.inspect_field_drop_source(target),
+                Action::ReviewFieldDrop { request } => self.save_field_drop(request),
+                Action::CancelFieldDropInspection { request_id } => {
+                    self.cancel_field_drop_inspection(request_id)
                 }
+                Action::CancelFieldDropReview { request_id } => {
+                    self.cancel_field_drop_review(request_id)
+                }
+                Action::FieldDropSave { identity, command } => {
+                    self.field_drop_save_command(identity, command)
+                }
+                Action::FieldDropClose { result } => self.finish_field_drop_close(result, ui.ctx()),
                 Action::InspectFieldRename { target } => self.inspect_field_rename_source(target),
                 Action::ReviewFieldRename { request } => self.save_field_rename(request),
                 Action::CancelFieldRenameReview { request_id } => {
@@ -1108,6 +1140,10 @@ impl eframe::App for Desktop {
                         self.state.clear_query_run();
                         self.clear_query_parameters();
                         match &self.pending {
+                            PendingOperation::FieldDropInspection { request_id } => {
+                                self.state.interrupt_field_drop_inspection_id(*request_id);
+                                self.pending = PendingOperation::Read;
+                            }
                             PendingOperation::FieldRenameInspection { request_id } => {
                                 self.state.interrupt_field_rename_inspection_id(*request_id);
                                 self.pending = PendingOperation::Read;

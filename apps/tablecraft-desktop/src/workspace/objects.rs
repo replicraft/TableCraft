@@ -83,9 +83,13 @@ impl Desktop {
         if self.state.active_object().as_ref() == Some(&tab) {
             return;
         }
-        if self.state.field_addition_open() || self.state.field_rename_open() {
+        if self.state.field_addition_open()
+            || self.state.field_rename_open()
+            || self.state.field_drop_open()
+        {
             if self.state.can_request_field_addition_transition(&tab)
                 || self.state.can_request_field_rename_transition(&tab)
+                || self.state.can_request_field_drop_transition(&tab)
             {
                 let _ = self.guard_table_draft_action(
                     super::table_drafts::DeferredDraftAction::ActivateObject(tab),
@@ -113,9 +117,13 @@ impl Desktop {
     }
 
     pub(super) fn close_object(&mut self, tab: ObjectTab) {
-        if self.state.field_addition_open() || self.state.field_rename_open() {
+        if self.state.field_addition_open()
+            || self.state.field_rename_open()
+            || self.state.field_drop_open()
+        {
             if self.state.can_request_field_addition_transition(&tab)
                 || self.state.can_request_field_rename_transition(&tab)
+                || self.state.can_request_field_drop_transition(&tab)
             {
                 let _ = self.guard_table_draft_action(
                     super::table_drafts::DeferredDraftAction::CloseObject(tab),

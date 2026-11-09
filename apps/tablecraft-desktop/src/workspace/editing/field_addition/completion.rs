@@ -338,20 +338,13 @@ impl Desktop {
             .clear_field_addition_save(&host.request, identity);
         let cleanup = host.cleanup.take();
         let filters = std::mem::take(&mut host.filters);
-        self.retain_filter_restore_definitions(filters);
-        self.state
-            .set_table_creation_available(revision, table_creation_available);
-        self.state
-            .set_table_design_available(revision, table_design_available);
-        self.state.set_save_cleanup(revision, cleanup);
-        self.state.busy = false;
-        self.pending = PendingOperation::Read;
-        self.editing.field_addition = None;
-        self.resume_after_field_schema = true;
-        self.editing.clear_review();
-        self.clear_query_parameters();
-        if let Some(open) = self.state.active_object_load() {
-            self.load_object(open);
-        }
+        self.finish_field_graph_reopen(
+            FieldOperation::Addition,
+            revision,
+            table_creation_available,
+            table_design_available,
+            cleanup,
+            filters,
+        );
     }
 }

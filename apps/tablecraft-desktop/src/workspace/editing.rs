@@ -2,6 +2,7 @@
 mod database_options;
 mod deleting;
 mod field_addition;
+mod field_drop;
 mod field_rename;
 mod field_save;
 mod inserting;
@@ -34,6 +35,7 @@ pub(super) struct Editing {
     query_definition: Option<query_definition::QueryDefinitionHost>,
     field_addition: Option<field_addition::FieldAdditionHost>,
     field_rename: Option<field_rename::FieldRenameHost>,
+    field_drop: Option<field_drop::FieldDropHost>,
     database_options: Option<database_options::DatabaseOptionsHost>,
     database_options_inspection: Option<(u64, u64)>,
     review: Option<(u64, ReviewedEdit)>,
@@ -68,6 +70,7 @@ enum SaveOwner {
     TableRename,
     FieldAddition,
     FieldRename,
+    FieldDrop,
     DatabaseOptions,
     QueryAction,
     QueryDefinition,
@@ -90,6 +93,7 @@ impl Editing {
             query_definition: None,
             field_addition: None,
             field_rename: None,
+            field_drop: None,
             database_options: None,
             database_options_inspection: None,
             review: None,
@@ -111,6 +115,7 @@ impl Editing {
             || self.query_definition.is_some()
             || self.field_addition.is_some()
             || self.field_rename.is_some()
+            || self.field_drop.is_some()
             || self.database_options.is_some()
     }
 
@@ -303,6 +308,11 @@ impl Desktop {
             self.state.mark_native_save_uncertain();
             let message = self.state.localizer.text("editing-save-uncertain");
             match save.owner {
+                SaveOwner::FieldDrop => {
+                    if let Some((identity, _)) = self.state.field_drop_save_status() {
+                        self.state.set_field_drop_actor_lost(identity, message);
+                    }
+                }
                 SaveOwner::FieldRename => {
                     if let Some((identity, _)) = self.state.field_rename_save_status() {
                         self.state.set_field_rename_actor_lost(identity, message);
@@ -339,6 +349,10 @@ impl Desktop {
         }
         if matches!(save.owner, SaveOwner::DatabaseOptions) {
             self.database_options_save_report(report);
+            return;
+        }
+        if matches!(save.owner, SaveOwner::FieldDrop) {
+            self.field_drop_save_report(report);
             return;
         }
         if matches!(save.owner, SaveOwner::FieldRename) {
@@ -379,6 +393,7 @@ impl Desktop {
             SaveOwner::TableRename
             | SaveOwner::FieldAddition
             | SaveOwner::FieldRename
+            | SaveOwner::FieldDrop
             | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }
@@ -386,6 +401,9 @@ impl Desktop {
 
     pub(super) fn cancel_current_save(&mut self) {
         if self.cancel_current_database_options_operation() {
+            return;
+        }
+        if self.cancel_current_field_drop_operation() {
             return;
         }
         if self.cancel_current_field_rename_operation() {
@@ -407,6 +425,7 @@ impl Desktop {
     pub(super) fn cancel_save(&mut self, id: u64) {
         self.note_field_addition_cancellation(id);
         self.note_field_rename_cancellation(id);
+        self.note_field_drop_cancellation(id);
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
             self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
@@ -414,6 +433,17 @@ impl Desktop {
     }
 
     pub(super) fn resolve_save(&mut self, id: u64, recover: bool) {
+        if let Some(identity) = self.field_drop_native_identity(id) {
+            self.field_drop_save_command(
+                identity,
+                if recover {
+                    tablecraft_ui::FieldDropSaveCommand::Recover
+                } else {
+                    tablecraft_ui::FieldDropSaveCommand::Release
+                },
+            );
+            return;
+        }
         if let Some(identity) = self.field_rename_native_identity(id) {
             self.field_rename_save_command(
                 identity,
@@ -482,6 +512,7 @@ impl Desktop {
                     }
                     SaveOwner::FieldAddition
                     | SaveOwner::FieldRename
+                    | SaveOwner::FieldDrop
                     | SaveOwner::DatabaseOptions => {}
                     SaveOwner::TableCreation => {}
                 }
@@ -492,6 +523,10 @@ impl Desktop {
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
         if self.acknowledge_uncertain_save(id) {
+            return;
+        }
+        if let Some(identity) = self.field_drop_native_identity(id) {
+            self.acknowledge_field_drop(identity);
             return;
         }
         if let Some(identity) = self.field_rename_native_identity(id) {
@@ -584,6 +619,7 @@ impl Desktop {
             SaveOwner::TableRename
             | SaveOwner::FieldAddition
             | SaveOwner::FieldRename
+            | SaveOwner::FieldDrop
             | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }

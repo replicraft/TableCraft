@@ -350,21 +350,14 @@ impl Desktop {
         self.state.clear_field_rename_save(&host.request, identity);
         let cleanup = host.cleanup.take();
         let filters = std::mem::take(&mut host.filters);
-        self.retain_filter_restore_definitions(filters);
-        self.state
-            .set_table_creation_available(revision, table_creation_available);
-        self.state
-            .set_table_design_available(revision, table_design_available);
-        self.state.set_save_cleanup(revision, cleanup);
-        self.state.busy = false;
-        self.pending = PendingOperation::Read;
-        self.editing.field_rename = None;
-        self.resume_after_field_schema = true;
-        self.editing.clear_review();
-        self.clear_query_parameters();
-        if let Some(open) = self.state.active_object_load() {
-            self.load_object(open);
-        }
+        self.finish_field_graph_reopen(
+            FieldOperation::Rename,
+            revision,
+            table_creation_available,
+            table_design_available,
+            cleanup,
+            filters,
+        );
     }
 
     pub(in crate::workspace) fn return_to_field_rename_draft(

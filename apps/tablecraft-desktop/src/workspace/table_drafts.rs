@@ -1,5 +1,6 @@
 //! Retain a requested host transition while shared UI confirms draft disposal.
 mod field_addition;
+mod field_drop;
 mod field_rename;
 use super::Desktop;
 use egui::{Context, ViewportCommand};
@@ -27,12 +28,14 @@ impl Desktop {
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
             || self.state.field_rename_close_open()
+            || self.state.field_drop_close_open()
         {
             drop(action);
             return None;
         }
         let action = self.defer_field_addition_transition(action)?;
         let action = self.defer_field_rename_transition(action)?;
+        let action = self.defer_field_drop_transition(action)?;
         let confirmation = if self.state.has_modified_saved_query_sql() {
             self.state.request_saved_query_sql_close_all()
         } else if self.state.has_modified_table_drafts() {
@@ -105,6 +108,7 @@ impl Desktop {
             || self.state.table_draft_field_delete_open()
             || self.state.saved_query_sql_close_open()
             || self.state.field_rename_close_open()
+            || self.state.field_drop_close_open()
         {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             return;
@@ -113,6 +117,7 @@ impl Desktop {
             || self.state.has_modified_saved_query_sql()
             || self.state.field_addition_open()
             || self.state.field_rename_open()
+            || self.state.field_drop_open()
         {
             context.send_viewport_cmd(ViewportCommand::CancelClose);
             let _ = self.guard_table_draft_action(DeferredDraftAction::CloseWindow);
