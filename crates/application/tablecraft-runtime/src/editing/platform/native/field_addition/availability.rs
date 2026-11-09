@@ -109,14 +109,22 @@ mod tests {
             ))))
             .unwrap()
         );
-        for error in [
-            InspectError::Cancelled,
-            InspectError::Allocation,
-            InspectError::Malformed,
+        for (input, expected) in [
+            (InspectError::Cancelled, InspectError::Cancelled),
+            (InspectError::Allocation, InspectError::Allocation),
+            (InspectError::Malformed, InspectError::Malformed),
         ] {
-            assert!(
-                matches!(source_result(Err(Error::FieldAddition(FieldAdditionIntentError::Field(FieldAdditionError::Inspect(error))))), Err(Error::FieldAddition(FieldAdditionIntentError::Field(FieldAdditionError::Inspect(actual)))) if actual == error)
-            );
+            let result = source_result(Err(Error::FieldAddition(FieldAdditionIntentError::Field(
+                FieldAdditionError::Inspect(input),
+            ))));
+            let Err(Error::FieldAddition(FieldAdditionIntentError::Field(
+                FieldAdditionError::Inspect(actual),
+            ))) = result
+            else {
+                panic!("failed inspection must retain its typed error");
+            };
+
+            assert_eq!(actual, expected);
         }
     }
 }

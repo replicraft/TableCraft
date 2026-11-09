@@ -10,7 +10,10 @@ use egui_kittest::{
 };
 use std::time::{Duration, Instant};
 use tablecraft_builders::table::FieldAdditionDeclaration;
-use tablecraft_runtime::{Command, Response, SaveOutcome, SaveReport, journal_path};
+use tablecraft_runtime::{
+    Command, FieldAdditionReview, Response, ReviewedFieldAddition, SaveOutcome, SaveReport,
+    journal_path,
+};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
 use tablecraft_ui::{EditSaveOutcome, FieldFilterTarget, SortSpec};
 
@@ -31,16 +34,12 @@ fn click(harness: &mut Harness<'_, Desktop>, label: &str) {
 
 fn take_review(
     harness: &Harness<'_, Desktop>,
-) -> (
-    u64,
-    tablecraft_runtime::AddColumnReview,
-    tablecraft_runtime::ReviewedFieldAddition,
-) {
+) -> (u64, FieldAdditionReview, ReviewedFieldAddition) {
     let deadline = Instant::now() + Duration::from_secs(10);
     loop {
         if let Some((generation, result)) = harness.state().worker.poll() {
             let Response::FieldAdditionReviewed { review, capability } = result.unwrap() else {
-                panic!("Number native review expected");
+                panic!("field native review expected");
             };
             return (generation, review, capability);
         }

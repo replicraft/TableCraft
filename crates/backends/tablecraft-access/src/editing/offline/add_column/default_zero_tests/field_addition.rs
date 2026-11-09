@@ -113,11 +113,11 @@ fn cold_and_settled_typed_field_recovery_reconstruct_exact_v2_declaration() {
             };
             assert_eq!(
                 receipt.verified_image(),
-                if committed {
+                Some(if committed {
                     VerifiedImage::Replacement
                 } else {
                     VerifiedImage::Original
-                }
+                })
             );
             assert_eq!(receipt.schema_change(), Some(SchemaChange::ColumnAdded));
             owner.release().unwrap();

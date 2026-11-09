@@ -11,15 +11,16 @@ mod inspection_completion;
 mod state;
 mod status;
 
-use abandon::FieldAdditionSavedWarning;
+pub use abandon::FieldAdditionSavedWarning;
 pub use close::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
-pub use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
 
 pub(super) use status::Status;
 pub use status::{FieldAdditionSaveCommand, FieldAdditionSaveIdentity, PreparedFieldAdditionSave};
 
 use super::{ObjectKind, ObjectTab};
-use tablecraft_builders::table::{MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
+use tablecraft_builders::table::{
+    FieldAdditionDeclaration, FieldAdditionKind, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS,
+};
 
 /// Exact naming snapshot submitted after the current frame's header widgets.
 #[derive(Debug, PartialEq, Eq)]
