@@ -168,4 +168,23 @@ fn created_number_table_round_trips_insert_change_delete_and_automatic_reopen() 
     assert_eq!(data.rows[0][1].text, "42");
     assert_eq!(std::fs::read(&path).unwrap(), deleted);
     assert!(!journal_path(&path).exists());
+
+    // Deleting the last issued ID must not rewind the persisted generator.
+    insert_generated_row(&mut reopened, Some("9"));
+    let inserted_again = std::fs::read(&path).unwrap();
+    assert_ne!(inserted_again, deleted);
+    assert!(!journal_path(&path).exists());
+    drop(reopened);
+
+    let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
+    finish_reads(&mut reopened);
+    let data = reopened.state().state.data.as_ref().unwrap();
+    assert_eq!(data.table, "Contacts");
+    assert_eq!(data.rows.len(), 2);
+    assert_eq!(data.rows[0][0].text, "1");
+    assert_eq!(data.rows[0][1].text, "42");
+    assert_eq!(data.rows[1][0].text, "3");
+    assert_eq!(data.rows[1][1].text, "9");
+    assert_eq!(std::fs::read(&path).unwrap(), inserted_again);
+    assert!(!journal_path(&path).exists());
 }
