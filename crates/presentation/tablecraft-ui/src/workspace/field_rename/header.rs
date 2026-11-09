@@ -45,10 +45,6 @@ pub(crate) fn show(
     response
 }
 
-#[expect(
-    clippy::too_many_arguments,
-    reason = "Keep borrowed field identity and popup ownership allocation-free."
-)]
 pub(crate) fn entry_menu(
     ui: &mut Ui,
     response: &Response,
@@ -105,14 +101,12 @@ pub(crate) fn entry_menu(
             ui.close();
         }
     });
-    if begin {
-        if let Some(native_number) = native_number {
-            *event = Some(
-                match FieldRenameTarget::from_parts(tab, name, native_number) {
-                    Some(target) => widget::Event::Begin(target),
-                    None => widget::Event::MemoryLimit,
-                },
-            );
-        }
+    if begin && let Some(native_number) = native_number {
+        *event = Some(
+            match FieldRenameTarget::from_parts(tab, name, native_number) {
+                Some(target) => widget::Event::Begin(target),
+                None => widget::Event::MemoryLimit,
+            },
+        );
     }
 }

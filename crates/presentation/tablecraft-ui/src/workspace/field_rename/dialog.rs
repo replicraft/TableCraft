@@ -1,5 +1,8 @@
 //! Bounded rename prompts adapted to the existing application dialog style.
 //! No retained Access capture qualifies these popup/status appearances.
+#[cfg(test)]
+mod tests;
+
 use super::{
     FieldRenameCloseDecision as Decision, FieldRenameSaveCommand as Command,
     FieldRenameSaveIdentity,
@@ -15,6 +18,10 @@ use egui::{Context, Id, Modal, Ui};
 const MAX_WIDTH: f32 = 520.0;
 const MAX_REPORT_HEIGHT: f32 = 230.0;
 const VIEWPORT_MARGIN: f32 = 32.0;
+const SOURCE_PANEL_HEIGHT: f32 = 96.0;
+const WARNING_PANEL_HEIGHT: f32 = 270.0;
+const MAX_DOCUMENT_HEIGHT_FRACTION: f32 = 0.5;
+const PANEL_PADDING: f32 = 8.0;
 
 impl State {
     pub(in crate::workspace) fn field_rename_close_dialog(
@@ -227,6 +234,38 @@ impl State {
         }
     }
 
+    pub(in crate::workspace) fn field_rename_source_panel(
+        &mut self,
+        ui: &mut Ui,
+        actions: &mut Vec<Action>,
+    ) {
+        if self.field_rename.status.is_some() {
+            return;
+        }
+        let warning = self.field_rename_source_stale();
+        let naming = self
+            .field_rename
+            .draft
+            .as_ref()
+            .is_some_and(|draft| draft.phase == Phase::Naming);
+        if !warning && !naming {
+            return;
+        }
+        let requested = if warning {
+            WARNING_PANEL_HEIGHT
+        } else {
+            SOURCE_PANEL_HEIGHT
+        };
+        let height = requested.min(ui.available_height() * MAX_DOCUMENT_HEIGHT_FRACTION);
+        egui::Panel::bottom(ui.make_persistent_id("field_rename_source_panel"))
+            .resizable(false)
+            .exact_size(height)
+            .frame(egui::Frame::new().inner_margin(PANEL_PADDING))
+            .show(ui, |ui| {
+                self.field_rename_source_status(ui, actions);
+            });
+    }
+
     pub(in crate::workspace) fn field_rename_source_status(
         &mut self,
         ui: &mut Ui,
@@ -245,43 +284,55 @@ impl State {
         if draft.phase != Phase::Naming {
             return;
         }
-        match &draft.observation {
-            Observation::Pending { .. } => {
-                ui.spinner();
-                ui.label(tr(ui, "field-rename-inspecting"));
-            }
-            Observation::Eligible { units } => {
-                let mut arguments = FluentArgs::new();
-                arguments.set("units", *units as i64);
-                ui.small(self.localizer.format("field-rename-profile", &arguments));
-            }
-            Observation::Unsupported => {
-                ui.label(tr(ui, "field-rename-source-unavailable"));
-            }
-            Observation::Failed { message } => {
-                if message.is_empty() {
-                    ui.label(tr(ui, "objects-memory-limit"));
-                } else {
-                    diagnostics::show(ui, ui.id().with("field_rename_source_error"), message);
+        let footer = ui.spacing().interact_size.y + ui.spacing().item_spacing.y;
+        egui::ScrollArea::vertical()
+            .id_salt("field_rename_source_information")
+            .max_height((ui.available_height() - footer).max(0.0))
+            .show(ui, |ui| match &draft.observation {
+                Observation::Pending { .. } => {
+                    ui.spinner();
+                    ui.label(tr(ui, "field-rename-inspecting"));
                 }
-            }
-            Observation::Interrupted => {
-                ui.label(tr(ui, "field-rename-inspection-interrupted"));
-            }
-        }
+                Observation::Eligible { units } => {
+                    let mut arguments = FluentArgs::new();
+                    arguments.set("units", *units as i64);
+                    ui.small(self.localizer.format("field-rename-profile", &arguments));
+                }
+                Observation::Unsupported => {
+                    ui.label(tr(ui, "field-rename-source-unavailable"));
+                }
+                Observation::Failed { message } => {
+                    if message.is_empty() {
+                        ui.label(tr(ui, "objects-memory-limit"));
+                    } else {
+                        diagnostics::show(ui, ui.id().with("field_rename_source_error"), message);
+                    }
+                }
+                Observation::Interrupted => {
+                    ui.label(tr(ui, "field-rename-inspection-interrupted"));
+                }
+            });
         let retry = matches!(
             draft.observation,
             Observation::Unsupported | Observation::Failed { .. } | Observation::Interrupted
         );
-        if retry && !self.busy && ui.button(tr(ui, "field-rename-retry-inspection")).clicked() {
+        let retry_clicked = ui
+            .horizontal_wrapped(|ui| {
+                let clicked = retry
+                    && !self.busy
+                    && ui.button(tr(ui, "field-rename-retry-inspection")).clicked();
+                if ui.button(tr(ui, "field-rename-cancel")).clicked() {
+                    actions.push(Action::CloseFieldRenameEditor);
+                }
+                clicked
+            })
+            .inner;
+        if retry_clicked {
             let target = draft.target.copy();
             if let Some(target) = target {
-                // The post-widget collector issues the one prepared readonly request.
+                // The post-widget collector issues the prepared readonly request.
                 self.retry_field_rename_inspection(&target);
             }
-        }
-        if ui.button(tr(ui, "field-rename-cancel")).clicked() {
-            actions.push(Action::CloseFieldRenameEditor);
         }
     }
 
@@ -293,9 +344,14 @@ impl State {
             warning.identity,
             FieldRenameSaveIdentity::UnchangedReview { .. }
         );
+        let footer = if self.field_rename_open() {
+            ui.spacing().interact_size.y + ui.spacing().item_spacing.y
+        } else {
+            0.0
+        };
         egui::ScrollArea::vertical()
             .id_salt("field_rename_warning")
-            .max_height(MAX_REPORT_HEIGHT)
+            .max_height(MAX_REPORT_HEIGHT.min((ui.available_height() - footer).max(0.0)))
             .show(ui, |ui| {
                 ui.group(|ui| {
                     ui.label(tr(

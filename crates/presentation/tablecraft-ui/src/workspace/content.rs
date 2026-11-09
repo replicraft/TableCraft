@@ -54,12 +54,14 @@ impl State {
             self.filter_report(ui);
             self.totals_report(ui);
         }
+        // Reserve the real status/action owner before data and Design consume
+        // their remaining viewport. Retained warnings also survive tab closure.
+        self.field_rename_source_panel(ui, actions);
         if self.unloaded_object_status(ui, actions) {
             return;
         }
         if self.view == DocumentView::Design {
             self.design(ui);
-            self.field_rename_source_status(ui, actions);
             return;
         }
         self.query_editor(ui, actions);
@@ -188,7 +190,6 @@ impl State {
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);
             self.field_addition_inspection_status(ui, actions);
-            self.field_rename_source_status(ui, actions);
         } else if self.view == DocumentView::Query {
             Frame::new().inner_margin(10).show(ui, |ui| {
                 ui.weak(tr(
