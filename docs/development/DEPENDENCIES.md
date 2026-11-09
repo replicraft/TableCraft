@@ -1,5 +1,28 @@
 # Adopted dependency and licensing baseline
 
+## Local MCP transport and typed schemas — 9 November 2026
+
+`apps/tablecraft-mcp` adopts `rmcp` 3.8.0 (official Rust SDK, Apache-2.0), with default
+features disabled and only server/stdio transport selected. Its published
+manifest targets Rust 1.88, below this workspace's 1.99 baseline. Existing Tokio
+1.53.3 is selected with the host's runtime/macros features and SDK-required I/O;
+no HTTP/TLS/authentication transport is enabled. SDK transport dependencies stay
+outside the desktop, ordinary CLI and reusable engine/query closures.
+
+Schemars 1.2.3 (MIT) is a direct workspace/member dependency with `derive`/`std`.
+Its typed input DTOs generate tool schemas and borrow protocol strings for strict
+Serde validation. Native mutation plans and sealed reviewed capabilities do not
+implement protocol serialization. Existing Serde/serde_json are appropriate at
+this explicit JSON protocol boundary. The runtime continues to own native
+admission, literal conversion, preservation and consuming save/recovery state.
+
+The lockfile adds the SDK/schema dependency closure, including Schemars' derive
+helpers, Futures utilities, Tokio utility/I/O support and the SDK's Chrono date
+carrier. This does not replace TableCraft's Jiff domain date policy. No registry
+version hashes are introduced. See the [official SDK](https://github.com/modelcontextprotocol/rust-sdk),
+[Schemars](https://docs.rs/schemars/1.2.3/schemars/) and [local host contract](../interfaces/MCP.md).
+
+
 ## Adaptive encryption memory discovery — 8 November 2026
 
 The native CLI now selects `sysinfo` 0.40.1 with `default-features = false` and
@@ -340,7 +363,7 @@ The testkit's opt-in `journal-support` feature consumes its existing optional
 workspace `tablecraft-io` declaration and journal contract. ACE enables this only
 through its development dependency for rename and ADD-column protocol tests.
 Production dependencies and default raw fixtures are unchanged; no registry
-package or license is added. See the [testkit guide](../testing/TESTKIT.md).
+package or license is added. See the [testkit guide](../../tests/reports/general/TESTKIT.md).
 
 ## Shared test support (2 November 2026)
 
@@ -352,7 +375,7 @@ Each consumer keeps a development dependency. Default raw Access fixtures use
 Core carriers and the UUID utility without production codecs; CLI support takes
 the executable from the test host. The lockfile changes local
 workspace edges without changing registry versions or checksums. See the
-[testkit guide](../testing/TESTKIT.md) and
+[testkit guide](../../tests/reports/general/TESTKIT.md) and
 [dependency policy](../architecture/DEPENDENCY_BOUNDARIES.md).
 
 ## Workspace ownership extraction (27 October 2026)
@@ -369,7 +392,7 @@ keeps native crypto policy and independent development cipher fixtures; Access
 keeps native payload qualification and query adaptation. The package boundaries
 are enforced by the dependency guard, including dev-only testkit edges.
 See [crypto](../platform/CRYPTO.md), [package formats](../formats/ACCESS_PACKAGES.md)
-and [testkit](../testing/TESTKIT.md). Existing license notices remain applicable.
+and [testkit](../../tests/reports/general/TESTKIT.md). Existing license notices remain applicable.
 
 ## Shared exact Decimal aggregate totals (24 October 2026)
 
@@ -434,7 +457,7 @@ provider pools. No Rust unsafe code is introduced by this adapter.
 
 Seven provider tests, six CLI tests and existing comparison regressions pass,
 with scoped Clippy, minimal-feature checks and strict rustdoc. The original
-[ICU4C replay](../testing/compare_icu_text.py) passes 3,032 controls against a fixed
+[ICU4C replay](../../tests/access/queries/expressions/compare_icu_text.py) passes 3,032 controls against a fixed
 CLI. This is independent ICU profile evidence, not a performance measurement,
 Windows NLS qualification or a complete advisory/unsafe-code audit. Primary APIs
 and exact settings are linked in the owning provider document.
@@ -456,7 +479,7 @@ independent generated controls and the measured work-unit incompatibility of
 prepaying a span for an early match. Production InStrB and its callback contract
 remain unchanged. This is a working benchmark consumer, not a production
 dependency/adoption or a speedup claim. See the
-[experiment contract](../testing/BYTE_SEARCH_EXPERIMENT.md) and
+[experiment contract](../../tests/reports/general/BYTE_SEARCH_EXPERIMENT.md) and
 [upstream API](https://docs.rs/memchr/2.8.3/memchr/memmem/fn.find.html).
 
 ## Native index collection experiment (24 October 2026)
@@ -489,7 +512,7 @@ Darwin arm64 build, retained index storage falls from 88 + 160 bytes to 232 byte
 and eliminates one allocation per index. Timing distributions contain substantial
 noise; no general query-speedup claim is made. Independent getter controls and
 focused mutation/corruption/resource regressions accompany the storage decision.
-See [the complete experiment](../testing/INDEX_COLUMN_COLLECTIONS.md). These checks
+See [the complete experiment](../../tests/reports/schema/INDEX_COLUMN_COLLECTIONS.md). These checks
 do not qualify native Access compatibility.
 Primary APIs: [ArrayVec](https://docs.rs/arrayvec/0.7.8/arrayvec/struct.ArrayVec.html),
 [SmallVec](https://docs.rs/smallvec/1.16.3/smallvec/struct.SmallVec.html).
@@ -783,7 +806,7 @@ Bouncy Castle bcprov-jdk18on 1.86 (MIT) and Jackcess 5.0.4. These are engineerin
 artifacts, with no Rust/application dependency. The shared reference guard now
 validates the exact 5.0.2/SID toolchain before compilation; 5.0.0 is explicitly
 refused there. [Artifact hashes](../access/storage/NATIVE_ENCRYPTION.md#independent-rewrite-evidence)
-and [modern encrypted comparisons](../testing/ENCRYPTED_MODERN_HISTORIES.md)
+and [modern encrypted comparisons](../../tests/reports/encryption/ENCRYPTED_MODERN_HISTORIES.md)
 record working consumers and qualification limits.
 
 ## Existing dependency baseline
@@ -1179,7 +1202,7 @@ and [subscriber](https://docs.rs/tracing-subscriber/0.3.20/tracing_subscriber/).
 ## Civil calendars, native layouts and measured byte processing
 
 Adopted 18 October 2026 with working consumers and
-[Hyperfine workloads](../testing/NATIVE_BENCHMARKS.md):
+[Hyperfine workloads](../../tests/reports/general/NATIVE_BENCHMARKS.md):
 
 | Package | Locked version | License / declared minimum Rust | Consumer and features |
 | --- | --- | --- | --- |
@@ -1428,7 +1451,7 @@ All added entries were checked against cached upstream package metadata:
 
 Dependency boundary checks and all ten policy tests passed. Workspace all-feature
 checks still do not activate upstream optional integrations. [CCur contracts](../expressions/EXPRESSIONS.md#explicit-currency-conversion)
-and [benchmarks](../testing/CURRENCY_CONVERSIONS.md) record independent numerical
+and [benchmarks](../../tests/reports/queries/CURRENCY_CONVERSIONS.md) record independent numerical
 checks and measured cost; no native Access compatibility claim follows from adoption.
 
 ## Decimal expression range and CDec
@@ -1450,7 +1473,7 @@ the shared query Sum/Avg fold for Decimal inputs. Existing conversion imports an
 validated core result construction are reused; no package, feature or serializer
 integration was added. Exponentiation uses the existing finite Double conversion/
 power path. [Contracts](../expressions/EXPRESSIONS.md#checked-decimal-arithmetic) and
-[measurements](../testing/DECIMAL_ARITHMETIC.md) distinguish the bounded engineering
+[measurements](../../tests/reports/general/DECIMAL_ARITHMETIC.md) distinguish the bounded engineering
 profile from pending native Access promotion/rounding/aggregate qualification.
 
 ## Named numeric formatting consumer
@@ -1583,7 +1606,7 @@ paths were reviewed locally. BigInt 0.4.8 includes the division-regression fix
 following 0.4.7. Preserve chosen upstream notices when distributing. This is a
 bounded-consumer review, not a full upstream unsafe-code or vulnerability audit.
 
-[The working consumer](../testing/FLOATING_MEANS.md) uses fixed i128 exponent bins
+[The working consumer](../../tests/reports/general/FLOATING_MEANS.md) uses fixed i128 exponent bins
 before final BigInt/rational conversion. Magnitudes are bounded by binary64 and
 the checked count, not an arbitrary input precision or exponent string. It uses
 unreduced Ratio only for conversion with a positive nonzero denominator; no raw
@@ -1591,7 +1614,7 @@ Ratio equality/hash contract is exposed. Library operations retain their own
 rounding; TableCraft adds no unsafe code or bespoke big-integer division.
 
 Standalone/default-feature checks, boundary guard tests, exact Fraction controls
-and [query-level benchmarks](../testing/FLOATING_MEANS.md#query-level-benchmark)
+and [query-level benchmarks](../../tests/reports/general/FLOATING_MEANS.md#query-level-benchmark)
 verify this local consumer. Access/other-platform qualification remains separate.
 Sources: [num-bigint 0.4.8](https://docs.rs/num-bigint/0.4.8/num_bigint/),
 [num-rational 0.4.2](https://docs.rs/num-rational/0.4.2/num_rational/),
@@ -1651,7 +1674,7 @@ and [tinyvec package](https://docs.rs/crate/tinyvec/1.13.3).
 
 ## Optional JDBC engineering probe
 
-The [independent aggregate probe](../testing/JDBC_AGGREGATE_METADATA.md) uses external
+The [independent aggregate probe](../../tests/reports/queries/JDBC_AGGREGATE_METADATA.md) uses external
 UCanAccess 5.2.0 (Apache-2.0), Jackcess 5.2.0 (Apache-2.0) and HSQLDB 2.7.4
 (BSD-style upstream terms). Exact JAR hashes, primary license references and
 retrieval checks are recorded there and in the fixture ledger. They are not

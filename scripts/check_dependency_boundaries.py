@@ -42,6 +42,8 @@ ALLOWED = {
                            "tablecraft-builders"},
     "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit",
                            "tablecraft-display", "tablecraft-builders"},
+    "tablecraft-mcp": {"tablecraft-runtime", "tablecraft-builders", "tablecraft-core",
+                       "tablecraft-schema", "tablecraft-display", "tablecraft-testkit"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
                        "tablecraft-io", "tablecraft-db", "tablecraft-ace",
                        "tablecraft-access", "tablecraft-sqlite", "tablecraft-sql",

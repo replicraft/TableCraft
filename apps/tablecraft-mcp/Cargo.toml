@@ -1,0 +1,33 @@
+[package]
+name = "tablecraft-mcp"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[[bin]]
+name = "tablecraft-mcp"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+clap.workspace = true
+rmcp = { workspace = true, features = ["server", "transport-io"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+tablecraft-runtime = { workspace = true, features = ["offline-edit", "ace16-create"] }
+tablecraft-builders.workspace = true
+tablecraft-core.workspace = true
+tablecraft-schema.workspace = true
+tablecraft-display.workspace = true
+jiff.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support"] }
