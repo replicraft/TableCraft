@@ -1,6 +1,8 @@
 //! A separate candidate language for nullable LONG with explicit DefaultValue 0.
 //! TCAC0001/0002 source languages and normal save APIs are unchanged.
 mod build;
+mod repeated;
+pub use repeated::RepeatedDefaultZeroAddColumnCandidate;
 #[cfg(test)]
 mod tests;
 mod verify;

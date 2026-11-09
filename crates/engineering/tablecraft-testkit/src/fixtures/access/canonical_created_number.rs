@@ -1,4 +1,6 @@
 //! Independent Number ADD property ordering, native records and full SDK goldens.
+pub mod repeated;
+
 use super::{canonical_created_add_column, canonical_created_default_zero, put16, put32};
 
 const PAGE: usize = 4096;

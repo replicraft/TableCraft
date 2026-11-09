@@ -14,6 +14,24 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(TableCheck, FirstTableDefinition), CreatedAddColumnError> {
+    let (checked, definition) = inspect(image, table, budget, cancelled)?;
+    let schema = checked.schema();
+    let columns = definition.borrowed_columns(budget, cancelled)?;
+    let original = create_ace16_database(schema.name(), &columns, &[], budget, cancelled)?;
+    if !common::equal_image(image.as_bytes(), original.as_bytes(), budget, cancelled)? {
+        return Err(CreatedAddColumnError::Source);
+    }
+    drop(columns);
+    Ok((checked, definition))
+}
+
+/// Shared geometry/declaration observation; only callers prove their full image.
+pub(super) fn inspect(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(TableCheck, FirstTableDefinition), CreatedAddColumnError> {
     check(budget, cancelled)?;
     image.require_standard_capture()?;
     if image.catalog().header().format() != FileFormat::Ace2016 {
@@ -41,11 +59,5 @@ pub(super) fn capture(
         return Err(CreatedAddColumnError::Source);
     }
     let definition = declarations::capture(image, &checked, budget, cancelled)?;
-    let columns = definition.borrowed_columns(budget, cancelled)?;
-    let original = create_ace16_database(schema.name(), &columns, &[], budget, cancelled)?;
-    if !common::equal_image(image.as_bytes(), original.as_bytes(), budget, cancelled)? {
-        return Err(CreatedAddColumnError::Source);
-    }
-    drop(columns);
     Ok((checked, definition))
 }

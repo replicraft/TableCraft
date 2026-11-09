@@ -3,7 +3,7 @@ mod declarations;
 mod default_zero;
 pub use default_zero::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
-    CreatedDefaultZeroColumnRequired,
+    CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
 };
 mod preservation;
 mod properties;

@@ -7,7 +7,7 @@ mod created;
 #[cfg(feature = "journal")]
 pub use created::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
-    CreatedDefaultZeroColumnRequired,
+    CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
 };
 
 mod preservation;
