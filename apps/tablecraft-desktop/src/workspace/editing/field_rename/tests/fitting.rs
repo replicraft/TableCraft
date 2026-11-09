@@ -1,5 +1,8 @@
 //! Actual named widgets retain complete source qualification for grow and shrink.
 use crate::workspace::editing::field_rename::widgets::propose_name;
+use crate::workspace::test_support::editing::{
+    review_pasted_cell, review_row_delete, save_reviewed_row,
+};
 use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
@@ -7,6 +10,7 @@ use std::time::{Duration, Instant};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting,
+    canonical_initial_table_creation::deletes,
     saved_field_rename::fitting::{self, SourceCase},
 };
 
@@ -168,7 +172,7 @@ fn actual_field_rename_capacity_refusal_preserves_name_then_fresh_correction_sav
 }
 
 #[test]
-fn fitted_field_rename_then_normal_omitted_row_insert_keeps_native_names_and_preserved_history() {
+fn fitted_field_rename_then_normal_row_crud_keeps_native_names_and_preserved_history() {
     for replacement in ["TaxAmount", "X"] {
         let [before, after] = fitting::pair(SourceCase::NumberFirst, replacement);
         let (_directory, path, _, mut harness) = test_support::opened(before);
@@ -193,5 +197,26 @@ fn fitted_field_rename_then_normal_omitted_row_insert_keeps_native_names_and_pre
         );
         let expected = inserting::first_number_row(&after, &[(0, Some(1)), (1, Some(0))]);
         assert_eq!(std::fs::read(&path).unwrap(), expected);
+
+        review_pasted_cell(&mut harness, &path, &expected, replacement, "1", "0", "42");
+        save_reviewed_row(&mut harness, "Apply to original file");
+        let edited = inserting::first_number_row(&after, &[(0, Some(1)), (1, Some(42))]);
+        assert_eq!(std::fs::read(&path).unwrap(), edited);
+        assert_eq!(harness.state().state.selected_cell_text(), Some("42"));
+        assert!(!journal_path(&path).exists());
+
+        review_row_delete(&mut harness, 0);
+        assert_eq!(std::fs::read(&path).unwrap(), edited);
+        assert!(!journal_path(&path).exists());
+        save_reviewed_row(&mut harness, "Delete reviewed row");
+        assert_eq!(
+            std::fs::read(&path).unwrap(),
+            deletes::only_long_row(&edited)
+        );
+        let page = harness.state().state.data.as_ref().unwrap();
+        assert_eq!(page.table, "Table1");
+        assert!(page.rows.is_empty());
+        assert!(page.columns.iter().any(|column| column.name == replacement));
+        assert!(!journal_path(&path).exists());
     }
 }

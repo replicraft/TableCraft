@@ -1,7 +1,7 @@
 //! Real clipboard events enter the same source-bound review and save workflow.
 use super::*;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use crate::workspace::test_support::finish_save;
+use crate::workspace::test_support::editing::{review_pasted_cell, save_reviewed_row};
 use crate::workspace::test_support::{finish_reads, focus_cell, opened};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
@@ -11,41 +11,8 @@ use tablecraft_testkit::fixtures::access::mutation_fixture;
 #[test]
 fn pasted_text_requires_review_and_explicit_apply_before_native_save() {
     let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
-    focus_cell(&mut harness, "Score", "2", "20");
-    harness.event(egui::Event::Paste("25".into()));
-    harness.run_steps(1);
-    finish_reads(&mut harness);
-
-    assert_eq!(
-        harness
-            .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
-            .value(),
-        Some("25".into())
-    );
-    assert!(harness.state().editing.review.is_none());
-    assert_eq!(std::fs::read(&path).unwrap(), original);
-
-    harness
-        .get_by_role_and_label(Role::Button, "Review change")
-        .click_accesskit();
-    harness.run_steps(1);
-    finish_reads(&mut harness);
-    assert!(harness.state().editing.review.is_some());
-    assert_eq!(std::fs::read(&path).unwrap(), original);
-
-    harness
-        .get_by_role_and_label(Role::Button, "Apply to original file")
-        .click_accesskit();
-    harness.run_steps(1);
-    assert!(matches!(
-        finish_save(&mut harness).outcome,
-        SaveOutcome::Saved { .. }
-    ));
-    harness
-        .get_by_role_and_label(Role::Button, "Close")
-        .click_accesskit();
-    harness.run_steps(1);
-    finish_reads(&mut harness);
+    review_pasted_cell(&mut harness, &path, &original, "Score", "2", "20", "25");
+    save_reviewed_row(&mut harness, "Apply to original file");
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.rows[1][1].text, "25");
     assert_eq!(harness.state().state.selected_cell_text(), Some("25"));
