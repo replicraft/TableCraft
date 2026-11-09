@@ -438,6 +438,7 @@ impl Desktop {
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::DatabaseOptionsReviewed { .. })
+                | Ok(Response::DatabaseOptionsInspected { .. })
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {
