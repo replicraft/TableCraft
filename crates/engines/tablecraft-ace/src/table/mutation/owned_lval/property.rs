@@ -42,15 +42,12 @@ pub(in crate::table::mutation) fn capture_maps(
         budget,
         cancelled,
     )?;
+    let pages = maps.pages(Family::LongValue);
     if maps.global.kind() != INLINE_MAP
         || maps.long_value.owned.kind() != INLINE_MAP
         || maps.long_value.hint.kind() != INLINE_MAP
-        || !matches!(
-            maps.long_value.pages.as_slice(),
-            [FIRST_PAGE] | [FIRST_PAGE, LAST_PAGE]
-        )
-        || image.as_bytes().len()
-            != (FIRST_PAGE as usize + maps.long_value.pages.len()) * PAGE_BYTES
+        || !matches!(pages, [FIRST_PAGE] | [FIRST_PAGE, LAST_PAGE])
+        || image.as_bytes().len() != (FIRST_PAGE as usize + pages.len()) * PAGE_BYTES
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -63,10 +60,10 @@ pub(in crate::table::mutation) fn capture_maps(
         reads: 0,
     };
     let candidates = allocation::pages(&mut reader, references.candidate())?;
-    if candidates.as_slice() != &maps.long_value.pages[maps.long_value.pages.len() - 1..] {
+    if candidates.as_slice() != &pages[pages.len() - 1..] {
         return Err(EditError::Preservation);
     }
-    if maps.long_value.pages.len() == 1 {
+    if pages.len() == 1 {
         for map in [
             &maps.ordinary.owned,
             &maps.ordinary.hint,
@@ -96,8 +93,7 @@ pub(in crate::table::mutation) fn append(
     check(budget, cancelled)?;
     let maps = capture_maps(image, schema, references, budget, cancelled)?;
     let page = *maps
-        .long_value
-        .pages
+        .pages(Family::LongValue)
         .last()
         .ok_or(EditError::Preservation)?;
     let start = page as usize * PAGE_BYTES;
@@ -161,7 +157,7 @@ pub(in crate::table::mutation) fn append(
         || plan.attempts[0].page != page
         || plan.attempts[0].bytes != body.len()
         || plan.attempts[0].fitted != fitted
-        || plan.maps.long_value.pages.as_slice()
+        || plan.maps.pages(Family::LongValue)
             != if target == FIRST_PAGE {
                 &[FIRST_PAGE][..]
             } else {
