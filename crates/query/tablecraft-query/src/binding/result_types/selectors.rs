@@ -240,8 +240,8 @@ fn literal_value(expression: &Expr) -> Result<Option<Value>, QueryError> {
         Expr::Literal(Expression::Boolean(value)) => Some(Value::Boolean(*value)),
         Expr::Literal(Expression::Integer(value)) => Some(Value::Int64(*value)),
         Expr::Literal(value @ Expression::Number(_)) => Some(literals::checked(value)?),
-        // Owned numeric scalar supplied to conditional truth/type analysis from borrowed plan
-        // literal; fixed-size checked numeric carrier.
+        // NO_CLONE: Owned numeric scalar supplied to conditional truth/type analysis from
+        // borrowed plan literal; fixed-size checked numeric carrier.
         Expr::NumericLiteral(value) => Some(value.clone()),
         Expr::DateLiteral(_, value) => Some(Value::DateTime(*value)),
         // Text control conversion requires execution policies. Fields,

@@ -146,16 +146,16 @@ impl States {
                 }
             }
             Token::Literal(range) => {
-                // Borrow literal units selected by a borrowed compiled token; cloning bounds
-                // avoids moving its range out of the reusable compiled pattern.
+                // NO_CLONE: Borrow literal units selected by a borrowed compiled token; cloning
+                // bounds avoids moving its range out of the reusable compiled pattern.
                 self.literal(units, &pattern.literals[range.clone()], last, col, work)?
             }
             Token::Class(range, negated) => {
                 if !reachable(&self.previous[..units.len()], work)? {
                     return Ok(false);
                 }
-                // Borrow class units selected by reusable compiled token; only index bounds are
-                // copied, not class storage.
+                // NO_CLONE: Borrow class units selected by reusable compiled token; only index
+                // bounds are copied, not class storage.
                 let list = &pattern.units[range.clone()];
                 for range in pattern::ranges(list) {
                     let (low, high) = range?;

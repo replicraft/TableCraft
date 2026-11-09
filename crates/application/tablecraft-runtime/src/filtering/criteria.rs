@@ -50,9 +50,9 @@ pub(super) fn copy_value(
     match value {
         Value::Text(text) => Ok(Value::Text(copy_text(text, work, cancelled)?)),
         Value::Binary(_) => Err(super::FilterError::UnsupportedField.into()),
-        // The Text/Binary branches perform separately charged fallible buffer copies or
-        // refusal. This remaining match arm copies scalar carriers from a borrowed enum with no
-        // underlying heap payload.
+        // NO_CLONE: The Text/Binary branches perform separately charged fallible buffer copies
+        // or refusal. This remaining match arm copies scalar carriers from a borrowed
+        // enum with no underlying heap payload.
         _ => Ok(value.clone()),
     }
 }

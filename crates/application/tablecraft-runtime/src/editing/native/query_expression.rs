@@ -33,9 +33,9 @@ pub(in crate::editing) fn review(
     }
     let mut work = budget();
     check(cancelled)?;
+    // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
+    // immutable bytes instead of copying the database image.
     let image = NativeImage::capture_shared(
-        // NativeImage owns the checked source while Document keeps using it; this shares
-        // immutable bytes instead of copying the database image.
         document.edits.image_source.clone(),
         SCOPE,
         &mut work,
@@ -78,8 +78,8 @@ pub(in crate::editing) fn review(
     work.charge_allocation(1, size_of::<QueryExpressionReopen>() as u64)?;
     work.charge_allocation(1, size_of::<State>() as u64)?;
     let reopen = Arc::new(QueryExpressionReopen {
-        // The capability or reopen witness outlives this borrowed Document call and owns its
-        // source path; the live Document keeps its own path.
+        // NO_CLONE: The capability or reopen witness outlives this borrowed Document call and
+        // owns its source path; the live Document keeps its own path.
         path: document.edits.path.clone(),
         expected: expected_bytes,
         target: SavedQueryTarget {

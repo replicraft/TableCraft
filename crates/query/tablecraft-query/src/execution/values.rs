@@ -36,8 +36,9 @@ impl Runtime<'_, '_> {
             }
             value => {
                 self.tick()?;
-                // Owned error/empty/null expression states are fixed-size; payload-bearing
-                // stored values and raw String bytes have separate charged fallible copy paths.
+                // NO_CLONE: Owned error/empty/null expression states are fixed-size;
+                // payload-bearing stored values and raw String bytes have separate charged
+                // fallible copy paths.
                 value.clone()
             }
         };
@@ -105,8 +106,8 @@ impl Runtime<'_, '_> {
             Value::Double(v) if !v.to_float().is_finite() => {
                 return Err(tablecraft_expressions::EvalError::NonFinite.into());
             }
-            // Copy fixed-width scalar carrier into an owned result after explicit nonfinite
-            // checks; variable Text/Binary already use charged try_reserve paths.
+            // NO_CLONE: Copy fixed-width scalar carrier into an owned result after explicit
+            // nonfinite checks; variable Text/Binary already use charged try_reserve paths.
             _ => value.clone(),
         })
     }

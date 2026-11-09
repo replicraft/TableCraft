@@ -79,8 +79,8 @@ impl AsyncReader {
         if !self.healthy.load(Ordering::Acquire) {
             return Err(AsyncError::Worker);
         }
-        // Owned admission permit must survive caller cancellation and remain with the actual
-        // connection worker job. The AsyncReader retains its gate for future requests.
+        // NO_CLONE: Owned admission permit must survive caller cancellation and remain with the
+        // actual connection worker job. The AsyncReader retains its gate for future requests.
         let permit = self
             .gate
             .clone()
@@ -89,11 +89,11 @@ impl AsyncReader {
         if !self.healthy.load(Ordering::Acquire) {
             return Err(AsyncError::Worker);
         }
-        // CancelOnDrop and request options must share the same cancellation flag across
-        // future/worker ownership; cloning Arc preserves that exact shared flag.
+        // NO_CLONE: CancelOnDrop and request options must share the same cancellation flag
+        // across future/worker ownership; cloning Arc preserves that exact shared flag.
         let mut cancellation = CancelOnDrop::new(options.cancelled.clone());
-        // Worker closure retains shared health latch after caller stops awaiting; AsyncReader
-        // must keep the original latch for subsequent admission checks.
+        // NO_CLONE: Worker closure retains shared health latch after caller stops awaiting;
+        // AsyncReader must keep the original latch for subsequent admission checks.
         let healthy = self.healthy.clone();
 
         let result =
@@ -101,9 +101,9 @@ impl AsyncReader {
                 .call_raw(move |connection| {
                     let _permit = permit;
                     let _span = tracing::debug_span!("sqlite.worker.query").entered();
-                    // Work storage controls and query cancellation callback each retain the
-                    // same request cancellation flag; moving it into Work would leave callback
-                    // without its owner.
+                    // NO_CLONE: Work storage controls and query cancellation callback each
+                    // retain the same request cancellation flag; moving it into Work would
+                    // leave callback without its owner.
                     let work = Work::new(options.storage_budget, options.cancelled.clone());
                     let result = (|| {
                         work.check()?;
@@ -118,8 +118,8 @@ impl AsyncReader {
                             .map(RndState::new)
                             .transpose()
                             .map_err(QueryError::from)?;
-                        // SqliteSource owns shared cumulative Work while outer operation
-                        // retains Work through finish_read, cleanup and rollback. No
+                        // NO_CLONE: SqliteSource owns shared cumulative Work while outer
+                        // operation retains Work through finish_read, cleanup and rollback. No
                         // independent copied budget or refreshed allowance.
                         let source = SqliteSource::initialize(&*connection, work.clone())?;
                         let plan = prepare(&query, &source)?;

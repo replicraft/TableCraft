@@ -57,8 +57,8 @@ impl Runtime<'_, '_> {
             }
             Expr::NumericLiteral(value) => {
                 self.tick()?;
-                // Owned numeric result from reusable borrowed plan; NumericLiteral constructors
-                // hold fixed-size checked numeric carriers, not Text/Binary.
+                // NO_CLONE: Owned numeric result from reusable borrowed plan; NumericLiteral
+                // constructors hold fixed-size checked numeric carriers, not Text/Binary.
                 Ok(value.clone())
             }
             Expr::Literal(literal) => Ok(self.evaluator().evaluate(literal)?),

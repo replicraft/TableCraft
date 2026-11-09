@@ -104,9 +104,9 @@ impl Binder<'_> {
                                 leaf: *leaf,
                                 member: index,
                             },
-                            // LocatedColumn owns schema for downstream joined parent predicate
-                            // construction while the borrowed relation retains its schema;
-                            // selected entry/name allocation is charged first.
+                            // NO_CLONE: LocatedColumn owns schema for downstream joined parent
+                            // predicate construction while the borrowed relation retains its
+                            // schema; selected entry/name allocation is charged first.
                             column: column.clone(),
                         });
                     }

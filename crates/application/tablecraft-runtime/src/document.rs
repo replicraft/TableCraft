@@ -321,17 +321,17 @@ impl Document {
         let edits = {
             work.charge_allocation(source_path.as_os_str().len() as u64, 1)?;
             work.charge_allocation(1, size_of::<AtomicBool>() as u64)?;
-            // The capability or reopen witness outlives this borrowed Document call and owns
-            // its source path; the live Document keeps its own path.
+            // NO_CLONE: The capability or reopen witness outlives this borrowed Document call
+            // and owns its source path; the live Document keeps its own path.
             DocumentEdits::new(source_path.clone(), bytes.clone(), image_source)
         };
+        // NO_CLONE: The reader and retained native witness need independent lifetimes; Bytes
+        // shares the immutable original image rather than copying it.
         #[cfg(all(
             feature = "offline-edit",
             feature = "ace16-create",
             any(target_os = "macos", target_os = "linux", windows)
         ))]
-        // The reader and retained native witness need independent lifetimes; Bytes shares the
-        // immutable original image rather than copying it.
         let captured = bytes.clone();
         let (source, format) = Source::open(bytes, password.as_str(), &mut work, cancelled)?;
         #[cfg(all(

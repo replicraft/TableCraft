@@ -102,10 +102,10 @@ impl ParsedQuery {
     /// exponent and radix spelling return None even when their lowered syntax
     /// has the same integer value. It supplies no binding or native edit authority.
     pub fn canonical_integer_projection_spelling(&self) -> Option<&str> {
+        // NO_CLONE: Copy two bounds for indexing while preserving the lexical spelling range
+        // inside borrowed ParsedQuery; no string or payload allocation.
         self.integer_projection_spelling
             .as_ref()
-            // Copy two bounds for indexing while preserving the lexical spelling range inside
-            // borrowed ParsedQuery; no string or payload allocation.
             .map(|range| &self.source[range.clone()])
     }
 

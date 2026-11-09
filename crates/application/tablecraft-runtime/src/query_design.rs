@@ -65,9 +65,9 @@ impl Document {
             cancelled,
         )?;
         Ok(Response::QueryDesignTable {
-            // Runtime response owns the exact immutable query-design target after the borrowed
-            // command input ends; host uses this response identity to reject stale
-            // publications.
+            // NO_CLONE: Runtime response owns the exact immutable query-design target after the
+            // borrowed command input ends; host uses this response identity to reject
+            // stale publications.
             target: target.clone(),
             metadata,
         })
@@ -141,8 +141,9 @@ fn design_response(
     metadata: Vec<DesignTableMetadata>,
 ) -> Response {
     Response::QueryDesignBuilt {
-        // Runtime response owns the exact immutable query-design target after the borrowed
-        // command input ends; host uses this response identity to reject stale publications.
+        // NO_CLONE: Runtime response owns the exact immutable query-design target after the
+        // borrowed command input ends; host uses this response identity to reject
+        // stale publications.
         target: target.clone(),
         built,
         metadata,

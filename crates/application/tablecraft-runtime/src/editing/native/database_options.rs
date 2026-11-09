@@ -32,9 +32,9 @@ pub(in crate::editing) fn review(
     }
     let mut work = budget();
     check(cancelled)?;
+    // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
+    // immutable bytes instead of copying the database image.
     let image = NativeImage::capture_shared(
-        // NativeImage owns the checked source while Document keeps using it; this shares
-        // immutable bytes instead of copying the database image.
         document.edits.image_source.clone(),
         SCOPE,
         &mut work,
@@ -62,8 +62,8 @@ pub(in crate::editing) fn review(
     work.charge_allocation(1, size_of::<DatabaseOptionsReopen>() as u64)?;
     work.charge_allocation(1, size_of::<State>() as u64)?;
     let reopen = Arc::new(DatabaseOptionsReopen {
-        // The capability or reopen witness outlives this borrowed Document call and owns its
-        // source path; the live Document keeps its own path.
+        // NO_CLONE: The capability or reopen witness outlives this borrowed Document call and
+        // owns its source path; the live Document keeps its own path.
         path: document.edits.path.clone(),
         expected,
         document_revision: document.revision,
@@ -89,9 +89,9 @@ pub(in crate::editing) fn source_available(
     if !document.source.editable_native() {
         return Ok(false);
     }
+    // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
+    // immutable bytes instead of copying the database image.
     let image =
-        // NativeImage owns the checked source while Document keeps using it; this shares
-        // immutable bytes instead of copying the database image.
         NativeImage::capture_shared(document.edits.image_source.clone(), SCOPE, work, cancelled)?;
     match image.check_disable_name_auto_correct_for_source(work, cancelled) {
         Ok(_) => Ok(true),

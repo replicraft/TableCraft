@@ -135,8 +135,8 @@ impl Binder<'_> {
                             } else {
                                 projection.push(self.field(0, index, &source.slots)?);
                             }
-                            // Wildcard result names must be owned in ReadPlan while source
-                            // slots remain independently available for binding and sort
+                            // NO_CLONE: Wildcard result names must be owned in ReadPlan while
+                            // source slots remain independently available for binding and sort
                             // resolution.
                             names.push(slot.name.clone());
                         }
@@ -274,10 +274,10 @@ impl Binder<'_> {
                 },
                 retained_member: false,
                 member: None,
-                // Temporary output-resolution slots and final ReadPlan names coexist during
-                // ORDER BY binding; each owns its name under current plan representation.
-                // Removing this requires a separate borrowed-slot representation, not a last-
-                // use move.
+                // NO_CLONE: Temporary output-resolution slots and final ReadPlan names coexist
+                // during ORDER BY binding; each owns its name under current plan
+                // representation. Removing this requires a separate borrowed-slot
+                // representation, not a last-use move.
                 name: n.clone(),
                 qualifier: None,
             })

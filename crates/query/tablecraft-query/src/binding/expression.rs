@@ -110,17 +110,17 @@ impl Binder<'_> {
                         Some(year) => parse_query_literal_with_reference_year(text, year),
                         None => parse_query_literal(text),
                     }?;
-                    // Prepared DateLiteral must own its original lexical spelling independently
-                    // of caller AST and retain the parsed date; the binder has charged its text
-                    // bytes first.
+                    // NO_CLONE: Prepared DateLiteral must own its original lexical spelling
+                    // independently of caller AST and retain the parsed date; the binder has
+                    // charged its text bytes first.
                     Expr::DateLiteral(text.clone(), value)
                 } else {
                     if matches!(expr, E::Number(_) | E::GuidLiteral(_)) {
                         super::literals::checked(expr)?;
                     }
-                    // Prepared plan outlives borrowed caller AST. String-bearing literal bytes
-                    // are bounded/charged first; this arm cannot clone arbitrary recursive
-                    // query AST.
+                    // NO_CLONE: Prepared plan outlives borrowed caller AST. String-bearing
+                    // literal bytes are bounded/charged first; this arm cannot clone arbitrary
+                    // recursive query AST.
                     Expr::Literal(expr.clone())
                 }
             }

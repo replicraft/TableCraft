@@ -27,8 +27,8 @@ impl Binder<'_> {
     ) -> Result<Value, QueryError> {
         self.tick(depth)?;
         match expr {
-            // Build owned policy-independent numeric heading from reusable checked plan
-            // literal; fixed-size carrier only.
+            // NO_CLONE: Build owned policy-independent numeric heading from reusable checked
+            // plan literal; fixed-size carrier only.
             Expr::NumericLiteral(value) => Ok(value.clone()),
             Expr::DateLiteral(_, value) => Ok(Value::DateTime(*value)),
             Expr::Literal(Expression::Text(text)) => Ok(Value::Text(self.copy_name(text)?)),

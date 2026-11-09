@@ -90,9 +90,9 @@ pub(super) fn copy_value(
             owned.extend_from_slice(bytes);
             Ok(Value::Binary(owned))
         }
-        // The Text/Binary branches perform separately charged fallible buffer copies or
-        // refusal. This remaining match arm copies scalar carriers from a borrowed enum with no
-        // underlying heap payload.
+        // NO_CLONE: The Text/Binary branches perform separately charged fallible buffer copies
+        // or refusal. This remaining match arm copies scalar carriers from a borrowed
+        // enum with no underlying heap payload.
         _ => Ok(value.clone()),
     }
 }

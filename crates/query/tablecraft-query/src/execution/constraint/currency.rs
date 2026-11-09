@@ -41,8 +41,8 @@ impl Runtime<'_, '_> {
     fn currency_numeric_literal(&mut self, expr: &Expr) -> Result<Option<Value>, QueryError> {
         self.tick()?;
         let result = match expr {
-            // Copy fixed-size admitted numeric literal into constraint-analysis result; the
-            // reusable plan remains borrowed and there is no heap payload.
+            // NO_CLONE: Copy fixed-size admitted numeric literal into constraint-analysis
+            // result; the reusable plan remains borrowed and there is no heap payload.
             Expr::NumericLiteral(value @ (Value::Int16(_) | Value::Int32(_))) => Ok(value.clone()),
             Expr::Literal(literal @ (Expression::Integer(_) | Expression::Number(_))) => {
                 if let Expression::Number(text) = literal {

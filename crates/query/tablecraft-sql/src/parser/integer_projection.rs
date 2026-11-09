@@ -25,8 +25,8 @@ pub(super) fn spelling(source: &str, tokens: &[TokenWithSpan]) -> Option<Range<u
     }
     let range =
         lex::byte_offset(source, number.span.start)..lex::byte_offset(source, number.span.end);
-    // Read exact lexical spelling while retaining the same two-bound range for the returned
-    // observation; zero heap allocation.
+    // NO_CLONE: Read exact lexical spelling while retaining the same two-bound range for the
+    // returned observation; zero heap allocation.
     let literal = source.get(range.clone())?;
     if literal.is_empty()
         || literal.len() > MAX_INT32_DIGITS

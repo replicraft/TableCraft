@@ -99,14 +99,14 @@ impl OfflineTarget {
     }
 
     pub(super) fn identity(&self) -> FileIdentity {
-        // Return an owned fixed-size identity while retained file target keeps its checked
-        // identity for later held-entry verification. No heap allocation.
+        // NO_CLONE: Return an owned fixed-size identity while retained file target keeps its
+        // checked identity for later held-entry verification. No heap allocation.
         self.identity.clone()
     }
 
     pub(super) fn parent_identity(&self) -> FileIdentity {
-        // Return an owned fixed-size parent identity while target retains the original for
-        // namespace/recovery ownership checks. No heap allocation.
+        // NO_CLONE: Return an owned fixed-size parent identity while target retains the
+        // original for namespace/recovery ownership checks. No heap allocation.
         self.parent_identity.clone()
     }
 

@@ -17,9 +17,9 @@ pub(in crate::editing) fn inspect(
     check(cancelled)?;
     let available = if document.source.editable_native() {
         let mut work = budget();
+        // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
+        // shares immutable bytes instead of copying the database image.
         let image = NativeImage::capture_shared(
-            // NativeImage owns the checked source while Document keeps using it; this shares
-            // immutable bytes instead of copying the database image.
             document.edits.image_source.clone(),
             SCOPE,
             &mut work,

@@ -371,9 +371,9 @@ impl SaveWorker {
                         }
                         continue;
                     };
-                    // The save actor guard retains the source validity latch after releasing
-                    // the mailbox lock; uncertainty can invalidate the same source even when
-                    // the mailbox owner still retains it.
+                    // NO_CLONE: The save actor guard retains the source validity latch after
+                    // releasing the mailbox lock; uncertainty can invalidate the same
+                    // source even when the mailbox owner still retains it.
                     source.validity = mailbox.validity.clone();
                     drop(mailbox);
                     let cancelled = || owner.cancelled.load(Ordering::Acquire);

@@ -11,11 +11,11 @@ pub(crate) fn rounded(text: &str, scale: i64, round: bool) -> Result<i128, EvalE
     let negative = mantissa.starts_with('-');
     let mantissa = mantissa.trim_start_matches('-');
     let digits = mantissa.bytes().filter(u8::is_ascii_digit);
-    // Compute original digit count before the final rounding pass consumes the same bounded
-    // spelling; iterator state only.
+    // NO_CLONE: Compute original digit count before the final rounding pass consumes the same
+    // bounded spelling; iterator state only.
     let digit_count = digits.clone().count();
-    // Detect all-zero input for exponent saturation behavior while preserving digits for final
-    // coefficient construction; iterator state only.
+    // NO_CLONE: Detect all-zero input for exponent saturation behavior while preserving digits
+    // for final coefficient construction; iterator state only.
     let nonzero = digits.clone().any(|digit| digit != b'0');
     if !nonzero {
         return Ok(0);

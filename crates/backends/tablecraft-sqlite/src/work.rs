@@ -57,9 +57,9 @@ impl Work {
     }
 
     pub fn install(&self, connection: &rusqlite::Connection) -> Result<(), SqliteError> {
-        // Progress handler closure must retain the same cumulative work/cancellation state
-        // after install returns; a borrowed local handle cannot live for connection callback
-        // lifetime. Shared state, not copied budget.
+        // NO_CLONE: Progress handler closure must retain the same cumulative work/cancellation
+        // state after install returns; a borrowed local handle cannot live for connection
+        // callback lifetime. Shared state, not copied budget.
         let work = self.clone();
         connection.progress_handler(
             VM_CHECK_INTERVAL,

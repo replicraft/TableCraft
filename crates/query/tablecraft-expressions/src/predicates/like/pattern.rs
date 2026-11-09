@@ -62,8 +62,8 @@ fn ranges(list: &str) -> impl Iterator<Item = Result<(char, char), EvalError>> +
             });
         }
         if chars.peek().is_some_and(|(_, c)| *c == '-') {
-            // Tentatively consume a dash and following bound, committing only a complete
-            // character-class range; preserve literal trailing dash behavior.
+            // NO_CLONE: Tentatively consume a dash and following bound, committing only a
+            // complete character-class range; preserve literal trailing dash behavior.
             let mut rest = chars.clone();
             rest.next();
             if let Some((_, last)) = rest.next() {
@@ -93,8 +93,8 @@ pub(super) fn compile<'a>(
             c if c == one => Token::One,
             '#' if mode == LikeMode::Ansi89 => Token::Digit,
             '[' => {
-                // Observe the next character byte offset without consuming it before the
-                // charged closing-bracket scan. Constant-size iterator state, not a string
+                // NO_CLONE: Observe the next character byte offset without consuming it before
+                // the charged closing-bracket scan. Constant-size iterator state, not a string
                 // copy.
                 let start = chars.clone().next().map_or(pattern.len(), |(i, _)| i);
                 let mut end = None;

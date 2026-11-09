@@ -192,11 +192,11 @@ impl SearchOptions {
         self.validate_start(start)?;
         let haystack = units::Units::new(haystack)?;
         let needle = units::Units::new(needle)?;
-        // Measure UTF-16 haystack length under step checks without consuming the independent
-        // iterator subsequently searched; no source payload copy.
+        // NO_CLONE: Measure UTF-16 haystack length under step checks without consuming the
+        // independent iterator subsequently searched; no source payload copy.
         let length = units::length(haystack.clone(), step)?;
-        // Measure UTF-16 needle length before actual matching while retaining its borrowed
-        // iterator; no UTF-16 collection allocated.
+        // NO_CLONE: Measure UTF-16 needle length before actual matching while retaining its
+        // borrowed iterator; no UTF-16 collection allocated.
         let needle_length = units::length(needle.clone(), step)?;
         let start = if self.reverse && start == LAST_POSITION {
             length
@@ -366,16 +366,16 @@ fn binary_units(
     let mut found = None;
     for position in 0..=last {
         step()?;
-        // Probe one candidate alignment without consuming the main candidate cursor, which
-        // advances by one unit for the next alignment. Iterator state only.
+        // NO_CLONE: Probe one candidate alignment without consuming the main candidate cursor,
+        // which advances by one unit for the next alignment. Iterator state only.
         let mut candidate = candidates.clone();
         candidates.next();
         if position < first {
             continue;
         }
         let mut matched = true;
-        // Restart the needle at each candidate alignment; consuming the original would prevent
-        // subsequent comparisons. Iterator state only.
+        // NO_CLONE: Restart the needle at each candidate alignment; consuming the original
+        // would prevent subsequent comparisons. Iterator state only.
         for unit in needle.clone() {
             step()?;
             if candidate.next() != Some(unit) {

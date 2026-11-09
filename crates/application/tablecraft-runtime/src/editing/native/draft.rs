@@ -37,9 +37,9 @@ impl Document {
             return Err(EditError::ReadOnlySource.into());
         }
         let mut work = budget();
+        // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
+        // shares immutable bytes instead of copying the database image.
         let image = NativeImage::capture_shared(
-            // NativeImage owns the checked source while Document keeps using it; this shares
-            // immutable bytes instead of copying the database image.
             self.edits.image_source.clone(),
             SCOPE,
             &mut work,
@@ -102,9 +102,9 @@ impl Document {
             return Err(EditError::StaleDraft.into());
         }
         let mut work = budget();
+        // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
+        // shares immutable bytes instead of copying the database image.
         let image = NativeImage::capture_shared(
-            // NativeImage owns the checked source while Document keeps using it; this shares
-            // immutable bytes instead of copying the database image.
             self.edits.image_source.clone(),
             SCOPE,
             &mut work,
@@ -158,11 +158,12 @@ impl Document {
         work.charge_allocation(1, size_of::<ReviewedState>() as u64)?;
         let capability = ReviewedEdit {
             state: Box::new(ReviewedState {
-                // The capability or reopen witness outlives this borrowed Document call and
-                // owns its source path; the live Document keeps its own path.
+                // NO_CLONE: The capability or reopen witness outlives this borrowed Document
+                // call and owns its source path; the live Document keeps its own
+                // path.
                 path: self.edits.path.clone(),
-                // The reader and retained native witness need independent lifetimes; Bytes
-                // shares the immutable original image rather than copying it.
+                // NO_CLONE: The reader and retained native witness need independent lifetimes;
+                // Bytes shares the immutable original image rather than copying it.
                 original: self.edits.original.clone(),
                 target: capability_target,
                 replacement,

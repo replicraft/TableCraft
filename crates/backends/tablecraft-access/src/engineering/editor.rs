@@ -469,8 +469,9 @@ fn copy(
             Value::Binary(owned)
         }
         // All other stored Value variants are fixed-size, heap-free carriers.
-        // Construct an owned engineering snapshot scalar; only fixed-size stored carriers reach
-        // fallback, with variable payload copies separately charged and fallibly reserved.
+        // NO_CLONE: Construct an owned engineering snapshot scalar; only fixed-size stored
+        // carriers reach fallback, with variable payload copies separately charged and fallibly
+        // reserved.
         value => value.clone(),
     })
 }

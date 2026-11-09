@@ -90,9 +90,9 @@ impl Binder<'_> {
                 members[*index - multivalues.len()].column()
             };
             self.charge(column.name().len())?;
-            // ParentFilter owns selected collection schemas after binding scratch/source
-            // references end; source Relation must retain the original column. Allocation and
-            // field name bytes are charged.
+            // NO_CLONE: ParentFilter owns selected collection schemas after binding
+            // scratch/source references end; source Relation must retain the original column.
+            // Allocation and field name bytes are charged.
             selected_columns.push(column.clone());
         }
         self.charge(collections.len() * size_of::<(usize, usize)>())?;
