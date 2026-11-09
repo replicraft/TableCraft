@@ -227,7 +227,7 @@ impl State {
         let added = !candidate
             .sources
             .iter()
-            .any(|source| source.table.eq_ignore_ascii_case(&table));
+            .any(|source| source.table.eq_ignore_ascii_case(table));
         if added {
             let Some(id) = candidate
                 .sources
@@ -250,7 +250,7 @@ impl State {
         let mut descriptors: Vec<_> = session
             .metadata
             .iter()
-            .filter(|previous| !previous.table.eq_ignore_ascii_case(&table))
+            .filter(|previous| !previous.table.eq_ignore_ascii_case(table))
             .cloned()
             .collect();
         descriptors.push(metadata);

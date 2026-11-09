@@ -104,7 +104,11 @@ pub(super) fn description(harness: &mut Harness<'_, Preview>) {
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     let mut arguments = FluentArgs::new();
     arguments.set("field", INITIAL_FIELD_NAME);
-    let record_label = localizer.format("table-draft-record-field", &arguments);
+    let record_label = harness
+        .state()
+        .state()
+        .localizer
+        .format("table-draft-record-field", &arguments);
     assert_eq!(
         harness
             .get_by_role_and_label(Role::TextInput, &record_label)
