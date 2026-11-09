@@ -1,12 +1,12 @@
 //! Explicit OFF metadata on the original closed creator ledger, never a default.
 mod properties;
+mod source;
 #[cfg(test)]
 mod tests;
 mod verify;
 
 use super::{
     AddTableError, CreateDatabaseError,
-    add_table::source,
     catalog_page::{Page, PageError},
     definition::put32,
     record::{self, DataPage},
@@ -101,6 +101,21 @@ impl NativeDatabaseOptionsPlan {
 }
 
 impl NativeImage {
+    /// Qualify the existing source for an explicit OFF review without an AFTER.
+    ///
+    /// This repeats the exact native source/ownership checks used by planning.
+    /// It opens no write lease and grants no persistence authority. Final target
+    /// placement and construction are still checked by the consuming review.
+    pub fn check_disable_name_auto_correct_source(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), DatabaseOptionsError> {
+        let _span = tracing::debug_span!("native.database_options.inspect_source").entered();
+        source::capture(self, budget, cancelled)?;
+        Ok(())
+    }
+
     /// Explicitly author disabled Track/Perform Name AutoCorrect database options.
     ///
     /// Missing metadata keeps its original meaning until this operation is
@@ -115,39 +130,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeDatabaseOptionsPlan, DatabaseOptionsError> {
         let _span = tracing::debug_span!("native.database_options.disable_name_tracking").entered();
-        check(budget, cancelled)?;
-        self.require_standard_capture()?;
-        if self.catalog().catalog().objects().len() != ORIGINAL_OBJECTS {
-            return Err(DatabaseOptionsError::Source);
-        }
-        source::require_name(&self, "MSysDb", budget, cancelled).map_err(source_error)?;
-        for origin in self.catalog().origins() {
-            check(budget, cancelled)?;
-            if origin.native_id() == DATABASE_ID as i32 {
-                return Err(DatabaseOptionsError::Source);
-            }
-        }
-        let (geometry, legacy) =
-            source::derive_geometry(&self, false, budget, cancelled).map_err(source_error)?;
-        let original = source::qualify_geometry(&self, geometry, legacy, budget, cancelled)
-            .map_err(source_error)?;
-        let new_page = self.as_bytes().len() / PAGE_BYTES;
-        if new_page >= MAP_PAGE_CAPACITY {
-            return Err(DatabaseOptionsError::Capacity);
-        }
-        for slot in [PROPERTY_OWNED, PROPERTY_CANDIDATE] {
-            let range = original
-                .maps
-                .records
-                .get(slot)
-                .ok_or(DatabaseOptionsError::Source)?;
-            if self.as_bytes()
-                [MAP_PAGE * PAGE_BYTES + range.start..MAP_PAGE * PAGE_BYTES + range.end]
-                != [0; MAP_BYTES]
-            {
-                return Err(DatabaseOptionsError::Source);
-            }
-        }
+        let (original, new_page) = source::capture(&self, budget, cancelled)?;
 
         let length = self
             .as_bytes()

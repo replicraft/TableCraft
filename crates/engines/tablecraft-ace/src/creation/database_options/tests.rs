@@ -131,3 +131,35 @@ fn cancellation_and_exhausted_pools_publish_no_database_option_candidate() {
         );
     }
 }
+
+#[test]
+fn inert_source_inspection_reuses_the_exact_existing_option_language() {
+    for before in originals() {
+        let image = capture(&before);
+        image
+            .check_disable_name_auto_correct_source(&mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(image.as_bytes(), before);
+
+        let after = canonical_database_options::explicit_off(&before);
+        assert!(matches!(
+            capture(&after).check_disable_name_auto_correct_source(&mut budget(), &|| false),
+            Err(DatabaseOptionsError::Source)
+        ));
+    }
+}
+
+#[test]
+fn inert_source_inspection_keeps_cancellation_and_resource_refusals_typed() {
+    let before = originals().remove(0);
+    let image = capture(&before);
+    assert!(matches!(
+        image.check_disable_name_auto_correct_source(&mut budget(), &|| true),
+        Err(DatabaseOptionsError::Inspect(InspectError::Cancelled))
+    ));
+    assert!(matches!(
+        image.check_disable_name_auto_correct_source(&mut ResourceBudget::new(0, 0, 0), &|| false,),
+        Err(DatabaseOptionsError::Inspect(InspectError::Limit(_)))
+    ));
+    assert_eq!(image.as_bytes(), before);
+}
