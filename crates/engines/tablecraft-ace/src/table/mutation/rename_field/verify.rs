@@ -40,6 +40,26 @@ pub(super) fn candidate(
     if before.as_bytes().get(entry.clone()) != after.get(entry) {
         return Err(Error::Preservation);
     }
+    metadata(
+        source,
+        after,
+        new_name,
+        source.observed.properties.raw_bytes().len(),
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn metadata(
+    source: &Qualified,
+    after: &[u8],
+    new_name: &str,
+    property_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), Error> {
+    let before = source.image();
+    let observed = &source.observed;
     let scope = before.catalog().catalog().scope();
     let catalog = inspect_catalog(&mut Cursor::new(after), scope, budget, cancelled)?;
     if catalog.header() != before.catalog().header()
@@ -102,7 +122,7 @@ pub(super) fn candidate(
     framing::validate(&properties, budget, cancelled)?;
     if properties.object_id() != observed.properties.object_id()
         || properties.name() != observed.properties.name()
-        || properties.raw_bytes().len() != observed.properties.raw_bytes().len()
+        || properties.raw_bytes().len() != property_bytes
         || properties.groups().len() != observed.properties.groups().len()
     {
         return Err(Error::Preservation);

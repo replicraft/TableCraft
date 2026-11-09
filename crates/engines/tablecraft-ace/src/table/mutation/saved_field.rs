@@ -63,6 +63,9 @@ pub(super) struct Observed {
     pub identity: Identity,
     pub definition_name: Range<usize>,
     pub property_name: Range<usize>,
+    pub property_body: Range<usize>,
+    pub property_descriptor: Range<usize>,
+    pub property_reference: u32,
     pub definition_entry: Range<usize>,
     pub group: usize,
     index: usize,
@@ -201,6 +204,9 @@ impl Observed {
         }
         reader.work(2 * properties.raw_bytes().len())?;
         let end = chunk.offset.checked_add(chunk.bytes).ok_or(Error::Source)?;
+        let property_body = chunk.offset..end;
+        let property_descriptor = descriptor.absolute_range()?.ok_or(Error::Source)?;
+        let property_reference = chunk.reference;
         if image.as_bytes().get(chunk.offset..end) != Some(properties.raw_bytes()) {
             return Err(Error::Source);
         }
@@ -254,6 +260,9 @@ impl Observed {
             identity,
             definition_name,
             property_name,
+            property_body,
+            property_descriptor,
+            property_reference,
             definition_entry,
             group,
             index,
