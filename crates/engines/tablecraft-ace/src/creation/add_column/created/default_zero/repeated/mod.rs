@@ -1,6 +1,6 @@
 //! Separate source-qualified repeated Number addition; frozen first-ADD stays strict.
 mod build;
-mod source;
+pub(in crate::creation::add_column::created) mod source;
 #[cfg(test)]
 mod tests;
 

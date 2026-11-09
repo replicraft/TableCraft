@@ -6,11 +6,7 @@ use crate::{
     document::Document,
     editing::FieldAdditionAvailability,
 };
-use tablecraft_ace::{
-    CreatedAddColumnError, CreatedDefaultZeroAddColumnError, CreatedFieldAdditionSourcePurpose,
-    DefaultZeroAddColumnIntentError, FieldAdditionError, FieldAdditionIntentError,
-    FieldAdditionTarget, NativeImage,
-};
+use tablecraft_ace::{FieldAdditionError, FieldAdditionIntentError, NativeImage};
 
 pub(in crate::editing) fn inspect(
     document: &mut Document,
@@ -19,7 +15,7 @@ pub(in crate::editing) fn inspect(
 ) -> Result<Response, Error> {
     let _span = tracing::debug_span!("application.inspect_field_addition_source").entered();
     check(cancelled)?;
-    let (number_available, short_text_available) = if document.source.editable_native() {
+    let available = if document.source.editable_native() {
         let mut work = budget();
         let image = NativeImage::capture_shared(
             document.edits.image_source.clone(),
@@ -27,55 +23,23 @@ pub(in crate::editing) fn inspect(
             &mut work,
             cancelled,
         )?;
-        let purpose = image
-            .created_field_addition_source_purpose(
-                table,
-                FieldAdditionTarget::NumberLongZero,
-                &mut work,
-                cancelled,
-            )
-            .map_err(|error| Error::FieldAddition(error.into()));
-        match purpose {
-            Ok(CreatedFieldAdditionSourcePurpose::TypedField) => {
-                let available = source_result(
-                    image
-                        .check_created_field_addition_source(table, &mut work, cancelled)
-                        .map_err(|error| Error::FieldAddition(error.into())),
-                )?;
-                (available, available)
-            }
-            Ok(purpose) => {
-                // TypedField was handled above. This is one selected legacy
-                // constructor, never a retry after its qualification result.
-                let number = if matches!(purpose, CreatedFieldAdditionSourcePurpose::FirstNumber) {
-                    image.check_created_default_zero_add_column_source(table, &mut work, cancelled)
-                } else {
-                    image.check_repeated_default_zero_add_column_source(table, &mut work, cancelled)
-                };
-                let number = source_result(
-                    number.map_err(|error| Error::DefaultZeroAddColumn(error.into())),
-                )?;
-                let text = source_result(
-                    image
-                        .check_created_field_addition_source(table, &mut work, cancelled)
-                        .map_err(|error| Error::FieldAddition(error.into())),
-                )?;
-                (number, text)
-            }
-            Err(error) => {
-                source_result(Err(error))?;
-                (false, false)
-            }
-        }
+        // ACE selects the immutable source purpose before proof and shares
+        // that complete source owner with the typed candidate. This qualifies
+        // both closed field kinds without a second history reconstruction.
+        source_result(
+            image
+                .check_created_field_addition_source(table, &mut work, cancelled)
+                .map_err(|error| Error::FieldAddition(error.into())),
+        )?
     } else {
-        (false, false)
+        false
     };
     let mut output = Presentation::new(cancelled);
     let availability = FieldAdditionAvailability {
         document_revision: document.revision,
         table: output.text(table)?,
-        number_available,
-        short_text_available,
+        number_available: available,
+        short_text_available: available,
     };
     check(cancelled)?;
     Ok(Response::FieldAdditionAvailability { availability })
@@ -84,13 +48,9 @@ pub(in crate::editing) fn inspect(
 fn source_result(result: Result<(), Error>) -> Result<bool, Error> {
     match result {
         Ok(()) => Ok(true),
-        Err(Error::FieldAddition(FieldAdditionIntentError::Field(FieldAdditionError::Source)))
-        | Err(Error::DefaultZeroAddColumn(DefaultZeroAddColumnIntentError::Column(
-            CreatedDefaultZeroAddColumnError::Source,
-        )))
-        | Err(Error::DefaultZeroAddColumn(DefaultZeroAddColumnIntentError::Column(
-            CreatedDefaultZeroAddColumnError::Created(CreatedAddColumnError::Source),
-        ))) => Ok(false),
+        Err(Error::FieldAddition(FieldAdditionIntentError::Field(FieldAdditionError::Source))) => {
+            Ok(false)
+        }
         Err(error) => Err(error),
     }
 }

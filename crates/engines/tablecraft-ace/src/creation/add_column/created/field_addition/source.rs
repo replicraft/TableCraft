@@ -1,8 +1,10 @@
 //! Exact mixed declaration/property history, reconstructed independently of raw groups.
-use super::{FieldAdditionError as Error, FieldAdditionTarget, build};
+use super::{
+    CreatedFieldAdditionSourcePurpose, FieldAdditionError as Error, FieldAdditionTarget, build,
+};
 use crate::{
-    FirstTableDefinition, NativeImage, TableCheck, creation::properties::Order, header::check,
-    inspect_table_properties, table::mutation::catalog_property,
+    CreateColumn, FirstTableDefinition, NativeImage, TableCheck, creation::properties::Order,
+    header::check, inspect_table_properties, table::mutation::catalog_property,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -15,6 +17,72 @@ pub(super) struct Source {
 }
 
 pub(super) fn capture(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, Error> {
+    match image.created_field_addition_source_purpose(
+        table,
+        FieldAdditionTarget::NumberLongZero,
+        budget,
+        cancelled,
+    )? {
+        CreatedFieldAdditionSourcePurpose::FirstNumber => {
+            let (checked, definition) =
+                super::super::source::capture(image, table, budget, cancelled)?;
+            let columns = definition.borrowed_columns(budget, cancelled)?;
+            // Reuse the actual first-Number source policy after its complete
+            // canonical source proof, without running a second reconstruction.
+            super::super::default_zero::source_properties(&columns, budget, cancelled)
+                .map_err(map_legacy_error)?;
+            generated_policy(&columns)?;
+            let order = build::initial_order(&columns, budget, cancelled)?;
+            drop(columns);
+            Ok(Source {
+                checked,
+                definition,
+                order,
+                external: false,
+            })
+        }
+        CreatedFieldAdditionSourcePurpose::RepeatedNumber => {
+            let proved = super::super::default_zero::repeated::source::capture(
+                image, table, budget, cancelled,
+            )
+            .map_err(map_legacy_error)?;
+            let columns = proved.definition.borrowed_columns(budget, cancelled)?;
+            generated_policy(&columns)?;
+            let order =
+                build::number_history_order(&columns, proved.default_first, budget, cancelled)?;
+            drop(columns);
+            Ok(Source {
+                checked: proved.checked,
+                definition: proved.definition,
+                order,
+                external: true,
+            })
+        }
+        CreatedFieldAdditionSourcePurpose::TypedField => {
+            capture_mixed(image, table, budget, cancelled)
+        }
+    }
+}
+
+fn generated_policy(columns: &[CreateColumn<'_>]) -> Result<(), Error> {
+    let generated = columns.first().ok_or(Error::Source)?;
+    if generated.required().is_some()
+        || generated.allow_zero_length().is_some()
+        || generated.default_literal().is_some()
+        || generated.description().is_some()
+        || generated.unicode_compression()
+    {
+        return Err(Error::Source);
+    }
+    Ok(())
+}
+
+fn capture_mixed(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
@@ -45,15 +113,7 @@ pub(super) fn capture(
     }
     let initial = count - history;
     let columns = definition.borrowed_columns(budget, cancelled)?;
-    let generated = columns.first().ok_or(Error::Source)?;
-    if generated.required().is_some()
-        || generated.allow_zero_length().is_some()
-        || generated.default_literal().is_some()
-        || generated.description().is_some()
-        || generated.unicode_compression()
-    {
-        return Err(Error::Source);
-    }
+    generated_policy(&columns)?;
     // The initial prefix retains the constructive owner's checked inert
     // declarations. Only the historical appended suffix must belong to this
     // operation's closed target tuples. Canonical seed and complete history
@@ -112,3 +172,17 @@ pub(super) fn capture(
         external,
     })
 }
+
+fn map_legacy_error(error: crate::CreatedDefaultZeroAddColumnError) -> Error {
+    match error {
+        crate::CreatedDefaultZeroAddColumnError::Created(error) => error.into(),
+        crate::CreatedDefaultZeroAddColumnError::Inspect(error) => Error::Inspect(error),
+        crate::CreatedDefaultZeroAddColumnError::Declaration(error) => Error::Declaration(error),
+        crate::CreatedDefaultZeroAddColumnError::Placement(error) => Error::Placement(error),
+        crate::CreatedDefaultZeroAddColumnError::Source => Error::Source,
+        crate::CreatedDefaultZeroAddColumnError::Preservation => Error::Preservation,
+    }
+}
+
+#[cfg(test)]
+mod tests;

@@ -45,6 +45,21 @@ pub(super) fn initial_order(
     Ok(Order::empty().extend(required, allow_empty, default_value, description, false)?)
 }
 
+/// Legacy history has already proved this exact Required/Default dictionary.
+/// Its first-key policy comes from the reconstructed seed, never observed order.
+pub(super) fn number_history_order(
+    columns: &[CreateColumn<'_>],
+    default_first: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Order, Error> {
+    let (required, allow_empty, default_value, description) = presence(columns, budget, cancelled)?;
+    if allow_empty || description {
+        return Err(Error::Source);
+    }
+    Ok(Order::empty().extend(required, false, default_value, false, default_first)?)
+}
+
 pub(super) fn extend_order(
     order: Order,
     columns: &[CreateColumn<'_>],

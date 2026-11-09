@@ -1,7 +1,7 @@
 //! A separate candidate language for nullable LONG with explicit DefaultValue 0.
 //! TCAC0001/0002 source languages and normal save APIs are unchanged.
 mod build;
-mod repeated;
+pub(super) mod repeated;
 mod source_carrier;
 pub use repeated::RepeatedDefaultZeroAddColumnCandidate;
 #[cfg(test)]
@@ -217,7 +217,7 @@ impl CreatedDefaultZeroAddColumnCandidate {
 }
 
 /// Retain exact source policy presence and determine the existing dictionary order.
-fn source_properties(
+pub(super) fn source_properties(
     columns: &[CreateColumn<'_>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

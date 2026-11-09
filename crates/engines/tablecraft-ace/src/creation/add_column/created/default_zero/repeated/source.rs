@@ -8,13 +8,13 @@ use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 
-pub(super) struct Source {
-    pub checked: TableCheck,
-    pub definition: FirstTableDefinition,
-    pub default_first: bool,
+pub(in crate::creation::add_column::created) struct Source {
+    pub(in crate::creation::add_column::created) checked: TableCheck,
+    pub(in crate::creation::add_column::created) definition: FirstTableDefinition,
+    pub(in crate::creation::add_column::created) default_first: bool,
 }
 
-pub(super) fn capture(
+pub(in crate::creation::add_column::created) fn capture(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
