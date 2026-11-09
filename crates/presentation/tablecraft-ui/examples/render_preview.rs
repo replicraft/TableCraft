@@ -5,6 +5,8 @@ mod database_options;
 mod date_residue;
 #[path = "render_preview/field_addition.rs"]
 mod field_addition;
+#[path = "render_preview/field_drop.rs"]
+mod field_drop;
 #[path = "render_preview/field_rename.rs"]
 mod field_rename;
 #[path = "render_preview/initial_numbers.rs"]
@@ -120,6 +122,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         format!("-number-{field_addition}")
     } else {
         format!("-field-addition-{field_addition}")
+    };
+    let field_drop = setting("TABLECRAFT_PREVIEW_FIELD_DROP", "none")?;
+    if !field_drop::is_mode(&field_drop) {
+        return Err(io::Error::other("unknown field deletion preview mode").into());
+    }
+    if field_drop != "none" && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("field deletion preview requires datasheet").into());
+    }
+    let field_drop_suffix = if field_drop == "none" {
+        String::new()
+    } else {
+        format!("-field-drop-{field_drop}")
     };
     let field_rename = setting("TABLECRAFT_PREVIEW_FIELD_RENAME", "none")?;
     if !field_rename::is_mode(&field_rename) {
@@ -273,6 +287,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(table_rename)
         + usize::from(saved_sql != "none")
         + usize::from(field_addition != "none")
+        + usize::from(field_drop != "none")
         + usize::from(field_rename != "none")
         + usize::from(database_options != "none");
     if interaction_count > 1 {
@@ -412,6 +427,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         if field_addition != "none" {
             field_addition::prepare(&mut harness, &field_addition);
         }
+        if field_drop != "none" {
+            field_drop::prepare(&mut harness, &field_drop);
+        }
         if field_rename != "none" {
             field_rename::prepare(&mut harness, &field_rename);
         }
@@ -420,7 +438,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_rename_suffix}{database_options_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
