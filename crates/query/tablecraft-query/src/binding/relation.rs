@@ -1,4 +1,5 @@
 mod derived;
+mod slots;
 mod table;
 
 use super::Binder;
@@ -101,7 +102,7 @@ impl Binder<'_> {
         outer: &[&[Slot]],
         depth: usize,
     ) -> Result<Relation, QueryError> {
-        let mut slots = combine_slots(&left.slots, &right.slots)?;
+        let mut slots = self.combine_slots(&left.slots, &right.slots)?;
         let nullable = match kind {
             JoinKind::Left => left.slots.len()..slots.len(),
             JoinKind::Right => 0..left.slots.len(),
@@ -143,55 +144,6 @@ impl Binder<'_> {
         Ok(relation)
     }
 }
-pub(super) fn combine_slots(left: &[Slot], right: &[Slot]) -> Result<Vec<Slot>, QueryError> {
-    if !valid_slot_width(left.iter().chain(right)) {
-        return Err(QueryError::StructureLimit);
-    }
-    // Repeated relation qualifiers would make qualified lookup unstable.
-    if left.iter().any(|a| {
-        right.iter().any(|b| {
-            a.qualifier
-                .as_ref()
-                .zip(b.qualifier.as_ref())
-                .is_some_and(|(a, b)| SOURCE_SCHEMA_POLICY.names.equals(a, b))
-        })
-    }) {
-        return Err(QueryError::AmbiguousName);
-    }
-    // Collection slots are independent of dense scalar rows and unavailable-name
-    // order. Keep every left slot in the offset, including unprojected lists.
-    let collection_offset = left
-        .iter()
-        .filter(|slot| slot.collection_index.is_some())
-        .count();
-    left.iter()
-        .chain(right)
-        .enumerate()
-        .map(|(position, slot)| {
-            let collection_index = match slot.collection_index {
-                Some(index) if position >= left.len() => Some(
-                    index
-                        .checked_add(collection_offset)
-                        .ok_or(QueryError::StructureLimit)?,
-                ),
-                index => index,
-            };
-            Ok(Slot {
-                output_type: slot.output_type,
-                declaration: slot.declaration,
-                text_policy: slot.text_policy,
-                available: slot.available,
-                collection_index,
-                collection_origin: slot.collection_origin,
-                retained_member: slot.retained_member,
-                member: slot.member.clone(),
-                name: slot.name.clone(),
-                qualifier: slot.qualifier.clone(),
-            })
-        })
-        .collect()
-}
-
 // Every logical output may add at most one retained virtual Value slot. The
 // public source/output ceiling remains unchanged; only the private namespace
 // receives this separate, checked allowance.

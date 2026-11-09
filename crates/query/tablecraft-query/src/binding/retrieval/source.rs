@@ -2,7 +2,6 @@
 use super::Binder;
 use crate::{
     QueryError,
-    binding::relation::combine_slots,
     external_sources::SourceNamespace,
     plan::{Relation, RelationNode, Slot},
     profile::{MAX_FROM_ITEMS, MAX_GROUP_KEYS, PERCENT_TOTAL, SOURCE_SCHEMA_POLICY},
@@ -93,7 +92,7 @@ impl Binder<'_> {
                 source = right;
                 continue;
             }
-            let slots = combine_slots(&source.slots, &right.slots)?;
+            let slots = self.combine_slots(&source.slots, &right.slots)?;
             source = Relation {
                 slots,
                 node: RelationNode::Cross(Box::new(source), Box::new(right)),

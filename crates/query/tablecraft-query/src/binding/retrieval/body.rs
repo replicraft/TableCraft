@@ -214,6 +214,19 @@ impl Binder<'_> {
         }
         let order = self.sort(sort, &[], &slots, outer, false, depth + 1)?;
         let declarations = self.unknown_declarations(output_types.len())?;
+
+        self.charge(
+            slots
+                .len()
+                .checked_mul(size_of::<String>())
+                .ok_or(QueryError::StructureLimit)?,
+        )?;
+        let mut names = Vec::new();
+        names
+            .try_reserve_exact(slots.len())
+            .map_err(|_| QueryError::Allocation)?;
+        names.extend(slots.into_iter().map(|slot| slot.name));
+
         Ok(ReadPlan {
             owner: self.owner,
             declarations,
@@ -221,7 +234,7 @@ impl Binder<'_> {
             materialized_types,
             declared_types,
             text_policies,
-            names: first.names.clone(),
+            names,
             node: ReadNode::Union {
                 first: Box::new(first),
                 rest: arms,

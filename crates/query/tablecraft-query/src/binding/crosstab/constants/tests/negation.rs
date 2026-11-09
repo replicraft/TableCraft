@@ -5,6 +5,7 @@ use crate::{
     source::{MemorySource, MemoryTable},
 };
 use tablecraft_core::values::{Double, LegacyDateTime};
+use tablecraft_schema::Column;
 use tablecraft_schema::ScalarType;
 use tablecraft_sql::parse_query;
 

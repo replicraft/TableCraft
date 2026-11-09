@@ -45,6 +45,8 @@ mod relation;
 mod result_types;
 mod retrieval;
 mod source_schema;
+#[cfg(test)]
+mod test_support;
 mod text_policy;
 
 /// Caller-issued lexical and structural settings for metadata-only retrieval preparation.
