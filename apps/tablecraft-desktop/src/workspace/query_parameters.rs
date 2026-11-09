@@ -4,13 +4,14 @@ use crate::workspace::request_read;
 use std::sync::Arc;
 use tablecraft_runtime::{
     Command, InspectedQuery, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
-    QueryOperation,
+    QueryOperation, QueryRunOptions,
 };
 use tablecraft_ui::{Action, ParameterInput, ParameterSpec};
 
 pub(super) struct Inspected {
     inspection_id: u64,
     target: Arc<InspectedQuery>,
+    options: QueryRunOptions,
 }
 
 impl Desktop {
@@ -29,7 +30,7 @@ impl Desktop {
             self.query_parameters = None;
         }
 
-        if let PendingOperation::QueryInspection { request_id } = self.pending
+        if let PendingOperation::QueryInspection { request_id, .. } = self.pending
             && request_id == self.generation
             && !self
                 .state
@@ -87,7 +88,10 @@ impl Desktop {
             return;
         }
 
-        self.pending = PendingOperation::QueryInspection { request_id };
+        self.pending = PendingOperation::QueryInspection {
+            request_id,
+            options: self.read_query_options(),
+        };
         self.editing.clear_review();
         self.state.busy = true;
         self.state.error = None;
@@ -99,10 +103,13 @@ impl Desktop {
         target: Arc<InspectedQuery>,
         parameters: Vec<RuntimeSpec>,
     ) {
-        if !matches!(self.pending, PendingOperation::QueryInspection { request_id: actual } if actual == request_id)
-        {
-            return;
-        }
+        let options = match self.pending {
+            PendingOperation::QueryInspection {
+                request_id: actual,
+                options,
+            } if actual == request_id => options,
+            _ => return,
+        };
         if !self
             .state
             .query_parameter_inspection_current(request_id, target.sql())
@@ -144,6 +151,7 @@ impl Desktop {
         self.query_parameters = Some(Inspected {
             inspection_id: request_id,
             target,
+            options,
         });
         let inspected = self
             .query_parameters
@@ -191,6 +199,7 @@ impl Desktop {
             return;
         }
 
+        let options = inspected.options;
         // NO_CLONE: The inspected target is shared between the immutable runtime binding and
         // dispatched run/action command; sharing avoids copying its parsed binding.
         let target = Arc::clone(&inspected.target);
@@ -213,6 +222,7 @@ impl Desktop {
 
         let Some(request_id) = request_read(
             Command::RunQuery {
+                options,
                 target,
                 parameters: inputs,
             },

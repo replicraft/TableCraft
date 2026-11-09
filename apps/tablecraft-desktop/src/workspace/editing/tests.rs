@@ -149,6 +149,7 @@ fn acknowledged_noop_save_refreshes_the_original_table_and_blocks_conflicting_ac
     assert!(desktop.editing.has_save());
     let read_generation = desktop.generation;
     desktop.submit(Command::Query {
+        options: Default::default(),
         sql: "SELECT 1".into(),
     });
     desktop.open();

@@ -427,3 +427,81 @@ fn stale_run_intent_cannot_replace_an_accepted_prompt_or_its_raw_input() {
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
+
+#[test]
+fn explicit_read_limits_are_captured_before_inspection_and_retry_requires_an_explicit_run() {
+    let (_directory, path, original, mut harness) = opened();
+    run(&mut harness, "SELECT 99 AS Previous");
+    let mut limits = harness.state().state.query_run_limits().unwrap();
+    limits.query.rows = 1;
+    harness.state_mut().configure_query_run_limits(limits);
+    assert!(
+        harness
+            .state_mut()
+            .state
+            .replace_query_sql("SELECT Id FROM Items".into())
+    );
+    harness.state_mut().inspect_query_parameters();
+    let captured = match harness.state().pending {
+        PendingOperation::QueryInspection { options, .. } => options,
+        _ => panic!("actual read inspection owns captured limits"),
+    };
+    assert_eq!(captured.query().rows(), 1);
+    let mut larger = limits;
+    larger.query.rows = 100;
+    harness.state_mut().configure_query_run_limits(larger);
+    assert_eq!(harness.state().query_run_options, captured);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy {
+        assert!(Instant::now() < deadline);
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert!(harness.state().state.error.is_some());
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99"
+    );
+    harness.state_mut().configure_query_run_limits(larger);
+    assert_eq!(harness.state().query_run_options.query().rows(), 100);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99",
+        "configuring limits must never run SQL implicitly"
+    );
+    run(&mut harness, "SELECT Id FROM Items");
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .len(),
+        3
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn active_parameter_prompt_rejects_injected_query_limit_configuration() {
+    let (_directory, path, original, mut harness) = opened();
+    run(
+        &mut harness,
+        "PARAMETERS [Requested] LONG; SELECT [Requested]",
+    );
+    let captured = harness.state().query_run_options;
+    let mut changed = harness.state().state.query_run_limits().unwrap();
+    changed.query.rows += 1;
+    harness.state_mut().configure_query_run_limits(changed);
+    assert_eq!(harness.state().query_run_options, captured);
+    enter(&mut harness, "Requested", "42");
+    confirm(&mut harness);
+    finish_reads(&mut harness);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "42"
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}

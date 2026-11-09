@@ -549,6 +549,7 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     harness
         .state_mut()
         .submit(tablecraft_runtime::Command::Query {
+            options: Default::default(),
             sql: "SELECT 1 AS [Value]".into(),
         });
     finish_reads(&mut harness);
@@ -558,6 +559,7 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     harness
         .state_mut()
         .submit(tablecraft_runtime::Command::Query {
+            options: Default::default(),
             sql: "SELECT 2 AS [Value]".into(),
         });
     // Edit the visible draft before polling even an already completed worker.
@@ -586,6 +588,7 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     harness
         .state_mut()
         .submit(tablecraft_runtime::Command::Query {
+            options: Default::default(),
             sql: "SELECT 1 / 0".into(),
         });
     finish_failed_read(&mut harness);
@@ -606,6 +609,7 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     harness
         .state_mut()
         .submit(tablecraft_runtime::Command::Query {
+            options: Default::default(),
             sql: "SELECT 4 AS [Value]".into(),
         });
     cancel_before_poll(&mut harness);
@@ -648,6 +652,7 @@ fn scratch_runs_keep_submitted_sql_with_results_across_edits_failure_cancel_and_
     harness
         .state_mut()
         .submit(tablecraft_runtime::Command::Query {
+            options: Default::default(),
             sql: "SELECT 5 AS [Value]".into(),
         });
     finish_reads(&mut harness);

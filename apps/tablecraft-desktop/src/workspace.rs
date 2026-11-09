@@ -8,6 +8,7 @@ mod navigation;
 mod objects;
 mod opening;
 mod query_design;
+mod query_limits;
 mod query_parameters;
 mod read_failures;
 mod read_requests;
@@ -28,8 +29,8 @@ use read_requests::request_read;
 use std::path::PathBuf;
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
-    Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle, Response,
-    SaveWorker, Worker,
+    Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle,
+    QueryRunOptions, Response, SaveWorker, Worker,
 };
 use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
@@ -118,6 +119,7 @@ enum PendingOperation {
     },
     QueryInspection {
         request_id: u64,
+        options: QueryRunOptions,
     },
     QueryDesignDescribe {
         request_id: u64,
@@ -126,6 +128,7 @@ enum PendingOperation {
     },
     QueryDesignBuild {
         request_id: u64,
+        options: QueryRunOptions,
         request: QueryDesignRequest,
     },
     QueryDesignImport {
@@ -237,6 +240,7 @@ pub(super) struct Desktop {
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
     query_parameters: Option<query_parameters::Inspected>,
+    query_run_options: QueryRunOptions,
     startup_visibility_pending: bool,
     font_inventory: FontInventory,
 }
@@ -281,9 +285,12 @@ impl Desktop {
             filter: None,
             objects: objects::Sessions::default(),
             query_parameters: None,
+            query_run_options: QueryRunOptions::default(),
             startup_visibility_pending: true,
             font_inventory: FontInventory::default(),
         };
+        app.state
+            .set_query_run_limits(query_limits::ui_limits(app.query_run_options));
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
@@ -338,7 +345,7 @@ impl Desktop {
         if matches!(&command, Command::Describe { .. }) {
             self.state.prepare_schema_view();
         }
-        let query_sql = if let Command::Query { sql } = &command {
+        let query_sql = if let Command::Query { sql, .. } = &command {
             let Some(captured) = self.state.capture_query_sql(sql) else {
                 return false;
             };
@@ -1157,6 +1164,9 @@ impl eframe::App for Desktop {
                 Action::CancelQueryActionReview { request_id } => {
                     self.cancel_query_action_review(request_id);
                 }
+                Action::ConfigureQueryRunLimits { limits } => {
+                    self.configure_query_run_limits(limits);
+                }
                 Action::Query => self.inspect_query_parameters(),
                 Action::RunParameterizedQuery {
                     inspection_id,
@@ -1454,6 +1464,7 @@ mod tests {
         // not dismiss it as though another document had just opened.
         open_sql(&mut desktop);
         desktop.submit(Command::Query {
+            options: Default::default(),
             sql: "SELECT 17 AS [Kept]".into(),
         });
         let generation = desktop.generation;
@@ -1480,6 +1491,7 @@ mod tests {
         let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
         let sql_tab = open_sql(&mut desktop);
         desktop.submit(Command::Query {
+            options: Default::default(),
             sql: "SELECT 17 AS [Kept]".into(),
         });
         finish(&mut desktop, &context, &mut frame);
@@ -1603,6 +1615,7 @@ mod tests {
         let table_rows = desktop.state.data.as_ref().unwrap().rows.as_ptr();
         let sql_tab = open_sql(&mut desktop);
         desktop.submit(Command::Query {
+            options: Default::default(),
             sql: "SELECT NULL AS [Absent], 'NULL' AS [Label], True AS [Yes], False AS [No], 'false' AS [Text]".into(),
         });
         finish(&mut desktop, &context, &mut frame);

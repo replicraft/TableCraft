@@ -66,6 +66,7 @@ impl Desktop {
             return;
         }
 
+        let options = self.read_query_options();
         let inputs = parameters
             .iter()
             .map(|input| RuntimeInput {
@@ -84,6 +85,7 @@ impl Desktop {
             .collect();
         let Some(request_id) = request_read(
             Command::RunSavedQuery {
+                options,
                 target: runtime_target(&target),
                 parameters: inputs,
             },

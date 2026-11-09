@@ -75,7 +75,7 @@ impl Desktop {
                 let request_id = *request_id;
                 self.fail_query_action_review(request_id, error.to_string());
             }
-            PendingOperation::QueryInspection { request_id } => {
+            PendingOperation::QueryInspection { request_id, .. } => {
                 let request_id = *request_id;
                 self.query_parameters = None;
                 if self.state.fail_query_parameter_inspection(request_id) {

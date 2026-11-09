@@ -3,7 +3,7 @@ use super::{Desktop, PendingOperation};
 use crate::workspace::request_read;
 use std::sync::Arc;
 use tablecraft_builders::query::{BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft};
-use tablecraft_runtime::{self as runtime, Command};
+use tablecraft_runtime::{self as runtime, Command, QueryRunOptions};
 use tablecraft_ui::{QueryDesignCompletion, QueryDesignRequest};
 
 impl Desktop {
@@ -82,6 +82,7 @@ impl Desktop {
         self.pending = PendingOperation::QueryDesignBuild {
             request_id,
             request,
+            options: self.read_query_options(),
         };
         self.state.busy = true;
     }
@@ -169,15 +170,16 @@ impl Desktop {
         built: BuiltQueryDesign,
         metadata: Vec<DesignTableMetadata>,
     ) {
-        let (expected, request) = match &self.pending {
+        let (expected, request, options) = match &self.pending {
             PendingOperation::QueryDesignBuild {
                 request_id,
                 request,
-            }
-            | PendingOperation::QueryDesignImport {
+                options,
+            } => (*request_id, request, *options),
+            PendingOperation::QueryDesignImport {
                 request_id,
                 request,
-            } => (*request_id, request),
+            } => (*request_id, request, self.read_query_options()),
             _ => return,
         };
         if expected != request_id {
@@ -192,7 +194,7 @@ impl Desktop {
             .state
             .set_query_design_built(request_id, built, metadata)
         {
-            Some(QueryDesignCompletion::Run) => self.run_query_design(),
+            Some(QueryDesignCompletion::Run) => self.run_query_design(options),
             Some(QueryDesignCompletion::ShowSql) => {}
             None => self
                 .state
@@ -200,12 +202,13 @@ impl Desktop {
         }
     }
 
-    fn run_query_design(&mut self) {
+    fn run_query_design(&mut self, options: QueryRunOptions) {
         if self.editing.has_save() {
             return;
         }
         let Some(request_id) = request_read(
             Command::Query {
+                options,
                 // NO_CLONE: The UI keeps its SQL buffer and result provenance; background query
                 // execution requires an independent owned command string.
                 sql: self.state.sql.clone(),

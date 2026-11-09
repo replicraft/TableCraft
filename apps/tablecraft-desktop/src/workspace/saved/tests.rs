@@ -86,6 +86,7 @@ fn inspect_then_run_preserves_the_sql_slot_and_publishes_noneditable_saved_resul
     let sql_tab = desktop.state.active_object().unwrap();
     desktop.state.sql = "SELECT 99 AS OriginalSqlResult".into();
     desktop.submit(Command::Query {
+        options: Default::default(),
         sql: desktop.state.sql.clone(),
     });
     finish(&mut desktop, &context);
@@ -196,5 +197,34 @@ fn excessive_empty_parameter_capacity_refuses_before_dispatch_and_preserves_save
         desktop.state.selected_cell_text().unwrap().as_ptr(),
         previous_cell
     );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn saved_read_uses_explicit_limits_at_each_run_without_reinspection_or_implicit_retry() {
+    let (_directory, path, original, context, mut desktop) = opened();
+    let selected = target(&desktop);
+    desktop.inspect_saved_query(selected.clone());
+    finish(&mut desktop, &context);
+    let mut limits = desktop.state.query_run_limits().unwrap();
+    limits.query.rows = 1;
+    desktop.configure_query_run_limits(limits);
+    desktop.run_saved_query(selected.clone(), Vec::new());
+    let mut frame = eframe::Frame::_new_kittest();
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while desktop.state.busy {
+        assert!(Instant::now() < deadline);
+        desktop.logic(&context, &mut frame);
+        std::thread::yield_now();
+    }
+    assert!(desktop.state.error.is_some());
+    assert!(desktop.state.selected_cell_text().is_none());
+    limits.query.rows = 100;
+    desktop.configure_query_run_limits(limits);
+    assert!(!desktop.state.busy);
+    assert!(desktop.state.selected_cell_text().is_none());
+    desktop.run_saved_query(selected, Vec::new());
+    finish(&mut desktop, &context);
+    assert_eq!(desktop.state.selected_cell_text(), Some("2"));
     assert_eq!(std::fs::read(path).unwrap(), original);
 }

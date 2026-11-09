@@ -349,3 +349,57 @@ fn cancelled_real_build_receipt_cannot_run_after_the_sql_object_is_closed_and_re
     assert!(!harness.state().state.busy);
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
+
+#[test]
+fn design_build_captures_read_limits_and_failed_run_preserves_previous_results() {
+    let (_directory, path, original, mut harness) = opened(source());
+    scratch(&mut harness);
+    sql(&mut harness, "SELECT 99 AS Previous");
+    run(&mut harness);
+    sql(&mut harness, "SELECT Id FROM Items");
+    design(&mut harness);
+    let mut limits = harness.state().state.query_run_limits().unwrap();
+    limits.query.rows = 1;
+    harness.state_mut().configure_query_run_limits(limits);
+    harness
+        .get_all_by_role_and_label(Role::Button, "Run query")
+        .next()
+        .unwrap()
+        .click_accesskit();
+    harness.run_steps(1);
+    let crate::workspace::PendingOperation::QueryDesignBuild { options, .. } =
+        harness.state().pending
+    else {
+        panic!("the actual design build retains run limits before its reply");
+    };
+    assert_eq!(options.query().rows(), 1);
+    let mut larger = limits;
+    larger.query.rows = 10_000;
+    harness.state_mut().configure_query_run_limits(larger);
+    assert_eq!(harness.state().query_run_options, options);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy {
+        assert!(Instant::now() < deadline);
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert!(harness.state().state.error.is_some());
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99"
+    );
+    harness.state_mut().configure_query_run_limits(larger);
+    run(&mut harness);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .len(),
+        205
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
