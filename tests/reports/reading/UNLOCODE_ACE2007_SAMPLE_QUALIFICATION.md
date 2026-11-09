@@ -39,9 +39,13 @@ qualify bounded pages, not a complete MCP scan of all tables.
   200,000 rows and 100,000,000 steps, and execution allowances of 256 MiB,
   1,000,000 rows and 100,000,000 steps, buffered and streaming counts both
   completed and returned 100,969.
-- Grouping with database General text comparison did not complete: the recorded
-  explicit-budget attempt exhausted steps; another attempt exhausted bytes.
-  These refusals remain qualification limits, not passing group-query evidence.
+- **Initial General grouping attempts** refused: the recorded explicit-budget
+  attempt exhausted steps; another attempt exhausted bytes. Those failures remain
+  part of the observation record.
+- **Current-binary General follow-up completed** with the same explicit allowances:
+  exit 0, 20 groups, and every count matching the independent complete-stream
+  derivation. The recorded run took about 2.05 seconds; this is one observation,
+  not a portable benchmark. The original source hash remained unchanged.
 - The grouped/HAVING query using explicit ordinal comparison completed with
   20 groups and matched independently derived counts from the complete stream.
   Ordinal success does not qualify General or native locale-specific equivalence.
@@ -53,11 +57,17 @@ qualify bounded pages, not a complete MCP scan of all tables.
 
 Private observations remain in `.cache/unlocode-mdb-before.json`,
 `.cache/unlocode-mdb-cli.json`, `.cache/unlocode-complete-reading.json`,
-`.cache/unlocode-mcp-reader.json`, `.cache/unlocode-ordinal-group-query.json` and
+`.cache/unlocode-mcp-reader.json`, `.cache/unlocode-ordinal-group-query.json`,
+`.cache/unlocode-general-grouping-after.json` and
 `.cache/mdb-sample-qualification-20261109/`. Raw CLI captures can contain source
 values and are deliberately not copied into the public report.
 
+The successful current-binary General run records implementation commit
+`3a773ad4c05fe77629dbb10b822cbc4e1fb837e2` and executable SHA-256
+`6ec89b6f9a5659e069fc84c95dc6246d3f390d34559ca1c77eac1935f630a016`.
+
 This is bounded read/query evidence for one ACE 2007-format sample. It does not
 establish Jet 4 support, full ACE compatibility, native Microsoft Access
-execution, write/save/reopen interoperability, or completed General-collation
-large-table grouping. No Windows/Access comparison was performed here.
+execution, write/save/reopen interoperability, or General-collation compatibility
+beyond the tested grouping request. No Windows/Access comparison was performed
+here.
