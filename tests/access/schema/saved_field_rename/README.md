@@ -75,3 +75,25 @@ updates, NameMaps, repeated rename, different-width/Unicode names, populated
 sources, other indexes/layouts or older Jet/ACE profiles. Native candidate,
 original-intent/recovery and normal GUI qualification require their own evidence;
 this record does not activate a writer.
+
+## Fitted ASCII hypotheses
+
+The separate `fitting.py` model retains the same four pinned empty/OFF sources.
+It resizes only ASCII names within existing TDEF/LVAL page capacity: original
+native numbers, field IDs, DATA/INDEX/maps and retired property rows remain intact.
+The live user row keeps its end, the following MSysDb OFF payload shifts intact,
+and the original bytes in newly freed space are retained. TDEF length/free space,
+name/group framing, the two LVAL row starts and catalog descriptor length follow
+the literal size delta. No property history, row slot or page is appended.
+
+`prepare_fitting.py` freezes complete `TaxAmount` growth and `X` shrink predictions
+for each source, alongside TDEF-only, stale-descriptor and stale-row controls.
+`run_fitting.py` reuses the metadata-only observer above, freezes all current tool
+pins before execution and records each control's actual behavior. It requires
+coordinated metadata to match except for the requested name; it does not assume
+that an SDK getter detects every malformed control. These models supply no SDK
+rename write, Microsoft Access save or expanded native admission by themselves.
+
+Use the same reviewed JAR and JDK arguments as above, a fresh fitting output
+directory, and invoke `prepare_fitting.py` followed by `run_fitting.py` through
+`tests/run.py`. Existing same-width recipes and captured observations are unchanged.
