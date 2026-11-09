@@ -5,7 +5,10 @@ use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::journal_path;
-use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
+use tablecraft_testkit::fixtures::access::{
+    canonical_created_number::mixed::after_off::deleted_field::inserting,
+    saved_field_rename::fitting::{self, SourceCase},
+};
 
 #[test]
 fn normal_datasheet_and_design_grow_and_shrink_real_number_and_text_names() {
@@ -162,4 +165,33 @@ fn actual_field_rename_capacity_refusal_preserves_name_then_fresh_correction_sav
         .find(|column| column.name == fitting_name)
         .unwrap();
     assert_eq!(column.native_number, Some(1));
+}
+
+#[test]
+fn fitted_field_rename_then_normal_omitted_row_insert_keeps_native_names_and_preserved_history() {
+    for replacement in ["TaxAmount", "X"] {
+        let [before, after] = fitting::pair(SourceCase::NumberFirst, replacement);
+        let (_directory, path, _, mut harness) = test_support::opened(before);
+        propose_name(&mut harness, "Score", replacement);
+        harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+        harness.run_steps(1);
+        finish_schema_save(&mut harness);
+        assert_eq!(std::fs::read(&path).unwrap(), after);
+        let revision = harness
+            .state()
+            .state
+            .database
+            .as_ref()
+            .unwrap()
+            .document_revision;
+        crate::workspace::test_support::inserting::insert_omitted_fields(
+            &mut harness,
+            &path,
+            &after,
+            revision,
+            &[replacement],
+        );
+        let expected = inserting::first_number_row(&after, &[(0, Some(1)), (1, Some(0))]);
+        assert_eq!(std::fs::read(&path).unwrap(), expected);
+    }
 }

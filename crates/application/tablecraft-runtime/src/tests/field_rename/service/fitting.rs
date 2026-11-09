@@ -68,3 +68,55 @@ fn fitted_number_and_text_reviews_save_and_reopen_the_independent_complete_image
         }
     }
 }
+
+#[test]
+fn fitted_field_rename_images_admit_generated_row_review_without_losing_omission_intent() {
+    let mut failures = Vec::new();
+    for replacement in ["TaxAmount", "X"] {
+        let [_, after] = fitting::pair(SourceCase::NumberFirst, replacement);
+        let (_directory, path, worker, revision) = opened(&after);
+        let Response::InsertDraft(draft) = request(
+            &worker,
+            Command::BeginInsert {
+                target: crate::InsertTarget {
+                    document_revision: revision,
+                    table: "Table1".into(),
+                },
+            },
+        )
+        .unwrap() else {
+            panic!("expected real insertion metadata after fitted field rename");
+        };
+        assert_eq!(draft.fields.len(), 2);
+        assert_eq!(draft.fields[0].name, "ID");
+        assert!(draft.fields[0].auto_number);
+        assert_eq!(draft.fields[1].name, replacement);
+        assert!(!draft.fields[1].auto_number);
+        match request(
+            &worker,
+            Command::ReviewInsert {
+                draft_id: draft.id,
+                inputs: vec![crate::InsertInput::Omitted, crate::InsertInput::Omitted],
+            },
+        ) {
+            Ok(Response::InsertReviewed { review, capability }) => {
+                assert_eq!(review.inserted_rows, 1);
+                assert!(
+                    review
+                        .inputs
+                        .iter()
+                        .all(|input| matches!(input, crate::InsertInput::Omitted))
+                );
+                assert_eq!(capability.source_path(), path);
+            }
+            Err(error) => failures.push(format!("{replacement}: {error:?}")),
+            Ok(_) => panic!("a successful admission must return its actual consuming review"),
+        }
+        assert_eq!(std::fs::read(&path).unwrap(), after);
+        assert!(!crate::journal_path(&path).exists());
+    }
+    assert!(
+        failures.is_empty(),
+        "post-rename row admission: {failures:?}"
+    );
+}
