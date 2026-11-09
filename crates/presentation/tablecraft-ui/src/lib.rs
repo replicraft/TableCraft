@@ -45,6 +45,12 @@ pub use workspace::{
 };
 pub use workspace::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 pub use workspace::{
+    FieldDropCloseDecision, FieldDropCloseResult, FieldDropConfirmationDecision,
+    FieldDropConfirmationResult, FieldDropRequest, FieldDropSaveCommand, FieldDropSaveIdentity,
+    FieldDropTarget, FieldDropWarning, PreparedFieldDropInspection, PreparedFieldDropResolution,
+    PreparedFieldDropSave,
+};
+pub use workspace::{
     FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose,
 };
 pub use workspace::{

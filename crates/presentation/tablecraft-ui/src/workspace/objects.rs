@@ -414,6 +414,7 @@ impl State {
         !self.field_addition_open()
             && !self.field_addition_close_open()
             && !self.field_rename_open()
+            && !self.field_drop_open()
             && self.object_switch_ready_without_saved_field_name()
     }
 
@@ -467,9 +468,12 @@ impl State {
             self.retire_unowned_field_addition_warning(revision);
             self.retire_database_options_warning(revision);
             self.retire_field_rename_warning(revision);
+            self.retire_field_drop_warning(revision);
             if self.has_modified_saved_query_sql()
                 || self.field_rename_open()
                 || self.field_rename_status_open()
+                || self.field_drop_open()
+                || self.field_drop_status_open()
             {
                 return;
             }

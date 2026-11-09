@@ -3,6 +3,7 @@ mod boundary;
 mod catalog;
 mod database_options_reopen;
 mod field_addition_reopen;
+mod field_drop_reopen;
 mod field_rename_reopen;
 mod replacement;
 mod restoration;

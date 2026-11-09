@@ -10,6 +10,7 @@ mod deletion;
 mod diagnostics;
 mod editing;
 pub(crate) mod field_addition;
+pub(crate) mod field_drop;
 mod field_name;
 pub(crate) mod field_rename;
 mod filtering;
@@ -52,6 +53,12 @@ pub use field_addition::{
     PreparedFieldAdditionSave,
 };
 pub use field_addition::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
+pub use field_drop::{
+    FieldDropCloseDecision, FieldDropCloseResult, FieldDropConfirmationDecision,
+    FieldDropConfirmationResult, FieldDropRequest, FieldDropSaveCommand, FieldDropSaveIdentity,
+    FieldDropTarget, FieldDropWarning, PreparedFieldDropInspection, PreparedFieldDropResolution,
+    PreparedFieldDropSave,
+};
 pub use field_rename::{
     FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose,
 };
@@ -454,6 +461,8 @@ pub struct State {
     pub field_addition_available: bool,
     field_addition: field_addition::Model,
     /// Host opt-in stays false until the guarded rename controller is connected.
+    pub field_drop_available: bool,
+    field_drop: field_drop::model::Model,
     pub field_rename_available: bool,
     field_rename: field_rename::model::Model,
     database_options: database_options::Model,
@@ -848,6 +857,8 @@ impl State {
             || self.database_options_modal_open()
             || self.field_addition_close_open()
             || self.field_addition_modal_open()
+            || self.field_drop_modal_open()
+            || self.field_drop_close_open()
             || self.field_rename_modal_open()
             || self.field_rename_close_open()
             || self.saved_query_sql_save_open()
@@ -916,6 +927,8 @@ impl State {
         }
         let modal_open = modal_open
             || self.field_addition_modal_open()
+            || self.field_drop_modal_open()
+            || self.field_drop_close_open()
             || self.field_rename_modal_open()
             || self.field_rename_close_open()
             || self.parameter_prompt_open()
