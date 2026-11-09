@@ -274,6 +274,9 @@ impl Preview {
                 let target = ObjectTarget {
                     document_revision: fixtures::REVISION,
                     kind: ObjectKind::Table {
+                        // prepare_object_open consumes table identity while fixture page
+                        // construction still needs its spelling after admission; two owned
+                        // hosts have independent values.
                         name: table.clone(),
                     },
                 };
@@ -286,6 +289,9 @@ impl Preview {
                 let target = ObjectTarget {
                     document_revision: fixtures::REVISION,
                     kind: ObjectKind::Table {
+                        // prepare_object_open consumes table identity before schema fixture
+                        // generation uses its spelling; original is retained for that admitted
+                        // operation.
                         name: table.clone(),
                     },
                 };
@@ -350,6 +356,8 @@ impl Preview {
                     self.state
                         .begin_saved_query_run(&target, parameters, request);
                     let mut data = fixtures::query();
+                    // Returned query Data must own table name independently of saved-query
+                    // target retained through exact result admission.
                     data.table = target.name.clone();
                     self.state.set_saved_query_data(request, &target, data);
                 }
@@ -358,6 +366,9 @@ impl Preview {
                 if self.state.can_navigate_record(&target) {
                     self.state.error = None;
                     let request = self.request();
+                    // Pending navigation owns target while the original is used to create
+                    // fixture page and validate matching result; sharing names is not part of
+                    // current DTO contract.
                     self.state.begin_record_navigation(target.clone(), request);
                     self.state.set_record_data(
                         request,
@@ -586,6 +597,8 @@ impl Preview {
         self.state.error = None;
         let request = self.request();
         self.state
+            // Pending inspection retains its target while detail fixture selection and exact
+            // reply comparison use the original.
             .begin_saved_query_inspection(target.clone(), request);
         let parameters = fixtures::parameters(&target);
         self.state
@@ -613,11 +626,15 @@ impl Preview {
             text: if target.column == "Balance" {
                 "1245.50".into()
             } else {
+                // EditDraft retains original cell text and separately editable input text;
+                // input mutations must not alter the displayed original oracle.
                 original.text.clone()
             },
             is_null: matches!(original.kind, CellKind::Scalar { is_null: true, .. }),
         };
         let request = self.request();
+        // Checking dialog owns initial target and the simulated draft reply owns its target
+        // independently for correlation; original is moved into final draft.
         self.state.begin_edit(target.clone(), request);
         self.state.set_edit_draft(
             request,
@@ -641,8 +658,12 @@ impl Preview {
         else {
             return None;
         };
+        // Current editable input and pending review input coexist and are compared for stale
+        // edits; after this one copy original input moves into review initiation.
         *current = input.clone();
         let draft_id = draft.id;
+        // Draft remains in State while returned EditReview owns target independently; cannot
+        // move target out of still-live draft.
         let target = draft.target.clone();
         let before = copy_cell(&draft.original);
         let after = if input.is_null {
@@ -673,6 +694,8 @@ pub(super) fn copy_cell(cell: &Cell) -> Cell {
     Cell {
         presentation: cell.presentation,
         alignment: cell.alignment,
+        // copy_cell deliberately produces independent Cell output from borrowed parent/original
+        // data for review display; no mutation of original presentation source.
         text: cell.text.clone(),
         kind: cell.kind,
     }

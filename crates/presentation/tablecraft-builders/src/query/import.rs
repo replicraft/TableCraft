@@ -176,6 +176,8 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
         return Err(QueryDesignError::Unsupported);
     }
     if let Some(selection) = &select.selection {
+        // The mutable visitor validates a separate selection expression without altering the
+        // parsed original used for canonical SQL round-trip equality.
         let mut selection = selection.clone();
         visit(&mut selection, &mut |_| Ok(()))?;
     }
@@ -186,6 +188,9 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
     for projection in &select.projection {
         let (value, alias) = match projection {
             Projection::Field { field, alias } => (
+                // An owned expression wrapper supplies canonical Access field spelling while
+                // the borrowed parsed projection remains required for subsequent
+                // validation/round-trip proof.
                 DesignExpression::Expression(Expression::Field(field.clone()).to_string()),
                 alias,
             ),
@@ -236,6 +241,8 @@ fn imported(select: &Select) -> Result<QueryDesignDraft, QueryDesignError> {
         });
     }
     if let Some(selection) = &select.selection {
+        // Criteria flattening consumes and splits this independent selection tree; the parsed
+        // original is retained for complete canonical round-trip comparison.
         grid_criteria(&mut draft, selection.clone())?;
     }
     validate_shape(&draft)?;

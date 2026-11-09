@@ -121,6 +121,9 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
     }
     if let Some(join) = events.join {
         let duplicate = session.draft.joins.contains(&join);
+        // Candidate or queued worker snapshot is independent of the current QBE draft; failed
+        // validation leaves the original intact and later edits cannot change an in-flight
+        // request.
         let mut candidate = session.draft.clone();
         candidate.joins.push(join);
         if !duplicate
@@ -137,6 +140,8 @@ pub(super) fn source_area(ui: &mut Ui, session: &mut Session, height: f32) -> bo
 }
 
 fn append_column(ui: &Ui, session: &mut Session, column: DesignColumn) -> bool {
+    // Candidate or queued worker snapshot is independent of the current QBE draft; failed
+    // validation leaves the original intact and later edits cannot change an in-flight request.
     let mut candidate = session.draft.clone();
     candidate.columns.push(column);
     if candidate.columns.len() <= MAX_DESIGN_COLUMNS && draft_text_bytes(&candidate).is_ok() {
@@ -220,6 +225,9 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
     for (index, field) in metadata.fields.iter().enumerate() {
         let reference = DesignField {
             source_id: source.id,
+            // QBE expression/anchor identity and context-menu join reference are independent
+            // owners; metadata remains available and geometry anchors outlive this local row
+            // rendering.
             column: field.name.clone(),
         };
         let response = ui
@@ -230,11 +238,17 @@ fn source_fields(ui: &mut Ui, session: &Session, source: &DesignSource, events: 
         if response.rect.intersects(ui.clip_rect()) {
             events
                 .anchors
+                // QBE expression/anchor identity and context-menu join reference are
+                // independent owners; metadata remains available and geometry anchors outlive
+                // this local row rendering.
                 .push((reference.clone(), response.rect.intersect(ui.clip_rect())));
         }
         if response.clicked_by(egui::PointerButton::Primary) {
             events.clicked = true;
             if click::activate(ui, &response, &mut events.pair) {
+                // the retained command or exact-owner witness needs its own captured identity
+                // after this render/dispatch; keep the original catalog, input or owner
+                // available for the later checks in this operation.
                 events.column = Some(DesignColumn::field(source.id, field.name.clone()));
             }
         }
@@ -316,12 +330,21 @@ fn join_menu(
                 ui.menu_button(source.alias.as_deref().unwrap_or(&source.table), |ui| {
                     for field in &metadata.fields {
                         let target = ui.button(&field.name);
+                        // Keyboard/focus/activation registries retain their own response while
+                        // the original response remains needed for hover, focus, click state or
+                        // returned geometry.
                         first_field.get_or_insert_with(|| target.clone());
                         if target.clicked() {
                             events.join = Some(DesignJoin {
+                                // DesignJoin needs its own captured identity after this
+                                // render/dispatch; keep the original catalog, input or owner
+                                // available for the later checks in this operation.
                                 left: left.clone(),
                                 right: DesignField {
                                     source_id: source.id,
+                                    // DesignJoin needs its own captured identity after this
+                                    // render/dispatch; keep the original catalog, input or
+                                    // owner available for the later checks in this operation.
                                     column: field.name.clone(),
                                 },
                                 kind: DesignJoinKind::Inner,

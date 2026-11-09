@@ -239,13 +239,20 @@ fn general_sheet(
     selection: &mut PropertySelection,
 ) -> Option<PropertyCopyFailure> {
     let mut failure = None;
+    // The layout API consumes this FontId; keep the original style or loop-local descriptor
+    // available for the next measurement.
     let font = ui.style().text_styles[&egui::TextStyle::Body].clone();
     let label_width = observations
         .iter()
         .fold(PROPERTY_LABEL_MIN_WIDTH, |width, (_, label, _)| {
-            let galley =
-                ui.painter()
-                    .layout_no_wrap(label.clone(), font.clone(), palette(ui.ctx()).ink);
+            let galley = ui
+                .painter()
+                // Two real toolkit outputs retain the text independently (paint/layout,
+                // accessibility or hover/clipboard); the owning API consumes the String
+                // while the other output remains needed.
+                // The layout API consumes this FontId; keep the original style or
+                // loop-local descriptor available for the next measurement.
+                .layout_no_wrap(label.clone(), font.clone(), palette(ui.ctx()).ink);
             width.max(galley.size().x + PROPERTY_TEXT_PADDING * 2.0)
         })
         .min(PROPERTY_LABEL_MAX_WIDTH);

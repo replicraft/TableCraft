@@ -188,6 +188,8 @@ impl State {
                 .data
                 .as_ref()
                 .is_some_and(|data| data.row_ordinals.is_some()))
+        // Return or dispatch an owned identity snapshot from retained shared State; the caller
+        // may queue work or mutate State while the source owner must remain intact.
         .then(|| view.target.clone())
     }
 
@@ -286,8 +288,14 @@ impl State {
         }
         let target = FilterSelectionTarget {
             document_revision: data.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: data.table.clone(),
             parent_ordinal: data.parent_ordinal(row)?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             column: data.columns.get(column)?.name.clone(),
             filter_id: self.active_filter_target().map(|target| target.filter_id),
             enabled: self.table_filter_enabled(),
@@ -365,10 +373,16 @@ impl State {
         self.table_filter.pending = Some(Pending {
             request_id,
             publication: self.focus_publication,
+            // Capture the actual formatting policy independently for cache invalidation,
+            // pending-result rejection or the displayed dialog binding; later preference edits
+            // must not mutate that snapshot.
             formatting: self.formatting.clone(),
             operation,
             column: self.data.as_ref().and_then(|data| {
                 let (_, column) = self.table_selection.position()?;
+                // Retain the exact prior source, selected column, scope, pattern or publication
+                // binding across mutation/publication. These owners reject stale work or
+                // preserve the other input; they cannot borrow the mutated State.
                 Some(data.columns.get(column)?.name.clone())
             }),
         });
@@ -576,6 +590,9 @@ impl State {
             return false;
         }
 
+        // Retain the exact prior source, selected column, scope, pattern or publication binding
+        // across mutation/publication. These owners reject stale work or preserve the other
+        // input; they cannot borrow the mutated State.
         let column = pending.column.clone();
         if !self.install_filtered_view(publication) {
             let message = self

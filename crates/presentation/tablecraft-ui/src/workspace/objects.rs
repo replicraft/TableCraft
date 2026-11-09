@@ -60,6 +60,8 @@ impl State {
         self.objects
             .entries
             .iter()
+            // Return or dispatch an owned identity snapshot from retained shared State; the
+            // caller may queue work or mutate State while the source owner must remain intact.
             .map(|entry| entry.tab.clone())
             .collect()
     }
@@ -75,10 +77,14 @@ impl State {
             .entries
             .iter()
             .find(|entry| Some(entry.tab.id) == self.objects.active)
+            // Return or dispatch an owned identity snapshot from retained shared State; the
+            // caller may queue work or mutate State while the source owner must remain intact.
             .map(|entry| entry.tab.clone())
     }
 
     pub fn selected_navigation_object(&self) -> Option<ObjectTarget> {
+        // Return or dispatch an owned identity snapshot from retained shared State; the caller
+        // may queue work or mutate State while the source owner must remain intact.
         self.objects.navigation.clone()
     }
 
@@ -147,6 +153,9 @@ impl State {
             .entries
             .iter()
             .find(|entry| entry.tab.target == target)
+            // Capture the exact current/next object identity before activating, taking or
+            // parking sessions mutates the object registry; borrowing an entry through that
+            // mutation would be invalid.
             .map(|entry| entry.tab.clone())
         {
             return self
@@ -167,6 +176,9 @@ impl State {
         let id = previous + 1;
         let tab = ObjectTab {
             id,
+            // ObjectTab needs its own captured identity after this render/dispatch; keep the
+            // original catalog, input or owner available for the later checks in this
+            // operation.
             target: target.clone(),
         };
         self.park_object();
@@ -222,6 +234,9 @@ impl State {
             .take()
             .unwrap_or_else(|| Session::empty(&tab.target.kind));
         self.objects.active = Some(tab.id);
+        // the retained command or exact-owner witness needs its own captured identity after
+        // this render/dispatch; keep the original catalog, input or owner available for the
+        // later checks in this operation.
         self.objects.navigation = Some(tab.target.clone());
         session.install(self);
         self.finish_object_activation();
@@ -379,6 +394,9 @@ impl State {
         );
         if self.modified_table_draft(tab) && !approved {
             self.table_draft_discard_approved = None;
+            // the retained command or exact-owner witness needs its own captured identity after
+            // this render/dispatch; keep the original catalog, input or owner available for the
+            // later checks in this operation.
             self.table_draft_close = Some(super::table_draft::CloseIntent::Tab(tab.clone()));
             return false;
         }
@@ -414,6 +432,9 @@ impl State {
                 .objects
                 .entries
                 .get(index.min(self.objects.entries.len().saturating_sub(1)))
+                // Capture the exact current/next object identity before activating, taking or
+                // parking sessions mutates the object registry; borrowing an entry through that
+                // mutation would be invalid.
                 .map(|entry| entry.tab.clone());
             if let Some(next) = next {
                 self.activate_object(&next);
@@ -506,10 +527,16 @@ impl State {
             .as_ref()
             .filter(|data| data.source_revision == Some(document_revision))
             .map(|data| ObjectKind::Table {
+                // Construct a typed owned target whose table/field identity is retained
+                // separately from the borrowed data/catalog/query snapshot. The source
+                // observation remains available after command dispatch.
                 name: data.table.clone(),
             })
             .or_else(|| {
                 self.schema.as_ref().map(|schema| ObjectKind::Table {
+                    // Construct a typed owned target whose table/field identity is retained
+                    // separately from the borrowed data/catalog/query snapshot. The source
+                    // observation remains available after command dispatch.
                     name: schema.table.clone(),
                 })
             });
@@ -519,6 +546,9 @@ impl State {
             .as_ref()
             .map(|target| ObjectKind::SavedQuery {
                 object_id: target.object_id,
+                // Construct a typed owned target whose table/field identity is retained
+                // separately from the borrowed data/catalog/query snapshot. The source
+                // observation remains available after command dispatch.
                 name: target.name.clone(),
             });
         let active_view = self.view;
@@ -612,6 +642,9 @@ impl State {
             document_revision: target.document_revision,
             kind: ObjectKind::SavedQuery {
                 object_id: target.object_id,
+                // Construct a typed owned target whose table/field identity is retained
+                // separately from the borrowed data/catalog/query snapshot. The source
+                // observation remains available after command dispatch.
                 name: target.name.clone(),
             },
         })
@@ -638,6 +671,9 @@ impl State {
             .entries
             .iter()
             .find(|entry| entry.tab.id == id)
+            // Capture the exact current/next object identity before activating, taking or
+            // parking sessions mutates the object registry; borrowing an entry through that
+            // mutation would be invalid.
             .map(|entry| entry.tab.target.kind.clone())
         else {
             return;

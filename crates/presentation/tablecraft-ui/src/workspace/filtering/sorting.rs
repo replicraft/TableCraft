@@ -21,6 +21,8 @@ pub struct SortSpec {
 impl State {
     pub fn table_sort(&self) -> Option<SortSpec> {
         self.active_filter_target()?;
+        // Return or dispatch an owned identity snapshot from retained shared State; the caller
+        // may queue work or mutate State while the source owner must remain intact.
         self.table_filter.view.as_ref()?.sort.clone()
     }
 
@@ -39,6 +41,9 @@ impl State {
         let data = self.data.as_ref()?;
         let target = SortTarget {
             document_revision: data.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: data.table.clone(),
             filter_id: self.active_filter_target().map(|target| target.filter_id),
         };
@@ -78,6 +83,9 @@ impl State {
         if !self.can_sort_view(&target, sort.as_ref(), enabled) {
             return false;
         }
+        // Retain the exact prior source, selected column, scope, pattern or publication binding
+        // across mutation/publication. These owners reject stale work or preserve the other
+        // input; they cannot borrow the mutated State.
         let column = sort.as_ref().map(|sort| sort.column.clone());
         self.begin_filter_operation(
             request_id,
@@ -118,6 +126,9 @@ impl State {
                 return None;
             }
             let (_, column) = self.table_selection.position()?;
+            // Sort controls construct two independent candidate SortSpecs, each checked by
+            // can_sort_view and potentially queued while the selected column is still needed
+            // for the other direction.
             Some(data.columns.get(column)?.name.clone())
         });
         let enabled = self.table_filter_enabled();
@@ -126,6 +137,9 @@ impl State {
             (true, Icon::Descending, "ribbon-descending"),
         ] {
             let sort = column.as_ref().map(|column| SortSpec {
+                // Sort controls construct two independent candidate SortSpecs, each checked by
+                // can_sort_view and potentially queued while the selected column is still
+                // needed for the other direction.
                 column: column.clone(),
                 descending,
             });
@@ -139,6 +153,9 @@ impl State {
                 && let (Some(target), Some(sort)) = (&target, sort)
             {
                 actions.push(Action::SortView {
+                    // Action::SortView needs its own captured identity after this
+                    // render/dispatch; keep the original catalog, input or owner available for
+                    // the later checks in this operation.
                     target: target.clone(),
                     sort: Some(sort),
                     enabled,

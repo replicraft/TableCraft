@@ -10,6 +10,8 @@ impl State {
             self.query_design_view_menu(ui, actions);
             return;
         }
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let active = self.active_object();
         let table = active.as_ref().and_then(|tab| match &tab.target.kind {
@@ -55,6 +57,9 @@ impl State {
                     if draft {
                         self.queue_table_draft_view(false);
                     } else if let Some(tab) = active.as_ref() {
+                        // Action::ViewObjectDatasheet needs its own captured identity after
+                        // this render/dispatch; keep the original catalog, input or owner
+                        // available for the later checks in this operation.
                         actions.push(Action::ViewObjectDatasheet { tab: tab.clone() });
                     }
                     ui.close();

@@ -41,6 +41,8 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
         harness.run_steps(LAYOUT_SETTLE_STEPS);
         assert!(!harness.state().state().can_create_table());
     }
+    // Design scenario resolves many labels across actual key/frame mutations; shared locale
+    // handle avoids retaining a borrow of mutable harness, without copying catalog data.
     let localizer = harness.state().state().localizer.clone();
     assert!(harness.state().state().can_create_table_design());
     harness
@@ -227,6 +229,8 @@ pub(super) fn design(harness: &mut Harness<'_, Preview>, mode: &str) {
 }
 
 fn add_design_field(harness: &mut Harness<'_, Preview>, kind: &str, name: &str) {
+    // Add-field helper resolves multiple labels across harness mutations and later formats
+    // field-specific label; immutable shared locale owner remains stable.
     let localizer = harness.state().state().localizer.clone();
     harness
         .get_by_role_and_label(

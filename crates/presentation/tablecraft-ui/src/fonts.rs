@@ -71,6 +71,8 @@ pub fn configure(ctx: &Context, locale: Locale) {
         fallback.extend(preferred.iter().map(|name| (*name).to_owned()));
     }
 
+    // Bold fallback prepends its own family while preserving the independently configured
+    // proportional fallback order.
     let mut bold_fallback = fonts.families[&FontFamily::Proportional].clone();
     bold_fallback.insert(0, BOLD_FAMILY.to_owned());
     fonts

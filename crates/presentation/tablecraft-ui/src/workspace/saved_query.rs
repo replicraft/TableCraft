@@ -65,14 +65,23 @@ impl SavedQueryState {
 
     pub(super) fn input_preferences(&self) -> Option<InputPreferences> {
         if let Some(preferences) = &self.restored_inputs {
+            // Capture a distinct restoration/edit-input snapshot while the original live
+            // declarations, draft, tab or totals preferences remain in use; parameter edit text
+            // and declaration identity are separate owners.
             return Some(preferences.clone());
         }
         Some(InputPreferences {
+            // Capture a distinct restoration/edit-input snapshot while the original live
+            // declarations, draft, tab or totals preferences remain in use; parameter edit text
+            // and declaration identity are separate owners.
             inputs: self.inputs.clone(),
             declarations: self
                 .parameters
                 .as_ref()?
                 .iter()
+                // Capture a distinct restoration/edit-input snapshot while the original live
+                // declarations, draft, tab or totals preferences remain in use; parameter edit
+                // text and declaration identity are separate owners.
                 .map(|parameter| (parameter.name.clone(), parameter.kind.clone()))
                 .collect(),
         })
@@ -254,10 +263,16 @@ impl State {
         self.saved_query.inputs = parameters
             .iter()
             .map(|parameter| ParameterInput {
+                // Capture a distinct restoration/edit-input snapshot while the original live
+                // declarations, draft, tab or totals preferences remain in use; parameter edit
+                // text and declaration identity are separate owners.
                 name: parameter.name.clone(),
                 kind: if parameter.kind == "value" {
                     String::new()
                 } else {
+                    // Capture a distinct restoration/edit-input snapshot while the original
+                    // live declarations, draft, tab or totals preferences remain in use;
+                    // parameter edit text and declaration identity are separate owners.
                     parameter.kind.clone()
                 },
                 text: String::new(),

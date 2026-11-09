@@ -38,6 +38,8 @@ impl Sheet {
             .iter()
             .map(|key| {
                 ui.painter()
+                    // The layout API consumes this FontId; keep the original style or
+                    // loop-local descriptor available for the next measurement.
                     .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color())
                     .size()
                     .x

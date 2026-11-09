@@ -38,6 +38,9 @@ pub(in crate::workspace) fn parameters(
             .max_height(max_height)
             .show(ui, |ui| {
                 for (index, (spec, input)) in parameters.iter().zip(inputs).enumerate() {
+                    // Keep an independent initial/checkpoint/edit buffer before the widget or
+                    // conversion mutates input; it is used for rejection, reset, comparison or
+                    // preserving the original value.
                     let previous_kind = input.kind.clone();
                     let previous_null = input.is_null;
                     ui.push_id(index, |ui| {

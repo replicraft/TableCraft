@@ -142,6 +142,8 @@ impl Row<'_> {
                 .as_ref()
                 .is_none_or(|(field, _)| *field != position)
         {
+            // Inline insertion checkpoint must remain independent of the actively edited entry;
+            // Escape restores from it while retaining the checkpoint for repeated edits.
             self.editor.checkpoint = Some((position, entry.clone()));
         }
         // egui clears focused_widget for Escape before the UI pass. The
@@ -159,6 +161,9 @@ impl Row<'_> {
             if let Some((_, checkpoint)) = &self.editor.checkpoint
                 && entry != checkpoint
             {
+                // Inline insertion checkpoint must remain independent of the actively edited
+                // entry; Escape restores from it while retaining the checkpoint for repeated
+                // edits.
                 *entry = checkpoint.clone();
             } else {
                 actions.push(Action::CloseInsert {
@@ -231,6 +236,9 @@ impl Row<'_> {
             if self.editor.focus == Some(position) {
                 response.request_focus();
                 self.editor.focus = None;
+                // Inline insertion checkpoint must remain independent of the actively edited
+                // entry; Escape restores from it while retaining the checkpoint for repeated
+                // edits.
                 self.editor.checkpoint = Some((position, entry.clone()));
                 response.scroll_to_me(None);
             }

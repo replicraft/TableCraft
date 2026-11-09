@@ -129,6 +129,9 @@ impl State {
             return false;
         }
         let tab = match &close {
+            // the retained command or exact-owner witness needs its own captured identity after
+            // this render/dispatch; keep the original catalog, input or owner available for the
+            // later checks in this operation.
             Some(CloseIntent::Tab(tab)) => Some(tab.clone()),
             Some(CloseIntent::All) => self
                 .object_tabs()
@@ -157,6 +160,9 @@ impl State {
             revision: editor.draft.revision(),
             record_revision: editor.record.revision(),
             property_revision: editor.property_revision(),
+            // the retained command or exact-owner witness needs its own captured identity after
+            // this render/dispatch; keep the original catalog, input or owner available for the
+            // later checks in this operation.
             name: editor.save_name.clone(),
             id: None,
             phase: Phase::Naming,
@@ -372,6 +378,9 @@ impl State {
         let target = ObjectTarget {
             document_revision: database.document_revision,
             kind: ObjectKind::Table {
+                // ObjectTarget needs its own captured identity after this render/dispatch; keep
+                // the original catalog, input or owner available for the later checks in this
+                // operation.
                 name: save.name.clone(),
             },
         };

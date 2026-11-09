@@ -70,6 +70,8 @@ impl Preview {
             .take(MOCK_FIELD_COUNT)
             .enumerate()
             .map(|(position, column)| InsertField {
+                // InsertDraft field names are independently owned editable metadata; underlying
+                // table columns remain in State for current-source admission.
                 name: column.name.clone(),
                 input_hint: if generated && position == MOCK_AUTO_NUMBER_POSITION {
                     crate::InputHint::Int32
@@ -81,6 +83,8 @@ impl Preview {
             })
             .collect();
         let request = self.request();
+        // Checking insertion owner and final draft reply each own correlation target; final
+        // draft consumes original after one copy.
         self.state.begin_insert(target.clone(), request);
         self.state.set_insert_draft(
             request,
@@ -97,11 +101,15 @@ impl Preview {
             return;
         }
         let target = match &self.state.insertion {
+            // Current insertion draft remains live while independently owned simulated
+            // InsertReview needs target; cannot move from borrowed dialog.
             Some(Dialog::Draft { draft, .. }) => draft.target.clone(),
             _ => return,
         };
         let request = self.request();
         self.state
+            // Pending review snapshot and returned review retain independently owned inputs to
+            // check stale/mismatched proposal publication; original moved into final review.
             .begin_insert_review(draft_id, proposed.clone(), request);
         self.state.set_insert_review(
             request,

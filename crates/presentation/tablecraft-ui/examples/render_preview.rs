@@ -315,6 +315,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                 // The real desktop receives a full-viewport root Ui without it.
                 let viewport = ui.ctx().viewport_rect();
                 let mut root = egui::Ui::new(
+                    // Ui::new needs an owned Context handle while the harness and original root
+                    // Ui retain the same context; clone shares egui state, not widget/database
+                    // payloads.
                     ui.ctx().clone(),
                     egui::Id::new("tablecraft_preview_root"),
                     egui::UiBuilder::new()
@@ -453,6 +456,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
+    // Retain one shared locale handle while repeatedly mutating harness frames and resolving
+    // field/type/record/delete/design labels. No Fluent catalog duplication.
     let localizer = harness.state().state().localizer.clone();
     let boolean = matches!(mode, "boolean" | "boolean-omitted");
     let number = matches!(mode, "design-number-size" | "design-decimal");

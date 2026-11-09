@@ -85,6 +85,9 @@ fn entry(ui: &mut Ui, key: &str, icon: Option<Icon>) -> Response {
         ui.visuals().weak_text_color()
     };
     let galley = ui.painter().layout(
+        // Two real toolkit outputs retain the text independently (paint/layout, accessibility
+        // or hover/clipboard); the owning API consumes the String while the other output
+        // remains needed.
         label.clone(),
         egui::TextStyle::Button.resolve(ui.style()),
         text_color,

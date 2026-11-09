@@ -160,6 +160,9 @@ impl Visible {
         requested: Range<usize>,
     ) -> Result<(), IndexError> {
         if self.requested.as_ref() != Some(&requested) {
+            // Range is a small non-Copy descriptor consumed by indexing/visible-row lookup
+            // while the same original bounds remain cached or iterated; no underlying text is
+            // copied.
             self.rows = index.visible(value, requested.clone())?;
             self.requested = Some(requested);
         }

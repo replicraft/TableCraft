@@ -21,6 +21,8 @@ const SQL: &str = concat!(
 const MAX_EDITOR_HEIGHT: f32 = 150.0;
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>) {
+    // Borrowed selected target must be owned across mutable State inspection and editor setup,
+    // preserving exact source identity.
     let target = harness
         .state()
         .state()
@@ -30,6 +32,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>) {
     {
         let state = harness.state_mut().state_mut();
         state.saved_query_sql_edit_available = true;
+        // Inspection owner retains target while the original continues into details and SQL
+        // source inspection.
         state.begin_saved_query_inspection(target.clone(), INSPECTION_ID);
         assert!(state.set_saved_query_details(INSPECTION_ID, &target, vec![]));
         let request = state

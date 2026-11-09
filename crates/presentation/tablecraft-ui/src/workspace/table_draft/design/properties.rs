@@ -35,6 +35,8 @@ pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
     let line_height = |key| {
         let text_height = ui
             .painter()
+            // The layout API consumes this FontId; keep the original style or loop-local
+            // descriptor available for the next measurement.
             .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color())
             .size()
             .y;

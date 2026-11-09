@@ -58,6 +58,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         assert!(state.set_table_data(Data {
             source_revision: Some(tab.target.document_revision),
             row_ordinals: None,
+            // The synthetic Data table name must be owned while the independent active-tab
+            // identity remains available for field-addition preparation.
             table: name.clone(),
             offset: 0,
             columns: vec!["ID".into()],

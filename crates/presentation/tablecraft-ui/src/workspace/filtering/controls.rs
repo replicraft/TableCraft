@@ -80,6 +80,9 @@ impl State {
             ] {
                 if ui.button(tr(ui, key)).clicked() {
                     actions.push(Action::FilterSelection {
+                        // Action::FilterSelection needs its own captured identity after this
+                        // render/dispatch; keep the original catalog, input or owner available
+                        // for the later checks in this operation.
                         target: target.clone(),
                         comparison,
                     });
@@ -197,6 +200,9 @@ impl State {
             .clicked()
         {
             actions.push(Action::FilterPage {
+                // Action::FilterPage needs its own captured identity after this
+                // render/dispatch; keep the original catalog, input or owner available for the
+                // later checks in this operation.
                 target: target.clone(),
                 offset: previous,
                 enabled,

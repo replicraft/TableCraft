@@ -127,6 +127,9 @@ impl Editors {
         }
         self.entries.try_reserve(1).ok()?;
         let literal = match field.default_mode() {
+            // Default editor cache and validated TableDraft each own a literal independently;
+            // setter refusal must retain the original raw edit and success keeps both caches
+            // synchronized.
             DraftDefaultMode::Literal(text) => text.clone(),
             _ => String::new(),
         };
@@ -244,6 +247,9 @@ impl Editors {
             DefaultChoice::Absent => DraftDefaultMode::Absent,
             DefaultChoice::Null => DraftDefaultMode::Null,
             DefaultChoice::Literal => {
+                // Default editor cache and validated TableDraft each own a literal
+                // independently; setter refusal must retain the original raw edit and success
+                // keeps both caches synchronized.
                 DraftDefaultMode::Literal(self.entries[position].literal.clone())
             }
         };
@@ -290,6 +296,9 @@ impl Editors {
         if draft
             .set_field_default(
                 self.entries[position].field,
+                // Default editor cache and validated TableDraft each own a literal
+                // independently; setter refusal must retain the original raw edit and success
+                // keeps both caches synchronized.
                 DraftDefaultMode::Literal(raw.clone()),
             )
             .is_err()

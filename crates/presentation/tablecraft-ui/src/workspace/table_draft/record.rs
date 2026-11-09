@@ -288,6 +288,9 @@ impl RowDraft {
                 .map(|entry| match entry.choice {
                     Choice::Omitted => InsertInput::Omitted,
                     Choice::Null | Choice::Value => InsertInput::Value(EditInput {
+                        // An independent insertion request/record snapshot or editable widget
+                        // candidate keeps raw entry text; the original typed entry is retained
+                        // for no-change, rejected-input and mode restoration semantics.
                         text: entry.text.clone(),
                         is_null: entry.choice == Choice::Null,
                     }),
@@ -304,6 +307,9 @@ impl RowDraft {
         Some(
             self.entries
                 .iter()
+                // An independent insertion request/record snapshot or editable widget candidate
+                // keeps raw entry text; the original typed entry is retained for no-change,
+                // rejected-input and mode restoration semantics.
                 .map(|entry| entry.text.clone())
                 .collect(),
         )
@@ -373,6 +379,9 @@ impl RowDraft {
         let original_revision = self.revision;
         let mut choice = entry.choice;
         let mut text = if choice == Choice::Value {
+            // An independent insertion request/record snapshot or editable widget candidate
+            // keeps raw entry text; the original typed entry is retained for no-change,
+            // rejected-input and mode restoration semantics.
             entry.text.clone()
         } else {
             String::new()
@@ -436,6 +445,11 @@ impl RowDraft {
                                         Choice::Omitted => InsertInput::Omitted,
                                         Choice::Null | Choice::Value => {
                                             InsertInput::Value(EditInput {
+                                                // An independent insertion request/record
+                                                // snapshot or editable widget candidate keeps
+                                                // raw entry text; the original typed entry is
+                                                // retained for no-change, rejected-input and
+                                                // mode restoration semantics.
                                                 text: self.entries[position].text.clone(),
                                                 is_null: choice == Choice::Null,
                                             })

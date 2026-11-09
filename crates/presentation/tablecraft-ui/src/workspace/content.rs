@@ -247,6 +247,9 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
             .clicked()
         {
             actions.push(Action::Page {
+                // Action::Page needs its own captured identity after this render/dispatch; keep
+                // the original catalog, input or owner available for the later checks in this
+                // operation.
                 table: data.table.clone(),
                 offset: data.offset.saturating_sub(100),
             });
@@ -279,6 +282,9 @@ fn page_navigator(ui: &mut Ui, data: &super::Data, busy: bool, actions: &mut Vec
             .clicked()
         {
             actions.push(Action::Page {
+                // Action::Page needs its own captured identity after this render/dispatch; keep
+                // the original catalog, input or owner available for the later checks in this
+                // operation.
                 table: data.table.clone(),
                 offset: next_offset.expect("enabled only for a valid next page"),
             });

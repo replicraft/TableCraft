@@ -36,6 +36,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             .bind(PRESENTATION_SAVE_ID);
         let sample = state.localizer.text("editing-mock-diagnosis");
         assert!(
+            // Saved report and failed AFTER-read report remain visible independently; sample is
+            // moved into final failure after one necessary saved-status copy.
             state.set_field_addition_save_outcome(identity, EditSaveOutcome::Saved(sample.clone()))
         );
         assert!(state.begin_field_addition_reopen(identity));

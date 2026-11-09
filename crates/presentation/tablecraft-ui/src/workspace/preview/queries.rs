@@ -100,6 +100,8 @@ impl Preview {
         let target = fixtures::saved_target();
         let request = self.request();
         self.state
+            // Inspection retains target while typed detail publication checks the caller-owned
+            // exact target; last copy remains necessary with owned inspection API.
             .begin_saved_query_inspection(target.clone(), request);
         assert!(
             self.state
@@ -115,6 +117,8 @@ impl Preview {
 
     fn successful_saved_result(&mut self) -> (SavedQueryTarget, Vec<ParameterInput>) {
         let target = fixtures::saved_target();
+        // inspect_saved consumes original into pending/details while helper needs exact target
+        // for subsequent run/result and return to caller.
         self.inspect_saved(target.clone());
         let inputs = fixtures::parameters(&target)
             .into_iter()
@@ -131,8 +135,12 @@ impl Preview {
         );
         let request = self.request();
         self.state
+            // The pending run retains its parameter snapshot while this helper returns the same
+            // authored inputs for a later running/error scene; both snapshots remain live.
             .begin_saved_query_run(&target, inputs.clone(), request);
         let mut data = fixtures::query();
+        // Result Data table name must be owned independently of target retained in saved-query
+        // session and returned to caller.
         data.table = target.name.clone();
         assert!(
             self.state.set_saved_query_data(request, &target, data),

@@ -78,6 +78,8 @@ impl RetainedInput {
                     ui.small(tr(ui, "insertion-preview-truncated"));
                 }
                 if ui.button(tr(ui, "insertion-copy-input")).clicked() {
+                    // The clipboard output owns its text beyond this borrowed cell/retained
+                    // editor; the existing source text must remain available.
                     ui.ctx().copy_text(entry.text.clone());
                 }
             });

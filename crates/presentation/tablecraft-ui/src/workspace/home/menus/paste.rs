@@ -23,6 +23,8 @@ pub(in crate::workspace) struct PendingPaste {
 
 impl State {
     pub(in crate::workspace) fn paste_menu(&mut self, ui: &mut Ui) {
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let current = self.current_paste_target().map(|target| PasteMenuWitness {
             target,
@@ -53,7 +55,13 @@ impl State {
             let captured = ui.data_mut(|data| {
                 let captured = data
                     .get_temp::<PasteMenuWitness>(witness_id)
+                    // the retained command or exact-owner witness needs its own captured
+                    // identity after this render/dispatch; keep the original catalog, input or
+                    // owner available for the later checks in this operation.
                     .unwrap_or_else(|| current.clone());
+                // the retained command or exact-owner witness needs its own captured identity
+                // after this render/dispatch; keep the original catalog, input or owner
+                // available for the later checks in this operation.
                 data.insert_temp(witness_id, captured.clone());
                 captured
             });

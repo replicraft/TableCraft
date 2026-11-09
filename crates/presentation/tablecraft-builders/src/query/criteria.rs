@@ -86,6 +86,9 @@ fn criterion(
                         .as_str()
                         .eq_ignore_ascii_case(field.name.as_str())
                 {
+                    // Each contextual predicate field is replaced with an owned qualified
+                    // reference while the original current field remains the template for other
+                    // occurrences.
                     *reference = field.clone();
                 }
                 Ok(())
@@ -109,6 +112,8 @@ fn criterion(
     } else {
         Expression::Binary {
             operator: BinaryOperator::Equal,
+            // A scalar criterion wraps an owned current-operand AST in an equality predicate
+            // while retaining the borrowed grid expression for other criteria rows.
             left: Box::new(current.clone()),
             right: Box::new(value),
         }

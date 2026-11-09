@@ -38,6 +38,8 @@ impl State {
             self.set_ribbon_collapsed(self.ribbon_collapsed());
         }
         let colors = palette(ui.ctx());
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         egui::Panel::top("title")
             .frame(Frame::new().fill(colors.title_fill).inner_margin(Margin {
@@ -91,6 +93,8 @@ impl State {
                     let status =
                         status.map(|text| RichText::new(text).color(colors.muted).size(11.0));
                     let status_width = status.as_ref().map_or(0.0, |text| {
+                        // Measure an independently owned WidgetText galley before retaining
+                        // RichText for the actual status label.
                         egui::WidgetText::from(text.clone())
                             .into_galley(
                                 ui,
@@ -265,6 +269,8 @@ impl State {
 
 impl State {
     fn status_bar(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
+        // Share the immutable localization bundle across mutable widget work; Localizer clones
+        // its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let colors = palette(ui.ctx());
         ui.horizontal(|ui| {
@@ -309,6 +315,8 @@ impl State {
                         if increase.on_hover_text(t.text("shell-zoom-in")).clicked() {
                             zoom = zoom.saturating_add(ZOOM_STEP_PERCENT);
                         }
+                        // An independent style is customized and installed; the shared original
+                        // theme/widget style must remain unchanged.
                         let mut style = (**ui.style()).clone();
                         style.spacing.slider_width = ZOOM_SLIDER_WIDTH;
                         style.spacing.slider_rail_height = 2.0;
@@ -430,6 +438,8 @@ impl State {
 }
 
 fn ribbon_tab_size(ui: &Ui, label: &str) -> egui::Vec2 {
+    // The layout API consumes this FontId; keep the original style or loop-local descriptor
+    // available for the next measurement.
     let font = ui.style().text_styles[&egui::TextStyle::Button].clone();
     let text = ui
         .painter()

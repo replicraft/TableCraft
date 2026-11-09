@@ -153,6 +153,9 @@ pub(super) fn group_with_launcher(
                 ui.ctx().accesskit_node_builder(response.id, |node| {
                     node.remove_action(egui::accesskit::Action::Click);
                     node.remove_action(egui::accesskit::Action::Focus);
+                    // Two real toolkit outputs retain the text independently (paint/layout,
+                    // accessibility or hover/clipboard); the owning API consumes the String
+                    // while the other output remains needed.
                     node.set_description(help.clone());
                 });
                 response.on_disabled_hover_text(help);
@@ -264,6 +267,8 @@ fn command_inner(
             CommandSize::Small => {
                 let text = ui
                     .painter()
+                    // The layout API consumes this FontId; keep the original style or
+                    // loop-local descriptor available for the next measurement.
                     .layout_no_wrap(label.to_owned(), font.clone(), color);
                 (
                     egui::vec2(SMALL_ICON_SIZE + text.size().x + 10.0, SMALL_COMMAND_HEIGHT),
@@ -356,6 +361,8 @@ fn command_inner(
         };
         icon.image(ui, image_rect.width()).paint_at(ui, image_rect);
         if !matches!(size, CommandSize::IconOnly) {
+            // The painter owns the shared galley while subsequent menu-chevron geometry still
+            // reads its text rows; only the shared pointer is duplicated.
             ui.painter().galley(text_position, text.clone(), color);
         }
         if let Some(placement) = menu {
@@ -405,6 +412,9 @@ fn command_inner(
             ui.ctx().accesskit_node_builder(response.id, |node| {
                 node.remove_action(egui::accesskit::Action::Click);
                 node.remove_action(egui::accesskit::Action::Focus);
+                // Two real toolkit outputs retain the text independently (paint/layout,
+                // accessibility or hover/clipboard); the owning API consumes the String while
+                // the other output remains needed.
                 node.set_description(unavailable_help.clone());
             });
         }
@@ -423,6 +433,8 @@ fn command_inner(
 fn large_command_width(ui: &Ui, label: &str, font: &FontId, color: egui::Color32) -> f32 {
     let measure = |text: &str| {
         ui.painter()
+            // The layout API consumes this FontId; keep the original style or loop-local
+            // descriptor available for the next measurement.
             .layout_no_wrap(text.to_owned(), font.clone(), color)
             .size()
             .x

@@ -21,6 +21,8 @@ impl Preview {
             data.has_more = false;
             data
         };
+        // The displayed page and occurrence receipt retain independent text snapshots; copy for
+        // the first owner and move the original into the final snapshot.
         self.state.set_table_data(data(text.clone()));
         let request_id = self.request();
         let start_utf16 = if long { 520 } else { 1 };

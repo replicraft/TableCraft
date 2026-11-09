@@ -35,6 +35,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         read_only_source::prepare(harness);
         return;
     }
+    // selected_saved_target borrows State; the scenario must retain exact target while mutating
+    // that State through inspection/editor/close phases.
     let target = harness
         .state()
         .state()
@@ -46,6 +48,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         // Explicit example-only host fact. Normal Preview remains unavailable;
         // this synthetic inspection never issues native or save authority.
         state.saved_query_sql_edit_available = true;
+        // begin_saved_query_inspection owns its pending target while the original is needed for
+        // detail publication and subsequent SQL inspection.
         state.begin_saved_query_inspection(target.clone(), INSPECTION_ID);
         assert!(state.set_saved_query_details(INSPECTION_ID, &target, vec![]));
         let request = state

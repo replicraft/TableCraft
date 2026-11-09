@@ -81,6 +81,9 @@ impl State {
                 Preference {
                     query_design,
                     totals,
+                    // Capture a distinct restoration/edit-input snapshot while the original
+                    // live declarations, draft, tab or totals preferences remain in use;
+                    // parameter edit text and declaration identity are separate owners.
                     kind: entry.tab.target.kind.clone(),
                     design,
                     offset,
@@ -94,6 +97,9 @@ impl State {
                 (!matches!(tab.target.kind, ObjectKind::DraftTable { .. }))
                     .then_some(tab.target.kind)
             }),
+            // Capture a distinct restoration/edit-input snapshot while the original live
+            // declarations, draft, tab or totals preferences remain in use; parameter edit text
+            // and declaration identity are separate owners.
             scratch_sql: self.sql.clone(),
         }
     }
@@ -116,6 +122,9 @@ impl State {
             || layout.entries.iter().any(|entry| {
                 !self.object_binding(&ObjectTarget {
                     document_revision: revision,
+                    // The restore or shortcut candidate retains its exact identity
+                    // independently of the original layout/registry and active-owner witness
+                    // before registry installation or deferred dispatch.
                     kind: entry.kind.clone(),
                 })
             })
@@ -145,6 +154,9 @@ impl State {
                     .find(|entry| Some(&entry.tab.target.kind) == layout.active.as_ref())
             })
             .or_else(|| restored.entries.first())
+            // The restore or shortcut candidate retains its exact identity independently of the
+            // original layout/registry and active-owner witness before registry installation or
+            // deferred dispatch.
             .map(|entry| entry.tab.clone());
         if restored
             .retained_bytes()

@@ -39,6 +39,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     assert!(state.set_table_data(Data {
         source_revision: Some(revision),
         row_ordinals: None,
+        // The table Data and the pending field-operation tab retain independent owned table
+        // names; both identities must survive the state transition.
         table: name.clone(),
         offset: 0,
         columns: vec![

@@ -20,6 +20,9 @@ pub(super) fn grid(ui: &mut Ui, data: &Data) -> Ui {
         .flatten();
     grid.ctx().accesskit_node_builder(grid.unique_id(), |node| {
         node.set_role(Role::Grid);
+        // Two real toolkit outputs retain the text independently (paint/layout, accessibility
+        // or hover/clipboard); the owning API consumes the String while the other output
+        // remains needed.
         node.set_label(data.table.clone());
         node.set_column_count(data.columns.len() + 1);
         if let Some(count) = row_count {

@@ -448,6 +448,9 @@ pub fn build_ast(
             Some(sort) => {
                 if column.show {
                     projection.push(Projection::Expression {
+                        // A visible sorted grid column must populate both independent
+                        // projection and ORDER BY AST expressions; the original expression then
+                        // moves into the sort key.
                         expression: value.clone(),
                         alias,
                     });
@@ -487,6 +490,8 @@ pub fn build(
     // The public parser remains the canonical syntax/structural ceiling.
     parse_query(&sql, ParseLimits::default())?;
     Ok(BuiltQueryDesign {
+        // BuiltQueryDesign returns an owned validated draft and SQL while the borrowed input
+        // draft remains with its caller/editor.
         draft: draft.clone(),
         sql,
     })

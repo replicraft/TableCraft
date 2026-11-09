@@ -52,6 +52,9 @@ impl State {
                         .target
                         .as_ref()
                         .expect("selected saved query")
+                        // Return or dispatch an owned identity snapshot from retained shared
+                        // State; the caller may queue work or mutate State while the source
+                        // owner must remain intact.
                         .clone(),
                 });
             }

@@ -392,6 +392,11 @@ fn render_rows(
                                                 );
                                                 if response.clicked() {
                                                     actions.push(Action::BeginInsert {
+                                                        // Action::BeginInsert needs its own
+                                                        // captured identity after this
+                                                        // render/dispatch; keep the original
+                                                        // catalog, input or owner available for
+                                                        // the later checks in this operation.
                                                         target: target.clone(),
                                                     });
                                                 }
@@ -594,6 +599,9 @@ fn empty_body(ui: &mut Ui, bounds: egui::Rect, scale: f32) {
     let color = crate::theme::palette(ui.ctx()).muted;
     let font = egui::TextStyle::Body.resolve(ui.style());
     let width = (visible.right() - origin.x).max(0.0);
+    // Two real toolkit outputs retain the text independently (paint/layout, accessibility or
+    // hover/clipboard); the owning API consumes the String while the other output remains
+    // needed.
     let galley = ui.painter().layout(message.clone(), font, color, width);
     let message_rect = egui::Rect::from_min_size(origin, galley.size());
     ui.painter().galley(origin, galley, color);
@@ -680,7 +688,13 @@ fn column_header(
                     actions.push(Action::DescribeFieldFilter {
                         target: crate::FieldFilterTarget {
                             document_revision: header.target.document_revision,
+                            // FieldFilterTarget needs its own captured identity after this
+                            // render/dispatch; keep the original catalog, input or owner
+                            // available for the later checks in this operation.
                             table: header.target.table.clone(),
+                            // FieldFilterTarget needs its own captured identity after this
+                            // render/dispatch; keep the original catalog, input or owner
+                            // available for the later checks in this operation.
                             column: column.name.clone(),
                             filter_id: header.target.filter_id,
                             enabled: header.enabled,
@@ -694,8 +708,14 @@ fn column_header(
                 {
                     if ui.button(tr(ui, key)).clicked() {
                         actions.push(Action::SortView {
+                            // SortSpec needs its own captured identity after this
+                            // render/dispatch; keep the original catalog, input or owner
+                            // available for the later checks in this operation.
                             target: header.target.clone(),
                             sort: Some(SortSpec {
+                                // SortSpec needs its own captured identity after this
+                                // render/dispatch; keep the original catalog, input or owner
+                                // available for the later checks in this operation.
                                 column: column.name.clone(),
                                 descending,
                             }),
@@ -830,6 +850,9 @@ fn collect_contents_action(
         });
         if let Some(text) = pasted {
             actions.push(Action::PasteCell {
+                // Action::PasteCell needs its own captured identity after this render/dispatch;
+                // keep the original catalog, input or owner available for the later checks in
+                // this operation.
                 target: target.clone(),
                 text,
             });

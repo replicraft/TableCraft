@@ -17,6 +17,9 @@ impl Cache {
         }
 
         self.engine = Engine::new(options).ok();
+        // Capture the actual formatting policy independently for cache invalidation,
+        // pending-result rejection or the displayed dialog binding; later preference edits must
+        // not mutate that snapshot.
         self.policy = Some(options.clone());
         true
     }

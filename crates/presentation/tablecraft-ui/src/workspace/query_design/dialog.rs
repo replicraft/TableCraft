@@ -39,6 +39,8 @@ impl State {
             .as_ref()
             .is_none_or(|selected| !tables().any(|table| &table.name == selected))
         {
+            // The Show Table dialog retains selected table identity independently of the
+            // borrowed table inventory, including across frames.
             session.selected_table = tables().next().map(|table| table.name.clone());
         }
         let mut close = false;
@@ -89,10 +91,21 @@ impl State {
                                 });
                                 if response.clicked() {
                                     row_clicked = true;
+                                    // The Show Table dialog retains selected table identity
+                                    // independently of the borrowed table inventory, including
+                                    // across frames.
                                     session.selected_table = Some(table.clone());
                                     if click::activate(ui, &response, &mut session.click_pair) {
                                         actions.push(Action::DescribeQueryDesign {
+                                            // Action::DescribeQueryDesign needs its own
+                                            // captured identity after this render/dispatch;
+                                            // keep the original catalog, input or owner
+                                            // available for the later checks in this operation.
                                             request: request.clone(),
+                                            // Action::DescribeQueryDesign needs its own
+                                            // captured identity after this render/dispatch;
+                                            // keep the original catalog, input or owner
+                                            // available for the later checks in this operation.
                                             table: table.clone(),
                                         });
                                     }
@@ -109,6 +122,11 @@ impl State {
                     .iter()
                     .map(|label| {
                         ui.painter()
+                            // Two real toolkit outputs retain the text independently
+                            // (paint/layout, accessibility or hover/clipboard); the owning API
+                            // consumes the String while the other output remains needed.
+                            // The layout API consumes this FontId; keep the original style or
+                            // loop-local descriptor available for the next measurement.
                             .layout_no_wrap(label.clone(), font.clone(), ui.visuals().text_color())
                             .size()
                             .x
@@ -129,7 +147,13 @@ impl State {
                     {
                         session.click_pair = None;
                         actions.push(Action::DescribeQueryDesign {
+                            // Action::DescribeQueryDesign needs its own captured identity after
+                            // this render/dispatch; keep the original catalog, input or owner
+                            // available for the later checks in this operation.
                             request: request.clone(),
+                            // Action::DescribeQueryDesign needs its own captured identity after
+                            // this render/dispatch; keep the original catalog, input or owner
+                            // available for the later checks in this operation.
                             table: session.selected_table.clone().expect("enabled selection"),
                         });
                     }

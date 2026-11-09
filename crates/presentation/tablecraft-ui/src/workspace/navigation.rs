@@ -79,6 +79,10 @@ impl State {
                             .database
                             .as_ref()
                             .map(|database| database.document_revision),
+                        // Retain the exact prior source, selected column, scope, pattern or
+                        // publication binding across mutation/publication. These owners reject
+                        // stale work or preserve the other input; they cannot borrow the
+                        // mutated State.
                         filter: self.filter.clone(),
                         show_system: self.show_system,
                         expansion: group::expansion(ui),
@@ -112,6 +116,11 @@ impl State {
                                     let target = ObjectTarget {
                                         document_revision: db.document_revision,
                                         kind: ObjectKind::Table {
+                                            // Construct a typed owned target whose table/field
+                                            // identity is retained separately from the borrowed
+                                            // data/catalog/query snapshot. The source
+                                            // observation remains available after command
+                                            // dispatch.
                                             name: table.name.clone(),
                                         },
                                     };
@@ -140,6 +149,11 @@ impl State {
                                                 })
                                                 && self.can_rename_table(&target)
                                             {
+                                                // the retained command or exact-owner witness
+                                                // needs its own captured identity after this
+                                                // render/dispatch; keep the original catalog,
+                                                // input or owner available for the later checks
+                                                // in this operation.
                                                 rename_target = Some(target.clone());
                                             }
                                             response.context_menu(|ui| {
@@ -157,6 +171,12 @@ impl State {
                                                     ))
                                                     .clicked()
                                                 {
+                                                    // the retained command or exact-owner
+                                                    // witness needs its own captured identity
+                                                    // after this render/dispatch; keep the
+                                                    // original catalog, input or owner
+                                                    // available for the later checks in this
+                                                    // operation.
                                                     rename_target = Some(target.clone());
                                                     ui.close();
                                                 }
@@ -172,6 +192,11 @@ impl State {
                                                     .clicked()
                                                 {
                                                     actions.push(Action::OpenObject {
+                                                        // Action::OpenObject needs its own
+                                                        // captured identity after this
+                                                        // render/dispatch; keep the original
+                                                        // catalog, input or owner available for
+                                                        // the later checks in this operation.
                                                         target: target.clone(),
                                                     });
                                                     ui.close();
@@ -187,12 +212,21 @@ impl State {
                                                     .clicked()
                                                 {
                                                     actions.push(Action::ViewSchema {
+                                                        // Action::ViewSchema needs its own
+                                                        // captured identity after this
+                                                        // render/dispatch; keep the original
+                                                        // catalog, input or owner available for
+                                                        // the later checks in this operation.
                                                         table: table.name.clone(),
                                                     });
                                                     ui.close();
                                                 }
                                             });
                                             if response.clicked() {
+                                                // Action::ViewSchema needs its own captured
+                                                // identity after this render/dispatch; keep the
+                                                // original catalog, input or owner available
+                                                // for the later checks in this operation.
                                                 selected_object = Some(target.clone());
                                             }
                                             if clicks.opened(ui, &response, enter_pressed)
@@ -219,6 +253,11 @@ impl State {
                                         document_revision: db.document_revision,
                                         kind: ObjectKind::SavedQuery {
                                             object_id: query.object_id,
+                                            // Construct a typed owned target whose table/field
+                                            // identity is retained separately from the borrowed
+                                            // data/catalog/query snapshot. The source
+                                            // observation remains available after command
+                                            // dispatch.
                                             name: query.name.clone(),
                                         },
                                     };
@@ -252,12 +291,23 @@ impl State {
                                                         .clicked()
                                                     {
                                                         actions.push(Action::OpenObject {
+                                                            // Action::OpenObject needs its own
+                                                            // captured identity after this
+                                                            // render/dispatch; keep the original
+                                                            // catalog, input or owner available
+                                                            // for the later checks in this
+                                                            // operation.
                                                             target: target.clone(),
                                                         });
                                                         ui.close();
                                                     }
                                                 });
                                                 if response.clicked() {
+                                                    // Action::OpenObject needs its own captured
+                                                    // identity after this render/dispatch; keep
+                                                    // the original catalog, input or owner
+                                                    // available for the later checks in this
+                                                    // operation.
                                                     selected_object = Some(target.clone());
                                                 }
                                                 if clicks.opened(ui, &response, enter_pressed)

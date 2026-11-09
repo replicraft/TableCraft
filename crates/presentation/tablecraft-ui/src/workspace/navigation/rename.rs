@@ -85,6 +85,9 @@ impl State {
             return false;
         };
         self.table_rename = Some(Rename {
+            // the retained command or exact-owner witness needs its own captured identity after
+            // this render/dispatch; keep the original catalog, input or owner available for the
+            // later checks in this operation.
             name: name.clone(),
             target,
             focus: true,
@@ -409,9 +412,18 @@ impl State {
                 let request = TableRenameRequest {
                     id: previous + 1,
                     document_revision: rename.target.document_revision,
+                    // the retained command or exact-owner witness needs its own captured
+                    // identity after this render/dispatch; keep the original catalog, input or
+                    // owner available for the later checks in this operation.
                     table: name.clone(),
+                    // the retained command or exact-owner witness needs its own captured
+                    // identity after this render/dispatch; keep the original catalog, input or
+                    // owner available for the later checks in this operation.
                     new_name: rename.name.clone(),
                 };
+                // Action::RenameTable needs its own captured identity after this
+                // render/dispatch; keep the original catalog, input or owner available for the
+                // later checks in this operation.
                 rename.phase = Phase::Reviewing(request.clone());
                 actions.push(Action::RenameTable { request });
             } else {

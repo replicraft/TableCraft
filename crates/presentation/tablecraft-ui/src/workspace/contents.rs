@@ -50,7 +50,13 @@ impl Data {
         }
         Some(ContentsTarget {
             document_revision: self.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: self.table.clone(),
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             column: self.columns.get(column)?.name.clone(),
             parent_ordinal: self.parent_ordinal(row)?,
         })

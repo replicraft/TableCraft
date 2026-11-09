@@ -303,6 +303,8 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
         ui.painter()
             .layout(
                 tr(ui, key),
+                // The layout API consumes this FontId; keep the original style or loop-local
+                // descriptor available for the next measurement.
                 font.clone(),
                 ui.visuals().text_color(),
                 ui.available_width(),

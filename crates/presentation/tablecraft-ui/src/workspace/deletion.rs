@@ -74,6 +74,9 @@ impl State {
         data.rows.get(row)?;
         let target = DeleteTarget {
             document_revision: data.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: data.table.clone(),
             parent_ordinal: data.parent_ordinal(row)?,
         };

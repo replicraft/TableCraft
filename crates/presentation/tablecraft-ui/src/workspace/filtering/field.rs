@@ -150,6 +150,9 @@ impl State {
         let data = self.data.as_ref()?;
         let target = FieldFilterTarget {
             document_revision: data.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: data.table.clone(),
             column: column.to_owned(),
             filter_id: self.active_filter_target().map(|target| target.filter_id),
@@ -211,6 +214,9 @@ impl State {
             target,
             object,
             publication: self.focus_publication,
+            // Capture the actual formatting policy independently for cache invalidation,
+            // pending-result rejection or the displayed dialog binding; later preference edits
+            // must not mutate that snapshot.
             formatting: self.formatting.clone(),
             request_id,
             description: None,
@@ -300,6 +306,9 @@ impl State {
         field.request_id = request_id;
         field.applying = true;
         field.error = None;
+        // Retain the exact prior source, selected column, scope, pattern or publication binding
+        // across mutation/publication. These owners reject stale work or preserve the other
+        // input; they cannot borrow the mutated State.
         let column = target.column.clone();
         self.begin_filter_operation(request_id, Operation::Field { target, operator });
         if let Some(pending) = &mut self.table_filter.pending {

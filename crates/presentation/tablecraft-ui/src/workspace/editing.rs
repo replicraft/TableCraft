@@ -91,7 +91,13 @@ impl Data {
         }
         Some(EditTarget {
             document_revision: self.source_revision?,
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             table: self.table.clone(),
+            // Construct a typed owned target whose table/field identity is retained separately
+            // from the borrowed data/catalog/query snapshot. The source observation remains
+            // available after command dispatch.
             column: self.columns.get(column)?.name.clone(),
             parent_ordinal: self.parent_ordinal(row)?,
         })
@@ -195,6 +201,9 @@ impl State {
                 _ => None,
             };
             let input = seed.map_or_else(
+                // Keep an independent initial/checkpoint/edit buffer before the widget or
+                // conversion mutates input; it is used for rejection, reset, comparison or
+                // preserving the original value.
                 || draft.initial.clone(),
                 |text| EditInput {
                     text,

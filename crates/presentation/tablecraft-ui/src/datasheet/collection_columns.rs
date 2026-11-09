@@ -13,6 +13,8 @@ const TEXT_MARGIN: f32 = super::CELL_TEXT_PADDING * 2.0 + 4.0;
 /// remain untouched; the last column keeps its independent remainder policy.
 pub(super) fn initial_widths(ui: &Ui, data: &Data) -> Vec<f32> {
     let mut widths = vec![INITIAL_MIN_WIDTH; data.columns.len()];
+    // The layout API consumes this FontId; keep the original style or loop-local descriptor
+    // available for the next measurement.
     let font = ui.style().text_styles[&TextStyle::Body].clone();
     let color = ui.visuals().text_color();
     let sampled_columns = data.columns.len().saturating_sub(1).min(SAMPLE_COLUMNS);
@@ -27,6 +29,8 @@ pub(super) fn initial_widths(ui: &Ui, data: &Data) -> Vec<f32> {
         );
         for label in labels {
             let prefix: String = label.chars().take(SAMPLE_CHARACTERS).collect();
+            // The layout API consumes this FontId; keep the original style or loop-local
+            // descriptor available for the next measurement.
             let galley = ui.painter().layout_no_wrap(prefix, font.clone(), color);
             *width = width
                 .max(galley.size().x + TEXT_MARGIN)

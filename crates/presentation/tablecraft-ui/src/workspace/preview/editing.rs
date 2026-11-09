@@ -111,6 +111,9 @@ impl Preview {
 
     fn pending_mock_review(&mut self) -> u64 {
         let input = replacement();
+        // preview_review consumes input into reviewed state, then this scenario intentionally
+        // begins a second pending review with same authored input to display validation;
+        // ownership crosses both states.
         self.preview_review(input.clone())
             .expect("synthetic review fixture is valid");
         let Some(EditDialog::Draft { draft, .. }) = &self.state.edit else {

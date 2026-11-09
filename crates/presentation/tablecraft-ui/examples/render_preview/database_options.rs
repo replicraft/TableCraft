@@ -104,6 +104,9 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 let report = state.localizer.text("editing-mock-diagnosis");
                 assert!(state.set_database_options_save_outcome(
                     identity,
+                    // Saved-outcome status and later failed-reopen warning retain independent
+                    // report strings simultaneously; one display owner must not consume the
+                    // other.
                     EditSaveOutcome::Saved(report.clone())
                 ));
                 assert!(state.begin_database_options_reopen(identity));
