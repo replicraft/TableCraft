@@ -91,7 +91,7 @@ impl State {
                     command = Some(Command::RetryReopen);
                 }
                 if self.can_return_to_number_column_draft(identity)
-                    && ui.button(tr(ui, "saved-query-save-return-draft")).clicked()
+                    && ui.button(tr(ui, "datasheet-number-return-draft")).clicked()
                 {
                     command = Some(Command::ReturnToDraft);
                 }

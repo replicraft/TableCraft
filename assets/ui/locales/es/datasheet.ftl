@@ -98,3 +98,6 @@ datasheet-number-saved-warning = El campo se guardó, pero no se pudo verificar 
 datasheet-number-abandon-title = ¿Cerrar el borrador del campo?
 datasheet-number-abandon-question = El campo se guardó. Cerrar este borrador no deshace ese guardado.
 datasheet-number-abandon-discard = Cerrar borrador
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = Volver al borrador del campo

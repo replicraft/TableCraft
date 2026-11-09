@@ -98,3 +98,6 @@ datasheet-number-saved-warning = フィールドは保存されましたが、�
 datasheet-number-abandon-title = フィールドの下書きを閉じますか？
 datasheet-number-abandon-question = フィールドは保存されています。この下書きを閉じても保存は取り消されません。
 datasheet-number-abandon-discard = 下書きを閉じる
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = フィールドの下書きに戻る

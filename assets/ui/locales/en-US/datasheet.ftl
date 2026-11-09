@@ -98,3 +98,6 @@ datasheet-number-saved-warning = The field was saved, but the database could not
 datasheet-number-abandon-title = Close field draft?
 datasheet-number-abandon-question = The field was saved. Closing this draft does not undo that save.
 datasheet-number-abandon-discard = Close draft
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = Return to draft

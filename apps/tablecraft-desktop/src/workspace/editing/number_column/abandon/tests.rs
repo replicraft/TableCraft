@@ -11,7 +11,7 @@ use egui_kittest::{
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{Command, Response, SaveOutcome, SaveReport, journal_path};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
-use tablecraft_ui::{EditSaveOutcome, FieldFilterOperator, FieldFilterTarget, SortSpec};
+use tablecraft_ui::{EditSaveOutcome, FieldFilterTarget, SortSpec};
 
 const FIXTURE_PAGE_BYTES: usize = 4096;
 // The independent raw fixture places its LVAL body at this page's tail. This
@@ -242,9 +242,24 @@ fn checked_number_save_revalidates_filter_and_sort_preferences_against_fresh_sch
     };
     harness.state_mut().describe_field_filter(filter.clone());
     finish_reads(&mut harness);
+    // The field controller accepts only the operator and inputs retained by its
+    // real widgets. Set both through those controls before dispatching apply.
     harness
-        .state_mut()
-        .apply_field_filter(filter, FieldFilterOperator::Greater, vec!["0".into()]);
+        .get_by_role_and_label(Role::ComboBox, "Comparison")
+        .click_accesskit();
+    harness.run_steps(2);
+    click(&mut harness, "Greater than");
+    harness.run_steps(2);
+    harness
+        .get_by_role_and_label(Role::MultilineTextInput, "Value")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
+    harness
+        .get_by_role_and_label(Role::MultilineTextInput, "Value")
+        .type_text("0");
+    harness.run_steps(2);
+    click(&mut harness, "Apply filter");
     finish_reads(&mut harness);
     if let Some(id) = harness.state().state.field_filter_request_id() {
         harness.state_mut().close_field_filter(id);

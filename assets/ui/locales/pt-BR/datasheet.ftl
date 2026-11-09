@@ -98,3 +98,6 @@ datasheet-number-saved-warning = O campo foi salvo, mas não foi possível verif
 datasheet-number-abandon-title = Fechar rascunho do campo?
 datasheet-number-abandon-question = O campo foi salvo. Fechar este rascunho não desfaz esse salvamento.
 datasheet-number-abandon-discard = Fechar rascunho
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = Voltar ao rascunho do campo

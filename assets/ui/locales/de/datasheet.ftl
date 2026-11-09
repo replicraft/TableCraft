@@ -98,3 +98,6 @@ datasheet-number-saved-warning = Das Feld wurde gespeichert, aber die Datenbank 
 datasheet-number-abandon-title = Feldentwurf schließen?
 datasheet-number-abandon-question = Das Feld wurde gespeichert. Das Schließen dieses Entwurfs macht die Speicherung nicht rückgängig.
 datasheet-number-abandon-discard = Entwurf schließen
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = Zum Feldentwurf zurückkehren

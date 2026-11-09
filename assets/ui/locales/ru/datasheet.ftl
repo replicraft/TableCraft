@@ -98,3 +98,6 @@ datasheet-number-saved-warning = Поле сохранено, но провер�
 datasheet-number-abandon-title = Закрыть черновик поля?
 datasheet-number-abandon-question = Поле сохранено. Закрытие черновика не отменяет сохранение.
 datasheet-number-abandon-discard = Закрыть черновик
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = Вернуться к черновику поля

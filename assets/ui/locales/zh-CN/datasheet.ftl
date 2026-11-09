@@ -98,3 +98,6 @@ datasheet-number-saved-warning = 字段已保存，但无法验证数据库。�
 datasheet-number-abandon-title = 关闭字段草稿？
 datasheet-number-abandon-question = 字段已保存。关闭此草稿不会撤销保存。
 datasheet-number-abandon-discard = 关闭草稿
+
+# Leave failed checked reopening without undoing an acknowledged field save.
+datasheet-number-return-draft = 返回字段草稿
