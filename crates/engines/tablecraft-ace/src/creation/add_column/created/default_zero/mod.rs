@@ -6,9 +6,13 @@ mod source_carrier;
 pub use repeated::RepeatedDefaultZeroAddColumnCandidate;
 #[cfg(test)]
 mod tests;
-mod verify;
 
-use super::super::{AddColumnCandidate, common, owned};
+use super::super::{
+    AddColumnCandidate, common,
+    initial_property::{self, InitialPropertyError},
+    owned,
+    property_preservation::{self, PropertyPreservationError},
+};
 use super::CreatedAddColumnError;
 use crate::{
     CreateColumn, CreateDatabaseError, EditError, InspectError, NativeImage, create_ace16_database,
@@ -49,6 +53,26 @@ pub enum CreatedDefaultZeroAddColumnError {
     /// The candidate failed complete complement or reopened semantic proof.
     #[error("default-zero add-column preservation check failed")]
     Preservation,
+}
+
+impl From<InitialPropertyError> for CreatedDefaultZeroAddColumnError {
+    fn from(error: InitialPropertyError) -> Self {
+        match error {
+            InitialPropertyError::Inspect(error) => Self::Inspect(error),
+            InitialPropertyError::Declaration(error) => Self::Declaration(error),
+            InitialPropertyError::Placement(error) => Self::Placement(error),
+            InitialPropertyError::Preservation => Self::Preservation,
+        }
+    }
+}
+
+impl From<PropertyPreservationError> for CreatedDefaultZeroAddColumnError {
+    fn from(error: PropertyPreservationError) -> Self {
+        match error {
+            PropertyPreservationError::Inspect(error) => Self::Inspect(error),
+            PropertyPreservationError::Preservation => Self::Preservation,
+        }
+    }
 }
 
 /// Candidate only: no intent, journal, adapter or GUI permission is supplied.
@@ -131,9 +155,17 @@ impl NativeImage {
         // the separate catalog/LVAL edit. Its source and wire remain unchanged.
         super::preservation::verify(&self, &intermediate, &checked, column, budget, cancelled)?;
         let body = build::properties(&columns, default_first, budget, cancelled)?;
-        let (after, change) =
-            build::candidate(&self, &checked, intermediate, body, budget, cancelled)?;
-        verify::candidate(&self, &after, &checked, column, &change, budget, cancelled)?;
+        let (after, change) = initial_property::apply(
+            &self,
+            checked.schema(),
+            intermediate,
+            body,
+            budget,
+            cancelled,
+        )?;
+        property_preservation::initial(
+            &self, &after, &checked, column, &change, budget, cancelled,
+        )?;
         let table = owned(checked.schema().name(), budget)?;
         let column = owned(column, budget)?;
         let count = columns.len();

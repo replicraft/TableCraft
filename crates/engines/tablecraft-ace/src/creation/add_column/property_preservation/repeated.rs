@@ -1,5 +1,5 @@
 //! Complete complement, native field/index identity and exact property verification.
-use super::Error;
+use super::PropertyPreservationError as Error;
 use crate::{
     NativeImage, TableCheck, check_table,
     format::{
@@ -13,7 +13,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) fn candidate(
+pub(in crate::creation::add_column) fn candidate(
     before: &NativeImage,
     after: &[u8],
     original: &TableCheck,

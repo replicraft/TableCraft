@@ -21,6 +21,7 @@ pub struct CreateColumn<'a> {
     default_literal: Option<&'a Value>,
     primary_key_name: Option<&'a str>,
     incrementing: bool,
+    unicode_compression: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -67,6 +68,7 @@ impl<'a> CreateColumn<'a> {
             default_literal: None,
             primary_key_name: None,
             incrementing: false,
+            unicode_compression: false,
         }
     }
 
@@ -87,6 +89,7 @@ impl<'a> CreateColumn<'a> {
             default_literal: None,
             primary_key_name: None,
             incrementing: false,
+            unicode_compression: false,
         })
     }
 
@@ -104,6 +107,7 @@ impl<'a> CreateColumn<'a> {
             default_literal: None,
             primary_key_name: None,
             incrementing: false,
+            unicode_compression: false,
         })
     }
 
@@ -118,6 +122,7 @@ impl<'a> CreateColumn<'a> {
             default_literal: None,
             primary_key_name: None,
             incrementing: false,
+            unicode_compression: false,
         }
     }
 
@@ -155,6 +160,22 @@ impl<'a> CreateColumn<'a> {
         }
         self.allow_zero_length = Some(allow);
         Ok(self)
+    }
+
+    /// Explicitly allow native Unicode compression on a sized Short Text field.
+    /// Existing constructors retain compression disabled. This metadata option
+    /// neither changes text values nor authorizes imported-field mutations.
+    pub fn with_unicode_compression(mut self, enabled: bool) -> Result<Self, CreateDatabaseError> {
+        if !matches!(self.declaration, Declaration::ShortText { .. }) {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        self.unicode_compression = enabled;
+        Ok(self)
+    }
+
+    /// Explicit native Short Text compression permission; false by default.
+    pub const fn unicode_compression(self) -> bool {
+        self.unicode_compression
     }
 
     /// Declare an exact typed scalar constant default. Nullable supported families

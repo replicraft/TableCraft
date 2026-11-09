@@ -17,6 +17,7 @@ struct Column {
     default: Option<Value>,
     required: Option<bool>,
     allow_zero_length: Option<bool>,
+    unicode_compression: bool,
 }
 
 struct Primary {
@@ -65,7 +66,15 @@ impl FirstTableDefinition {
         let primary = columns[0]
             .primary_key_name()
             .ok_or(CreateDatabaseError::Declaration)?;
-        Self::retain(table, columns, Some((0, primary)), false, budget, cancelled)
+        Self::retain(
+            table,
+            columns,
+            Some((0, primary)),
+            false,
+            false,
+            budget,
+            cancelled,
+        )
     }
 
     /// Capture an empty manual Design declaration with no generated fields.
@@ -97,7 +106,31 @@ impl FirstTableDefinition {
                 return Err(CreateDatabaseError::Declaration);
             }
         }
-        Self::retain(table, columns, primary, true, budget, cancelled)
+        Self::retain(table, columns, primary, true, false, budget, cancelled)
+    }
+
+    /// Capture only this new field-addition owner's compression-aware declarations.
+    /// Frozen first-table request languages continue through the strict methods.
+    #[cfg(feature = "journal")]
+    pub(crate) fn capture_field_addition(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        Self::validate_borrowed(table, columns, budget, cancelled)?;
+        let primary = columns[0]
+            .primary_key_name()
+            .ok_or(CreateDatabaseError::Declaration)?;
+        Self::retain(
+            table,
+            columns,
+            Some((0, primary)),
+            false,
+            true,
+            budget,
+            cancelled,
+        )
     }
 
     fn retain(
@@ -105,6 +138,7 @@ impl FirstTableDefinition {
         columns: &[CreateColumn<'_>],
         primary: Option<(usize, &str)>,
         manual: bool,
+        allow_compression: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CreateDatabaseError> {
@@ -126,6 +160,9 @@ impl FirstTableDefinition {
             .map_err(|_| InspectError::Allocation)?;
         for column in columns {
             check(budget, cancelled)?;
+            if column.unicode_compression() && !allow_compression {
+                return Err(CreateDatabaseError::Declaration);
+            }
             retained.push(Column {
                 name: copy_name(column.name(), budget)?,
                 description: column
@@ -135,6 +172,7 @@ impl FirstTableDefinition {
                 declaration: column.declaration(),
                 required: column.required(),
                 allow_zero_length: column.allow_zero_length(),
+                unicode_compression: column.unicode_compression(),
                 default: column
                     .default_literal()
                     .map(|value| copy_default(value, budget))
@@ -225,6 +263,11 @@ impl FirstTableDefinition {
                 Declaration::Decimal(constraints) => {
                     CreateColumn::decimal(&column.name, constraints)
                 }
+            };
+            let borrowed = if column.unicode_compression {
+                borrowed.with_unicode_compression(true)?
+            } else {
+                borrowed
             };
             let borrowed = match &self.primary {
                 Some(primary) if primary.position == position => {

@@ -2,12 +2,7 @@
 use super::{Error, build};
 use crate::{
     CreateColumn, FirstTableDefinition, NativeImage, TableCheck, create_ace16_database,
-    format::{
-        reader::{Reader, row_count, row_range},
-        row::OFFSET_MASK,
-    },
     header::check,
-    table::mutation::catalog_property,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -28,35 +23,19 @@ pub(super) fn capture(
     check(budget, cancelled)?;
     let (checked, definition) =
         super::super::super::source::inspect(image, table, budget, cancelled)?;
-    let pages = catalog_property::repeated_property_pages(image, budget, cancelled)?;
-    let mut input = image.reader();
-    let mut reader = Reader {
-        source: &mut input,
-        header: image.catalog().header(),
-        budget,
-        cancelled,
-        reads: 0,
-    };
-    let mut rows = 0usize;
     let count = checked.schema().columns().len();
-    for number in pages {
-        let page = reader.page(number)?;
-        let page_rows = row_count(&page)?;
-        if page_rows == 0 {
-            return Err(Error::Source);
-        }
-        rows = rows.checked_add(page_rows).ok_or(Error::Source)?;
-        if rows >= count {
-            return Err(Error::Source);
-        }
-        for slot in 0..page_rows {
-            reader.tick()?;
-            let (word, start, end) = row_range(&page, slot)?;
-            if word & !OFFSET_MASK != 0 || start == end {
-                return Err(Error::Source);
+    let rows = super::super::super::super::property_history::count(image, count, budget, cancelled)
+        .map_err(|error| match error {
+            super::super::super::super::property_history::PropertyHistoryError::Inspect(error) => {
+                Error::Inspect(error)
             }
-        }
-    }
+            super::super::super::super::property_history::PropertyHistoryError::Placement(
+                error,
+            ) => Error::Placement(error),
+            super::super::super::super::property_history::PropertyHistoryError::Source => {
+                Error::Source
+            }
+        })?;
 
     let columns = definition.borrowed_columns(budget, cancelled)?;
     super::super::source_properties(&columns, budget, cancelled)?;

@@ -8,6 +8,11 @@ use crate::{InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::{FieldConstraints, ScalarType};
 
+#[cfg(feature = "journal")]
+mod order;
+#[cfg(feature = "journal")]
+pub(super) use order::{Order, PropertyName};
+
 const SIGNATURE: &[u8; 4] = b"MR2\0";
 const NAME_LIST: u16 = 0x80;
 const COLUMN_VALUES: u16 = 1;
@@ -34,6 +39,8 @@ pub(super) struct Prepared<'a> {
     default_value: bool,
     description: bool,
     default_first: bool,
+    #[cfg(feature = "journal")]
+    order: Option<Order>,
 }
 
 fn add(length: usize, extra: usize) -> Result<usize, CreateDatabaseError> {
@@ -142,7 +149,17 @@ pub(super) fn capture<'a>(
         default_value,
         description,
         default_first: false,
+        #[cfg(feature = "journal")]
+        order: None,
     }))
+}
+
+#[cfg(feature = "journal")]
+struct OrderedGroup<'a> {
+    required: Option<bool>,
+    empty: Option<bool>,
+    literal: Option<&'a Literal>,
+    description: Option<&'a str>,
 }
 
 struct Writer<'a, 'budget> {
@@ -229,6 +246,77 @@ impl Prepared<'_> {
         self
     }
 
+    /// Select only a complete checked ordering of the properties being emitted.
+    /// Existing constructive and Number profiles retain their original branches.
+    #[cfg(feature = "journal")]
+    pub(super) fn with_order(mut self, order: Order) -> Result<Self, CreateDatabaseError> {
+        order.require_exact(
+            self.required,
+            self.allow_empty,
+            self.default_value,
+            self.description,
+        )?;
+        self.order = Some(order);
+        Ok(self)
+    }
+
+    #[cfg(feature = "journal")]
+    fn write_ordered_names(
+        &self,
+        writer: &mut Writer<'_, '_>,
+        lengths: [usize; 4],
+    ) -> Result<bool, CreateDatabaseError> {
+        let Some(order) = self.order else {
+            return Ok(false);
+        };
+        for property in order.names() {
+            let (name, length) = match property {
+                PropertyName::Required => (REQUIRED, lengths[0]),
+                PropertyName::AllowEmpty => (ALLOW_EMPTY, lengths[1]),
+                PropertyName::DefaultValue => (DEFAULT_VALUE, lengths[2]),
+                PropertyName::Description => (DESCRIPTION, lengths[3]),
+            };
+            writer.name(name, length)?;
+        }
+        Ok(true)
+    }
+
+    #[cfg(feature = "journal")]
+    fn write_ordered_values(
+        &self,
+        writer: &mut Writer<'_, '_>,
+        group: OrderedGroup<'_>,
+    ) -> Result<bool, CreateDatabaseError> {
+        let Some(order) = self.order else {
+            return Ok(false);
+        };
+        for (index, property) in order.names().iter().enumerate() {
+            match property {
+                PropertyName::Required => {
+                    if let Some(value) = group.required {
+                        writer.boolean(index, value)?;
+                    }
+                }
+                PropertyName::AllowEmpty => {
+                    if let Some(value) = group.empty {
+                        writer.boolean(index, value)?;
+                    }
+                }
+                PropertyName::DefaultValue => {
+                    if let Some(value) = group.literal {
+                        writer.default(index, value)?;
+                    }
+                }
+                PropertyName::Description => {
+                    if let Some(text) = group.description {
+                        writer.description(index, text)?;
+                    }
+                }
+            }
+        }
+        Ok(true)
+    }
+
     pub fn inline_length(&self) -> usize {
         INLINE_HEADER + self.length
     }
@@ -276,20 +364,34 @@ impl Prepared<'_> {
             BLOCK_HEADER + required_length + empty_length + default_length + description_length,
         )?;
         writer.put(&NAME_LIST.to_le_bytes())?;
-        if self.default_first && self.default_value {
-            writer.name(DEFAULT_VALUE, default_length)?;
-        }
-        if self.required {
-            writer.name(REQUIRED, required_length)?;
-        }
-        if self.allow_empty {
-            writer.name(ALLOW_EMPTY, empty_length)?;
-        }
-        if !self.default_first && self.default_value {
-            writer.name(DEFAULT_VALUE, default_length)?;
-        }
-        if self.description {
-            writer.name(DESCRIPTION, description_length)?;
+        #[cfg(feature = "journal")]
+        let ordered_names = self.write_ordered_names(
+            &mut writer,
+            [
+                required_length,
+                empty_length,
+                default_length,
+                description_length,
+            ],
+        )?;
+        #[cfg(not(feature = "journal"))]
+        let ordered_names = false;
+        if !ordered_names {
+            if self.default_first && self.default_value {
+                writer.name(DEFAULT_VALUE, default_length)?;
+            }
+            if self.required {
+                writer.name(REQUIRED, required_length)?;
+            }
+            if self.allow_empty {
+                writer.name(ALLOW_EMPTY, empty_length)?;
+            }
+            if !self.default_first && self.default_value {
+                writer.name(DEFAULT_VALUE, default_length)?;
+            }
+            if self.description {
+                writer.name(DESCRIPTION, description_length)?;
+            }
         }
         for position in 0..self.columns.count() {
             check(writer.budget, cancelled)?;
@@ -326,29 +428,43 @@ impl Prepared<'_> {
             writer.put(&COLUMN_VALUES.to_le_bytes())?;
             writer.long(group_name)?;
             writer.name(name, label)?;
-            let default_prefix = usize::from(self.default_first && self.default_value);
-            if self.default_first
-                && let Some(literal) = &literal
-            {
-                writer.default(0, literal)?;
-            }
-            if let Some(value) = required {
-                writer.boolean(default_prefix, value)?;
-            }
-            if let Some(value) = empty {
-                writer.boolean(default_prefix + usize::from(self.required), value)?;
-            }
-            if !self.default_first
-                && let Some(literal) = &literal
-            {
-                let index = usize::from(self.required) + usize::from(self.allow_empty);
-                writer.default(index, literal)?;
-            }
-            if let Some(text) = description {
-                let index = usize::from(self.required)
-                    + usize::from(self.allow_empty)
-                    + usize::from(self.default_value);
-                writer.description(index, text)?;
+            #[cfg(feature = "journal")]
+            let ordered_values = self.write_ordered_values(
+                &mut writer,
+                OrderedGroup {
+                    required,
+                    empty,
+                    literal: literal.as_ref(),
+                    description,
+                },
+            )?;
+            #[cfg(not(feature = "journal"))]
+            let ordered_values = false;
+            if !ordered_values {
+                let default_prefix = usize::from(self.default_first && self.default_value);
+                if self.default_first
+                    && let Some(literal) = &literal
+                {
+                    writer.default(0, literal)?;
+                }
+                if let Some(value) = required {
+                    writer.boolean(default_prefix, value)?;
+                }
+                if let Some(value) = empty {
+                    writer.boolean(default_prefix + usize::from(self.required), value)?;
+                }
+                if !self.default_first
+                    && let Some(literal) = &literal
+                {
+                    let index = usize::from(self.required) + usize::from(self.allow_empty);
+                    writer.default(index, literal)?;
+                }
+                if let Some(text) = description {
+                    let index = usize::from(self.required)
+                        + usize::from(self.allow_empty)
+                        + usize::from(self.default_value);
+                    writer.description(index, text)?;
+                }
             }
         }
         if writer.at != writer.bytes.len() {

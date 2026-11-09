@@ -60,6 +60,7 @@ pub(super) struct Field<'a> {
     pub decimal: Option<DecimalConstraints>,
     pub native_flags: Option<u8>,
     pub native_variable: Option<usize>,
+    pub unicode_compression: bool,
 }
 
 const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Field<'_> {
@@ -71,6 +72,7 @@ const fn field(name: &str, kind: u8, offset: Option<usize>, width: usize) -> Fie
         decimal: None,
         native_flags: None,
         native_variable: None,
+        unicode_compression: false,
     }
 }
 
@@ -94,6 +96,7 @@ const fn catalog_field(
         decimal: None,
         native_flags: Some(flags),
         native_variable: Some(variable),
+        unicode_compression: false,
     }
 }
 
@@ -284,5 +287,6 @@ pub(super) fn bind<'a>(
         decimal,
         native_flags: None,
         native_variable: None,
+        unicode_compression: false,
     })
 }

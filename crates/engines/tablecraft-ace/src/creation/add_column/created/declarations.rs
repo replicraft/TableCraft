@@ -2,7 +2,7 @@
 use super::{CreatedAddColumnError, properties};
 use crate::{
     CreateColumn, FirstTableDefinition, NativeColumn, NativeImage, TableCheck, format::data_type,
-    header::check, inspect_table_properties,
+    format::layout::UNICODE_COMPRESSION_FLAG, header::check, inspect_table_properties,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::{DecimalConstraints, ScalarType};
@@ -10,6 +10,25 @@ use tablecraft_schema::{DecimalConstraints, ScalarType};
 pub(super) fn capture(
     image: &NativeImage,
     checked: &TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<FirstTableDefinition, CreatedAddColumnError> {
+    capture_with_compression(image, checked, false, budget, cancelled)
+}
+
+pub(super) fn capture_field_addition(
+    image: &NativeImage,
+    checked: &TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<FirstTableDefinition, CreatedAddColumnError> {
+    capture_with_compression(image, checked, true, budget, cancelled)
+}
+
+fn capture_with_compression(
+    image: &NativeImage,
+    checked: &TableCheck,
+    allow_compression: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FirstTableDefinition, CreatedAddColumnError> {
@@ -41,6 +60,14 @@ pub(super) fn capture(
     for (position, (field, policy)) in schema.columns().iter().zip(&policies).enumerate() {
         check(budget, cancelled)?;
         let mut column = declaration(field)?;
+        if allow_compression && field.extended_flags() != 0 {
+            if field.native_type() != data_type::SHORT_TEXT
+                || field.extended_flags() != UNICODE_COMPRESSION_FLAG
+            {
+                return Err(CreatedAddColumnError::Source);
+            }
+            column = column.with_unicode_compression(true)?;
+        }
         if let Some(required) = policy.required {
             column = column.with_required(required);
         }
@@ -62,12 +89,11 @@ pub(super) fn capture(
         }
         columns.push(column);
     }
-    Ok(FirstTableDefinition::capture(
-        schema.name(),
-        &columns,
-        budget,
-        cancelled,
-    )?)
+    Ok(if allow_compression {
+        FirstTableDefinition::capture_field_addition(schema.name(), &columns, budget, cancelled)?
+    } else {
+        FirstTableDefinition::capture(schema.name(), &columns, budget, cancelled)?
+    })
 }
 
 fn declaration(field: &NativeColumn) -> Result<CreateColumn<'_>, CreatedAddColumnError> {

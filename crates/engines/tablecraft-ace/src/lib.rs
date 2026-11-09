@@ -45,7 +45,8 @@ pub use creation::{
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use creation::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
-    CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
+    CreatedDefaultZeroColumnRequired, FieldAdditionCandidate, FieldAdditionError,
+    FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
 };
 mod encryption;
 mod error;

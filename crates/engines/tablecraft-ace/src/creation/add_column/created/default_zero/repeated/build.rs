@@ -1,8 +1,9 @@
 //! Reuse declaration, property, catalog-root and owned-LVAL placement owners.
-use super::{Error, verify};
+use super::Error;
 use crate::{
-    CreateColumn, NativeImage, TableCheck, create_ace16_database, format::page::PAGE_BYTES,
-    header::check, table::mutation::catalog_property,
+    CreateColumn, NativeImage, TableCheck, create_ace16_database,
+    creation::add_column::property_preservation, format::page::PAGE_BYTES, header::check,
+    table::mutation::catalog_property,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -29,6 +30,6 @@ pub(super) fn append(
     let change =
         catalog_property::compose_repeated(before, checked.schema(), body, budget, cancelled)?;
     change.apply(&mut after, budget, cancelled)?;
-    verify::candidate(before, &after, checked, column, &change, budget, cancelled)?;
+    property_preservation::repeated(before, &after, checked, column, &change, budget, cancelled)?;
     Ok(after)
 }

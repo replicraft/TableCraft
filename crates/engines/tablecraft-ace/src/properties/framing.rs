@@ -95,6 +95,16 @@ pub(crate) fn validate(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), InspectError> {
+    ordered_names(properties, budget, cancelled).map(|_| ())
+}
+
+/// Validate the complete framing and retain its existing borrowed dictionary order.
+/// Names remain unclassified data; mutation callers must separately qualify them.
+pub(crate) fn ordered_names<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<&'a [u8]>, InspectError> {
     let _span = tracing::debug_span!("native.properties.complete_framing").entered();
     check(budget, cancelled)?;
     let mut cursor = Cursor::new(properties.raw_bytes());
@@ -211,7 +221,7 @@ pub(crate) fn validate(
         }
     }
     check(budget, cancelled)?;
-    Ok(())
+    Ok(names)
 }
 
 #[cfg(test)]

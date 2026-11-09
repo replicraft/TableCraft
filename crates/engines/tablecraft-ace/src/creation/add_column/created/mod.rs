@@ -1,10 +1,12 @@
 //! Explicit second source profile; no widening or retry of TCAC0001/profile 1.
 mod declarations;
 mod default_zero;
+mod field_addition;
 pub use default_zero::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
 };
+pub use field_addition::{FieldAdditionCandidate, FieldAdditionError, FieldAdditionTarget};
 mod preservation;
 mod properties;
 mod source;

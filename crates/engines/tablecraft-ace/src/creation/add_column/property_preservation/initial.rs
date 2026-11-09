@@ -1,5 +1,5 @@
 //! Reopen complete image, validate native root identity and exact property body.
-use super::CreatedDefaultZeroAddColumnError as Error;
+use super::PropertyPreservationError as Error;
 use crate::{
     NativeImage, TableCheck, check_table,
     format::{
@@ -19,7 +19,7 @@ const OWNER_PADDING: Range<usize> = OWNER_OFFSET + size_of::<u32>()..ROW_COUNT_O
 const OWNER_PADDING_BYTES: usize = OWNER_PADDING.end - OWNER_PADDING.start;
 const LVAL_OWNER: u32 = u32::from_le_bytes(*b"LVAL");
 
-pub(super) fn candidate(
+pub(in crate::creation::add_column) fn candidate(
     before: &NativeImage,
     after: &[u8],
     original: &TableCheck,

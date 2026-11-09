@@ -32,6 +32,29 @@ pub(super) fn inspect(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(TableCheck, FirstTableDefinition), CreatedAddColumnError> {
+    let checked = geometry(image, table, budget, cancelled)?;
+    let definition = declarations::capture(image, &checked, budget, cancelled)?;
+    Ok((checked, definition))
+}
+
+/// New field-addition observation; the caller must prove the complete source.
+pub(super) fn inspect_field_addition(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(TableCheck, FirstTableDefinition), CreatedAddColumnError> {
+    let checked = geometry(image, table, budget, cancelled)?;
+    let definition = declarations::capture_field_addition(image, &checked, budget, cancelled)?;
+    Ok((checked, definition))
+}
+
+fn geometry(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableCheck, CreatedAddColumnError> {
     check(budget, cancelled)?;
     image.require_standard_capture()?;
     if image.catalog().header().format() != FileFormat::Ace2016 {
@@ -58,6 +81,5 @@ pub(super) fn inspect(
     {
         return Err(CreatedAddColumnError::Source);
     }
-    let definition = declarations::capture(image, &checked, budget, cancelled)?;
-    Ok((checked, definition))
+    Ok(checked)
 }

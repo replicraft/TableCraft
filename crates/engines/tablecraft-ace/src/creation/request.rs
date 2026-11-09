@@ -126,6 +126,7 @@ pub(super) fn validate<'a>(
         decimal: None,
         native_flags: None,
         native_variable: None,
+        unicode_compression: false,
     }; profile::MAX_COLUMNS];
     let mut fixed_bytes = 0_usize;
     let mut incrementing = None;
@@ -140,6 +141,7 @@ pub(super) fn validate<'a>(
             }
         }
         *field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
+        field.unicode_compression = columns.unicode_compression(position);
         if columns.incrementing(position) {
             if incrementing.replace(position).is_some() {
                 return Err(CreateDatabaseError::Declaration);

@@ -3,7 +3,6 @@ mod build;
 mod source;
 #[cfg(test)]
 mod tests;
-mod verify;
 
 use super::CreatedDefaultZeroAddColumnError as Error;
 use crate::{

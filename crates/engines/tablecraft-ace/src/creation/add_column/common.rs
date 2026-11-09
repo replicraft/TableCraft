@@ -71,6 +71,48 @@ pub(super) fn preserves_complement(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, InspectError> {
+    preserves_definition_complement(
+        before,
+        after,
+        definition,
+        declaration_tail,
+        false,
+        budget,
+        cancelled,
+    )
+}
+
+/// The new typed declaration owner separately proves the exact variable count.
+/// Old fixed-field profiles keep the original false policy above.
+#[cfg(feature = "journal")]
+pub(super) fn preserves_variable_definition_complement(
+    before: &[u8],
+    after: &[u8],
+    definition: usize,
+    declaration_tail: Range<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, InspectError> {
+    preserves_definition_complement(
+        before,
+        after,
+        definition,
+        declaration_tail,
+        true,
+        budget,
+        cancelled,
+    )
+}
+
+fn preserves_definition_complement(
+    before: &[u8],
+    after: &[u8],
+    definition: usize,
+    declaration_tail: Range<usize>,
+    variable_columns: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, InspectError> {
     if before.len() != after.len() || declaration_tail.end > PAGE_BYTES {
         return Ok(false);
     }
@@ -84,7 +126,11 @@ pub(super) fn preserves_complement(
             || DEFINITION_LENGTH.contains(&offset)
             || MAX_COLUMNS.contains(&offset)
             || LIVE_COLUMNS.contains(&offset)
-            || declaration_tail.contains(&offset);
+            || declaration_tail.contains(&offset)
+            || (variable_columns
+                && (layout::VARIABLE_SLOT_COUNT_OFFSET
+                    ..layout::VARIABLE_SLOT_COUNT_OFFSET + size_of::<u16>())
+                    .contains(&offset));
         if original != proposed && !allowed {
             return Ok(false);
         }

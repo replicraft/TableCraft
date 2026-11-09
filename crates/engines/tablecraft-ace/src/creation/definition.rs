@@ -31,6 +31,7 @@ const COLUMN_SORT: usize = 11;
 const COLUMN_PRECISION: usize = 11;
 const COLUMN_SCALE: usize = COLUMN_PRECISION + size_of::<u8>();
 const COLUMN_FLAGS: usize = 15;
+const COLUMN_EXTENDED_FLAGS: usize = 16;
 const COLUMN_OFFSET: usize = 21;
 const COLUMN_WIDTH: usize = 23;
 const LVAL_PAIR_BYTES: usize = size_of::<u16>() + 2 * size_of::<u32>();
@@ -210,6 +211,12 @@ pub(super) fn write_role_with_primary(
                 0
             };
         page[start + COLUMN_FLAGS] = field.native_flags.unwrap_or(ordinary_flags);
+        if field.unicode_compression {
+            if field.kind != SHORT_TEXT {
+                return Err(CreateDatabaseError::Declaration);
+            }
+            page[start + COLUMN_EXTENDED_FLAGS] = layout::UNICODE_COMPRESSION_FLAG;
+        }
         put16(page, start + COLUMN_OFFSET, field.offset.unwrap_or(0))?;
         put16(page, start + COLUMN_WIDTH, field.width)?;
         let name_bytes = field.name.encode_utf16().count() * size_of::<u16>();

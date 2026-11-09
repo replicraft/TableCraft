@@ -3,6 +3,12 @@ mod build;
 mod common;
 #[cfg(feature = "journal")]
 mod created;
+#[cfg(feature = "journal")]
+mod initial_property;
+#[cfg(feature = "journal")]
+mod property_history;
+#[cfg(feature = "journal")]
+mod property_preservation;
 
 #[cfg(feature = "journal")]
 pub use created::{
@@ -15,6 +21,8 @@ mod source;
 
 #[cfg(feature = "journal")]
 pub use created::{CreatedAddColumnCandidate, CreatedAddColumnError};
+#[cfg(feature = "journal")]
+pub use created::{FieldAdditionCandidate, FieldAdditionError, FieldAdditionTarget};
 
 use super::{CreateDatabaseError, request};
 use crate::{InspectError, NativeImage, header::check};
