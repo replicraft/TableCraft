@@ -9,7 +9,8 @@ use crate::{
 use crate::{
     ContentsTarget, FieldFilterOperator, FieldFilterTarget, FilterComparison, FilterDefinition,
     FilterHandle, FilterSelectionTarget, FindRequest, InspectedQuery, ParameterInput,
-    QueryDesignTarget, SavedQueryTarget, SortSpec, SortTarget, TotalSpec, TotalsTarget,
+    QueryDesignTarget, QueryRunOptions, SavedQueryTarget, SortSpec, SortTarget, TotalSpec,
+    TotalsTarget,
 };
 #[cfg(feature = "offline-edit")]
 use crate::{
@@ -276,6 +277,7 @@ pub enum Command {
         target: ContentsTarget,
     },
     Query {
+        options: QueryRunOptions,
         sql: String,
     },
     InspectQuery {
@@ -283,6 +285,7 @@ pub enum Command {
         sql: String,
     },
     RunQuery {
+        options: QueryRunOptions,
         target: Arc<InspectedQuery>,
         parameters: Vec<ParameterInput>,
     },
@@ -305,6 +308,7 @@ pub enum Command {
         target: SavedQueryTarget,
     },
     RunSavedQuery {
+        options: QueryRunOptions,
         target: SavedQueryTarget,
         parameters: Vec<ParameterInput>,
     },

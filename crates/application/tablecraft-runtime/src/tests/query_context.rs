@@ -159,6 +159,7 @@ fn saved_inspection_and_failed_binding_are_inert_and_execution_reuses_scratch_co
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: Vec::new(),
             },

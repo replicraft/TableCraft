@@ -87,6 +87,7 @@ pub use find::{
     FindTarget, MAX_FIND_PATTERN_BYTES,
 };
 pub use query::inspection::{InspectedQuery, QueryOperation};
+pub use query::options::{QueryPoolLimits, QueryRunOptions, QueryRunOptionsError, QueryRunPool};
 pub use query::parameters::{
     MAX_QUERY_INPUT_BYTES, MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
 };

@@ -149,6 +149,7 @@ fn reviewed_multirow_update_holds_no_lease_and_saves_complete_independent_after_
     let _ = request(
         &worker,
         Command::Query {
+            options: Default::default(),
             sql: "SELECT 1/0".into(),
         },
     );

@@ -128,6 +128,7 @@ use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn query(sql: &str) -> Command {
     Command::Query {
+        options: Default::default(),
         sql: sql.to_owned(),
     }
 }
@@ -398,7 +399,7 @@ fn latest_request_cancels_running_work_and_replaces_pending_work() {
     let (seen_tx, seen_rx) = mpsc::sync_channel(2);
     let mut first = true;
     let worker = Worker::test_worker(move |command, cancelled| {
-        let Command::Query { sql } = command else {
+        let Command::Query { sql, .. } = command else {
             panic!("expected query");
         };
         seen_tx.send(sql.clone()).unwrap();
@@ -475,7 +476,7 @@ fn explicit_cancel_discards_a_late_result() {
 #[test]
 fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
     let worker = Arc::new(Worker::test_worker(|command, _| {
-        let Command::Query { sql } = command else {
+        let Command::Query { sql, .. } = command else {
             panic!("expected query");
         };
         Ok(Response::Data {

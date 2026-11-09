@@ -83,6 +83,7 @@ fn inspection_does_not_decode_user_records_or_claim_execution_readiness() {
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: Vec::new(),
             }
@@ -135,6 +136,7 @@ fn typed_declared_parameters_execute_original_fragments_without_native_cell_capa
     } = request(
         &worker,
         Command::RunSavedQuery {
+            options: Default::default(),
             target: target.clone(),
             parameters: vec![input.clone()],
         },
@@ -168,6 +170,7 @@ fn typed_declared_parameters_execute_original_fragments_without_native_cell_capa
             request(
                 &worker,
                 Command::RunSavedQuery {
+                    options: Default::default(),
                     target: target.clone(),
                     parameters,
                 }
@@ -208,6 +211,7 @@ fn value_parameters_require_a_carrier_and_literal_text_never_becomes_sql() {
     } = request(
         &worker,
         Command::RunSavedQuery {
+            options: Default::default(),
             target: target.clone(),
             parameters: vec![input.clone()],
         },
@@ -221,6 +225,7 @@ fn value_parameters_require_a_carrier_and_literal_text_never_becomes_sql() {
     let Response::Data { rows, .. } = request(
         &worker,
         Command::RunSavedQuery {
+            options: Default::default(),
             target: target.clone(),
             parameters: vec![ParameterInput {
                 is_null: true,
@@ -239,6 +244,7 @@ fn value_parameters_require_a_carrier_and_literal_text_never_becomes_sql() {
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: vec![ParameterInput {
                     kind: String::new(),
@@ -280,6 +286,7 @@ fn stale_saved_targets_and_unsupported_or_external_definitions_never_execute() {
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: Vec::new()
             }
@@ -317,6 +324,7 @@ fn stale_saved_targets_and_unsupported_or_external_definitions_never_execute() {
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: Vec::new()
             }

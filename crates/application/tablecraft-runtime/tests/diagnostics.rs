@@ -45,6 +45,7 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
             offset: 0,
         },
         Command::Query {
+            options: Default::default(),
             sql: "SELECT 'PRIVATE_SQL'".into(),
         },
         Command::Describe {

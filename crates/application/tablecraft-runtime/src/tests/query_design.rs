@@ -78,7 +78,16 @@ fn design_metadata_build_and_import_do_not_read_user_records() {
         panic!("lossless supported SQL import");
     };
     assert_eq!(built.sql, imported.sql);
-    assert!(request(&worker, Command::Query { sql: built.sql }).is_err());
+    assert!(
+        request(
+            &worker,
+            Command::Query {
+                options: Default::default(),
+                sql: built.sql
+            }
+        )
+        .is_err()
+    );
     assert_eq!(std::fs::read(path).unwrap(), bytes);
 }
 
@@ -196,7 +205,14 @@ fn typed_self_join_graphs_build_then_execute_with_native_outer_join_membership()
             columns,
             rows,
             ..
-        } = request(&worker, Command::Query { sql: built.sql }).unwrap()
+        } = request(
+            &worker,
+            Command::Query {
+                options: Default::default(),
+                sql: built.sql,
+            },
+        )
+        .unwrap()
         else {
             panic!("existing native query service executes the built graph");
         };

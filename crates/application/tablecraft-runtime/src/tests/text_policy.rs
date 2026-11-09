@@ -7,7 +7,7 @@ use tablecraft_testkit::fixtures::access::saved_queries::{
     Fragment, QUERY_ID, database_with_query_flags,
 };
 
-fn database_order(bytes: &mut [u8], order: [u8; 4]) {
+pub(super) fn database_order(bytes: &mut [u8], order: [u8; 4]) {
     // Independently authored header bytes; never obtain these from its decoder.
     for (position, mask) in [1, 27, 152, 253].into_iter().enumerate() {
         bytes[110 + position] = order[position] ^ mask;
@@ -178,6 +178,7 @@ fn saved_read_uses_the_same_database_default_without_activating_inspection() {
     let Response::Data { rows, .. } = request(
         &worker,
         Command::RunSavedQuery {
+            options: Default::default(),
             target: target.clone(),
             parameters: Vec::new(),
         },
@@ -214,6 +215,7 @@ fn saved_read_uses_the_same_database_default_without_activating_inspection() {
         request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target,
                 parameters: Vec::new(),
             },

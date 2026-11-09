@@ -1,11 +1,14 @@
 //! Revision-bound inert saved-query inspection and explicitly requested execution.
 
 use crate::{
-    Error, Response,
-    controls::{SCOPE, budget, check, comparison_budget},
+    Error, QueryRunOptions, Response,
+    controls::{SCOPE, budget, check},
     display::Presentation,
     document::Document,
-    query::parameters::{self, ParameterInput},
+    query::{
+        RunSettings,
+        parameters::{self, ParameterInput},
+    },
 };
 use std::cell::RefCell;
 use tablecraft_access::{NativeSource, SavedRead};
@@ -47,27 +50,42 @@ impl Document {
         &mut self,
         target: &SavedQueryTarget,
         inputs: &[ParameterInput],
+        options: QueryRunOptions,
         clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         require_revision(self, target, cancelled)?;
-        let mut output = Presentation::new(cancelled);
-        parameters::validate_input_limits(inputs, &mut output)?;
-        let source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
-        let comparison_pool = RefCell::new(comparison_budget());
+        let mut output = Presentation::with_budget(options.presentation().budget(), cancelled);
+        parameters::validate_input_limits(inputs, &mut output)
+            .map_err(crate::query::options::presentation_error)?;
+        let source = NativeSource::new_with_snapshot_limits(
+            &mut self.source,
+            SCOPE,
+            options.native().budget(),
+            cancelled,
+            options.snapshot(),
+        )
+        .map_err(crate::query::options::native_error)?;
+        let comparison_pool = RefCell::new(options.comparison().budget());
         let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
         let saved = source.read_saved_query(&target.name, ParseLimits::default())?;
-        require_object(&saved, target, &mut output)?;
-        let bindings = parameters::bindings(saved.query(), inputs, &mut output)?;
+        require_object(&saved, target, &mut output)
+            .map_err(crate::query::options::presentation_error)?;
+        let bindings = parameters::bindings(saved.query(), inputs, &mut output)
+            .map_err(crate::query::options::presentation_error)?;
         crate::query::execute(
             saved.query(),
             &mut source,
             &resolver,
             &bindings,
-            &target.name,
-            clock,
-            cancelled,
+            RunSettings {
+                options,
+                title: &target.name,
+                clock,
+                cancelled,
+            },
+            output,
         )
     }
 }

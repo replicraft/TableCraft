@@ -574,10 +574,17 @@ impl Worker {
                 sql,
                 cancelled,
             ),
-            Command::RunQuery { target, parameters } => document
-                .as_mut()
-                .ok_or(Error::NoDatabase)?
-                .run_query(target, parameters, clock.as_ref(), cancelled),
+            Command::RunQuery {
+                target,
+                parameters,
+                options,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.run_query(
+                target,
+                parameters,
+                *options,
+                clock.as_ref(),
+                cancelled,
+            ),
             #[cfg(feature = "offline-edit")]
             Command::ReviewQueryInsert { target, parameters } => document
                 .as_mut()
@@ -597,16 +604,23 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .inspect_saved_query(target, cancelled),
-            Command::RunSavedQuery { target, parameters } => document
-                .as_mut()
-                .ok_or(Error::NoDatabase)?
-                .run_saved_query(target, parameters, clock.as_ref(), cancelled),
-            Command::Query { sql } => {
-                document
-                    .as_mut()
-                    .ok_or(Error::NoDatabase)?
-                    .query(sql, clock.as_ref(), cancelled)
-            }
+            Command::RunSavedQuery {
+                target,
+                parameters,
+                options,
+            } => document.as_mut().ok_or(Error::NoDatabase)?.run_saved_query(
+                target,
+                parameters,
+                *options,
+                clock.as_ref(),
+                cancelled,
+            ),
+            Command::Query { sql, options } => document.as_mut().ok_or(Error::NoDatabase)?.query(
+                sql,
+                *options,
+                clock.as_ref(),
+                cancelled,
+            ),
         })
     }
 

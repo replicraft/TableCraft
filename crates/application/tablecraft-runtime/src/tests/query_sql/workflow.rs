@@ -76,6 +76,7 @@ fn two_expression_save_consumes_distinct_capability_and_reopens_full_image() {
     let Response::Data { rows, .. } = request(
         &worker,
         Command::RunSavedQuery {
+            options: Default::default(),
             target: fresh,
             parameters: Vec::new(),
         },

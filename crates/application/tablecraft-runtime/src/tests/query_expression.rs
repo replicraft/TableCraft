@@ -97,6 +97,7 @@ fn reviewed_query_and_noop_save_exact_images_and_reopen_without_execution_replay
         let Response::Data { rows, .. } = request(
             &worker,
             Command::RunSavedQuery {
+                options: Default::default(),
                 target: fresh,
                 parameters: Vec::new(),
             },

@@ -199,6 +199,7 @@ fn needed_clock_is_sampled_once_for_values_or_a_complete_select_batch() {
         let Response::Data { rows, .. } = request(
             &worker,
             Command::Query {
+                options: Default::default(),
                 sql: "SELECT Count(*) AS Records FROM Items".into(),
             },
         )

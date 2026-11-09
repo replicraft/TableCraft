@@ -108,6 +108,7 @@ fn inspection_retains_exact_sql_without_scanning_records_or_consulting_clock() {
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target,
                 parameters: vec![input("Minimum?", "int32", "1")],
             }
@@ -166,6 +167,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
         let actual = request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters,
             },
@@ -184,6 +186,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters: malformed,
             }
@@ -195,6 +198,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters: valid,
             },
@@ -241,6 +245,7 @@ fn value_parameters_keep_literal_text_and_explicit_null_separate_from_sql() {
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters: vec![value.clone()],
             },
@@ -252,6 +257,7 @@ fn value_parameters_keep_literal_text_and_explicit_null_separate_from_sql() {
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters: vec![ParameterInput {
                     is_null: true,
@@ -269,6 +275,7 @@ fn value_parameters_keep_literal_text_and_explicit_null_separate_from_sql() {
         request(
             &worker,
             Command::RunQuery {
+                options: Default::default(),
                 target,
                 parameters: vec![ParameterInput {
                     kind: String::new(),
@@ -302,6 +309,7 @@ fn query_witness_refuses_reopen_and_other_worker_even_with_matching_revision() {
         request(
             &second,
             Command::RunQuery {
+                options: Default::default(),
                 target: target.clone(),
                 parameters: parameters.clone()
             }
@@ -310,7 +318,14 @@ fn query_witness_refuses_reopen_and_other_worker_even_with_matching_revision() {
     ));
     assert_ne!(opened(&first, &path), revision);
     assert!(matches!(
-        request(&first, Command::RunQuery { target, parameters }),
+        request(
+            &first,
+            Command::RunQuery {
+                options: Default::default(),
+                target,
+                parameters
+            }
+        ),
         Err(Error::StaleQuery)
     ));
     assert!(matches!(

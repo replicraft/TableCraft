@@ -15,6 +15,12 @@ use tablecraft_builders::query::QueryDesignError;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("read query {pool:?} pool: {source}")]
+    ReadQueryLimit {
+        pool: crate::QueryRunPool,
+        #[source]
+        source: tablecraft_core::limits::LimitError,
+    },
     /// The read actor ended; no cached document or queued command is reused.
     #[error("the background read worker stopped unexpectedly")]
     ReadWorkerStopped,

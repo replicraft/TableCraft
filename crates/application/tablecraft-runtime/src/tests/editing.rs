@@ -76,6 +76,7 @@ fn unlocked_review_commits_once_and_keeps_its_receipt_until_acknowledged() {
     assert!(rejected.into_reviewed().is_some());
     worker
         .request(Command::Query {
+            options: Default::default(),
             sql: "SELECT 1".into(),
         })
         .expect("fresh test worker identity");

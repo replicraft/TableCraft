@@ -19,10 +19,11 @@ pub(super) struct Presentation<'a> {
 
 impl<'a> Presentation<'a> {
     pub(super) fn new(cancelled: &'a dyn Fn() -> bool) -> Self {
-        Self {
-            work: ResourceBudget::new(OUTPUT_BYTES, 0, 100_000),
-            cancelled,
-        }
+        Self::with_budget(ResourceBudget::new(OUTPUT_BYTES, 0, 100_000), cancelled)
+    }
+
+    pub(super) fn with_budget(work: ResourceBudget, cancelled: &'a dyn Fn() -> bool) -> Self {
+        Self { work, cancelled }
     }
 
     pub(super) fn work(&mut self, steps: u64) -> Result<(), Error> {

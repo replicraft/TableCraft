@@ -115,6 +115,7 @@ fn native_number_and_text_renames_use_one_actor_and_exact_independent_after_witn
         let Response::Data { columns, .. } = request(
             &worker,
             Command::Query {
+                options: Default::default(),
                 sql: format!("SELECT [{new}] FROM Table1"),
             },
         )

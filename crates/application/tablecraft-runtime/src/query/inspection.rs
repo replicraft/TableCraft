@@ -1,11 +1,11 @@
 //! Issued SQL snapshots bind declaration prompts to one exact opened document.
 use super::{
-    SQL_BYTES, execute,
+    RunSettings, SQL_BYTES, execute,
     parameters::{self, ParameterInput},
 };
 use crate::{
-    Error, Response,
-    controls::{SCOPE, budget, check, comparison_budget},
+    Error, QueryRunOptions, Response,
+    controls::{SCOPE, check},
     display::Presentation,
     document::Document,
 };
@@ -120,17 +120,27 @@ impl Document {
         &mut self,
         target: &InspectedQuery,
         inputs: &[ParameterInput],
+        options: QueryRunOptions,
         clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
-        let mut output = Presentation::new(cancelled);
-        parameters::validate_input_limits(inputs, &mut output)?;
+        let mut output = Presentation::with_budget(options.presentation().budget(), cancelled);
+        parameters::validate_input_limits(inputs, &mut output)
+            .map_err(super::options::presentation_error)?;
         let parsed = parse_query(target.sql(), ParseLimits::default())?;
-        let bindings = parameters::bindings(parsed.query(), inputs, &mut output)?;
+        let bindings = parameters::bindings(parsed.query(), inputs, &mut output)
+            .map_err(super::options::presentation_error)?;
         check(cancelled)?;
-        let source = NativeSource::new(&mut self.source, SCOPE, budget(), cancelled)?;
-        let comparison_pool = RefCell::new(comparison_budget());
+        let source = NativeSource::new_with_snapshot_limits(
+            &mut self.source,
+            SCOPE,
+            options.native().budget(),
+            cancelled,
+            options.snapshot(),
+        )
+        .map_err(super::options::native_error)?;
+        let comparison_pool = RefCell::new(options.comparison().budget());
         let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
         execute(
@@ -138,9 +148,13 @@ impl Document {
             &mut source,
             &resolver,
             &bindings,
-            "Query results",
-            clock,
-            cancelled,
+            RunSettings {
+                options,
+                title: "Query results",
+                clock,
+                cancelled,
+            },
+            output,
         )
     }
 }
