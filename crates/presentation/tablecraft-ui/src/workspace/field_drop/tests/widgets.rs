@@ -13,7 +13,22 @@ fn harness(state: State) -> Harness<'static, (State, Vec<Action>)> {
     let mut harness = Harness::builder()
         .with_size(egui::vec2(1100.0, 720.0))
         .build_ui_state(
-            |ui, state: &mut (State, Vec<Action>)| state.1.extend(state.0.show(ui)),
+            |ui, state: &mut (State, Vec<Action>)| {
+                let actions = state.0.show(ui);
+                // The real host accepts and binds a readonly inspection before
+                // another input frame. Key-down/key-up are separate frames in
+                // this harness; leave eligibility unknown until a real reply.
+                for action in &actions {
+                    if let Action::InspectFieldDrop { target } = action {
+                        state
+                            .0
+                            .prepare_field_drop_inspection(target)
+                            .expect("the exact emitted inspection is accepted")
+                            .bind(80);
+                    }
+                }
+                state.1.extend(actions);
+            },
             (state, Vec::new()),
         );
     crate::configure(&harness.ctx);
@@ -102,15 +117,33 @@ fn saved_design_delete_rows_and_delete_key_bind_actual_native_field() {
         if keyboard {
             harness.get_by_label("Score").focus();
             harness.run_steps(1);
+            assert!(
+                harness.get_by_label("Score").is_focused(),
+                "Delete belongs to the actual saved Design field cell"
+            );
             harness.key_press(Key::Delete);
         } else {
-            harness
-                .get_by_role_and_label(Role::Button, "Delete Rows")
-                .click_accesskit();
+            let delete = harness.get_by_role_and_label(Role::Button, "Delete Rows");
+            assert!(
+                !delete.accesskit_node().is_disabled(),
+                "the actual saved Design Delete Rows command must be enabled"
+            );
+            delete.click_accesskit();
         }
         harness.run_steps(1);
         let [Action::InspectFieldDrop { target }] = harness.state().1.as_slice() else {
-            panic!("Design removal starts only readonly inspection");
+            let inspections = harness
+                .state()
+                .1
+                .iter()
+                .filter(|action| matches!(action, Action::InspectFieldDrop { .. }))
+                .count();
+            panic!(
+                "Design removal starts exactly one readonly inspection: keyboard={keyboard}, actions={}, inspections={inspections}, editor_open={}, dirty={}",
+                harness.state().1.len(),
+                harness.state().0.field_drop_open(),
+                harness.state().0.field_drop_dirty(),
+            );
         };
         assert_eq!(target.column, "Score");
         assert_eq!(target.native_number, 17);
@@ -205,9 +238,21 @@ fn dirty_close_buttons_return_exact_save_discard_cancel_choices() {
             crate::FieldDropCloseDecision::Discard => "Discard",
             crate::FieldDropCloseDecision::Cancel => "Cancel",
         };
-        harness
-            .get_by_role_and_label(Role::Button, label)
-            .click_accesskit();
+        let dialog = harness
+            .ctx
+            .memory(|memory| memory.area_rect(egui::Id::new("field_drop_close")))
+            .expect("the actual pending-deletion close confirmation is presented");
+        {
+            let mut buttons = harness
+                .get_all_by_role_and_label(Role::Button, label)
+                .filter(|button| dialog.contains_rect(button.rect()));
+            let button = buttons
+                .next()
+                .expect("the choice belongs to the close dialog");
+            assert!(buttons.next().is_none(), "exactly one dialog-owned choice");
+            assert!(!button.accesskit_node().is_disabled());
+            button.click_accesskit();
+        }
         harness.run_steps(1);
         let [Action::FieldDropClose { result }] = harness.state().1.as_slice() else {
             panic!("exact close result expected");
