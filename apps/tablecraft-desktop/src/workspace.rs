@@ -1110,6 +1110,14 @@ impl eframe::App for Desktop {
                         self.state.clear_query_run();
                         self.clear_query_parameters();
                         match &self.pending {
+                            PendingOperation::NumberColumnAvailability { request_id, .. } => {
+                                // This exact readonly publication was revoked.
+                                // Keep its field-level interruption/retry state,
+                                // without creating an unrelated global error.
+                                self.state.interrupt_number_column_inspection(*request_id);
+                                self.state.prune_number_column_inspections();
+                                self.pending = PendingOperation::Read;
+                            }
                             PendingOperation::ReplaceFind { request_id } => {
                                 self.state.fail_replace_find(
                                     *request_id,

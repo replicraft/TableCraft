@@ -261,15 +261,24 @@ impl Desktop {
     }
 
     pub(in crate::workspace) fn cancel_number_column_review(&mut self, request_id: u64) {
-        if let Some(host) = self
+        let Some(host) = self
             .editing
             .number_column
-            .as_mut()
+            .as_ref()
             .filter(|host| host.request_id == request_id && host.identity.is_none())
-        {
-            host.cancelled = true;
-            self.worker.cancel();
-        }
+        else {
+            return;
+        };
+        // Worker cancellation revokes reply publication, including an already
+        // completed capability. This readonly review has no native save actor;
+        // no terminal callback can release its presentation after cancellation.
+        self.worker.cancel();
+        self.state
+            .release_number_column_review(&host.request, request_id);
+        self.editing.number_column = None;
+        self.pending = PendingOperation::Read;
+        self.state.busy = false;
+        self.restore_number_column_close_after_refusal();
     }
 }
 

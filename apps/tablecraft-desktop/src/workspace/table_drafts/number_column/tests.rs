@@ -27,7 +27,26 @@ fn wait_number(harness: &mut Harness<'_, Desktop>) {
     while harness.state().state.busy || harness.state().editing.has_save() {
         assert!(
             Instant::now() < deadline,
-            "Number review/save/read did not settle"
+            "Number review/save/read did not settle; busy={}, host_pending={}, report={:?}, status={:?}, error={:?}",
+            harness.state().state.busy,
+            harness.state().editing.has_save(),
+            harness.state().editing.save_report(),
+            harness
+                .state()
+                .state
+                .number_column_save_status()
+                .map(|(identity, _)| (
+                    identity,
+                    harness
+                        .state()
+                        .state
+                        .can_acknowledge_number_column_save(identity),
+                    harness
+                        .state()
+                        .state
+                        .can_retry_number_column_reopen(identity),
+                )),
+            harness.state().state.error
         );
         harness.run_steps(1);
         std::thread::yield_now();

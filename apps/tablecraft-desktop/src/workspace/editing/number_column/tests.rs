@@ -59,7 +59,26 @@ fn number_header_save_checks_after_and_preserves_tab_ids_order_and_scratch_sql()
     while harness.state().state.busy || harness.state().editing.number_column.is_some() {
         assert!(
             Instant::now() < deadline,
-            "Number actor/witness did not finish"
+            "Number actor/witness did not finish; busy={}, host_pending={}, report={:?}, status={:?}, error={:?}",
+            harness.state().state.busy,
+            harness.state().editing.has_save(),
+            harness.state().editing.save_report(),
+            harness
+                .state()
+                .state
+                .number_column_save_status()
+                .map(|(identity, _)| (
+                    identity,
+                    harness
+                        .state()
+                        .state
+                        .can_acknowledge_number_column_save(identity),
+                    harness
+                        .state()
+                        .state
+                        .can_retry_number_column_reopen(identity),
+                )),
+            harness.state().state.error
         );
         harness.run_steps(1);
         std::thread::yield_now();
@@ -115,12 +134,12 @@ fn review_cancellation_latch_never_starts_actor_even_if_capability_finishes_firs
         .unwrap()
         .request_id;
     harness.state_mut().cancel_number_column_review(id);
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.busy {
-        assert!(Instant::now() < deadline);
-        harness.run_steps(1);
-        std::thread::yield_now();
-    }
+    assert!(!harness.state().worker.publication_is_current(id));
+    assert!(
+        !harness.state().state.busy,
+        "revoked readonly replies cannot finish this owner later"
+    );
+    harness.run_steps(2);
     assert!(harness.state().editing.number_column.is_none());
     assert!(harness.state().editing.save.is_none());
     assert_eq!(
