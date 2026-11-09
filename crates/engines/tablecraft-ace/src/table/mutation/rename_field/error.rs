@@ -17,6 +17,12 @@ pub enum FieldRenameError {
     /// Only equal UTF-16 width ASCII name changes are currently qualified.
     #[error("field rename currently requires equal-width ASCII names")]
     NameShape,
+    /// The fitted profile is separate from the existing same-width/no-op route.
+    #[error("fitted field rename requires unequal-width ASCII names")]
+    FittedNameShape,
+    /// The name cannot fit the original definition and property page capacity.
+    #[error("fitted field rename exceeds the existing name capacity")]
+    FittedCapacity,
     /// Another field already has the proposed name under ASCII folding.
     #[error("field rename conflicts with an existing field")]
     DuplicateName,

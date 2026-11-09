@@ -217,4 +217,7 @@ mod query_expression_source;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
-pub use rename_field::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRenameIdentity};
+pub use rename_field::{
+    FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
+    NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+};
