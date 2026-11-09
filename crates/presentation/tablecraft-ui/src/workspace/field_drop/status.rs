@@ -158,6 +158,7 @@ impl State {
         {
             return false;
         }
+        self.field_drop.request_memory = None;
         self.field_drop.draft.as_mut().unwrap().phase = Phase::PendingDeletion;
         self.field_drop.status = None;
         true

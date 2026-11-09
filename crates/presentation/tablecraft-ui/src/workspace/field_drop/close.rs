@@ -28,6 +28,7 @@ impl State {
             return false;
         };
         draft.phase == Phase::PendingDeletion
+            && self.field_drop.request_memory.is_none()
             && self.field_drop.close.is_none()
             && self.field_drop.status.is_none()
             && self.field_drop_owner_bound(&draft.target)
@@ -48,7 +49,10 @@ impl State {
     }
 
     fn request_current_field_drop_close_in_document(&mut self) -> bool {
-        if self.field_drop.close.is_some() || self.field_drop.status.is_some() {
+        if self.field_drop.close.is_some()
+            || self.field_drop.status.is_some()
+            || self.field_drop.request_memory.is_some()
+        {
             return false;
         }
         let Some(draft) = self.field_drop.presented() else {

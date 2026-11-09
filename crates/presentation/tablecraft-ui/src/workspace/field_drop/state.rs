@@ -1,7 +1,7 @@
 use super::{
     FieldDropConfirmationDecision as Decision, FieldDropConfirmationResult, FieldDropRequest,
     FieldDropTarget,
-    model::{Observation, Phase},
+    model::{Observation, Phase, RequestReservation},
 };
 use crate::workspace::{DocumentView, ObjectKind, State, objects::MAX_RETAINED_BYTES};
 
@@ -243,6 +243,7 @@ impl State {
     pub fn can_review_field_drop(&self) -> bool {
         self.field_drop.close.is_none()
             && self.field_drop.status.is_none()
+            && self.field_drop.request_memory.is_none()
             && self.field_drop.draft.as_ref().is_some_and(|draft| {
                 draft.phase == Phase::PendingDeletion
                     && matches!(draft.observation, Observation::Eligible)
@@ -271,6 +272,13 @@ impl State {
         {
             return false;
         }
+        let Some(bytes) = request.retained_bytes() else {
+            return false;
+        };
+        if !self.admit_object_bytes(Some(bytes)) {
+            return false;
+        }
+        self.field_drop.request_memory = Some(RequestReservation { request_id, bytes });
         self.field_drop.draft.as_mut().unwrap().phase = Phase::Reviewing { request_id };
         true
     }
@@ -310,21 +318,30 @@ impl State {
         true
     }
 
+    /// Release the exact host request after review failure or abandoned save start.
+    /// The host drops its snapshot immediately; no new memory admission is needed.
     pub fn release_field_drop_review(
         &mut self,
         request: &FieldDropRequest,
         request_id: u64,
     ) -> bool {
-        if !self
+        let reviewing = self
             .field_drop
-            .matches(request, Phase::Reviewing { request_id })
-        {
+            .matches(request, Phase::Reviewing { request_id });
+        let abandoned_start = self.field_drop.matches(request, Phase::PendingDeletion)
+            && self.field_drop.reserves_request(request, request_id);
+        if !reviewing && !abandoned_start {
             return false;
         }
+        // The host releases this exact request. An abandoned save-start token
+        // only rolls back its phase; it must not erase still-live host memory.
+        self.field_drop.request_memory = None;
         self.field_drop.draft.as_mut().unwrap().phase = Phase::PendingDeletion;
         true
     }
 
+    /// Release a checked review whose host will not start the save actor.
+    /// The host drops its exact request snapshot immediately after this transition.
     pub fn release_field_drop_accepted_review(
         &mut self,
         request: &FieldDropRequest,
@@ -340,6 +357,7 @@ impl State {
         ) {
             return false;
         }
+        self.field_drop.request_memory = None;
         self.field_drop.draft.as_mut().unwrap().phase = Phase::PendingDeletion;
         true
     }

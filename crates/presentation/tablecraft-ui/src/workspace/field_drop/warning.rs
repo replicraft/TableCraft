@@ -51,6 +51,9 @@ impl State {
         {
             return false;
         }
+        // The warning takes the paid draft/status; the host releases its
+        // separate original request immediately after this accepted transfer.
+        self.field_drop.request_memory = None;
         let status = self.field_drop.status.take().unwrap();
         let mut owner = self.field_drop.draft.take().unwrap();
         owner.phase = Phase::PendingDeletion;

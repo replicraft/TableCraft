@@ -1,4 +1,5 @@
 //! Source-free presentation/ownership checks, never native eligibility witnesses.
+mod request_memory;
 mod widgets;
 
 use super::*;
@@ -191,7 +192,12 @@ fn dirty_close_save_discard_cancel_and_stale_revision_are_exact() {
 fn refused_save_start_keeps_confirmed_delete_and_binding_is_allocation_free() {
     let (mut state, request) = accepted();
     assert!(!state.accept_field_drop_review(&request, 82, 90));
+    let retained = state.object_bytes();
     drop(state.prepare_field_drop_save(&request, 81, 90).unwrap());
+    assert_eq!(state.object_bytes(), retained, "host request remains alive");
+    assert!(!state.can_review_field_drop());
+    assert!(!state.release_field_drop_review(&request, 82));
+    assert!(state.release_field_drop_review(&request, 81));
     assert!(state.can_review_field_drop());
     assert!(state.field_drop_dirty());
     assert!(state.field_drop_save_status().is_none());
@@ -223,11 +229,11 @@ fn retained_outcome_requires_explicit_resolution_and_original_release_stays_dirt
     assert!(!state.begin_field_drop_reopen(identity));
     assert!(state.can_resolve_field_drop_save(identity, true));
     assert!(!state.can_resolve_field_drop_save(identity, false));
-    drop(
-        state
+    {
+        let _preparation = state
             .prepare_field_drop_resolution(&request, identity, true)
-            .unwrap(),
-    );
+            .unwrap();
+    }
     assert!(state.can_resolve_field_drop_save(identity, true));
     let next = state
         .prepare_field_drop_resolution(&request, identity, true)

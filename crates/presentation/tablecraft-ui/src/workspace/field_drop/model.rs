@@ -29,6 +29,12 @@ pub(super) struct Draft {
     pub focus_no: bool,
 }
 
+#[derive(Clone, Copy)]
+pub(super) struct RequestReservation {
+    pub request_id: u64,
+    pub bytes: usize,
+}
+
 #[derive(Default)]
 pub(in crate::workspace) struct Model {
     pub(super) draft: Option<Draft>,
@@ -36,6 +42,7 @@ pub(in crate::workspace) struct Model {
     pub(super) warning: Option<super::warning::Warning>,
     pub(super) close: Option<super::close::Confirmation>,
     pub(super) selection: Option<FieldDropTarget>,
+    pub(super) request_memory: Option<RequestReservation>,
 }
 
 impl Model {
@@ -44,6 +51,7 @@ impl Model {
             || self.status.is_some()
             || self.warning.is_some()
             || self.close.is_some()
+            || self.request_memory.is_some()
             || !target.bounded()
         {
             return false;
@@ -93,6 +101,21 @@ impl Model {
             draft.target == request.target
                 && draft.revision == request.draft_revision
                 && draft.phase == phase
+                && match phase {
+                    Phase::Reviewing { request_id } | Phase::Reviewed { request_id, .. } => {
+                        self.reserves_request(request, request_id)
+                    }
+                    Phase::Owned { identity } => {
+                        self.reserves_request(request, identity.request_id)
+                    }
+                    Phase::Confirming | Phase::PendingDeletion => true,
+                }
+        })
+    }
+
+    pub(super) fn reserves_request(&self, request: &FieldDropRequest, request_id: u64) -> bool {
+        self.request_memory.is_some_and(|reserved| {
+            reserved.request_id == request_id && request.retained_bytes() == Some(reserved.bytes)
         })
     }
 
@@ -119,6 +142,9 @@ impl Model {
     }
 
     pub fn discard(&mut self, target: &FieldDropTarget, revision: u64) -> bool {
+        if self.request_memory.is_some() {
+            return false;
+        }
         if let Some(draft) = &self.draft {
             if draft.target != *target
                 || draft.revision != revision
@@ -142,7 +168,8 @@ impl Model {
     }
 
     pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
-        let mut bytes = size_of::<Self>();
+        let mut bytes = size_of::<Self>()
+            .checked_add(self.request_memory.map_or(0, |reserved| reserved.bytes))?;
         if let Some(draft) = &self.draft {
             bytes = bytes.checked_add(draft.heap_bytes()?)?;
         }
