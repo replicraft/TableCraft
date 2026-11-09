@@ -245,7 +245,11 @@ fn readable_table_query_sql_is_visible_without_scanning_rows_or_qualifying_write
 fn full_sql_binds_actual_native_spelling_instead_of_inventing_original_literal() {
     let [before, _] = storage_pair();
     let (_directory, path, worker, target) = opened(&before);
-    for original in ["SELECT 042 AS Answer;", "SELECT (42) AS Answer;"] {
+    for original in [
+        "SELECT 042 AS Answer;",
+        "SELECT (42) AS Answer;",
+        "SELECT +42 AS Answer;",
+    ] {
         let Response::QuerySqlReviewed { review: actual, .. } =
             review(&worker, &target, original, "SELECT 43 AS Answer;")
         else {
@@ -259,7 +263,7 @@ fn full_sql_binds_actual_native_spelling_instead_of_inventing_original_literal()
             &worker,
             Command::ReviewQuerySql {
                 target: target.clone(),
-                original_sql: "SELECT +42 AS Answer;".into(),
+                original_sql: "SELECT 41 + 1 AS Answer;".into(),
                 proposed_sql: "SELECT 43 AS Answer;".into(),
             }
         ),
