@@ -1,0 +1,97 @@
+{
+  "date": "2026-11-08",
+  "scope": "Native typed Number and Short Text candidate; no normal typed-field save or UI activation",
+  "source_commits": [
+    "af0a055a",
+    "3b959efa",
+    "a99542f3",
+    "2ae9d098"
+  ],
+  "platform": "macOS ARM64, headless; Microsoft Access and Windows execution unrun",
+  "unique_selected_tests": 336,
+  "counting": "Names are unique across all five filters. The earlier 45-column-case run is included in the 142-case creation run and is not added again. Three existing ignored tests are excluded.",
+  "runs": [
+    {
+      "check": "creation",
+      "path": ".cache/mixed-field-corrected-creation-20261108.log",
+      "sha256": "2b84555febdd063fe7085bd9206d96fe9db6b87336f388952fa5065267cabafa",
+      "passed": 142,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "check": "fixture",
+      "path": ".cache/mixed-field-corrected-fixture-20261108.log",
+      "sha256": "8d4d4b2bb181067a5efe0c2eb0a991b15651167918503b5203343a6e6842edf9",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "check": "intents",
+      "path": ".cache/mixed-field-corrected-intents-20261108.log",
+      "sha256": "894a7c10c8f35096de8de9de6e56f3b422d5dea77e43986ffb5aa8d9083bc7bc",
+      "passed": 170,
+      "failed": 0,
+      "ignored": 2
+    },
+    {
+      "check": "long-values",
+      "path": ".cache/mixed-field-corrected-long-values-20261108.log",
+      "sha256": "43f9dffd50c20980d5c07eb77dbfdcf21b4d0e445596f74640f5aa2921613b99",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "check": "insert-long-values",
+      "path": ".cache/mixed-field-corrected-insert-long-values-20261108.log",
+      "sha256": "c0cd8747ecfe9f9e38e7602664c1b92806b80d62ad0f32762a2659cb168cd6f8",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "strict_lint": [
+    {
+      "path": ".cache/mixed-field-corrected-clippy-20261108.log",
+      "sha256": "74d57af9879a5a063fddfb2f1619f947b8734ad112a846e49679c556fe198833",
+      "status": "passed"
+    },
+    {
+      "path": ".cache/mixed-field-corrected-create-journal-20261108.log",
+      "sha256": "24103dcd709ed84f4f835b9f6fba64a1d8a6b0960205a17849dd5bf4a3377109",
+      "status": "passed"
+    },
+    {
+      "path": ".cache/mixed-field-create-only-strict-20261108.log",
+      "sha256": "75a238c47c8b8ceaf1daf5922be77cd0a55d023c18d259729fd5682eecca8794",
+      "status": "passed"
+    }
+  ],
+  "independent_evidence": "Ten candidate cases cover eighteen complete SDK Short Text AFTERs and the separately retained third Number image; raw fixture has independent SDK hash pins. SDK evidence is not native Microsoft Access qualification.",
+  "earlier_failures": [
+    {
+      "check": "all-feature strict testkit lint",
+      "cause": "Two constant-width chunks_exact iterators",
+      "correction": "as_chunks retains complete UTF16 pairs and original ignored remainder semantics"
+    },
+    {
+      "check": "creation-only compile",
+      "cause": "physical_field accessor incorrectly required journal although creation preservation uses it",
+      "correction": "Accessor gated by ace16-create"
+    },
+    {
+      "check": "creation-only warnings",
+      "cause": "Four journal-only helpers/constants compiled without journal",
+      "correction": "Gate helpers at their actual journal consumers; strict creation-only lint passes"
+    }
+  ],
+  "limits": [
+    "Only empty canonical ACE16 generated-primary sources with strict Number/Text policy tuples and independently reconstructed property history.",
+    "Short Text width 1..255 UTF16 units, explicit compression permission, Required(false), AllowZeroLength(true), no stored default.",
+    "Old creator defaults and TCAC1-4 admission remain unchanged.",
+    "No typed-field persistence intent, normal save authority or GUI Text activation is supplied by the candidate checkpoint.",
+    "Native Access/Windows save-reopen and general populated-table schema changes remain unqualified."
+  ]
+}

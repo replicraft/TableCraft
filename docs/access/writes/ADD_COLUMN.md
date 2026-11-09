@@ -1,9 +1,33 @@
 # Empty saved-table column addition
 
-The native engine now has an authored source-qualified candidate and a separate
-original-intent persistence/recovery API for appending one nullable ordinary
-Int32 field. The focused native and offline adapter checks pass; these APIs do not yet
-enable saved-column editing in the GUI or CLI.
+The normal desktop supports restricted Number-column additions through reviewed
+native saves and complete-image reopen. The engine also supplies lower-level
+Int32 candidates and original-intent recovery profiles, plus a separate typed
+Number/Short Text candidate. General saved-column editing remains unfinished;
+the typed candidate alone does not enable Text saves in the GUI.
+
+## Typed Number and Short Text candidate
+
+The separate `prepare_created_add_field_candidate` API now constructs a typed
+Number or Short Text candidate from a positively reconstructed empty ACE16
+source. Short Text explicitly selects 1–255 UTF-16 units and Unicode compression
+permission, Required(false), AllowZeroLength(true), and no stored default. Existing
+creation defaults and TCAC1–4 source/request languages remain unchanged.
+
+The proof reconstructs a canonical generated-primary seed and every appended
+field/property-history stage. Dictionary order derives from that history; an
+arbitrary observed permutation cannot authorize itself. Original field widths,
+compression, variable ordinals, index bytes, property rows and the full image
+complement remain protected. Only the qualified one-EOF property rollover is
+available. This candidate supplies no normal persistence authority or GUI Text
+activation; the existing Number save service remains separate.
+
+The [candidate workflow batch](../../testing/results/typed-field-candidate-workflows-2026-11-08.json)
+passes 336 unique selected tests, including ten new candidate cases covering
+18 independent SDK AFTER images. Three existing ignored cases are excluded.
+Strict engine/testkit all-feature lint, creation+journal lint and creation-only
+lint pass. Initial feature/lint failures remain recorded separately. Native
+Microsoft Access and Windows execution remain unqualified.
 
 ## Actual source and preservation
 

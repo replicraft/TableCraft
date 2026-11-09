@@ -1,5 +1,15 @@
 # Implementation status
 
+## Typed saved-field candidate — 8 November 2026
+
+A separate native Number/Short Text candidate reconstructs exact empty ACE16
+source history and protects existing declarations, property storage and unrelated
+bytes. The [336-case batch](testing/results/typed-field-candidate-workflows-2026-11-08.json)
+and strict feature-configuration lint pass. This checkpoint does not activate
+Short Text in the GUI or grant a typed-field normal save capability; recovery
+and shared application integration remain the next step. Native Access and
+Windows execution remain unqualified.
+
 ## Normal desktop Number-column saves — 8 November 2026
 
 Saved-table Click to Add now offers Number when native host support and an actual
