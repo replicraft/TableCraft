@@ -1,20 +1,30 @@
 use super::*;
 use tablecraft_core::limits::Resource;
+use tablecraft_testkit::{
+    fixtures::access::canonical_created_number::{
+        Source as NumberSource, repeated as number_history,
+    },
+    support::bytes::hex,
+};
 
 #[test]
 fn sealed_plans_bind_complete_source_target_and_independent_request_bytes() {
     let before = raw::source(raw::SourceCase::IdOnly);
+    // The first Number oracle explicitly stores Required(false). The mixed
+    // append helper expects an existing Required dictionary and cannot supply
+    // this first-ADD declaration from an empty property bag.
+    let first_number = number_history::source(NumberSource::IdOnly);
+    assert_eq!(
+        hex(&Sha256::digest(&first_number)),
+        "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72"
+    );
     for (target, column, expected) in [
         (
             text(255, true),
             "Label",
             raw::append_text(&before, "Label", 255, true),
         ),
-        (
-            FieldAdditionTarget::NumberLongZero,
-            "Score",
-            raw::append_number(&before, "Score"),
-        ),
+        (FieldAdditionTarget::NumberLongZero, "Score", first_number),
     ] {
         let original = plan(&before, column, target);
         assert_eq!(original.before_bytes(), before);

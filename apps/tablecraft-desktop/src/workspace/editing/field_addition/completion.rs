@@ -51,7 +51,16 @@ impl Desktop {
         );
         let ordinary_success = !host.cancelled
             && report.operation == SaveOperation::Apply
-            && matches!(report.outcome, SaveOutcome::Saved { receipt } if report.outcome.field_addition_reopen_facts().is_ok_and(|facts| facts.replacement) && receipt.completion == SaveCompletion::Applied);
+            && match report.outcome {
+                SaveOutcome::Saved { receipt } => {
+                    report
+                        .outcome
+                        .field_addition_reopen_facts()
+                        .is_ok_and(|facts| facts.replacement)
+                        && receipt.completion == SaveCompletion::Applied
+                }
+                _ => false,
+            };
         if ordinary_success {
             self.acknowledge_field_addition(identity);
         }

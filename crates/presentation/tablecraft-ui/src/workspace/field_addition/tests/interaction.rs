@@ -105,15 +105,15 @@ fn host_support_and_positive_source_fact_are_independent_header_gates() {
 
 #[test]
 fn saved_number_header_keeps_stored_schema_inert_and_ctrl_s_captures_final_text() {
-    header_review(FieldAdditionKind::Number, "Number", "Score");
+    header_review(FieldAdditionKind::Number, "Score");
 }
 
 #[test]
 fn saved_short_text_header_uses_the_same_editor_and_captures_its_full_declaration() {
-    header_review(FieldAdditionKind::ShortText, "Short Text", "Label");
+    header_review(FieldAdditionKind::ShortText, "Label");
 }
 
-fn header_review(kind: FieldAdditionKind, label: &str, name: &str) {
+fn header_review(kind: FieldAdditionKind, name: &str) {
     let mut state = state(true);
     let tab = state.active_object().unwrap();
     assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
@@ -123,6 +123,12 @@ fn header_review(kind: FieldAdditionKind, label: &str, name: &str) {
         kind == FieldAdditionKind::Number,
         kind == FieldAdditionKind::ShortText
     ));
+    let (selected_key, unavailable_key) = match kind {
+        FieldAdditionKind::Number => ("table-draft-number", "table-draft-short-text"),
+        FieldAdditionKind::ShortText => ("table-draft-short-text", "table-draft-number"),
+    };
+    let label = state.localizer.text(selected_key);
+    let unavailable = state.localizer.text(unavailable_key);
     let mut harness = harness(state);
     harness
         .get_by_role_and_label(Role::Button, "Click to Add")
@@ -130,7 +136,7 @@ fn header_review(kind: FieldAdditionKind, label: &str, name: &str) {
     harness.run_steps(2);
     assert!(
         !harness
-            .get_by_role_and_label(Role::Button, label)
+            .get_by_role_and_label(Role::Button, &label)
             .accesskit_node()
             .is_disabled()
     );
@@ -140,19 +146,14 @@ fn header_review(kind: FieldAdditionKind, label: &str, name: &str) {
             .accesskit_node()
             .is_disabled()
     );
-    let unavailable = if kind == FieldAdditionKind::Number {
-        "Short Text"
-    } else {
-        "Number"
-    };
     assert!(
         harness
-            .get_by_role_and_label(Role::Button, unavailable)
+            .get_by_role_and_label(Role::Button, &unavailable)
             .accesskit_node()
             .is_disabled()
     );
     harness
-        .get_by_role_and_label(Role::Button, label)
+        .get_by_role_and_label(Role::Button, &label)
         .click_accesskit();
     harness.run_steps(2);
     assert_eq!(harness.state().0.field_addition_name().unwrap().1, "Field1");

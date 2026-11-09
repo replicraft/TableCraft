@@ -1,7 +1,7 @@
 //! TCAC5 shares the real offline lifecycle while retaining its exact declaration.
 use super::{RetainedPlan, SCOPE, budget, open, retained_plan};
 use crate::editing::offline::{
-    SchemaChange, VerifiedImage,
+    CompletionKind, SchemaChange, VerifiedImage,
     plan::MutationIntent,
     test_support::{assert_completion, assert_staged_read_state},
 };
@@ -113,13 +113,24 @@ fn cold_and_settled_typed_field_recovery_reconstruct_exact_v2_declaration() {
             };
             assert_eq!(
                 receipt.verified_image(),
-                Some(if committed {
+                retired.then_some(if committed {
                     VerifiedImage::Replacement
                 } else {
                     VerifiedImage::Original
                 })
             );
-            assert_eq!(receipt.schema_change(), Some(SchemaChange::ColumnAdded));
+            assert_eq!(
+                receipt.schema_change(),
+                committed.then_some(SchemaChange::ColumnAdded)
+            );
+            assert_eq!(
+                receipt.kind(),
+                if retired {
+                    CompletionKind::Confirmed
+                } else {
+                    CompletionKind::Recovered
+                }
+            );
             owner.release().unwrap();
             assert_eq!(fs::read(path).unwrap(), expected);
         }
