@@ -145,3 +145,38 @@ The 16 baseline **not verified** rule dispositions remain explicit limitations,
 including complete panic/cast callsite proof, atomic-model checking and workload
 profiling. They are not confirmed defects silently marked fixed. This review does
 not certify every callsite, dependency, platform or Access compatibility profile.
+
+## Clone follow-up — 9 November 2026
+
+The initial audit did not establish that every remaining clone was necessary.
+The selected desktop `workspace/objects/tests.rs` has now received a complete
+review of its 38 explicit calls: eight comparison-only copies were replaced by
+borrowed comparisons, and one last-use target now moves. The remaining 29 are
+26 owned command inputs retained for later commands or independent expectations,
+two owned returns and one shared egui Context. The
+[per-site ledger](../testing/results/objects-test-clones-2026-11-09.json)
+records every decision and the exact before/after source hashes.
+
+Five shared UI implementation files now borrow readonly descriptions, types and
+tab titles, defer an inspection target copy until the action occurs, and avoid
+copying the query-grid original before constructing its necessary edit buffer.
+Buffered and progressive CLI query consumers now move parsed parameter values
+directly into bindings instead of cloning a second value vector. Parameter names
+borrow the raw arguments. The cached Jiff time-zone clone remains appropriate:
+the conversion requires an owned zone, whose representation supports shared data.
+
+This is scoped ownership work, not repository-wide clearance. The UI inventory
+contains 330 production-source candidates, of which 58 were individually read;
+272 remain open. The runtime/CLI follow-up considered 116 production clone sites
+by carrier and ownership groups, without claiming complete independent workflow
+proof for all 116. Lexical counts alone do not establish unnecessary allocation.
+
+The follow-up passed 201 desktop tests (one existing ignored), 112 CLI unit tests
+and 65 parameter/progressive integration cases. Its UI batch passed 681 cases
+and exposed one newly added retry test observing before the next-frame action
+collector. A test-only timing correction then passed all 32 DROP UI cases;
+repeated cases are not added to the totals. Strict workspace/all-target/all-feature
+Clippy passed. The [GUI record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+retains the failed attempt and subsequent focused result separately. Native
+startup/File/Open review resumed with permission; native database save interaction
+was not established by that graphical attempt.
