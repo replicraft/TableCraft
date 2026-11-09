@@ -31,6 +31,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     rows::unique(deletes, budget, cancelled)?;
     if plan.before_bytes().len() != plan.after_bytes().len()
         || plan.changed_rows() != deletes.len()

@@ -37,6 +37,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = normal_ordinary::capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let bound = binding::all(&source, groups, budget, cancelled)?;
     let (expected, changed_rows) = reconstruct(&image, &source, groups, bound, budget, cancelled)?;
     if changed_rows != plan.changed_rows() {

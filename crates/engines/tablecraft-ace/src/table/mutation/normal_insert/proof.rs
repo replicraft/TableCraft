@@ -57,6 +57,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     properties::require_text_declarations(
         &image,
         source.table.schema(),

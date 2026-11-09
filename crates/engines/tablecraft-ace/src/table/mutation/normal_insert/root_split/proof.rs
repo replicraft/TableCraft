@@ -69,6 +69,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_action_source(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     if !super::selected(&image, &source, requests)? {
         return Err(EditError::Preservation);
     }

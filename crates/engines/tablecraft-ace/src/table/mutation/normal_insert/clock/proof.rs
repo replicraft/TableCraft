@@ -30,6 +30,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     if !source.indexes.indexes().is_empty() {
         return Err(EditError::Preservation);
     }

@@ -56,6 +56,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_action_source(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let (facts, optional_wire) =
         super::qualify(&image, &source, table, requests, budget, cancelled)?;
     crate::table::mutation::record_insertion::properties::require_text_declarations(

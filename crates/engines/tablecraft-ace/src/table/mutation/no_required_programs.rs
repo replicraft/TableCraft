@@ -13,6 +13,9 @@ use crate::{
     format::data_type::{GUID, SHORT_BINARY, SHORT_TEXT},
     header::check,
     inspect_table_indexes,
+    table::mutation::ordinary_content::definition::{
+        self, RowDeclaration, tail::RetainedDefinitionTail,
+    },
 };
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
@@ -32,6 +35,7 @@ pub(in crate::table::mutation) struct NoRequiredTablePrograms<'image> {
     definition: u32,
     catalog_reference: u32,
     declaration: Declaration,
+    definition_tail: Option<RetainedDefinitionTail>,
 }
 
 impl<'image> NoRequiredTablePrograms<'image> {
@@ -163,28 +167,14 @@ impl<'image> NoRequiredTablePrograms<'image> {
         }
         let catalog_reference = selected.reference;
         declarations::capture(image, budget, cancelled)?;
-        match declaration {
-            Declaration::DenseIntegral => {
-                super::ordinary_content::definition::validate_user(
-                    image, schema, budget, cancelled,
-                )?;
-            }
-            Declaration::DenseRetained => {
-                super::ordinary_content::definition::validate_retained_updates(
-                    image, schema, budget, cancelled,
-                )?;
-            }
-            Declaration::Actions => {
-                super::ordinary_content::definition::validate_actions(
-                    image, schema, budget, cancelled,
-                )?;
-            }
-            Declaration::SparseGenerated => {
-                super::ordinary_content::definition::validate_generated(
-                    image, schema, budget, cancelled,
-                )?;
-            }
-        }
+        let row_declaration = match declaration {
+            Declaration::DenseIntegral => RowDeclaration::DenseIntegral,
+            Declaration::DenseRetained => RowDeclaration::DenseRetained,
+            Declaration::Actions => RowDeclaration::Actions,
+            Declaration::SparseGenerated => RowDeclaration::SparseGenerated,
+        };
+        let definition_tail =
+            definition::validate_rows(image, schema, row_declaration, budget, cancelled)?;
 
         // Public coverage corroborates the raw code-carrier NULL checks,
         // strict property qualification and physical catalog census. Its three
@@ -208,7 +198,16 @@ impl<'image> NoRequiredTablePrograms<'image> {
             definition: schema.definition_page(),
             catalog_reference,
             declaration,
+            definition_tail,
         })
+    }
+
+    pub(in crate::table::mutation) fn share_definition_tail(
+        &self,
+    ) -> Option<RetainedDefinitionTail> {
+        self.definition_tail
+            .as_ref()
+            .map(RetainedDefinitionTail::share)
     }
 
     pub(in crate::table::mutation) fn require_source(

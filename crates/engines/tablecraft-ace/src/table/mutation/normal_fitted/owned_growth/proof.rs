@@ -41,6 +41,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let bound = binding::all(&source, groups, budget, cancelled)?;
     let captured = record_roots::capture(
         &image,

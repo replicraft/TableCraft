@@ -34,6 +34,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_action_source(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let facts = super::admission::qualify(&image, &source, table, requests, budget, cancelled)?;
     let indexes = [
         insertion::qualify_actions(facts.checked(), 1, budget, cancelled)?,

@@ -1,7 +1,7 @@
 //! Shared exhaustive raw TD header, column descriptor and name classification.
 use super::Role;
 use crate::{
-    EditError, InspectError, NativeImage,
+    EditError, FileFormat, InspectError, NativeImage,
     format::{
         bytes::{u16_at, u32_at},
         data_type::{
@@ -53,17 +53,64 @@ const COLUMN_PAYLOAD_OFFSET: usize = 21;
 const COLUMN_WIDTH_OFFSET: usize = COLUMN_PAYLOAD_OFFSET + size_of::<u16>();
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
 
+enum TailAdmission {
+    Zeroed,
+    PreserveRows,
+}
+
 pub(super) struct Declaration {
     pub layout: Layout,
     pub length: usize,
     pub candidate: u32,
     pub position: usize,
+    pub retained_tail: bool,
 }
 
 pub(super) fn capture(
     image: &NativeImage,
     number: u32,
     role: Role,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Declaration, EditError> {
+    capture_with_tail(
+        image,
+        number,
+        role,
+        TailAdmission::Zeroed,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn capture_rows(
+    image: &NativeImage,
+    number: u32,
+    role: Role,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Declaration, EditError> {
+    if !matches!(
+        role,
+        Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
+    ) {
+        return Err(refused());
+    }
+    capture_with_tail(
+        image,
+        number,
+        role,
+        TailAdmission::PreserveRows,
+        budget,
+        cancelled,
+    )
+}
+
+fn capture_with_tail(
+    image: &NativeImage,
+    number: u32,
+    role: Role,
+    tail_admission: TailAdmission,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Declaration, EditError> {
@@ -318,7 +365,18 @@ pub(super) fn capture(
     if role == Role::SelectedGenerated && !has_counter {
         return Err(refused());
     }
-    if page[..HEADER_BYTES] != expected || page[length..].iter().any(|byte| *byte != 0) {
+    let nonzero_tail = page[length..].iter().any(|byte| *byte != 0);
+    let retained_tail = matches!(tail_admission, TailAdmission::PreserveRows)
+        && image.catalog().header().format() == FileFormat::Ace2016
+        && nonzero_tail;
+    if page[..HEADER_BYTES] != expected
+        || (nonzero_tail && !retained_tail)
+        || (retained_tail
+            && (length > PAGE_BYTES - super::tail::RESERVED_BYTES
+                || page[PAGE_BYTES - super::tail::RESERVED_BYTES..]
+                    .iter()
+                    .any(|byte| *byte != 0)))
+    {
         return Err(refused());
     }
     if position != layout.index_start {
@@ -331,6 +389,7 @@ pub(super) fn capture(
         length,
         candidate,
         position,
+        retained_tail,
     })
 }
 

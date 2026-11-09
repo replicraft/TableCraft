@@ -40,6 +40,7 @@ pub(in crate::table::mutation::normal_fitted) fn prove(
         cancelled,
     )?;
     let source = super::capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let facts = super::qualify(&image, &source, table, budget, cancelled)?;
     let (mut expected, changed) =
         data_proof::reconstruct_indexed_binary(&image, &source, groups, budget, cancelled)?;

@@ -114,6 +114,7 @@ pub(super) fn prove(
         cancelled,
     )?;
     let source = capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let facts = super::capture_indexes(&image, &source, budget, cancelled)?;
     let expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     let (mut expected, changed_rows) = records::reconstruct_integral_original(

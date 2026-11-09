@@ -40,6 +40,7 @@ pub(in crate::table::mutation::normal_insert) fn prove(
         cancelled,
     )?;
     let source = super::super::capture_source(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let counter = super::mode::capture(&image, &source, budget, cancelled)?;
     let defaults =
         super::binding::capture_properties(&image, source.table.schema(), budget, cancelled)?;

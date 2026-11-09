@@ -102,6 +102,7 @@ fn prove_with_policy(
         cancelled,
     )?;
     let source = capture(&image, table, budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     preflight_with_policy(&source, original, carriers, budget, cancelled)?;
     let expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 

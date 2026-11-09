@@ -1,5 +1,6 @@
 //! Single-page declaration ownership composed with the shared raw validator.
 mod raw;
+pub(in crate::table::mutation) mod tail;
 
 use super::{
     indexes,
@@ -11,6 +12,7 @@ use crate::{
     EditError, InspectError, NativeImage, TableSchema,
     format::{
         bytes::{u16_at, u32_at},
+        definition::LENGTH_OFFSET,
         layout::Layout,
         reader::Reader,
     },
@@ -18,7 +20,7 @@ use crate::{
     inspect_table_indexes,
     table::long_value::maps,
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const LVAL_COLUMN_OFFSET: usize = 0;
 const LVAL_OWNED_OFFSET: usize = size_of::<u16>();
@@ -64,6 +66,7 @@ pub(super) fn capture<'image>(
         length,
         candidate,
         mut position,
+        retained_tail: _,
     } = declaration;
     let page = ledger.page(number)?;
     if layout.physical_indexes != 0 || layout.logical_indexes != 0 {
@@ -117,7 +120,16 @@ pub(in crate::table::mutation) fn validate_user(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    validate_selected(image, schema, Role::SelectedUser, false, budget, cancelled)
+    validate_selected(
+        image,
+        schema,
+        Role::SelectedUser,
+        false,
+        TailMode::Strict,
+        budget,
+        cancelled,
+    )
+    .map(drop)
 }
 
 /// Action-only complete declaration framing; no mutation permission is returned.
@@ -132,9 +144,11 @@ pub(in crate::table::mutation) fn validate_actions(
         schema,
         Role::SelectedActions,
         false,
+        TailMode::Strict,
         budget,
         cancelled,
     )
+    .map(drop)
 }
 
 /// Exact sparse fixed-LONG declaration; program absence is still proved separately.
@@ -149,9 +163,11 @@ pub(in crate::table::mutation) fn validate_generated(
         schema,
         Role::SelectedGenerated,
         false,
+        TailMode::Strict,
         budget,
         cancelled,
     )
+    .map(drop)
 }
 
 /// Dense canonical field identities with complete readonly scalar index closure.
@@ -161,7 +177,75 @@ pub(in crate::table::mutation) fn validate_retained_updates(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    validate_selected(image, schema, Role::SelectedUser, true, budget, cancelled)
+    validate_selected(
+        image,
+        schema,
+        Role::SelectedUser,
+        true,
+        TailMode::Strict,
+        budget,
+        cancelled,
+    )
+    .map(drop)
+}
+
+#[derive(Clone, Copy)]
+enum TailMode {
+    Strict,
+    RowOnly,
+}
+
+/// Closed declaration policies used only by actual normal row operations.
+pub(in crate::table::mutation) enum RowDeclaration {
+    DenseIntegral,
+    DenseRetained,
+    Actions,
+    SparseGenerated,
+}
+
+pub(in crate::table::mutation) fn validate_rows(
+    image: &NativeImage,
+    schema: &TableSchema,
+    declaration: RowDeclaration,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<tail::RetainedDefinitionTail>, EditError> {
+    let page = raw::page(image, schema.definition_page())?;
+    let length = u32_at(page, LENGTH_OFFSET)? as usize;
+    let slack = page.get(length..).ok_or_else(refused)?;
+    budget.charge(Resource::Steps, slack.len() as u64)?;
+    check(budget, cancelled)?;
+    if slack.iter().all(|byte| *byte == 0) {
+        // Select the unchanged strict path from original metadata, never by
+        // retrying a failed proof. Existing zero-tail work retains no witness.
+        match declaration {
+            RowDeclaration::DenseIntegral => validate_user(image, schema, budget, cancelled)?,
+            RowDeclaration::DenseRetained => {
+                validate_retained_updates(image, schema, budget, cancelled)?
+            }
+            RowDeclaration::Actions => validate_actions(image, schema, budget, cancelled)?,
+            RowDeclaration::SparseGenerated => {
+                validate_generated(image, schema, budget, cancelled)?
+            }
+        }
+        return Ok(None);
+    }
+
+    let (role, retained_updates) = match declaration {
+        RowDeclaration::DenseIntegral => (Role::SelectedUser, false),
+        RowDeclaration::DenseRetained => (Role::SelectedUser, true),
+        RowDeclaration::Actions => (Role::SelectedActions, false),
+        RowDeclaration::SparseGenerated => (Role::SelectedGenerated, false),
+    };
+    validate_selected(
+        image,
+        schema,
+        role,
+        retained_updates,
+        TailMode::RowOnly,
+        budget,
+        cancelled,
+    )
 }
 
 fn validate_selected(
@@ -169,11 +253,17 @@ fn validate_selected(
     schema: &TableSchema,
     role: Role,
     retained_updates: bool,
+    tail_mode: TailMode,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<(), EditError> {
+) -> Result<Option<tail::RetainedDefinitionTail>, EditError> {
     check(budget, cancelled)?;
-    let declaration = raw::capture(image, schema.definition_page(), role, budget, cancelled)?;
+    let declaration = match tail_mode {
+        TailMode::Strict => raw::capture(image, schema.definition_page(), role, budget, cancelled)?,
+        TailMode::RowOnly => {
+            raw::capture_rows(image, schema.definition_page(), role, budget, cancelled)?
+        }
+    };
     let inspection = inspect_table_indexes(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -251,7 +341,18 @@ fn validate_selected(
         return Err(refused());
     }
     check(budget, cancelled)?;
-    Ok(())
+    if declaration.retained_tail {
+        tail::RetainedDefinitionTail::capture(
+            image,
+            schema.definition_page(),
+            declaration.length,
+            budget,
+            cancelled,
+        )
+        .map(Some)
+    } else {
+        Ok(None)
+    }
 }
 
 #[cfg(test)]
@@ -269,7 +370,7 @@ pub(in crate::table::mutation) fn validate_binary_updates(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    raw::capture(
+    raw::capture_rows(
         image,
         schema.definition_page(),
         Role::SelectedUser,

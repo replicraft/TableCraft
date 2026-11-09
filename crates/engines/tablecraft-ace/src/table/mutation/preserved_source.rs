@@ -34,7 +34,9 @@ use crate::table::mutation::guards::fields::batch::SelectedPrograms;
 #[cfg(feature = "journal")]
 use crate::table::mutation::no_required_programs::NoRequiredTablePrograms;
 #[cfg(feature = "journal")]
-use crate::table::mutation::ordinary_content::ClosedContent;
+use crate::table::mutation::ordinary_content::{
+    ClosedContent, definition::tail::RetainedDefinitionTail,
+};
 
 const CATALOG_HAS_COMPLEX: u32 = 0x0004_0000;
 
@@ -49,6 +51,30 @@ pub(in crate::table::mutation) struct Source {
     pub indexes: IndexInspection,
     pub records: Vec<Record>,
     pub dependencies: Vec<usize>,
+    #[cfg(feature = "journal")]
+    definition_tail: Option<RetainedDefinitionTail>,
+}
+
+impl Source {
+    #[cfg(feature = "journal")]
+    pub(in crate::table::mutation) fn require_preserved_definition_tail(
+        &self,
+        image: &NativeImage,
+        after: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if let Some(tail) = &self.definition_tail {
+            tail.require_unchanged(
+                image,
+                after,
+                self.table.schema().definition_page(),
+                budget,
+                cancelled,
+            )?;
+        }
+        Ok(())
+    }
 }
 
 struct Ordinal(usize);
@@ -309,6 +335,11 @@ fn capture_framed(
             certificate.require_source(image, schema, budget, cancelled)?
         }
     }
+    #[cfg(feature = "journal")]
+    let definition_tail = match &payload {
+        PayloadAdmission::NoRequired(certificate) => certificate.share_definition_tail(),
+        _ => None,
+    };
     let properties = inspect_table_properties(
         &mut image.reader(),
         image.catalog().catalog().scope(),
@@ -434,6 +465,8 @@ fn capture_framed(
             indexes,
             records,
             dependencies,
+            #[cfg(feature = "journal")]
+            definition_tail,
         });
     }
 
@@ -635,6 +668,8 @@ fn capture_framed(
         indexes,
         records,
         dependencies,
+        #[cfg(feature = "journal")]
+        definition_tail,
     })
 }
 
