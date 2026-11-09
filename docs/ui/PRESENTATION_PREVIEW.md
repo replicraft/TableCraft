@@ -2690,3 +2690,47 @@ TABLECRAFT_PREVIEW_HEIGHT=820 TABLECRAFT_PREVIEW_SCALE=1 \
 TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/field-addition-text \
 cargo run -p tablecraft-ui --example render_preview
 ```
+
+## Saved Design field staging — 9 November 2026
+
+The normal-host offscreen renderer now accepts these modes with
+`TABLECRAFT_PREVIEW_SCENE=design`:
+
+| `TABLECRAFT_PREVIEW_FIELD_ADDITION` | Visible state |
+| --- | --- |
+| `design-blank` | First blank saved-table Name/Type row |
+| `design-name` | Pending Short Text name |
+| `design-number-name` | Number chosen through the real type picker, with a pending name |
+| `design-menu` | Expanded type picker; unsupported declarations remain disabled |
+| `design-duplicate` | Existing field name entered as a proposal; no native review is invented |
+| `design-review` | Pending review and cancellation controls |
+
+These scenes explicitly provide source-free positive Number/Short Text facts to
+the same shared widgets. They do not authorize native writes, instantiate a
+worker, assign a stored field number or qualify an actual source. The existing
+[normal-host save tests](DATABASE_CREATION.md#saved-design-blank-row-addition) cover
+real backend review, journaled publication and checked reopening separately.
+
+The retained Windows Access Table Design capture was opened again for its blank
+Name/Type row, selector gutter and separate Field Properties pane. Its guest
+scale is unknown. No retained Access capture establishes the new pending-field
+message, type-picker popup or review modal; those surfaces are adaptations.
+
+Resolve translations and other egui Context reads before `widget_info` callbacks.
+That callback can already hold the accessibility Context write lock; translating
+inside it caused a real nested-lock failure in the initial Design test batch.
+The corrected callbacks retain the same accessible names without nested Context
+access.
+
+Six final frames were rendered and opened on macOS ARM64 with the offscreen GPU
+renderer: English light Short Text and dark Number at 1280 × 820 logical pixels
+(1×), Russian dark type picker and German dark duplicate proposal at 860 × 640
+(1×), Japanese light pending review at 860 × 640 (2×), and English light blank
+row at 640 × 480 (1×). The new name/type controls, pending-property message and
+review controls remain visible. Compact Design uses the existing horizontal
+Ribbon/grid and vertical property scrolling; the frame does not claim that all
+columns or properties fit simultaneously. Source-specific generated fields stay
+unchanged above the pending row. The initial frames exposed a misleading read-only
+caption on qualified ADD-only sources; the final frames use the observed ADD
+caption while unsupported sources retain read-only wording. No native window
+or Windows/Access interaction was used for these checks.
