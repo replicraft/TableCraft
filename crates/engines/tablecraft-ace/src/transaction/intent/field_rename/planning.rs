@@ -9,7 +9,7 @@ use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
 
 /// Sealed exact field-rename candidate, complete source and original request.
 pub struct RecoverableFieldRenamePlan {
-    candidate: NativeFieldRenameCandidate,
+    candidate: Box<NativeFieldRenameCandidate>,
     intent: Intent,
 }
 
@@ -29,11 +29,26 @@ impl NativeImage {
             self.prepare_same_width_field_rename(table, column, new_name, budget, cancelled)?;
         let intent = Intent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
-        Ok(RecoverableFieldRenamePlan { candidate, intent })
+        RecoverableFieldRenamePlan::new(candidate, intent, budget, cancelled)
     }
 }
 
 impl RecoverableFieldRenamePlan {
+    fn new(
+        candidate: NativeFieldRenameCandidate,
+        intent: Intent,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        check(budget, cancelled)?;
+        budget.charge_allocation(1, size_of::<NativeFieldRenameCandidate>() as u64)?;
+
+        Ok(Self {
+            candidate: Box::new(candidate),
+            intent,
+        })
+    }
+
     /// Bounded original request data, never serialized storage authority.
     pub fn intent(&self) -> &Intent {
         &self.intent
@@ -101,10 +116,7 @@ impl RecoverableFieldRenamePlan {
             cancelled,
         )?;
         check(proof, cancelled)?;
-        Ok(Self {
-            candidate,
-            intent: self.intent,
-        })
+        Self::new(candidate, self.intent, native, cancelled)
     }
 
     /// Prepare the exact equal-length pair in a checked V1 journal using only
