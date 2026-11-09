@@ -32,12 +32,6 @@ impl State {
         if !super::inputs_within_limits(&self.saved_query.inputs) {
             ui.small(tr(ui, "saved-query-input-limit"));
         }
-        let target = self
-            .saved_query
-            .target
-            .as_ref()
-            .expect("selected saved query")
-            .clone();
         ui.horizontal(|ui| {
             let run = ui.add_enabled(
                 self.saved_query_command_ready(),
@@ -53,7 +47,12 @@ impl State {
             focus::register(ui, Pane::Document, &inspect, false);
             if inspect.clicked() {
                 actions.push(Action::InspectSavedQuery {
-                    target: target.clone(),
+                    target: self
+                        .saved_query
+                        .target
+                        .as_ref()
+                        .expect("selected saved query")
+                        .clone(),
                 });
             }
         });

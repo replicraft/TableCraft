@@ -73,7 +73,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                 ui.push_id(("qbe_cell", index, row), |ui| match row {
                                     0 => {
                                         let original = field_text(&column.expression);
-                                        let mut text = original.clone();
+                                        let mut text = original.to_owned();
                                         let cost = match &column.expression {
                                             DesignExpression::Field(field) => field.column.len(),
                                             DesignExpression::Expression(text) => text.len(),
@@ -291,11 +291,11 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
     changed
 }
 
-fn field_text(expression: &DesignExpression) -> String {
+fn field_text(expression: &DesignExpression) -> &str {
     match expression {
-        DesignExpression::Field(field) => field.column.clone(),
-        DesignExpression::AllFields(_) => "*".into(),
-        DesignExpression::Expression(text) => text.clone(),
+        DesignExpression::Field(field) => &field.column,
+        DesignExpression::AllFields(_) => "*",
+        DesignExpression::Expression(text) => text,
     }
 }
 

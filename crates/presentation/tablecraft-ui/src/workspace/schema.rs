@@ -8,6 +8,7 @@ use super::{DocumentView, State};
 use crate::workspace::focus::{self, Pane};
 use egui::{Id, RichText, Ui};
 use egui_extras::{Column, TableBuilder};
+use std::borrow::Cow;
 
 const MAX_PANE_ENTRY_FRAMES: u64 = 8;
 const FIELD_ROW_HEIGHT: f32 = 19.0;
@@ -323,20 +324,20 @@ impl State {
                                     .map(|property| &property.value);
                                 let (description, style) = match value {
                                     Some(FieldPropertyValue::Text(value)) => {
-                                        (value.clone(), grid::CellStyle::Value)
+                                        (Cow::Borrowed(value.as_str()), grid::CellStyle::Value)
                                     }
                                     Some(FieldPropertyValue::Absent) => {
-                                        (String::new(), grid::CellStyle::Value)
+                                        (Cow::Borrowed(""), grid::CellStyle::Value)
                                     }
                                     Some(FieldPropertyValue::Uninspected) | None => (
-                                        localizer.text("design-not-inspected"),
+                                        Cow::Owned(localizer.text("design-not-inspected")),
                                         grid::CellStyle::Unknown,
                                     ),
                                     Some(
                                         FieldPropertyValue::Unsupported
                                         | FieldPropertyValue::Boolean(_),
                                     ) => (
-                                        localizer.text("design-unsupported-value"),
+                                        Cow::Owned(localizer.text("design-unsupported-value")),
                                         grid::CellStyle::Unknown,
                                     ),
                                 };
@@ -526,9 +527,9 @@ fn navigate_fields(
     Some(*selected)
 }
 
-fn property(ui: &mut Ui, label: &str, value: impl Into<String>) {
+fn property(ui: &mut Ui, label: &str, value: impl Into<egui::WidgetText>) {
     let name = ui.label(label);
-    ui.add(egui::Label::new(value.into()).selectable(true))
+    ui.add(egui::Label::new(value).selectable(true))
         .labelled_by(name.id);
     ui.end_row();
 }

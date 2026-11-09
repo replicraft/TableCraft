@@ -6,6 +6,7 @@ use crate::workspace::focus::{self, Pane};
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::workspace::ribbon::Icon;
 use egui::{Frame, Id, Margin, Response, Sense, TextStyle, Ui, WidgetInfo, WidgetType};
+use std::borrow::Cow;
 
 const TAB_HEIGHT: f32 = 22.0;
 const MIN_TAB_WIDTH: f32 = 48.0;
@@ -67,22 +68,26 @@ impl State {
                                         } else {
                                             Icon::Table
                                         };
-                                        (name.clone(), icon)
+                                        (Cow::Borrowed(name.as_str()), icon)
                                     }
                                     ObjectKind::SavedQuery { name, .. } => {
-                                        (name.clone(), Icon::Search)
+                                        (Cow::Borrowed(name.as_str()), Icon::Search)
                                     }
                                     ObjectKind::DraftTable { .. } => (
                                         self.table_draft_name(&object)
-                                            .map(str::to_owned)
-                                            .unwrap_or_else(|| tr(ui, "table-draft-unavailable")),
+                                            .map(Cow::Borrowed)
+                                            .unwrap_or_else(|| {
+                                                Cow::Owned(tr(ui, "table-draft-unavailable"))
+                                            }),
                                         if selected && self.table_draft_design_visible() {
                                             Icon::TableEdit
                                         } else {
                                             Icon::Table
                                         },
                                     ),
-                                    ObjectKind::Sql => (tr(ui, "shell-query"), Icon::Search),
+                                    ObjectKind::Sql => {
+                                        (Cow::Owned(tr(ui, "shell-query")), Icon::Search)
+                                    }
                                 };
                                 let id = ui.make_persistent_id((
                                     "object_tab",
@@ -135,9 +140,7 @@ impl State {
                                     }
                                 }
                                 if close {
-                                    actions.push(Action::CloseObject {
-                                        tab: object.clone(),
-                                    });
+                                    actions.push(Action::CloseObject { tab: object });
                                 } else if response.clicked() {
                                     actions.push(Action::ActivateObject { tab: object });
                                 }

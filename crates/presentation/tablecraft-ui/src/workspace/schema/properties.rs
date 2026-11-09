@@ -5,6 +5,7 @@ use crate::{Localizer, theme::palette};
 use egui::text_selection::LabelSelectionState;
 use egui::{Align, Direction, Event, Label, Layout, Response, ScrollArea, Ui, UiBuilder};
 use egui_extras::{Column, TableBuilder};
+use std::borrow::Cow;
 
 const MAX_PROPERTY_COPY_BYTES: usize = 1_048_576;
 const PROPERTY_ROW_HEIGHT: f32 = 18.0;
@@ -131,16 +132,18 @@ fn show_general(ui: &mut Ui, field: &Field, selection: &mut PropertySelection) {
         observations.push((
             "FieldSize",
             localizer.text("design-field-size"),
-            type_labels::field_size(&localizer, size),
+            Cow::Owned(type_labels::field_size(&localizer, size)),
         ));
     }
     for observation in &field.properties {
         let value = match &observation.value {
-            FieldPropertyValue::Uninspected => localizer.text("design-not-inspected"),
-            FieldPropertyValue::Absent => localizer.text("design-not-stored"),
-            FieldPropertyValue::Boolean(value) => yes_no(ui, *value),
-            FieldPropertyValue::Text(value) => value.clone(),
-            FieldPropertyValue::Unsupported => localizer.text("design-unsupported-value"),
+            FieldPropertyValue::Uninspected => Cow::Owned(localizer.text("design-not-inspected")),
+            FieldPropertyValue::Absent => Cow::Owned(localizer.text("design-not-stored")),
+            FieldPropertyValue::Boolean(value) => Cow::Owned(yes_no(ui, *value)),
+            FieldPropertyValue::Text(value) => Cow::Borrowed(value.as_str()),
+            FieldPropertyValue::Unsupported => {
+                Cow::Owned(localizer.text("design-unsupported-value"))
+            }
         };
         observations.push((observation.name, observation.label(&localizer), value));
     }
@@ -176,13 +179,14 @@ fn show_general(ui: &mut Ui, field: &Field, selection: &mut PropertySelection) {
                         &localizer.text("design-native-type"),
                         format!("0x{:02X}", field.native_type),
                     );
+                    let scalar_type = field.scalar_type.as_deref().map_or_else(
+                        || Cow::Owned(localizer.text("design-unsupported")),
+                        Cow::Borrowed,
+                    );
                     property(
                         ui,
                         &localizer.text("design-readable-carrier"),
-                        field
-                            .scalar_type
-                            .clone()
-                            .unwrap_or_else(|| localizer.text("design-unsupported")),
+                        scalar_type.as_ref(),
                     );
                     property(
                         ui,
@@ -231,7 +235,7 @@ fn show_general(ui: &mut Ui, field: &Field, selection: &mut PropertySelection) {
 
 fn general_sheet(
     ui: &mut Ui,
-    observations: &[(&str, String, String)],
+    observations: &[(&str, String, Cow<'_, str>)],
     selection: &mut PropertySelection,
 ) -> Option<PropertyCopyFailure> {
     let mut failure = None;
