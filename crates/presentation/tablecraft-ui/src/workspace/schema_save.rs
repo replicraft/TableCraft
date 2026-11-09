@@ -60,10 +60,22 @@ impl<I: Copy + PartialEq> Status<I> {
     }
 
     pub(in crate::workspace) fn can_resolve(&self, identity: I, recover: bool) -> bool {
-        self.identity == identity
-            && self.phase == StatusPhase::Finished
-            && matches!(&self.outcome, Some(EditSaveOutcome::Retained { can_recover, can_release, .. })
-                if if recover { *can_recover } else { *can_release })
+        if self.identity != identity || self.phase != StatusPhase::Finished {
+            return false;
+        }
+        let Some(EditSaveOutcome::Retained {
+            can_recover,
+            can_release,
+            ..
+        }) = self.outcome.as_ref()
+        else {
+            return false;
+        };
+
+        if recover {
+            return *can_recover;
+        }
+        *can_release
     }
 
     pub(in crate::workspace) fn can_acknowledge(&self, identity: I) -> bool {

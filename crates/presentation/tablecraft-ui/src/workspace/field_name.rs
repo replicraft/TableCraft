@@ -55,7 +55,7 @@ impl TextBuffer for NameBuffer {
         let bytes = self.text.len().checked_add(inserted.len());
         let valid = bytes.is_some_and(|bytes| bytes <= MAX_DRAFT_NAME_BYTES)
             && self.text.encode_utf16().count() + inserted.encode_utf16().count()
-                <= tablecraft_builders::table::MAX_DRAFT_NAME_UNITS;
+                <= MAX_DRAFT_NAME_UNITS;
         if !valid {
             if self.deletion_pending {
                 self.text.clear();
