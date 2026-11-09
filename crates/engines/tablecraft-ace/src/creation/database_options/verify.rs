@@ -12,12 +12,12 @@ use crate::{
         data_type,
         layout::RECORD_COUNT_OFFSET,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_count, row_range},
+        reader::{row_count, row_range},
         row::{OFFSET_MASK, ROW_COUNT_OFFSET, reference, slot_offset},
     },
     header::check,
-    inspect_catalog, inspect_database_properties, inspect_table_schema,
-    table::mutation::catalog_property::{column, descriptor},
+    inspect_catalog, inspect_database_properties,
+    table::mutation::catalog_property::ledger,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -180,24 +180,14 @@ pub(super) fn candidate(
     }
     // The database role and its observed body are distinct from the catalog
     // column's ownership. Bind its actual descriptor to the produced row too.
-    let catalog_schema = inspect_table_schema(
-        &mut Cursor::new(after),
-        native.catalog().scope(),
-        "MSysObjects",
+    let ledger = ledger::capture(after, &native, budget, cancelled)?;
+    if !ledger.sole_single(
+        db.object_id(),
+        reference(new_page, 0),
+        properties::ENCODED_BYTES,
         budget,
         cancelled,
-    )?;
-    let property_column = column(&catalog_schema)?;
-    let mut input = Cursor::new(after);
-    let mut reader = Reader {
-        source: &mut input,
-        header: native.header(),
-        budget,
-        cancelled,
-        reads: 0,
-    };
-    let descriptor = descriptor::capture(&mut reader, &catalog_schema, property_column, db)?;
-    if !descriptor.canonical_single(reference(new_page, 0), properties::ENCODED_BYTES)? {
+    )? {
         return Err(DatabaseOptionsError::Preservation);
     }
     check(budget, cancelled)?;

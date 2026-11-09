@@ -87,20 +87,31 @@ impl Maps {
             cancelled,
             reads: 0,
         };
-        let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
-        global.require_allocated_storage(&mut reader, &global)?;
-        global.require_allocated(&mut reader, schema.definition_page())?;
-        let metadata = definition::read(&mut reader, schema.definition_page())?;
+        Self::capture_from_reader(&mut reader, schema, references, eof_allocation)
+    }
+
+    /// Read the same actual map scopes from an immutable byte-view reader.
+    /// Caller-specific page and source admission remains outside this observation.
+    pub fn capture_from_reader(
+        reader: &mut Reader<'_, Cursor<&[u8]>>,
+        schema: &TableSchema,
+        references: LongValueMapReferences,
+        eof_allocation: EofAllocation,
+    ) -> Result<Self, EditError> {
+        let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
+        global.require_allocated_storage(reader, &global)?;
+        global.require_allocated(reader, schema.definition_page())?;
+        let metadata = definition::read(reader, schema.definition_page())?;
         let ordinary_hint = u32_at(&metadata, TABLE_FREE_MAP_OFFSET)?;
         let ordinary = Scope::capture(
-            &mut reader,
+            reader,
             schema.layout.usage,
             ordinary_hint,
             MapRole::TableFreeSpace,
             &global,
         )?;
         let long_value = Scope::capture(
-            &mut reader,
+            reader,
             references.owned(),
             references.candidate(),
             MapRole::LongValueCandidate,

@@ -1,6 +1,6 @@
 //! Shared ordinary-row census over the actual qualified property-page ledger.
 use crate::{
-    EditError, InspectError, NativeImage,
+    EditError, InspectError, NativeImage, TableSchema,
     format::{
         reader::{Reader, row_count, row_range},
         row::OFFSET_MASK,
@@ -22,6 +22,7 @@ pub(super) enum PropertyHistoryError {
 
 pub(super) fn count(
     image: &NativeImage,
+    table: &TableSchema,
     maximum: usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -36,7 +37,8 @@ pub(super) fn count(
         reads: 0,
     };
     let mut rows = 0usize;
-    for number in pages {
+    let mut last = None;
+    for &number in &pages {
         let page = reader.page(number)?;
         let page_rows = row_count(&page)?;
         if page_rows == 0 {
@@ -48,6 +50,7 @@ pub(super) fn count(
         if rows >= maximum {
             return Err(PropertyHistoryError::Source);
         }
+        last = Some((number, page_rows - 1));
         for slot in 0..page_rows {
             reader.tick()?;
             let (word, start, end) = row_range(&page, slot)?;
@@ -57,5 +60,14 @@ pub(super) fn count(
         }
     }
 
+    // Keep every original row/count/slot refusal ahead of the new role policy.
+    // Total column rows are not implicitly user history in a composed source.
+    let (page, slot) = last.ok_or(PropertyHistoryError::Source)?;
+    let slot = u8::try_from(slot).map_err(|_| PropertyHistoryError::Source)?;
+    let ledger =
+        catalog_property::ledger::capture(image.as_bytes(), image.catalog(), budget, cancelled)?;
+    if !ledger.sole_user_history(table.object_id(), &pages, page, slot, budget, cancelled)? {
+        return Err(PropertyHistoryError::Source);
+    }
     Ok(rows)
 }

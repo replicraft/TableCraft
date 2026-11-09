@@ -26,13 +26,8 @@ pub(super) fn capture(
         cancelled,
         reads: 0,
     };
-    let declarations = declarations(&mut reader, schema)?;
-    let selected = declarations
-        .entries
-        .iter()
-        .find(|entry| entry.number == schema.columns()[column].number())
-        .ok_or(InspectError::Unsupported)?;
-    if !declarations.complete || selected.references.owned() == selected.references.candidate() {
+    let references = references(&mut reader, schema, column)?;
+    if references.owned() == references.candidate() {
         return Err(InspectError::Unsupported.into());
     }
     let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
@@ -42,10 +37,10 @@ pub(super) fn capture(
     if global_cell.before & global_cell.mask != 0 {
         return Err(InspectError::Unsupported.into());
     }
-    let owned = RepresentedMap::read(&mut reader, selected.references.owned(), MapRole::Owned)?;
+    let owned = RepresentedMap::read(&mut reader, references.owned(), MapRole::Owned)?;
     let candidate = RepresentedMap::read(
         &mut reader,
-        selected.references.candidate(),
+        references.candidate(),
         MapRole::LongValueCandidate,
     )?;
     owned.require_allocated_storage(&mut reader, &global)?;
@@ -58,4 +53,26 @@ pub(super) fn capture(
         return Err(InspectError::Unsupported.into());
     }
     Ok(cells)
+}
+
+/// Resolve the actual selected native column pair without granting page scope.
+pub(super) fn references<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    catalog: &TableSchema,
+    column: usize,
+) -> Result<crate::LongValueMapReferences, EditError> {
+    let declared = declarations(reader, catalog)?;
+    let column = catalog
+        .columns()
+        .get(column)
+        .ok_or(InspectError::Malformed)?;
+    let selected = declared
+        .entries
+        .iter()
+        .find(|entry| entry.number == column.number())
+        .ok_or(InspectError::Unsupported)?;
+    if !declared.complete {
+        return Err(InspectError::Unsupported.into());
+    }
+    Ok(selected.references)
 }

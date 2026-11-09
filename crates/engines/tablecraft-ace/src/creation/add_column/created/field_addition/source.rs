@@ -104,7 +104,13 @@ fn capture_mixed(
         catalog_property::properties_external(image, checked.schema(), budget, cancelled)?;
     let count = checked.schema().columns().len();
     let history = if external {
-        super::super::super::property_history::count(image, count, budget, cancelled)?
+        super::super::super::property_history::count(
+            image,
+            checked.schema(),
+            count,
+            budget,
+            cancelled,
+        )?
     } else {
         0
     };

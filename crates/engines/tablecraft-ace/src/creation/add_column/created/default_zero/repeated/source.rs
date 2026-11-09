@@ -24,18 +24,22 @@ pub(in crate::creation::add_column::created) fn capture(
     let (checked, definition) =
         super::super::super::source::inspect(image, table, budget, cancelled)?;
     let count = checked.schema().columns().len();
-    let rows = super::super::super::super::property_history::count(image, count, budget, cancelled)
-        .map_err(|error| match error {
-            super::super::super::super::property_history::PropertyHistoryError::Inspect(error) => {
-                Error::Inspect(error)
-            }
-            super::super::super::super::property_history::PropertyHistoryError::Placement(
-                error,
-            ) => Error::Placement(error),
-            super::super::super::super::property_history::PropertyHistoryError::Source => {
-                Error::Source
-            }
-        })?;
+    let rows = super::super::super::super::property_history::count(
+        image,
+        checked.schema(),
+        count,
+        budget,
+        cancelled,
+    )
+    .map_err(|error| match error {
+        super::super::super::super::property_history::PropertyHistoryError::Inspect(error) => {
+            Error::Inspect(error)
+        }
+        super::super::super::super::property_history::PropertyHistoryError::Placement(error) => {
+            Error::Placement(error)
+        }
+        super::super::super::super::property_history::PropertyHistoryError::Source => Error::Source,
+    })?;
 
     let columns = definition.borrowed_columns(budget, cancelled)?;
     super::super::source_properties(&columns, budget, cancelled)?;

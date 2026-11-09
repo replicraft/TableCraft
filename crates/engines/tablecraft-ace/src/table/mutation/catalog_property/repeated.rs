@@ -5,12 +5,9 @@ use crate::{
     InspectError, NativeImage, TableSchema,
     format::{page::PAGE_BYTES, reader::Reader},
     header::check,
-    table::{
-        long_value::maps::declarations,
-        mutation::owned_lval::{
-            maps::Maps,
-            property::{self, PropertyAppend},
-        },
+    table::mutation::owned_lval::{
+        maps::Maps,
+        property::{self, PropertyAppend},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -37,16 +34,7 @@ fn references(
         cancelled,
         reads: 0,
     };
-    let declared = declarations(&mut reader, catalog)?;
-    let selected = declared
-        .entries
-        .iter()
-        .find(|entry| entry.number == catalog.columns()[column].number())
-        .ok_or(InspectError::Unsupported)?;
-    if !declared.complete {
-        return Err(InspectError::Unsupported.into());
-    }
-    Ok(selected.references)
+    super::maps::references(&mut reader, catalog, column)
 }
 
 /// Actual owned-page ledger; observing it grants no mutation authority.

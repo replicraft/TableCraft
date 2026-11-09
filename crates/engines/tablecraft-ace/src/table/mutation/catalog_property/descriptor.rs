@@ -80,6 +80,33 @@ impl Descriptor {
         ))
     }
 
+    pub(super) fn matches_origin<R: NativeReadSource>(
+        &self,
+        reader: &mut Reader<'_, R>,
+        catalog: &TableSchema,
+        origin: &NativeObjectOrigin,
+        name: &str,
+    ) -> Result<bool, InspectError> {
+        let actual =
+            crate::catalog::record::decode(&self.record.data, &catalog.layout, reader.budget)?;
+        Ok(actual.id == origin.native_id()
+            && actual.parent == origin.parent_id()
+            && actual.kind == origin.type_code()
+            && actual.flags == origin.flags()
+            && actual.name == name)
+    }
+
+    pub(super) fn physical_offset(&self) -> usize {
+        self.record.offset
+    }
+
+    pub(super) fn traced<R: NativeReadSource>(
+        &self,
+        reader: &mut Reader<'_, R>,
+    ) -> Result<trace::Traced, InspectError> {
+        trace::read(reader, self.bytes())
+    }
+
     /// Strict original producer binding; no LVAL page or body is followed here.
     pub(crate) fn canonical_single(
         &self,

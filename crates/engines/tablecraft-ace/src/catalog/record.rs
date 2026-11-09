@@ -21,14 +21,14 @@ const REPORT: i16 = -32764;
 const MACRO: i16 = -32766;
 const MODULE: i16 = -32761;
 
-pub(super) struct Record {
+pub(crate) struct Record {
     pub id: i32,
     pub parent: i32,
     pub kind: i16,
     pub flags: u32,
     pub name: String,
 }
-pub(super) fn decode(
+pub(crate) fn decode(
     bytes: &[u8],
     layout: &Layout,
     budget: &mut ResourceBudget,

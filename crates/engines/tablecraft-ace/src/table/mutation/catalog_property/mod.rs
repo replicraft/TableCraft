@@ -5,6 +5,7 @@
 mod carrier;
 pub(crate) mod descriptor;
 pub(crate) use carrier::external as properties_external;
+pub(crate) mod ledger;
 mod maps;
 mod parent;
 mod record;

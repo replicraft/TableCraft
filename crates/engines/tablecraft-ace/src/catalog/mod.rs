@@ -1,7 +1,7 @@
 mod inventory;
 mod linked;
 mod origin;
-mod record;
+pub(crate) mod record;
 pub use inventory::{CatalogInspection, inspect_catalog};
 pub use origin::{NativeObjectOrigin, NativeTableStorage};
 
