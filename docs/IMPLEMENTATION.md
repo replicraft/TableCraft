@@ -13,10 +13,22 @@ controls. No writer admission or broader type/property editing was added.
 Two shared staging tests and two normal desktop tests covering four actual files
 pass headlessly: independent complete Number/Short Text AFTER images, actual
 selection and Datasheet consistency, plus nonempty/unqualified source refusal
-without journals or changed bytes. The accessibility-registration lock found by
-the earlier larger batch is fixed; a complete follow-up suite is not claimed by
-these focused checks. Native Windows/Access parity remains unqualified. See the
+without journals or changed bytes. The initial larger batches exposed an
+accessibility-registration lock and an Escape focus-release issue; both were
+corrected. The final complete shared UI suite passes 705 tests, and the complete
+desktop suite passes 217 with one pre-existing external-fixture ignore. Strict
+all-target/all-feature Clippy and rustdoc pass for both packages. Six final
+light/dark/localized offscreen frames were opened at 1×/2×, including compact
+layouts; see the [visual record](ui/PRESENTATION_PREVIEW.md#saved-design-field-staging--9-november-2026).
+Native Windows/Access parity remains unqualified. See the
 [workflow](ui/DATABASE_CREATION.md#saved-design-blank-row-addition).
+
+A connected original ACE2007 sample case also passes through normal object
+navigation, table reading, an explicitly ordered SQL query and return to Design.
+The completed source inspection keeps unsupported field creation disabled;
+Save starts no writer or journal and the original/copy bytes remain unchanged.
+Physical browser order is retained separately from SQL ordering. This is one
+sample workflow, not write compatibility or complete ACE2007 qualification.
 
 ## Normal created-file CRUD and cell focus — 9 November 2026
 
