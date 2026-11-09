@@ -136,6 +136,12 @@ pub struct SaveFailure {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveOutcome {
+    /// The accepted actor ended without a terminal native result. These optional
+    /// facts are historical observations, never the current file or a retry grant.
+    Uncertain {
+        last_known_outcome: Option<SaveKnownOutcome>,
+        last_completed: Option<SaveReceipt>,
+    },
     Saved {
         receipt: SaveReceipt,
     },
@@ -172,24 +178,46 @@ impl SaveReport {
     }
 }
 
+/// Why a save or retained-resource resolution request was not accepted.
+/// This is a start refusal, not the outcome of an already accepted write.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveStartFailure {
-    /// The OS refused the worker thread; the original capability is returned.
+    /// The OS refused actor startup before any request could be accepted.
     ThreadStart(std::io::ErrorKind),
+    /// The actor ended and accepts no further work. A new source owner must be
+    /// established explicitly; this does not establish the current file state.
+    WorkerStopped,
+    /// An active request, terminal report or retained native owner blocks a start.
     Busy,
+    /// The supplied review no longer belongs to the current document generation.
     StaleDocument,
+    /// The requested operation does not match the current capability/session state.
     InvalidState,
+    /// No further worker-local request identity can be issued.
     Exhausted,
+    /// This target has no implementation of the requested native save service.
     UnsupportedPlatform,
 }
 
-/// A rejected start returns its unconsumed capability to the caller.
+/// A request refused before acceptance by the save actor.
+///
+/// Starts that consume a reviewed capability or source path retain that exact
+/// payload for [`Self::into_reviewed`]. Recovery/release requests identify an
+/// already retained session instead of transferring a payload, so their errors
+/// return `None`. A returned payload is not revalidated and grants no automatic
+/// retry or permission to infer the result of earlier native work.
 pub struct SaveStartError<T = ReviewedEdit> {
+    /// The reason the new request was not accepted.
     pub kind: SaveStartFailure,
     pub(super) reviewed: Option<T>,
 }
 
 impl<T> SaveStartError<T> {
+    /// Recover the exact unconsumed capability or source path supplied to a start.
+    ///
+    /// Returns `None` for refused recovery/release requests, which supplied only
+    /// an existing report identity. This does not resolve or release any retained
+    /// native resources, and it does not make a stale review current again.
     pub fn into_reviewed(self) -> Option<T> {
         self.reviewed
     }

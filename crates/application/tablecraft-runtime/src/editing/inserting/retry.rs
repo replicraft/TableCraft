@@ -38,6 +38,7 @@ pub struct InsertRetryEvidence {
     no_writes: bool,
     original_known: bool,
     committed_observed: bool,
+    uncertain_observed: bool,
 }
 
 impl InsertRetryEvidence {
@@ -51,7 +52,11 @@ impl InsertRetryEvidence {
             }
             self.no_writes |= report.stopped_before_target_writes();
         }
+        if matches!(report.outcome, SaveOutcome::Uncertain { .. }) {
+            self.uncertain_observed = true;
+        }
         let current = match report.outcome {
+            SaveOutcome::Uncertain { .. } => None,
             SaveOutcome::Saved { receipt } => Some(receipt.known),
             SaveOutcome::Failed(failure) => failure.current_outcome,
             SaveOutcome::Released {
@@ -71,7 +76,9 @@ impl InsertRetryEvidence {
     }
 
     pub fn can_retry_original(&self) -> bool {
-        !self.committed_observed && (self.no_writes || self.original_known)
+        !self.uncertain_observed
+            && !self.committed_observed
+            && (self.no_writes || self.original_known)
     }
 }
 

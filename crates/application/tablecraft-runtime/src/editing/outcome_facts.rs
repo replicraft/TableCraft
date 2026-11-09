@@ -38,9 +38,30 @@ pub(super) fn reopen_facts(
             (replacement, completed)
         }
         SaveOutcome::Failed(_) => (false, None),
+        SaveOutcome::Uncertain { .. } => return Err(()),
     };
     Ok(ReopenFacts {
         replacement,
         completed,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn uncertain_actor_has_no_current_replacement_or_receipt_authority() {
+        for previous in [
+            None,
+            Some(SaveKnownOutcome::OriginalVerified),
+            Some(SaveKnownOutcome::Committed),
+        ] {
+            let outcome = SaveOutcome::Uncertain {
+                last_known_outcome: previous,
+                last_completed: None,
+            };
+            assert!(reopen_facts(outcome, |_| true).is_err());
+        }
+    }
 }

@@ -119,3 +119,26 @@ fn historical_receipts_are_not_current_outcomes_and_new_apply_starts_a_new_chain
         assert!(evidence.can_retry_original());
     }
 }
+
+#[test]
+fn uncertain_resolution_revokes_previous_original_and_no_write_retry_evidence() {
+    for original in [
+        failed(None, true, None),
+        failed(Some(SaveKnownOutcome::OriginalVerified), false, None),
+    ] {
+        let mut evidence = InsertRetryEvidence::default();
+        evidence.observe(original);
+        assert!(evidence.can_retry_original());
+        evidence.observe(SaveReport {
+            id: 2,
+            operation: SaveOperation::Recover,
+            outcome: SaveOutcome::Uncertain {
+                last_known_outcome: Some(SaveKnownOutcome::OriginalVerified),
+                last_completed: None,
+            },
+        });
+        assert!(!evidence.can_retry_original());
+        evidence.observe(released());
+        assert!(!evidence.can_retry_original());
+    }
+}

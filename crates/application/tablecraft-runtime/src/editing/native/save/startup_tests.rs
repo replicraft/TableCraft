@@ -1,7 +1,6 @@
 //! Unavailable save actors refuse capabilities before journal acceptance.
 use super::*;
 use crate::thread_start::{FailingSpawner, PausedSpawner};
-use crate::{Command, EditInput, EditTarget, Response, Worker};
 use std::time::{Duration, Instant};
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
@@ -11,47 +10,7 @@ fn failed_thread_start_returns_real_review_without_target_or_journal_work() {
     let source = directory.path().join("source.accdb");
     let before = mutation_fixture::database();
     std::fs::write(&source, &before).unwrap();
-    let reader = Worker::new(|| {});
-    let Response::Opened {
-        document_revision, ..
-    } = crate::tests::request(
-        &reader,
-        Command::Open {
-            path: source.clone(),
-            password: String::new(),
-        },
-    )
-    .unwrap()
-    else {
-        panic!("expected original source");
-    };
-    let Response::EditDraft(draft) = crate::tests::request(
-        &reader,
-        Command::BeginEdit {
-            target: EditTarget {
-                document_revision,
-                table: "Items".into(),
-                column: "Score".into(),
-                parent_ordinal: 1,
-            },
-        },
-    )
-    .unwrap() else {
-        panic!("expected actual cell draft");
-    };
-    let Response::EditReviewed { capability, .. } = crate::tests::request(
-        &reader,
-        Command::ReviewEdit {
-            draft_id: draft.id,
-            input: EditInput {
-                text: "42".into(),
-                is_null: false,
-            },
-        },
-    )
-    .unwrap() else {
-        panic!("expected actual consuming review");
-    };
+    let (_reader, capability) = super::test_support::review_source(&source);
     let captured_path = capability
         .source_path()
         .as_os_str()
