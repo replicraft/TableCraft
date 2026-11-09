@@ -157,10 +157,10 @@ struct ActorSource {
 
 impl Drop for ActorSource {
     fn drop(&mut self) {
-        if !self.graceful || std::thread::panicking() {
-            if let Some(validity) = &self.validity {
-                validity.store(false, Ordering::Release);
-            }
+        if (!self.graceful || std::thread::panicking())
+            && let Some(validity) = &self.validity
+        {
+            validity.store(false, Ordering::Release);
         }
     }
 }

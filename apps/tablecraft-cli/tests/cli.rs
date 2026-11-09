@@ -12,7 +12,10 @@ fn help_states_actual_capabilities_without_a_display() {
         assert!(text.contains("Usage: tablecraft"));
         assert!(text.contains("Query update creates a fresh offline Jet 4 copy"));
         assert!(text.contains("Query journal-update/recover-update explicitly edit or recover"));
-        assert!(text.contains("GUI hosts are not implemented."));
+        assert!(text.contains(
+            "The desktop host uses shared runtime services with operation-specific editing limits."
+        ));
+        assert!(!text.contains("GUI hosts are not implemented."));
     }
 }
 

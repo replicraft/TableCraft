@@ -8,13 +8,13 @@ use crate::{
 };
 use crate::{
     ContentsTarget, FieldFilterOperator, FieldFilterTarget, FilterComparison, FilterDefinition,
-    FilterHandle, FilterSelectionTarget, FindPosition, FindRequest, InspectedQuery, ParameterInput,
+    FilterHandle, FilterSelectionTarget, FindRequest, InspectedQuery, ParameterInput,
     QueryDesignTarget, SavedQueryTarget, SortSpec, SortTarget, TotalSpec, TotalsTarget,
 };
 #[cfg(feature = "offline-edit")]
 use crate::{
-    DeleteTarget, EditInput, EditTarget, InsertInput, InsertRetryWitness, InsertTarget,
-    QueryExpressionReopen, TableRenameReopen,
+    DeleteTarget, EditInput, EditTarget, FindPosition, InsertInput, InsertRetryWitness,
+    InsertTarget, QueryExpressionReopen, TableRenameReopen,
 };
 use std::{path::PathBuf, sync::Arc};
 use tablecraft_builders::query::QueryDesignDraft;
