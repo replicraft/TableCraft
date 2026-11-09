@@ -1,5 +1,24 @@
 # Implementation status
 
+## Normal created-file CRUD and cell focus — 9 November 2026
+
+A fresh ACE16 file now has a combined normal-host acceptance case across table
+creation, generated row insertion, fresh Open, non-no-op Number-cell update,
+reviewed deletion, another fresh Open and subsequent generated insertion.
+Final fresh-host rows are exactly IDs 1 and 3 with companion values 42 and 9;
+ID 2 was deleted and its generation history was retained. No native admission or
+writer profile changed. See the [created-file journey](ui/DATABASE_CREATION.md#created-file-row-lifecycle).
+
+The journey also closes a presentation gap: acknowledged cell saves now reselect
+and reveal the actual edited cell after the matching checked reopen/page or
+filter publication. Stale replies, changed identities and missing filtered rows
+cannot redirect that focus or grant mutation authority. Twelve shared UI,
+nine desktop editing and three actual clipboard checks pass; one pre-existing
+external-fixture case remains ignored. The combined created-file case passes
+separately. These checks are headless and do not claim native Windows/Access
+interaction. Saved Design-view ADD remains a useful next GUI slice over the
+already bounded Number/Short Text service.
+
 ## Classified query-source failures — 9 November 2026
 
 The backend-neutral `SourceFailure` contract preserves payload-free source

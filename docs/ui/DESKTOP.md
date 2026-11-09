@@ -4,6 +4,27 @@ The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
 reserved active journal through the shared runtime owner. Opening and rendering
 its prompt make no changes; recovery requires an explicit action.
 
+## Cell-save focus and created-file CRUD — 9 November 2026
+
+An acknowledged cell save now returns selection to the edited record and field
+after its own guarded reopen and accepted normal/filtered page publication.
+The host retains presentation coordinates separately from the consumed native
+review, binds them to each actual save/read identity and rebinds only the fresh
+document revision. A missing or filtered-out target cannot invent a replacement
+cell. Stale replies cannot replay focus; unrelated or superseding reads retire
+the pending restoration. Selection supplies no new write authority.
+
+Shared presentation checks cover mapped native ordinals and stale identities;
+normal desktop no-op and actual clipboard-driven changed-value saves retain the
+edited cell. Twelve focused UI, nine desktop editing and three actual clipboard
+cases pass, with one existing external-fixture case still ignored. This changes
+selection behavior without a new visual control or native appearance claim.
+
+The separate [created-file lifecycle](DATABASE_CREATION.md#created-file-row-lifecycle)
+passes actual creation, generated insertion, non-no-op update, deletion,
+subsequent insertion and fresh automatic reopening. It uses the normal widgets,
+real runtime services and native persistence without expanding admission.
+
 ## Saved-field name proposals — 9 November 2026
 
 The [shared saved-field rename flow](FIELD_RENAME.md) connects actual true-name

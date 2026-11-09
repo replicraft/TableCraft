@@ -34,6 +34,26 @@ before native reader qualification. This binds the captured content, not physica
 file identity or continued identity of the publication's captured parent.
 Reopen failure preserves the successful publication fact.
 
+## Created-file row lifecycle
+
+A normal headless desktop journey now creates a real blank ACE16 file, adds a
+Number companion to its generated primary ID, saves the table, and inserts
+values 7 and 8 through the actual reviewed row workflow. A fresh desktop Open
+automatically selects that table. Its actual cell editor changes 7 to 42;
+Navigation/Ribbon deletion removes the second record. Another fresh Open verifies
+the survivor before a new reviewed insertion supplies 9. Final fresh reopening
+reads exactly IDs 1 and 3 with values 42 and 9: deleting ID 2 did not reset the
+stored generation history.
+
+The case observes original bytes before each Apply, real native save receipts,
+explicit terminal acknowledgement, checked refresh, journal absence after
+acknowledgement and a fresh host independent of retained result state. It uses
+existing native admission without header retags, mock saves or a newly widened
+write profile. It does not establish all field types, arbitrary imported sources,
+Access autosave, Windows execution or native Microsoft Access save/reopen parity.
+The focused case passes on macOS ARM64; the existing source-preservation and
+recovery suites remain separate evidence.
+
 ## Initial unsaved table
 
 After successful guarded reopening, the desktop opens an unsaved `Table1` draft.

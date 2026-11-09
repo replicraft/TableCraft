@@ -1,6 +1,6 @@
 # Native CRUD, queries and Access parity
 
-Scope accounting, updated 8 November 2026. This records the user's expanded target,
+Scope accounting, updated 9 November 2026. This records the user's expanded target,
 the inspected implementation and the remaining work; it is not a compatibility
 announcement or a record of newly passing native tests.
 
@@ -38,12 +38,20 @@ All cells describe current implementation, not the requested final state.
 | Create a database | Missing creator | Missing | Missing | Missing | Bounded scalar creator |
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
-| Drop a saved table | Missing | Missing | Missing | Missing | Missing |
+| Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
 | Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal GUI save/reopen |
 | Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
+
+The existing ACE16 creator and normal row services now have one combined normal
+GUI acceptance journey: create a Number table with a generated primary ID, insert
+two records, reopen, make a non-no-op companion-cell change, delete a record,
+reopen and insert again. The new ID continues past the deleted value, and a fresh
+host reads the expected final rows. This qualifies that headless application
+journey under existing admission, not broader native writer profiles or Windows
+Access interoperability. See [database creation](../ui/DATABASE_CREATION.md#created-file-row-lifecycle).
 
 Jet 3 currently recognizes headers only. Native catalog/row/text/index decoding,
 creation, all writes and their recovery/query qualification remain unimplemented.
