@@ -38,10 +38,13 @@ pub struct CreationWorker {
 }
 
 impl CreationWorker {
+    /// Compile-target support, independent of whether this actor could start.
     pub const fn is_supported() -> bool {
         cfg!(any(unix, windows))
     }
 
+    /// Construct a nonreplaceable creation owner without accepting a request.
+    /// OS thread-start failure is retained and returned by [`Self::start`].
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
         Self::with_operation(repaint, service::blank)
     }
@@ -137,6 +140,21 @@ impl CreationWorker {
         Self { shared, startup }
     }
 
+    /// Accept one original destination without waiting for publication.
+    /// The returned identity names a later terminal report, not a created file.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreationStartFailure::UnsupportedPlatform`] or
+    /// [`CreationStartFailure::ThreadStart`] when no actor can accept work,
+    /// [`CreationStartFailure::Busy`] while another request/report is retained,
+    /// or [`CreationStartFailure::Exhausted`] when identities are exhausted.
+    /// Every refusal returns the original request without filesystem work.
+    /// Operation failures after acceptance are reported by [`Self::poll`].
+    ///
+    /// # Panics
+    ///
+    /// Panics if an internal bug has poisoned the creation mailbox.
     pub fn start(&self, request: CreationRequest) -> Result<u64, CreationStartError> {
         if !Self::is_supported() {
             return Err(CreationStartError {
@@ -184,6 +202,10 @@ impl CreationWorker {
     }
 
     /// Repeated polling clones the same preallocated terminal receipt owner.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an internal bug has poisoned the creation mailbox.
     pub fn poll(&self) -> Option<Arc<CreationReport>> {
         self.shared
             .mailbox
@@ -193,6 +215,12 @@ impl CreationWorker {
             .clone()
     }
 
+    /// Request cancellation of this exact active operation, without asserting
+    /// that publication was prevented. Its terminal outcome remains required.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an internal bug has poisoned the creation mailbox.
     pub fn cancel(&self, id: u64) -> bool {
         let mailbox = self
             .shared
@@ -206,6 +234,11 @@ impl CreationWorker {
         true
     }
 
+    /// Release only the matching terminal report; never remove its output.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an internal bug has poisoned the creation mailbox.
     pub fn acknowledge(&self, id: u64) -> bool {
         let mut mailbox = self
             .shared
@@ -224,6 +257,12 @@ impl CreationWorker {
         true
     }
 
+    /// Whether an accepted request or unacknowledged report owns this worker.
+    /// Startup failure is observed through [`Self::start`], not this busy flag.
+    ///
+    /// # Panics
+    ///
+    /// Panics if an internal bug has poisoned the creation mailbox.
     pub fn is_busy(&self) -> bool {
         let mailbox = self
             .shared

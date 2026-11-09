@@ -11,6 +11,19 @@ const DESCRIPTION_UNITS: usize = 255;
 /// Names and complete row/declaration compatibility are validated per operation.
 /// Only explicit supported field policies/defaults and Increment declarations are optional; native flags,
 /// offsets and mutation authority are not supplied.
+///
+/// Retain each returned declaration when choosing policies. Discarding a
+/// configured copy leaves the original declaration unchanged:
+///
+/// ```compile_fail
+/// #![deny(unused_must_use)]
+/// use tablecraft_ace::CreateColumn;
+/// use tablecraft_schema::ScalarType;
+///
+/// let column = CreateColumn::new("Score", ScalarType::Int32);
+/// column.with_required(true);
+/// ```
+#[must_use = "retain the returned column declaration so its policies are applied"]
 #[derive(Clone, Copy)]
 pub struct CreateColumn<'a> {
     name: &'a str,
@@ -75,6 +88,12 @@ impl<'a> CreateColumn<'a> {
     /// Declare a positive native Text capacity of 1..=255 UTF-16 code units.
     /// This is the current constructive profile, not a statement that zero is
     /// impossible in every native format. Names are checked by the operation.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] if the capacity is outside
+    /// 1..=255 UTF-16 code units. Identifier and operation-level compatibility
+    /// checks remain with database preparation.
     pub fn short_text(name: &'a str, max_utf16_units: usize) -> Result<Self, CreateDatabaseError> {
         let declaration = Declaration::ShortText {
             units: max_utf16_units,
@@ -95,6 +114,12 @@ impl<'a> CreateColumn<'a> {
 
     /// Declare a positive Short Binary limit of 1..=255 bytes, independently of
     /// value contents or the wider reader-only legacy/system declaration ceiling.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] if the byte capacity is
+    /// outside 1..=255. Identifier and operation-level compatibility checks
+    /// remain with database preparation.
     pub fn short_binary(name: &'a str, max_bytes: usize) -> Result<Self, CreateDatabaseError> {
         let declaration = Declaration::ShortBinary { bytes: max_bytes };
         declaration.validate()?;
@@ -128,6 +153,11 @@ impl<'a> CreateColumn<'a> {
 
     /// Retain inert descriptive text, including present-empty text. The current
     /// constructive profile counts at most 255 UTF-16 units, without normalization.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] if the description exceeds
+    /// 255 UTF-16 code units. A present-empty description remains valid.
     pub fn with_description(mut self, description: &'a str) -> Result<Self, CreateDatabaseError> {
         if description
             .encode_utf16()
@@ -154,6 +184,11 @@ impl<'a> CreateColumn<'a> {
 
     /// Author AllowZeroLength only on an explicitly sized native Short Text.
     /// This does not alter Binary, infer defaults or add Memo creation support.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] unless this is an explicitly
+    /// sized Short Text declaration, even when `allow` is false.
     pub fn with_allow_zero_length(mut self, allow: bool) -> Result<Self, CreateDatabaseError> {
         if !matches!(self.declaration, Declaration::ShortText { .. }) {
             return Err(CreateDatabaseError::Declaration);
@@ -165,6 +200,11 @@ impl<'a> CreateColumn<'a> {
     /// Explicitly allow native Unicode compression on a sized Short Text field.
     /// Existing constructors retain compression disabled. This metadata option
     /// neither changes text values nor authorizes imported-field mutations.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] unless this is an explicitly
+    /// sized Short Text declaration, even when `enabled` is false.
     pub fn with_unicode_compression(mut self, enabled: bool) -> Result<Self, CreateDatabaseError> {
         if !matches!(self.declaration, Declaration::ShortText { .. }) {
             return Err(CreateDatabaseError::Declaration);
@@ -184,6 +224,15 @@ impl<'a> CreateColumn<'a> {
     /// This metadata never replaces a supplied value. Date declaration formatting
     /// must preserve every original bit or preparation refuses before publication.
     /// Clock, generated and executable expressions remain outside this API.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] for an Increment field or a
+    /// declaration without supported constant defaults. Returns
+    /// [`CreateDatabaseError::Carrier`] for a mismatched scalar carrier,
+    /// non-finite floating value or Decimal outside the declared precision/scale.
+    /// Complete default formatting and physical compatibility are checked during
+    /// preparation; this setter does not authorize a write.
     pub fn with_default_literal(mut self, value: &'a Value) -> Result<Self, CreateDatabaseError> {
         if self.incrementing {
             return Err(CreateDatabaseError::Declaration);
@@ -235,6 +284,12 @@ impl<'a> CreateColumn<'a> {
     ///
     /// The operation validates the identifier, uniqueness, non-NULL initial keys
     /// and physical fit. No page, map, native flags or generated values are supplied.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] unless this is an ordinary
+    /// Int32, Int64 or Currency declaration. The operation checks the key name
+    /// and complete native key constraints separately.
     pub fn with_primary_key(mut self, name: &'a str) -> Result<Self, CreateDatabaseError> {
         if !matches!(
             self.declaration,
@@ -252,6 +307,12 @@ impl<'a> CreateColumn<'a> {
     /// primary key, and no optional policies/defaults. Ordinary companions use
     /// the same bounded fixed and sized-variable declarations as manual creation.
     /// Complete initial rows are never rewritten or interpreted as generation.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CreateDatabaseError::Declaration`] unless this is Int32 with
+    /// DefaultValue, Required and AllowZeroLength all absent. The operation
+    /// separately validates the primary key, field order and empty source.
     pub fn with_incrementing_autonumber(mut self) -> Result<Self, CreateDatabaseError> {
         if !matches!(self.declaration, Declaration::Fixed(ScalarType::Int32))
             || self.default_literal.is_some()
