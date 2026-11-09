@@ -5,8 +5,9 @@ disable Track/Perform Name AutoCorrect. The normal desktop now composes that
 service through File → Options → Current Database, with a separate close-objects
 confirmation. The corrected composed functional gates and final offscreen
 review pass within the scope recorded below.
-The native source and original-intent limits below remain unchanged; this is
-neither general settings editing nor complete Access compatibility.
+The original creator source and `TCDO0001` remain unchanged. A distinct
+`TCDO0002` now qualifies the fitted OFF-after-field-history profile described
+below; this is neither general settings editing nor complete Access compatibility.
 
 `NativeImage::plan_disable_name_auto_correct` constructs the unpublished native
 candidate. It does not change constructor defaults, imply that missing metadata
@@ -223,12 +224,13 @@ light/dark and translated offscreen frames pass layout assertions and direct
 visual review, including four final Return frames. Actual Windows and Microsoft
 Access save/reopen remain unrun.
 
-The SDK OFF-after-ADD observations above do not expand the current source
-language: settings saves after Number/ShortText ADD still refuse. Enabling,
-logging, general NameMap removal, arbitrary imported settings, broad CRUD
-composition and older native write profiles remain unqualified here.
+The SDK OFF-after-ADD observations above remain separate from native source
+qualification. The distinct source, original request and normal save below now
+admit that bounded composition. Enabling, logging, general NameMap removal,
+arbitrary imported settings, broad CRUD composition and older native write
+profiles remain unqualified here.
 
-## Unpublished OFF-after-ADD candidate
+## OFF after qualified field history — 8–9 November 2026
 
 `NativeImage::prepare_disable_name_auto_correct_after_field_history` now returns
 an owning `FieldHistoryDatabaseOptionsCandidate` for a separate source profile.
@@ -259,11 +261,72 @@ bytes, cancellation and exhausted budgets refuse. This is engine construction
 and independent-reader evidence, not a native Microsoft Access save comparison.
 
 The candidate exposes complete before/after bytes and the actual property ROW
-reference, but supplies no journal, consuming runtime review, GUI settings-save
-activation or recovery request. In particular, it cannot be consumed as the
-frozen `TCDO0001` plan; no TCDO0002 activation is supplied by this checkpoint.
-Existing TCDO0001, TCAC0001–0005 and rename source/request languages stay unchanged.
-The normal File Options service therefore still refuses settings saves after an
-existing field ADD. Repeated settings writes, page rollover, populated sources,
-ADD after explicit OFF, field rename and general NameMap handling remain separate
-implementation work.
+reference without persistence authority. The separate
+`plan_recoverable_disable_name_auto_correct_after_field_history` method seals it
+as `TCDO0002`/profile 2. The fixed 64-byte original request stores only the
+11-page BEFORE length, complete domain-separated source digest, fixed disable-both
+action, version/profile and zero flags/reserved fields. It stores no target path,
+property ROW, patch or AFTER image. Neither a matching digest nor successful
+request decoding supplies native source authority.
+
+Normal requalification captures the retained target afresh, rebuilds the same
+candidate and compares both complete images and the actual property reference
+under separate cumulative native/proof pools. Persistence uses the existing V2
+journal owner even though this profile's BEFORE and AFTER have equal length.
+Cold/retained recovery selects the exact version before decoding, reconstructs the
+same native candidate under one cumulative pool, and consumes that same checked
+V2 session. Settled confirmation remains write-free. Equal-length pending mixtures
+of original/replacement bytes and partial commit markers have qualified recovery;
+foreign truncation or growth falls outside both endpoints and refuses without
+writing. This profile does not manufacture missing tails or add general repair.
+
+The normal source-purpose selector reads actual MSysObjects LvProp column map
+ownership, after standard-capture/ACE16 guards. An empty column-owned page set
+selects the original Creator proof; a nonempty set selects FieldHistory. It does
+not select from user-column presence, row counts, a file hash or a failed native
+constructor. Complete qualification then runs exactly the selected source proof.
+Resource, cancellation, malformed-storage and nested proof errors stay typed;
+only an ordinary source refusal becomes unavailable.
+
+Eligibility performs the same source and fitted-placement checks without building
+a target AFTER or taking a native write lease. Native allocation geometry, not
+just canonical field-history membership, limits availability: the observed N12
+source has 596 free bytes on page 10 and admits the OFF body; N13 has only 71
+free bytes and refuses before review. No second property page, map edit, new
+allocation or rollover is admitted. Common ineligible five-object catalogs still
+publish inert Absent/Other facts, and all four runtime stored-state classes remain
+separate from write eligibility.
+
+The Access adapter's new
+`stage_reviewed_field_history_disable_name_auto_correct_with_budgets` accepts the
+sealed new plan and returns the existing staged options owner. The original typed
+stager remains available for `TCDO0001`. A private selected-plan/intent composition
+shares actual staging, V2 recovery and finalization; it does not retry an old
+decoder or duplicate the public save lifecycle. Receipts remain allocation-free
+NameAutoCorrectDisabled facts with no row counts or schema/query marker.
+
+The same runtime `ReviewDisableNameAutoCorrect`, consuming
+`ReviewedDatabaseOptions`, nonreplaceable SaveWorker and full-image reopen witness
+now serve both selected source purposes. The normal File Options command works
+after qualified first/repeated Number and mixed Short Text histories. The actual
+headless GUI test uses Number and Text→Number→Text sources, verifies complete
+independent AFTER images, closes confirmed persisted tabs only after the witness,
+and retains exact scratch SQL. Stored field definitions, properties, historical
+rows and all other protected bytes remain unchanged. There is no new UI surface
+or new screenshot qualification in this composition batch.
+
+The [composition workflow record](../../testing/results/field-history-options-workflows-2026-11-09.json)
+records 991 unique selected passing checks with five existing ignored cases:
+169 creation, 187 original-intent, 11 catalog-property, 188 Access-adapter, 257
+runtime and 179 desktop cases. Strict all-feature lint and the minimal ACE
+create+journal profile pass. Earlier Options UI checks and the 19 accepted
+source-free frames remain in their prior record and are excluded from this new
+total. SDK/native-reader comparisons and headless saves do not qualify native
+Microsoft Access save behavior, Windows execution or other Jet/ACE writer profiles.
+
+Existing `TCDO0001`, TCAC0001–0005 and rename source/request languages remain
+unchanged. Repeated settings writes, populated sources and broader allocation
+layouts remain unsupported. Subsequent ADD or rename after this field-history
+OFF still needs its own native source/intent qualification; the existing
+creator-OFF→rename V3 route is a separate already-qualified source. This slice
+closes ADD→OFF for the fitted profile, not general bidirectional CRUD composition.

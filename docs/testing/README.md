@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Settings after field histories: native, recovery and normal GUI workflows](results/field-history-options-workflows-2026-11-09.json)
+
 - [Database Options, shared property ownership and candidate workflow checks](results/database-options-workflows-2026-11-08.json)
 
 - [Explicit Short Text and mixed-column SDK source evidence](short_text_add/README.md)

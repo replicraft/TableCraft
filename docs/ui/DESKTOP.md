@@ -35,9 +35,23 @@ retires the exact presentation immediately because cancelled replies cannot be
 published. No setting changes automatically during Rename.
 
 The [owning options contract](../access/writes/DATABASE_OPTIONS.md) retains the
-current narrow creator source and original-intent boundaries. In particular,
-settings saves after an existing Number/ShortText ADD remain unsupported despite
-independent SDK composition observations. The
+original creator source and adds a separate fitted field-history profile. The
+same normal File Options workflow now saves OFF after qualified empty Number and
+Short Text histories through `TCDO0002`; it selects the native source purpose
+before one complete proof and never retries a failed constructor. The current
+11-page/page-10 profile needs actual free space: N12's observed 596 bytes admit
+the OFF body, while N13's 71 bytes refuse before review. Other allocation layouts,
+repeated settings changes and subsequent ADD/rename on that new OFF source remain
+unqualified. The existing creator-OFF→rename route remains separate.
+
+The [field-history composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+passes 991 unique selected checks, including all 179 desktop cases. Its new actual
+widget case covers Number and Text→Number→Text sources through real review/save,
+full witness, persisted-tab closure and exact scratch SQL retention, comparing
+complete independent AFTER images. It changes no visible controls and adds no
+new captures. Prior UI checks and offscreen frames are not counted again.
+
+The
 [coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
 includes all 178 passing desktop cases (one existing ignored) and 618 passing
 shared UI cases. The broad selected-package run plus focused corrections verifies

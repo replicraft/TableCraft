@@ -1768,10 +1768,33 @@ Readonly cancellation retires the exact host state immediately because the worke
 revokes reply publication; SaveWorker cancellation retains its terminal owner.
 No implicit Name AutoCorrect change or Rename hook is introduced.
 
-Earlier service-only and SQL/creator verification records remain historical
-checkpoints, separate from the current composed UI/desktop validation. This route
-does not qualify settings changes after an existing column ADD; independent SDK
-observations do not substitute for the unchanged native source admission.
+The same explicit service now also saves OFF after qualified empty creator
+field histories using the distinct `TCDO0002`/profile 2. Source purpose is chosen
+once from actual catalog-column LvProp map ownership, then exactly that source
+proof and constructor run. The original `TCDO0001` source/decoder is unchanged;
+no failed old qualification or decoder is retried as the new profile. The private
+selected plan remains attached to the same consuming review, SaveWorker,
+options-only outcome and full-image reopen witness.
+
+Eligibility proves both source and actual fitted storage without allocating the
+target AFTER or holding a lease. The current FieldHistory purpose requires an
+11-page image, missing MSysDb, a sole latest user-property owner and one existing
+page 10 with enough room for the OFF body and catalog append. N12's observed 596
+free bytes qualify; N13's 71 refuse before review. The inert four-state observation
+continues to work on ineligible catalogs; missing or unknown never means OFF.
+No allowance was raised or reset. Equal-length V2 recovery accepts qualified
+pending original/replacement mixtures; a foreign shortened or grown target refuses
+without writes rather than inventing a tail.
+
+The [field-history composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+passes 991 unique selected checks with five existing ignored cases, including all
+257 runtime and 179 desktop cases. It also retains the strict all-feature and
+minimal ACE create+journal lint results. These checks exercise five independent
+field-history sources and actual Number/mixed-history GUI saves, with complete
+AFTER and scratch-text preservation. Prior UI suite/focused checks and renders
+are not repeated or counted in that total. Later ADD or rename on this new OFF
+source, repeated settings changes and broader storage/older native profiles remain
+unqualified; the existing creator-OFF→rename source stays separate.
 
 The [coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
 includes all 253 passing runtime cases and one existing ignored case. The broader

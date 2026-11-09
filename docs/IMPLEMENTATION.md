@@ -1,5 +1,25 @@
 # Implementation status
 
+## Settings after saved field additions — 9 November 2026
+
+The normal Options workflow now saves explicit Name AutoCorrect OFF after
+qualified Number and mixed Short Text histories. Native column-map metadata
+selects one complete source proof; readonly fit rejects insufficient storage
+without building a settings candidate. TCDO0002 binds the original source and
+reconstructs the complete native result through the retained checked journal.
+The adapter, runtime and existing GUI command use the same selected plan and
+full-image reopen witness. TCDO0001 and TCAC1–5 retain their original languages.
+
+The [composition batch](testing/results/field-history-options-workflows-2026-11-09.json)
+passes 991 unique selected tests with five existing ignored cases excluded.
+Runtime saves cover all five independent SDK/raw source classes; normal desktop
+widgets cover Number and Text → Number → Text, retaining field bytes and scratch
+SQL. Strict lint, the smaller native feature configuration and formatting pass.
+An old error-wrapper assertion was corrected to require the exact selected-source
+refusal, with its no-write checks retained. No new visual or native Access result
+is claimed. The new source remains an empty, unencoded, fitted eleven-page ACE16
+profile. Further ADD and field rename/change/drop on that result remain work.
+
 ## Explicit database Options and shared property ownership — 8 November 2026
 
 The normal File → Options dialog now observes stored Name AutoCorrect settings

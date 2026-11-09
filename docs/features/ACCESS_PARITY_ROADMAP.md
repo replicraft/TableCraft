@@ -83,9 +83,15 @@ review and a connected Navigation Pane workflow. The retained single-Int32
 user-index route has a separate V2 intent, and a sealed creator V3 source admits
 qualified creator images after explicit Name AutoCorrect OFF. Missing settings
 never imply ON or OFF. The [explicit settings service](../access/writes/DATABASE_OPTIONS.md)
-now connects File Options and passes coordinated functional checks; final
-offscreen label review remains pending. Source
-composition after existing field ADD remains unsupported. Ordinary populated or
+now connects File Options with accepted scoped offscreen review and supports
+fitted OFF after qualified empty Number/Short Text histories through a distinct
+`TCDO0002` request. Actual catalog-column map ownership selects one source proof;
+no old decoder/source failure is retried. The
+[composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+passes 991 unique selected checks. This remains an 11-page, existing-page-10 fitted
+profile: the observed N12 free space qualifies and N13 does not. Subsequent
+ADD/rename on that field-history OFF source remains unqualified, while the original
+creator-OFF→rename route retains its separate boundary. Ordinary populated or
 broader table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
 

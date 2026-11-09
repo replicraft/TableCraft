@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-09",
+  "execution_note": "The work spans the November 8\u20139 local-date boundary; original ignored-cache artifact identifiers are retained.",
+  "scope": "Normal explicit OFF settings after qualified empty ACE16 Number and Short Text addition histories: metadata purpose, source/fit proof, TCDO2 reconstruction/recovery, retained adapter, runtime and actual desktop widgets",
+  "source_checkpoint": "d24ed743 and precise test-only selected-refusal assertion b65b257d",
+  "platform": "macOS 14.7.2 ARM64 headless; no native app windows or Microsoft Access comparison",
+  "unique_selected_successful_tests": 991,
+  "existing_ignored_cases": 5,
+  "counting": "Unique package/test names across three native filters, all Access-adapter, runtime and desktop unit tests. The failed initial runtime run is replaced by the corrected complete runtime run. Prior Options UI/preview checks and the earlier 2787-test evidence are not added. This is not a full-workspace run.",
+  "runs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::mutation::catalog_property::",
+      "passed": 11,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::",
+      "passed": 169,
+      "ignored": 1
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::",
+      "passed": 187,
+      "ignored": 2
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "all",
+      "passed": 188,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft-desktop",
+      "filter": "all",
+      "passed": 179,
+      "ignored": 1
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "all",
+      "passed": 257,
+      "ignored": 1
+    }
+  ],
+  "test_artifacts": [
+    {
+      "path": ".cache/database-options-composition-summary-20261108.json",
+      "sha256": "c32feb78e4ae7686e9ad3da5e14f4fe265a38b3903b7496ffc2036e7b2e35cd7"
+    },
+    {
+      "path": ".cache/database-options-composition-corrected-runtime-20261108.json",
+      "sha256": "61364a7ea88d1f629af35e7149e8799fe6f7725fe6e2d829a49cd6e0692ed78a"
+    }
+  ],
+  "checks": [
+    {
+      "scope": "strict all-feature affected-library/desktop/preview Clippy",
+      "path": ".cache/database-options-composition-clippy-20261108.log",
+      "sha256": "1e717ea90e0d2059acee7f16aa14cbb4d9d31243b07b719ee0fb6d5671581901"
+    },
+    {
+      "scope": "strict ACE create+journal without preview Clippy",
+      "path": ".cache/database-options-composition-minimal-clippy-20261108.log",
+      "sha256": "30aea9527ce48f4a597a2daf635ca77d99e6699aacef99b9da5c75071e33ac45"
+    },
+    {
+      "scope": "repository formatting",
+      "path": ".cache/database-options-composition-format-20261108.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    },
+    {
+      "scope": "dependency boundary guard",
+      "path": ".cache/database-options-composition-boundaries-20261108.log",
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a"
+    }
+  ],
+  "verified": [
+    "Actual catalog LvProp ownership chooses one source language before qualification. Empty storage selects original creator; allocated storage selects field history, including database-owned rows independent of a user carrier. No failed decoder or qualifier falls back.",
+    "Normal eligibility retains distinct stored settings facts and common ineligible-catalog behavior. Original source checks remain unchanged. Readonly physical fit allocates no settings AFTER and takes no lease; N12 with 596 bytes fits, N13 with 71 bytes refuses under the unchanged 512 MiB/5M pool.",
+    "TCDO0002 is a closed 64-byte original-length/hash/fixed-OFF request, not a stored patch/AFTER/ROW. Old TCDO0001 remains exact. Fresh complete candidate reconstruction and both-image proof use existing checked V2 ownership and cumulative native/proof/recovery pools.",
+    "Retained/cold/settled recovery checks pending mixed images, commits and partial markers. Equal-length endpoints reject unrelated truncated or grown targets without writes; no missing-tail repair is claimed.",
+    "Same retained Access staged owner and consuming runtime SaveWorker produce only the separate options-change receipt. Typed cancellation/resource failures propagate through nested source/placement errors.",
+    "All five independently pinned Number/Text SDK source classes save exact raw OFF images through runtime ACK and full-image checked reopening. Stale source/unsupported source/cancellation retain refusal and resource boundaries.",
+    "Actual normal desktop Options widgets complete the existing confirmed-close journey on first Number and Text\u2192Number\u2192Text sources, preserving every field byte and exact scratch text/identity/preferences."
+  ],
+  "earlier_failure": {
+    "case": "tests::database_options::cancelled_reviews_and_already_off_sources_refuse_without_writes",
+    "cause": "An old assertion expected the creator error wrapper for a nine-role already-OFF source. Actual nonempty column ownership now deliberately selects the field-history constructor, which source-refuses.",
+    "correction": "The test requires the exact nested selected-source refusal; no production guard was weakened. Original byte and cancellation assertions remain.",
+    "artifact": {
+      "path": ".cache/database-options-composition-summary-20261108.json",
+      "sha256": "c32feb78e4ae7686e9ad3da5e14f4fe265a38b3903b7496ffc2036e7b2e35cd7"
+    }
+  },
+  "independent_reference": "nac-after-field-add-sdk-2026-11-08.json",
+  "prior_visual_record": "database-options-workflows-2026-11-08.json",
+  "visual_scope": "No presentation code or controls changed in this stage. Real GUI behavior was exercised headlessly; prior offscreen captures are historical layout evidence rather than additional checks here.",
+  "limits": [
+    "Current new source is standard unencoded ACE16, one empty generated-primary table, qualified Source5 declarations/history, exactly 11 pages with owned LvProp page10 and fitted catalog/body appends.",
+    "Two new live roles share the column ledger. Broader populated/imported/encrypted/older-format or additional-allocation sources remain unqualified.",
+    "Further ADD or field rename/change/drop after these composed settings remains separate work. Existing original-creator OFF\u2192table rename V3 is a different source language.",
+    "Native Microsoft Access and Windows/Linux execution and physical durability qualification remain unrun."
+  ]
+}
