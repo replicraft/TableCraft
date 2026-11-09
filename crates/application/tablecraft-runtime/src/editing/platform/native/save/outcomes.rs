@@ -124,6 +124,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         schema_change: value.schema_change().map(|change| match change {
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
             SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
+            SchemaChange::ColumnRenamed => SaveSchemaChange::ColumnRenamed,
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
             }

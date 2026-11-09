@@ -71,8 +71,14 @@ pub enum SaveCompletion {
 pub enum SaveSchemaChange {
     TableRenamed,
     ColumnAdded,
-    FirstTableCreated { column_count: usize },
-    TableAdded { column_count: usize },
+    /// One existing field changed true name while retaining native identity.
+    ColumnRenamed,
+    FirstTableCreated {
+        column_count: usize,
+    },
+    TableAdded {
+        column_count: usize,
+    },
 }
 
 /// Acknowledged query-definition facts, separate from table schema and rows.
