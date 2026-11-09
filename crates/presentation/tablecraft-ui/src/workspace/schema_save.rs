@@ -127,3 +127,52 @@ impl<I: Copy + PartialEq> Status<I> {
         }
     }
 }
+
+/// The same allocation-free phase/status install and abandoned-start rollback.
+/// Operation-specific admission and runtime capabilities remain with each owner.
+pub(in crate::workspace) struct Preparation<'a, I, P: Copy> {
+    phase: &'a mut P,
+    status: &'a mut Option<Status<I>>,
+    fallback: P,
+    bound: bool,
+}
+
+impl<'a, I, P: Copy> Preparation<'a, I, P> {
+    pub(in crate::workspace) fn new(
+        phase: &'a mut P,
+        status: &'a mut Option<Status<I>>,
+        fallback: P,
+    ) -> Self {
+        Self {
+            phase,
+            status,
+            fallback,
+            bound: false,
+        }
+    }
+
+    pub(in crate::workspace) fn install(
+        &mut self,
+        identity: I,
+        owned_phase: P,
+        status_phase: StatusPhase,
+    ) {
+        *self.phase = owned_phase;
+        *self.status = Some(Status {
+            identity,
+            phase: status_phase,
+            outcome: None,
+            error: None,
+            omitted: false,
+        });
+        self.bound = true;
+    }
+}
+
+impl<I, P: Copy> Drop for Preparation<'_, I, P> {
+    fn drop(&mut self) {
+        if !self.bound {
+            *self.phase = self.fallback;
+        }
+    }
+}

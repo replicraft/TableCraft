@@ -1,9 +1,9 @@
 //! Exclusive presentation admission before a native actor can be accepted.
 use super::FieldAdditionSaveIdentity;
-use crate::workspace::schema_save::{Status, StatusPhase};
+use crate::workspace::schema_save::{Preparation, StatusPhase};
 use crate::workspace::{
     State,
-    field_addition::{Draft, FieldAdditionRequest, Phase},
+    field_addition::{FieldAdditionRequest, Phase},
 };
 
 /// Holds the exact named review and its inline status slot exclusively. The host
@@ -11,11 +11,9 @@ use crate::workspace::{
 /// no callback or widget can change the presentation state before binding.
 /// This token is presentation ownership, never a native write capability.
 pub struct PreparedFieldAdditionSave<'a> {
-    draft: &'a mut Draft,
-    status: &'a mut Option<Status<FieldAdditionSaveIdentity>>,
+    prepared: Preparation<'a, FieldAdditionSaveIdentity, Phase>,
     request_id: u64,
     review_id: u64,
-    bound: bool,
 }
 
 impl PreparedFieldAdditionSave<'_> {
@@ -27,33 +25,19 @@ impl PreparedFieldAdditionSave<'_> {
             review_id: self.review_id,
             save_id,
         };
-        self.draft.phase = Phase::Saving {
-            request_id: identity.request_id,
-            review_id: identity.review_id,
-            save_id,
-        };
-        *self.status = Some(Status {
+        self.prepared.install(
             identity,
-            phase: StatusPhase::Saving {
+            Phase::Saving {
+                request_id: identity.request_id,
+                review_id: identity.review_id,
+                save_id,
+            },
+            StatusPhase::Saving {
                 cancelled: false,
                 resolving: false,
             },
-            outcome: None,
-            error: None,
-            omitted: false,
-        });
-        self.bound = true;
+        );
         identity
-    }
-}
-
-impl Drop for PreparedFieldAdditionSave<'_> {
-    fn drop(&mut self) {
-        if !self.bound {
-            // A refused worker returns its unconsumed capability separately.
-            // Dropping this token cannot erase the user's proposed field name.
-            self.draft.phase = Phase::Naming;
-        }
     }
 }
 
@@ -81,11 +65,13 @@ impl State {
             return None;
         }
         Some(PreparedFieldAdditionSave {
-            draft: self.field_addition.draft.as_mut()?,
-            status: &mut self.field_addition_status,
+            prepared: Preparation::new(
+                &mut self.field_addition.draft.as_mut()?.phase,
+                &mut self.field_addition_status,
+                Phase::Naming,
+            ),
             request_id,
             review_id,
-            bound: false,
         })
     }
 }
