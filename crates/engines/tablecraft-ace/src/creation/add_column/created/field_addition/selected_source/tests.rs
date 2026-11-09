@@ -159,7 +159,7 @@ fn measured_capacity_keeps_shorter_valid_names_available() {
 }
 
 #[test]
-fn later_user_event_keeps_selected_purpose_but_fails_complete_settled_proof() {
+fn later_user_event_selects_history_without_widening_the_settled_source() {
     let before = raw::source(raw::SourceCase::Number);
     let after = raw::append_number(&before, "AfterOff");
     assert_eq!(
@@ -171,12 +171,17 @@ fn later_user_event_keeps_selected_purpose_but_fails_complete_settled_proof() {
                 &|| false
             )
             .unwrap(),
-        FieldAdditionSourcePurpose::AfterExplicitOff
+        FieldAdditionSourcePurpose::AfterExplicitOffHistory,
     );
-    assert!(matches!(
-        image(&after).inspect_field_addition_source("Table1", &mut budget(), &|| false),
-        Err(FieldAdditionSourceError::Source)
-    ));
+    let facts = image(&after)
+        .inspect_field_addition_source("Table1", &mut budget(), &|| false)
+        .unwrap();
+    assert!(facts.number_available() && facts.short_text_available());
+    assert!(
+        image(&after)
+            .check_field_history_name_auto_correct_off_source(&mut budget(), &|| false)
+            .is_err()
+    );
 }
 
 #[test]
@@ -211,5 +216,101 @@ fn unsupported_formats_and_failed_observation_preserve_error_identity() {
             &|| false
         ),
         Err(FieldAdditionSourceError::Inspect(InspectError::Limit(_)))
+    ));
+}
+
+#[test]
+fn actual_refs_resolve_both_forwarded_and_ordinary_user_catalog_roots() {
+    let inline = mixed::source(mixed::SourceCase::InlineNumber);
+    let fields = mixed::append_text(&inline, "Label", 255, true);
+    let off = canonical_database_options::append_explicit_off_to_owned_page(&fields);
+    let ordinary = raw::append_number(&off, "AfterOff");
+    let forwarded = raw::history::source(raw::history::SourceCase::NumberThenNumber);
+    for (current, expected_forwarded) in [(ordinary, false), (forwarded, true)] {
+        // Independent catalog root word: logical user slot7 is forwarded only
+        // in one source. DB remains a different live object in both sources.
+        let at = 4 * 4096 + 14 + 7 * 2;
+        let word = u16::from_le_bytes(current[at..at + 2].try_into().unwrap());
+        assert_eq!(word & 0x4000 != 0, expected_forwarded);
+        let facts = image(&current)
+            .inspect_field_addition_source("Table1", &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(
+            facts.purpose(),
+            FieldAdditionSourcePurpose::AfterExplicitOffHistory
+        );
+        assert!(facts.number_available() && facts.short_text_available());
+    }
+}
+
+#[test]
+fn qualified_history_with_no_room_returns_false_without_a_proposed_after() {
+    let mut before = repeated::source(NumberSource::IdOnly);
+    for ordinal in 0..5 {
+        before = repeated::append(&before, &format!("N{ordinal}{}", "x".repeat(60)));
+    }
+    let off = canonical_database_options::append_explicit_off_to_owned_page(&before);
+    let current = raw::append_number(&off, &"Z".repeat(59));
+    let facts = image(&current)
+        .inspect_field_addition_source("Table1", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(
+        facts.purpose(),
+        FieldAdditionSourcePurpose::AfterExplicitOffHistory
+    );
+    assert_eq!(facts.after_off_name_limits(), Some((None, None)));
+    assert!(!facts.number_available() && !facts.short_text_available());
+}
+
+#[test]
+fn historical_tail_failure_and_nested_inspection_are_not_hidden_as_source_facts() {
+    let mut current = raw::history::source(raw::history::SourceCase::NumberThenNumber);
+    current[7 * 4096 + 3000] ^= 1;
+    assert!(matches!(
+        image(&current).inspect_field_addition_source("Table1", &mut budget(), &|| false),
+        Err(FieldAdditionSourceError::History(
+            FieldAdditionAfterOffHistoryError::Preservation
+        ))
+    ));
+    for error in [
+        InspectError::Cancelled,
+        InspectError::Allocation,
+        InspectError::Malformed,
+    ] {
+        let wrapped = FieldAdditionSourceError::from(FieldAdditionAfterOffHistoryError::Field(
+            FieldAdditionAfterOffError::Placement(crate::EditError::Inspect(error)),
+        ));
+        assert!(matches!(wrapped, FieldAdditionSourceError::History(_)));
+    }
+    assert!(matches!(
+        FieldAdditionSourceError::from(FieldAdditionAfterOffHistoryError::Field(
+            FieldAdditionAfterOffError::Field(FieldAdditionError::Source)
+        )),
+        FieldAdditionSourceError::Source
+    ));
+}
+
+#[test]
+fn readable_small_role_catalog_refuses_before_specialized_map_observation() {
+    let mut current = tablecraft_testkit::fixtures::access::database_properties::database(None);
+    let header = mixed::source(mixed::SourceCase::IdOnly);
+    current[..4096].copy_from_slice(&header[..4096]);
+    let captured = image(&current);
+    assert_eq!(captured.catalog().header().format(), FileFormat::Ace2016);
+    assert_eq!(captured.catalog().origins().len(), 5);
+    assert_eq!(
+        captured
+            .field_addition_source_purpose(
+                "Missing",
+                FieldAdditionTarget::NumberLongZero,
+                &mut budget(),
+                &|| false
+            )
+            .unwrap(),
+        FieldAdditionSourcePurpose::AfterExplicitOff
+    );
+    assert!(matches!(
+        image(&current).inspect_field_addition_source("Missing", &mut budget(), &|| false),
+        Err(FieldAdditionSourceError::Source)
     ));
 }

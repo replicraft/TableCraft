@@ -1,6 +1,9 @@
 //! Name-width capacity after one retained complete settled-source proof.
 use super::super::{FieldAdditionError, FieldAdditionTarget, build};
-use super::{FieldAdditionAfterOffError as Error, source::Source};
+use super::{
+    FieldAdditionAfterOffError as Error, FieldAdditionAfterOffHistoryError, history,
+    source::{ProvedImage, Source},
+};
 use crate::{
     CreateColumn, InspectError, NativeImage,
     creation::{
@@ -21,6 +24,26 @@ pub(in crate::creation::add_column::created::field_addition) fn inspect(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Option<u8>, Option<u8>), Error> {
     let source = Source::capture(image, table, budget, cancelled)?;
+    limits(source, budget, cancelled)
+}
+
+/// Reuse the actual full-compared Replay; no named or target AFTER is built.
+pub(in crate::creation::add_column::created::field_addition) fn inspect_history(
+    image: NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Option<u8>, Option<u8>), FieldAdditionAfterOffHistoryError> {
+    let proof = history::qualified_replay(&image, table, budget, cancelled)?;
+    let source = Source::from_proof(proof, table, budget, cancelled)?;
+    Ok(limits(source, budget, cancelled)?)
+}
+
+fn limits<P: ProvedImage>(
+    source: Source<P>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Option<u8>, Option<u8>), Error> {
     let mut columns = source
         .definition
         .borrowed_columns(budget, cancelled)

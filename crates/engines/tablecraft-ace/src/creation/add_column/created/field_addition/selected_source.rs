@@ -1,14 +1,23 @@
 //! Explicit normal source selection, separate from frozen TCAC1–5 entrypoints.
 use super::{
-    CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffError, FieldAdditionError,
-    FieldAdditionTarget, after_off,
+    CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffError,
+    FieldAdditionAfterOffHistoryError, FieldAdditionError, FieldAdditionTarget, after_off,
 };
 use crate::{
     FieldHistoryDatabaseOptionsError, FileFormat, InspectError, NativeImage,
-    format::page::PAGE_BYTES, header::check, properties::database,
+    format::{
+        page::PAGE_BYTES,
+        row::{reference_page, reference_slot},
+    },
+    header::check,
+    inspect_table_schema,
+    properties::database,
+    table::mutation::catalog_property::ledger,
 };
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
+
+const POST_OFF_OBJECTS: usize = crate::creation::profile::CATALOG_OBJECT_COUNT + 1;
 
 /// Metadata-selected source purpose, never proof or mutation permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -17,6 +26,9 @@ pub enum FieldAdditionSourcePurpose {
     Created(CreatedFieldAdditionSourcePurpose),
     /// Actual native database role; only full settled OFF proof can admit it.
     AfterExplicitOff,
+    /// Actual user and DB Single references place the user later on one shared page.
+    /// Full chronological source proof and fitted capacity are still required.
+    AfterExplicitOffHistory,
 }
 
 /// Selected source refusal while preserving inspection/resource identity.
@@ -34,6 +46,9 @@ pub enum FieldAdditionSourceError {
     /// Explicit OFF proof or capacity observation refused outside its source guard.
     #[error(transparent)]
     AfterOff(FieldAdditionAfterOffError),
+    /// Complete post-OFF history or capacity failed outside ordinary source refusal.
+    #[error(transparent)]
+    History(FieldAdditionAfterOffHistoryError),
 }
 
 impl From<FieldAdditionError> for FieldAdditionSourceError {
@@ -56,6 +71,26 @@ impl From<FieldAdditionAfterOffError> for FieldAdditionSourceError {
                 FieldAdditionError::Source,
             )) => Self::Source,
             error => Self::AfterOff(error),
+        }
+    }
+}
+
+impl From<FieldAdditionAfterOffHistoryError> for FieldAdditionSourceError {
+    fn from(error: FieldAdditionAfterOffHistoryError) -> Self {
+        match error {
+            FieldAdditionAfterOffHistoryError::Inspect(error) => Self::Inspect(error),
+            FieldAdditionAfterOffHistoryError::Source
+            | FieldAdditionAfterOffHistoryError::Field(FieldAdditionAfterOffError::Namespace)
+            | FieldAdditionAfterOffHistoryError::Field(FieldAdditionAfterOffError::Field(
+                FieldAdditionError::Source,
+            ))
+            | FieldAdditionAfterOffHistoryError::Field(FieldAdditionAfterOffError::SourceProof(
+                FieldHistoryDatabaseOptionsError::Source,
+            ))
+            | FieldAdditionAfterOffHistoryError::Field(FieldAdditionAfterOffError::SourceProof(
+                FieldHistoryDatabaseOptionsError::Field(FieldAdditionError::Source),
+            )) => Self::Source,
+            error => Self::History(error),
         }
     }
 }
@@ -84,7 +119,7 @@ impl FieldAdditionSourceAvailability {
             .is_none_or(|limits| limits.1.is_some())
     }
 
-    /// Measured maximum ASCII name units for the OFF branch; None on legacy sources.
+    /// Measured maximum ASCII name units for OFF/history branches; None on legacy sources.
     /// Inner None means no named field of that declaration fits the fitted page.
     pub const fn after_off_name_limits(&self) -> Option<(Option<u8>, Option<u8>)> {
         self.after_off_limits
@@ -109,7 +144,7 @@ impl NativeImage {
         {
             return Err(FieldAdditionSourceError::Source);
         }
-        if database::role(self.catalog(), budget, cancelled)?.is_some() {
+        if let Some(database) = database::role(self.catalog(), budget, cancelled)? {
             if table.len() > after_off::MAX_ASCII_NAME_BYTES {
                 return Err(FieldAdditionSourceError::Source);
             }
@@ -118,6 +153,28 @@ impl NativeImage {
                 .map_err(InspectError::from)?;
             if !table.is_ascii() {
                 return Err(FieldAdditionSourceError::Source);
+            }
+            // Both selected OFF languages require the same nine native roles.
+            // Preserve known ineligible catalogs before specialized column maps.
+            if self.catalog().origins().len() != POST_OFF_OBJECTS {
+                return Ok(FieldAdditionSourcePurpose::AfterExplicitOff);
+            }
+            let schema = inspect_table_schema(
+                &mut self.reader(),
+                self.catalog().catalog().scope(),
+                table,
+                budget,
+                cancelled,
+            )?;
+            let live = ledger::capture(self.as_bytes(), self.catalog(), budget, cancelled)
+                .map_err(FieldAdditionAfterOffError::from)?;
+            let user = live.single_reference(schema.object_id(), budget, cancelled)?;
+            let database = live.single_reference(database.object_id(), budget, cancelled)?;
+            if let (Some((user, _)), Some((database, _))) = (user, database)
+                && reference_page(user) == reference_page(database)
+                && reference_slot(user) > reference_slot(database)
+            {
+                return Ok(FieldAdditionSourcePurpose::AfterExplicitOffHistory);
             }
             return Ok(FieldAdditionSourcePurpose::AfterExplicitOff);
         }
@@ -150,6 +207,9 @@ impl NativeImage {
             FieldAdditionSourcePurpose::AfterExplicitOff => Some(after_off::availability::inspect(
                 self, table, budget, cancelled,
             )?),
+            FieldAdditionSourcePurpose::AfterExplicitOffHistory => Some(
+                after_off::availability::inspect_history(self, table, budget, cancelled)?,
+            ),
         };
         check(budget, cancelled)?;
         Ok(FieldAdditionSourceAvailability {
