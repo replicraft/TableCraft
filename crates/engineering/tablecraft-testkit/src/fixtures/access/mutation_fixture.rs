@@ -25,6 +25,18 @@ pub fn database() -> Vec<u8> {
     with_rows(&[(1, 10), (2, 20), (3, 30)])
 }
 
+/// Valid catalog/schema with an independently corrupted user DATA page tag.
+/// Opening metadata must not inspect or repair the unreadable user records.
+pub fn with_invalid_row_page() -> Vec<u8> {
+    const PAGE_BYTES: usize = 4096;
+    const USER_DATA_PAGE: usize = 12;
+    const INVALID_PAGE_TAG: u8 = 0xff;
+
+    let mut bytes = database();
+    bytes[USER_DATA_PAGE * PAGE_BYTES] = INVALID_PAGE_TAG;
+    bytes
+}
+
 /// Independently framed one-page scalar records for browser/host scenarios.
 pub fn with_rows(records: &[(i32, i32)]) -> Vec<u8> {
     let mut bytes = image(false, false);
