@@ -10,7 +10,9 @@ fn bindings_borrow_original_names_and_retain_exact_owned_values() {
         "Nothing=null:".to_owned(),
         "Count=long:-17".to_owned(),
     ];
-    let bindings = parse(&raw).unwrap();
+    let Ok(bindings) = parse(&raw) else {
+        panic!("valid bounded bindings must parse");
+    };
     assert_eq!(bindings[0].0, "P=Q");
     assert_eq!(bindings[0].0.as_ptr(), raw[0][1..4].as_ptr());
     assert_eq!(bindings[0].1, Value::Text("a=b:c".into()));
