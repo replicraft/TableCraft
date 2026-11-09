@@ -406,7 +406,7 @@ impl State {
             .as_ref()
             .is_some_and(|(_, presentation)| presentation.name.is_some())
         {
-            ui.weak(crate::localization::tr(ui, "ribbon-unavailable"));
+            ui.weak(crate::localization::tr(ui, "design-pending-properties"));
         } else if let Some(field) = schema.fields.get(self.selected_field) {
             ui.push_id(
                 (

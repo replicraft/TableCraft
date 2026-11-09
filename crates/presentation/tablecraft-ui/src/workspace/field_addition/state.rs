@@ -285,7 +285,9 @@ impl State {
     /// The next consuming review still qualifies the complete native source.
     pub fn set_field_addition_kind(&mut self, tab: &ObjectTab, kind: FieldAdditionKind) -> bool {
         self.can_edit_field_addition_name(tab)
-            && self.field_addition.available(tab, kind)
+            && self
+                .field_addition_choices(tab)
+                .is_some_and(|choices| choices.supports(kind))
             && self
                 .field_addition
                 .replace_declaration(tab, FieldAdditionDeclaration::ui_default(kind))
