@@ -421,3 +421,6 @@ pub mod canonical_mixed_add_table;
 
 /// Independent exact Number declarations with retained property ordering.
 pub mod canonical_created_number;
+
+/// Frozen same-width field rename pairs, without production codecs.
+pub mod saved_field_rename;
