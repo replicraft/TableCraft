@@ -135,6 +135,27 @@ impl Document {
     }
 
     #[cfg(feature = "offline-edit")]
+    pub(super) fn open_table_dropped(
+        witness: &crate::TableDroppedReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            #[cfg(feature = "ace16-create")]
+            Error::CreatedSourceChanged => Error::TableDroppedSourceChanged,
+            Error::SourceChanged => Error::TableDroppedSourceChanged,
+            error => error,
+        })
+    }
+
+    #[cfg(feature = "offline-edit")]
     pub(super) fn open_insert_original(
         witness: &InsertRetryWitness,
         revision: u64,

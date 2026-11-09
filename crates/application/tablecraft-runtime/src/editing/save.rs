@@ -70,6 +70,8 @@ pub enum SaveCompletion {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveSchemaChange {
     TableRenamed,
+    /// One qualified closed empty table was removed from the native catalog.
+    TableDropped,
     ColumnAdded,
     /// One existing field changed true name while retaining native identity.
     ColumnRenamed,

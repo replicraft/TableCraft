@@ -26,3 +26,4 @@ pub(crate) mod state;
 pub(crate) mod table_creation;
 
 pub(in crate::editing) mod table_rename;
+pub(in crate::editing) mod table_drop;

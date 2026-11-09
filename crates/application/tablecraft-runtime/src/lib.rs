@@ -70,6 +70,11 @@ pub use editing::{
 pub use editing::{
     QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview, ReviewedQuerySql,
 };
+#[cfg(feature = "offline-edit")]
+pub use editing::{
+    ReviewedTableDrop, TableDropOutcomeError, TableDropReopenFacts, TableDropReview,
+    TableDropSourceInspection, TableDroppedReopen,
+};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,

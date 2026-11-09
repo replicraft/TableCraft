@@ -10,6 +10,7 @@ mod field_rename;
 #[cfg(feature = "ace16-create")]
 mod number_column;
 mod query_expression_edits;
+mod table_drop;
 
 use super::RetainedOwner;
 use crate::editing::save::{
@@ -128,6 +129,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         changed_rows: value.changed_rows(),
         schema_change: value.schema_change().map(|change| match change {
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
+            SchemaChange::TableDropped => SaveSchemaChange::TableDropped,
             SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
             SchemaChange::ColumnRenamed => SaveSchemaChange::ColumnRenamed,
             SchemaChange::ColumnDropped => SaveSchemaChange::ColumnDropped,
@@ -247,6 +249,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
+            Cause::TableDropIntent(error) => table_drop::intent(error),
             Cause::QueryExpressionEditsIntent(error) => query_expression_edits::intent(error),
             Cause::QueryExpressionIntent(error) => query_expression_intent_failure(error),
             Cause::QueryExpressionQualification(error) => query_expression_recovery_failure(error),
@@ -291,6 +294,12 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<NativeRecoveryQualificationError>() {
         return qualification_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::TableDropError>() {
+        return table_drop::candidate(error);
+    }
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::TableDropIntentError>() {
+        return table_drop::intent(error);
     }
     if let Some(error) = error.downcast_ref::<TableRenameError>() {
         return rename_failure(error);

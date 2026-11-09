@@ -14,7 +14,7 @@ use crate::{
 #[cfg(feature = "offline-edit")]
 use crate::{
     DeleteTarget, EditInput, EditTarget, FindPosition, InsertInput, InsertRetryWitness,
-    InsertTarget, QueryExpressionReopen, TableRenameReopen,
+    InsertTarget, QueryExpressionReopen, TableDroppedReopen, TableRenameReopen,
 };
 use std::{path::PathBuf, sync::Arc};
 use tablecraft_builders::query::QueryDesignDraft;
@@ -24,6 +24,20 @@ use zeroize::Zeroize;
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(feature = "offline-edit")]
+    InspectTableDropSource {
+        document_revision: u64,
+        table: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    ReviewTableDrop {
+        document_revision: u64,
+        table: String,
+    },
+    #[cfg(feature = "offline-edit")]
+    OpenTableDropped {
+        witness: Arc<TableDroppedReopen>,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     InspectDatabaseOptions {
         document_revision: u64,

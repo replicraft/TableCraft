@@ -7,7 +7,8 @@ use crate::editing::{
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
-    ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableRename,
+    ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableDrop,
+    ReviewedTableRename,
 };
 use std::path::PathBuf;
 
@@ -57,6 +58,23 @@ impl SaveWorker {
         reviewed: ReviewedQueryExpression,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedQueryExpression>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    /// Table DROP remains unavailable on this host.
+    pub const fn supports_table_drop() -> bool {
+        false
+    }
+
+    /// Return the exact capability without starting native filesystem work.
+    pub fn start_table_drop(
+        &self,
+        reviewed: ReviewedTableDrop,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedTableDrop>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

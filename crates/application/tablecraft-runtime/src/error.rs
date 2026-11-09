@@ -49,6 +49,18 @@ pub enum Error {
     #[error("renamed table contents changed before reopening")]
     RenamedTableSourceChanged,
     #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    TableDropSource(#[from] tablecraft_ace::TableDropError),
+    #[cfg(feature = "offline-edit")]
+    #[error(transparent)]
+    TableDropIntent(#[from] tablecraft_ace::TableDropIntentError),
+    #[cfg(feature = "offline-edit")]
+    #[error("table DROP target no longer matches the viewed document")]
+    StaleTableDropTarget,
+    #[cfg(feature = "offline-edit")]
+    #[error("deleted table source changed before reopening")]
+    TableDroppedSourceChanged,
+    #[cfg(feature = "offline-edit")]
     #[error("original insertion source changed before reopening")]
     InsertOriginalSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]

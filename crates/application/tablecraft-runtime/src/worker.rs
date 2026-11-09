@@ -196,6 +196,33 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(feature = "offline-edit")]
+            Command::InspectTableDropSource {
+                document_revision,
+                table,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_table_drop_source(*document_revision, table, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::ReviewTableDrop {
+                document_revision,
+                table,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_table_drop(*document_revision, table, cancelled),
+            #[cfg(feature = "offline-edit")]
+            Command::OpenTableDropped { witness } => {
+                let fresh_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_table_dropped(witness, fresh_revision, cancelled)?;
+                document = Some(opened);
+                document_revision = fresh_revision;
+                Ok(response)
+            }
+            #[cfg(feature = "offline-edit")]
             Command::OpenInsertOriginal { witness } => {
                 document = None;
                 document_revision = document_revision
@@ -652,6 +679,12 @@ impl Worker {
                         Command::OpenQueryExpressionSaved { .. } => "open_query_expression_saved",
                         #[cfg(feature = "offline-edit")]
                         Command::OpenTableRenamed { .. } => "open_table_renamed",
+                        #[cfg(feature = "offline-edit")]
+                        Command::InspectTableDropSource { .. } => "inspect_table_drop_source",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewTableDrop { .. } => "review_table_drop",
+                        #[cfg(feature = "offline-edit")]
+                        Command::OpenTableDropped { .. } => "open_table_dropped",
                         #[cfg(feature = "offline-edit")]
                         Command::OpenInsertOriginal { .. } => "open_insert_original",
                         #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]

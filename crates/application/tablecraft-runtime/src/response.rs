@@ -17,13 +17,22 @@ use crate::{
     DeleteReview, EditDraft, EditReview, InsertDraft, InsertReview, QueryDeleteReview,
     QueryExpressionReview, QueryInsertReview, QuerySqlDraft, QuerySqlReview, QueryUpdateReview,
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
-    ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableRename,
-    TableRenameReview,
+    ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableDrop,
+    ReviewedTableRename, TableDropReview, TableDropSourceInspection, TableRenameReview,
 };
 use std::{path::PathBuf, sync::Arc};
 use tablecraft_builders::query::{BuiltQueryDesign, DesignTableMetadata};
 
 pub enum Response {
+    #[cfg(feature = "offline-edit")]
+    TableDropSourceInspected {
+        inspection: TableDropSourceInspection,
+    },
+    #[cfg(feature = "offline-edit")]
+    TableDropReviewed {
+        review: TableDropReview,
+        capability: ReviewedTableDrop,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     DatabaseOptionsInspected {
         inspection: DatabaseOptionsInspection,

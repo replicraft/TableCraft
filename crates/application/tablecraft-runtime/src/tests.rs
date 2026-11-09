@@ -103,6 +103,11 @@ mod table_creation_availability;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod table_rename;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod table_drop;
 mod text_policy;
 mod totals;
 

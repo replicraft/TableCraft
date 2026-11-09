@@ -17,6 +17,7 @@ mod apply_query_expression;
 mod apply_query_sql;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
+mod apply_table_drop;
 mod apply_table_rename;
 mod outcomes;
 mod restart;
@@ -50,8 +51,8 @@ use crate::{
     controls::action_recovery_budget,
     editing::{
         ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
-        ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableRename,
-        platform::query_action::Plan,
+        ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableDrop,
+        ReviewedTableRename, platform::query_action::Plan,
     },
 };
 use crate::{
@@ -91,6 +92,7 @@ enum Task {
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
     ApplyTableRename(ReviewedTableRename, PathBuf),
+    ApplyTableDrop(ReviewedTableDrop, PathBuf),
     ApplyInsert(ReviewedInsert, PathBuf),
     ApplyDelete(ReviewedDelete, PathBuf),
     ApplyQueryUpdate(ReviewedQueryUpdate, PathBuf),
@@ -258,6 +260,29 @@ impl SaveWorker {
         true
     }
 
+    /// Compile-target support, independent of actor health and source eligibility.
+    pub const fn supports_table_drop() -> bool {
+        true
+    }
+
+    /// Consume one checked table DROP review through the retained save actor.
+    ///
+    /// # Errors
+    /// Refusal returns the capability, following [`Self::start`].
+    ///
+    /// # Panics
+    /// Panics when a required internal synchronization lock is poisoned.
+    pub fn start_table_drop(
+        &self,
+        reviewed: ReviewedTableDrop,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedTableDrop>> {
+        // NO_CLONE: The actor and document must observe the same revocation latch.
+        // Arc shares that atomic state across threads; copying it would detach validity.
+        let valid = Some(Arc::clone(&reviewed.state.valid));
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyTableDrop)
+    }
+
     /// Whether this host can consume actual native saved-field DROP reviews.
     /// This is compile-target support, not actor health or source eligibility.
     #[cfg(feature = "ace16-create")]
@@ -394,6 +419,7 @@ impl SaveWorker {
                         | Task::ApplyQuerySql(..)
                         | Task::Apply(..)
                         | Task::ApplyTableRename(..)
+                        | Task::ApplyTableDrop(..)
                         | Task::ApplyInsert(..)
                         | Task::ApplyDelete(..)
                         | Task::ApplyQueryInsert(..)
@@ -419,6 +445,14 @@ impl SaveWorker {
                         }
                         Task::ApplyQueryExpression(reviewed, bundle) => {
                             apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyTableDrop(reviewed, bundle) => {
+                            self::apply_table_drop::apply_table_drop(
+                                reviewed,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
                         }
                         Task::ApplyQuerySql(reviewed, bundle) => {
                             apply_query_sql(reviewed, bundle, &mut retained, &cancelled)

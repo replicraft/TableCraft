@@ -25,6 +25,7 @@ mod save;
 #[cfg(feature = "ace16-create")]
 mod table_creation;
 mod table_rename;
+mod table_drop;
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(crate) mod native;
@@ -86,6 +87,10 @@ pub use save::{
 #[cfg(feature = "ace16-create")]
 pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
 pub use table_rename::{ReviewedTableRename, TableRenameReopen, TableRenameReview};
+pub use table_drop::{
+    ReviewedTableDrop, TableDropOutcomeError, TableDropReopenFacts, TableDropReview,
+    TableDropSourceInspection, TableDroppedReopen,
+};
 
 use crate::{Cell, scalar_input::InputHint};
 use std::{
