@@ -710,8 +710,10 @@ impl State {
         self.schema_activation_pending = activate;
         self.bump_focus_publication();
         self.close_contents();
+        self.selected_field = self
+            .take_field_rename_schema_selection(&schema)
+            .unwrap_or(0);
         self.schema = Some(schema);
-        self.selected_field = 0;
         if std::mem::take(&mut self.schema_activation_pending) {
             self.interrupt_saved_query();
             self.view = DocumentView::Design;

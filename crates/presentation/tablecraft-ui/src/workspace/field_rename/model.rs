@@ -34,6 +34,7 @@ pub(in crate::workspace) struct Model {
     pub(super) status: Option<Status<FieldRenameSaveIdentity>>,
     pub(super) warning: Option<super::warning::Warning>,
     pub(super) close: Option<super::close::Confirmation>,
+    pub(super) selection: Option<FieldRenameTarget>,
 }
 
 impl Model {
@@ -50,6 +51,7 @@ impl Model {
             return false;
         }
 
+        self.selection = None;
         self.draft = Some(Draft {
             target,
             proposed,
@@ -311,6 +313,10 @@ impl Model {
         }
         if let Some(warning) = &self.warning {
             bytes = bytes.checked_add(warning.heap_bytes()?)?;
+        }
+
+        if let Some(selection) = &self.selection {
+            bytes = bytes.checked_add(selection.heap_bytes()?)?;
         }
 
         if let Some(close) = &self.close {

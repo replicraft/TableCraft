@@ -123,6 +123,14 @@ impl State {
     /// Only an explicit fresh document revision may retire closed history. An
     /// open proposal is never silently discarded by a general layout reset.
     pub(in crate::workspace) fn retire_field_rename_warning(&mut self, revision: Option<u64>) {
+        if self
+            .field_rename
+            .selection
+            .as_ref()
+            .is_some_and(|target| Some(target.tab.target.document_revision) != revision)
+        {
+            self.field_rename.selection = None;
+        }
         if self.field_rename.warning.as_ref().is_some_and(|warning| {
             !warning.open && Some(warning.owner.target.tab.target.document_revision) != revision
         }) {

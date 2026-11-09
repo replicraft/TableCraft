@@ -173,7 +173,7 @@ impl State {
             return false;
         }
 
-        self.field_rename = super::model::Model::default();
+        self.finish_field_rename_presentation();
 
         true
     }

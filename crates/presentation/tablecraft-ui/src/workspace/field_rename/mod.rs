@@ -11,6 +11,7 @@ pub(crate) mod rendering;
 pub(crate) mod widget;
 pub use close::{FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose};
 mod preparation;
+mod selection;
 mod state;
 mod status;
 mod warning;
