@@ -5,3 +5,5 @@ mod insertion_retry;
 mod other_services;
 mod recovery;
 mod schema;
+
+mod unchanged_field_rename;

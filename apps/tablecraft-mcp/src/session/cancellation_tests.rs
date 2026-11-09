@@ -4,7 +4,9 @@ use super::*;
 use std::sync::mpsc;
 use tablecraft_testkit::fixtures::access::{mutation_fixture, query_expression_edits};
 
-fn cancel_after_dispatch(session: &mut Session) -> (Arc<AtomicBool>, thread::JoinHandle<u64>) {
+pub(super) fn cancel_after_dispatch(
+    session: &mut Session,
+) -> (Arc<AtomicBool>, thread::JoinHandle<u64>) {
     let (issued, observed) = mpsc::sync_channel(1);
     let (release, proceed) = mpsc::sync_channel(1);
     session.read_dispatched = Some(Box::new(move |id| {

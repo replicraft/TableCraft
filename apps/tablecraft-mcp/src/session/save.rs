@@ -186,7 +186,8 @@ fn receipt_json(receipt: SaveReceipt) -> Value {
 
 impl Session {
     pub(super) fn start_reserved_recovery(&mut self, args: &Value) -> Result<Value, String> {
-        if self.active_save.is_some()
+        if self.unchanged_field_rename.is_some()
+            || self.active_save.is_some()
             || self.saves.is_busy()
             || self.creation.is_busy()
             || self.uncertain

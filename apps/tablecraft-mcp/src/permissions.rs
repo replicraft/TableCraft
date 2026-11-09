@@ -81,6 +81,8 @@ pub(super) fn access(operation: &str) -> Option<Access> {
         | "acknowledge_creation"
         | "open_created_database"
         | "retry_insert"
+        | "retry_unchanged_field_rename"
+        | "discard_unchanged_field_rename"
         | "discard_insert_retry" => Access::OwnedLifecycle,
         "session_status"
         | "open_database"

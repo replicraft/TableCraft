@@ -201,6 +201,12 @@ struct Save {
 
 #[derive(Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
+struct ReadOnlyOperation {
+    operation_id: u64,
+}
+
+#[derive(Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 struct Creation {
     creation_id: u64,
 }
@@ -382,6 +388,9 @@ struct ReplaceFound<'a> {
 
 pub(super) fn schema(operation: &str) -> Option<Map<String, Value>> {
     let schema = match operation {
+        "retry_unchanged_field_rename" | "discard_unchanged_field_rename" => {
+            schemars::schema_for!(ReadOnlyOperation)
+        }
         "find_next" => schemars::schema_for!(Find<'_>),
         "continue_find" => schemars::schema_for!(ContinueFind),
         "replace_found" => schemars::schema_for!(ReplaceFound<'_>),
@@ -456,6 +465,9 @@ pub(super) fn schema(operation: &str) -> Option<Map<String, Value>> {
 
 pub(super) fn validate(operation: &str, arguments: &Value) -> Result<(), String> {
     match operation {
+        "retry_unchanged_field_rename" | "discard_unchanged_field_rename" => {
+            check::<ReadOnlyOperation>(arguments)
+        }
         "find_next" => {
             let request = Find::deserialize(arguments).map_err(|error| error.to_string())?;
             if request.formatted.unwrap_or(false) && request.format_options.is_none() {

@@ -11,7 +11,8 @@ impl Session {
         args: &Value,
     ) -> Result<Value, String> {
         if operation == "create_database" {
-            if self.active_save.is_some()
+            if self.unchanged_field_rename.is_some()
+                || self.active_save.is_some()
                 || self.saves.is_busy()
                 || self.creation.is_busy()
                 || self.uncertain
@@ -77,7 +78,11 @@ impl Session {
                 Ok(json!({"creation_id": requested, "acknowledged": true}))
             }
             "open_created_database" => {
-                if self.active_save.is_some() || self.saves.is_busy() || self.creation.is_busy() {
+                if self.unchanged_field_rename.is_some()
+                    || self.active_save.is_some()
+                    || self.saves.is_busy()
+                    || self.creation.is_busy()
+                {
                     return Err("Acknowledge all native owners before opening created bytes".into());
                 }
                 let report = self

@@ -7,6 +7,14 @@ use rmcp::model::Tool;
 // Names are protocol surface, not alternate implementations of these operations.
 const OPERATIONS: &[(&str, &str)] = &[
     (
+        "retry_unchanged_field_rename",
+        "Retry only the accepted complete-image read for an unchanged field rename; never start a native save.",
+    ),
+    (
+        "discard_unchanged_field_rename",
+        "Discard the actual retained unchanged-rename read context without writing native data.",
+    ),
+    (
         "retry_insert",
         "Verify the retained complete original image and obtain a fresh insertion draft; never replay the old review or inputs.",
     ),
@@ -266,10 +274,7 @@ pub(super) fn definition(name: &str, permissions: Permissions) -> Option<Tool> {
     if let Some(kind) = name.strip_prefix("apply_")
         && APPLY_KINDS.contains(&kind)
     {
-        return tool(
-            name.to_owned(),
-            "Consume the exact retained review capability and start its native save. Use save_status, then acknowledge its actual outcome.",
-        );
+        return apply_tool(name.to_owned());
     }
     OPERATIONS
         .iter()
@@ -301,12 +306,7 @@ pub(super) fn definitions(permissions: Permissions) -> Result<Vec<Tool>, &'stati
         .iter()
         .map(|kind| format!("apply_{kind}"))
         .filter(|name| permissions.allows(name))
-        .map(|name| {
-            tool(
-                name,
-                "Consume the exact retained review capability and start its native save. Poll save_status and acknowledge the actual outcome.",
-            )
-        });
+        .map(apply_tool);
     operations
         .chain(applies)
         .map(|tool| tool.ok_or("registered tool has no request schema"))
@@ -315,4 +315,13 @@ pub(super) fn definitions(permissions: Permissions) -> Result<Vec<Tool>, &'stati
 
 fn tool(name: String, description: &'static str) -> Option<Tool> {
     requests::schema(&name).map(|schema| Tool::new(name, description, schema))
+}
+
+fn apply_tool(name: String) -> Option<Tool> {
+    let description = if name == "apply_field_rename" {
+        "Consume the exact review. An unchanged name performs only complete-image verification; a changed name starts a native save. Inspect the returned operation_id or save_id."
+    } else {
+        "Consume the exact retained review and start its native save. Poll save_status and acknowledge the actual outcome."
+    };
+    tool(name, description)
 }

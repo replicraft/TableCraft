@@ -111,7 +111,8 @@ impl Session {
     }
 
     pub(super) fn apply_review(&mut self, operation: &str, args: &Value) -> Result<Value, String> {
-        if self.active_save.is_some()
+        if self.unchanged_field_rename.is_some()
+            || self.active_save.is_some()
             || self.saves.is_busy()
             || self.creation.is_busy()
             || self.uncertain
@@ -129,6 +130,12 @@ impl Session {
         }
         let Some((id, capability)) = self.reviewed.take() else {
             return Err("The reviewed capability is no longer owned".into());
+        };
+        let capability = match capability {
+            Reviewed::FieldRename(capability) if !capability.changed() => {
+                return self.accept_unchanged_field_rename(id, capability);
+            }
+            capability => capability,
         };
         let path = capability.source_path().to_path_buf();
         let witness = capability.witness();

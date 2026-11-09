@@ -9,6 +9,7 @@ mod response;
 mod retry;
 mod reviewed;
 mod save;
+mod unchanged_field_rename;
 
 use reviewed::Reviewed;
 use save::ActiveSave;
@@ -39,6 +40,7 @@ pub struct Session {
     reviewed: Option<(u64, Reviewed)>,
     active_save: Option<ActiveSave>,
     insert_retry: Option<retry::InsertRetry>,
+    unchanged_field_rename: Option<unchanged_field_rename::PendingRename>,
     next_handle: u64,
     created: Option<Arc<CreationReport>>,
     drop_source: Option<tablecraft_runtime::TableDropSourceInspection>,
@@ -66,6 +68,7 @@ impl Session {
             reviewed: None,
             active_save: None,
             insert_retry: None,
+            unchanged_field_rename: None,
             next_handle: 0,
             created: None,
             drop_source: None,
@@ -102,6 +105,7 @@ impl Session {
             "session_status" => Ok(json!({
                 "document_revision": self.revision,
                 "document_published": self.revision.is_some(),
+                "unchanged_field_rename_operation_id": self.unchanged_field_rename.as_ref().map(|pending| pending.id),
                 "active_save_id": self.active_save.as_ref().map(|save| save.id),
                 "active_creation_id": self.creation_id.filter(|_| self.creation.is_busy()),
                 "source_uncertain": self.uncertain || self.refresh_required,
@@ -110,6 +114,9 @@ impl Session {
                 "catalog": &self.catalog,
                 "insert_retry": self.retry_status(),
             })),
+            "retry_unchanged_field_rename" | "discard_unchanged_field_rename" => {
+                self.unchanged_field_rename_operation(operation, &args)
+            }
             "retry_insert" | "discard_insert_retry" => {
                 self.insertion_retry_operation(operation, &args)
             }
@@ -126,7 +133,11 @@ impl Session {
                 self.apply_review(operation, &args)
             }
             _ => {
-                if self.active_save.is_some() || self.saves.is_busy() || self.creation.is_busy() {
+                if self.active_save.is_some()
+                    || self.saves.is_busy()
+                    || self.creation.is_busy()
+                    || self.unchanged_field_rename.is_some()
+                {
                     return Err("Resolve and acknowledge the active save or creation before issuing document requests".into());
                 }
                 if self.uncertain {
