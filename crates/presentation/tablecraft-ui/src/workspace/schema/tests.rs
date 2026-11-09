@@ -64,6 +64,48 @@ fn painted(output: &FullOutput, expected: &str) -> bool {
     })
 }
 
+#[test]
+fn design_caption_distinguishes_observed_add_support_and_local_proposal_from_read_only() {
+    for available in [false, true] {
+        let mut state = crate::workspace::test_support::saved_table(
+            "Design addition caption",
+            vec!["ID".into()],
+        );
+        state.field_addition_available = true;
+        let tab = state.active_object().unwrap();
+        state.prepare_schema_view();
+        state.set_schema(Schema {
+            table: "Table1".into(),
+            declared_rows: 0,
+            fields: vec![field("ID", 0, Some("Int32"))],
+        });
+        assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
+        assert!(state.set_field_addition_availability(&tab, 80, available, available));
+
+        let context = egui::Context::default();
+        crate::configure(&context);
+        let output = render(&mut state, &context, Vec::new());
+        let expected = state.localizer.text(if available {
+            "design-add-fields-save"
+        } else {
+            "design-read-only"
+        });
+        assert!(painted(&output, &expected));
+
+        if available {
+            assert!(state.begin_field_addition_name(
+                &tab,
+                "Notes".into(),
+                tablecraft_builders::table::FieldAdditionDeclaration::NumberLongZero,
+            ));
+            state.busy = true;
+            let output = render(&mut state, &context, Vec::new());
+            assert!(painted(&output, &expected));
+            assert!(!painted(&output, &state.localizer.text("design-read-only")));
+        }
+    }
+}
+
 fn visible_text_rect(output: &FullOutput, expected: &str) -> Option<egui::Rect> {
     output.shapes.iter().find_map(|shape| match &shape.shape {
         egui::epaint::Shape::Text(text) if text.galley.job.text == expected => {

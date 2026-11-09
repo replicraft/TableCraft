@@ -2,6 +2,7 @@
 
 design-choose = Wählen Sie für eine Tabelle „Schema anzeigen“, um ihre Deklaration zu prüfen.
 design-read-only = Tabellenentwurf · schreibgeschützt
+design-add-fields-save = Tabellenentwurf · Felder mit Speichern hinzufügen
 design-declared-rows = Deklarierte Zeilen (ungeprüft): { $count }
 design-inert-help = Nur gespeicherte Deklarationen. Standardwerte und Gültigkeitsregeln werden ohne Auswertung angezeigt.
 design-no-fields = Die erfasste Deklaration enthält keine Felder.

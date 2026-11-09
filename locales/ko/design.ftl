@@ -2,6 +2,7 @@
 
 design-choose = 테이블에서 스키마 보기를 선택하여 선언을 검사하세요.
 design-read-only = 테이블 디자인 · 읽기 전용
+design-add-fields-save = 테이블 디자인 · 저장으로 필드 추가
 design-declared-rows = 선언된 행 수(미검증): { $count }
 design-inert-help = 저장된 선언만 표시합니다. 기본값과 유효성 검사 규칙은 평가하지 않습니다.
 design-no-fields = 가져온 선언에 필드가 없습니다.

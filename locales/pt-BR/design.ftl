@@ -2,6 +2,7 @@
 
 design-choose = Escolha Exibir esquema em uma tabela para inspecionar sua declaração.
 design-read-only = Design da Tabela · somente leitura
+design-add-fields-save = Design da tabela · adicione campos com Salvar
 design-declared-rows = Linhas declaradas (não verificadas): { $count }
 design-inert-help = Somente declarações armazenadas. Valores padrão e regras de validação são exibidos sem avaliação.
 design-no-fields = Nenhum campo na declaração capturada.

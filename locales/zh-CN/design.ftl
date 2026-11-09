@@ -2,6 +2,7 @@
 
 design-choose = 对表选择“查看架构”以检查其声明。
 design-read-only = 表设计 · 只读
+design-add-fields-save = 表设计 · 使用“保存”添加字段
 design-declared-rows = 声明的行数（未经验证）：{ $count }
 design-inert-help = 仅显示存储的声明。默认值和验证规则不会求值。
 design-no-fields = 捕获的声明中没有字段。

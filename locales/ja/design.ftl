@@ -2,6 +2,7 @@
 
 design-choose = テーブルの「スキーマの表示」を選択して宣言を確認してください。
 design-read-only = テーブル デザイン · 読み取り専用
+design-add-fields-save = テーブル デザイン · 保存してフィールドを追加
 design-declared-rows = 宣言された行数（未検証）: { $count }
 design-inert-help = 保存済みの宣言のみ表示します。既定値と入力規則は評価しません。
 design-no-fields = 取得した宣言にフィールドがありません。

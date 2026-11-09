@@ -139,6 +139,9 @@ impl State {
         let addition_kind = self
             .field_addition_declaration()
             .map(|declaration| declaration.kind());
+        let addition_caption = addition.as_ref().is_some_and(|(_, presentation)| {
+            presentation.name.is_some() || (presentation.enabled && presentation.choices.any())
+        });
         let mut addition_event = None;
         let Some(schema) = &self.schema else {
             ui.weak(crate::localization::tr(ui, "design-choose"));
@@ -146,7 +149,9 @@ impl State {
         };
         ui.small(crate::localization::tr(
             ui,
-            if self.field_drop_available {
+            if addition_caption {
+                "design-add-fields-save"
+            } else if self.field_drop_available {
                 "field-drop-design-help"
             } else if self.field_rename_available {
                 "field-rename-design-help"

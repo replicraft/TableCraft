@@ -2,6 +2,7 @@
 
 design-choose = Choose View schema for a table to inspect its declaration.
 design-read-only = Table Design · read only
+design-add-fields-save = Table Design · add fields with Save
 design-declared-rows = Declared rows (unverified): { $count }
 design-inert-help = Stored declarations only. Defaults and validation rules are displayed without evaluation.
 design-no-fields = No fields in the captured declaration.
