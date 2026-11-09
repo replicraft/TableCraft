@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-08",
+  "scope": "Existing local SELECT projection/WHERE expression edits; no QueryDef creation, Save As or general topology changes",
+  "platform": "macOS 14.7.2 ARM64, headless; no native windows",
+  "implementation_commits": [
+    "a06712d1",
+    "fe33c183",
+    "e9f32450",
+    "fb0c0450"
+  ],
+  "corrections": [
+    "f9ba2342: explicit test imports after owner extraction; logical platform module path",
+    "d6ef2a4e: bracket reserved Second alias in fixture SQL",
+    "353216ab: unary plus normalizes in parser; mismatch case now uses different owned AST"
+  ],
+  "test_checkpoints": [
+    {
+      "record": ".cache/query-sql-bridge-summary-20261108.json",
+      "source_commit": "f9ba2342",
+      "passing_cases": 11,
+      "suites": {
+        "Access offline fitting/fragments staging and recovery": 10,
+        "runtime typed fragment error classification": 1
+      }
+    },
+    {
+      "record": ".cache/full-sql-number-summary-20261108.json",
+      "source_commit": "fb0c0450",
+      "passing_cases": 72,
+      "suites": {
+        "Access full-SQL bridge": 8,
+        "Access saved context": 4,
+        "runtime unchanged literal route": 5,
+        "UI saved SQL": 22,
+        "UI saved SQL publication": 11,
+        "UI Number publication shared helper regression": 7,
+        "desktop query save": 11,
+        "desktop SQL inspection": 4
+      }
+    },
+    {
+      "record": ".cache/number-return-query-summary-20261108.json",
+      "source_commit": "85a63af4",
+      "passing_cases": 11,
+      "suites": {
+        "runtime complete SQL route": 11
+      },
+      "note": "Only this named SQL suite is counted here; separate Number failure-exit tests in the same invocation had unresolved failures."
+    }
+  ],
+  "selected_unique_passing_cases": 94,
+  "lint": {
+    "result": "PASS",
+    "record": ".cache/number-return-query-clippy-20261108.log",
+    "source_commit": "85a63af4",
+    "packages": [
+      "tablecraft-ace",
+      "tablecraft-access",
+      "tablecraft-runtime",
+      "tablecraft-builders",
+      "tablecraft-ui",
+      "tablecraft-desktop"
+    ],
+    "scope": "all features, libraries and desktop binary, -D warnings; not all workspace targets"
+  },
+  "syntax_accounting": {
+    "expression_size_bytes": 72,
+    "projection_size_bytes": 96,
+    "charged_bytes_for_two_96_projection_sets": 1037832,
+    "retained_projection_logical_bytes": 19756,
+    "alias_utf8_bytes": 1324,
+    "parser_peak_heap": "unmeasured",
+    "note": "Logical admission accounting, not measured parser heap or performance."
+  },
+  "limitations": [
+    "Native Microsoft Access and Windows execution unrun.",
+    "Fixed-image journal V1 and semantic request TCQE0002 are distinct versions.",
+    "Compiled/cache/property sources and general query topology/parameter changes remain unsupported.",
+    "Number refresh-failure exit acceptance is separate and not qualified by this record."
+  ]
+}

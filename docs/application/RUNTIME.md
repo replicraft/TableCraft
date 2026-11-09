@@ -1648,6 +1648,9 @@ new-revision publication retaining other active/parked drafts. Query facts remai
 separate from row/schema/settings outcomes. Only acknowledged known AFTER or an
 explicitly unchanged review followed by the same successful full-image witness
 can resolve exact visible text. Failed/original outcomes preserve dirty drafts;
-Open/Create/close and unrelated writes cannot bypass them. This bounded existing
-constant SELECT route does not establish general QueryDef creation/Save As,
+Open/Create/close and unrelated writes cannot bypass them. The distinct `ReviewedQuerySql`/`start_query_sql` route now targets qualified
+existing SELECT projection/WHERE fragments through TCQE0002; the low-level
+literal TCQE0001 service remains unchanged. The [coordinated record](../testing/results/full-sql-expression-workflows-2026-11-08.json)
+retains its selected passing checks and corrected failures. This route does not establish general
+QueryDef creation/Save As,
 Access 97–2019 write parity or native Microsoft Access save behavior.

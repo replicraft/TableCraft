@@ -8,14 +8,36 @@ read-only, while a source without qualified SQL shows the unavailable placeholde
 
 ## Current native boundary
 
-The current route changes an existing qualified constant SELECT's integer
-projection named `Answer`: unencoded ACE 16 code 5/subversion zero, exactly one
-saved query with five native fragments, and a canonical nonnegative Int32
-decimal replacement with the same UTF-16 payload length. The engine's fitting fragment, catalog, ownership and
-complete-image limits remain in the [native QueryDef contract](../testing/NATIVE_QUERYDEF_FITTING_SAVE.md).
-Runtime `ReviewQuerySql` parses complete original/proposed SQL into TableCraft
-syntax, checks the actual stored definition and delegates physical qualification
-to the normal native writer. The host neither slices SQL nor encodes query rows.
+The complete-SQL route reviews existing projection and WHERE expressions in a
+qualified local SELECT against actual saved fragments from the same immutable
+ACE 16 image. Multiple saved definitions and MSysQueries DATA pages can coexist.
+Each edit binds the target's signed native identity, attribute, order and exact
+original text. Existing fragment membership/order, aliases, parameters, sources,
+flags and all other model fields must remain unchanged. Only changed expression
+ASTs are serialized; unchanged stored spelling remains byte-exact. The complete
+candidate is reconstructed and must equal the full proposed SQL model.
+
+The native source remains a closed, unencoded ACE 16 code 5/subversion-zero
+profile with complete catalog/index/allocation/forwarded-root ownership checks.
+Edited Memo bodies must be inline; protected unedited external bodies may remain
+unchanged. Qualified replacement can grow or shrink through the existing native
+record-placement owner while preserving the file length, logical index roots
+and every byte outside its proved scope. Unsupported topology, parameters,
+compiled/cache/property payloads and unqualified ownership still refuse.
+
+`ReviewQuerySql` returns a distinct `ReviewedQuerySql` capability for
+`SaveWorker::start_query_sql`. Its ordered native request uses `TCQE0002` and the
+existing fixed-image checked V1 journal. Request version and journal version are
+separate. The low-level literal review/`ReviewedQueryExpression`/TCQE0001 route
+keeps its original same-length, one-query, five-fragment language exactly; neither
+decoder retries a failed request as the other version. The
+[native QueryDef reference](../testing/NATIVE_QUERYDEF_FITTING_SAVE.md) preserves
+that earlier profile and the independent SDK observations.
+
+Canonical SQL visibility remains independent of writer eligibility. A readable
+SELECT/UNION/crosstab can remain read-only. Even semantic no-op review performs
+the complete native qualification; AST equality alone grants no write authority.
+The host neither slices SQL nor encodes native fragments.
 
 This does not create a QueryDef, implement Save As, add MSysQueries to ordinary
 creator databases, qualify broader query shapes or establish Access 97–2019
@@ -97,7 +119,19 @@ or original result cancels the deferred transition while preserving the draft.
 Unrelated row/schema/settings writes stay blocked while saved SQL is dirty;
 the query-only save uses the explicit full-witness owned-transfer route.
 
-## Evidence
+## Connected expression expansion evidence
+
+The [coordinated workflow record](../testing/results/full-sql-expression-workflows-2026-11-08.json)
+retains 94 selected passing checks across the Access bridge/staging, runtime,
+shared UI and headless desktop checkpoints. Eleven full-SQL runtime cases cover
+multi-projection save/reopen/explicit Run, projection+WHERE review, inert syntax,
+source invalidation and complete-witness tamper refusal. Five unchanged
+literal-service tests retain the separate TCQE0001 boundary. The record preserves
+initial compile/fixture/assertion failures separately from corrected checks.
+Strict affected-library/desktop lint passes; no native Access or Windows runtime
+execution is claimed. General QueryDef CRUD remains unfinished.
+
+## Earlier bounded-route evidence
 
 The [initial connected headless batch](../testing/results/query-save-rebind-2026-11-08.json)
 passes 93 tests, including seven real desktop query-save cases and nine owned

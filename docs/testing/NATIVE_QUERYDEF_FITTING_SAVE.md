@@ -21,6 +21,24 @@ evaluation stays disabled. Saving stored metadata executes no query, macro, VBA,
 UDF or external provider. Explicit read-only TableCraft retrieval subsequently
 returns `42` and `43`; those executions are separate observations.
 
+## Separate existing-expression request version
+
+The newer TCQE0002 candidate and original intent bind ordered existing COLUMN
+and WHERE fragment edits by actual query identity, attribute, order and expected
+text. Multiple definitions/pages and qualified inline Memo growth/shrink use the
+shared native record-placement/forwarding owner. Unedited external bodies remain
+protected; this is not general external-Memo editing. Complete candidate images,
+logical roots, indexes, roles and untouched bytes are independently checked.
+The [repeated-root reference](querydef_existing_save/REPEATED_WRITES.md) retains
+SDK evidence separately from Rust construction and consumer outcomes.
+
+TCQE0001 below retains its exact original admission and wire language. TCQE0002
+uses the same fixed-image checked V1 journal because this operation preserves
+file length; semantic request version does not select a resizable journal.
+Closed action/version dispatch has no decoder fallback. The full-SQL runtime
+transition passes its selected [coordinated checks](results/full-sql-expression-workflows-2026-11-08.json),
+including separate unchanged literal-service regressions. Native Access saves remain unrun.
+
 ## Observed physical change
 
 The source has 90 pages of 4,096 bytes (368,640 bytes). Its `Constants` query has

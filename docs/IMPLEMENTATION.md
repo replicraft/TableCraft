@@ -1,5 +1,24 @@
 # Implementation status
 
+## Existing saved-query expression expansion — 8 November 2026
+
+The connected full-SQL route now targets existing local SELECT projections and
+WHERE fragments with multiple saved definitions/pages under the explicit native
+source/ownership profile. Runtime issues distinct `ReviewedQuerySql` authority
+and consumes it through `start_query_sql`, TCQE0002 original-intent reconstruction
+and the existing fixed-image journal. Low-level literal TCQE0001 remains frozen.
+Unchanged native spellings and every non-expression model field remain protected;
+full proposed-model equality and the same full-image witness precede atomic
+publication of the exact submitted text and retained other drafts.
+
+The [coordinated workflow record](testing/results/full-sql-expression-workflows-2026-11-08.json)
+retains 94 passing selected checks across its recorded checkpoints and strict
+affected-library/desktop lint. Initial compile, fixture and assertion failures
+remain separate from corrected checks. Independent SDK byte observations remain
+separate from this consumer gate and native Microsoft Access/Windows execution. General
+QueryDef creation/Save As, topology/parameter changes, ordinary compiled/cache
+sources and Access 97–2019 write parity remain unfinished.
+
 ## Readable saved SQL and column candidate checkpoint — 8 November 2026
 
 Supported saved-query models now expose canonical SQL independently of write
