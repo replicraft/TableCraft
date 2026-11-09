@@ -108,7 +108,7 @@ impl Desktop {
         let Some(kind) = action_kind(&target) else {
             return;
         };
-        if self.state.field_addition_source_stale() {
+        if self.state.native_mutation_blocked() {
             return;
         }
         self.editing.clear_review();

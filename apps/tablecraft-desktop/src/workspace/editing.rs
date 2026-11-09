@@ -1,4 +1,5 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
+mod database_options;
 mod deleting;
 mod field_addition;
 mod inserting;
@@ -28,6 +29,8 @@ pub(super) struct Editing {
     worker: SaveWorker,
     query_definition: Option<query_definition::QueryDefinitionHost>,
     field_addition: Option<field_addition::FieldAdditionHost>,
+    database_options: Option<database_options::DatabaseOptionsHost>,
+    database_options_inspection: Option<(u64, u64)>,
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
@@ -55,6 +58,7 @@ enum SaveOwner {
     TableCreation,
     TableRename,
     FieldAddition,
+    DatabaseOptions,
     QueryAction,
     QueryDefinition,
 }
@@ -75,6 +79,8 @@ impl Editing {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             query_definition: None,
             field_addition: None,
+            database_options: None,
+            database_options_inspection: None,
             review: None,
             insert_review: None,
             delete_review: None,
@@ -93,6 +99,7 @@ impl Editing {
             || self.worker.is_busy()
             || self.query_definition.is_some()
             || self.field_addition.is_some()
+            || self.database_options.is_some()
     }
 
     pub(super) fn clear_refresh(&mut self) {
@@ -269,6 +276,10 @@ impl Desktop {
             self.query_definition_save_report(report);
             return;
         }
+        if matches!(save.owner, SaveOwner::DatabaseOptions) {
+            self.database_options_save_report(report);
+            return;
+        }
         if matches!(save.owner, SaveOwner::FieldAddition) {
             self.field_addition_save_report(report);
             return;
@@ -300,12 +311,15 @@ impl Desktop {
                 self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::FieldAddition => {}
+            SaveOwner::TableRename | SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }
     }
 
     pub(super) fn cancel_current_save(&mut self) {
+        if self.cancel_current_database_options_operation() {
+            return;
+        }
         if self.cancel_current_field_addition_operation() {
             return;
         }
@@ -383,7 +397,7 @@ impl Desktop {
                     SaveOwner::QueryDefinition => {
                         self.query_definition_resolution_started(next);
                     }
-                    SaveOwner::FieldAddition => {}
+                    SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -475,7 +489,7 @@ impl Desktop {
                 self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::FieldAddition => {}
+            SaveOwner::TableRename | SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {

@@ -84,9 +84,19 @@ impl Desktop {
         match command {
             FieldAdditionSaveCommand::Cancel => {
                 let reopening = host.reopening;
+                let request_id = host.request_id;
                 self.editing.field_addition.as_mut().unwrap().cancelled = true;
                 if reopening {
+                    // Worker cancellation revokes reply publication immediately.
+                    // Preserve the acknowledged AFTER owner and allow its exact
+                    // witness to be retried or explicitly returned to the draft.
                     self.worker.cancel();
+                    self.field_addition_reopen_failed(
+                        request_id,
+                        self.state.localizer.text("shell-operation-cancelled"),
+                    );
+                    self.state.busy = false;
+                    self.pending = PendingOperation::Read;
                 } else {
                     self.editing.worker.cancel(identity.save_id);
                 }

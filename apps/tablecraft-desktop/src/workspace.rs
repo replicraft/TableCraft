@@ -35,6 +35,16 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
+    DatabaseOptionsInspection {
+        revision: u64,
+        request_id: u64,
+    },
+    DatabaseOptionsReview {
+        request_id: u64,
+    },
+    DatabaseOptionsReopen {
+        request_id: u64,
+    },
     FieldAdditionAvailability {
         request_id: u64,
         tab: tablecraft_ui::ObjectTab,
@@ -240,6 +250,8 @@ impl Desktop {
         app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.table_rename_available = SaveWorker::supports_table_rename();
         app.state.field_addition_available = SaveWorker::supports_field_addition();
+        // Enable only after the close-objects and retained-owner workflow gates.
+        state.database_options_available = false;
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
@@ -417,6 +429,7 @@ impl Desktop {
     }
 
     fn poll(&mut self) {
+        self.retire_database_options_inspection_publication();
         self.retire_field_addition_inspection_publications();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
@@ -437,12 +450,16 @@ impl Desktop {
                     self.start_reviewed_query_definition(generation, review, capability);
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
-                | Ok(Response::DatabaseOptionsReviewed { .. })
-                | Ok(Response::DatabaseOptionsInspected { .. })
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
+                Ok(Response::DatabaseOptionsInspected { inspection }) => {
+                    self.publish_database_options_inspection(generation, inspection)
+                }
+                Ok(Response::DatabaseOptionsReviewed { review, capability }) => {
+                    self.start_reviewed_database_options(generation, review, capability)
                 }
                 Ok(Response::FieldAdditionReviewed { review, capability }) => {
                     self.start_reviewed_field_addition(generation, review, capability);
@@ -553,6 +570,15 @@ impl Desktop {
                             })
                             .collect(),
                     };
+                    if let PendingOperation::DatabaseOptionsReopen { request_id } = self.pending {
+                        self.finish_database_options_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
                     if let PendingOperation::FieldAdditionReopen { request_id } = self.pending {
                         self.finish_field_addition_reopen(
                             request_id,
@@ -718,6 +744,21 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
+                    PendingOperation::DatabaseOptionsInspection {
+                        revision,
+                        request_id,
+                    } => {
+                        let (revision, id) = (*revision, *request_id);
+                        self.fail_database_options_inspection(revision, id, error.to_string());
+                    }
+                    PendingOperation::DatabaseOptionsReview { request_id } => {
+                        let id = *request_id;
+                        self.database_options_review_failed(id, error.to_string());
+                    }
+                    PendingOperation::DatabaseOptionsReopen { request_id } => {
+                        let id = *request_id;
+                        self.database_options_reopen_failed(id, error.to_string());
+                    }
                     PendingOperation::FieldAdditionAvailability { .. } => {
                         self.field_addition_availability_failed(generation, error.to_string())
                     }
@@ -1041,6 +1082,18 @@ impl eframe::App for Desktop {
                 }
                 Action::FieldAdditionClose { result } => {
                     self.finish_field_addition_close(result, ui.ctx())
+                }
+                Action::InspectDatabaseOptions { document_revision } => {
+                    self.inspect_database_options(document_revision)
+                }
+                Action::DisableNameAutoCorrect { request } => {
+                    self.disable_name_auto_correct(request)
+                }
+                Action::CancelDatabaseOptionsReview { request_id } => {
+                    self.cancel_database_options_review(request_id)
+                }
+                Action::DatabaseOptionsSave { identity, command } => {
+                    self.database_options_save_command(identity, command)
                 }
                 Action::ReviewFieldAddition { request } => self.save_field_addition(request),
                 Action::RetryFieldAdditionInspection { tab } => {

@@ -1,4 +1,5 @@
 //! Real actor/ACK/read boundaries; no product pause flags or substituted outcomes.
+mod cancellation;
 use crate::workspace::{
     Desktop,
     test_support::{self, finish_reads},
@@ -158,7 +159,7 @@ fn saved_after_tamper_can_return_discard_and_reopen_without_rollback_or_write_re
     click(&mut harness, "Return to draft");
     assert!(!harness.state().editing.has_save());
     assert!(harness.state().deferred_draft_action.is_none());
-    assert!(harness.state().state.field_addition_source_stale());
+    assert!(harness.state().state.native_mutation_blocked());
     assert_eq!(
         harness.state().state.field_addition_name().unwrap().1,
         "Score"
@@ -191,7 +192,7 @@ fn saved_after_tamper_can_return_discard_and_reopen_without_rollback_or_write_re
     assert!(!harness.state().state.can_save_field_addition_close());
     click(&mut harness, "Close draft");
     finish_reads(&mut harness);
-    assert!(!harness.state().state.field_addition_source_stale());
+    assert!(!harness.state().state.native_mutation_blocked());
     assert!(
         harness
             .state()

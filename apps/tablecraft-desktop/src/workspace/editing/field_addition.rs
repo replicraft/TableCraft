@@ -102,7 +102,7 @@ impl Desktop {
 
     pub(in crate::workspace) fn save_field_addition(&mut self, request: FieldAdditionRequest) {
         if self.editing.has_save()
-            || self.state.field_addition_source_stale()
+            || self.state.native_mutation_blocked()
             || self.creating.is_busy()
             || self.file_dialog.is_open()
             || self.recovery.is_some()
