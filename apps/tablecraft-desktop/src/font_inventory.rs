@@ -1,51 +1,124 @@
-//! Host-only system family enumeration. No font data enters document services.
-use std::sync::OnceLock;
+//! Process-cached system names discovered once away from the event thread.
+#[cfg(test)]
+mod tests;
+
+use egui::Context;
+use std::{
+    io,
+    panic::{AssertUnwindSafe, catch_unwind},
+    sync::{
+        OnceLock,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::Duration,
+};
 use tablecraft_ui::FontFamilies;
 
-static FAMILIES: OnceLock<FontFamilies> = OnceLock::new();
+static CATALOG: Catalog = Catalog::new();
+const CHECK_INTERVAL: Duration = Duration::from_millis(100);
+type Task = Box<dyn FnOnce() + Send + 'static>;
 
-pub(super) fn families() -> FontFamilies {
-    FAMILIES.get_or_init(discover).clone()
+struct Catalog {
+    started: AtomicBool,
+    failed: AtomicBool,
+    families: OnceLock<FontFamilies>,
 }
 
-fn discover() -> FontFamilies {
+impl Catalog {
+    const fn new() -> Self {
+        Self {
+            started: AtomicBool::new(false),
+            failed: AtomicBool::new(false),
+            families: OnceLock::new(),
+        }
+    }
+
+    fn start_with(
+        &'static self,
+        context: &Context,
+        discover: impl FnOnce() -> Option<FontFamilies> + Send + 'static,
+        spawn: impl FnOnce(Task) -> io::Result<()>,
+    ) {
+        if self
+            .started
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return;
+        }
+        let context = context.clone();
+        let repaint = context.clone();
+        let task = Box::new(move || {
+            match catch_unwind(AssertUnwindSafe(discover)) {
+                Ok(Some(families)) => {
+                    let _ = self.families.set(families);
+                }
+                Ok(None) | Err(_) => {
+                    self.failed.store(true, Ordering::Release);
+                    tracing::warn!(
+                        "system font family discovery failed; bundled fonts remain available"
+                    );
+                }
+            }
+            // A closed event loop must not turn inert discovery into a panic.
+            let _ = catch_unwind(AssertUnwindSafe(|| repaint.request_repaint()));
+        });
+        if spawn(task).is_err() {
+            self.failed.store(true, Ordering::Release);
+            tracing::warn!(
+                "system font discovery worker could not start; bundled fonts remain available"
+            );
+            context.request_repaint();
+        }
+    }
+}
+
+/// Per-host observation only; the process owns one bounded discovery task/cache.
+#[derive(Default)]
+pub(super) struct FontInventory {
+    finished: bool,
+}
+
+impl FontInventory {
+    pub(super) fn poll(&mut self, context: &Context) -> Option<FontFamilies> {
+        if self.finished {
+            return None;
+        }
+        CATALOG.start_with(context, discover, spawn);
+        self.poll_catalog(&CATALOG, context)
+    }
+
+    fn poll_catalog(&mut self, catalog: &Catalog, context: &Context) -> Option<FontFamilies> {
+        if self.finished {
+            return None;
+        }
+        // get() never waits for OnceLock initialization. Only the background
+        // owner calls set(); no UI constructor runs discovery or get_or_init.
+        if let Some(families) = catalog.families.get() {
+            self.finished = true;
+            context.request_repaint();
+            return Some(families.clone());
+        }
+        if catalog.failed.load(Ordering::Acquire) {
+            self.finished = true;
+        } else {
+            // A second live host does not need another retained event-loop
+            // callback or unbounded waiter list to observe the process cache.
+            context.request_repaint_after(CHECK_INTERVAL);
+        }
+        None
+    }
+}
+
+fn spawn(task: Task) -> io::Result<()> {
+    std::thread::Builder::new()
+        .name("tablecraft-font-inventory".into())
+        .spawn(task)
+        .map(drop)
+}
+
+fn discover() -> Option<FontFamilies> {
     let _span = tracing::debug_span!("font_families_discover").entered();
     let mut collection = fontique::Collection::new(fontique::CollectionOptions::default());
-    match FontFamilies::from_system(collection.family_names()) {
-        Ok(families) => families,
-        Err(_) => {
-            tracing::warn!("system font family inventory refused; bundled fonts remain available");
-            FontFamilies::default()
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn system_discovery_keeps_bundled_families_and_reuses_the_process_catalog() {
-        let first = families();
-        let second = families();
-        assert_eq!(first.families().as_ptr(), second.families().as_ptr());
-        for family in [
-            "Selawik",
-            "Noto Emoji",
-            "Noto Sans JP",
-            "Noto Sans KR",
-            "Noto Sans SC",
-        ] {
-            assert!(first.families().iter().any(|name| name == family));
-        }
-
-        // This independent metadata probe makes the local provider's result
-        // observable without requiring a platform-specific installed-font set.
-        let mut system = fontique::Collection::new(fontique::CollectionOptions::default());
-        let discovered = system.family_names().count();
-        println!(
-            "Fontique system families: {discovered}; merged catalog: {}",
-            first.families().len()
-        );
-    }
+    FontFamilies::from_system(collection.family_names()).ok()
 }

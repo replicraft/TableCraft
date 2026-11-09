@@ -17,6 +17,7 @@ mod test_support;
 mod totals;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
+use crate::font_inventory::FontInventory;
 use creating::Creating;
 use editing::Editing;
 use editing::table_creation::TableCreationHost;
@@ -216,6 +217,7 @@ pub(super) struct Desktop {
     objects: objects::Sessions,
     query_parameters: Option<query_parameters::Inspected>,
     startup_visibility_pending: bool,
+    font_inventory: FontInventory,
 }
 
 #[derive(Default)]
@@ -253,6 +255,7 @@ impl Desktop {
             objects: objects::Sessions::default(),
             query_parameters: None,
             startup_visibility_pending: true,
+            font_inventory: FontInventory::default(),
         };
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
@@ -262,7 +265,6 @@ impl Desktop {
         app.state.field_rename_available = SaveWorker::supports_field_rename();
         app.state.database_options_available = SaveWorker::supports_database_options();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
-        app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;
         app.state.replace_available = cfg!(any(target_os = "macos", target_os = "linux", windows));
@@ -931,6 +933,9 @@ impl Desktop {
 
 impl eframe::App for Desktop {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        if let Some(families) = self.font_inventory.poll(ctx) {
+            self.state.font_families = families;
+        }
         self.release_stale_query_parameters();
         // A hidden startup frame can run logic without painting. Request the
         // initial window once, leaving later user hide/minimize choices alone.

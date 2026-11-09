@@ -1,4 +1,5 @@
 //! Presentation-only preview host. It owns no database worker or file resources.
+use crate::font_inventory::FontInventory;
 use tablecraft_ui::{
     Localizer, Theme,
     preview::{Preview, Scene},
@@ -7,6 +8,7 @@ use tablecraft_ui::{
 pub(super) struct MockApp {
     preview: Preview,
     startup_visibility_pending: bool,
+    font_inventory: FontInventory,
 }
 
 impl MockApp {
@@ -16,17 +18,20 @@ impl MockApp {
         preview.state_mut().theme = theme;
         preview.set_scene(scene);
         preview.state_mut().formatting.system_locale = crate::regional::locale();
-        preview.state_mut().font_families = crate::font_inventory::families();
 
         Self {
             preview,
             startup_visibility_pending: true,
+            font_inventory: FontInventory::default(),
         }
     }
 }
 
 impl eframe::App for MockApp {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        if let Some(families) = self.font_inventory.poll(ctx) {
+            self.preview.state_mut().font_families = families;
+        }
         if std::mem::take(&mut self.startup_visibility_pending) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
         }
