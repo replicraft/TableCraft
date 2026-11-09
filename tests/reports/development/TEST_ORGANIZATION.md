@@ -55,3 +55,20 @@ current entry-point help checks also pass. Current entry-point help checks and P
 run without launching Java, a native application, Cargo or Git. Documentation
 links are checked separately. These checks establish tooling behavior, not native
 database or Windows/Access compatibility.
+
+## Live helper deduplication
+
+The variable, GUID tuple and decimal index insertion models now share the raw
+image construction body in
+[`shared_insert/derive.py`](../../access/indexes/shared_insert/derive.py). Each
+feature keeps its own request, record, key, eligibility and tree policy. Its
+named constructor binds thirteen callbacks/constants explicitly; the shared
+algorithm imports neither those feature modules nor production encoders.
+
+The extracted body has the same AST as all three former bodies. Wrapper keyword
+bindings were checked against the actual prior function globals. A fresh replay
+compares old/new complete images and facts for 118 retained source/request cases
+(38 variable, 32 GUID tuple, 48 decimal), then checks the complete results against
+pinned cached image and fact goldens. All agree. This is model extraction
+regression evidence, not a new JVM, Rust writer, Windows or native Access run.
+See the [fresh equivalence record](../../results/development/shared-insert-derive-equivalence-2026-11-09.json).

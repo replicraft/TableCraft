@@ -568,5 +568,14 @@
     "failures": 0,
     "errors": 0,
     "skipped": 0
+  },
+  "duplicate_group_review": {
+    "1": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_insert/derive.py",
+      "policy_boundary": "Each feature constructor explicitly binds its own thirteen callbacks/constants; no module-global injection or production encoder.",
+      "equivalence_cases": 118,
+      "evidence": "tests/results/development/shared-insert-derive-equivalence-2026-11-09.json"
+    }
   }
 }

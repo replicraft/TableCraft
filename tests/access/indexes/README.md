@@ -32,4 +32,6 @@
 - [variable_encoded_split_sources](variable_encoded_split_sources/)
 - [variable_index_split_originals](variable_index_split_originals/)
 
+- [shared_insert](shared_insert/)
+
 Run Python entry points through [`tests/run.py`](../../run.py).
