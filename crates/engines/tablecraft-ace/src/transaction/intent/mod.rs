@@ -79,6 +79,15 @@ pub use rename_table::{
 };
 
 #[cfg(feature = "ace16-create")]
+mod database_options_field_history;
+#[cfg(feature = "ace16-create")]
+pub use database_options_field_history::{
+    FieldHistoryOptionsIntentError, NativeFieldHistoryDatabaseOptionsIntent,
+    QualifiedFieldHistoryDatabaseOptionsRecovery, RecoverableFieldHistoryDatabaseOptionsPlan,
+    qualify_native_field_history_database_options_recovery,
+};
+
+#[cfg(feature = "ace16-create")]
 mod database_options;
 #[cfg(feature = "ace16-create")]
 pub use database_options::{

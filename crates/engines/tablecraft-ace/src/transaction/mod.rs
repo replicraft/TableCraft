@@ -210,6 +210,13 @@ pub use intent::{
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
+    FieldHistoryOptionsIntentError, NativeFieldHistoryDatabaseOptionsIntent,
+    QualifiedFieldHistoryDatabaseOptionsRecovery, RecoverableFieldHistoryDatabaseOptionsPlan,
+    qualify_native_field_history_database_options_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
     DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
     RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
 };

@@ -320,6 +320,13 @@ pub use transaction::{
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{
+    FieldHistoryOptionsIntentError, NativeFieldHistoryDatabaseOptionsIntent,
+    QualifiedFieldHistoryDatabaseOptionsRecovery, RecoverableFieldHistoryDatabaseOptionsPlan,
+    qualify_native_field_history_database_options_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
     DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
     RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
 };
