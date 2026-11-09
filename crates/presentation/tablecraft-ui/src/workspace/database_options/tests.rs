@@ -258,3 +258,71 @@ fn wrong_catalog_reopen_refuses_without_dropping_current_tabs_or_sql() {
     assert_eq!(state.sql.as_ptr(), pointer);
     assert_eq!(state.database.as_ref().unwrap().document_revision, 7);
 }
+
+#[test]
+fn returned_warning_paints_report_once_without_claiming_the_old_observation_is_current() {
+    let mut state = state();
+    let identity = accepted(&mut state);
+    assert!(state.set_database_options_save_outcome(
+        identity,
+        EditSaveOutcome::Saved("accepted save report".into()),
+    ));
+    assert!(state.begin_database_options_reopen(identity));
+    assert!(state.fail_database_options_reopen(identity, "fresh read failed".into()));
+    assert!(state.return_from_database_options_reopen(
+        identity,
+        Some(SaveCleanupNotice::RetainedPrivateJournal)
+    ));
+    state.database_options_restore_settings();
+    let old_observation = state.localizer.text("database-options-state-missing");
+    let warning = state.localizer.text("database-options-saved-warning");
+    let cleanup = state
+        .localizer
+        .text("editing-save-retained-private-journal");
+    let mut harness = egui_kittest::Harness::builder()
+        .with_size(egui::vec2(1280.0, 820.0))
+        .build_ui_state(
+            |ui, state: &mut State| {
+                state.show(ui);
+            },
+            state,
+        );
+    crate::configure(&harness.ctx);
+    harness.run();
+    let painted: Vec<_> = harness
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| {
+            let egui::Shape::Text(text) = &shape.shape else {
+                return None;
+            };
+            Some(text.galley.job.text.as_str())
+        })
+        .collect();
+    assert!(!painted.contains(&old_observation.as_str()));
+    assert!(painted.contains(&warning.as_str()));
+    assert!(painted.contains(&cleanup.as_str()));
+    assert_eq!(
+        painted
+            .iter()
+            .filter(|text| **text == "fresh read failed")
+            .count(),
+        1
+    );
+    assert_eq!(
+        painted
+            .iter()
+            .filter(|text| **text == "accepted save report")
+            .count(),
+        1
+    );
+    // Suppression is presentation-only; exact source observation and retained
+    // outcome are preserved, while new native mutations remain blocked.
+    assert_eq!(
+        harness.state().database_options_observation(),
+        Some(NameAutoCorrectState::Missing)
+    );
+    assert!(harness.state().matches_database_options_save(identity));
+    assert!(harness.state().native_mutation_blocked());
+}

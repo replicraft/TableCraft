@@ -25,15 +25,20 @@ impl State {
             return;
         };
         ui.label(tr(ui, "database-options-name-autocorrect"));
-        let key = match self.database_options_observation() {
-            None => "database-options-state-unknown",
-            Some(NameAutoCorrectState::Missing) => "database-options-state-missing",
-            Some(NameAutoCorrectState::Absent) => "database-options-state-absent",
-            Some(NameAutoCorrectState::ExplicitOff) => "database-options-state-off",
-            Some(NameAutoCorrectState::Other) => "database-options-state-other",
-        };
-        ui.label(tr(ui, key));
-        ui.small(tr(ui, "database-options-help"));
+        let stale = self.database_options_source_stale();
+        // The retained observation belongs to BEFORE. Once AFTER is known but
+        // its fresh read failed, do not present that old value as current.
+        if !stale {
+            let key = match self.database_options_observation() {
+                None => "database-options-state-unknown",
+                Some(NameAutoCorrectState::Missing) => "database-options-state-missing",
+                Some(NameAutoCorrectState::Absent) => "database-options-state-absent",
+                Some(NameAutoCorrectState::ExplicitOff) => "database-options-state-off",
+                Some(NameAutoCorrectState::Other) => "database-options-state-other",
+            };
+            ui.label(tr(ui, key));
+            ui.small(tr(ui, "database-options-help"));
+        }
         if self.needs_database_options_inspection() {
             actions.push(Action::InspectDatabaseOptions {
                 document_revision: revision,
@@ -63,7 +68,7 @@ impl State {
                 .on_disabled_hover_text(tr(ui, "ribbon-unavailable"));
         }
         if self.database_options.revision == Some(revision) && !self.database_options_pending() {
-            if let Some(message) = &self.database_options.error {
+            if !stale && let Some(message) = &self.database_options.error {
                 diagnostics::show(
                     ui,
                     ui.id().with("database_options_inspection_error"),
