@@ -12,9 +12,10 @@ fn explicit_options_save_confirms_then_closes_persisted_tabs_and_keeps_scratch()
     let before = canonical_creator_rename::originals().remove(0);
     let expected = canonical_database_options::explicit_off(&before);
     let (_directory, path, original, mut harness) = test_support::opened(before);
-    // The normal host activation remains root-owned until these gates pass.
-    harness.state_mut().state.database_options_available =
-        tablecraft_runtime::SaveWorker::supports_database_options();
+    assert_eq!(
+        harness.state().state.database_options_available,
+        tablecraft_runtime::SaveWorker::supports_database_options()
+    );
     let persisted = harness.state().state.active_object().unwrap();
     let revision = persisted.target.document_revision;
     let scratch = harness
@@ -106,9 +107,10 @@ fn explicit_options_save_confirms_then_closes_persisted_tabs_and_keeps_scratch()
 fn cancelling_readonly_options_review_releases_presentation_without_starting_save() {
     let before = canonical_creator_rename::originals().remove(0);
     let (_directory, path, original, mut harness) = test_support::opened(before);
-    // The normal host activation remains root-owned until these gates pass.
-    harness.state_mut().state.database_options_available =
-        tablecraft_runtime::SaveWorker::supports_database_options();
+    assert_eq!(
+        harness.state().state.database_options_available,
+        tablecraft_runtime::SaveWorker::supports_database_options()
+    );
     let revision = harness
         .state()
         .state
