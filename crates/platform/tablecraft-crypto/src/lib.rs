@@ -11,6 +11,7 @@
 #![deny(missing_docs)]
 
 mod aes;
+mod comparison;
 mod error;
 mod hash;
 mod stream;
@@ -20,9 +21,4 @@ pub use error::CryptoError;
 pub use hash::{HashAlgorithm, MAX_DIGEST_BYTES, digest};
 pub use stream::Rc4Stream;
 
-/// Compare equal-length contents without content-dependent early termination.
-/// Length equality is public and checked separately by the primitive.
-pub fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
-    use subtle::ConstantTimeEq;
-    bool::from(left.ct_eq(right))
-}
+pub use comparison::constant_time_eq;
