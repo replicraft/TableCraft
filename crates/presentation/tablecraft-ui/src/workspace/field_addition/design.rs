@@ -44,7 +44,10 @@ pub(crate) fn name(ui: &mut Ui, presentation: &Presentation) -> Option<Event> {
     if enabled && presentation.focus {
         response.request_focus();
     }
-    if response.has_focus()
+    // egui releases text focus on Escape before this response is inspected;
+    // that submission frame still belongs to this exact pending name editor.
+    if enabled
+        && (response.has_focus() || response.lost_focus())
         && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
     {
         return Some(Event::Discard { revision });
