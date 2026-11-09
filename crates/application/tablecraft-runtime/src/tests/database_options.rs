@@ -6,6 +6,7 @@ use crate::{
     Command, DatabaseOptionsReview, Error, Response, ReviewedDatabaseOptions,
     SaveDatabaseOptionsChange, SaveFailureKind, SaveOutcome, SaveStartFailure, SaveWorker,
 };
+use tablecraft_ace::{FieldHistoryDatabaseOptionsError, FieldHistoryOptionsIntentError};
 use tablecraft_testkit::{
     fixtures::access::{canonical_creator_rename, canonical_database_options},
     support::access::retained_target::assert_retained_target_observation,
@@ -189,15 +190,25 @@ fn cancelled_reviews_and_already_off_sources_refuse_without_writes() {
     let before =
         canonical_database_options::explicit_off(&canonical_creator_rename::originals().remove(0));
     let (_directory, path, worker, revision) = opened(&before);
-    assert!(matches!(
-        request(
-            &worker,
-            Command::ReviewDisableNameAutoCorrect {
-                document_revision: revision
-            }
+    // Actual external column ownership selects FieldHistory before proof.
+    // Its nine-role/already-OFF source refusal must not masquerade as a failed
+    // creator attempt, nor trigger a retry through that frozen constructor.
+    let result = request(
+        &worker,
+        Command::ReviewDisableNameAutoCorrect {
+            document_revision: revision,
+        },
+    );
+    assert!(
+        matches!(
+            result,
+            Err(Error::FieldHistoryDatabaseOptions(
+                FieldHistoryOptionsIntentError::Options(FieldHistoryDatabaseOptionsError::Source)
+            ))
         ),
-        Err(Error::DatabaseOptions(_))
-    ));
+        "expected the selected field-history source refusal: {:?}",
+        result.as_ref().err()
+    );
     assert_eq!(std::fs::read(&path).unwrap(), before);
 
     let original = canonical_creator_rename::originals().remove(0);
