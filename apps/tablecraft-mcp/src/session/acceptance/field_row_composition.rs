@@ -3,15 +3,17 @@ use crate::session::tests::{acknowledge, opened, save};
 use serde_json::json;
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting::first_number_row,
+    canonical_initial_table_creation::deletes::only_long_row,
     saved_field_rename::fitting::{self, SourceCase},
 };
 
 #[test]
-fn fitted_field_rename_files_allow_fresh_host_insert_and_cell_update_without_tail_loss() {
+fn fitted_field_rename_files_allow_fresh_host_row_crud_without_tail_loss() {
     for column in ["TaxAmount", "X"] {
         let [_, renamed] = fitting::pair(SourceCase::NumberFirst, column);
         let expected_insert = first_number_row(&renamed, &[(0, Some(1)), (1, Some(0))]);
         let expected_update = first_number_row(&renamed, &[(0, Some(1)), (1, Some(42))]);
+        let expected_delete = only_long_row(&expected_update);
         let (_directory, path, mut session) = opened(&renamed);
         let revision = session.revision.unwrap();
         let draft = session
@@ -77,6 +79,33 @@ fn fitted_field_rename_files_allow_fresh_host_insert_and_cell_update_without_tai
         assert_eq!(rows["rows"].as_array().unwrap().len(), 1);
         assert_eq!(rows["rows"][0][0]["text"], "1");
         assert_eq!(rows["rows"][0][1]["text"], "42");
+        assert_eq!(rows["columns"][1]["name"], column);
+
+        let review = session
+            .execute(
+                "review_delete",
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Table1",
+                    "parent_ordinal": 0
+                }),
+            )
+            .unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), expected_update);
+        let save_id = save(&mut session, "apply_delete", review);
+        assert_eq!(std::fs::read(&path).unwrap(), expected_delete);
+        acknowledge(&mut session, save_id, &path);
+        let rows = session
+            .execute(
+                "read_rows",
+                json!({
+                    "document_revision": session.revision.unwrap(),
+                    "table": "Table1",
+                    "offset": 0
+                }),
+            )
+            .unwrap();
+        assert!(rows["rows"].as_array().unwrap().is_empty());
         assert_eq!(rows["columns"][1]["name"], column);
     }
 }
