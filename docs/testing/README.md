@@ -94,3 +94,14 @@ when current documentation moves. Fixture, runner and release-note paths remain
 stable during documentation-only reorganizations.
 
 [Documentation index](../README.md)
+
+## Repeated ADD after explicit OFF — 9 November 2026
+
+The first-party [repeated field ADD recipe](field_add_repeat_after_off/README.md)
+and [four-case observation record](results/field-add-repeat-after-off-sdk-2026-11-09.json)
+retain full frozen source/AFTER hashes, actual DB/user ROW chronology, preservation
+facts and the pre-SDK metadata correction. The reviewed local Jackcess 5.0.4
+Apache-2.0 artifact is unchanged; only generated copies were mutated, with
+expression evaluation disabled. SDK bytes/getters are engineering evidence,
+not native repeated-source/write admission, GUI or Microsoft Access validation.
+No third-party database/source/binary or private machine path is included.

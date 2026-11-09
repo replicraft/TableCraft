@@ -11258,7 +11258,7 @@ unchanged Number helper's explicit-zero declaration after compressed Short Text.
 A separate third Number operation also matches a complete independent image.
 Every SDK operation copies its input, disables expression evaluation, reopens
 read-only and preserves its original. The SDK is the same reviewed Apache-2.0
-Jackcess5.0.4 JAR; no third-party source/database, generated class or JAR is tracked.
+Jackcess 5.0.4 JAR; no third-party source/database, generated class or JAR is tracked.
 
 The [report](results/add-short-text-sdk-source-2026-11-08.json) pins every image,
 executed helper/model/report history and portable raw-model rerun. The raw model
@@ -11308,3 +11308,14 @@ observations were not repeated during promotion. No third-party source or binary
 database/class/JAR, private path or production encoder is included as an oracle.
 These are raw mutations plus inert SDK reads, **not SDK rename writes**, native
 Access behavior, dependency/NameMap updates or normal writer/recovery admission.
+
+## Repeated ADD after explicit OFF — 9 November 2026
+
+The first-party [repeated field ADD recipe](field_add_repeat_after_off/README.md)
+and [four-case observation record](results/field-add-repeat-after-off-sdk-2026-11-09.json)
+retain full frozen source/AFTER hashes, actual DB/user ROW chronology, preservation
+facts and the pre-SDK metadata correction. The reviewed local Jackcess 5.0.4
+Apache-2.0 artifact is unchanged; only generated copies were mutated, with
+expression evaluation disabled. SDK bytes/getters are engineering evidence,
+not native repeated-source/write admission, GUI or Microsoft Access validation.
+No third-party database/source/binary or private machine path is included.

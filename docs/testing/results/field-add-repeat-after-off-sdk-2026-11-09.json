@@ -1,0 +1,620 @@
+{
+  "date": "2026-11-09",
+  "scope": "Independent second Number/Text ADD after explicit OFF; SDK representation evidence only",
+  "status": {
+    "complete_image_matches": 4,
+    "sdk_mutation_successes": 4,
+    "inert_property_observers": 4,
+    "originals_preserved": true,
+    "native_repeated_source_admission": false,
+    "native_repeated_candidate_or_intent": false,
+    "native_access_windows": "unverified",
+    "older_profiles": "unqualified"
+  },
+  "prior_source_record": "field-add-after-off-sdk-2026-11-09.json",
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "frozen_prediction_sha256": "f68b6808db080087cd27b77e5b3351eb3df28bf8bc45da72ed9100c3863aa87b",
+  "executed_model_sha256": "c25fa89d95ccd5604dc9fe0787e69a57eba916b8dce7291405fb7de20352b49a",
+  "maintained_model": {
+    "source": "docs/testing/field_add_repeat_after_off/model.py",
+    "sha256": "5106bdcf469ff8a62bb719df9f796277c05253748eaa5e7fbb104e052345b4e3",
+    "difference_from_executed": "Format offsets/tags named; four complete predictions independently replayed without SDK rerun"
+  },
+  "original_executed_recipes": {
+    "prepare.py": "7325da739b95efad8497b5b034fb8ad6f0dbf7c3908881daccf876867177ea6d",
+    "run.py": "366cb57e48c1330b20099c93c2c9a286babf27efb204acc8777d34d6cdb449f8"
+  },
+  "maintained_portable_recipes": [
+    {
+      "source": "docs/testing/field_add_repeat_after_off/prepare.py",
+      "sha256": "7bc28c07f544b327aec5724bd42f4873a5b9a3a5a07a7580dc8bb2ddb7391c8a"
+    },
+    {
+      "source": "docs/testing/field_add_repeat_after_off/run.py",
+      "sha256": "14f515cf1321d817aa820c3a64f5656d75494f197d12bd2d37ccccc68d82cf59"
+    }
+  ],
+  "unchanged_owners": [
+    {
+      "source": "docs/testing/field_add_after_off/model.py",
+      "sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33"
+    },
+    {
+      "source": "docs/testing/short_text_add/model.py",
+      "sha256": "640514975f34cd3468f4672e0cd9e9a516f15a439c5005c71d3f3d3a5e969a5b"
+    },
+    {
+      "source": "docs/testing/number_column_repeat/raw.py",
+      "sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c"
+    },
+    {
+      "source": "docs/testing/CreatedNumberColumnOracle.java",
+      "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886"
+    },
+    {
+      "source": "docs/testing/short_text_add/CreatedShortTextColumnOracle.java",
+      "sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e"
+    }
+  ],
+  "observer": {
+    "source": "docs/testing/field_add_after_off/AfterOffProperties.java",
+    "sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9"
+  },
+  "expression_evaluation": false,
+  "history": {
+    "initial_pre_sdk_observation_correction": {
+      "stage": "pre-SDK prediction review",
+      "sdk_mutations": 0,
+      "reason": "Reused first-event observation assumed final LVAL row was DB; current user row is final after first ADD. Predictions themselves remain unchanged; new observer follows actual native DB descriptor.",
+      "original_prediction_sha256": "bd3d31a7f297983b88ac1b136285b08208ec1f1f381c814ae1434b7dc4a39c31",
+      "original_model_sha256": "176a24acc82c7753e8d8e069d0d37cb42bd9b25caea5dbefc16b759aa45c82cc"
+    },
+    "byte_predictions_changed_by_observation_correction": false,
+    "compile_exit": 0,
+    "sdk_failures": 0,
+    "identical_successful_sdk_commands_rerun": false,
+    "portable_sdk_runner_executed": false
+  },
+  "observations": [
+    {
+      "case": "number-first-long-long",
+      "source_sha256": "fbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680",
+      "kind": "LONG",
+      "column": "SecondNumber",
+      "expected_sha256": "cf07d4ba065af7f694c263b3344a01ad6fd6a8f4ebe1e073088626ed2541919f",
+      "expected_bytes": 45056,
+      "after_sha256": "cf07d4ba065af7f694c263b3344a01ad6fd6a8f4ebe1e073088626ed2541919f",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "prediction_facts": {
+        "before_user_row": 2,
+        "after_user_row": 3,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 3,
+        "after_column_rows": 4,
+        "before_user_descriptor": "8e000040020a000000000000",
+        "after_user_descriptor": "c5000040030a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0459060000030000000300000000000300000000000c000400",
+        "before_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 0,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "facts": {
+        "before_user_row": 2,
+        "after_user_row": 3,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 3,
+        "after_column_rows": 4,
+        "before_user_descriptor": "8e000040020a000000000000",
+        "after_user_descriptor": "c5000040030a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0459060000030000000300000000000300000000000c000400",
+        "before_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 0,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "sdk_exit": 0,
+      "inert_observer_exit": 0
+    },
+    {
+      "case": "number-first-long-text",
+      "source_sha256": "fbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680",
+      "kind": "TEXT",
+      "column": "SecondLabel",
+      "expected_sha256": "020379bbab66648cb5f2b580f8cc5e903132d451483066dea94296bb967674b7",
+      "expected_bytes": 45056,
+      "after_sha256": "020379bbab66648cb5f2b580f8cc5e903132d451483066dea94296bb967674b7",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "prediction_facts": {
+        "before_user_row": 2,
+        "after_user_row": 3,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 3,
+        "after_column_rows": 4,
+        "before_user_descriptor": "8e000040020a000000000000",
+        "after_user_descriptor": "e2000040030a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000030000000300090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 1,
+          "definition_bytes": 339,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "facts": {
+        "before_user_row": 2,
+        "after_user_row": 3,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 3,
+        "after_column_rows": 4,
+        "before_user_descriptor": "8e000040020a000000000000",
+        "after_user_descriptor": "e2000040030a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000030000000300090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 1,
+          "definition_bytes": 339,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 1,
+          "descriptor_hex": "98000040010a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44809,
+          "body_end": 44961
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "sdk_exit": 0,
+      "inert_observer_exit": 0
+    },
+    {
+      "case": "text-number-text-text-long",
+      "source_sha256": "d5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002",
+      "kind": "LONG",
+      "column": "SecondNumber",
+      "expected_sha256": "a28268a3acb88767749b3d640e1dc2b072ff0fda515ccfc18735be113c337bd3",
+      "expected_bytes": 45056,
+      "after_sha256": "a28268a3acb88767749b3d640e1dc2b072ff0fda515ccfc18735be113c337bd3",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "prediction_facts": {
+        "before_user_row": 4,
+        "after_user_row": 5,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 5,
+        "after_column_rows": 6,
+        "before_user_descriptor": "11010040040a000000000000",
+        "after_user_descriptor": "48010040050a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000500030005000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 6,
+          "maximum_fields": 6,
+          "variable_fields": 3,
+          "definition_bytes": 435,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "facts": {
+        "before_user_row": 4,
+        "after_user_row": 5,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 5,
+        "after_column_rows": 6,
+        "before_user_descriptor": "11010040040a000000000000",
+        "after_user_descriptor": "48010040050a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000500030005000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 6,
+          "maximum_fields": 6,
+          "variable_fields": 3,
+          "definition_bytes": 435,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "sdk_exit": 0,
+      "inert_observer_exit": 0
+    },
+    {
+      "case": "text-number-text-text-text",
+      "source_sha256": "d5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002",
+      "kind": "TEXT",
+      "column": "SecondLabel",
+      "expected_sha256": "275af21a3140ab69a320b7b2a86ef79207443d67777d55381f742d0cd6dab04a",
+      "expected_bytes": 45056,
+      "after_sha256": "275af21a3140ab69a320b7b2a86ef79207443d67777d55381f742d0cd6dab04a",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "prediction_facts": {
+        "before_user_row": 4,
+        "after_user_row": 5,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 5,
+        "after_column_rows": 6,
+        "before_user_descriptor": "11010040040a000000000000",
+        "after_user_descriptor": "45010040050a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000050003000500090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 6,
+          "maximum_fields": 6,
+          "variable_fields": 4,
+          "definition_bytes": 433,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "facts": {
+        "before_user_row": 4,
+        "after_user_row": 5,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 5,
+        "after_column_rows": 6,
+        "before_user_descriptor": "11010040040a000000000000",
+        "after_user_descriptor": "45010040050a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000050003000500090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 6,
+          "maximum_fields": 6,
+          "variable_fields": 4,
+          "definition_bytes": 433,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "database_reference_unchanged": true,
+        "database_before": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "database_after": {
+          "catalog_slot": 9,
+          "property_row": 3,
+          "descriptor_hex": "98000040030a000000000000",
+          "record_start": 19658,
+          "record_end": 19743,
+          "body_start": 44400,
+          "body_end": 44552
+        },
+        "chronology": "actual DB ROW remains earlier than current user ROW"
+      },
+      "sdk_exit": 0,
+      "inert_observer_exit": 0
+    }
+  ]
+}
