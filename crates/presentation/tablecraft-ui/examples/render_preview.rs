@@ -1,4 +1,6 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
+#[path = "render_preview/database_options.rs"]
+mod database_options;
 #[path = "render_preview/date_residue.rs"]
 mod date_residue;
 #[path = "render_preview/field_addition.rs"]
@@ -116,6 +118,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         format!("-number-{field_addition}")
     } else {
         format!("-field-addition-{field_addition}")
+    };
+    let database_options = setting("TABLECRAFT_PREVIEW_DATABASE_OPTIONS", "none")?;
+    if !database_options::is_mode(&database_options) {
+        return Err(io::Error::other("unknown database Options preview mode").into());
+    }
+    if database_options != "none" && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("database Options preview requires datasheet").into());
+    }
+    let database_options_suffix = if database_options == "none" {
+        String::new()
+    } else {
+        format!("-database-options-{database_options}")
     };
     let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
     if !saved_sql::is_mode(&saved_sql) {
@@ -244,7 +258,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(!initial_suffix.is_empty())
         + usize::from(table_rename)
         + usize::from(saved_sql != "none")
-        + usize::from(field_addition != "none");
+        + usize::from(field_addition != "none")
+        + usize::from(database_options != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -382,9 +397,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if field_addition != "none" {
             field_addition::prepare(&mut harness, &field_addition);
         }
+        if database_options != "none" {
+            database_options::prepare(&mut harness, &database_options);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{database_options_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
