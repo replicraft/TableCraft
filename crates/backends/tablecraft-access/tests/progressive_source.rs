@@ -23,7 +23,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_query::{QueryError, Source};
+use tablecraft_query::{QueryError, Source, SourceFailure};
 
 const PAGE_BYTES: usize = 4096;
 const TABLE_PAGE: usize = 10;
@@ -126,7 +126,7 @@ fn ordinary_projection_streams_multiple_batches_without_retention_ceiling_or_cac
         );
         assert_eq!(
             source.scan("Items", &mut |_| Ok(())),
-            Err(QueryError::StructureLimit)
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
         );
     }
 }
@@ -146,10 +146,17 @@ fn successful_progressive_scan_does_not_populate_ordinary_snapshot_or_projection
     .unwrap();
     assert_eq!(collect(&source, &[0]).unwrap().len(), 3);
     fail.set(Some(12));
-    assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
+    assert_eq!(
+        collect(&source, &[0]),
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
+    );
     assert_eq!(
         source.scan_projected("Items", &[0], None, &mut |_| Ok(())),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     );
     assert!(reads.get() > 0);
 }
@@ -173,7 +180,11 @@ fn late_read_and_count_failures_preserve_only_prior_callbacks_and_never_cache_su
                 seen.push(row.get(0).unwrap().clone());
                 Ok(())
             }),
-            Err(QueryError::Source)
+            Err(QueryError::SourceFailure(if corrupt_count {
+                SourceFailure::InvalidData
+            } else {
+                SourceFailure::Io(std::io::ErrorKind::Other)
+            }))
         );
         assert_eq!(seen.len(), if corrupt_count { 4 } else { 3 });
         assert_eq!(seen[0], Value::Int32(1));
@@ -214,7 +225,10 @@ fn callbacks_release_shared_budget_but_keep_native_cursor_exclusive() {
     source
         .scan_projected_progressive("Items", &[0], &mut |_| {
             pool.try_borrow_mut().unwrap().charge(Resource::Steps, 1)?;
-            assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
+            assert_eq!(
+                collect(&source, &[0]),
+                Err(QueryError::SourceFailure(SourceFailure::Busy))
+            );
             visits += 1;
             Ok(())
         })
@@ -252,7 +266,10 @@ fn cancellation_and_cumulative_limits_stop_later_batches() {
         assert!(if cancel {
             result == Err(QueryError::Cancelled)
         } else {
-            matches!(result, Err(QueryError::Limit(_)))
+            matches!(
+                result,
+                Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
+            )
         });
         assert_eq!(visits, 1);
     }
@@ -269,7 +286,7 @@ fn bound_schema_changes_and_invalid_projections_fail_before_callback() {
             source.scan_projected_progressive("Items", indices, &mut |_| panic!(
                 "invalid projection callback"
             )),
-            Err(QueryError::Source)
+            Err(QueryError::SourceFailure(SourceFailure::InvalidRequest))
         );
     }
     changed.set(true);

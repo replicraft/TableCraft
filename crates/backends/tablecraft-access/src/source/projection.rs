@@ -22,7 +22,8 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         visitor: &mut dyn FnMut(ProjectedRow<'_>) -> Result<(), QueryError>,
     ) -> Result<(), QueryError> {
         let columns = self.schema_columns(table)?;
-        validate_projection(indices, columns.len())?;
+        validate_projection(indices, columns.len())
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::InvalidRequest))?;
         if indices.len() == columns.len() {
             let mut dense =
                 |row: &[tablecraft_core::values::Value]| visitor(ProjectedRow::dense(row));
@@ -46,7 +47,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
                 .charge(Resource::Steps, (indices.len() + 1) as u64)
-                .map_err(|error| query_error(error.into()))
                 .map_err(crate::source::query_limit)?;
             if indices
                 .iter()

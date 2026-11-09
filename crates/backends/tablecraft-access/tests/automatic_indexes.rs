@@ -18,7 +18,7 @@ use tablecraft_access::NativeSource;
 use tablecraft_ace::{NativeReadSource, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_query::{QueryError, QueryResult, Source, prepare};
+use tablecraft_query::{QueryError, QueryResult, Source, SourceFailure, prepare};
 use tablecraft_sql::parse_query;
 
 struct Reads {
@@ -94,7 +94,7 @@ fn automatic_narrow_selections_are_lazy_and_do_not_publish_partial_caches() {
                 }
                 assert_eq!(
                     run(&source, "SELECT Count(*) FROM Items").err(),
-                    Some(QueryError::StructureLimit)
+                    Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
                 );
             }
         }
@@ -142,7 +142,7 @@ fn corrupt_chosen_indexes_fail_without_sequential_retry() {
         .with_auto_indexes();
     assert_eq!(
         run(&source, "SELECT Id FROM Items WHERE Score=0").err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
 
     // A later unconstrained scan is independent and can still read all rows.

@@ -289,7 +289,6 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             budget
                 .charge(Resource::Steps, fields.len() as u64 + 1)
-                .map_err(|error| query_error(error.into()))
                 .map_err(crate::source::query_limit)?;
             budget
                 .charge_allocation(

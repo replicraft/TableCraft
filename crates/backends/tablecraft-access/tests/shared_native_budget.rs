@@ -10,7 +10,7 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_model::CatalogScope;
-use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
+use tablecraft_query::{ExecutionOptions, QueryError, Source, SourceFailure, prepare};
 use tablecraft_schema::Column;
 use tablecraft_sql::parse_query;
 
@@ -135,7 +135,7 @@ fn two_individually_fitting_sources_exhaust_one_host_routed_join_pool() {
     right.columns("ROULETTE_TB").unwrap();
     assert!(matches!(
         join(&Routed { left: &left, right: &right }),
-        Err(QueryError::Limit(limit)) if limit.resource == Resource::Steps
+        Err(QueryError::SourceFailure(SourceFailure::Limit(limit))) if limit.resource == Resource::Steps
     ));
 }
 
@@ -158,7 +158,7 @@ fn cached_reuse_never_refunds_or_refills_the_shared_native_pool() {
     assert_eq!(remaining(&pool), exhausted);
     assert!(matches!(
         read(&second),
-        Err(QueryError::Limit(limit)) if limit.resource == Resource::Steps
+        Err(QueryError::SourceFailure(SourceFailure::Limit(limit))) if limit.resource == Resource::Steps
     ));
     assert!(remaining(&pool)[0] <= exhausted[0]);
     assert_eq!(remaining(&pool)[2], 0);
@@ -180,9 +180,12 @@ fn setup_and_uncached_read_borrow_collisions_are_typed_not_panics() {
     ));
     assert_eq!(
         source.columns("ROULETTE_TB").err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::Busy))
     );
-    assert_eq!(read(&source), Err(QueryError::Source));
+    assert_eq!(
+        read(&source),
+        Err(QueryError::SourceFailure(SourceFailure::Busy))
+    );
     assert!(matches!(
         source.with_stored_calculations(),
         Err(InspectError::Unsupported)
@@ -278,7 +281,12 @@ fn cancelled_and_failed_reads_keep_consumption_and_publish_no_partial_cache() {
     source.columns("ROULETTE_TB").unwrap();
     let before = remaining(&pool);
     fail.set(true);
-    assert_eq!(read(&source), Err(QueryError::Source));
+    assert_eq!(
+        read(&source),
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
+    );
     let failed = remaining(&pool);
     assert!(failed[0] < before[0] || failed[2] < before[2]);
     fail.set(false);
@@ -309,10 +317,16 @@ fn setup_charges_and_explicit_row_limits_never_reset_the_pool() {
     )
     .unwrap();
     let before = remaining(&pool);
-    assert_eq!(read(&source), Err(QueryError::StructureLimit));
+    assert_eq!(
+        read(&source),
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
     let failed = remaining(&pool);
     assert!(failed[0] < before[0]);
-    assert_eq!(read(&source), Err(QueryError::StructureLimit));
+    assert_eq!(
+        read(&source),
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
     assert!(remaining(&pool)[0] < failed[0]);
 }
 

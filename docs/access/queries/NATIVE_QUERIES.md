@@ -722,3 +722,23 @@ metadata-only snapshots without reading FileData. Parent counts, displayed
 children and qualified joins retain their existing cardinality contracts.
 Function-wrapped/projection/correlated-container tests remain unsupported; native
 SQL semantics and the wider advanced-field acceptance work remain unqualified.
+
+### Native source failure identity
+
+Native query sources preserve known read failures through
+`QueryError::SourceFailure`: I/O error kind, truncation, malformed native data,
+occupied source or native-budget borrows, invalid source requests, failed cursor
+state, native constraints, native resource limits, native structural ceilings and
+allocation failure. These failures are payload-free. Native pool exhaustion stays
+source-scoped instead of becoming an evaluator limit; a caller's visitor error
+retains its original query error unchanged. Unsupported profiles, unknown table or
+index names, cancellation, ambiguous names and schema errors retain their existing
+query categories. Unclassified adapter states retain the opaque `Source` error.
+
+The linked, external and recomputed facades forward the original source failure;
+they do not retry with a sequential scan or reinterpret a failed read as a complete
+relation. A failed buffered load publishes no cache. Progressive reads may have
+already delivered callbacks before a later failure, but neither that prefix nor a
+later cursor suffix becomes a complete cached table. Invalid projection requests
+fail before callbacks, and explicit native snapshot row ceilings remain distinct
+from evaluator limits.

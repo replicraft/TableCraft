@@ -73,7 +73,6 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
                 .charge(Resource::Steps, selected.len() as u64)
-                .map_err(|error| query_error(error.into()))
                 .map_err(crate::source::query_limit)?;
             if let Some(memo) = &cache.history_memos[*index] {
                 let cell = &cache.snapshots[owner].history;
@@ -255,7 +254,6 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             }
             budget
                 .charge(Resource::Steps, 1)
-                .map_err(|error| query_error(error.into()))
                 .map_err(crate::source::query_limit)?;
             if !declared
                 .collection()

@@ -23,7 +23,8 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         }
 
         let columns = self.schema_columns(table)?;
-        validate_projection(indices, columns.len())?;
+        validate_projection(indices, columns.len())
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::InvalidRequest))?;
         let declared = entry.columns.get().ok_or(QueryError::Source)?;
         let mut source = self
             .source
@@ -81,7 +82,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     .map_err(query_error)?
             };
             if batch.offset() != delivered {
-                return Err(QueryError::Source);
+                return Err(QueryError::SourceFailure(SourceFailure::InvalidData));
             }
             for row in batch.rows() {
                 if (self.cancelled)() {
@@ -97,7 +98,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             }
             if batch.reached_end() {
                 if delivered != cursor.schema().declared_rows() || delivered != cursor.position() {
-                    return Err(QueryError::Source);
+                    return Err(QueryError::SourceFailure(SourceFailure::InvalidData));
                 }
                 return if (self.cancelled)() {
                     Err(QueryError::Cancelled)

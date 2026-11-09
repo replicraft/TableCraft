@@ -6,7 +6,7 @@ use std::{
 use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
+use tablecraft_query::{ExecutionOptions, QueryError, Source, SourceFailure, prepare};
 #[path = "native_source/constraints.rs"]
 mod constraints;
 fn copy() -> Vec<u8> {
@@ -186,7 +186,9 @@ fn failed_load_publishes_no_rows_and_explicit_retry_only_caches_a_complete_table
     fail.set(true);
     assert_eq!(
         source.scan("ROULETTE_TB", &mut |_| panic!("failed load exposed a row")),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     );
     fail.set(false);
     assert_eq!(source.columns("ROULETTE_TB").unwrap().len(), 3);
@@ -220,8 +222,8 @@ fn repeated_failed_loads_exhaust_the_original_shared_allowance() {
     fail.set(true);
     for _ in 0..=10_000 {
         match source.scan("ROULETTE_TB", &mut |_| panic!("failed load exposed a row")) {
-            Err(QueryError::Source) => {}
-            Err(QueryError::Limit(_)) => return,
+            Err(QueryError::SourceFailure(SourceFailure::Io(std::io::ErrorKind::Other))) => {}
+            Err(QueryError::SourceFailure(SourceFailure::Limit(_))) => return,
             _ => panic!("unexpected failed-load result"),
         }
     }
@@ -294,6 +296,36 @@ fn binding_reads_only_metadata_and_defers_corrupt_user_records_to_execution() {
     assert_eq!(
         plan.execute(&source, &[], ExecutionOptions::default())
             .err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::Busy))
+    );
+}
+
+#[test]
+fn malformed_record_page_preserves_metadata_but_never_publishes_or_caches_rows() {
+    let bytes = tablecraft_testkit::fixtures::access::mutation_fixture::with_invalid_row_page();
+    let source = NativeSource::new(
+        Cursor::new(bytes.as_slice()),
+        CatalogScope::new(1),
+        budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(source.columns("Items").unwrap().len(), 2);
+
+    for _ in 0..2 {
+        assert_eq!(
+            source.scan_projected("Items", &[0], None, &mut |_| {
+                panic!("malformed selected page published a row")
+            }),
+            Err(QueryError::SourceFailure(SourceFailure::InvalidData))
+        );
+        assert_eq!(
+            source.scan("Items", &mut |_| panic!("malformed page populated a cache")),
+            Err(QueryError::SourceFailure(SourceFailure::InvalidData))
+        );
+    }
+    assert_eq!(
+        bytes,
+        tablecraft_testkit::fixtures::access::mutation_fixture::with_invalid_row_page()
     );
 }
