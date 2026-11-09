@@ -109,9 +109,16 @@ fn saved_number_then_new_row_omits_score_and_generates_id_through_real_widgets()
     );
     // Change the actual mode, then explicitly omit it. Both transitions close
     // the real menu; no literal zero or empty numeric value is submitted.
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("field", "Score");
+    let mode_label = harness
+        .state()
+        .state
+        .localizer
+        .format("insertion-field-input", &arguments);
     for mode in ["Value", "Omitted"] {
         harness
-            .get_by_role_and_label(Role::Button, "Score input mode")
+            .get_by_role_and_label(Role::Button, &mode_label)
             .click_accesskit();
         harness.run_steps(2);
         harness
