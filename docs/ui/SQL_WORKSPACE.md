@@ -239,42 +239,51 @@ Captured SQL is presentation state, not executable authority or tracing payload.
 
 ## Scoped larger-table reads
 
-The GUI currently has no larger-query limit selector. Runtime
-[`Query`, `RunQuery` and `RunSavedQuery`](../../crates/application/tablecraft-runtime/src/command.rs)
-carry SQL/inspection/parameters rather than caller-selected resource limits.
-Scratch SQL, Query Design execution and saved-query execution use the same
-bounded read path; being able to browse a large table in 100-row pages does not
-establish that a complete query over it fits these independent limits.
+The **Read query limits…** control is available beside scratch/saved Run controls
+and in Query Design/results. It edits host-supplied values for the next read run.
+Apply validates them through the shared runtime; it does not run a query, retry a
+failure, change SQL or discard previous results. Invalid values remain editable
+with the supported numeric ranges in their diagnosis. Cancel/Escape discards only
+the preference draft. Sectioned `query-limits.ftl` catalogs cover every UI locale.
 
-| Pool | Current runtime limit | Owner |
+The host initializes these values from actual `QueryRunOptions::default`, then
+captures checked options for each accepted scratch inspection, Design build/run
+or saved-query execution. Parameter acquisition cannot change the captured run.
+Action-query reviews, native writes and their independent budgets are unchanged.
+See the [runtime contract](../application/RUNTIME.md#captured-read-query-resource-options).
+
+| Pool | Unchanged default | Owner |
 | --- | --- | --- |
-| Complete native scalar snapshot | 16,384 rows, 256-row internal batches | [`TableSnapshotLimits::default`](../../crates/engines/tablecraft-ace/src/table/page/cursor/limits.rs), selected by [`NativeSource::new`](../../crates/backends/tablecraft-access/src/source.rs) |
-| Cumulative native reads/allocations, rows and work | 512 MiB / 100,000 rows / 5,000,000 steps | [`controls::budget`](../../crates/application/tablecraft-runtime/src/controls.rs) |
-| Cumulative query allocations, rows and work | 16 MiB / 10,000 rows / 1,000,000 steps | [`query::execute`](../../crates/application/tablecraft-runtime/src/query.rs) |
-| Comparison bytes and work | 16 MiB / 1,000,000 steps | [`comparison_budget`](../../crates/application/tablecraft-runtime/src/controls.rs) |
-| Runtime presentation allocations and work | 8 MiB / 100,000 steps | [`Presentation::new`](../../crates/application/tablecraft-runtime/src/display.rs) |
-| Immutable file image | 64 MiB | [`Document`](../../crates/application/tablecraft-runtime/src/document.rs) |
-| Submitted SQL | 64 KiB | [`query`](../../crates/application/tablecraft-runtime/src/query.rs) |
+| Complete native scalar snapshot | 16,384 rows, 256-row internal batches | [`TableSnapshotLimits`](../../crates/engines/tablecraft-ace/src/table/page/cursor/limits.rs) |
+| Cumulative native reads/allocations, rows and work | 512 MiB / 100,000 rows / 5,000,000 steps | [`QueryRunOptions`](../../crates/application/tablecraft-runtime/src/query/options.rs) |
+| Cumulative query allocations, rows and work | 16 MiB / 10,000 rows / 1,000,000 steps | Same per-run options |
+| Comparison bytes and work | 16 MiB / 1,000,000 steps | Same per-run options |
+| Parameter/result presentation allocations and work | 8 MiB / 100,000 steps | Same per-run options, one cumulative pool |
+| Immutable file image | 64 MiB, not changed by this control | [`Document`](../../crates/application/tablecraft-runtime/src/document.rs) |
+| Submitted SQL | 64 KiB, not changed by this control | [`query`](../../crates/application/tablecraft-runtime/src/query.rs) |
 
-These are consumer budgets, not MDB/ACCDB format limits or reserved process
-memory. Native rows include metadata; query rows cover cumulative work rather
-than only the final displayed result. A small `TOP` or `COUNT` result does not
-waive complete source loading or intermediate work. The 100,969-row UN/LOCODE
-main table can be paged without admitting an ordinary complete GUI query over
-that table. Library APIs and the CLI already offer
-[explicit larger native/query allowances](../access/queries/LARGER_NATIVE_QUERIES.md),
-but their defaults and maxima are not automatically the GUI's settings.
+These are cumulative consumer allowances, not format limits or reserved process
+memory. Native rows include metadata; query rows count intermediate work rather
+than only final results. Snapshot rows are bounded to 1,000,000; query execution
+is bounded to 256 MiB, 1,000,000 rows and 100,000,000 steps. The other adjustable
+pools permit at most 4 GiB, 10,000,000 rows where applicable and 1,000,000,000
+steps. Comparison/presentation have no source-row allowance. No invalid value is
+silently clamped by the runtime. Existing UI retention and protocol output caps
+remain independent.
 
-Limit errors currently report an exhausted resource dimension and remaining
-allowance where preserved by the typed error path; the GUI has no separate
-native/query/presentation pool explanation or explicit larger-read retry.
-Native failures can also become a generic query-source failure. A useful next
-workflow is a checked shared-runtime read-only run-options contract, followed by
-GUI options and a pool-specific explanation that preserves the previous result,
-captured SQL and parameter intent for an explicit rerun. This is planned work;
-no configurable runtime contract or control is implemented by this document.
-Keep each pool independent, preserve buffered complete-or-error publication and
-cancellation, and leave action-query/write admission and budgets unchanged.
+A fresh read-only MCP process over the retained 100,969-row sample refuses its
+largest-table count under defaults, then returns 100,969 with explicitly raised
+snapshot/native/execution/comparison allowances. The same inspected SQL target is
+reused, and the original database SHA-256 is unchanged. This observes the shared
+runtime, separately from desktop headless SQL/Design/saved-query cases over
+independent synthetic files; it is not a native Access comparison.
+
+Native-boundary and presentation limit errors identify their known resource
+pool. Source/expression errors whose shared contracts erase pool provenance keep
+their original typed diagnosis; they are not relabelled as a guessed execution
+or comparison failure. Full pool-specific provenance remains a follow-up. A
+failed run preserves prior complete results and requires explicit Run again;
+there is no automatic larger retry or partial result publication.
 
 ## Verification and appearance
 

@@ -1,5 +1,29 @@
 # Implementation status
 
+## Explicit read-query limits — 9 November 2026
+
+Desktop and MCP now consume the same checked per-run snapshot/native/execution/
+comparison/presentation allowances. Defaults are unchanged; writes and action
+reviews retain separate budgets. Desktop captures settings with actual run
+intents, including parameter acquisition. Its shared localized preferences dialog
+validates edits without running SQL or discarding previous results. The
+[SQL workspace contract](ui/SQL_WORKSPACE.md#scoped-larger-table-reads) records
+the controls, independent bounds and remaining error-provenance limitation.
+
+Four runtime resource/identity regressions, real desktop scratch/Design/saved
+limit-and-rerun cases, three shared-widget cases and 61 MCP unit/session plus two
+stdio checks pass. Initial aggregate runs exposed incorrect error-location/type
+assertions and a compact SQL-result layout regression; focused reruns pass after
+their separate corrections. Strict all-target/all-feature Clippy passes for the
+four affected packages. Four offscreen light/dark/localized frames were inspected
+on macOS ARM64; no native window or Windows/Access execution is claimed.
+
+A fresh read-only MCP host counted all 100,969 rows in the retained sample using
+explicit larger allowances after the unchanged default refusal, preserving its
+original hash. Native-boundary and presentation errors identify their pool;
+errors with erased cross-layer provenance keep their original diagnosis. Existing
+immutable-file, UI-retention and MCP publication caps remain independent.
+
 ## Large-table browsing and General grouping — 9 November 2026
 
 The shared record navigator retains a checked EOF count when returning to earlier
@@ -23,9 +47,9 @@ under the same explicit allowances that previously failed, with counts matching
 the complete stream. The original file remains unchanged. See the
 [sample qualification](../tests/reports/reading/UNLOCODE_ACE2007_SAMPLE_QUALIFICATION.md).
 These checks establish neither Jet 4 sample coverage nor native Access parity.
-The GUI still needs explicit larger-query options and clearer pool-specific
-failures; its existing independent limits are recorded in the
-[SQL workspace contract](ui/SQL_WORKSPACE.md).
+The later explicit read-query options workflow is described above and in the
+[SQL workspace contract](ui/SQL_WORKSPACE.md). Opaque cross-layer limit failures
+still need complete pool-specific provenance.
 
 ## Local shared-service MCP host — 9 November 2026
 

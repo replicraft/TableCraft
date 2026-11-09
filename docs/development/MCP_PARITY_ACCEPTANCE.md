@@ -3,7 +3,7 @@
 This inventory checks the actual current `Action` enum, all runtime `Command`
 variants, the normal desktop dispatcher and the MCP session implementation. It
 is intentionally more specific than tool counts or matching API names. There are
-100 current shared-UI actions and 60 runtime command variants; every name appears
+101 current shared-UI actions and 60 runtime command variants; every name appears
 once in its table below. Feature-gated legacy primitives are identified rather
 than silently counted as active desktop functionality.
 
@@ -68,6 +68,7 @@ Each field uses the same `TableDraft` setters and final snapshot as the desktop.
 
 | Action | MCP semantic counterpart / ownership | Acceptance |
 | --- | --- | --- |
+| `ConfigureQueryRunLimits` | Per-run `options` on `run_query` / `run_saved_query`; preferences remain host-owned | Real restrictive/raised snapshot and presentation cases; action-review schemas refuse read options |
 | `InspectFieldDrop` | `inspect_field_drop` / `review_field_drop` | S0: real saved-field DROP; pending mark/confirmation is presentation-owned |
 | `ReviewFieldDrop` | `inspect_field_drop` / `review_field_drop` | S0: real saved-field DROP; pending mark/confirmation is presentation-owned |
 | `CancelFieldDropInspection` | SDK request cancellation; explicit save/creation cancel when those actors are active | S0: accepted-read and post-ACK cancellation; exact individual dialog races are not all separately repeated |

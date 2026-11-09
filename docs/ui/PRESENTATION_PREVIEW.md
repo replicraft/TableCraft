@@ -1,5 +1,33 @@
 # Presentation preview
 
+## Read-query limits — 9 November 2026
+
+`TABLECRAFT_PREVIEW_QUERY_LIMITS=true` with the `query` scene opens the actual
+shared preferences widget with explicit source-free example values. It creates
+no runtime budget, source, query result or native permission. Other workflow
+preview switches remain mutually exclusive.
+
+```sh
+TABLECRAFT_PREVIEW_HOST=normal TABLECRAFT_PREVIEW_SCENE=query \
+TABLECRAFT_PREVIEW_QUERY_LIMITS=true TABLECRAFT_PREVIEW_THEME=dark \
+TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/query-limits \
+cargo run -p tablecraft-ui --example render_preview
+```
+
+Four frames were rendered and directly inspected headlessly on macOS 14.7.2
+ARM64 through WGPU, with Windows input emulation and 1× scale: English light/dark
+at 1280 × 820, Russian dark at 640 × 480, and Japanese light at 860 × 640 logical
+points. GPU adapter identity was not captured. Fields, headings and footer
+decisions remain visible; the compact translated dialog fits its viewport.
+The corresponding widget tests check host acknowledgement/rejection, retained
+results/SQL, cancellation and compact decision containment.
+
+There is no retained Access capture for this resource-preferences dialog; it is
+a TableCraft adaptation. The published Query Setup reference was reopened to
+check the surrounding native distinction, not to claim these controls exist in
+Access. No native app window was opened, and these frames establish no database
+execution or native Access parity.
+
 ## Ownership regression — 9 November 2026
 
 Headless-only verification was reinstated after the brief native review. The
