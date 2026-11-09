@@ -185,3 +185,23 @@ retain the concrete execution/oracle boundaries above. Thin feature binders are
 not alternate algorithm bodies: they retain their own typed codec, source policy
 or CLI defaults. This concludes the bounded engineering-helper review; it does
 not claim a semantic audit of every Rust test in the repository.
+
+## Final batch and measured scope
+
+The final affected Python batch passes all 42 tests with zero failures, errors or
+skips. Fourteen current entry-point help checks pass, and all 775 engineering
+Python files parse. The post-extraction scan finds eight long-function AST groups:
+five are the retained witness/oracle boundaries already explained; three are thin
+`derive`, `analyze` and `decode_tree` policy binders. Those binders select their own
+feature-owned readers/codecs and preserve closed public signatures; there is only
+one corresponding shared algorithm body. Replacing them with a generic mutable
+module/context registry would hide that binding rather than remove another
+algorithm implementation.
+
+The 32 changed Python consumer files shrink from 10,591 physical lines to 8,843;
+the 13 shared Python owners add 1,095 lines, giving a net reduction of **653
+physical Python source lines**. This includes comments, docstrings and blank lines;
+it excludes Markdown, JSON receipts, unrelated files and Rust test coverage. It
+is not a Rust SLOC estimate or a count of tests removed. Final source hashes and
+remaining-group dispositions are recorded in the inventory's
+`post_deduplication` section.

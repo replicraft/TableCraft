@@ -689,5 +689,470 @@
     "shared_live_groups": 17,
     "retained_groups": 5,
     "tests_removed": 0
+  },
+  "post_deduplication": {
+    "python_files_parsed": 775,
+    "final_python_test_batch": {
+      "tests_run": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "entry_point_help": [
+      {
+        "tool": "tests/access/queries/expressions/compare_general_like.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/queries/saved/compare_saved_ordering.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/queries/execution/compare_linked_queries.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/rows/ace16_insert_ordinary/verify.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/schema/fields/compare_boolean_relationships.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/indexes/native/compare_null_indexes.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/encryption/database/compare_encrypted_modern_histories.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/recovery/native/compare_jet4_journal_updates.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/creation/databases/compare_autonumber_deletes.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/reading/tables/compare_browsing.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/storage/native/compare_memo_history_family.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+        "returncode": 0
+      },
+      {
+        "tool": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+        "returncode": 0
+      }
+    ],
+    "original_groups_reviewed": 22,
+    "shared_live_groups": 17,
+    "retained_original_groups": 5,
+    "current_long_function_groups": [
+      [
+        {
+          "path": "tests/access/indexes/ace16_insert_variable_indexes/model.py",
+          "function": "derive",
+          "line_start": 275,
+          "line_end": 294,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        },
+        {
+          "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+          "function": "derive",
+          "line_start": 160,
+          "line_end": 179,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        },
+        {
+          "path": "tests/access/indexes/ace16_insert_decimal_indexes/model.py",
+          "function": "derive",
+          "line_start": 229,
+          "line_end": 248,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/indexes/repeated_split_originals/action_model.py",
+          "function": "analyze",
+          "line_start": 116,
+          "line_end": 135,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        },
+        {
+          "path": "tests/access/indexes/integral_split_originals/action_model.py",
+          "function": "analyze",
+          "line_start": 116,
+          "line_end": 135,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/indexes/repeated_split_originals/candidate_model.py",
+          "function": "decode_tree",
+          "line_start": 146,
+          "line_end": 170,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        },
+        {
+          "path": "tests/access/indexes/integral_split_originals/candidate_model.py",
+          "function": "decode_tree",
+          "line_start": 84,
+          "line_end": 108,
+          "retained_witness": false,
+          "disposition": "Explicit feature policy binders; one shared algorithm body"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/indexes/ace16_nullable_split_batch_updates/executed/native/proof.py",
+          "function": "tree",
+          "line_start": 30,
+          "line_end": 98,
+          "retained_witness": true,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        },
+        {
+          "path": "tests/access/indexes/ace16_nullable_split_batch_updates/executed/reference/reference.py",
+          "function": "tree",
+          "line_start": 30,
+          "line_end": 98,
+          "retained_witness": true,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+          "function": "wide_properties",
+          "line_start": 69,
+          "line_end": 114,
+          "retained_witness": true,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        },
+        {
+          "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+          "function": "wide_properties",
+          "line_start": 157,
+          "line_end": 202,
+          "retained_witness": false,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+          "function": "envelope",
+          "line_start": 117,
+          "line_end": 153,
+          "retained_witness": true,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        },
+        {
+          "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+          "function": "envelope",
+          "line_start": 205,
+          "line_end": 241,
+          "retained_witness": false,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+          "function": "source_expected",
+          "line_start": 156,
+          "line_end": 207,
+          "retained_witness": true,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        },
+        {
+          "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+          "function": "source_expected",
+          "line_start": 244,
+          "line_end": 295,
+          "retained_witness": false,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        }
+      ],
+      [
+        {
+          "path": "tests/access/rows/ace16_fixed_ignore_null_updates/reference.py",
+          "function": "ordered_intent",
+          "line_start": 22,
+          "line_end": 60,
+          "retained_witness": false,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        },
+        {
+          "path": "tests/access/rows/ace16_fixed_ignore_null_updates/native_reference.py",
+          "function": "ordered_intent",
+          "line_start": 22,
+          "line_end": 60,
+          "retained_witness": false,
+          "disposition": "Retained execution/witness or independent expected-transition boundary"
+        }
+      ]
+    ],
+    "current_maintained_source_pins": [
+      {
+        "path": "tests/access/indexes/ace16_insert_child_split/model.py",
+        "bytes": 8278,
+        "sha256": "4431500e298d1ae48d7941088a9c833a428b54cd7220b4dd51fa108c4ae1106a"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_child_split/verify.py",
+        "bytes": 17512,
+        "sha256": "577412cd31d3e936234269cac0042b9ba17f562b5a0b606855a541b6665c1886"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_decimal_indexes/model.py",
+        "bytes": 9344,
+        "sha256": "94adf5ad52442c735cbf0fb239e71b458cb8084a509b851381bf28df8edf9e4c"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_decimal_indexes/reference.py",
+        "bytes": 20716,
+        "sha256": "4cf4cc0ff2581fde76a573e45febe044e3518651a425924b30194f07df059457"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_general_height_one/model.py",
+        "bytes": 12263,
+        "sha256": "b48a7f694428c2ed29130790e956a0700655f67764235039c83fcb6f4b683f76"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+        "bytes": 19916,
+        "sha256": "0a7ef5d8c6ed99b7d9dd109c0f5192a720a741edadc835276ca42797f29d2172"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+        "bytes": 6246,
+        "sha256": "d94759d72ecb093f59eda4d79e1c27d2228ac1b114e45190fe05ecc1205d1a4e"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/reference.py",
+        "bytes": 18029,
+        "sha256": "bd3be0bc26c5549d2c656a2bef465e2827216165c327bf93775a5839487656bf"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_height_one/verify.py",
+        "bytes": 15767,
+        "sha256": "63ed4b150a6f4d1c8b1d55579ee36f7f41dc70572b42ba374bfbcd1225d67a18"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_scalar_indexes/model.py",
+        "bytes": 11247,
+        "sha256": "d11e57b7fdd9a80f7b1a23db0f93f5c40878f9136dc965a2ba9f623346458e6e"
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_variable_indexes/model.py",
+        "bytes": 11482,
+        "sha256": "b40f586d6612f1fc138b425b2eee688a752fc327f839474eb54793d0714daf80"
+      },
+      {
+        "path": "tests/access/indexes/encoded_index_split_sources/action_model.py",
+        "bytes": 15863,
+        "sha256": "2c8a1f8d68056b39c2e574a77a2093f3efbc054b66ec7a77c813498caecc223d"
+      },
+      {
+        "path": "tests/access/indexes/encoded_index_split_sources/model.py",
+        "bytes": 15817,
+        "sha256": "a8d901e4514f82335ac88558b08ad4337284bc4fc6fa071eecabae961ce2b07c"
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/action_model.py",
+        "bytes": 4252,
+        "sha256": "948a2f92310500fce2f2362b959601306b430a1ef9cfccd2a5d5d8a081595efa"
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/candidate_model.py",
+        "bytes": 6402,
+        "sha256": "ffea2f962e98a14d6527b77b60d19a9a6847298f6a779460accc31e4499d72a8"
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/model.py",
+        "bytes": 12933,
+        "sha256": "29a8c0012a2f72f006099f67cdf126ee1aa6f4f21ad6f10a7a38b7cc83c85238"
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+        "bytes": 11243,
+        "sha256": "af8dfb4ff1d6f120973bc51fbca075a7ac501bcd1c9cbf8e98ff075fda2b29cc"
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+        "bytes": 24603,
+        "sha256": "5ff82f1cd55d1571276ae962f0989690c01a53f93138d24c12aadc487d9063da"
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+        "bytes": 21868,
+        "sha256": "fdaaae19ceae41864cfb1bfe70ac759d058495ba24272897ac5a8b9b5de00e79"
+      },
+      {
+        "path": "tests/access/indexes/repeated_split_originals/action_model.py",
+        "bytes": 4252,
+        "sha256": "58ab4baee0958c01be58134d94f40f0db3542a631709379130a8d6934c9262c8"
+      },
+      {
+        "path": "tests/access/indexes/repeated_split_originals/candidate_model.py",
+        "bytes": 9131,
+        "sha256": "af8edf1ecc2618af29059c8dc9ba562ef248eb9b0423f6cf44ad97cee9f526e8"
+      },
+      {
+        "path": "tests/access/indexes/repeated_split_originals/model.py",
+        "bytes": 13345,
+        "sha256": "dcee46ed672361d646a8ccc670406c7e74dd4b79ac61cd85359adc0734d72d63"
+      },
+      {
+        "path": "tests/access/indexes/shared_insert/derive.py",
+        "bytes": 7364,
+        "sha256": "6c625744ad81778031b53b79827a31c8318672928ce53d3c65465fbd0d1d873c"
+      },
+      {
+        "path": "tests/access/indexes/shared_keys/weights.py",
+        "bytes": 1440,
+        "sha256": "d8c2372fbaa87078dacec013af3fa67b6da2bafdbf67dd61beec218f1479d481"
+      },
+      {
+        "path": "tests/access/indexes/shared_split/actions.py",
+        "bytes": 12307,
+        "sha256": "f9acf11f4eb45b37007633c476a379ff6d9923e50dcc4ecbd70612ebf34ee1f7"
+      },
+      {
+        "path": "tests/access/indexes/shared_split/candidates.py",
+        "bytes": 2773,
+        "sha256": "056209f51a135ec6846a7780a0cdf09312c7c634e37ef1be3573dce05a0f284c"
+      },
+      {
+        "path": "tests/access/indexes/shared_split/render.py",
+        "bytes": 1727,
+        "sha256": "742520a281a3fc72760a6764ce4da326258784fda26e1acdc6d6875c0951e32e"
+      },
+      {
+        "path": "tests/access/indexes/shared_trees/integral.py",
+        "bytes": 2798,
+        "sha256": "e67f963aee11dd0565e01eece1f83184ae66304879e5c33cd539549d8e0581ce"
+      },
+      {
+        "path": "tests/access/indexes/shared_trees/metadata.py",
+        "bytes": 1271,
+        "sha256": "373c0f5955599cd7da832e3b5adfd70a49dd6e9583420fe2346812c3bf850b60"
+      },
+      {
+        "path": "tests/access/indexes/shared_trees/model.py",
+        "bytes": 2740,
+        "sha256": "026438938ff1475001ba8aa1cabeb7beed65e81e9b876364bb9ef8b75926f516"
+      },
+      {
+        "path": "tests/access/indexes/shared_trees/reference.py",
+        "bytes": 3256,
+        "sha256": "b2afeda345fc74eeec893ae82befc4c78776f5192f3929da664d32ec44848fde"
+      },
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+        "bytes": 22607,
+        "sha256": "dab5faf547e724f50a050080b13cc3a563334b93d3c523c77305848110578175"
+      },
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/model.py",
+        "bytes": 19892,
+        "sha256": "85fa11df312ea9bc1df2d7f8a7598685e49d68b5baa1fbd9f32a292ae8042ed7"
+      },
+      {
+        "path": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+        "bytes": 11955,
+        "sha256": "e323826caf7051332503fe81c9dbfb2f27e28c7ac40b82de3bbdb5792f37b814"
+      },
+      {
+        "path": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+        "bytes": 877,
+        "sha256": "931c5cad1fb386fef598d12abe36186551d7dd0c53e9a5420c9e5057cef9d58b"
+      },
+      {
+        "path": "tests/access/rows/ace16_insert_global_bootstrap/source.py",
+        "bytes": 16066,
+        "sha256": "58964d205c9c3c3f7fb5d05133a43ed46a6ff601d496f6929d0f660ffdcfeb92"
+      },
+      {
+        "path": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+        "bytes": 12371,
+        "sha256": "2fd492fd7fba38f4ba6844086ef1992529d5c24d04ce814289fa340bdadc136c"
+      },
+      {
+        "path": "tests/access/shared/shared_provenance/git_objects.py",
+        "bytes": 1526,
+        "sha256": "a1cab1c1802486c57a47c3ef463cbc8a5ae12e879324dc66a461bd6180f63c59"
+      },
+      {
+        "path": "tests/access/shared/shared_provenance/saved_cli.py",
+        "bytes": 1313,
+        "sha256": "69260e35cea8cab6cb3c1a39b469a2b0d0962f31502197a5f35eee919475661b"
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_external_long_values/source.py",
+        "bytes": 10769,
+        "sha256": "c4802c08c8d1cd2a07d1b1db8de93a2d4d77f05627510e191385ba3c61d51b6b"
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+        "bytes": 14531,
+        "sha256": "7590e653e218bc6797da6b30eb535d6592a65b19d9fc3413eb1a486e0acb28eb"
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_long_value_map_growth/source.py",
+        "bytes": 14717,
+        "sha256": "e4ff82545d65337e8aa019eee02ea830fddad01d629cb7a855f1854c12f31c05"
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+        "bytes": 11012,
+        "sha256": "e315462c3269deb3787bcbaf7428156f0f1b008cb85cb9068cb3418c76007141"
+      },
+      {
+        "path": "tests/access/storage/shared_long_values/source.py",
+        "bytes": 5775,
+        "sha256": "020148f5b7785f4a66195add713377803422ed0e22d1d41055cfa850af7df704"
+      },
+      {
+        "path": "tests/access/storage/shared_maps/cells.py",
+        "bytes": 1966,
+        "sha256": "7063be93194f4ffa906a952d2a998fc36216eaa074d7a0b8d8f2eb2572381a59"
+      }
+    ],
+    "physical_python_line_delta": {
+      "basis": "Whole changed Python consumer files plus new shared Python owners, including comments/docstrings/blank lines; excludes Markdown, receipts and unrelated Rust tests. Earliest pre-extraction source snapshots compared with current bytes.",
+      "changed_consumer_files": 32,
+      "new_shared_python_files": 13,
+      "before_lines": 10591,
+      "current_consumer_lines": 8843,
+      "new_shared_lines": 1095,
+      "net_lines_removed": 653
+    },
+    "git_processes": 0,
+    "fixture_processes": 0,
+    "native_access_execution": false,
+    "local_documentation_targets": 9127,
+    "missing_documentation_targets": 0
   }
 }
