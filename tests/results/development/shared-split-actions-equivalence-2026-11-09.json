@@ -1,0 +1,372 @@
+{
+  "scope": "Fresh split-analysis extraction equivalence over retained pinned before/after/getter cases, not new native execution",
+  "groups": [
+    9,
+    10,
+    11
+  ],
+  "extractions": [
+    {
+      "group": 9,
+      "function": "inspect_indexes",
+      "paths": [
+        "tests/access/indexes/repeated_split_originals/action_model.py",
+        "tests/access/indexes/integral_split_originals/action_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_split/actions.py",
+      "body_ast_sha256": "edc22ad81d9f4ca631bab665ec8d02e1ec5e21c2121d340b14e9721d39edb89d",
+      "bindings": [
+        "COUNTER_BYTES",
+        "FLAGS_OFFSET",
+        "PAGE",
+        "PHYSICAL_BYTES",
+        "ROOT_OFFSET",
+        "TABLE_HEADER",
+        "USAGE_OFFSET",
+        "decode_map",
+        "physical_start",
+        "source",
+        "units"
+      ]
+    },
+    {
+      "group": 10,
+      "function": "complete_members",
+      "paths": [
+        "tests/access/indexes/repeated_split_originals/action_model.py",
+        "tests/access/indexes/integral_split_originals/action_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_split/actions.py",
+      "body_ast_sha256": "6491e8826d62e57c470dd40549bd0632a69483da1fb2967f45f3f3fc3c8b3f46",
+      "bindings": [
+        "BITMAP_DATA",
+        "BITS_PER_BYTE",
+        "MAP_BASE",
+        "MAP_BITMAP",
+        "MAP_INDIRECT",
+        "MAP_INLINE",
+        "PAGE",
+        "POINTER_BYTES",
+        "source"
+      ]
+    },
+    {
+      "group": 11,
+      "function": "analyze",
+      "paths": [
+        "tests/access/indexes/repeated_split_originals/action_model.py",
+        "tests/access/indexes/integral_split_originals/action_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_split/actions.py",
+      "body_ast_sha256": "4d7641119154083132b6ac964ad76beeb4aec69de1db352bf1378473f7b85e79",
+      "bindings": [
+        "PAGE",
+        "Path",
+        "VALUE_INDEX",
+        "complete_members",
+        "decode_map",
+        "digest",
+        "inspect_indexes",
+        "key_offset",
+        "normalized_tables",
+        "source",
+        "units"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "family": "repeated_split_originals",
+      "profile": "V2016",
+      "target": "Int64Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 573440,
+          "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2016-Int64Keys-reference.accdb",
+          "bytes": 598016,
+          "sha256": "c038f2b41fbe26c1d603d59b61d72926961480cfb3855dea6e7fba355cba8719"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2016-Int64Keys-describe.stdout",
+          "bytes": 448880,
+          "sha256": "4f5f77e9413d7a0de6ef9673897eb98e0c081921a44ae5a3913a901f0fe28586"
+        }
+      ]
+    },
+    {
+      "family": "repeated_split_originals",
+      "profile": "V2016",
+      "target": "CurrencyKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-repeated-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 573440,
+          "sha256": "c8b1feaa3acc119dd3d867398785217ae62735088b46d5cb9f309ee3d6e6ac4d"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2016-CurrencyKeys-reference.accdb",
+          "bytes": 598016,
+          "sha256": "68ff1eb354895708d90edfe81b0f53027965cf1b245c2b88725421cc57d342ed"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2016-CurrencyKeys-describe.stdout",
+          "bytes": 448876,
+          "sha256": "1dc399e24d9dfebfa466b92645868230b034e1c802255a06c67f73b5a2fee672"
+        }
+      ]
+    },
+    {
+      "family": "repeated_split_originals",
+      "profile": "V2019",
+      "target": "Int64Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 647168,
+          "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2019-Int64Keys-reference.accdb",
+          "bytes": 671744,
+          "sha256": "a3671308b749171ca4fd783087d4bea5a8ad4c85ec9af2a9f6983386930cd099"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2019-Int64Keys-describe.stdout",
+          "bytes": 450143,
+          "sha256": "7b39859af686a6f2e5c8c545d75b6867b98fab3cd45415fc2ab4ccba6168ca05"
+        }
+      ]
+    },
+    {
+      "family": "repeated_split_originals",
+      "profile": "V2019",
+      "target": "CurrencyKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-repeated-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 647168,
+          "sha256": "aeb73b84f68288eb763523948273a82e1e0ff0112b5815fa61c041ee2359652f"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2019-CurrencyKeys-reference.accdb",
+          "bytes": 671744,
+          "sha256": "c07c2852119de43ad38af13dbaaaa9315b3bc7c7ff614fd3bbb88bcb497cd2cc"
+        },
+        {
+          "path": ".cache/ace16-repeated-split-actions-first-20261027/V2019-CurrencyKeys-describe.stdout",
+          "bytes": 450139,
+          "sha256": "44747481154d7ca7a8cde773b976498e1eacec73442612fbee2065fc2e31b5e7"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2016",
+      "target": "ByteKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 757760,
+          "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-ByteKeys-reference.accdb",
+          "bytes": 774144,
+          "sha256": "032563992ead73518499fdfa40f57f1fbc7052fce5fd6ef9812afe0bcd6764e6"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-ByteKeys-describe.stdout",
+          "bytes": 630892,
+          "sha256": "f3782a6781c7bf5b603f1a2c2ad17af3f23f7640ee6c1161c975f8cbaf87a1dd"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2016",
+      "target": "Int16Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 757760,
+          "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-Int16Keys-reference.accdb",
+          "bytes": 774144,
+          "sha256": "3a0386018a372b1551f7577013bf507392212a121587f43a9e88b872fd190936"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-Int16Keys-describe.stdout",
+          "bytes": 630895,
+          "sha256": "4c57d0dd101a2995c931cefdaa0f4e958ff62561b48d6b30bd177fca94abd38d"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2016",
+      "target": "Int64Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 757760,
+          "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-Int64Keys-reference.accdb",
+          "bytes": 774144,
+          "sha256": "eea3d1783cbe1284fe99257f98124e13383c279da7f72a55b16bd8bccc70c580"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-Int64Keys-describe.stdout",
+          "bytes": 630909,
+          "sha256": "67f9c7d38bed6ec353ceac9656199ae78e4bd31994f2377289e9db9813d48020"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2016",
+      "target": "CurrencyKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2016-before.accdb",
+          "bytes": 757760,
+          "sha256": "8e976662f1c2ddf2e7616870082a71da3a618017ab0cca6faf78f7fe301350a6"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-CurrencyKeys-reference.accdb",
+          "bytes": 774144,
+          "sha256": "6e91e03147ab302883239684d7b6c8b3bb40f950e11b791f298599df4d84f54d"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2016-CurrencyKeys-describe.stdout",
+          "bytes": 630905,
+          "sha256": "1d7c385678debbbdf0df1b9f6d7c07624b98479bf7daee0521345449b939a1e4"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2019",
+      "target": "ByteKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 827392,
+          "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-ByteKeys-reference.accdb",
+          "bytes": 843776,
+          "sha256": "33c8452cdb5ebd482a409b1e91710f19cd5a7a42e2344fd3664f24f85548ae1d"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-ByteKeys-describe.stdout",
+          "bytes": 632617,
+          "sha256": "3e8bce1498d3ba71635c7de0718944f2d26449e43942067d9f46e2df674db193"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2019",
+      "target": "Int16Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 827392,
+          "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-Int16Keys-reference.accdb",
+          "bytes": 843776,
+          "sha256": "4719643ee7ac75abedabd20137bcb85820557217f03128838bb317129aabf7ce"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-Int16Keys-describe.stdout",
+          "bytes": 632620,
+          "sha256": "4cc030555df8d034cebd41036fb24610d69eef0ae7c35341e45b1acb5778d727"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2019",
+      "target": "Int64Keys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 827392,
+          "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-Int64Keys-reference.accdb",
+          "bytes": 843776,
+          "sha256": "8f0e7d96ac804b7108cc3706295fecde623a87e0145841a6afa325bb22e67214"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-Int64Keys-describe.stdout",
+          "bytes": 632634,
+          "sha256": "4ba52e814e794adb5b6a048fec97bd4dfb9f02feb2ea8e0a32493b61e0cbb025"
+        }
+      ]
+    },
+    {
+      "family": "integral_split_originals",
+      "profile": "V2019",
+      "target": "CurrencyKeys",
+      "old_new_complete_facts_equal": true,
+      "pinned_cached_analysis_equal": true,
+      "inputs": [
+        {
+          "path": ".cache/ace16-integral-split-sources-first-20261027/V2019-before.accdb",
+          "bytes": 827392,
+          "sha256": "dcb7f14d9eab21dd9f518ddd3aafdc90b06f9325a20b5bbe60cdc44303f39dd7"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-CurrencyKeys-reference.accdb",
+          "bytes": 843776,
+          "sha256": "87254bcb13b1134c38617059b9c13915bb638f8e4c8a483e236a19f04d9b611d"
+        },
+        {
+          "path": ".cache/ace16-integral-split-actions-first-20261027/V2019-CurrencyKeys-describe.stdout",
+          "bytes": 632630,
+          "sha256": "7bdf36973df0c02d940286607e27bb20216d94340b4acc881cf1157decaa38e3"
+        }
+      ]
+    }
+  ],
+  "case_count": 12,
+  "callback_graph": "Unchanged bindings retain identity; extracted inspect_indexes/complete_members edges are checked transitively by exact body AST and explicit feature bindings.",
+  "fixture_processes": 0,
+  "native_access_execution": false,
+  "production_encoder_used": false
+}

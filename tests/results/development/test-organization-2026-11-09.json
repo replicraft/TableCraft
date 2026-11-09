@@ -588,6 +588,44 @@
       "owner": "tests/access/storage/shared_long_values/source.py",
       "source_cases": 16,
       "evidence": "tests/results/development/shared-long-value-source-equivalence-2026-11-09.json"
+    },
+    "9": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_split/actions.py",
+      "action_cases": 12,
+      "evidence": "tests/results/development/shared-split-actions-equivalence-2026-11-09.json"
+    },
+    "10": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_split/actions.py",
+      "action_cases": 12,
+      "evidence": "tests/results/development/shared-split-actions-equivalence-2026-11-09.json"
+    },
+    "11": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_split/actions.py",
+      "action_cases": 12,
+      "evidence": "tests/results/development/shared-split-actions-equivalence-2026-11-09.json"
+    },
+    "15": {
+      "status": "Retained immutable executed evidence",
+      "reason": "Both copies are captured executed/native or executed/reference sources; there is no live implementation to deduplicate."
+    },
+    "16": {
+      "status": "One live owner plus retained witness",
+      "reason": "Exactly one live function remains; moving it to another helper would add indirection, while modifying the historical witness would invalidate captured source identity."
+    },
+    "17": {
+      "status": "One live owner plus retained witness",
+      "reason": "Exactly one live function remains; moving it to another helper would add indirection, while modifying the historical witness would invalidate captured source identity."
+    },
+    "18": {
+      "status": "One live owner plus retained witness",
+      "reason": "Exactly one live function remains; moving it to another helper would add indirection, while modifying the historical witness would invalidate captured source identity."
+    },
+    "22": {
+      "status": "Preserved independent expected-transition oracles",
+      "reason": "Public-reference and native-transition proofs keep independent ordered write/refusal/warning expectations; sharing this semantic helper would correlate their expected results."
     }
   }
 }

@@ -34,4 +34,6 @@
 
 - [shared_insert](shared_insert/)
 
+- [shared_split](shared_split/)
+
 Run Python entry points through [`tests/run.py`](../../run.py).

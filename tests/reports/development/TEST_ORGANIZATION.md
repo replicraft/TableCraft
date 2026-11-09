@@ -83,3 +83,27 @@ former implementations. Sixteen retained source/getter cases (4 bootstrap,
 8 map-growth, 4 external) yield identical complete old/new qualification states;
 unknown getter tags also retain exact refusal categories. See the
 [fresh source equivalence record](../../results/development/shared-long-value-source-equivalence-2026-11-09.json).
+
+Repeated and integral split actions now share index inspection, complete-map
+membership decoding and action analysis in
+[`shared_split/actions.py`](../../access/indexes/shared_split/actions.py).
+The families still supply their own typed source model, numeric readers and
+qualification functions. The three bodies retain their original ASTs, including
+the complete row, key, counter, ownership and untouched-byte checks. Four repeated
+and eight integral retained actions produce identical complete old/new facts and
+match their pinned original source/reference/getter analysis. See the
+[fresh action equivalence record](../../results/development/shared-split-actions-equivalence-2026-11-09.json).
+
+### Concrete retained boundaries
+
+- Group 15 has two executed nullable-split `tree` sources and no live duplicate.
+  Replacing either would change the actual code recorded for that execution.
+- Groups 16–18 each have one live macro-XML verifier body and one retained witness.
+  There is no second live implementation to consolidate; extracting the single
+  live body would only add forwarding code while leaving the witness unchanged.
+- Group 22 has separate public-reference and native-transition `ordered_intent`
+  expectations. They are different evidence paths: the native proof must not
+  obtain its expected ordered write/refusal/warning results from the same helper
+  as the public-reference proof. Their separate ownership is intentional even
+  where the present algorithms agree. Common transport primitives may be shared;
+  expected-transition authority remains separate.
