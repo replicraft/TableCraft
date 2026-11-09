@@ -123,7 +123,7 @@ impl<'a, 'source> Runtime<'a, 'source> {
                 return Err(QueryError::Source);
             }
             if let Some(error) = &query_failure {
-                return Err(error.clone());
+                return Err(*error);
             }
             let result: Result<(), StreamError<E>> = (|| {
                 self.tick()?;
@@ -137,7 +137,7 @@ impl<'a, 'source> Runtime<'a, 'source> {
             match result {
                 Ok(()) => Ok(()),
                 Err(StreamError::Query(error)) => {
-                    query_failure = Some(error.clone());
+                    query_failure = Some(error);
                     Err(error)
                 }
                 Err(StreamError::Sink(error)) => {

@@ -75,7 +75,7 @@ impl Runtime<'_, '_> {
                 let mut failure: Option<QueryError> = None;
                 let mut visitor = |row: ProjectedRow<'_>| {
                     if let Some(error) = &failure {
-                        return Err(error.clone());
+                        return Err(*error);
                     }
                     let result = (|| {
                         self.tick()?;
@@ -83,7 +83,7 @@ impl Runtime<'_, '_> {
                         self.push(&mut rows, owned)
                     })();
                     if let Err(error) = &result {
-                        failure = Some(error.clone());
+                        failure = Some(*error);
                     }
                     result
                 };

@@ -106,7 +106,7 @@ impl CollationResolver for Resolver {
     ) -> Result<Option<TextEqualityKey>, QueryError> {
         self.calls.set(self.calls.get() + 1);
         if let Some(error) = &self.failure {
-            return Err(error.clone());
+            return Err(*error);
         }
         let policy = if self.wrong_policy {
             TextCollationId::from_host(8)

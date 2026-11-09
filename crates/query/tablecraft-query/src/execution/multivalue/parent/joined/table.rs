@@ -63,7 +63,7 @@ impl Runtime<'_, '_> {
         let mut visitor = |scalars: tablecraft_db::ProjectedRow<'_>,
                            lists: &[&dyn MultivalueList]| {
             if let Some(error) = &failure {
-                return Err(error.clone());
+                return Err(*error);
             }
             let result = (|| {
                 self.tick()?;
@@ -149,7 +149,7 @@ impl Runtime<'_, '_> {
                 Ok(())
             })();
             if let Err(error) = &result {
-                failure = Some(error.clone());
+                failure = Some(*error);
             }
             result
         };

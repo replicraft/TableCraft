@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 /// Query errors omit source names, SQL and value payloads.
-#[derive(Clone, Debug, Error, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Error, PartialEq, Eq)]
 pub enum QueryError {
     /// Feature outside the supported retrieval profile.
     #[error("query feature is not implemented")]

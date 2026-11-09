@@ -95,7 +95,7 @@ impl Runtime<'_, '_> {
         let mut failure: Option<QueryError> = None;
         let mut visitor = |scalars: ProjectedRow<'_>, lists: &[&dyn MultivalueList]| {
             if let Some(error) = &failure {
-                return Err(error.clone());
+                return Err(*error);
             }
             let result = (|| {
                 self.tick()?;
@@ -167,7 +167,7 @@ impl Runtime<'_, '_> {
                 )
             })();
             if let Err(error) = &result {
-                failure = Some(error.clone());
+                failure = Some(*error);
             }
             result
         };

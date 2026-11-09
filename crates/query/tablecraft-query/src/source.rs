@@ -184,14 +184,14 @@ pub trait Source {
         let mut failure: Option<QueryError> = None;
         let mut select = |row: &[Value]| {
             if let Some(error) = &failure {
-                return Err(error.clone());
+                return Err(*error);
             }
             let result = (|| {
                 validate_row(columns, row)?;
                 visitor(ProjectedRow::select(row, indices)?)
             })();
             if let Err(error) = &result {
-                failure = Some(error.clone());
+                failure = Some(*error);
             }
             result
         };
