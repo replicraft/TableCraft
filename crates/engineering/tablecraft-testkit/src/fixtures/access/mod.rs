@@ -406,6 +406,7 @@ pub mod calculated_storage;
 pub mod complex_links;
 
 pub mod query_expression_edits;
+pub mod query_sql_expression_edits;
 /// Independent saved-query catalog/fragment images; no SQL reconstruction.
 pub mod saved_queries;
 

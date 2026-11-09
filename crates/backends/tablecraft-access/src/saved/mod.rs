@@ -1,5 +1,9 @@
 //! Explicit native fragment adaptation, separate from storage and execution.
 mod compile;
+#[cfg(feature = "journal")]
+mod expression_edit;
+#[cfg(feature = "journal")]
+pub use expression_edit::{SavedQuerySqlEditError, prepare_saved_query_sql_expression_edits};
 mod context;
 mod crosstab;
 mod error;

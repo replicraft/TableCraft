@@ -31,6 +31,8 @@ pub mod editing;
 pub mod engineering;
 pub use editing::{NativeEditError, NativeEditor};
 mod saved;
+#[cfg(feature = "journal")]
+pub use saved::{SavedQuerySqlEditError, prepare_saved_query_sql_expression_edits};
 pub use saved::{
     SavedRead, SavedReadError, SavedSelect, SavedSelectError, reconstruct_saved_read,
     reconstruct_saved_select,
