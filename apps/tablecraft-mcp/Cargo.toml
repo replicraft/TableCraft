@@ -23,10 +23,8 @@ serde_json.workspace = true
 schemars.workspace = true
 tablecraft-runtime = { workspace = true, features = ["offline-edit", "ace16-create"] }
 tablecraft-builders.workspace = true
-tablecraft-core.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-display.workspace = true
-jiff.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
