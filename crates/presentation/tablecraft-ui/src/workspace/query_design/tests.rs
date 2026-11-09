@@ -51,7 +51,12 @@ fn scratch_result_cannot_borrow_a_retained_designs_freshness_revision() {
     let request = state.query_design_request().unwrap();
     let draft = state.query_design_draft().unwrap().clone();
     assert!(!draft.columns.is_empty());
-    assert!(state.begin_query_design_build(request, draft, QueryDesignCompletion::Run, 1));
+    assert!(state.begin_query_design_build(
+        request,
+        Arc::new(draft),
+        QueryDesignCompletion::Run,
+        1
+    ));
     assert_eq!(
         state.set_query_design_built(1, built(&state), metadata()),
         Some(QueryDesignCompletion::Run)
@@ -84,7 +89,7 @@ fn build_failure_preserves_draft_and_run_requires_exact_instance_receipt() {
     let request = state.query_design_request().unwrap();
     assert!(state.begin_query_design_build(
         request.clone(),
-        original_draft.clone(),
+        Arc::new(original_draft.clone()),
         QueryDesignCompletion::ShowSql,
         1
     ));
@@ -98,7 +103,12 @@ fn build_failure_preserves_draft_and_run_requires_exact_instance_receipt() {
             .is_none()
     );
 
-    assert!(state.begin_query_design_build(request, original_draft, QueryDesignCompletion::Run, 2));
+    assert!(state.begin_query_design_build(
+        request,
+        Arc::new(original_draft),
+        QueryDesignCompletion::Run,
+        2
+    ));
     assert_eq!(
         state.set_query_design_built(2, built(&state), metadata()),
         Some(QueryDesignCompletion::Run)
@@ -407,7 +417,7 @@ fn design_sql_replacement_advances_scratch_revision_and_exhaustion_preserves_bot
         let request = state.query_design_request().unwrap();
         assert!(state.begin_query_design_build(
             request,
-            original_draft.clone(),
+            Arc::new(original_draft.clone()),
             QueryDesignCompletion::ShowSql,
             1,
         ));
@@ -430,4 +440,38 @@ fn design_sql_replacement_advances_scratch_revision_and_exhaustion_preserves_bot
             assert_eq!(state.query_sql_revision(), revision.map(|value| value + 1));
         }
     }
+}
+
+#[test]
+fn shared_submitted_draft_keeps_complete_logical_retention_charge() {
+    let mut state = state();
+    let before = state.query_design.retained_bytes().unwrap();
+    let Action::BuildQueryDesign {
+        request,
+        draft,
+        completion,
+    } = state.query_design_run_action().unwrap()
+    else {
+        panic!("the current Design must issue its bounded build action");
+    };
+    let mut payload = crate::workspace::objects::memory::Counter::new(
+        size_of::<QueryDesignDraft>() + retention::SHARED_DRAFT_CONTROL_BYTES,
+    );
+    retention::count_draft(&mut payload, &draft);
+    let expected_charge = payload.finish().unwrap();
+    let submitted = Arc::clone(&draft);
+    assert!(state.begin_query_design_build(request, draft, completion, 77));
+    let pending = &state.query_design.session.as_ref().unwrap().pending;
+    let PendingKind::Build { draft, .. } = &pending.as_ref().unwrap().kind else {
+        panic!("the pending state must own the submitted draft");
+    };
+    assert!(Arc::ptr_eq(draft, &submitted));
+    let retained = state.query_design.retained_bytes().unwrap();
+    assert!(
+        retained >= before + expected_charge,
+        "sharing must not discount logical vectors/text or shared ownership overhead"
+    );
+    assert!(state.cancel_query_design(77));
+    assert_eq!(state.query_design.retained_bytes(), Some(before));
+    assert_eq!(state.query_design_draft(), Some(submitted.as_ref()));
 }

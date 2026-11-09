@@ -1,7 +1,13 @@
 //! Draft ownership follows the scratch object, with bounded retained heap accounting.
 use super::{PendingKind, QueryDesign};
 use crate::workspace::objects::memory::Counter;
+use std::sync::atomic::AtomicUsize;
 use tablecraft_builders::query::{DesignExpression, QueryDesignDraft};
+
+// Reserve strong/weak ownership counters and a full payload-alignment unit.
+// This is conservative logical accounting, not an assumed private Arc ABI.
+pub(super) const SHARED_DRAFT_CONTROL_BYTES: usize =
+    size_of::<(AtomicUsize, AtomicUsize)>() + align_of::<QueryDesignDraft>();
 
 impl QueryDesign {
     pub(in crate::workspace) fn retained_bytes(&self) -> Option<usize> {
@@ -22,7 +28,13 @@ impl QueryDesign {
             if let Some(pending) = &session.pending {
                 match &pending.kind {
                     PendingKind::Describe { table } => count.string(table),
-                    PendingKind::Build { draft, .. } => count_draft(&mut count, draft),
+                    PendingKind::Build { draft, .. } => {
+                        // The draft header is now out of line. Keep charging its complete
+                        // logical payload to this owner even when another Arc shares it.
+                        count.add(size_of::<QueryDesignDraft>());
+                        count.add(SHARED_DRAFT_CONTROL_BYTES);
+                        count_draft(&mut count, draft);
+                    }
                     PendingKind::Import { sql } | PendingKind::Run { sql } => count.string(sql),
                 }
             }

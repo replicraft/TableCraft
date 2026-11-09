@@ -9,6 +9,7 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
+use std::sync::Arc;
 use tablecraft_builders::query::build;
 
 #[test]
@@ -80,12 +81,29 @@ fn ribbon_owns_query_views_and_requests_checked_sql_without_implicit_run() {
         .metadata
         .clone();
     let built = build(&draft, &metadata).unwrap();
+    let submitted = Arc::clone(&draft);
     assert!(
         harness
             .state_mut()
             .0
             .begin_query_design_build(request, draft, completion, 900)
     );
+    let pending = &harness
+        .state()
+        .0
+        .query_design
+        .session
+        .as_ref()
+        .unwrap()
+        .pending;
+    let super::super::PendingKind::Build { draft, .. } = &pending.as_ref().unwrap().kind else {
+        panic!("the normal Ribbon action must retain the submitted build");
+    };
+    assert!(Arc::ptr_eq(draft, &submitted));
+    assert!(!std::ptr::eq(
+        harness.state().0.query_design_draft().unwrap(),
+        submitted.as_ref(),
+    ));
     assert_eq!(
         harness
             .state_mut()

@@ -1,6 +1,7 @@
 //! Authored design inventories are presentation fixtures, never executed queries.
 use super::{Preview, fixtures};
 use crate::{ObjectKind, ObjectTarget, QueryDesignCompletion, QueryDesignRequest};
+use std::sync::Arc;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignColumn, DesignField, DesignFieldMetadata, DesignJoin, DesignJoinKind,
     DesignSort, DesignSource, DesignTableMetadata, QueryDesignDraft, build,
@@ -68,6 +69,8 @@ impl Preview {
                 }));
         }
         let built = build(&draft, &metadata).expect("bounded authored synthetic QBE");
+        // Current SQL editor and BuiltQueryDesign reply retain independent SQL spellings during
+        // import; later reply consumes built SQL after comparing pending editor snapshot.
         self.state.sql = built.sql.clone();
         let request = self
             .state
@@ -76,6 +79,9 @@ impl Preview {
         let id = self.request();
         assert!(
             self.state
+                // PendingKind::Import owns exact editor SQL snapshot for stale-input comparison
+                // while visible editor remains mutable; no borrowed editor lifetime across
+                // pending state.
                 .begin_query_design_import(request, self.state.sql.clone(), id)
         );
         assert!(
@@ -130,6 +136,8 @@ impl Preview {
         let id = self.request();
         assert!(
             self.state
+                // Pending import must retain exact editor snapshot independently of editor and
+                // built result; this instance exercises normal authored QBE import.
                 .begin_query_design_import(request, self.state.sql.clone(), id)
         );
         let mut name = DesignColumn::field(1, "CustomerName".into());
@@ -149,6 +157,9 @@ impl Preview {
                     id,
                     BuiltQueryDesign {
                         draft,
+                        // BuiltQueryDesign reply owns proposed SQL while State retains
+                        // pending/current SQL until admission; final reply moves its SQL into
+                        // editor.
                         sql: self.state.sql.clone()
                     },
                     vec![table_metadata("Customers")],
@@ -163,6 +174,8 @@ impl Preview {
                 .state
                 .query_design_request()
                 .expect("same synthetic tab");
+            // Simulated failing build owns draft snapshot while visible QBE draft stays in
+            // State for rejected-build preservation; moving would discard current design.
             let draft = self
                 .state
                 .query_design_draft()
@@ -171,7 +184,7 @@ impl Preview {
             let id = self.request();
             assert!(self.state.begin_query_design_build(
                 request,
-                draft,
+                Arc::new(draft),
                 QueryDesignCompletion::ShowSql,
                 id
             ));
@@ -188,6 +201,8 @@ impl Preview {
         let id = self.request();
         if self
             .state
+            // Pending table description owns table name while fixture metadata generation later
+            // reads original after admission; result owns its independent table spelling.
             .begin_query_design_description(request, table.clone(), id)
         {
             self.state

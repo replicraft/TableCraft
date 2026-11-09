@@ -405,7 +405,7 @@ impl Worker {
             Command::BuildQueryDesign { target, draft } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .build_query_design(target, draft, cancelled),
+                .build_query_design(target, draft.as_ref(), cancelled),
             Command::ImportQueryDesign { target, sql } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?

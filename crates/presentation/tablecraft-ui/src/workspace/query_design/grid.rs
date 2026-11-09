@@ -2,8 +2,9 @@
 use super::{MAX_DESIGN_COLUMNS, MAX_DESIGN_TEXT_BYTES, Session, context_menu};
 use crate::localization::tr;
 use crate::workspace::focus::{self, Pane};
-use egui::{Align, Layout, ScrollArea, TextEdit, Ui};
+use egui::{Align, Layout, ScrollArea, TextBuffer, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
+use std::borrow::Cow;
 use tablecraft_builders::query::{
     DesignColumn, DesignExpression, DesignField, DesignSort, DesignSource, DesignTableMetadata,
 };
@@ -73,7 +74,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                 ui.push_id(("qbe_cell", index, row), |ui| match row {
                                     0 => {
                                         let original = field_text(&column.expression);
-                                        let mut text = original.to_owned();
+                                        let mut text = Cow::Borrowed(original);
                                         let cost = match &column.expression {
                                             DesignExpression::Field(field) => field.column.len(),
                                             DesignExpression::Expression(text) => text.len(),
@@ -93,12 +94,12 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             &response,
                                             index == 0 || response.has_focus(),
                                         );
-                                        if response.changed() && text != original {
+                                        if response.changed() && text.as_ref() != original {
                                             column.expression = edited_field(
                                                 sources,
                                                 &session.metadata,
                                                 &column.expression,
-                                                text,
+                                                text.into_owned(),
                                             );
                                             changed = true;
                                         } else {
@@ -107,8 +108,9 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                             budget.remaining = previous_budget;
                                         }
                                         context_menu::show(ui, &response, |ui, keyboard_open| {
-                                            let mut alias =
-                                                column.alias.clone().unwrap_or_default();
+                                            let mut alias = Cow::Borrowed(
+                                                column.alias.as_deref().unwrap_or(""),
+                                            );
                                             ui.label(tr(ui, "qbe-alias"));
                                             let alias_input = bounded_input(
                                                 ui,
@@ -121,7 +123,8 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                                 alias_input.request_focus();
                                             }
                                             if alias_input.changed() {
-                                                column.alias = (!alias.is_empty()).then_some(alias);
+                                                column.alias =
+                                                    (!alias.is_empty()).then(|| alias.into_owned());
                                                 changed = true;
                                             }
                                             if ui.button(tr(ui, "qbe-remove-column")).clicked() {
@@ -325,6 +328,9 @@ fn edited_field(
         }) {
             return DesignExpression::Field(DesignField {
                 source_id,
+                // QBE expression/anchor identity and context-menu join reference are
+                // independent owners; metadata remains available and geometry anchors outlive
+                // this local row rendering.
                 column: field.name.clone(),
             });
         }
@@ -356,17 +362,17 @@ struct InputBudget {
 
 fn bounded_input(
     ui: &mut Ui,
-    text: &mut String,
+    text: &mut dyn TextBuffer,
     label_key: &str,
     old_cost: usize,
     budget: &mut InputBudget,
 ) -> egui::Response {
     let id = ui.make_persistent_id(label_key);
     let limit = budget.remaining.saturating_add(old_cost);
-    budget.rejected |= crate::text_input::reject_oversized_events(ui, id, text, limit);
+    budget.rejected |= crate::text_input::reject_oversized_events(ui, id, text.as_str(), limit);
     let label = tr(ui, label_key);
     let response = ui.add(
-        TextEdit::singleline(text)
+        TextEdit::singleline(&mut *text)
             .id(id)
             .desired_width(GRID_COLUMN_WIDTH)
             .frame(egui::Frame::NONE)
@@ -374,7 +380,7 @@ fn bounded_input(
             .char_limit(limit.min(crate::text_input::MAX_EDITOR_SCALARS)),
     );
     if response.changed() {
-        budget.remaining = limit.saturating_sub(text.len());
+        budget.remaining = limit.saturating_sub(text.as_str().len());
     }
     ui.ctx()
         .accesskit_node_builder(response.id, |node| node.set_label(label.as_str()));

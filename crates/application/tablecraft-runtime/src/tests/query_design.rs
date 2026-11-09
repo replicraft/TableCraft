@@ -1,6 +1,7 @@
 //! Query design is source-bound metadata and syntax, never an implicit table scan.
 use super::{request, stored::opened};
 use crate::{Command, Error, QueryDesignTarget, Response};
+use std::sync::Arc;
 use tablecraft_builders::query::{
     DesignColumn, DesignField, DesignJoin, DesignJoinKind, DesignSort, DesignSource,
     QueryDesignDraft, QueryDesignError,
@@ -55,7 +56,7 @@ fn design_metadata_build_and_import_do_not_read_user_records() {
         &worker,
         Command::BuildQueryDesign {
             target: target.clone(),
-            draft: draft(),
+            draft: Arc::new(draft()),
         },
     )
     .unwrap() else {
@@ -102,7 +103,7 @@ fn unsupported_sql_is_rejected_before_missing_native_sources_and_stale_revision_
         &worker,
         Command::BuildQueryDesign {
             target: target.clone(),
-            draft: draft(),
+            draft: Arc::new(draft()),
         },
     )
     .unwrap() else {
@@ -114,7 +115,7 @@ fn unsupported_sql_is_rejected_before_missing_native_sources_and_stale_revision_
             &worker,
             Command::BuildQueryDesign {
                 target,
-                draft: draft()
+                draft: Arc::new(draft())
             }
         ),
         Err(Error::StaleDocument)
@@ -178,7 +179,7 @@ fn typed_self_join_graphs_build_then_execute_with_native_outer_join_membership()
             &worker,
             Command::BuildQueryDesign {
                 target: target.clone(),
-                draft: draft.clone(),
+                draft: Arc::new(draft.clone()),
             },
         )
         .unwrap()

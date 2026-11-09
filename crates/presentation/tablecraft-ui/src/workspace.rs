@@ -106,6 +106,8 @@ use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
 use egui::Ui;
 use query::provenance::{PendingSql, ResultOrigin};
+use std::sync::Arc;
+use tablecraft_builders::query::QueryDesignDraft;
 use tablecraft_display::Options;
 
 /// One inert catalog entry. A visible declaration does not imply readable rows.
@@ -428,7 +430,7 @@ pub enum Action {
     },
     BuildQueryDesign {
         request: QueryDesignRequest,
-        draft: tablecraft_builders::query::QueryDesignDraft,
+        draft: Arc<QueryDesignDraft>,
         completion: QueryDesignCompletion,
     },
     ImportQueryDesign {
@@ -701,6 +703,8 @@ impl State {
             let Some(cell) = self.selected_total_cell() else {
                 return false;
             };
+            // The clipboard output owns its text beyond this borrowed cell/retained editor; the
+            // existing source text must remain available.
             ctx.copy_text(cell.text.clone());
             return true;
         }

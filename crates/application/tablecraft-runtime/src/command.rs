@@ -169,7 +169,7 @@ pub enum Command {
     },
     BuildQueryDesign {
         target: QueryDesignTarget,
-        draft: QueryDesignDraft,
+        draft: Arc<QueryDesignDraft>,
     },
     ImportQueryDesign {
         target: QueryDesignTarget,

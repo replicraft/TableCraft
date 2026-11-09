@@ -1,6 +1,7 @@
 //! Query-design requests bridge shared editor state to headless runtime services.
 use super::{Desktop, PendingOperation};
 use crate::workspace::request_read;
+use std::sync::Arc;
 use tablecraft_builders::query::{BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft};
 use tablecraft_runtime::{self as runtime, Command};
 use tablecraft_ui::{QueryDesignCompletion, QueryDesignRequest};
@@ -13,6 +14,8 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::DescribeQueryDesign {
                 target: native_target(&request),
+                // Worker source metadata request owns table text while UI pending QBE
+                // description and host witness retain the source independently.
                 table: table.clone(),
             },
             &self.worker,
@@ -21,6 +24,8 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
+        // The UI pending description retains request revision and table identity; the host
+        // retains its own request/table witness to validate the native reply.
         if !self
             .state
             .begin_query_design_description(request.clone(), table.clone(), request_id)
@@ -40,7 +45,7 @@ impl Desktop {
     pub(super) fn build_query_design(
         &mut self,
         request: QueryDesignRequest,
-        draft: QueryDesignDraft,
+        draft: Arc<QueryDesignDraft>,
         completion: QueryDesignCompletion,
     ) {
         if self.editing.has_save()
@@ -53,7 +58,9 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::BuildQueryDesign {
                 target: native_target(&request),
-                draft: draft.clone(),
+                // UI pending and the worker retain the same immutable submitted draft;
+                // Arc shares its vectors/text instead of repeating the editor's deep copy.
+                draft: Arc::clone(&draft),
             },
             &self.worker,
             &mut self.state,
@@ -61,6 +68,8 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
+        // The shared pending QBE build and desktop pending operation each own the exact
+        // object/publication/draft-revision witness.
         if !self
             .state
             .begin_query_design_build(request.clone(), draft, completion, request_id)
@@ -83,6 +92,8 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::ImportQueryDesign {
                 target: native_target(&request),
+                // Runtime import owns SQL while UI pending import stores the exact submitted
+                // SQL; unsupported imports must preserve the prior draft/results.
                 sql: sql.clone(),
             },
             &self.worker,
@@ -91,6 +102,8 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
+        // Shared pending import and desktop pending reply validator each retain the exact
+        // design request identity.
         if !self
             .state
             .begin_query_design_import(request.clone(), sql, request_id)
@@ -191,6 +204,8 @@ impl Desktop {
         }
         let Some(request_id) = request_read(
             Command::Query {
+                // The UI keeps its SQL buffer and result provenance; background query execution
+                // requires an independent owned command string.
                 sql: self.state.sql.clone(),
             },
             &self.worker,

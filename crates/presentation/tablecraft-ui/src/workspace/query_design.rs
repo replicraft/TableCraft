@@ -13,6 +13,7 @@ pub(in crate::workspace) use preferences::Preferences;
 
 use super::query::provenance::ResultOrigin;
 use super::{Action, DocumentView, ObjectKind, ObjectTab, State, click};
+use std::sync::Arc;
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignSource, DesignTableMetadata, MAX_DESIGN_COLUMNS, MAX_DESIGN_SOURCES,
     MAX_DESIGN_TEXT_BYTES, QueryDesignDraft,
@@ -75,7 +76,7 @@ enum PendingKind {
         table: String,
     },
     Build {
-        draft: QueryDesignDraft,
+        draft: Arc<QueryDesignDraft>,
         completion: QueryDesignCompletion,
     },
     Import {
@@ -219,6 +220,9 @@ impl State {
             return false;
         }
         let table = table.as_str();
+        // Mutate and validate a candidate before replacing the editor: failed metadata
+        // must preserve the original draft. Arc/Cow would detach on this first mutation,
+        // so they cannot remove this rollback copy; no worker needs to share it.
         let mut candidate = session.draft.clone();
         let added = !candidate
             .sources
@@ -284,7 +288,7 @@ impl State {
     pub fn begin_query_design_build(
         &mut self,
         request: QueryDesignRequest,
-        draft: QueryDesignDraft,
+        draft: Arc<QueryDesignDraft>,
         completion: QueryDesignCompletion,
         request_id: u64,
     ) -> bool {
@@ -340,7 +344,9 @@ impl State {
         }
         let session = self.query_design.session.as_ref()?;
         let completion = match &session.pending.as_ref()?.kind {
-            PendingKind::Build { draft, completion } if *draft == built.draft => Some(*completion),
+            PendingKind::Build { draft, completion } if draft.as_ref() == &built.draft => {
+                Some(*completion)
+            }
             PendingKind::Import { sql } if *sql == self.sql => None,
             _ => return None,
         };
@@ -425,6 +431,9 @@ impl State {
             request,
             request_id,
             PendingKind::Run {
+                // Preserve the submitted SQL after the editable buffer changes so old
+                // results retain their true provenance. A borrow would alias that buffer;
+                // sharing requires one immutable SQL contract across all result owners.
                 sql: self.sql.clone(),
             },
         );
@@ -465,6 +474,9 @@ impl State {
             unreachable!("validated Design run");
         };
         if !self.set_query_data(Some(sql), data) {
+            // The global diagnostic and independently dismissible Design error both
+            // retain this text. Cow cannot borrow mutable UI state; Arc per diagnostic
+            // would replace both message contracts for a small exceptional-path copy.
             let message = self
                 .error
                 .clone()
@@ -526,6 +538,9 @@ impl State {
         } else if !self.query_design_visible() {
             Some(Action::ImportQueryDesign {
                 request,
+                // Import owns the submitted SQL while the editor keeps its mutable
+                // buffer after rejection. Rc cannot cross the worker; borrowing the
+                // editor through Cow cannot survive asynchronous dispatch.
                 sql: self.sql.clone(),
             })
         } else {
@@ -545,7 +560,10 @@ impl State {
         let session = self.query_design.session.as_ref()?;
         (session.mode == Mode::Design).then(|| Action::BuildQueryDesign {
             request,
-            draft: session.draft.clone(),
+            // Capture a stable submitted snapshot while the editor keeps its mutable draft.
+            // Arc then shares this one immutable payload with UI pending and the worker;
+            // Rc cannot cross the worker thread and Cow cannot borrow mutable editor state.
+            draft: Arc::new(session.draft.clone()),
             completion: QueryDesignCompletion::ShowSql,
         })
     }
@@ -556,7 +574,10 @@ impl State {
         self.can_build_query_design(&request, &session.draft, QueryDesignCompletion::Run)
             .then(|| Action::BuildQueryDesign {
                 request,
-                draft: session.draft.clone(),
+                // Capture a stable submitted snapshot while the editor keeps its mutable draft.
+                // Arc then shares this one immutable payload with UI pending and the worker;
+                // Rc cannot cross the worker thread and Cow cannot borrow mutable editor state.
+                draft: Arc::new(session.draft.clone()),
                 completion: QueryDesignCompletion::Run,
             })
     }
