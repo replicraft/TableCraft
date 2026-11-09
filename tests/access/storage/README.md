@@ -12,4 +12,6 @@
 - [page_preview_originals](page_preview_originals/)
 - [usage_map_growth](usage_map_growth/)
 
+- [shared_long_values](shared_long_values/)
+
 Run Python entry points through [`tests/run.py`](../../run.py).

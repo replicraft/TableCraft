@@ -1,0 +1,332 @@
+{
+  "scope": "Fresh shared long-value decoder/inventory extraction equivalence over retained independent source/getter evidence; no native re-execution",
+  "groups": [
+    20,
+    21
+  ],
+  "extractions": [
+    {
+      "group": 20,
+      "function": "parse",
+      "paths": [
+        "tests/access/rows/ace16_insert_global_bootstrap/source.py",
+        "tests/access/storage/ace16_insert_long_value_map_growth/source.py",
+        "tests/access/storage/ace16_insert_external_long_values/source.py"
+      ],
+      "helper": "tests/access/storage/shared_long_values/source.py",
+      "body_ast_sha256": "ca07bfd46dcd6be74fbf46a9a6333eb79478df484f7569b5d85d6b8be32955b5",
+      "bindings": [
+        "label"
+      ]
+    },
+    {
+      "group": 21,
+      "function": "inventory",
+      "paths": [
+        "tests/access/rows/ace16_insert_global_bootstrap/source.py",
+        "tests/access/storage/ace16_insert_long_value_map_growth/source.py",
+        "tests/access/storage/ace16_insert_external_long_values/source.py"
+      ],
+      "helper": "tests/access/storage/shared_long_values/source.py",
+      "body_ast_sha256": "09064cbcb7b164657509fddead856744b2a2aa87058e6ac426ac6a0a09a91df9",
+      "bindings": [
+        "PAGE",
+        "number"
+      ]
+    }
+  ],
+  "source_cases": [
+    {
+      "family": "ace16_insert_global_bootstrap",
+      "id": "V2016-raw-pad400",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2016-raw-pad400-source.accdb",
+          "bytes": 2097152,
+          "sha256": "3ccca8c4fa201a4c9d5116da6cf1a79fc0bde45a25a6cbede87a51c9b22ea9f6"
+        },
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2016-raw-pad400-inspect.stdout",
+          "bytes": 6128797,
+          "sha256": "0937c8e606df723068b322e09d555dd7808296f3dbd755c0c9ed17015d6553d5"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_global_bootstrap",
+      "id": "V2016-compressed-pad400",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2016-compressed-pad400-source.accdb",
+          "bytes": 2097152,
+          "sha256": "f7fb387caeac365752a73fec67020dbcebd2b00a7b9fd33dd8ccb1be341e4d9b"
+        },
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2016-compressed-pad400-inspect.stdout",
+          "bytes": 6128794,
+          "sha256": "5e8e2dcc57c0245331058f125ff36dc728b726faf7f6b3601c97ba4d3c3467a3"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_global_bootstrap",
+      "id": "V2019-raw-pad382",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2019-raw-pad382-source.accdb",
+          "bytes": 2097152,
+          "sha256": "44af6b3a2295cdf68c0ea992fdcce2faad044f258750b7b8ca45ab1881731f32"
+        },
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2019-raw-pad382-inspect.stdout",
+          "bytes": 5862808,
+          "sha256": "b8468da49d401b3b3e201878fc24f0952ea8f78bc255db3754634f162e384cd8"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_global_bootstrap",
+      "id": "V2019-compressed-pad382",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2019-compressed-pad382-source.accdb",
+          "bytes": 2097152,
+          "sha256": "d72603dfb73a95e3c7ab215aad1a21af3f025517f0e288e186b9f337cbff3d77"
+        },
+        {
+          "path": ".cache/ace16-insert-global-bootstrap-source-first-20261028/V2019-compressed-pad382-inspect.stdout",
+          "bytes": 5862805,
+          "sha256": "0f08155c8f9aba3a9e029820eb99a398660918226525881d79cefb56cd0f7785"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2016-raw-pad430",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad430-source.accdb",
+          "bytes": 2224128,
+          "sha256": "03475aaacce434a8bb1866ba4d7662ef1887a76ad73c084a3f56f7a67ec0cb2f"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad430-inspect.stdout",
+          "bytes": 7345176,
+          "sha256": "9e17f5bbe21174b9d0a59c82fd20cd475d6dc47e38fa390555b9d30662c062d0"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2016-raw-pad700",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad700-source.accdb",
+          "bytes": 3330048,
+          "sha256": "a880b7ad5b692b2760db00877e488848c059533104ac7465ba276c31b086870c"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-raw-pad700-inspect.stdout",
+          "bytes": 11429196,
+          "sha256": "987322f5e5f3d46af82d999dc2f69c61751ab596709e0e60ff284c0859bc932f"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2016-compressed-pad430",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad430-source.accdb",
+          "bytes": 2224128,
+          "sha256": "91bfd01b7820019378be9babc34856ddf03a770f1f3b48595e3328e0aee70244"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad430-inspect.stdout",
+          "bytes": 7345173,
+          "sha256": "83cbde1613d41f814b1177ae683cba0354eb79133c0ecf724e4e61c6fd3a8760"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2016-compressed-pad700",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad700-source.accdb",
+          "bytes": 3330048,
+          "sha256": "71a44a6576962165fc49f92eb099f991cf40852a0994246bb106f05e79bc5c39"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2016-compressed-pad700-inspect.stdout",
+          "bytes": 11429193,
+          "sha256": "ca04c4157c6b58e8e71f09867e5639a28cba90a2038fcc08f31a5334fb4ed4d3"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2019-raw-pad430",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad430-source.accdb",
+          "bytes": 2297856,
+          "sha256": "6d90bfdfcc38ddb9dd33a578f24082fc298cd93151fff016bd2d82ebc0b2eda7"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad430-inspect.stdout",
+          "bytes": 7351282,
+          "sha256": "006d4e9cbd14fdb201a45622dbac65a59efa877dc23dbaa040760b55db180e1a"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2019-raw-pad700",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad700-source.accdb",
+          "bytes": 3403776,
+          "sha256": "4b9f82b73c95cc20f64539805185d954b7eb1d93d651a50bbf93377e82c92190"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-raw-pad700-inspect.stdout",
+          "bytes": 11435302,
+          "sha256": "1b18951b86b5c9194d3f55baa589891aead696b2df9d838711fb622354ac05cb"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2019-compressed-pad430",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad430-source.accdb",
+          "bytes": 2297856,
+          "sha256": "a494a63d6b9090327714e5af58ea6144a4fe009b3c536da03b84dc0e6f4c8abd"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad430-inspect.stdout",
+          "bytes": 7351279,
+          "sha256": "7687c67fc2cdbb772ae2316bbe2865319dab38d7c0bb19f0c63483bb783ffe2a"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_long_value_map_growth",
+      "id": "V2019-compressed-pad700",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad700-source.accdb",
+          "bytes": 3403776,
+          "sha256": "f04df2d45a57eb1adcb35fc9933fde8ce7a35d25faa10fa23425b6128b9a1066"
+        },
+        {
+          "path": ".cache/ace16-insert-long-value-map-growth-source-first-20261028/V2019-compressed-pad700-inspect.stdout",
+          "bytes": 11435299,
+          "sha256": "09cd645a1d89236eec5f885551cecbe5017067840d4364206ca1811589f0b9f1"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_external_long_values",
+      "id": "V2016-raw",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-raw-source.accdb",
+          "bytes": 446464,
+          "sha256": "9a6b7e0e5b0984e51e1af3170ff92e641b48809db2f74c17ab634f80993c0359"
+        },
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-raw-inspect.stdout",
+          "bytes": 78659,
+          "sha256": "f5eb73ca48c52ba070766fa0e6cf9828ac633b2cc5245f7e7b7863b27b7ecf60"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_external_long_values",
+      "id": "V2016-compressed",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-compressed-source.accdb",
+          "bytes": 446464,
+          "sha256": "1f5c45d48680ef13c474ebe9b6a6a3e4a745ac7dcdca94c5f3b2b96d82d11c04"
+        },
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2016-compressed-inspect.stdout",
+          "bytes": 78656,
+          "sha256": "06fcae313b1854991c586947058694569e33fbfdfad256fda5b7e116fcd3becb"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_external_long_values",
+      "id": "V2019-raw",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-raw-source.accdb",
+          "bytes": 520192,
+          "sha256": "986ddd0db110ef562ead874c3c27dbba514a6d2154cb49bf0836d17f3966f125"
+        },
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-raw-inspect.stdout",
+          "bytes": 84938,
+          "sha256": "3ff52d642a1553a1470b72747ead5f943feb7fcabde98fe9ec667d4e114c12b2"
+        }
+      ]
+    },
+    {
+      "family": "ace16_insert_external_long_values",
+      "id": "V2019-compressed",
+      "old_new_whole_source_state_equal": true,
+      "malformed_refusals_equal": true,
+      "current_input_pins": [
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-compressed-source.accdb",
+          "bytes": 520192,
+          "sha256": "e8c39e4b9e52f4204e5e58338d2180efaba980e193c4be078fc84aaf771454de"
+        },
+        {
+          "path": ".cache/ace16-insert-external-long-value-source-first-20261028/V2019-compressed-inspect.stdout",
+          "bytes": 84935,
+          "sha256": "f56aeb6fcd9b53064c4e9f52d98d6dffdb938d471577b9125f510e6227b6e50b"
+        }
+      ]
+    }
+  ],
+  "source_case_count": 16,
+  "fixture_processes": 0,
+  "native_access_execution": false,
+  "production_encoder_used": false
+}

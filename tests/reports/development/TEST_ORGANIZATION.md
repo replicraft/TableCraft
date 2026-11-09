@@ -72,3 +72,14 @@ compares old/new complete images and facts for 118 retained source/request cases
 pinned cached image and fact goldens. All agree. This is model extraction
 regression evidence, not a new JVM, Rust writer, Windows or native Access run.
 See the [fresh equivalence record](../../results/development/shared-insert-derive-equivalence-2026-11-09.json).
+
+The GLOBAL-bootstrap, long-value-map-growth and external-long-value source models
+now share only tagged-getter parsing and raw LVAL inventory traversal in
+[`shared_long_values/source.py`](../../access/storage/shared_long_values/source.py).
+Each source model still binds its own label decoder, numeric reader and page size;
+its source-specific qualification, expected rows, map ownership and allocation
+requirements remain separate. Both extracted bodies are AST-identical to their
+former implementations. Sixteen retained source/getter cases (4 bootstrap,
+8 map-growth, 4 external) yield identical complete old/new qualification states;
+unknown getter tags also retain exact refusal categories. See the
+[fresh source equivalence record](../../results/development/shared-long-value-source-equivalence-2026-11-09.json).

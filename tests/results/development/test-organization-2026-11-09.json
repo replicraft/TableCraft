@@ -576,6 +576,18 @@
       "policy_boundary": "Each feature constructor explicitly binds its own thirteen callbacks/constants; no module-global injection or production encoder.",
       "equivalence_cases": 118,
       "evidence": "tests/results/development/shared-insert-derive-equivalence-2026-11-09.json"
+    },
+    "20": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/storage/shared_long_values/source.py",
+      "source_cases": 16,
+      "evidence": "tests/results/development/shared-long-value-source-equivalence-2026-11-09.json"
+    },
+    "21": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/storage/shared_long_values/source.py",
+      "source_cases": 16,
+      "evidence": "tests/results/development/shared-long-value-source-equivalence-2026-11-09.json"
     }
   }
 }
