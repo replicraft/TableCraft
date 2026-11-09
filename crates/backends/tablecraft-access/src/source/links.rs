@@ -9,7 +9,7 @@ use super::NativeSourceHandle;
 use std::cell::RefCell;
 use tablecraft_ace::{InspectError, NativeTableStorage};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::{QueryError, Source};
+use tablecraft_query::{QueryError, Source, SourceFailure};
 
 struct Route<'a> {
     alias: &'a str,
@@ -46,7 +46,7 @@ impl<'a> LinkedNativeSource<'a> {
         let mut routes: Vec<Route<'a>> = Vec::new();
         routes
             .try_reserve_exact(mappings.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
 
         for (index, mapping) in mappings.iter().enumerate() {
             charge(root, pool, 1, 0)?;
@@ -128,8 +128,9 @@ impl<'a> LinkedNativeSource<'a> {
                 .shared_budget()
                 .ok_or(QueryError::Source)?
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?
-                .charge(Resource::Steps, 1)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
+                .charge(Resource::Steps, 1)
+                .map_err(crate::source::query_limit)?;
             if route.alias.eq_ignore_ascii_case(table) {
                 return Ok((route.target.source(), route.table));
             }

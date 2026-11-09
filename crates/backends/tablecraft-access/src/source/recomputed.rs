@@ -5,7 +5,7 @@ mod forwarding;
 use super::{CalculationError, NativeSource};
 use tablecraft_ace::NativeReadSource;
 use tablecraft_core::limits::Resource;
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_sql::{ParseLimits, query::Query};
 
 const MAX_VIEWS: usize = 256;
@@ -65,18 +65,18 @@ impl<'s, 'a, R: NativeReadSource> RecomputedNativeSource<'s, 'a, R> {
         let _span = tracing::debug_span!("native.calculation.views.prepare").entered();
         Self::tick(source)?;
         if requests.len() > MAX_VIEWS {
-            return Err(QueryError::StructureLimit.into());
+            return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
         }
         source
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
             .charge_allocation(requests.len() as u64, size_of::<View>() as u64)
-            .map_err(QueryError::from)?;
+            .map_err(crate::source::query_limit)?;
         let mut views = Vec::new();
         views
             .try_reserve_exact(requests.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
 
         for request in requests {
             Self::tick(source)?;
@@ -100,8 +100,9 @@ impl<'s, 'a, R: NativeReadSource> RecomputedNativeSource<'s, 'a, R> {
         source
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
-            .charge(Resource::Steps, 1)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
+            .charge(Resource::Steps, 1)
+            .map_err(crate::source::query_limit)?;
         Ok(())
     }
 }

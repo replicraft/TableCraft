@@ -10,7 +10,7 @@ use tablecraft_ace::{
     read_table_index_with_request,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
-use tablecraft_query::{QueryError, Source, source::ScanConstraint};
+use tablecraft_query::{QueryError, Source, SourceFailure, source::ScanConstraint};
 use tablecraft_schema::ScalarType;
 
 mod automatic;
@@ -37,11 +37,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut source = self
                 .source
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let inspection = inspect_table_indexes(
                 &mut *source,
                 self.scope,

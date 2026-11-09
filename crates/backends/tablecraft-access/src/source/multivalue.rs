@@ -5,7 +5,7 @@ use tablecraft_ace::{
     MultivalueColumn, inspect_multivalue_declarations, read_multivalue_column_with_limits,
 };
 use tablecraft_db::validate_projection;
-use tablecraft_query::{QueryError, source::TextCollationId};
+use tablecraft_query::{QueryError, SourceFailure, source::TextCollationId};
 use tablecraft_schema::Column;
 
 pub(super) struct CollectionCache {
@@ -27,7 +27,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let declarations = if entry
                 .columns
                 .get()
@@ -40,7 +40,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 let mut source = self
                     .source
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 inspect_multivalue_declarations(
                     &mut *source,
                     self.scope,
@@ -60,15 +60,17 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut text_collations = Vec::new();
             columns
                 .try_reserve_exact(declarations.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             text_collations
                 .try_reserve_exact(declarations.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             for declaration in declarations {
                 if (self.cancelled)() {
                     return Err(QueryError::Cancelled);
                 }
-                budget.charge(tablecraft_core::limits::Resource::Steps, 1)?;
+                budget
+                    .charge(tablecraft_core::limits::Resource::Steps, 1)
+                    .map_err(crate::source::query_limit)?;
                 text_collations.push(
                     declaration
                         .text_sort_order()
@@ -95,7 +97,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut snapshots = Vec::new();
             snapshots
                 .try_reserve_exact(columns.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             snapshots.extend((0..columns.len()).map(|_| OnceCell::new()));
             entry
                 .multivalues
@@ -148,11 +150,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 let mut source = self
                     .source
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 let mut budget = self
                     .budget
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 let snapshot = read_multivalue_column_with_limits(
                     &mut *source,
                     self.scope,
@@ -177,7 +179,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         self.budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
             .charge_allocation(
                 collections.len() as u64,
                 size_of::<&MultivalueColumn>() as u64,
@@ -186,7 +188,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let mut selected = Vec::new();
         selected
             .try_reserve_exact(collections.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
         for index in collections {
             selected.push(cache.snapshots[*index].get().ok_or(QueryError::Source)?);
         }

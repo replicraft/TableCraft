@@ -2,7 +2,7 @@
 use super::{NativeSource, query_error};
 use tablecraft_ace::{NativeReadSource, NativeTableStorage, TableCursor};
 use tablecraft_db::{ProjectedRow, validate_projection};
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
     pub(super) fn progressive_scan(
@@ -28,11 +28,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         let mut source = self
             .source
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let mut budget = self
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
@@ -71,7 +71,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 let mut budget = self
                     .budget
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 cursor
                     .next_page(
                         self.snapshot_limits.batch_rows(),
@@ -91,7 +91,9 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     return Err(QueryError::SchemaChanged);
                 }
                 visitor(ProjectedRow::dense(row))?;
-                delivered = delivered.checked_add(1).ok_or(QueryError::StructureLimit)?;
+                delivered = delivered
+                    .checked_add(1)
+                    .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
             }
             if batch.reached_end() {
                 if delivered != cursor.schema().declared_rows() || delivered != cursor.position() {

@@ -7,7 +7,7 @@ use std::cell::OnceCell;
 use tablecraft_ace::{CatalogInspection, InspectError, read_saved_query_definition};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::ObjectKind;
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_sql::ParseLimits;
 use tablecraft_sql::query::Query;
 use thiserror::Error;
@@ -148,11 +148,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         }
         self.budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
             .charge(
                 Resource::Steps,
                 self.queries.len() as u64 + self.entries.len() as u64 + 1,
-            )?;
+            )
+            .map_err(crate::source::query_limit)?;
         let mut matches = self
             .queries
             .iter()
@@ -172,11 +173,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut source = self
                 .source
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let definition = read_saved_query_definition(
                 &mut *source,
                 self.scope,
@@ -209,9 +210,11 @@ fn reconstruction_error(error: SavedReadError) -> QueryError {
     match error {
         SavedReadError::Unsupported => QueryError::Unsupported,
         SavedReadError::Cancelled => QueryError::Cancelled,
-        SavedReadError::Allocation => QueryError::Allocation,
-        SavedReadError::Limit(error) => QueryError::Limit(error),
-        SavedReadError::SyntaxLimit => QueryError::StructureLimit,
-        SavedReadError::InvalidMetadata | SavedReadError::Parse(_) => QueryError::Source,
+        SavedReadError::Allocation => QueryError::SourceFailure(SourceFailure::Allocation),
+        SavedReadError::Limit(error) => crate::source::query_limit(error),
+        SavedReadError::SyntaxLimit => QueryError::SourceFailure(SourceFailure::StructureLimit),
+        SavedReadError::InvalidMetadata | SavedReadError::Parse(_) => {
+            QueryError::SourceFailure(SourceFailure::InvalidData)
+        }
     }
 }

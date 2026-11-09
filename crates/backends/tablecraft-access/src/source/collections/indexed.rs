@@ -6,7 +6,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{MultivalueList, ProjectedRow, validate_projection};
-use tablecraft_query::{QueryError, source::MultivalueVisitor};
+use tablecraft_query::{QueryError, SourceFailure, source::MultivalueVisitor};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn indexed_member_scan(
@@ -38,14 +38,14 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let mut budget = self
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;
         let mut source = self
             .source
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let read_index = if declared.has_cached(Some(indices)) {
             read_stored_table_index_with_references
         } else {
@@ -72,7 +72,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let mut budget = self
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let snapshot = indexed.snapshot();
         self.check_snapshot_rows(snapshot)?;
         if !declared.matches_projection(snapshot, indices) {
@@ -91,10 +91,12 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             if (self.cancelled)() {
                 return Err(QueryError::Cancelled);
             }
-            budget.charge(
-                Resource::Steps,
-                snapshot.schema().columns().len() as u64 + 1,
-            )?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    snapshot.schema().columns().len() as u64 + 1,
+                )
+                .map_err(crate::source::query_limit)?;
             if !snapshot.schema().same_definition(field.owner()) {
                 return Err(QueryError::SchemaChanged);
             }
@@ -107,7 +109,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 if (self.cancelled)() {
                     return Err(QueryError::Cancelled);
                 }
-                budget.charge(Resource::Steps, 1)?;
+                budget
+                    .charge(Resource::Steps, 1)
+                    .map_err(crate::source::query_limit)?;
                 let reference = parent.row_reference();
                 if previous.is_some_and(|old| old >= reference)
                     || parents[position].row_reference() != reference
@@ -118,16 +122,20 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             }
         }
 
-        budget.charge_allocation(parents.len() as u64, size_of::<u8>() as u64)?;
-        budget.charge_allocation(parents.len() as u64, size_of::<usize>() as u64)?;
+        budget
+            .charge_allocation(parents.len() as u64, size_of::<u8>() as u64)
+            .map_err(crate::source::query_limit)?;
+        budget
+            .charge_allocation(parents.len() as u64, size_of::<usize>() as u64)
+            .map_err(crate::source::query_limit)?;
         let mut seen = Vec::new();
         seen.try_reserve_exact(parents.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
         seen.resize(parents.len(), 0_u8);
         let mut ordinals = Vec::new();
         ordinals
             .try_reserve_exact(parents.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
 
         // Complete All scans must form a bijection before any visitor is called.
         for reference in indexed.row_references() {
@@ -137,7 +145,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 if (self.cancelled)() {
                     return Err(QueryError::Cancelled);
                 }
-                budget.charge(Resource::Steps, 1)?;
+                budget
+                    .charge(Resource::Steps, 1)
+                    .map_err(crate::source::query_limit)?;
                 let middle = start + (end - start) / 2;
                 if parents[middle].row_reference() < *reference {
                     start = middle + 1;
@@ -148,7 +158,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             if (self.cancelled)() {
                 return Err(QueryError::Cancelled);
             }
-            budget.charge(Resource::Steps, 1)?;
+            budget
+                .charge(Resource::Steps, 1)
+                .map_err(crate::source::query_limit)?;
             if parents.get(start).map(|parent| parent.row_reference()) != Some(*reference)
                 || seen[start] != 0
             {
@@ -166,16 +178,20 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
-            budget.charge(Resource::Steps, fields.len() as u64 + 1)?;
-            budget.charge_allocation(
-                fields.len() as u64,
-                (size_of::<NativeList<'_>>() + size_of::<&dyn MultivalueList>()) as u64,
-            )?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
+            budget
+                .charge(Resource::Steps, fields.len() as u64 + 1)
+                .map_err(crate::source::query_limit)?;
+            budget
+                .charge_allocation(
+                    fields.len() as u64,
+                    (size_of::<NativeList<'_>>() + size_of::<&dyn MultivalueList>()) as u64,
+                )
+                .map_err(crate::source::query_limit)?;
             let mut lists = Vec::new();
             lists
                 .try_reserve_exact(fields.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             for field in &fields {
                 lists.push(NativeList {
                     field,
@@ -186,7 +202,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut views = Vec::new();
             views
                 .try_reserve_exact(lists.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             views.extend(lists.iter().map(|list| list as &dyn MultivalueList));
             drop(budget);
             visitor(ProjectedRow::dense(row), &views)?;

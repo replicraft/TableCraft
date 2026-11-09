@@ -3,12 +3,12 @@ use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, TableCursor, TableSnapshot,
     read_stored_table_index_with_request, read_table_index_with_request,
 };
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
     pub(super) fn check_snapshot_rows(&self, snapshot: &TableSnapshot) -> Result<(), QueryError> {
         if snapshot.rows().len() > self.snapshot_limits.maximum_rows() as usize {
-            return Err(QueryError::StructureLimit);
+            return Err(QueryError::SourceFailure(SourceFailure::StructureLimit));
         }
         Ok(())
     }
@@ -21,11 +21,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut source = self
                 .source
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let table = if declared.has_cached(None) {
                 let names = declared
                     .projection_names(&mut budget)

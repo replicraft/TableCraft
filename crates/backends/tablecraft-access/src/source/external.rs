@@ -10,7 +10,7 @@ use std::cell::RefCell;
 use tablecraft_ace::NativeTableStorage;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_query::{
-    QueryError, Source,
+    QueryError, Source, SourceFailure,
     source::{ExternalSourceRequest, ResolvedExternalSource, SourceKey},
 };
 
@@ -104,12 +104,12 @@ impl<'a> ExternalNativeSource<'a> {
             mappings
                 .len()
                 .checked_mul(size_of::<Target<'_>>())
-                .ok_or(QueryError::StructureLimit)?,
+                .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?,
         )?;
         let mut targets: Vec<Target<'a>> = Vec::new();
         targets
             .try_reserve_exact(mappings.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
 
         for mapping in mappings {
             debit(handle, pool, Resource::Steps, 1)?;
@@ -202,7 +202,8 @@ fn debit(
 ) -> Result<(), QueryError> {
     handle.check()?;
     pool.try_borrow_mut()
-        .map_err(|_| QueryError::Source)?
-        .charge(resource, count as u64)?;
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
+        .charge(resource, count as u64)
+        .map_err(crate::source::query_limit)?;
     Ok(())
 }

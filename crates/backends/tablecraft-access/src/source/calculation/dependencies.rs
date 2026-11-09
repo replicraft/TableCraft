@@ -2,7 +2,7 @@
 use super::{CalculationError, syntax};
 use tablecraft_ace::{CalculationDeclaration, InspectError, TableFeatures};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_sql::{
     ParseLimits,
     select::{Expression, FunctionArgument},
@@ -29,11 +29,11 @@ pub(super) fn expand(
             MAX_CALCULATED_DEPENDENCIES as u64,
             size_of::<usize>() as u64,
         )
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     let mut active = Vec::new();
     active
         .try_reserve_exact(MAX_CALCULATED_DEPENDENCIES)
-        .map_err(|_| QueryError::Allocation)?;
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
     active.push(root);
     let mut expansion = Expansion {
         features,
@@ -65,7 +65,7 @@ impl Expansion<'_, '_> {
         }
         self.budget
             .charge(Resource::Steps, 1)
-            .map_err(QueryError::from)?;
+            .map_err(crate::source::query_limit)?;
         Ok(())
     }
 
@@ -78,11 +78,11 @@ impl Expansion<'_, '_> {
         self.nodes = self
             .nodes
             .checked_add(1)
-            .ok_or(QueryError::StructureLimit)?;
+            .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
         if self.nodes > self.limits.max_tokens.min(ParseLimits::MAX_TOKENS)
             || depth > self.limits.max_depth.min(ParseLimits::MAX_DEPTH)
         {
-            return Err(QueryError::StructureLimit.into());
+            return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
         }
         match &mut expression {
             Expression::Field(field) if field.qualifier.is_none() => {
@@ -91,7 +91,7 @@ impl Expansion<'_, '_> {
                         Resource::Steps,
                         self.features.schema().columns().len() as u64,
                     )
-                    .map_err(QueryError::from)?;
+                    .map_err(crate::source::query_limit)?;
                 let position = self
                     .features
                     .schema()
@@ -117,29 +117,29 @@ impl Expansion<'_, '_> {
                     return Err(CalculationError::Unsupported);
                 }
                 if self.active.len() >= MAX_CALCULATED_DEPENDENCIES {
-                    return Err(QueryError::StructureLimit.into());
+                    return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
                 }
                 let name = column.column().name();
                 self.budget
                     .charge(Resource::Steps, self.calculated.len() as u64)
-                    .map_err(QueryError::from)?;
+                    .map_err(crate::source::query_limit)?;
                 if !self.calculated.iter().any(|candidate| candidate == name) {
                     if self.calculated.len() >= MAX_CALCULATED_DEPENDENCIES {
-                        return Err(QueryError::StructureLimit.into());
+                        return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
                     }
                     self.budget
                         .charge_allocation(1, size_of::<String>() as u64)
-                        .map_err(QueryError::from)?;
+                        .map_err(crate::source::query_limit)?;
                     self.budget
                         .charge_allocation(name.len() as u64, 1)
-                        .map_err(QueryError::from)?;
+                        .map_err(crate::source::query_limit)?;
                     self.calculated
                         .try_reserve(1)
-                        .map_err(|_| QueryError::Allocation)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                     let mut owned = String::new();
                     owned
                         .try_reserve_exact(name.len())
-                        .map_err(|_| QueryError::Allocation)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                     owned.push_str(name);
                     self.calculated.push(owned);
                 }

@@ -1,6 +1,6 @@
 use super::CalculationError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_schema::Column;
 use tablecraft_sql::{
     ParseError, ParseErrorKind, ParseLimits, SourceLocation, parse_expression_strict,
@@ -44,7 +44,7 @@ pub(super) fn parse(
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, expression.len() as u64)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     let expression = parse_expression_strict(expression, limits)?;
     // Parser workspace has independent checked byte/token/depth ceilings.
     // Retained owned syntax and dependency storage additionally consume the
@@ -72,16 +72,16 @@ pub(super) fn prepare_expression(
         .len()
         .checked_add(table.len())
         .and_then(|length| length.checked_add("]".len()))
-        .ok_or(QueryError::StructureLimit)?;
+        .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
     budget
         .charge_allocation(length as u64, 1)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     budget
         .charge_allocation(1, QUERY_MODEL_BYTES as u64)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     budget
         .charge_allocation((table.len() + "Recomputed".len()) as u64, 1)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
 
     if length > ParseLimits::MAX_BYTES {
         return Err(ParseError {
@@ -132,7 +132,7 @@ fn check(
     }
     budget
         .charge(Resource::Steps, 1)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     Ok(())
 }
 
@@ -146,18 +146,18 @@ fn validate(
     check(budget, cancelled)?;
     budget
         .charge_allocation(1, size_of::<Expression>() as u64)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     match expression {
         Expression::Integer(_) | Expression::Null | Expression::Boolean(_) => {}
         Expression::Number(value) | Expression::Text(value) => {
             budget
                 .charge_allocation(value.len() as u64, 1)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
         }
         Expression::Field(field) if field.qualifier.is_none() => {
             budget
                 .charge(Resource::Steps, (columns.len() + dependencies.len()) as u64)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
             let column = columns
                 .iter()
                 .find(|column| column.name().eq_ignore_ascii_case(field.name.as_str()))
@@ -168,22 +168,22 @@ fn validate(
             {
                 budget
                     .charge_allocation(1, size_of::<String>() as u64)
-                    .map_err(QueryError::from)?;
+                    .map_err(crate::source::query_limit)?;
                 budget
                     .charge_allocation(column.name().len() as u64, 1)
-                    .map_err(QueryError::from)?;
+                    .map_err(crate::source::query_limit)?;
                 dependencies
                     .try_reserve_exact(1)
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 let mut name = String::new();
                 name.try_reserve_exact(column.name().len())
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 name.push_str(column.name());
                 dependencies.push(name);
             }
             budget
                 .charge_allocation(field.name.as_str().len() as u64, 1)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
         }
         Expression::Call {
             qualifier,
@@ -192,10 +192,10 @@ fn validate(
         } if admitted_iif(qualifier, name, arguments) => {
             budget
                 .charge_allocation(arguments.len() as u64, size_of::<FunctionArgument>() as u64)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
             budget
                 .charge_allocation(name.as_str().len() as u64, 1)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
             for argument in arguments {
                 let FunctionArgument::Expression(expression) = argument else {
                     return Err(CalculationError::Unsupported);

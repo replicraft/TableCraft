@@ -32,7 +32,7 @@ use tablecraft_core::{
 use tablecraft_db::ProjectedRow;
 use tablecraft_model::{CatalogScope, ModelError};
 use tablecraft_query::{
-    QueryError,
+    QueryError, SourceFailure,
     source::{ScanConstraint, Source},
 };
 use tablecraft_schema::Column;
@@ -441,17 +441,37 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     }
 }
 fn query_error(error: InspectError) -> QueryError {
-    match error {
-        InspectError::Unsupported | InspectError::Encoded => QueryError::Unsupported,
-        InspectError::UnknownTable | InspectError::UnknownIndex => QueryError::UnknownName,
-        InspectError::Cancelled => QueryError::Cancelled,
-        InspectError::StructureLimit => QueryError::StructureLimit,
+    let failure = match error {
+        InspectError::Unsupported | InspectError::Encoded => return QueryError::Unsupported,
+        InspectError::UnknownTable | InspectError::UnknownIndex => return QueryError::UnknownName,
+        InspectError::Cancelled => return QueryError::Cancelled,
+        InspectError::Model(ModelError::AmbiguousName) => return QueryError::AmbiguousName,
+        InspectError::Schema(error) => return QueryError::Schema(error),
+        InspectError::Io(kind) => SourceFailure::Io(kind),
+        InspectError::Truncated => SourceFailure::Truncated,
+        InspectError::Malformed | InspectError::MalformedEncryption => SourceFailure::InvalidData,
+        InspectError::LockBusy => SourceFailure::Busy,
+        InspectError::InvalidPageRange
+        | InspectError::InvalidSnapshotLimits
+        | InspectError::InvalidAttachmentLimits
+        | InspectError::InvalidLongValueLimits
+        | InspectError::InvalidLongTextLimits => SourceFailure::InvalidRequest,
+        InspectError::CursorAdvanced
+        | InspectError::CursorFailed
+        | InspectError::CollectionReaderFailed => SourceFailure::CursorState,
+        InspectError::IndexConstraint(_)
+        | InspectError::Constraint(_)
+        | InspectError::ComplexReference(_) => SourceFailure::Constraint,
+        InspectError::StructureLimit => SourceFailure::StructureLimit,
         InspectError::Allocation | InspectError::Model(ModelError::Allocation) => {
-            QueryError::Allocation
+            SourceFailure::Allocation
         }
-        InspectError::Model(ModelError::AmbiguousName) => QueryError::AmbiguousName,
-        InspectError::Schema(error) => QueryError::Schema(error),
-        InspectError::Limit(error) => QueryError::Limit(error),
-        _ => QueryError::Source,
-    }
+        InspectError::Limit(error) => SourceFailure::Limit(error),
+        _ => return QueryError::Source,
+    };
+    QueryError::SourceFailure(failure)
+}
+
+fn query_limit(error: tablecraft_core::limits::LimitError) -> QueryError {
+    QueryError::SourceFailure(SourceFailure::Limit(error))
 }

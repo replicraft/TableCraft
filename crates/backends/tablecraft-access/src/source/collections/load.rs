@@ -7,7 +7,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::validate_projection;
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_schema::ScalarType;
 
 impl<R: NativeReadSource> NativeSource<'_, R> {
@@ -21,12 +21,12 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         let mut fields = self.load_members(table, members)?;
         self.budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
             .charge_allocation(values.len() as u64, size_of::<NativeField<'_>>() as u64)
             .map_err(|error| query_error(error.into()))?;
         fields
             .try_reserve_exact(values.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
         // Legacy Value views precede named members, matching the source contract.
         for (position, column) in selected.into_iter().enumerate() {
             fields.insert(position, NativeField::Value(column));
@@ -48,13 +48,13 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         let cache = entry.collections.get().ok_or(QueryError::Source)?;
         self.budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
             .charge_allocation(selected.len() as u64, size_of::<NativeField<'_>>() as u64)
             .map_err(|error| query_error(error.into()))?;
         let mut fields = Vec::new();
         fields
             .try_reserve_exact(selected.len())
-            .map_err(|_| QueryError::Allocation)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
         for index in selected {
             if (self.cancelled)() {
                 return Err(QueryError::Cancelled);
@@ -71,20 +71,21 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 .ok_or(QueryError::Source)?;
             self.budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
                 .charge(Resource::Steps, selected.len() as u64)
-                .map_err(|error| query_error(error.into()))?;
+                .map_err(|error| query_error(error.into()))
+                .map_err(crate::source::query_limit)?;
             if let Some(memo) = &cache.history_memos[*index] {
                 let cell = &cache.snapshots[owner].history;
                 if cell.get().is_none() {
                     let mut source = self
                         .source
                         .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                     let mut budget = self
                         .budget
                         .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                     let snapshot = read_version_history_column_with_limits(
                         &mut *source,
                         self.scope,
@@ -149,11 +150,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     let mut source = self
                         .source
                         .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                     let mut budget = self
                         .budget
                         .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                     let snapshot = read_attachment_metadata_with_limits(
                         &mut *source,
                         self.scope,
@@ -184,11 +185,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 let mut source = self
                     .source
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 let mut budget = self
                     .budget
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 let snapshot = read_attachment_column_with_limits(
                     &mut *source,
                     self.scope,
@@ -220,7 +221,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     let mut budget = self
                         .budget
                         .try_borrow_mut()
-                        .map_err(|_| QueryError::Source)?;
+                        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                     let files = DecodedFiles::read(
                         snapshot,
                         self.attachment_decode_limits,
@@ -254,7 +255,8 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             }
             budget
                 .charge(Resource::Steps, 1)
-                .map_err(|error| query_error(error.into()))?;
+                .map_err(|error| query_error(error.into()))
+                .map_err(crate::source::query_limit)?;
             if !declared
                 .collection()
                 .as_str()

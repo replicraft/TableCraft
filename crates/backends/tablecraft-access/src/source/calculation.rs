@@ -6,7 +6,9 @@ use tablecraft_ace::{
     CalculationDeclaration, InspectError, NativeReadSource, inspect_calculation_declaration,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_query::{ExecutionOptions, PreparedQuery, QueryError, QueryResult, Source, prepare};
+use tablecraft_query::{
+    ExecutionOptions, PreparedQuery, QueryError, QueryResult, Source, SourceFailure, prepare,
+};
 use tablecraft_sql::{ParseError, ParseLimits, query::Query};
 use thiserror::Error;
 
@@ -118,11 +120,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             let mut source = self
                 .source
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             inspect_calculation_declaration(
                 &mut *source,
                 self.scope,
@@ -136,7 +138,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
         let mut budget = self
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let (expression, calculated_dependencies) =
             dependencies::expand(&declaration, limits, &mut budget, self.cancelled)?;
         let (query, dependencies) = syntax::prepare_expression(
@@ -154,7 +156,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
             }
             budget
                 .charge(Resource::Steps, columns.len() as u64 + 1)
-                .map_err(QueryError::from)?;
+                .map_err(crate::source::query_limit)?;
             let index = columns
                 .iter()
                 .position(|column| column.name() == dependency)

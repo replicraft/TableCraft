@@ -12,7 +12,7 @@ use tablecraft_ace::{
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_db::{MultivalueList, validate_projection};
 use tablecraft_query::{
-    QueryError,
+    QueryError, SourceFailure,
     source::{MultivalueVisitor, TextCollationId},
 };
 use tablecraft_schema::{CollectionMember, SchemaName};
@@ -107,7 +107,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let unavailable = &entry.columns.get().ok_or(QueryError::Source)?.unavailable;
             let declarations = if unavailable.is_empty() {
                 Vec::new()
@@ -115,7 +115,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 let mut source = self
                     .source
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 inspect_attachment_declarations(
                     &mut *source,
                     self.scope,
@@ -136,15 +136,17 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut history_memos = Vec::new();
             members
                 .try_reserve_exact(declarations.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             text_collations
                 .try_reserve_exact(declarations.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             for declaration in declarations {
                 if (self.cancelled)() {
                     return Err(QueryError::Cancelled);
                 }
-                budget.charge(Resource::Steps, 1)?;
+                budget
+                    .charge(Resource::Steps, 1)
+                    .map_err(crate::source::query_limit)?;
                 text_collations.push(
                     declaration
                         .text_sort_order()
@@ -159,13 +161,13 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(|error| query_error(error.into()))?;
             history_memos
                 .try_reserve_exact(members.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             history_memos.resize(members.len(), None);
             if !unavailable.is_empty() {
                 let mut source = self
                     .source
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 let histories = inspect_version_history_declarations(
                     &mut *source,
                     self.scope,
@@ -184,18 +186,20 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     .map_err(|error| query_error(error.into()))?;
                 members
                     .try_reserve_exact(histories.len())
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 text_collations
                     .try_reserve_exact(histories.len())
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 history_memos
                     .try_reserve_exact(histories.len())
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 for declaration in histories {
                     if (self.cancelled)() {
                         return Err(QueryError::Cancelled);
                     }
-                    budget.charge(Resource::Steps, 1)?;
+                    budget
+                        .charge(Resource::Steps, 1)
+                        .map_err(crate::source::query_limit)?;
                     let (member, memo, order) = declaration.into_parts();
                     members.push(member);
                     text_collations.push(order.map(crate::collation::identity));
@@ -216,7 +220,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut snapshots = Vec::new();
             snapshots
                 .try_reserve_exact(members.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             snapshots.extend((0..members.len()).map(|_| CollectionSnapshot {
                 metadata: OnceCell::new(),
                 stored: OnceCell::new(),
@@ -282,10 +286,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             budget
                 .charge(Resource::Steps, fields.len() as u64 + 1)
-                .map_err(|error| query_error(error.into()))?;
+                .map_err(|error| query_error(error.into()))
+                .map_err(crate::source::query_limit)?;
             budget
                 .charge_allocation(
                     fields.len() as u64,
@@ -295,7 +300,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut lists = Vec::new();
             lists
                 .try_reserve_exact(fields.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             for field in &fields {
                 lists.push(NativeList {
                     field,
@@ -310,7 +315,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut views = Vec::new();
             views
                 .try_reserve_exact(lists.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             views.extend(lists.iter().map(|list| list as &dyn MultivalueList));
             drop(budget);
             visitor(row, &views)?;

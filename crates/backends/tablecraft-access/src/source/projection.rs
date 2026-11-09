@@ -7,7 +7,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{ProjectedRow, validate_projection};
-use tablecraft_query::{QueryError, Source, source::ScanConstraint};
+use tablecraft_query::{QueryError, Source, SourceFailure, source::ScanConstraint};
 
 pub(super) struct CachedProjection {
     indices: Vec<usize>,
@@ -40,13 +40,14 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let cached = entry
             .projected
             .try_borrow()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         for projection in cached.iter() {
             self.budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
                 .charge(Resource::Steps, (indices.len() + 1) as u64)
-                .map_err(|error| query_error(error.into()))?;
+                .map_err(|error| query_error(error.into()))
+                .map_err(crate::source::query_limit)?;
             if indices
                 .iter()
                 .all(|index| projection.indices.binary_search(index).is_ok())
@@ -57,14 +58,14 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 let mut budget = self
                     .budget
                     .try_borrow_mut()
-                    .map_err(|_| QueryError::Source)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
                 budget
                     .charge_allocation(indices.len() as u64, size_of::<usize>() as u64)
                     .map_err(|error| query_error(error.into()))?;
                 let mut positions = Vec::new();
                 positions
                     .try_reserve_exact(indices.len())
-                    .map_err(|_| QueryError::Allocation)?;
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
                 for index in indices {
                     positions.push(
                         projection
@@ -100,11 +101,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut cache = entry
                 .projected
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             budget
                 .charge_allocation(indices.len() as u64, size_of::<usize>() as u64)
                 .map_err(|error| query_error(error.into()))?;
@@ -114,9 +115,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut owned = Vec::new();
             owned
                 .try_reserve_exact(indices.len())
-                .map_err(|_| QueryError::Allocation)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             owned.extend_from_slice(indices);
-            cache.try_reserve(1).map_err(|_| QueryError::Allocation)?;
+            cache
+                .try_reserve(1)
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             cache.push(CachedProjection {
                 indices: owned,
                 snapshot,
@@ -127,7 +130,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let cache = entry
                 .projected
                 .try_borrow()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             self.visit_projection(
                 &cache.get(position).ok_or(QueryError::Source)?.snapshot,
                 None,
@@ -164,11 +167,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         let mut source = self
             .source
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let mut budget = self
             .budget
             .try_borrow_mut()
-            .map_err(|_| QueryError::Source)?;
+            .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
         let names = declared
             .selected_names(indices, &mut budget)
             .map_err(query_error)?;

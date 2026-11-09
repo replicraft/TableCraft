@@ -3,7 +3,7 @@ use super::{CalculationView, MAX_NAME_BYTES, MAX_VIEW_COLUMNS, RecomputedNativeS
 use crate::source::{CalculationError, NativeSource};
 use tablecraft_ace::{NativeReadSource, NativeTableStorage};
 use tablecraft_core::limits::Resource;
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_sql::{
     ParseError, ParseErrorKind, ParseLimits, SourceLocation,
     query::{Query, ReadBody, ReadQuery, Statement},
@@ -21,7 +21,7 @@ pub(super) fn prepare<R: NativeReadSource>(
     limits: ParseLimits,
 ) -> Result<View, CalculationError> {
     if request.columns.is_empty() || request.columns.len() > MAX_VIEW_COLUMNS {
-        return Err(QueryError::StructureLimit.into());
+        return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
     }
     identifier(request.alias)?;
     let name = copy(source, request.alias)?;
@@ -48,7 +48,7 @@ pub(super) fn prepare<R: NativeReadSource>(
     let mut selected = Vec::new();
     selected
         .try_reserve_exact(request.columns.len())
-        .map_err(|_| QueryError::Allocation)?;
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
 
     for requested in request.columns {
         RecomputedNativeSource::tick(source)?;
@@ -101,7 +101,7 @@ pub(super) fn prepare<R: NativeReadSource>(
 
 fn identifier(name: &str) -> Result<(), CalculationError> {
     if name.len() > MAX_NAME_BYTES {
-        return Err(QueryError::StructureLimit.into());
+        return Err(QueryError::SourceFailure(SourceFailure::StructureLimit).into());
     }
     if name.is_empty() || name.contains(']') || name.chars().any(char::is_control) {
         return Err(CalculationError::Unsupported);
@@ -117,7 +117,7 @@ fn copy<R: NativeReadSource>(
     let mut owned = String::new();
     owned
         .try_reserve_exact(value.len())
-        .map_err(|_| QueryError::Allocation)?;
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
     owned.push_str(value);
     Ok(owned)
 }
@@ -131,9 +131,9 @@ fn charge<R: NativeReadSource>(
     source
         .budget
         .try_borrow_mut()
-        .map_err(|_| QueryError::Source)?
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
         .charge_allocation(count as u64, width as u64)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
     Ok(())
 }
 
@@ -149,14 +149,14 @@ fn query<R: NativeReadSource>(
         .len()
         .checked_add(" FROM []".len())
         .and_then(|value| value.checked_add(table.len()))
-        .ok_or(QueryError::StructureLimit)?;
+        .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
     for value in &selected {
         RecomputedNativeSource::tick(source)?;
         identifier(&value.name)?;
         length = length
             .checked_add(value.name.len())
             .and_then(|value| value.checked_add("[],".len()))
-            .ok_or(QueryError::StructureLimit)?;
+            .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
     }
     charge(source, length, size_of::<u8>())?;
     charge(
@@ -176,9 +176,9 @@ fn query<R: NativeReadSource>(
     source
         .budget
         .try_borrow_mut()
-        .map_err(|_| QueryError::Source)?
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?
         .charge(Resource::Steps, length as u64)
-        .map_err(QueryError::from)?;
+        .map_err(crate::source::query_limit)?;
 
     // Keep the former SELECT carrier's input/token ceilings without reparsing
     // identifiers or already-validated formula trees.
@@ -186,9 +186,11 @@ fn query<R: NativeReadSource>(
         .len()
         .checked_mul(2)
         .and_then(|count| count.checked_add(2))
-        .ok_or(QueryError::StructureLimit)?;
+        .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
     // The old reservation included one unused trailing comma byte.
-    let syntax_bytes = length.checked_sub(1).ok_or(QueryError::StructureLimit)?;
+    let syntax_bytes = length
+        .checked_sub(1)
+        .ok_or(QueryError::SourceFailure(SourceFailure::StructureLimit))?;
     let message = if syntax_bytes > limits.max_bytes.min(ParseLimits::MAX_BYTES) {
         Some("SQL byte limit exceeded")
     } else if tokens > limits.max_tokens.min(ParseLimits::MAX_TOKENS) {
@@ -210,7 +212,7 @@ fn query<R: NativeReadSource>(
     let mut projections = Vec::new();
     projections
         .try_reserve_exact(selected.len())
-        .map_err(|_| QueryError::Allocation)?;
+        .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
     for selected in selected {
         RecomputedNativeSource::tick(source)?;
         let name = Name::from_identifier(&selected.name, limits)?;

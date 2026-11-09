@@ -20,10 +20,12 @@ pub(super) fn choose<'a>(
         }
         // Candidate mapping searches native and exposed fields. Charge the
         // bounded metadata work even when a declaration is ultimately skipped.
-        budget.charge(
-            Resource::Steps,
-            (inspection.schema().columns().len() + declared.columns.len() + 1) as u64,
-        )?;
+        budget
+            .charge(
+                Resource::Steps,
+                (inspection.schema().columns().len() + declared.columns.len() + 1) as u64,
+            )
+            .map_err(crate::source::query_limit)?;
         let Some(constraints) = index.constraints() else {
             continue;
         };

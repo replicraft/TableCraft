@@ -3,7 +3,7 @@ use tablecraft_ace::{
     InspectError, NativeColumn, TableSchema, inspect_table_features, inspect_table_schema,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_query::{QueryError, source::TextCollationId};
+use tablecraft_query::{QueryError, SourceFailure, source::TextCollationId};
 use tablecraft_schema::{Column, SchemaName};
 
 pub(crate) struct ScalarSchema {
@@ -136,11 +136,11 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
             let mut source = self
                 .source
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let mut budget = self
                 .budget
                 .try_borrow_mut()
-                .map_err(|_| QueryError::Source)?;
+                .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let columns =
                 if self.stored_calculations {
                     let features = inspect_table_features(
@@ -164,7 +164,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                         if (self.cancelled)() {
                             return Err(QueryError::Cancelled);
                         }
-                        budget.charge(Resource::Steps, 1)?;
+                        budget
+                            .charge(Resource::Steps, 1)
+                            .map_err(crate::source::query_limit)?;
                         match field.stored_column(&mut budget) {
                             Ok(column) => {
                                 if column.data_type() == tablecraft_schema::ScalarType::Text
@@ -186,7 +188,9 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                                     .map_err(|error| query_error(error.into()))?;
                                 let mut name = String::new();
                                 name.try_reserve_exact(field.column().name().len())
-                                    .map_err(|_| QueryError::Allocation)?;
+                                    .map_err(|_| {
+                                        QueryError::SourceFailure(SourceFailure::Allocation)
+                                    })?;
                                 name.push_str(field.column().name());
                                 columns.unavailable.push(
                                     SchemaName::new(name)
