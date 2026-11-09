@@ -53,6 +53,11 @@ fn click(harness: &mut Harness<'_, Desktop>, key: &str) {
     // Actions are consumed after drawing. Paint the resulting dialog before
     // querying its controls rather than using the previous frame's tree.
     harness.run_steps(2);
+    if !harness.state().state.busy {
+        // A different Modal becomes the top modal on the following frame.
+        // Settle that transition before checking whether its controls are enabled.
+        harness.run();
+    }
 }
 
 fn take_review(
