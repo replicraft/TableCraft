@@ -2734,3 +2734,28 @@ unchanged above the pending row. The initial frames exposed a misleading read-on
 caption on qualified ADD-only sources; the final frames use the observed ADD
 caption while unsupported sources retain read-only wording. No native window
 or Windows/Access interaction was used for these checks.
+
+## Fitted field-name proposals — 9 November 2026
+
+`TABLECRAFT_PREVIEW_FIELD_RENAME=grow-name` and `shrink-name` use an explicit
+source-free fitted-ASCII observation through the same shared editor. The retained
+`unsupported` mode deliberately supplies a same-width observation: its longer
+proposal remains visible and cannot dispatch a review. These facts are distinct;
+the new modes do not change the meaning of the old source restriction. None
+creates a native candidate, review capability, worker, file or journal.
+
+Five frames were rendered and opened on macOS ARM64 with the offscreen GPU
+renderer: English light growth and dark shrink at 1280 × 820 logical pixels/1×,
+German dark growth and the English light same-width refusal at 860 × 640/1×, and
+Japanese light shrink at 860 × 640/2×. The actual name input and localized policy
+message fit alongside the separate cancellation control. Compact layouts retain
+the complete Ribbon through horizontal scrolling. Original synthetic schema
+names remain unchanged behind the proposals.
+
+The retained Windows Access Datasheet and Table Design screenshots were opened
+again; guest scale is unknown. There is no retained Access rename editor/status
+reference, so these remain adaptations, not pixel or native interaction parity.
+The initial shared UI batch rejected two new tests because their source reply
+preceded any bound inspection request; corrected setup retains the production
+identity checks, and all 25 field-rename UI cases pass. Native persistence and
+independent image/recovery checks are separate evidence.
