@@ -1,5 +1,6 @@
 //! Actual options widgets, consuming review, durable save and full-witness reopen.
 mod failures;
+mod field_history;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui::accesskit::Role;
@@ -12,6 +13,13 @@ use tablecraft_ui::{ObjectKind, ObjectTarget};
 fn explicit_options_save_confirms_then_closes_persisted_tabs_and_keeps_scratch() {
     let before = canonical_creator_rename::originals().remove(0);
     let expected = canonical_database_options::explicit_off(&before);
+    assert_options_save_closes_persisted_tabs_and_preserves_scratch(before, expected);
+}
+
+fn assert_options_save_closes_persisted_tabs_and_preserves_scratch(
+    before: Vec<u8>,
+    expected: Vec<u8>,
+) {
     let (_directory, path, original, mut harness) = test_support::opened(before);
     assert_eq!(
         harness.state().state.database_options_available,
