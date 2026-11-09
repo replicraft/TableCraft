@@ -54,8 +54,13 @@ fn design_number_and_short_text_save_exact_images_and_select_the_actual_new_fiel
             .get_by_role_and_label(Role::ComboBox, "Data Type")
             .click_accesskit();
         harness.run_steps(2);
+        let kind_label = harness.state().state.localizer.text(if kind == "Number" {
+            "table-draft-number"
+        } else {
+            "table-draft-short-text"
+        });
         harness
-            .get_by_role_and_label(Role::Button, kind)
+            .get_by_role_and_label(Role::Button, &kind_label)
             .click_accesskit();
         harness.run_steps(2);
         assert_eq!(harness.state().state.field_addition_name().unwrap().1, name);
