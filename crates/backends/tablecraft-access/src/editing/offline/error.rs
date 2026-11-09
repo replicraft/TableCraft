@@ -7,8 +7,9 @@ use tablecraft_ace::{
     DefaultZeroAddColumnIntentError, FirstTableError, FirstTableIntentError,
 };
 use tablecraft_ace::{
-    InspectError, NativeIntentError, NativeRecoveryQualificationError, QueryExpressionIntentError,
-    QueryExpressionRecoveryError, TableRenameIntentError,
+    InspectError, NativeIntentError, NativeRecoveryQualificationError,
+    QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
+    TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -116,6 +117,9 @@ pub enum Cause {
     /// Fresh original query definition, identity or complete image did not qualify.
     #[error(transparent)]
     QueryExpressionQualification(QueryExpressionRecoveryError),
+    /// TCQE0002 encoding, fresh source, fragment or complete-image proof refused.
+    #[error(transparent)]
+    QueryExpressionEditsIntent(QueryExpressionEditsIntentError),
     /// Table-rename intent framing or encoding failed without decoder fallback.
     #[error(transparent)]
     TableRenameIntent(TableRenameIntentError),

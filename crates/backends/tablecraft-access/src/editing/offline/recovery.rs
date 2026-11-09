@@ -13,12 +13,14 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeTableRenameIntent, NativeUpdateIntent,
-    NativeUpdateProfile, qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
+    NativeQueryExpressionIntent, NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile,
+    qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
     qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
     qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
-    qualify_native_omitted_insert_recovery, qualify_native_query_expression_recovery,
-    qualify_native_table_rename_recovery, qualify_native_update_recovery,
+    qualify_native_omitted_insert_recovery, qualify_native_query_expression_edits_recovery,
+    qualify_native_query_expression_recovery, qualify_native_table_rename_recovery,
+    qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
@@ -69,6 +71,18 @@ impl OfflineWriteSession {
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::DatabaseOptions(intent) => {
                     super::database_options::recover(pair, intent, slot.scope, budget, cancelled)
+                }
+                MutationIntent::QueryExpressionEdits(intent) => {
+                    let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_query_expression_edits_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::QueryExpressionEditsIntent)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
                 }
                 MutationIntent::QueryExpression(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
@@ -321,6 +335,17 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::QueryExpressionEdits(intent) => {
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_query_expression_edits_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::QueryExpressionEditsIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::QueryExpression(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -532,7 +557,9 @@ impl OfflineWriteSession {
         let slot = self.slot_mut()?;
         slot.current = None;
         let target = slot.target.take().ok_or(Cause::InvalidState)?;
-        let limit = NativeTableRenameIntent::MAX_ENCODED_BYTES
+        let limit = NativeQueryExpressionIntent::MAX_ENCODED_BYTES
+            .max(NativeQueryExpressionEditsIntent::MAX_ENCODED_BYTES)
+            .max(NativeTableRenameIntent::MAX_ENCODED_BYTES)
             .max(NativeUpdateIntent::MAX_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)

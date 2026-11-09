@@ -1,4 +1,5 @@
 //! Retained-target query metadata saves and closed TCQE lifecycle observations.
+mod edits;
 use super::*;
 use crate::editing::offline::{
     CompletionKind, VerifiedImage,
@@ -243,13 +244,13 @@ fn cold_and_retained_recovery_and_settled_confirmation_keep_query_facts_distinct
 }
 
 #[test]
-fn tcqe_decode_failure_is_not_retried_as_row_or_schema_intent() {
+fn future_tcqe_decode_failure_is_not_retried_as_row_or_schema_intent() {
     let [before, _] = storage_pair();
     let mut raw = review(&before, "43")
         .intent()
         .encode(&mut budget(), &|| false)
         .unwrap();
-    raw[7] = b'2';
+    raw[7] = b'3';
     assert!(matches!(
         MutationIntent::decode(&raw, &mut budget(), &|| false),
         Err(Cause::QueryExpressionIntent(

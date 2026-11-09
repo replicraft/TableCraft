@@ -1,5 +1,5 @@
 //! Private action composition; row and schema operations retain distinct intents.
-use super::{Cause, QueryChange, SchemaChange};
+use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
@@ -10,10 +10,9 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionIntent,
-    NativeTableRenameIntent, NativeUpdateIntent, PreparedNativeUpdate, RecoverableNativeDeletePlan,
-    RecoverableNativeEditPlan, RecoverableNativeQueryExpressionPlan,
-    RecoverableNativeTableRenamePlan,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
+    NativeQueryExpressionIntent, NativeTableRenameIntent, NativeUpdateIntent, PreparedNativeUpdate,
+    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -21,7 +20,7 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(RecoverableNativeDatabaseOptionsPlan),
-    QueryExpression(RecoverableNativeQueryExpressionPlan),
+    QueryExpression(QueryExpressionPlan),
     #[cfg(feature = "ace16-create")]
     AddColumn(RecoverableAddColumnPlan),
     #[cfg(feature = "ace16-create")]
@@ -48,10 +47,7 @@ impl MutationPlan {
                 .intent()
                 .encode(budget, cancelled)
                 .map_err(Cause::DatabaseOptionsIntent),
-            Self::QueryExpression(plan) => plan
-                .intent()
-                .encode(budget, cancelled)
-                .map_err(Cause::QueryExpressionIntent),
+            Self::QueryExpression(plan) => plan.encode_intent(budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(plan) => plan
                 .intent()
@@ -102,10 +98,7 @@ impl MutationPlan {
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
             Self::QueryExpression(plan) => {
-                let prepared = plan
-                    .prepare(target, journal, budget, cancelled)
-                    .map_err(Cause::Prepare)?;
-                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+                return plan.commit(target, journal, budget, cancelled);
             }
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(plan) => {
@@ -160,6 +153,7 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(NativeDatabaseOptionsIntent),
     QueryExpression(NativeQueryExpressionIntent),
+    QueryExpressionEdits(NativeQueryExpressionEditsIntent),
     #[cfg(feature = "ace16-create")]
     AddColumn(NativeAddColumnIntent),
     #[cfg(feature = "ace16-create")]
@@ -208,6 +202,14 @@ impl MutationIntent {
 
     pub(super) fn query_change(&self) -> Option<QueryChange> {
         match self {
+            Self::QueryExpressionEdits(intent) => intent
+                .edits()
+                .iter()
+                .any(|edit| {
+                    let request = edit.as_request();
+                    request.expected != request.replacement
+                })
+                .then_some(QueryChange::ExpressionSaved),
             Self::QueryExpression(intent) => (intent.expected_expression()
                 != intent.replacement_expression())
             .then_some(QueryChange::ExpressionSaved),
@@ -227,6 +229,11 @@ impl MutationIntent {
             return NativeDatabaseOptionsIntent::decode(raw, budget, cancelled)
                 .map(Self::DatabaseOptions)
                 .map_err(Cause::DatabaseOptionsIntent);
+        }
+        if raw.starts_with(b"TCQE0002") {
+            return NativeQueryExpressionEditsIntent::decode(raw, budget, cancelled)
+                .map(Self::QueryExpressionEdits)
+                .map_err(Cause::QueryExpressionEditsIntent);
         }
         if raw.starts_with(b"TCQE") {
             return NativeQueryExpressionIntent::decode(raw, budget, cancelled)

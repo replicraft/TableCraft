@@ -1,6 +1,7 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
 #[cfg(feature = "ace16-create")]
 mod number_column;
+mod query_expression_edits;
 
 use super::RetainedOwner;
 use crate::editing::save::{
@@ -21,8 +22,9 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
-    QueryExpressionError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    RecoverableQueryExpressionError, TableRenameError, TableRenameIntentError,
+    QueryExpressionEditsError, QueryExpressionEditsIntentError, QueryExpressionError,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableQueryExpressionError,
+    TableRenameError, TableRenameIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -232,6 +234,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::Intent(error) => intent_failure(error),
             Cause::Qualification(error) => qualification_failure(error),
             Cause::TableRenameIntent(error) => rename_intent_failure(error),
+            Cause::QueryExpressionEditsIntent(error) => query_expression_edits::intent(error),
             Cause::QueryExpressionIntent(error) => query_expression_intent_failure(error),
             Cause::QueryExpressionQualification(error) => query_expression_recovery_failure(error),
             Cause::Prepare(error) | Cause::Recovery(error) => journal_failure(error),
@@ -261,6 +264,12 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<TableRenameIntentError>() {
         return rename_intent_failure(error);
+    }
+    if let Some(error) = error.downcast_ref::<QueryExpressionEditsError>() {
+        return query_expression_edits::expression(error);
+    }
+    if let Some(error) = error.downcast_ref::<QueryExpressionEditsIntentError>() {
+        return query_expression_edits::intent(error);
     }
     if let Some(error) = error.downcast_ref::<QueryExpressionError>() {
         return query_expression_failure(error);
