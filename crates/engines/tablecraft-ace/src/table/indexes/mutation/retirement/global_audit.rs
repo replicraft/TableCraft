@@ -1,9 +1,9 @@
 //! Exact union proof for global bitmap bytes touched by several table owners.
-use super::{GLOBAL_MAP_REFERENCE, INVALID_PREFIX_BYTES, RetirementTable};
+use super::{INVALID_PREFIX_BYTES, RetirementTable};
 use crate::{
     EditError, InspectError,
     format::{
-        allocation::{MapCell, MapRole, RepresentedMap},
+        allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
         page::PAGE_BYTES,
         reader::Reader,
     },
@@ -46,7 +46,7 @@ pub(in crate::table) fn audit_global(
             cancelled,
             reads: 0,
         };
-        let map = RepresentedMap::read(&mut reader, GLOBAL_MAP_REFERENCE, MapRole::GlobalFree)?;
+        let map = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
         for table in tables {
             for page in table.retired {
                 reader.tick()?;
@@ -71,7 +71,7 @@ pub(in crate::table) fn audit_global(
         cancelled,
         reads: 0,
     };
-    let map = RepresentedMap::read(&mut reader, GLOBAL_MAP_REFERENCE, MapRole::GlobalFree)?;
+    let map = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     for (number, original) in &cells {
         reader.tick()?;
         reader.work(cells.len())?;

@@ -1,9 +1,6 @@
-use super::{
-    FIRST_REUSABLE_PAGE, GLOBAL_MAP_REFERENCE, INVALID_PREFIX_BYTES, RetirementTable, append,
-    header_patch,
-};
+use super::{FIRST_REUSABLE_PAGE, INVALID_PREFIX_BYTES, RetirementTable, append, header_patch};
 use crate::format::{
-    allocation::{self, MapRole, RepresentedMap},
+    allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
     bytes::u32_at,
     page::OWNER_OFFSET,
     reader::Reader,
@@ -35,7 +32,7 @@ fn collect(
         cancelled,
         reads: 0,
     };
-    let global = RepresentedMap::read(&mut reader, GLOBAL_MAP_REFERENCE, MapRole::GlobalFree)?;
+    let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global.require_allocated_storage(&mut reader, &global)?;
     global.require_allocated(&mut reader, schema.definition)?;
     let data_map = RepresentedMap::read(&mut reader, schema.layout.usage, MapRole::Owned)?;

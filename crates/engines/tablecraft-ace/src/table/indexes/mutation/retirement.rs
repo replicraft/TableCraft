@@ -18,8 +18,6 @@ use super::IndexDataPatch;
 use crate::{EditError, InspectError, NativeImage, format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) use crate::format::allocation::GLOBAL_FREE_REFERENCE as GLOBAL_MAP_REFERENCE;
-
 pub(in crate::table) struct RetiredPage {
     pub number: u32,
     pub physical: u32,

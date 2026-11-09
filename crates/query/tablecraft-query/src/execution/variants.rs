@@ -4,7 +4,10 @@ use super::{Environment, Runtime};
 use crate::execution::cell::CellValue;
 use crate::{
     QueryError,
-    plan::{Aggregate, Expr, declarations::literal_declaration},
+    plan::{
+        Aggregate, Expr,
+        declarations::{functions, literal_declaration},
+    },
 };
 use tablecraft_core::values::{ExpressionValue, Value};
 use tablecraft_expressions::functions::text::byte_string::ByteOperand;
@@ -48,7 +51,7 @@ impl Runtime<'_, '_> {
         }
         if let Expr::DomainCall(kind, arguments) = expression {
             self.tick()?;
-            let declaration = super::declarations::functions::result(expression);
+            let declaration = functions::result(expression);
             return self
                 .domain_expression(*kind, arguments, env)
                 .map(|value| value.with_declaration(declaration));
@@ -79,7 +82,7 @@ impl Runtime<'_, '_> {
                     .map(|value| value.with_declaration(None))
             }
             _ => {
-                let declaration = super::declarations::functions::result(expression);
+                let declaration = functions::result(expression);
                 self.eval(expression, env)
                     .map(|value| CellValue::scalar(value).with_declaration(declaration))
             }
@@ -102,8 +105,7 @@ impl Runtime<'_, '_> {
                         ExpressionValue::StringBytes(bytes.into_expression_string())
                     }
                 };
-                Ok(CellValue::from(value)
-                    .with_declaration(super::declarations::functions::result(expression)))
+                Ok(CellValue::from(value).with_declaration(functions::result(expression)))
             }
             Expr::Eval(value) => {
                 self.tick()?;
@@ -299,7 +301,7 @@ impl Runtime<'_, '_> {
                 self.retain_string_cell(value)
             }
             _ => {
-                let declaration = super::declarations::functions::result(expression);
+                let declaration = functions::result(expression);
                 self.eval(expression, env)
                     .map(|value| CellValue::scalar(value).with_declaration(declaration))
             }

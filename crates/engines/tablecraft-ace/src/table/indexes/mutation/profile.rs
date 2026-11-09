@@ -4,6 +4,7 @@ use super::super::{composite::DecimalValue, guid::GuidProfile};
 use super::NumericKey;
 use crate::table::indexes::key::KeyRow;
 use crate::table::indexes::key::KeyWork;
+use crate::table::indexes::numeric::encode_component;
 use crate::{EditError, InspectError};
 use std::cmp::Ordering;
 
@@ -71,7 +72,7 @@ impl WriteProfile for SingleProfile {
         column == self.column
     }
     fn encode(&self, key: Self::Key, bytes: &mut [u8]) -> Result<usize, InspectError> {
-        super::encoding::component(key, self.kind, self.descending, bytes)
+        encode_component(key, self.kind, self.descending, bytes)
     }
     fn update(
         &self,

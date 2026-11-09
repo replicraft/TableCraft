@@ -23,7 +23,7 @@ use tablecraft_query::{
 };
 use tablecraft_sql::query::Query;
 
-pub(crate) use super::collation::TextCollation;
+use super::collation::TextCollation;
 #[derive(Clone, Copy, ValueEnum)]
 pub(crate) enum Wildcards {
     /// Access asterisk, question mark, digit and negated-list wildcards.

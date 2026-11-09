@@ -1,6 +1,6 @@
-use super::{GLOBAL_MAP_REFERENCE, RetiredPage};
+use super::RetiredPage;
 use crate::format::{
-    allocation::{self, MapRole, RepresentedMap},
+    allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
     page::PAGE_BYTES,
     reader::Reader,
 };
@@ -92,7 +92,7 @@ pub(in crate::table) fn audit_retirements(
         cancelled,
         reads: 0,
     };
-    let global = RepresentedMap::read(&mut reader, GLOBAL_MAP_REFERENCE, MapRole::GlobalFree)?;
+    let global = RepresentedMap::read(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     global.require_allocated_storage(&mut reader, &global)?;
     global.require_allocated(&mut reader, new_indexes.schema().definition)?;
     let data_map = RepresentedMap::read(

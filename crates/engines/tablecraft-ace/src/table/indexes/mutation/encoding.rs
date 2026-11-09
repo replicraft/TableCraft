@@ -1,4 +1,3 @@
-pub(super) use super::super::numeric::encode_component as component;
 use super::super::{
     key::MARKER_BYTES,
     page::{Entry, ROW_BYTES},

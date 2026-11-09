@@ -1,4 +1,4 @@
-use super::{Error, retrieval::TextCollation};
+use super::{Error, collation::TextCollation};
 use crate::native::{self, publication};
 use std::path::Path;
 use tablecraft_access::editing::sql;

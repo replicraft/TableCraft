@@ -2,7 +2,7 @@
 mod publisher;
 
 use super::{
-    Error, execution_context, parameters, parse, retrieval::TextCollation, run_args::RunArgs,
+    Error, collation::TextCollation, execution_context, parameters, parse, run_args::RunArgs,
 };
 use crate::{commands::ExecutionError, native, presentation::Format};
 use publisher::Publisher;

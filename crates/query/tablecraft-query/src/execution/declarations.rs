@@ -1,6 +1,5 @@
 //! Operation-local operator declaration provenance, independent of stored values.
 use crate::plan::declarations::combined;
-pub(super) use crate::plan::declarations::functions;
 mod predicates;
 pub(super) mod relational;
 use super::Runtime;

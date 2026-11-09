@@ -1,6 +1,7 @@
 //! Qualified write carriers; physical GUID segments differ from stored UUID bytes.
 use super::super::{composite::DecimalValue, decimal::DecimalType, guid};
 use super::NumericKey;
+use crate::table::indexes::numeric::encode_component;
 use crate::{EditError, InspectError, NativeColumn};
 use tablecraft_schema::ScalarType;
 
@@ -53,9 +54,7 @@ impl MutationKey {
         bytes: &mut [u8],
     ) -> Result<usize, InspectError> {
         match self {
-            Self::Numeric(kind) => {
-                super::encoding::component(numeric(key)?, kind, descending, bytes)
-            }
+            Self::Numeric(kind) => encode_component(numeric(key)?, kind, descending, bytes),
             Self::Guid => guid::encode_component(guid_key(key)?, descending, bytes),
             Self::Decimal(kind) => kind.encode(decimal_key(key)?, descending, bytes),
         }
