@@ -8,6 +8,7 @@ Contributing, dependency policy, tracing and CLI release packaging.
 - [Dependency and reference review](DEPENDENCY_REVIEW.md)
 - [Desktop and engine library follow-up](DESKTOP_LIBRARY_REVIEW.md)
 - [Development baseline](DEVELOPMENT.md)
+- [Rust source review and follow-up](RUST_REVIEW.md)
 - [Library choices](LIBRARY_POLICY.md)
 - [CLI release preparation](RELEASING.md)
 - [Desktop archive preparation](DESKTOP_PACKAGING.md)

@@ -70,7 +70,7 @@ profile, or every VBA overload is supported. Known gaps stay `Partial` even when
 the common case works. There is deliberately no overall completion percentage.
 
 Scalar implementations live in
-[`tablecraft-expressions`](../../crates/query/tablecraft-expressions/src/functions/mod.rs);
+[`tablecraft-expressions`](../../crates/query/tablecraft-expressions/src/functions.rs);
 SQL binding/execution lives in
 [`tablecraft-query`](../../crates/query/tablecraft-query/src/binding/calls.rs).
 Unless noted, implemented scalar functions work in `query eval` and `query run`;
