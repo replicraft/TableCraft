@@ -1,0 +1,345 @@
+{
+  "scope": "Fresh optional provenance/CLI extraction equivalence with simulated protocol I/O only; no Git or fixture processes",
+  "groups": [
+    14,
+    19
+  ],
+  "extractions": [
+    {
+      "group": 14,
+      "function": "git_objects",
+      "paths": [
+        "tests/access/indexes/ace16_insert_child_split/verify.py",
+        "tests/access/indexes/ace16_insert_height_one/verify.py",
+        "tests/access/indexes/ace16_insert_general_height_one/verify.py"
+      ],
+      "helper": "tests/access/shared/shared_provenance/git_objects.py",
+      "body_ast_sha256": "22877ea0f29d2d661f92012448bf1e615824fbaacd92402a8635aed1ce826dfa",
+      "bindings": [
+        "ROOT",
+        "hashlib",
+        "subprocess"
+      ],
+      "facade": "Direct helper dependency; no forwarding wrapper."
+    },
+    {
+      "group": 19,
+      "function": "main",
+      "paths": [
+        "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+        "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+        "tests/access/storage/ace16_insert_external_long_values/verify.py"
+      ],
+      "helper": "tests/access/shared/shared_provenance/saved_cli.py",
+      "body_ast_sha256": "d4cf7cef08a0374d652f438b5e460bcc6931aef29dded5785797f93a98b572a0",
+      "bindings": [
+        "GETTERS",
+        "NATIVE_WORK",
+        "Path",
+        "ROOT",
+        "__doc__",
+        "argparse",
+        "json",
+        "replay",
+        "subprocess"
+      ]
+    }
+  ],
+  "git_protocol_observations": [
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "valid",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "trailing",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "wrong-type",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "wrong-digest",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "missing-object",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "query-newline",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "scenario": "byte-ceiling",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "valid",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "trailing",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "wrong-type",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "wrong-digest",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "missing-object",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "query-newline",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "scenario": "byte-ceiling",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "valid",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "trailing",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "wrong-type",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "wrong-digest",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "missing-object",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 1
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "query-newline",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    },
+    {
+      "consumer": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "scenario": "byte-ceiling",
+      "old_new_protocol_behavior_equal": true,
+      "simulated_protocol_calls_per_implementation": 0
+    }
+  ],
+  "cli_observations": [
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "success",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "missing",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "assertion",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "value",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "key",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "process-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "unknown-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "scenario": "help",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "success",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "missing",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "assertion",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "value",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "key",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "process-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "unknown-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "scenario": "help",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "success",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "missing",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "assertion",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "value",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "key",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "process-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "unknown-error",
+      "old_new_return_stdout_stderr_equal": true
+    },
+    {
+      "consumer": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "scenario": "help",
+      "old_new_return_stdout_stderr_equal": true
+    }
+  ],
+  "git_scenarios_per_consumer": 7,
+  "cli_scenarios_per_consumer": 8,
+  "git_processes": 0,
+  "fixture_processes": 0,
+  "native_access_execution": false,
+  "current_maintained_source_pins": [
+    {
+      "path": "tests/access/indexes/ace16_insert_child_split/verify.py",
+      "bytes": 17512,
+      "sha256": "577412cd31d3e936234269cac0042b9ba17f562b5a0b606855a541b6665c1886"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+      "bytes": 19916,
+      "sha256": "0a7ef5d8c6ed99b7d9dd109c0f5192a720a741edadc835276ca42797f29d2172"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_height_one/verify.py",
+      "bytes": 15767,
+      "sha256": "63ed4b150a6f4d1c8b1d55579ee36f7f41dc70572b42ba374bfbcd1225d67a18"
+    },
+    {
+      "path": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+      "bytes": 12371,
+      "sha256": "2fd492fd7fba38f4ba6844086ef1992529d5c24d04ce814289fa340bdadc136c"
+    },
+    {
+      "path": "tests/access/shared/shared_provenance/git_objects.py",
+      "bytes": 1526,
+      "sha256": "a1cab1c1802486c57a47c3ef463cbc8a5ae12e879324dc66a461bd6180f63c59"
+    },
+    {
+      "path": "tests/access/shared/shared_provenance/saved_cli.py",
+      "bytes": 1313,
+      "sha256": "69260e35cea8cab6cb3c1a39b469a2b0d0962f31502197a5f35eee919475661b"
+    },
+    {
+      "path": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+      "bytes": 14531,
+      "sha256": "7590e653e218bc6797da6b30eb535d6592a65b19d9fc3413eb1a486e0acb28eb"
+    },
+    {
+      "path": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+      "bytes": 11012,
+      "sha256": "e315462c3269deb3787bcbaf7428156f0f1b008cb85cb9068cb3418c76007141"
+    }
+  ]
+}

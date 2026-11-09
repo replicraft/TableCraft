@@ -143,3 +143,45 @@ and before/after combinations, not new native observations. Complete constructio
 also still matches 96 scalar/GUID/decimal image-and-fact goldens plus eight complete
 child/general-height-one renderer goldens. See the
 [fresh raw tree/render equivalence record](../../results/development/shared-raw-tree-render-equivalence-2026-11-09.json).
+
+The final live groups, 14 and 19, now have shared
+[optional Git-object protocol verification](../../access/shared/shared_provenance/git_objects.py)
+and [saved-verifier CLI handling](../../access/shared/shared_provenance/saved_cli.py).
+The Git helper keeps the same canonical checkout root and standard-library
+bindings; callers import its actual owner directly. Each CLI still supplies its
+own description, defaults and replay function explicitly.
+
+The original bodies are AST-identical. Seven simulated bounded Git protocol
+scenarios are compared through three consumers (21 comparisons), covering exact
+blobs, framing/type/digest failures, injected query newlines and byte ceilings.
+No Git process is executed. Eight CLI scenarios through three consumers (24
+comparisons) preserve success, missing evidence, handled errors, help and unknown
+error propagation, including return values and stdout/stderr. See the
+[fresh protocol/CLI equivalence record](../../results/development/shared-provenance-cli-equivalence-2026-11-09.json).
+
+## Disposition of all 22 original groups
+
+| Original group | Disposition |
+| --- | --- |
+| 1 | Shared raw insertion body; feature codecs remain bound separately |
+| 2 | Shared finite weights; original truncation callbacks remain bound |
+| 3–4 | Shared raw map primitives; direct imports, no forwarding wrappers |
+| 5 | Shared metadata-only tree traversal |
+| 6 | Shared within model raw-tree family |
+| 7 | Shared within reference raw-tree family; separate from group 6 |
+| 8 | Shared integral raw framing |
+| 9–11 | Shared split action inspection and complete membership |
+| 12 | Shared within candidate tree family; separate typed decoder callbacks |
+| 13 | Shared independent page renderer |
+| 14 | Shared optional Git-object protocol verifier |
+| 15 | Two immutable executed sources; no live duplicate to extract |
+| 16–18 | One live body plus immutable witness; no second live owner |
+| 19 | Shared saved-verifier CLI with explicit feature defaults/replay |
+| 20–21 | Shared getter parsing and raw LVAL inventory |
+| 22 | Separate public/native expected-transition oracles retained intentionally |
+
+Seventeen live duplicate groups now have shared implementations. Five groups
+retain the concrete execution/oracle boundaries above. Thin feature binders are
+not alternate algorithm bodies: they retain their own typed codec, source policy
+or CLI defaults. This concludes the bounded engineering-helper review; it does
+not claim a semantic audit of every Rust test in the repository.

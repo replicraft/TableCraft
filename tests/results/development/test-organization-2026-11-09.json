@@ -671,6 +671,23 @@
       "status": "Shared live implementation extracted with oracle separation",
       "owner": "tests/access/indexes/shared_split/render.py",
       "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
+    },
+    "14": {
+      "status": "Shared live protocol/CLI implementation extracted",
+      "owner": "tests/access/shared/shared_provenance/git_objects.py",
+      "evidence": "tests/results/development/shared-provenance-cli-equivalence-2026-11-09.json"
+    },
+    "19": {
+      "status": "Shared live protocol/CLI implementation extracted",
+      "owner": "tests/access/shared/shared_provenance/saved_cli.py",
+      "evidence": "tests/results/development/shared-provenance-cli-equivalence-2026-11-09.json"
     }
+  },
+  "initial_inventory_phase": "Original pre-deduplication function groups; recorded line positions describe that initial scan, not current refactored files.",
+  "duplicate_review_summary": {
+    "reviewed_original_groups": 22,
+    "shared_live_groups": 17,
+    "retained_groups": 5,
+    "tests_removed": 0
   }
 }

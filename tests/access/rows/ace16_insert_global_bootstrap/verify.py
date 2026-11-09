@@ -1,4 +1,5 @@
 """Saved GLOBAL bootstrap proof; no producer/Java/Cargo or default subprocess."""
+from shared_provenance.saved_cli import main as shared_main
 import argparse
 import ast
 import json
@@ -175,24 +176,18 @@ def replay(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--evidence-root', type=Path, default=ROOT)
-    parser.add_argument('--verify-git', action='store_true')
-    parser.add_argument('--producer-report', default=NATIVE_WORK + '/report.json')
-    parser.add_argument('--getter-report', default=GETTERS + '/report.json')
-    args = parser.parse_args()
-    try:
-        result = replay(args)
-    except FileNotFoundError as error:
-        print(json.dumps({'verified': False, 'available': False,
-                          'reason': 'Required private evidence is absent', 'missing': str(error.filename)}, indent=2))
-        return 2
-    except (AssertionError, ValueError, KeyError, subprocess.SubprocessError) as error:
-        print(json.dumps({'verified': False, 'available': True,
-                          'reason': type(error).__name__ + ': ' + str(error)}, indent=2))
-        return 1
-    print(json.dumps(result, indent=2))
-    return 0
+    """Bind this feature's source policy to shared independent mechanics."""
+    return shared_main(
+        GETTERS=GETTERS,
+        NATIVE_WORK=NATIVE_WORK,
+        Path=Path,
+        ROOT=ROOT,
+        __doc__=__doc__,
+        argparse=argparse,
+        json=json,
+        replay=replay,
+        subprocess=subprocess,
+    )
 
 
 if __name__ == '__main__':
