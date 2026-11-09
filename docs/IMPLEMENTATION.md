@@ -21,7 +21,10 @@ captures. Windows and native Access execution remain unqualified.
 Current native source limits remain explicit: empty, unencoded ACE16 canonical
 generated-primary tables with bounded properties. Repeated Number addition now
 has a distinct TCAC0004 source/history proof, preserving the first addition's
-external property rows and appending a new body on the same owned LVAL page.
+external property rows and appending a new body on its owned LVAL ledger.
+The current bounded route allows one rollover to immediate EOF page 11, then
+fitted page-11 bodies; another allocation and sources at the sixteen-field
+ceiling refuse.
 Three independent [SDK observations](testing/number_column_repeat/README.md)
 match complete native second-ADD images; allocation/index pages remain unchanged.
 The same runtime/GUI service selects its exact source purpose, retains the sealed
@@ -36,9 +39,17 @@ lint passes both with all features and for normal creation+journal without
 preview. Earlier build and test-selection failures remain separate from passing
 gates. The third GUI image initially used a raw oracle; later independent SDK
 evidence is tracked separately rather than rewriting that execution record.
-Page-full allocation, additional tables/options composition, populated tables,
-unknown properties/history, rename/drop and broader profiles remain unfinished.
-Native Microsoft Access and Windows execution remain unqualified.
+A later [rollover workflow record](testing/results/number-column-rollover-workflows-2026-11-08.json)
+retains 135 selected passing checks, including the complete SDK rollover image,
+partial-growth recovery/settled proof and ordinary runtime/GUI N13→N14 saves.
+Both composed consumers then save a row with generated ID1 and fourteen omitted
+Number defaults stored as non-NULL zeros, using normal budgets and viewport.
+TCAC0004 retains its declaration/framing and V2 journal; original TCAC1–3 stay
+frozen. The earlier same-page observations and their passing counts remain
+historical records. Second-page-full allocation, additional tables/options
+composition, populated tables, unknown properties/history, rename/drop and
+broader profiles remain unfinished. Native Microsoft Access and Windows
+execution remain unqualified.
 
 ## Existing saved-query expression expansion — 8 November 2026
 

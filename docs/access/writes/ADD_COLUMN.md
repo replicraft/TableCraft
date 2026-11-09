@@ -261,31 +261,48 @@ as row 1; the prior row 0 body remains byte-exact. Dictionary/group order and ab
 versus explicit Required metadata remain distinct.
 
 Source admission is positive complete-image reconstruction, not a creator flag,
-fixture hash or normalized copy. The exact eleven-page empty ACE16 generated-key
-layout retains one property LVAL page. For n current fields and r occupied
-property rows, reconstruct the canonical n-r field prefix, apply the frozen first
-Number constructor, then replay the known same-page append for each historical
-Number field. Every historical appended field requires exact Int32/Required(false)
-/zero policies. The complete resulting source must equal the actual original,
+fixture hash or normalized copy. The exact empty ACE16 generated-key layout
+retains owned property pages [10] in an eleven-page file, or [10, 11] in a
+twelve-page file after one rollover. Only the last owned page is a candidate.
+For n current fields and r occupied property rows summed across that actual
+ledger, reconstruct the canonical n-r field prefix, apply the frozen first
+Number constructor, then replay each historical append, including its exact
+fitted or one-rollover placement. Every historical appended field requires exact
+Int32, stored Required(false) and zero policies. The complete resulting source must equal the actual original,
 including catalog logical/hidden roots, descriptor selection of the last body,
 old property rows, maps, index ownership and untouched bytes. Work and allocations
 consume one cumulative native allowance across all stages.
 
 Candidate construction uses the existing declaration/MR2 serializer, catalog
 logical-root/record-placement owner and shared `owned_lval` append framing. Exactly
-one fitted existing-page append is permitted: no page allocation, map change,
-row reuse or property-history retirement. A body that cannot fit refuses without
-publishing a partial candidate. Fresh native reopen verifies the exact complete
-property body and field/index identity; all earlier row spans and contents remain
-unchanged. Additional tables/options insertion, unknown histories, populated
-sources, chained/other external storage and another LVAL page remain unsupported.
+one new body appends to the last owned page when it fits. If page 10 cannot
+fit it, exactly one immediate-EOF page 11 may be allocated; subsequent bodies
+must fit page 11. The old page 10 stays entirely exact during rollover. A full
+page 11 refuses: no second allocation, reuse, reclaim or history retirement is
+admitted. The existing sixteen-field bound remains independent: a qualified
+source with fifteen fields can yield sixteen; a sixteen-field source cannot
+add another field.
+
+The represented EOF policy is explicit. Preview allocation still requires its
+original free-cell state. This canonical property route requires the represented
+EOF free bit clear, while separately proving physical file length, immediate EOF,
+ordinary/LVAL nonownership and the complete constructive source. The bit alone
+grants no ownership. Rollover derives exactly two selected owned/candidate map
+byte edits, rejects role-byte aliasing and leaves global allocation bytes exact.
+Fresh native reopen verifies the exact complete property body and field/index
+identity; every earlier row's slot word, span and payload remains unchanged.
+Complement proof permits only the selected definition/catalog/property scopes
+and those derived map bytes. Additional tables/options insertion, unknown
+histories, populated sources, chained/other external storage and growth beyond
+page 11 remain unsupported.
 
 TCAC0004 binds the original complete length/digest and exact names; decode returns
 request data only. Fresh reconstruction and both-image qualification use separate
 normal native/proof allowances and one cumulative recovery allowance. It reuses
-the checked resizable V2 journal even though this profile preserves file length;
-request version and journal version are independent. TCAC0001/0002/0003 retain
-their exact previous languages and reconstruct only their captured constructors.
+the checked resizable V2 journal for both fitted equal-length images and the
+one-page rollover; request version and journal version are independent. Extending
+source/placement admission changes neither the original declaration nor its
+TCAC0004 framing. TCAC0001/0002/0003 retain their exact previous languages and reconstruct only their captured constructors.
 Cold/settled recovery dispatches the exact version with no decoder fallback.
 
 The public runtime/UI service stays `ReviewAddNumberColumn`,
@@ -309,6 +326,32 @@ creation+journal without preview. This is bounded repeated ADD, not saved-field
 rename/drop, general column CRUD or Access 97–2019/native Microsoft Access
 qualification. The earlier native and consumer checkpoints, zero-match selection
 attempt and corrected test-helper build failure remain separately recorded.
+
+### One-rollover recovery and consumer evidence
+
+The earlier three second-ADD SDK observations above remain same-page evidence.
+The later [rollover SDK record](../../testing/results/number-column-rollover-sdk-2026-11-08.json)
+separately pins the complete N13→N14 image, which grows from 45,056 to 49,152
+bytes. N15's fitted page-11 construction has independent raw-model/native proof;
+it is not an additional SDK execution observation.
+
+The [rollover workflow record](../../testing/results/number-column-rollover-workflows-2026-11-08.json)
+retains 135 selected passing checks: 83 engine, 16 adapter, 18 runtime and 18
+desktop checks. Strict normal creation+journal lint without preview passes.
+Native checks cover the complete SDK image, positive reconstructed page-11
+sources, exact map refusals and full-page refusal.
+Checked V2 tests cover committed growth, partial-growth rollback, write-free
+settled confirmation and refusal of tampered foreign/global/owned map bytes even
+when a generic journal digest is valid. Preview's original RequireFree placement
+policy remains separate.
+
+Runtime and ordinary `Desktop::new` headless checks both save N14 using unchanged
+normal native/proof/persistence budgets, acknowledge the real actor and pass the
+complete-image reopen. The actual GUI then uses New row, omits all fourteen
+Number fields and saves generated ID1 plus fourteen non-NULL zeros. No viewport
+widening or capability override is used. These checks qualify this bounded
+engine/application route; they do not establish native Microsoft Access,
+Windows execution, other fields or older-format writes.
 
 
 ## Short Text and mixed-source evidence checkpoint

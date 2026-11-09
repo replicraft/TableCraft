@@ -343,12 +343,19 @@ through a distinct source/history proof and TCAC0004 original intent. Actual
 carrier metadata selects one constructor; each still performs complete native
 qualification and exact whole-image checked reopening. An ordinary headless
 Click-to-Add/name/Save flow passes three times in one session without a capability
-override. The first two complete images have independent SDK pins; the third is
-an independent raw-history check. This supplies no native Microsoft Access
+override. The first two complete images have independent SDK pins; that original
+GUI execution used an independent raw third-image oracle, with its later SDK
+comparison retained separately. This supplies no native Microsoft Access
 interaction or save-timestamp evidence.
 
-Repeated addition preserves every earlier property body and appends to the same
-owned LVAL page. Page-full allocation, unknown/additional property storage,
+Repeated addition preserves every earlier property body. It now permits exactly
+one rollover from property page 10 to immediate EOF page 11, then fitted appends
+on page 11 within the sixteen-field bound. A full second page refuses. The
+[rollover workflow record](../testing/results/number-column-rollover-workflows-2026-11-08.json)
+includes ordinary headless N13→N14 header/name/Save and checked reopen, followed
+by actual New row with all fourteen Number fields omitted: native reopen shows
+generated ID1 and fourteen non-NULL zeros. The normal viewport, host flags and
+budgets remain unchanged. Unknown/additional property storage,
 options/additional-table composition, populated tables, other field choices and
 other Jet/ACE write profiles remain separate targets. See the
 [native repeated-ADD limits](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)

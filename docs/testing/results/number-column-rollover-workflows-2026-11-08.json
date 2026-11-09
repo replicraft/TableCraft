@@ -1,0 +1,148 @@
+{
+  "date": "2026-11-08",
+  "scope": "Normal Number additions through one checked EOF property-page rollover, recovery, full-image reopen and omitted-field insertion",
+  "platform": "macOS ARM64, headless; native Access and Windows/Linux execution unrun",
+  "implementation_commits": [
+    "fc85eb17",
+    "0b139cf7",
+    "ae0e5170"
+  ],
+  "unique_selected_tests": 135,
+  "unique_by_layer": {
+    "engine": 83,
+    "Access_adapter": 16,
+    "runtime": 18,
+    "desktop": 18
+  },
+  "runs": [
+    {
+      "path": ".cache/number-rollover-summary-20261108.json",
+      "sha256": "91581523a885b881f01eaa53666707528c8f828db89fd3408b44a2875b639742",
+      "results": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::add_column::",
+          "passed": 35,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::add_column::",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::default_zero_add_column::",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::repeated_default_zero_add_column::",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::long_value::",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::insert::long_values::",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "editing::offline::add_column::tests::",
+          "passed": 16,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "tests::number_column::",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "editing::platform::save::outcomes::number_column::",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::number_column::",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::inserting::tests::number_column::",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::table_drafts::number_column::tests",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "path": ".cache/number-rollover-source-classifier-20261108.json",
+      "sha256": "8027275ae27fbc9d9320642698ae2ce55b95fba59c68cd1f4badb4f685bf9305",
+      "results": [
+        {
+          "package": "tablecraft_runtime",
+          "filter": "editing::platform::number_column::availability::tests::explicit_source_refusals_disable_but_failed_inspection_is_not_hidden",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    }
+  ],
+  "lint": [
+    {
+      "path": ".cache/number-rollover-normal-corrected-clippy-20261108.log",
+      "sha256": "723a561cf145c8b6a5b347b2358d811da48eb7b25e913c04dde37785777774f4",
+      "status": "passed",
+      "source_commit": "ae0e5170"
+    },
+    {
+      "path": ".cache/number-rollover-full-clippy-20261108.log",
+      "sha256": "604956be429bfa733965d28a4aef5710747623287f159a38b640b2830bcd2423",
+      "status": "passed",
+      "source_commit": "ae0e5170"
+    }
+  ],
+  "limitations": [
+    "Only qualified empty canonical ACE16 generated-primary sources; maximum sixteen fields in this profile.",
+    "One EOF property allocation at page11; no second growth, arbitrary page reuse or populated-table schema changes.",
+    "TCAC0004 and V2 journal unchanged; original TCAC1-3 remain distinct.",
+    "SDK byte comparisons are independent-reader evidence, not Microsoft Access qualification."
+  ],
+  "earlier_failure": {
+    "check": "normal-only strict clippy",
+    "reason": "Maps::pages unused without preview",
+    "correction_commit": "ae0e5170",
+    "disposition": "Corrected by using existing ownership accessor; corrected normal and all-feature lint pass."
+  }
+}

@@ -1626,8 +1626,19 @@ The host publishes no new revision from receipt alone. Ordinary Click-to-Add,
 name and Save can therefore repeat after successful checked reopening; their
 saved facts, stale-source safeguards and other drafts retain the existing lifecycle.
 The [native contract](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
-defines the exact empty-table/property-history/page-capacity limits. No general
-column alteration or older-format write admission follows from service reuse.
+defines the exact empty-table/property-history/page-capacity limits. TCAC0004
+now permits one property-page rollover to immediate EOF page 11 and later fitted
+page-11 bodies, within the existing sixteen-field ceiling; it retains the same
+original declaration/framing and checked V2 lifecycle. A full page 11 still
+refuses. Native proof, comparison and persistence use their existing independent
+allowances, including during whole-history reconstruction.
+
+The [rollover workflow record](../testing/results/number-column-rollover-workflows-2026-11-08.json)
+includes a normal N13→N14 save, actual actor acknowledgement and full-image
+reopen, followed by ordinary insertion with every Number field omitted. Fresh
+reads verify generated ID1 and fourteen non-NULL zeros. The desktop exercises
+those same native services through its ordinary widgets. No general column
+alteration or older-format write admission follows from service reuse.
 
 ## Reviewed explicit database options
 
