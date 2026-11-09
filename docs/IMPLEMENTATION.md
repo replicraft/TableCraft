@@ -1,5 +1,32 @@
 # Implementation status
 
+## Large-table browsing and General grouping — 9 November 2026
+
+The shared record navigator retains a checked EOF count when returning to earlier
+pages of the same immutable native table. Last remains usable without another
+complete scan; counts are not inferred from declared metadata or empty
+out-of-range pages. The record input measures its text so large row numbers fit.
+Nineteen focused UI tests and two desktop headless workflows pass.
+
+Buffered single-Text grouping now uses explicitly qualified policy-scoped
+candidate hints, followed by the original full comparison. Collisions, unsupported
+hints, eager failures, cancellation and occupied optional comparison pools retain
+their checked behavior. No default allowance changed. The full query suite passes
+1,838 tests/doc-tests; four native grouping cases pass, including both General
+sort versions. The 100,000-row budget regression now runs without repeating the
+deliberately failing full-size linear baseline; a small differential corpus
+retains that comparison.
+
+The donated `.mdb` sample is actually ACE 2007 format. Its complete largest-table
+read returns 100,969 rows across 12 columns; database-General grouping now completes
+under the same explicit allowances that previously failed, with counts matching
+the complete stream. The original file remains unchanged. See the
+[sample qualification](../tests/reports/reading/UNLOCODE_ACE2007_SAMPLE_QUALIFICATION.md).
+These checks establish neither Jet 4 sample coverage nor native Access parity.
+The GUI still needs explicit larger-query options and clearer pool-specific
+failures; its existing independent limits are recorded in the
+[SQL workspace contract](ui/SQL_WORKSPACE.md).
+
 ## Local shared-service MCP host — 9 November 2026
 
 `apps/tablecraft-mcp` now supplies an explicitly invoked local stdio host using
