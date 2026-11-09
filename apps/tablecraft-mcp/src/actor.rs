@@ -159,3 +159,6 @@ impl io::Write for ArgumentBudget {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

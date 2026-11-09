@@ -522,3 +522,6 @@ fn check<'a, T: Deserialize<'a>>(arguments: &'a Value) -> Result<(), String> {
         .map(|_| ())
         .map_err(|error| error.to_string())
 }
+
+#[cfg(test)]
+mod tests;

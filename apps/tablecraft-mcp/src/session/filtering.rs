@@ -302,3 +302,71 @@ fn total_aggregate_name(value: TotalAggregate) -> &'static str {
         TotalAggregate::Variance => "variance",
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::session::tests::{acknowledge, opened, save};
+    use tablecraft_testkit::fixtures::access::mutation_fixture;
+
+    #[test]
+    fn actual_filter_sort_totals_and_fresh_reapply_keep_native_handle_boundaries() {
+        let source = mutation_fixture::with_rows(&[(1, 30), (2, 10), (3, 20), (4, 10)]);
+        let (_directory, path, mut session) = opened(&source);
+        let revision = session.revision.unwrap();
+        let description = session
+            .execute(
+                "describe_field_filter",
+                json!({"document_revision": revision, "table": "Items", "column": "Score"}),
+            )
+            .unwrap();
+        assert!(
+            description["operators"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|operator| operator == "greater_or_equal")
+        );
+        let filtered = session.execute("apply_field_filter", json!({"document_revision": revision, "table": "Items", "column": "Score", "operator": "greater_or_equal", "inputs": ["20"]})).unwrap();
+        assert_eq!(filtered["source_ordinals"], json!([0, 2]));
+        assert_eq!(filtered["matched_rows"], 2);
+        let sorted = session.execute("sort_view", json!({"document_revision": revision, "table": "Items", "filter_id": filtered["filter_id"], "sort": {"column": "Score", "descending": false}})).unwrap();
+        assert_eq!(sorted["source_ordinals"], json!([2, 0]));
+        assert!(session.execute("filter_page", json!({"document_revision": revision, "filter_id": filtered["filter_id"], "offset": 0})).is_err());
+        let totals = session.execute("calculate_totals", json!({"document_revision": revision, "table": "Items", "filter_id": sorted["filter_id"], "specs": [{"column": "Score", "aggregate": "sum"}]})).unwrap();
+        assert_eq!(totals["view_rows"], 2);
+        assert_eq!(totals["cells"][0]["text"], "50");
+        assert_eq!(std::fs::read(&path).unwrap(), source);
+
+        let draft = session.execute("begin_edit", json!({"document_revision": revision, "table": "Items", "column": "Score", "parent_ordinal": 2})).unwrap();
+        let review = session.execute("review_edit", json!({"document_revision": revision, "draft_id": draft["draft_id"], "text": "5", "is_null": false})).unwrap();
+        let id = save(&mut session, "apply_edit", review);
+        acknowledge(&mut session, id, &path);
+        let fresh = session.revision.unwrap();
+        assert!(session.execute("filter_page", json!({"document_revision": fresh, "filter_id": sorted["filter_id"], "offset": 0})).is_err());
+        let reapplied = session.execute("reapply_filter", json!({"document_revision": fresh, "definition_id": sorted["definition_id"], "offset": 0})).unwrap();
+        assert_eq!(reapplied["matched_rows"], 1);
+        assert_eq!(reapplied["source_ordinals"], json!([0]));
+        let disabled = session.execute("filter_page", json!({"document_revision": fresh, "filter_id": reapplied["filter_id"], "offset": 0, "enabled": false})).unwrap();
+        assert_eq!(disabled["rows"].as_array().unwrap().len(), 4);
+        let cleared = session
+            .execute(
+                "clear_filter",
+                json!({"document_revision": fresh, "filter_id": disabled["filter_id"]}),
+            )
+            .unwrap();
+        assert_eq!(cleared["filter_count"], 0);
+    }
+
+    #[test]
+    fn selection_filters_issue_actual_handles_and_wrong_table_or_revision_refuse() {
+        let source = mutation_fixture::with_rows(&[(1, 10), (2, 10), (3, 20)]);
+        let (_directory, path, mut session) = opened(&source);
+        let revision = session.revision.unwrap();
+        let selected = session.execute("filter_selection", json!({"document_revision": revision, "table": "Items", "column": "Score", "parent_ordinal": 0, "comparison": "equal"})).unwrap();
+        assert_eq!(selected["matched_rows"], 2);
+        assert!(session.execute("sort_view", json!({"document_revision": revision, "table": "Other", "filter_id": selected["filter_id"], "sort": null})).is_err());
+        assert!(session.execute("filter_page", json!({"document_revision": revision + 1, "filter_id": selected["filter_id"], "offset": 0})).is_err());
+        assert_eq!(std::fs::read(path).unwrap(), source);
+    }
+}

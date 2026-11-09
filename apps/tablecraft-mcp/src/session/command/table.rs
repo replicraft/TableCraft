@@ -117,3 +117,34 @@ pub(super) fn snapshot(args: &Value) -> Result<TableDraftSnapshot, String> {
         .snapshot(arg::text(args, "table")?)
         .map_err(|error| error.to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn all_shared_default_modes_reach_the_checked_snapshot_without_hidden_literal_input() {
+        for (mode, expected) in [
+            ("type_default", DraftDefaultMode::TypeDefault),
+            ("absent", DraftDefaultMode::Absent),
+            ("null", DraftDefaultMode::Null),
+        ] {
+            let captured = snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": mode}]})).unwrap();
+            assert_eq!(captured.fields()[1].default_mode(), &expected);
+            assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": mode, "default_literal": "0"}]})).is_err());
+        }
+        let literal = snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": "literal", "default_literal": " 42 "}]})).unwrap();
+        assert_eq!(
+            literal.fields()[1].default_mode(),
+            &DraftDefaultMode::Literal(" 42 ".into())
+        );
+        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Score", "kind": "number", "default_mode": "literal"}]})).is_err());
+    }
+
+    #[test]
+    fn half_declared_decimal_constraints_are_refused_instead_of_ignoring_scale() {
+        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Amount", "kind": "number", "number_size": "decimal", "scale": 2}]})).is_err());
+        assert!(snapshot(&json!({"table": "T", "fields": [{"name": "Amount", "kind": "number", "number_size": "decimal", "precision": 10}]})).is_err());
+    }
+}

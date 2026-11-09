@@ -207,3 +207,89 @@ fn parse_draft(args: &Value) -> Result<QueryDesignDraft, String> {
         columns,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::session::tests::opened;
+    use tablecraft_testkit::fixtures::access::mutation_fixture;
+
+    #[test]
+    fn real_metadata_import_owned_draft_rebuild_and_explicit_execution_are_separate() {
+        let source = mutation_fixture::database();
+        let (_directory, path, mut session) = opened(&source);
+        let revision = session.revision.unwrap();
+        let description = session
+            .execute(
+                "describe_query_design",
+                json!({"document_revision": revision, "table": "Items"}),
+            )
+            .unwrap();
+        assert_eq!(description["metadata"]["fields"][0]["name"], "Id");
+        let imported = session.execute("import_query_design", json!({"document_revision": revision, "sql": "SELECT [Id] FROM [Items] WHERE [Score] > 10 ORDER BY [Score] DESC;"})).unwrap();
+        assert!(imported["sql"].as_str().unwrap().contains("WHERE"));
+        let rebuilt = session
+            .execute(
+                "rebuild_query_design",
+                json!({"document_revision": revision, "design_id": imported["design_id"]}),
+            )
+            .unwrap();
+        assert_eq!(rebuilt["sql"], imported["sql"]);
+        assert!(
+            session
+                .execute(
+                    "rebuild_query_design",
+                    json!({"document_revision": revision, "design_id": imported["design_id"]})
+                )
+                .is_err()
+        );
+        let built = session
+            .execute(
+                "build_query_design",
+                json!({"document_revision": revision, "draft": rebuilt["draft"]}),
+            )
+            .unwrap();
+        assert_eq!(built["sql"], rebuilt["sql"]);
+        assert!(!session.saves.is_busy());
+        assert_eq!(std::fs::read(&path).unwrap(), source);
+        let inspected = session
+            .execute(
+                "inspect_query",
+                json!({"document_revision": revision, "sql": built["sql"]}),
+            )
+            .unwrap();
+        let result = session
+            .execute(
+                "run_query",
+                json!({"document_revision": revision, "query_id": inspected["query_id"]}),
+            )
+            .unwrap();
+        assert!(result["rows"].is_array());
+        session
+            .execute("open_database", json!({"path": path}))
+            .unwrap();
+        assert!(session.execute("rebuild_query_design", json!({"document_revision": session.revision.unwrap(), "design_id": built["design_id"]})).is_err());
+    }
+
+    #[test]
+    fn unsupported_sql_and_unknown_native_fields_never_publish_a_design_or_write() {
+        let source = mutation_fixture::database();
+        let (_directory, path, mut session) = opened(&source);
+        let revision = session.revision.unwrap();
+        assert!(
+            session
+                .execute(
+                    "import_query_design",
+                    json!({"document_revision": revision, "sql": "DELETE FROM [Items];"})
+                )
+                .is_err()
+        );
+        assert!(session.execute("build_query_design", json!({"document_revision": revision, "draft": {
+            "sources": [{"id": 1, "table": "Items"}], "joins": [],
+            "columns": [{"expression": {"kind": "field", "source_id": 1, "column": "Missing"}}]
+        }})).is_err());
+        assert!(session.design_state.draft.is_none());
+        assert!(!session.saves.is_busy());
+        assert_eq!(std::fs::read(path).unwrap(), source);
+    }
+}

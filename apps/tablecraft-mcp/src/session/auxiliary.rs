@@ -220,3 +220,287 @@ fn format_options(args: &Value) -> Result<Options, String> {
         currency,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{Duration, Instant};
+    use tablecraft_testkit::fixtures::access::mutation_fixture;
+
+    fn source() -> (tempfile::TempDir, std::path::PathBuf, Vec<u8>, Session) {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("find.accdb");
+        let before =
+            mutation_fixture::with_rows_and_sort_order(&[(1, 10), (2, 20), (3, 30)], [9, 4, 0, 0]);
+        std::fs::write(&path, &before).unwrap();
+        let mut session = Session::new().unwrap();
+        session
+            .execute("open_database", json!({"path": path}))
+            .unwrap();
+        (directory, path, before, session)
+    }
+
+    fn find(session: &mut Session, pattern: &str) -> Value {
+        session
+            .execute(
+                "find_next",
+                json!({
+                    "document_revision": session.revision.unwrap(), "table": "Items",
+                    "column": "Score", "pattern": pattern, "matching": "any", "direction": "all",
+                }),
+            )
+            .unwrap()
+    }
+
+    #[test]
+    fn real_occurrence_becomes_normal_edit_review_and_native_save_without_invented_target() {
+        let (_directory, path, before, mut session) = source();
+        let revision = session.revision.unwrap();
+        let found = find(&mut session, "2");
+        assert_eq!(found["parent_ordinal"], 1);
+        assert_eq!(found["column"], "Score");
+        assert_eq!(found["span"]["start_utf16"], 0);
+        let draft = session
+            .execute(
+                "replace_found",
+                json!({
+                    "document_revision": revision, "find_id": found["find_id"], "replacement": "7",
+                }),
+            )
+            .unwrap();
+        assert_eq!(draft["parent_ordinal"], 1);
+        assert_eq!(draft["initial"]["text"], "70");
+        assert_eq!(std::fs::read(&path).unwrap(), before);
+        assert!(session.execute("replace_found", json!({
+            "document_revision": revision, "find_id": found["find_id"], "replacement": "9",
+        })).is_err());
+        let reviewed = session
+            .execute(
+                "review_edit",
+                json!({
+                    "document_revision": revision, "draft_id": draft["draft_id"], "text": "70",
+                }),
+            )
+            .unwrap();
+        let started = session
+            .execute("apply_edit", json!({"review_id": reviewed["review_id"]}))
+            .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(10);
+        loop {
+            let status = session
+                .execute("save_status", json!({"save_id": started["save_id"]}))
+                .unwrap();
+            if status["status"] == "terminal" {
+                assert_eq!(status["outcome"]["kind"], "saved", "{status}");
+                break;
+            }
+            assert!(Instant::now() < deadline, "Find replacement save stalled");
+            std::thread::yield_now();
+        }
+        let acknowledgement = session
+            .execute("acknowledge_save", json!({"save_id": started["save_id"]}))
+            .unwrap();
+        assert_eq!(acknowledgement["reopened"], true);
+        let page = session
+            .execute(
+                "read_rows",
+                json!({
+                    "document_revision": session.revision.unwrap(), "table": "Items", "offset": 0,
+                }),
+            )
+            .unwrap();
+        assert_eq!(page["rows"][1][1]["text"], "70");
+        assert_ne!(session.revision, Some(revision));
+    }
+
+    #[test]
+    fn continuation_consumes_actual_handle_and_unknown_stale_or_formatted_requests_do_not_write() {
+        let (_directory, path, before, mut session) = source();
+        let revision = session.revision.unwrap();
+        let first = find(&mut session, "0");
+        assert_eq!(first["parent_ordinal"], 0);
+        assert!(
+            session
+                .execute(
+                    "replace_found",
+                    json!({
+                        "document_revision": revision, "find_id": 999, "replacement": "5",
+                    })
+                )
+                .is_err()
+        );
+        assert!(
+            session
+                .execute(
+                    "continue_find",
+                    json!({
+                        "document_revision": revision + 1, "find_id": first["find_id"],
+                    })
+                )
+                .is_err()
+        );
+        let second = session
+            .execute(
+                "continue_find",
+                json!({
+                    "document_revision": revision, "find_id": first["find_id"],
+                }),
+            )
+            .unwrap();
+        assert_eq!(second["parent_ordinal"], 1);
+        assert_ne!(second["find_id"], first["find_id"]);
+        assert!(
+            session
+                .execute(
+                    "continue_find",
+                    json!({
+                        "document_revision": revision, "find_id": first["find_id"],
+                    })
+                )
+                .is_err()
+        );
+        assert!(
+            session
+                .execute(
+                    "find_next",
+                    json!({
+                        "document_revision": revision, "table": "Items", "pattern": "0",
+                        "matching": "whole", "direction": "all", "formatted": true,
+                    })
+                )
+                .is_err()
+        );
+        assert!(!session.saves.is_busy());
+        assert!(session.active_save.is_none());
+        assert_eq!(std::fs::read(path).unwrap(), before);
+    }
+
+    #[test]
+    fn filtered_sorted_occurrence_retains_its_real_view_through_continuation_and_replacement() {
+        use crate::session::tests::{acknowledge, opened, save};
+        let before =
+            mutation_fixture::with_rows_and_sort_order(&[(1, 10), (2, 20), (3, 30)], [9, 4, 0, 0]);
+        let (_directory, path, mut session) = opened(&before);
+        let revision = session.revision.unwrap();
+        let filtered = session
+            .execute(
+                "apply_field_filter",
+                json!({
+                    "document_revision": revision, "table": "Items", "column": "Score",
+                    "operator": "greater_or_equal", "inputs": ["20"],
+                }),
+            )
+            .unwrap();
+        let sorted = session.execute("sort_view", json!({
+            "document_revision": revision, "table": "Items", "filter_id": filtered["filter_id"],
+            "sort": {"column": "Score", "descending": true},
+        })).unwrap();
+        let first = session.execute("find_next", json!({
+            "document_revision": revision, "table": "Items", "column": "Score", "pattern": "0",
+            "matching": "any", "direction": "all", "filter_id": sorted["filter_id"],
+        })).unwrap();
+        assert_eq!(first["parent_ordinal"], 2);
+        assert!(session.find_state.found.as_ref().unwrap().filter.is_some());
+
+        // Publishing another page supersedes the protocol filter ID, while the Find
+        // descriptor still owns the original real sorted view, never a JSON row map.
+        session
+            .execute(
+                "filter_page",
+                json!({
+                    "document_revision": revision, "filter_id": sorted["filter_id"], "offset": 0,
+                }),
+            )
+            .unwrap();
+        let next = session
+            .execute(
+                "continue_find",
+                json!({
+                    "document_revision": revision, "find_id": first["find_id"],
+                }),
+            )
+            .unwrap();
+        assert_eq!(next["parent_ordinal"], 1);
+        let draft = session
+            .execute(
+                "replace_found",
+                json!({
+                    "document_revision": revision, "find_id": next["find_id"], "replacement": "7",
+                }),
+            )
+            .unwrap();
+        assert_eq!(draft["parent_ordinal"], 1);
+        assert_eq!(draft["initial"]["text"], "27");
+        assert_eq!(std::fs::read(&path).unwrap(), before);
+        let reviewed = session
+            .execute(
+                "review_edit",
+                json!({
+                    "document_revision": revision, "draft_id": draft["draft_id"], "text": "27",
+                }),
+            )
+            .unwrap();
+        let id = save(&mut session, "apply_edit", reviewed);
+        acknowledge(&mut session, id, &path);
+        let rows = session
+            .execute(
+                "read_rows",
+                json!({
+                    "document_revision": session.revision.unwrap(), "table": "Items", "offset": 0,
+                }),
+            )
+            .unwrap();
+        assert_eq!(rows["rows"][0][1]["text"], "10");
+        assert_eq!(rows["rows"][1][1]["text"], "27");
+        assert_eq!(rows["rows"][2][1]["text"], "30");
+    }
+
+    #[test]
+    fn formatted_currency_and_date_find_use_only_the_explicit_captured_display_policy() {
+        use crate::session::tests::opened;
+        use tablecraft_testkit::fixtures::access::{
+            canonical_fixed_creation, canonical_native17_creation,
+        };
+        let source = canonical_fixed_creation::source(canonical_fixed_creation::Case::SignedZero);
+        let before = canonical_native17_creation::source(source.bytes);
+        let (_directory, path, mut session) = opened(&before);
+        let revision = session.revision.unwrap();
+        let mut request = json!({
+            "document_revision": revision, "table": "Items", "column": "Money", "pattern": "€0.00",
+            "matching": "whole", "direction": "all", "formatted": true,
+            "format_options": {"system_locale": "en-US", "date": "iso", "time": "hours_minutes_seconds", "currency": "eur"},
+        });
+        let money = session.execute("find_next", request.clone()).unwrap();
+        assert_eq!(money["found"], true);
+        assert_eq!(money["column"], "Money");
+        let captured = &session.find_state.found.as_ref().unwrap().request;
+        assert!(captured.formatted);
+        assert_eq!(captured.format_options.currency, CurrencyChoice::Eur);
+        request["format_options"]["currency"] = json!("usd");
+        assert_eq!(
+            session.execute("find_next", request.clone()).unwrap()["found"],
+            false
+        );
+        request["column"] = json!("DateValue");
+        request["pattern"] = json!("1899-12-30");
+        request["matching"] = json!("any");
+        assert_eq!(
+            session.execute("find_next", request.clone()).unwrap()["found"],
+            true
+        );
+        request["format_options"]["date"] = json!("month_day_year");
+        assert_eq!(
+            session.execute("find_next", request.clone()).unwrap()["found"],
+            false
+        );
+        request["pattern"] = json!("12/30/1899");
+        assert_eq!(
+            session.execute("find_next", request.clone()).unwrap()["found"],
+            true
+        );
+        request["format_options"]["time"] = json!("invented");
+        assert!(session.execute("find_next", request).is_err());
+        assert!(!session.saves.is_busy());
+        assert_eq!(std::fs::read(path).unwrap(), before);
+    }
+}
