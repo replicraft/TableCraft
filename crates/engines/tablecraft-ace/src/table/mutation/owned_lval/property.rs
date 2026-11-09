@@ -19,6 +19,12 @@ const FIRST_PAGE: u32 = 10;
 const LAST_PAGE: u32 = FIRST_PAGE + 1;
 const INLINE_MAP: u8 = 0;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Growth {
+    OneEof,
+    FittedOnly,
+}
+
 pub(in crate::table::mutation) struct PropertyAppend {
     pub page: u32,
     pub bytes: Vec<u8>,
@@ -90,6 +96,45 @@ pub(in crate::table::mutation) fn append(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PropertyAppend, EditError> {
+    append_with_growth(
+        image,
+        schema,
+        references,
+        body,
+        Growth::OneEof,
+        budget,
+        cancelled,
+    )
+}
+
+pub(in crate::table::mutation) fn append_fitted(
+    image: &NativeImage,
+    schema: &TableSchema,
+    references: LongValueMapReferences,
+    body: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PropertyAppend, EditError> {
+    append_with_growth(
+        image,
+        schema,
+        references,
+        body,
+        Growth::FittedOnly,
+        budget,
+        cancelled,
+    )
+}
+
+fn append_with_growth(
+    image: &NativeImage,
+    schema: &TableSchema,
+    references: LongValueMapReferences,
+    body: &[u8],
+    growth: Growth,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PropertyAppend, EditError> {
     check(budget, cancelled)?;
     let maps = capture_maps(image, schema, references, budget, cancelled)?;
     let page = *maps
@@ -104,7 +149,7 @@ pub(in crate::table::mutation) fn append(
             .len()
             .checked_add(SLOT_BYTES)
             .is_some_and(|needed| needed <= end - slot_offset(count));
-    if !fitted && page == LAST_PAGE {
+    if !fitted && (page == LAST_PAGE || growth == Growth::FittedOnly) {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     // Derive the exact two represented-byte edits from the real map owner.

@@ -185,6 +185,31 @@ impl Ledger<'_> {
         Ok(found)
     }
 
+    /// Observe one actual canonical single ROW and body length. This grants no
+    /// semantic role or mutation authority and never counts historical events.
+    pub(crate) fn single_reference(
+        &self,
+        object: ObjectId,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<(u32, usize)>, InspectError> {
+        for entry in &self.live {
+            check(budget, cancelled)?;
+            if entry.origin.object_id() == object {
+                if !matches!(entry.kind, Kind::Single) || entry.chunks.len() != 1 {
+                    return Ok(None);
+                }
+                let reference = entry.chunks[0].reference;
+                if !entry.descriptor.canonical_single(reference, entry.bytes)? {
+                    return Ok(None);
+                }
+                return Ok(Some((reference, entry.bytes)));
+            }
+        }
+        check(budget, cancelled)?;
+        Ok(None)
+    }
+
     /// Match exactly two supplied live native object/ROW/length observations.
     /// This does not qualify either object's semantic role or grant mutation.
     pub(crate) fn two_singles(

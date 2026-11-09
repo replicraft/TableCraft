@@ -1,4 +1,5 @@
 //! Repeated Number property mutation under a separately complete source proof.
+use super::super::record_roots;
 use super::super::record_serialization::long_value::{Encoded, StorageChoice};
 use super::{EditError, catalog, column, parent};
 use crate::{
@@ -51,6 +52,12 @@ pub(crate) fn repeated_property_pages(
     Ok(long_value.pages)
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Parent {
+    LastLogical,
+    ActualOrigin,
+}
+
 pub(crate) fn compose_repeated(
     image: &NativeImage,
     table: &TableSchema,
@@ -58,51 +65,86 @@ pub(crate) fn compose_repeated(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RepeatedChange, EditError> {
+    compose(image, table, body, Parent::LastLogical, budget, cancelled)
+}
+
+pub(crate) fn compose_fitted_at_origin(
+    image: &NativeImage,
+    table: &TableSchema,
+    body: Vec<u8>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RepeatedChange, EditError> {
+    compose(image, table, body, Parent::ActualOrigin, budget, cancelled)
+}
+
+fn compose(
+    image: &NativeImage,
+    table: &TableSchema,
+    body: Vec<u8>,
+    selection: Parent,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RepeatedChange, EditError> {
     let catalog = catalog(image, budget, cancelled)?;
-    parent::with_selected(
-        image,
-        table,
-        &catalog,
-        budget,
-        cancelled,
-        |root, owned, budget| {
-            let column = column(&catalog)?;
-            let references = references(image, &catalog, column, budget, cancelled)?;
-            let append = property::append(image, &catalog, references, &body, budget, cancelled)?;
-            let encoded = Encoded::Present(body);
-            if encoded.preferred() != StorageChoice::Single {
-                return Err(InspectError::Unsupported.into());
+    let place = |root: &record_roots::Root<'_, parent::Selected>,
+                 owned: &[u32],
+                 budget: &mut ResourceBudget| {
+        let column = column(&catalog)?;
+        let references = references(image, &catalog, column, budget, cancelled)?;
+        let append = match selection {
+            Parent::LastLogical => {
+                property::append(image, &catalog, references, &body, budget, cancelled)?
             }
-            let descriptor = encoded.descriptor(
-                StorageChoice::Single,
-                Some(append.reference),
-                budget,
-                cancelled,
-            )?;
-            let (catalog_page, catalog_bytes) = parent::place(
-                image,
-                &catalog,
-                column,
-                &descriptor,
-                root,
-                owned,
-                budget,
-                cancelled,
-            )?;
-            let Encoded::Present(body) = encoded else {
-                return Err(EditError::Preservation);
-            };
-            Ok(RepeatedChange {
-                catalog_page,
-                catalog_bytes,
-                body,
-                append,
-            })
-        },
-    )
+            Parent::ActualOrigin => {
+                property::append_fitted(image, &catalog, references, &body, budget, cancelled)?
+            }
+        };
+        let encoded = Encoded::Present(body);
+        if encoded.preferred() != StorageChoice::Single {
+            return Err(InspectError::Unsupported.into());
+        }
+        let descriptor = encoded.descriptor(
+            StorageChoice::Single,
+            Some(append.reference),
+            budget,
+            cancelled,
+        )?;
+        let (catalog_page, catalog_bytes) = parent::place(
+            image,
+            &catalog,
+            column,
+            &descriptor,
+            root,
+            owned,
+            budget,
+            cancelled,
+        )?;
+        let Encoded::Present(body) = encoded else {
+            return Err(EditError::Preservation);
+        };
+        Ok(RepeatedChange {
+            catalog_page,
+            catalog_bytes,
+            body,
+            append,
+        })
+    };
+    match selection {
+        Parent::LastLogical => {
+            parent::with_selected(image, table, &catalog, budget, cancelled, place)
+        }
+        Parent::ActualOrigin => {
+            parent::with_origin(image, table, &catalog, budget, cancelled, place)
+        }
+    }
 }
 
 impl RepeatedChange {
+    pub(crate) fn property_reference(&self) -> u32 {
+        self.append.reference
+    }
+
     pub(crate) fn length(&self) -> usize {
         self.append.length
     }

@@ -48,6 +48,46 @@ pub(super) fn with_selected<T>(
     compose(root, &roots.owned, budget)
 }
 
+/// Select the actual captured object root, separately from the frozen last-root
+/// policy. Complete source qualification remains with this distinct caller.
+pub(super) fn with_origin<T>(
+    image: &NativeImage,
+    table: &TableSchema,
+    catalog: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    compose: impl FnOnce(
+        &record_roots::Root<'_, Selected>,
+        &[u32],
+        &mut ResourceBudget,
+    ) -> Result<T, EditError>,
+) -> Result<T, EditError> {
+    crate::header::check(budget, cancelled)?;
+    budget
+        .charge(
+            tablecraft_core::limits::Resource::Steps,
+            image.catalog().origins().len() as u64,
+        )
+        .map_err(InspectError::from)?;
+    if usize::try_from(catalog.declared_rows()).ok() != Some(image.catalog().origins().len()) {
+        return Err(EditError::Preservation);
+    }
+    let ordinal = image
+        .catalog()
+        .origins()
+        .iter()
+        .position(|origin| origin.object_id() == table.object_id())
+        .ok_or(InspectError::Malformed)?;
+    let origin = &image.catalog().origins()[ordinal];
+    let updates = [Selected(ordinal)];
+    let roots = record_roots::capture(image, catalog, &updates, budget, cancelled)?;
+    let root = roots.selected.first().ok_or(EditError::Preservation)?;
+    if roots.selected.len() != 1 || root.reference != reference(origin.page(), origin.slot()) {
+        return Err(EditError::Preservation);
+    }
+    compose(root, &roots.owned, budget)
+}
+
 #[expect(
     clippy::too_many_arguments,
     reason = "Keep selected root, ownership and descriptor proof separate."

@@ -31,7 +31,8 @@ pub use add_column::{CreatedAddColumnCandidate, CreatedAddColumnError};
 #[cfg(feature = "journal")]
 pub use add_column::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
-    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose, FieldAdditionCandidate,
+    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionCandidate,
     FieldAdditionError, FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
 };
 #[cfg(feature = "journal")]

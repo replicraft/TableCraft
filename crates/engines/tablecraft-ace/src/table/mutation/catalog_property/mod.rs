@@ -13,7 +13,9 @@ mod parent;
 mod record;
 mod repeated;
 pub(crate) mod storage;
-pub(crate) use repeated::{RepeatedChange, compose_repeated, repeated_property_pages};
+pub(crate) use repeated::{
+    RepeatedChange, compose_fitted_at_origin, compose_repeated, repeated_property_pages,
+};
 
 use super::EditError;
 use super::record_serialization::long_value::{Encoded, StorageChoice};

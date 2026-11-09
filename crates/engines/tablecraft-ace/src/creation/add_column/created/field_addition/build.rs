@@ -101,7 +101,7 @@ pub(super) fn canonical(
     Ok(build::build(&request, budget, cancelled)?)
 }
 
-fn property_body(
+pub(super) fn property_body(
     columns: &[CreateColumn<'_>],
     order: Order,
     budget: &mut ResourceBudget,

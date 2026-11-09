@@ -7,8 +7,8 @@ pub use default_zero::{
     CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
 };
 pub use field_addition::{
-    CreatedFieldAdditionSourcePurpose, FieldAdditionCandidate, FieldAdditionError,
-    FieldAdditionTarget,
+    CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
+    FieldAdditionCandidate, FieldAdditionError, FieldAdditionTarget,
 };
 mod preservation;
 mod properties;

@@ -16,6 +16,7 @@ pub enum SourceCase {
     Mixed,
 }
 
+/// Build the exact independent nine-role BEFORE image for this observed class.
 pub fn source(case: SourceCase) -> Vec<u8> {
     let fields = match case {
         SourceCase::Number => repeated::source(Source::IdOnly),
