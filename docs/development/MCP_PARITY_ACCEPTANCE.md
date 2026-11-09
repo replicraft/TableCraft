@@ -12,8 +12,8 @@ than silently counted as active desktop functionality.
 - **S0**: functional host cases already observed in the earlier local MCP batch,
   including actual files, scoped protocol/actor checks and stdio process execution.
 - **S1**: new source-qualified MCP acceptance cases added in
-  `apps/tablecraft-mcp/src/session/acceptance/`; these require the consolidated
-  batch before claiming a pass. They reuse existing independent raw builders and
+  `apps/tablecraft-mcp/src/session/acceptance/`; these passed in the consolidated
+  batch of 57 unit/service cases and two actual stdio cases. They reuse existing independent raw builders and
   private Session helpers instead of copying native qualification suites.
 - **Presentation-only**: the action owns widgets, tabs, hidden raw input or native
   file pickers; it grants no backend authority and does not require a widget API
@@ -25,6 +25,14 @@ remain separate. Full arbitrary CRUD/DDL, populated-table DROP, relationships,
 forms/reports and deferred VBA are not supplied by current source qualification.
 
 ## Concrete functional acceptance
+
+The final local batch also covers exact unchanged field rename: the accepted
+review uses checked read-only reopening without a journal/save ID, retains its
+witness after mismatch/cancellation, and exposes explicit retry/discard. Case-only
+renames still save the independently constructed full native image. The stdio
+checks include default-readonly forced-call refusal and explicit startup grants;
+a grant never substitutes for native source admission or an actual consuming owner.
+
 
 | Family | Actual observation / acceptance case | Boundary still explicit |
 | --- | --- | --- |
@@ -231,7 +239,7 @@ actual accepted runtime capability/report can supply those witnesses.
 
 ## Remaining acceptance limits
 
-The new S1 cases must pass the final batch; merely adding them is not evidence.
+The S1 cases passed the consolidated local batch. This records the exercised scenarios, not every profile, parameter or timing combination.
 Individual cancellation timings, every aggregate/type combination, every query
 shape and every supported file profile are not duplicated in the MCP suite.
 Their detailed native/runtime suites remain their owning evidence. Disabled

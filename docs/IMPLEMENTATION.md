@@ -8,15 +8,17 @@ read, CRUD, action-query, visual-query, Find/Replace and native save/recovery
 services. It retains actual opaque capabilities, consuming reviews, save actors
 and complete-image reopen witnesses; it adds no independent native writer or
 format admission. Desktop/CLI/engine builds do not inherit the MCP transport.
+The host defaults to read-only; explicit trusted startup grants select data,
+schema, application or maintenance writes.
 See the [host contract](interfaces/MCP.md) and
 [crate ownership review](development/CRATE_OWNERSHIP_REVIEW.md).
 
-The local host batch passes 30 unit/service cases and one actual stdio process
-integration case, with strict all-target host Clippy. The native batch passes
+The local host batch passes 57 unit/service cases and two actual stdio process
+integration cases, with strict all-target host Clippy. The native batch passes
 1,615 ACE tests (263 existing ignored) and 213 Access adapter tests. Shared runtime
-passes 320 tests (one existing ignored), shared UI 691 and the four real desktop
-table-deletion host cases. These are local/headless checks, not Windows execution
-or a native Access compatibility qualification. Qualified table DROP currently
+passes 326 tests (one existing ignored), shared UI 691, and the full desktop
+headless batch passes 205 (one existing ignored). These are local/headless
+checks, not Windows execution or a native Access compatibility qualification. Qualified table DROP currently
 requires an empty source and preserves allocated native storage.
 
 Locales now live at `locales/`; shared assets live at `assets/fonts/` and
@@ -26,13 +28,12 @@ was committed as exact-content renames before maintained path/import updates.
 The [organization review](../tests/reports/development/TEST_ORGANIZATION.md)
 separates fresh tooling checks, duplicate-helper candidates and historical records.
 
-
 ## Complete non-test clone review — 9 November 2026
 
 The [ownership audit](development/CLONE_AUDIT.md) individually reviews all 707
 baseline explicit non-test clone calls, the rustdoc example and 16 additional
-host clone forms. Current source has 596 explicit calls, reconciled per file with
-the retained ledger and marked `NO_CLONE` above complete statements/fields.
+host clone forms. Its recorded closeout snapshot had 596 explicit calls,
+reconciled per file with the retained ledger and marked `NO_CLONE` above complete statements/fields.
 Borrowed UI reply identities, moved parser payloads, conditional `Cow` text edits
 and shared `Arc` Query Design submissions remove redundant copies without
 weakening revision or budget checks. The earlier Jiff conclusion is corrected:

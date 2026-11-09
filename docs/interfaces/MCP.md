@@ -10,6 +10,23 @@ planner. Its format/operation limits remain those of the shared runtime.
 cargo run -p tablecraft-mcp -- --root /absolute/path/to/databases
 ```
 
+This invocation is read-only. Grant only the write families needed by a trusted
+local client at process startup:
+
+| Flag | New authority |
+| --- | --- |
+| `--allow-data-write` | Apply reviewed row edits and INSERT/UPDATE/DELETE queries |
+| `--allow-schema-write` | Create a database; apply reviewed table, field and database-option edits |
+| `--allow-application-write` | Apply reviewed saved-query SQL or literal-expression edits |
+| `--allow-maintenance` | Start checked recovery from a reserved native journal |
+
+Tool discovery filters physical write operations using the same immutable grants
+checked by the session actor. Reviews remain inert and may be inspected without a
+write grant; a review handle is not permission to apply it. Tool arguments cannot
+enable a grant. Cancel/recover/release/acknowledge and read-only continuations still
+require their actual retained operation owner. These local process grants do not
+implement remote principals, persistent changeset authorization or desktop IPC.
+
 Configure an MCP client to launch that executable with these arguments. Standard
 output contains only MCP protocol messages. This is an explicitly invoked local
 host, without HTTP transport, remote authentication, project scripting or VBA.
@@ -26,7 +43,10 @@ The same request types validate arguments before dispatch, borrowing input text.
 Unknown fields, wrong types and fabricated capability payloads are refused.
 One dedicated session thread serializes calls; blocking native services do not
 run on Tokio's transport thread. Input is bounded by the SDK's 16 MiB line limit
-and a separate 8 MiB tool-argument limit. Each process owns one document session.
+and a separate 8 MiB tool-argument limit. Logical result JSON is capped at 4 MiB
+before the SDK allocates its escaped text fallback; oversized results return an
+explicit output-limit error without truncated records or payload diagnostics.
+Each process owns one document session.
 
 1. `open_database` takes `path` and optional `password`. Its catalog contains the
    actual document revision, local/system table facts and saved-query identities.
@@ -77,8 +97,55 @@ accepted native save or creation; resolve those through their actual status and
 explicit cancellation/recovery tools. Cancelled guarded reopening retains the
 same accepted witness and report for retry.
 
+After an acknowledged INSERT failure, `retry_insert` can only verify the retained
+complete original image and issue a fresh insertion draft. It never replays old
+inputs or a consumed review. `discard_insert_retry` drops that advisory context.
+Unknown source images remain refresh-required; an actual uncertain or observed
+committed save chain cannot gain original-retry permission.
+
+An exact unchanged field-rename review follows desktop's no-save path. Apply
+returns an `operation_id` and checked read-only reopen facts, without a journal,
+`save_id` or fabricated saved receipt. Failed/cancelled verification retains the
+same witness for `retry_unchanged_field_rename` or explicit
+`discard_unchanged_field_rename`. Case-only changes still use the actual native
+save path. The initial apply requires the schema grant in either case.
+
 The remaining sections describe future agent services, not capabilities supplied
 by this host merely because tools are discoverable.
+
+## Architecture proposal: current status
+
+The broader agent-development design remains the target. Existing one-operation
+reviews are not a dependency-aware multi-object changeset implementation.
+
+| Milestone | Implemented boundary | Remaining work |
+| --- | --- | --- |
+| MCP-0: local host | Official SDK, stdio, tool discovery, structured session status and cooperative read cancellation | Desktop attachment is a separate mode |
+| MCP-1: inspection | Local table/field metadata, stored collections and supported saved queries | Broader object definitions, relationships, indexes and dependency discovery through shared services |
+| MCP-2: reads | Bounded shared-runtime query execution; structured display cells with independent NULL/Boolean facts | A lossless typed scalar export contract; display text is not a stored value or edit input |
+| MCP-3: capability checks | Actual source-specific inspection and native admission for implemented operations | A complete application compatibility/dependency report |
+| MCP-4: editing | Consuming single-operation reviews, literal inputs, original-image insertion continuation and retained save/recovery owners | Canonical semantic diffs, digest-bound authorization and dependency-aware multi-object staging |
+| MCP-5: application objects | No form/report authoring or previews supplied by the tool list | Working definition, rendering and application-scenario services |
+| MCP-6: desktop attachment | Not implemented | Authorized local IPC sharing the desktop's real session, pending edits and owners |
+| MCP-7: remote/project work | Not implemented | Authenticated remote transport; SQLite/native-project implementation remains paused |
+
+The proposed `tablecraft-edit` boundary stays module-first in runtime until
+working reusable planning justifies extraction. Physical transactions, locks and
+recovery remain in ACE; shared editing does not create cross-object atomicity.
+The [changeset contract](../architecture/APPLICATION_CHANGESETS.md) identifies a
+concrete field-rename impact/diff slice and its unsupported-dependency refusals.
+
+The executable remains at the requested `apps/tablecraft-mcp` location. A reusable
+`crates/interfaces/` adapter is a possible later extraction for an actual second
+host, such as desktop-attached IPC. Creating that package now would not supply
+attachment, authorization or shared session ownership. The existing separate
+app already keeps SDK and transport dependencies out of normal desktop/CLI builds.
+
+Desktop attachment must use the desktop's authorized application session; opening
+a second standalone writer to emulate attachment is not equivalent. Future
+resources/prompts, Tasks, subscriptions, persistent handles and remote principals
+need their own ownership, expiry, permission and lifecycle contracts. SDK support
+for those primitives does not mean this host advertises or implements them.
 
 ## Service mapping
 

@@ -184,8 +184,8 @@ full query authoring solely because SELECT and some mutations are supported.
 
 ## Local verification and remaining qualification
 
-The consolidated local MCP batch passed 30 unit cases and one actual stdio
-integration case after the wire-shape and cancellation follow-ups. The real-file cases cover
+The consolidated local MCP batch passed 57 unit/service cases and two actual stdio
+integration cases after the parity, source-refresh, no-op and permission follow-ups. The real-file cases cover
 cell update/row insertion/deletion, table rename and saved-field deletion,
 complete saved-SQL expected-image failure/retry, blank creation/table creation,
 consumed/stale/refused capabilities, Find/Replace, filters/sorting/totals, inert
@@ -214,8 +214,7 @@ A revoked read publication retires document/review/view authority until explicit
 reopening, without cancelling an accepted native save or asserting rollback.
 `session_status` reveals retained save/creation IDs when a cancelled or lost
 response did not deliver them. Dropping a client request does not erase outcomes
-or checked AFTER witnesses. The additional cancellation checks remain separate
-from the earlier recorded verification batch. The report introduces no new crate extraction
+or checked AFTER witnesses. The consolidated batch includes the additional cancellation checks. The report introduces no new crate extraction
 or additional backend permission.
 
 ## Worker usage and ownership
