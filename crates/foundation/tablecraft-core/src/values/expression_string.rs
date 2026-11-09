@@ -40,6 +40,8 @@ impl ExpressionString {
 
     /// Borrow exactly the active bytes, without terminators, padding or realignment.
     pub fn as_bytes(&self) -> &[u8] {
+        // Borrow active bytes from immutable ExpressionString while preserving its selected
+        // two-bound range. No backing bytes are copied.
         &self.bytes[self.range.clone()]
     }
 

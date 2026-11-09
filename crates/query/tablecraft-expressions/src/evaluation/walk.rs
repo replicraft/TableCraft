@@ -28,8 +28,12 @@ impl Evaluator<'_> {
             Value::Binary(_) => Err(EvalError::UnsupportedExpression),
             Value::Single(_) | Value::Double(_) => {
                 numeric::float(value)?;
+                // Materialize the owned expression result from a borrowed binding after finite-
+                // float validation. These matched carriers are fixed-size and allocate nothing.
                 Ok(value.clone())
             }
+            // Materialize fixed-size owned scalar from borrowed binding; Text is separately
+            // budgeted and Binary refused before this fallback.
             _ => Ok(value.clone()),
         }
     }

@@ -41,6 +41,9 @@ impl Binder<'_> {
                 predicate: SelectPredicate::All,
                 projection: vec![Projection::Wildcard(None)],
                 from: vec![TableSource::Table(Table {
+                    // Synthesize an owned local Table source for TABLE/reference-query binding
+                    // from a borrowed name, reusing full SELECT validation. Avoiding it needs a
+                    // distinct borrowed input node API rather than moving caller syntax.
                     name: name.clone(),
                     alias: None,
                     database: None,

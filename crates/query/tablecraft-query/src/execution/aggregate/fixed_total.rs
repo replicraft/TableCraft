@@ -86,6 +86,9 @@ impl Total {
     fn integer(&self) -> BigInt {
         match &self.coefficient {
             Coefficient::Small(value) => BigInt::from(*value),
+            // The retained aggregate coefficient must survive while arithmetic and rational
+            // conversion consume independent BigInt scratch. Callers prepay the bounded
+            // arithmetic buffers before this copy.
             Coefficient::Large(value) => value.clone(),
         }
     }

@@ -59,6 +59,9 @@ impl NumericPrefix<'_> {
             return Ok(Double::from_float(0.0));
         }
         if matches!(first, Some('e' | 'E' | 'd' | 'D')) {
+            // Probe exponent/sign/digit grammar without committing the original borrowed
+            // character cursor until a complete exponent is recognized. Cursor clone copies
+            // only iterator state; lookahead work stays charged.
             let mut lookahead = cursor.clone();
             let mut next = lookahead.next(buffer)?;
             let sign = if matches!(next, Some('+' | '-')) {

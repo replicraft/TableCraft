@@ -104,6 +104,8 @@ impl ParsedQuery {
     pub fn canonical_integer_projection_spelling(&self) -> Option<&str> {
         self.integer_projection_spelling
             .as_ref()
+            // Copy two bounds for indexing while preserving the lexical spelling range inside
+            // borrowed ParsedQuery; no string or payload allocation.
             .map(|range| &self.source[range.clone()])
     }
 

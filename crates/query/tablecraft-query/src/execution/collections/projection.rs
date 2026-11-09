@@ -98,6 +98,9 @@ impl Runtime<'_, '_> {
         match value {
             Value::Single(_) | Value::Double(_) => {
                 self.tick()?;
+                // Return fixed-width stored IEEE bits unchanged, including nonfinite
+                // representations, for collection storage; generic scalar copy intentionally
+                // rejects nonfinite arithmetic operands.
                 Ok(value.clone())
             }
             value => self.copy(value),

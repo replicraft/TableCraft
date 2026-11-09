@@ -144,6 +144,8 @@ pub(super) fn publish<B: Backend>(
     }
 
     Ok(PublicationReceipt {
+        // Return owned fixed-size captured-parent identity in publication receipt while backend
+        // identity is borrowed; no path/file data allocation.
         parent: backend.identity().clone(),
         guarantee: backend.guarantee(),
     })

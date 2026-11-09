@@ -9,6 +9,8 @@ pub(super) fn convert(text: &str) -> Result<Value, EvalError> {
     let mantissa = mantissa.trim_start_matches('-');
     let whole = mantissa.find('.').unwrap_or(mantissa.len()) as i64;
     let digits = mantissa.bytes().filter(u8::is_ascii_digit);
+    // Count leading zero digits while retaining the lexical iterator for total fractional
+    // width; copied cursor state, not digit storage.
     let leading = digits.clone().take_while(|digit| *digit == b'0').count() as i64;
     let fractional = digits.count() as i64 - whole;
     let integer_digits = whole.saturating_add(exponent).saturating_sub(leading);
