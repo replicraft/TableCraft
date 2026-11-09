@@ -78,6 +78,28 @@ pub fn pair(case: SourceCase, new_name: &str) -> [Vec<u8>; 2] {
     [before, after]
 }
 
+/// Natural retained Number history with only 46 bytes left after explicit OFF.
+/// The twenty-character second field appears in eleven retained property bodies;
+/// no padding or page bytes are forged to manufacture the capacity boundary.
+pub fn near_capacity_source() -> Vec<u8> {
+    let first = repeated::source(Source::IdOnly);
+    let mut fields = repeated::append(&first, "SecondNumberColumnXX");
+    for number in 3..=12 {
+        fields = repeated::append(&fields, &format!("N{number}"));
+    }
+    let before = canonical_database_options::append_explicit_off_to_owned_page(&fields);
+    assert_eq!(word(&before, PROPERTY * PAGE + FREE), 46);
+    before
+}
+
+/// A complete independent AFTER only when the requested unequal ASCII name fits
+/// the actual existing row page. Score's five units can grow to 28, but not 29.
+pub fn near_capacity_pair(new_name: &str) -> [Vec<u8>; 2] {
+    let before = near_capacity_source();
+    let after = rename(&before, "Score", new_name);
+    [before, after]
+}
+
 fn word(bytes: &[u8], at: usize) -> usize {
     usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
 }

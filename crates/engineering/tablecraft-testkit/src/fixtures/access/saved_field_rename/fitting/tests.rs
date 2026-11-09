@@ -67,3 +67,18 @@ fn fitting_pairs_match_independent_python_image_predictions() {
         assert_eq!(before.len(), after.len());
     }
 }
+
+#[test]
+fn natural_number_history_exhausts_existing_row_capacity_at_twenty_eight_units() {
+    let [before, after] = near_capacity_pair(&"R".repeat(28));
+    assert_eq!(
+        digest(&before),
+        "b578687208760c4f3e2eaab846f2b643e71676302f6c893c62d93f3724497948"
+    );
+    assert_eq!(
+        digest(&after),
+        "0541d931970c2134fce58ab5604feaeb65663e7c0809632cdfbde63aa677a9d1"
+    );
+    assert_eq!(before.len(), 45056);
+    assert_eq!(after.len(), before.len());
+}
