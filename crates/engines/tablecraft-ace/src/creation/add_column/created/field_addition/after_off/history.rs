@@ -30,7 +30,7 @@ const SOURCE_OBJECTS: usize = 9;
 const PROPERTY_PAGE: u32 = 10;
 const DATABASE_BODY_BYTES: usize = 152;
 
-/// Refusal of the separate replay-based post-OFF field-history source language.
+/// Refusal of the separate replay-based source or its consuming field addition.
 #[derive(Debug, Error)]
 pub enum FieldAdditionAfterOffHistoryError {
     /// Native read, cancellation, allocation or cumulative resource failure.
@@ -64,7 +64,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), FieldAdditionAfterOffHistoryError> {
         let _span = tracing::debug_span!("native.field_addition.post_off_history_source").entered();
-        validate(self, table, budget, cancelled)
+        qualified_replay(self, table, budget, cancelled).map(drop)
     }
 }
 
@@ -85,12 +85,12 @@ fn target(
     }
 }
 
-fn validate(
+pub(super) fn qualified_replay(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<(), FieldAdditionAfterOffHistoryError> {
+) -> Result<Replay, FieldAdditionAfterOffHistoryError> {
     check(budget, cancelled)?;
     image.require_standard_capture()?;
     if image.catalog().header().format() != FileFormat::Ace2016
@@ -270,5 +270,5 @@ fn validate(
         return Err(Error::Preservation);
     }
     check(reader.budget, cancelled)?;
-    Ok(())
+    Ok(replay)
 }

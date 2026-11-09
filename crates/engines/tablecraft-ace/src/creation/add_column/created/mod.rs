@@ -8,9 +8,9 @@ pub use default_zero::{
 };
 pub use field_addition::{
     CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
-    FieldAdditionAfterOffHistoryError, FieldAdditionCandidate, FieldAdditionError,
-    FieldAdditionSourceAvailability, FieldAdditionSourceError, FieldAdditionSourcePurpose,
-    FieldAdditionTarget,
+    FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
+    FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
 };
 mod preservation;
 mod properties;

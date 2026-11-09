@@ -2,7 +2,8 @@
 mod after_off;
 mod build;
 pub use after_off::{
-    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
+    FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
 };
 mod purpose;
 pub use purpose::CreatedFieldAdditionSourcePurpose;

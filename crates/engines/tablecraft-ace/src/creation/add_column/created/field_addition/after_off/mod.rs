@@ -1,6 +1,7 @@
 //! Fitted ADD and chronological source replay after explicit Name AutoCorrect OFF.
 pub(super) mod availability;
 mod history;
+mod history_candidate;
 mod kernel;
 mod source;
 #[cfg(test)]
@@ -16,6 +17,7 @@ use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
 
 pub use history::FieldAdditionAfterOffHistoryError;
+pub use history_candidate::FieldAdditionAfterOffHistoryCandidate;
 
 const TEXT_UNITS: usize = 255;
 pub(super) const MAX_ASCII_NAME_BYTES: usize = 64;

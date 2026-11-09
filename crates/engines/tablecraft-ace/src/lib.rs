@@ -48,7 +48,8 @@ pub use creation::{
 pub use creation::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
-    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
+    FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
     FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
     RepeatedDefaultZeroAddColumnCandidate,

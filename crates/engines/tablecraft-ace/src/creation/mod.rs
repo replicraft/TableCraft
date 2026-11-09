@@ -32,7 +32,8 @@ pub use add_column::{CreatedAddColumnCandidate, CreatedAddColumnError};
 pub use add_column::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
-    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
+    FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
     FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
     RepeatedDefaultZeroAddColumnCandidate,
