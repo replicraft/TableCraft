@@ -1508,7 +1508,7 @@
       "selected_license": "OFL-1.1",
       "sources": [
         {
-          "path": "assets/ui/fonts/OFL-Selawik.txt",
+          "path": "assets/fonts/OFL-Selawik.txt",
           "role": "license"
         }
       ]
@@ -1518,7 +1518,7 @@
       "selected_license": "OFL-1.1",
       "sources": [
         {
-          "path": "assets/ui/fonts/OFL-NotoSansCJK.txt",
+          "path": "assets/fonts/OFL-NotoSansCJK.txt",
           "role": "license"
         },
         {
@@ -1528,7 +1528,7 @@
           "role": "attribution",
           "derived_from": {
             "root": "repository",
-            "path": "assets/ui/fonts/NotoSansJP-Regular.otf",
+            "path": "assets/fonts/NotoSansJP-Regular.otf",
             "bytes": 4533028,
             "sha256": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073"
           },
@@ -1541,7 +1541,7 @@
       "selected_license": "OFL-1.1",
       "sources": [
         {
-          "path": "assets/ui/fonts/OFL-NotoEmoji.txt",
+          "path": "assets/fonts/OFL-NotoEmoji.txt",
           "role": "license"
         }
       ]
@@ -1610,23 +1610,23 @@
     },
     {
       "root": "repository",
-      "path": "assets/ui/fonts/NotoEmoji-Variable.ttf"
+      "path": "assets/fonts/NotoEmoji-Variable.ttf"
     },
     {
       "root": "repository",
-      "path": "assets/ui/fonts/NotoSansJP-Regular.otf"
+      "path": "assets/fonts/NotoSansJP-Regular.otf"
     },
     {
       "root": "repository",
-      "path": "assets/ui/fonts/NotoSansKR-Regular.otf"
+      "path": "assets/fonts/NotoSansKR-Regular.otf"
     },
     {
       "root": "repository",
-      "path": "assets/ui/fonts/NotoSansSC-Regular.otf"
+      "path": "assets/fonts/NotoSansSC-Regular.otf"
     },
     {
       "root": "repository",
-      "path": "assets/ui/fonts/selawk.ttf"
+      "path": "assets/fonts/selawk.ttf"
     },
     {
       "root": "repository",

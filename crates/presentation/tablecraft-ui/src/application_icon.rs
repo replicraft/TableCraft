@@ -8,7 +8,7 @@ pub fn application_icon() -> Result<egui::IconData, ApplicationIconError> {
     let image = egui_extras::image::load_svg_bytes(
         include_bytes!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../../assets/ui/icons/tablecraft/application-light.svg"
+            "/../../../assets/icons/tablecraft/application-light.svg"
         )),
         &Default::default(),
     )

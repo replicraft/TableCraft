@@ -398,7 +398,7 @@ external references, filters, scripts, or linked images. Commands sharing a
 concept may share geometric building blocks; distinct command meanings have
 separate compositions.
 
-Run `python3 assets/ui/icons/tablecraft/generate.py` from any working directory
+Run `python3 assets/icons/tablecraft/generate.py` from any working directory
 to reproduce the variants and hash manifest. The geometry and semantic palette
 are defined together in that owning generator.
 

@@ -2455,7 +2455,7 @@ explicit absent, uninspected and unsupported states; expression text stays inert
 `tablecraft-runtime` owns the
 headless read session and cancellable tasks; `tablecraft-desktop` owns native
 startup and the UI action bridge; `tablecraft-ui` owns reusable presentation for
-native and eventual web hosts. Shared fonts live in `assets/ui/fonts`.
+native and eventual web hosts. Shared fonts live in `assets/fonts`.
 File/Open now uses a full-page Backstage surface based on the retained Access
 capture, with actual Open/About controls and success-only return to the workspace.
 Datasheets now retain active-cell selection with bounded arrow navigation and

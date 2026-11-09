@@ -212,7 +212,7 @@ Microsoft/Office-style presentation: ribbon command groups, object navigation,
 document tabs, datasheet, query editor and status area. Toolkit defaults are
 implementation mechanics; review the actual product layout, density and states.
 Selawik from Microsoft's official release 1.01 is bundled with its OFL notice in
-`assets/ui/fonts`. The presentation theme installs
+`assets/fonts`. The presentation theme installs
 it with fallback glyph coverage. Glyph fallback, DPI and text sizing still need
 verification on each claimed platform; bundling the font establishes no visual
 parity.
@@ -1655,7 +1655,7 @@ These presentation actions issue no database commands.
 
 The All Objects heading and category labels align to the left. Latin category
 labels now use the actual Selawik Bold face, bundled unchanged from Microsoft's
-Selawik 1.01 release under `assets/ui/fonts`, alongside the existing regular face
+Selawik 1.01 release under `assets/fonts`, alongside the existing regular face
 and OFL notice. `selawik-provenance.json` records source archive, file hashes and
 weight metadata. The existing CJK and monochrome emoji fallbacks remain regular;
 this change does not claim bold CJK glyphs or install a font into the operating

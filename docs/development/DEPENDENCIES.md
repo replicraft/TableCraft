@@ -136,7 +136,7 @@ into runtime or the CLI, and no new entropy source or VBA runtime is supplied.
 The shared UI bundles the unmodified Noto Emoji 3.002 variable TrueType font from
 Google's official font repository, under SIL OFL 1.1 (Copyright 2013 Google LLC).
 Its original notice, immutable source URLs and byte hashes live with the root
-[font assets](../../assets/ui/fonts/README.md#noto-emoji-fallback). This font has
+[font assets](../../assets/fonts/README.md#noto-emoji-fallback). This font has
 `glyf`/`loca` outlines; the existing epaint rasterizer does not gain a new color
 or bitmap rendering backend.
 
@@ -245,7 +245,7 @@ existing runtime Open operation, rather than reading bytes through the dialog.
 The shared UI, runtime and CLI do not depend on rfd. Native dialog behavior still
 requires platform observation; future polling tests are not that observation.
 
-The unmodified regular [Selawik 1.01 font](../../assets/ui/fonts/README.md) is
+The unmodified regular [Selawik 1.01 font](../../assets/fonts/README.md) is
 bundled at the repository asset root under SIL OFL 1.1. Its copyright/license
 is retained beside the file and displayed in the shared About view. Existing CLI
 release archives do not contain this font or new desktop dependencies. Desktop
@@ -1821,7 +1821,7 @@ checks. This leaves the CLI’s existing expression `fluent-catalog` feature unc
 and adds no GUI or renderer dependencies to it. `egui_extras` enables `svg` only for the UI consumer's
 curated Microsoft Fluent System Icons. Root assets retain MIT provenance.
 Selawik and unmodified regional Noto Sans CJK fonts retain their OFL notices and
-source hashes under `assets/ui/fonts/`.
+source hashes under `assets/fonts/`.
 
 ## Mock UI preview rendering
 
@@ -1841,7 +1841,7 @@ across GPUs/platforms and native Access behavioral compatibility are separate
 qualification, not consequences of a successful render.
 
 Noto Sans JP/KR/SC Regular 2.004 regional subset OTFs are unmodified bundled UI
-fallback assets under `assets/ui/fonts`, with their OFL 1.1 license and immutable
+fallback assets under `assets/fonts`, with their OFL 1.1 license and immutable
 source/hash provenance. They extend the selected Selawik UI font rather than
 replacing it. Font selection is a presentation language choice, independent of
 native database collation, value formatting or OS locale discovery.
@@ -1851,7 +1851,7 @@ native database collation, value formatting or OS locale discovery.
 
 The UI retains the same existing `egui_extras` SVG loader and renderer features.
 Its active command artwork now uses original generated TableCraft SVGs from
-`assets/ui/icons/tablecraft/`, including reproducible geometry, explicit
+`assets/icons/tablecraft/`, including reproducible geometry, explicit
 light/dark/disabled palettes and a complete hash inventory. No new dependency,
 SVG text/font loading or network resource is introduced. The earlier Fluent
 subset and its MIT notice remain together as inert source provenance; current

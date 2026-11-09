@@ -213,7 +213,7 @@ navigation. The retained capture shows Account, not Open or Options; TableCraft'
 Open form and theme/language Options are provisional surfaces. Dark colors are a
 TableCraft adaptation: no dark Access capture is retained. Original generated TableCraft SVGs supply distinct colored command artwork,
 with reproducible geometry, explicit theme/disabled variants and hashes under
-`assets/ui/icons/tablecraft/`. Their command meanings follow the captures while
+`assets/icons/tablecraft/`. Their command meanings follow the captures while
 retaining original artwork.
 
 The read-only schema inspector now follows the observed Design-view organization,
@@ -442,7 +442,7 @@ collapsed Navigation Pane state, dark theme or CJK heading comparison.
 
 Current presentation uses left-aligned headings and the real Selawik Bold face
 for Latin category text. The original Microsoft 1.01 font bytes and their source,
-hashes, weight and OFL notice remain under root `assets/ui/fonts`; regular CJK and
+hashes, weight and OFL notice remain under root `assets/fonts`; regular CJK and
 monochrome emoji fallbacks are retained. This establishes bundled-font provenance,
 not native Access font identity or bold CJK coverage. No system font installation
 or new dependency is involved.

@@ -155,7 +155,7 @@ macro_rules! source {
             concat!("bytes://tablecraft/original/", $name, "-", $variant, ".svg"),
             include_bytes!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                "/../../../assets/ui/icons/tablecraft/",
+                "/../../../assets/icons/tablecraft/",
                 $name,
                 "-",
                 $variant,

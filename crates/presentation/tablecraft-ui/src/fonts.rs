@@ -27,27 +27,27 @@ pub fn configure(ctx: &Context, locale: Locale) {
     for (name, bytes) in [
         (
             NOTO_EMOJI,
-            include_bytes!("../../../../assets/ui/fonts/NotoEmoji-Variable.ttf").as_slice(),
+            include_bytes!("../../../../assets/fonts/NotoEmoji-Variable.ttf").as_slice(),
         ),
         (
             SELAWIK,
-            include_bytes!("../../../../assets/ui/fonts/selawk.ttf").as_slice(),
+            include_bytes!("../../../../assets/fonts/selawk.ttf").as_slice(),
         ),
         (
             BOLD_FAMILY,
-            include_bytes!("../../../../assets/ui/fonts/selawkb.ttf").as_slice(),
+            include_bytes!("../../../../assets/fonts/selawkb.ttf").as_slice(),
         ),
         (
             NOTO_JAPANESE,
-            include_bytes!("../../../../assets/ui/fonts/NotoSansJP-Regular.otf").as_slice(),
+            include_bytes!("../../../../assets/fonts/NotoSansJP-Regular.otf").as_slice(),
         ),
         (
             NOTO_KOREAN,
-            include_bytes!("../../../../assets/ui/fonts/NotoSansKR-Regular.otf").as_slice(),
+            include_bytes!("../../../../assets/fonts/NotoSansKR-Regular.otf").as_slice(),
         ),
         (
             NOTO_SIMPLIFIED_CHINESE,
-            include_bytes!("../../../../assets/ui/fonts/NotoSansSC-Regular.otf").as_slice(),
+            include_bytes!("../../../../assets/fonts/NotoSansSC-Regular.otf").as_slice(),
         ),
     ] {
         fonts

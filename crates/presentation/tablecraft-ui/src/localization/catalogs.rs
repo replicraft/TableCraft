@@ -5,7 +5,7 @@ macro_rules! section {
         (
             $section,
             include_str!(concat!(
-                "../../../../../assets/ui/locales/",
+                "../../../../../locales/",
                 $locale,
                 "/",
                 $section,

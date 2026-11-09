@@ -19,7 +19,7 @@ TABLECRAFT_ICON_DIR=.cache/desktop-icons cargo run --offline --locked \
 ```
 
 The source artwork remains
-[`application-light.svg`](../../assets/ui/icons/tablecraft/application-light.svg).
+[`application-light.svg`](../../assets/icons/tablecraft/application-light.svg).
 Generated files are build outputs, not replacement source artwork. Producing an
 ICO does not embed it in a Windows executable; that resource step remains open.
 

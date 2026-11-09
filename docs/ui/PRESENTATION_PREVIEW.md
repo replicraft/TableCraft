@@ -1459,13 +1459,13 @@ with 536 themed/disabled SVGs, including the attachment paperclip.
 File → Options selects System, Light or Dark and the interface language. These choices
 apply to the current session. Selawik remains the primary font; bundled regional
 Noto Sans CJK fallbacks supply Japanese, Korean and Simplified Chinese glyphs.
-Font sources, hashes and OFL notices live in `assets/ui/fonts/`.
+Font sources, hashes and OFL notices live in `assets/fonts/`.
 
 Fluent (`fluent-bundle`, from fluent-rs) handles bundled resources. Each locale
 has 23 section files: `shell`, `ribbon`, `backstage`, `creation`, `table-draft`, `datasheet`, `query`,
 `saved-query`, `design`, `editing`, `insertion`, `deletion`, `collections`,
 `navigation`, `objects`, `diagnostics`, `recovery`, `settings`, `find`, `filtering`, `zoom`, `totals` and `query-design`
-`.ftl` files under `assets/ui/locales/`. Languages are English, Spanish, German, Russian, Japanese
+`.ftl` files under `locales/`. Languages are English, Spanish, German, Russian, Japanese
 (`ja`; `jp` is accepted as an input alias), Korean, Simplified Chinese (`zh-CN`)
 and Brazilian Portuguese (`pt-BR`). Catalog tests check syntax, exact message and
 variable parity, formatting and fallback diagnostics. Translations are initial
@@ -1477,7 +1477,7 @@ wildcard, time-zone or regional value-format policies. Missing/invalid messages
 have a diagnosed English fallback; counters retain no message arguments.
 
 The Ribbon uses original generated SVG command icons from
-`assets/ui/icons/tablecraft/`, with light/dark and neutral disabled variants.
+`assets/icons/tablecraft/`, with light/dark and neutral disabled variants.
 Their generator and hash manifest retain reproducible source geometry; the
 artwork uses the repository license. Earlier dated verification records below
 refer to the prior Microsoft Fluent subset, which remains inert source material.

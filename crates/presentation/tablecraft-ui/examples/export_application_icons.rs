@@ -21,7 +21,7 @@ use std::{
 };
 
 const SOURCE: &[u8] =
-    include_bytes!("../../../../assets/ui/icons/tablecraft/application-light.svg");
+    include_bytes!("../../../../assets/icons/tablecraft/application-light.svg");
 const PNG_SIZES: [u32; 9] = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 
 fn main() -> Result<(), Box<dyn Error>> {

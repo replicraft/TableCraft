@@ -138,7 +138,7 @@ Application hosts remain under `apps/`: existing `tablecraft-cli` and the workin
 `tablecraft-display` supplies pure formatting and validated presentation facts to
 runtime, UI and desktop directly, without GUI or database dependencies. UI owns
 widgets and the formatting-options editor; runtime owns native fact qualification.
-Fonts reside at `assets/ui/fonts`. No platform file/window/runtime service lives
+Fonts reside at `assets/fonts`. No platform file/window/runtime service lives
 in the presentation crate. Desktop implementation began at the user's explicit
 request; the [desktop scope](../ui/DESKTOP.md) owns its acceptance status.
 

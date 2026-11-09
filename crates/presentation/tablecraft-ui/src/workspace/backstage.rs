@@ -215,7 +215,7 @@ impl State {
         egui::CollapsingHeader::new(tr(ui, "backstage-font-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
                 ui.label(include_str!(
-                    "../../../../../assets/ui/fonts/OFL-Selawik.txt"
+                    "../../../../../assets/fonts/OFL-Selawik.txt"
                 ));
             });
         });
@@ -228,7 +228,7 @@ impl State {
         egui::CollapsingHeader::new(tr(ui, "backstage-noto-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
                 ui.label(include_str!(
-                    "../../../../../assets/ui/fonts/OFL-NotoSansCJK.txt"
+                    "../../../../../assets/fonts/OFL-NotoSansCJK.txt"
                 ));
             });
         });
@@ -241,7 +241,7 @@ impl State {
         egui::CollapsingHeader::new(tr(ui, "backstage-emoji-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
                 ui.label(include_str!(
-                    "../../../../../assets/ui/fonts/OFL-NotoEmoji.txt"
+                    "../../../../../assets/fonts/OFL-NotoEmoji.txt"
                 ));
             });
         });
@@ -249,7 +249,7 @@ impl State {
         ui.label(tr(ui, "backstage-icons-credit"));
         ui.hyperlink_to(
             tr(ui, "backstage-icons-source"),
-            "https://github.com/replicraft/TableCraft/tree/main/assets/ui/icons/tablecraft",
+            "https://github.com/replicraft/TableCraft/tree/main/assets/icons/tablecraft",
         );
         egui::CollapsingHeader::new(tr(ui, "backstage-icons-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
