@@ -11,15 +11,19 @@ use tablecraft_ui::{ObjectKind, ObjectTarget, ParameterInput, ParameterSpec, Sav
 
 impl Desktop {
     pub(super) fn inspect_saved_query(&mut self, target: SavedQueryTarget) {
-        let object = ObjectTarget {
-            document_revision: target.document_revision,
-            kind: ObjectKind::SavedQuery {
-                object_id: target.object_id,
-                name: target.name.clone(),
-            },
-        };
-        if self.state.active_object().map(|tab| tab.target).as_ref() != Some(&object) {
-            self.open_object(object);
+        let active = self.state.active_object().is_some_and(|tab| {
+            tab.target.document_revision == target.document_revision
+                && matches!(&tab.target.kind, ObjectKind::SavedQuery { object_id, name }
+                    if *object_id == target.object_id && *name == target.name)
+        });
+        if !active {
+            self.open_object(ObjectTarget {
+                document_revision: target.document_revision,
+                kind: ObjectKind::SavedQuery {
+                    object_id: target.object_id,
+                    name: target.name,
+                },
+            });
             return;
         }
         if self.editing.has_save() || !self.state.can_inspect_saved_query(&target) {
@@ -80,12 +84,9 @@ impl Desktop {
             return;
         };
         self.generation = request_id;
-        self.pending = PendingOperation::SavedRun {
-            target: target.clone(),
-            request_id,
-        };
         self.state
-            .begin_saved_query_run(target, parameters, request_id);
+            .begin_saved_query_run(&target, parameters, request_id);
+        self.pending = PendingOperation::SavedRun { target, request_id };
         self.state.busy = true;
         self.state.error = None;
     }
@@ -101,10 +102,9 @@ impl Desktop {
             object_id: target.object_id,
             name: target.name,
         };
-        let selected = target.clone();
         if self.state.set_saved_query_details(
             request_id,
-            target,
+            &target,
             parameters
                 .into_iter()
                 .map(|parameter| ParameterSpec {
@@ -119,7 +119,7 @@ impl Desktop {
             // A same-revision retained SQL draft already has its source binding.
             // In particular, witnessed own-save publication retains submitted
             // spelling rather than replacing it with canonical inspection SQL.
-            self.inspect_saved_query_sql(selected);
+            self.inspect_saved_query_sql(target);
         }
     }
 }

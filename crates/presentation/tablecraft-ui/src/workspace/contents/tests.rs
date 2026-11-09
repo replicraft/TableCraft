@@ -96,7 +96,7 @@ fn contents_publication_preserves_background_and_cannot_reopen_closed_or_stale_d
     let mut state = state();
     let target = target(&state);
     state.begin_contents(target.clone(), 11);
-    state.set_contents(11, target.clone(), CollectionKind::Multivalue, true, data());
+    state.set_contents(11, &target, CollectionKind::Multivalue, true, data());
     assert!(matches!(
         state.contents.as_ref().unwrap().result,
         ContentsResult::Ready { .. }
@@ -105,24 +105,24 @@ fn contents_publication_preserves_background_and_cannot_reopen_closed_or_stale_d
     assert_eq!(state.query_data.as_ref().unwrap().rows[0][0].text, "NULL");
     assert!(state.schema.is_some());
     state.close_contents();
-    state.set_contents(11, target.clone(), CollectionKind::Multivalue, true, data());
+    state.set_contents(11, &target, CollectionKind::Multivalue, true, data());
     assert!(state.contents.is_none());
 
     state.begin_contents(target.clone(), 12);
-    state.fail_contents(11, target.clone(), "Old error".into());
+    state.fail_contents(11, &target, "Old error".into());
     assert!(matches!(
         state.contents.as_ref().unwrap().result,
         ContentsResult::Loading
     ));
     state.select_view(DocumentView::Query);
-    state.set_contents(12, target.clone(), CollectionKind::Multivalue, true, data());
+    state.set_contents(12, &target, CollectionKind::Multivalue, true, data());
     assert!(state.contents.is_none());
     assert!(state.view == DocumentView::Query);
 
     state.select_view(DocumentView::Table);
     state.begin_contents(target.clone(), 13);
     state.database.as_mut().unwrap().document_revision = 8;
-    state.set_contents(13, target, CollectionKind::Multivalue, true, data());
+    state.set_contents(13, &target, CollectionKind::Multivalue, true, data());
     assert!(matches!(
         state.contents.as_ref().unwrap().result,
         ContentsResult::Loading
@@ -222,7 +222,7 @@ fn dialog_renders_assigned_empty_absent_and_null_member_states_without_actions()
         if empty {
             data.rows.clear();
         }
-        state.set_contents(19, target.clone(), kind, assigned, data);
+        state.set_contents(19, &target, kind, assigned, data);
         for _ in 0..3 {
             let mut output = context.run_ui(
                 egui::RawInput {
@@ -340,7 +340,7 @@ fn settled_contents_datasheet_starts_below_modal_controls_and_metadata() {
         Cell::scalar("application/octet-stream"),
         Cell::scalar("128,400"),
     ]];
-    state.set_contents(23, target, CollectionKind::Attachments, true, contents);
+    state.set_contents(23, &target, CollectionKind::Attachments, true, contents);
 
     for frame in 0..4 {
         let mut output = context.run_ui(
@@ -535,7 +535,7 @@ fn collection_widths_are_shared_by_parent_rows_but_isolated_between_fields() {
         let mut contents = data();
         contents.columns = vec!["Metadata".into(), "Value".into()];
         contents.rows = vec![vec![Cell::scalar("short"), Cell::scalar("tail")]];
-        state.set_contents(request, target, CollectionKind::Multivalue, true, contents);
+        state.set_contents(request, &target, CollectionKind::Multivalue, true, contents);
     }
 
     let context = egui::Context::default();
@@ -618,9 +618,9 @@ fn compact_collection_keeps_close_visible_with_long_target_and_error() {
         state.begin_contents(target.clone(), 25);
         let detail = "Literal service diagnosis\n".repeat(100) + "FINAL COLLECTION DIAGNOSIS";
         if failed {
-            state.fail_contents(25, target, detail.clone());
+            state.fail_contents(25, &target, detail.clone());
         } else {
-            state.set_contents(25, target, CollectionKind::Multivalue, true, data());
+            state.set_contents(25, &target, CollectionKind::Multivalue, true, data());
         }
         let context = egui::Context::default();
         context.enable_accesskit();

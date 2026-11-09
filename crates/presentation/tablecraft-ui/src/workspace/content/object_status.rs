@@ -40,9 +40,7 @@ impl State {
                 );
                 focus::register(ui, Pane::Document, &retry, true);
                 if retry.clicked() {
-                    actions.push(Action::RetryObject {
-                        tab: open.tab.clone(),
-                    });
+                    actions.push(Action::RetryObject { tab: open.tab });
                 }
             }
         });

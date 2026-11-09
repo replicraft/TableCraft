@@ -183,7 +183,7 @@ impl State {
             ui.label(message(
                 ui,
                 "table-draft-delete-field-question",
-                &[("field", confirmation.name.clone())],
+                &[("field", confirmation.name.as_str())],
             ));
             ui.label(tr(ui, "table-draft-delete-field-warning"));
             ui.horizontal_wrapped(|ui| {

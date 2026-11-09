@@ -145,7 +145,7 @@ impl State {
                     } else {
                         "filtering-sort-ascending"
                     },
-                    &[("column", sort.column.clone())],
+                    &[("column", sort.column.as_str())],
                 ));
             }
         }

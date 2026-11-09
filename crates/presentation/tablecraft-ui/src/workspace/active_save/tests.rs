@@ -26,7 +26,7 @@ pub(in crate::workspace) fn inspected_state(edit_available: bool) -> (State, Sav
     };
     state.dismiss_backstage();
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), Vec::new()));
+    assert!(state.set_saved_query_details(1, &target, Vec::new()));
     let request = state
         .begin_saved_query_sql_inspection(target.clone(), 2)
         .unwrap();

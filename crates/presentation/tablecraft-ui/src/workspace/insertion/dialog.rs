@@ -48,7 +48,7 @@ impl State {
                             ui.label(message(
                                 ui,
                                 "insertion-target",
-                                &[("table", target.table.clone())],
+                                &[("table", target.table.as_str())],
                             ));
                             if let Some(error) = error {
                                 diagnostics::show(ui, ui.id().with("insert_check_error"), error);
@@ -69,7 +69,7 @@ impl State {
                             ui.label(message(
                                 ui,
                                 "insertion-target",
-                                &[("table", draft.target.table.clone())],
+                                &[("table", draft.target.table.as_str())],
                             ));
                             ui.label(tr(ui, "insertion-intent-help"));
                             let mut changed = false;

@@ -26,7 +26,7 @@ fn reviewed() -> (State, SavedQuerySqlRequest) {
         }],
     });
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
+    assert!(state.set_saved_query_details(1, &target, vec![]));
     let request = state.begin_saved_query_sql_inspection(target, 2).unwrap();
     assert!(state.set_saved_query_sql_inspection(
         2,

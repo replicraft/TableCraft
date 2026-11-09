@@ -42,7 +42,7 @@ fn open_saved(state: &mut State, proposed: Option<String>) -> ObjectTab {
         name: "Q".into(),
     };
     state.begin_saved_query_inspection(target.clone(), 100);
-    assert!(state.set_saved_query_details(100, target.clone(), vec![]));
+    assert!(state.set_saved_query_details(100, &target, vec![]));
     let inspection = state.begin_saved_query_sql_inspection(target, 101).unwrap();
     assert!(state.set_saved_query_sql_inspection(
         101,

@@ -7,7 +7,6 @@ use tablecraft_runtime::{
 };
 use tablecraft_ui::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
-    FilterTarget,
 };
 
 impl Desktop {
@@ -15,13 +14,9 @@ impl Desktop {
         let Some(filter_id) = target.filter_id else {
             return Ok(None);
         };
-        self.filter_handle(&FilterTarget {
-            document_revision: target.document_revision,
-            table: target.table.clone(),
-            filter_id,
-        })
-        .map(Some)
-        .ok_or(())
+        self.filter_handle(target.document_revision, &target.table, filter_id)
+            .map(Some)
+            .ok_or(())
     }
 
     pub(in crate::workspace) fn describe_field_filter(&mut self, target: FieldFilterTarget) {

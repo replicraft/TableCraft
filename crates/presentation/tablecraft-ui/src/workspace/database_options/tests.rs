@@ -194,7 +194,7 @@ fn dirty_stored_query_blocks_confirmation_without_losing_typed_text() {
         name: "Q".into(),
     };
     state.begin_saved_query_inspection(target.clone(), 10);
-    assert!(state.set_saved_query_details(10, target.clone(), vec![]));
+    assert!(state.set_saved_query_details(10, &target, vec![]));
     let inspection = state.begin_saved_query_sql_inspection(target, 11).unwrap();
     assert!(state.set_saved_query_sql_inspection(
         11,

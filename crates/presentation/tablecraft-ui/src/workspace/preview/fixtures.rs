@@ -325,7 +325,6 @@ pub(super) fn schema(table: &str) -> Schema {
                 _ => ("Short Text", "120", 10, 240),
             };
             Field {
-                name: column.name.clone(),
                 number,
                 native_type,
                 storage_bytes: bytes,
@@ -378,6 +377,7 @@ pub(super) fn schema(table: &str) -> Schema {
                         value: FieldPropertyValue::Absent,
                     },
                 ],
+                name: column.name,
             }
         })
         .collect();

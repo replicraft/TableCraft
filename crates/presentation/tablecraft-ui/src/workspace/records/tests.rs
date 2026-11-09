@@ -57,8 +57,8 @@ fn navigation_keeps_column_and_accepts_only_matching_source_request_and_record()
     );
     state.begin_record_navigation(target.clone(), 10);
     assert_eq!(state.table_selection.position(), Some((99, 1)));
-    assert!(!state.set_record_data(9, target.clone(), page(200, 3, false)));
-    assert!(!state.set_record_data(10, target.clone(), page(199, 4, false)));
+    assert!(!state.set_record_data(9, &target, page(200, 3, false)));
+    assert!(!state.set_record_data(10, &target, page(199, 4, false)));
     assert_eq!(state.data.as_ref().unwrap().offset, 100);
     assert_eq!(state.table_selection.position(), Some((99, 1)));
     assert!(
@@ -70,7 +70,7 @@ fn navigation_keeps_column_and_accepts_only_matching_source_request_and_record()
             .contains("another record position")
     );
     state.begin_record_navigation(target.clone(), 11);
-    assert!(state.set_record_data(11, target, page(200, 3, false)));
+    assert!(state.set_record_data(11, &target, page(200, 3, false)));
     assert_eq!(state.table_selection.position(), Some((0, 1)));
     assert_eq!(state.data.as_ref().unwrap().offset, 200);
 }
@@ -81,7 +81,7 @@ fn checked_eof_failure_and_replaced_view_preserve_the_previous_page() {
     let mut target = state.selected_record_target().unwrap();
     target.parent_ordinal = 999;
     state.begin_record_navigation(target.clone(), 10);
-    assert!(!state.set_record_data(10, target.clone(), page(999, 0, false)));
+    assert!(!state.set_record_data(10, &target, page(999, 0, false)));
     assert_eq!(state.data.as_ref().unwrap().offset, 100);
     assert!(state.records.error.as_ref().unwrap().contains("no record"));
 
@@ -92,7 +92,7 @@ fn checked_eof_failure_and_replaced_view_preserve_the_previous_page() {
 
     state.begin_record_navigation(target.clone(), 12);
     state.select_view(DocumentView::Query);
-    assert!(!state.set_record_data(12, target, page(999, 1, false)));
+    assert!(!state.set_record_data(12, &target, page(999, 1, false)));
     assert_eq!(state.data.as_ref().unwrap().offset, 100);
     assert!(state.view == DocumentView::Query);
 }
@@ -380,9 +380,9 @@ fn home_select_record_uses_visible_query_and_saved_result_without_native_handles
                 system: false,
             });
             state.begin_saved_query_inspection(target.clone(), 1);
-            assert!(state.set_saved_query_details(1, target.clone(), Vec::new()));
-            state.begin_saved_query_run(target.clone(), Vec::new(), 2);
-            assert!(state.set_saved_query_data(2, target, result));
+            assert!(state.set_saved_query_details(1, &target, Vec::new()));
+            state.begin_saved_query_run(&target, Vec::new(), 2);
+            assert!(state.set_saved_query_data(2, &target, result));
             state
                 .saved_query
                 .selection

@@ -50,13 +50,14 @@ fn replace_label(harness: &mut Harness<'_, Preview>, role: Role, label: &str, va
 }
 
 pub(super) fn choose(harness: &mut Harness<'_, Preview>, label: &str, choice: &str) {
-    let localizer = harness.state().state().localizer.clone();
+    let label = harness.state().state().localizer.text(label);
+    let choice = harness.state().state().localizer.text(choice);
     harness
-        .get_by_role_and_label(Role::ComboBox, &localizer.text(label))
+        .get_by_role_and_label(Role::ComboBox, &label)
         .click_accesskit();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
     harness
-        .get_by_role_and_label(Role::Button, &localizer.text(choice))
+        .get_by_role_and_label(Role::Button, &choice)
         .click_accesskit();
     harness.run_steps(LAYOUT_SETTLE_STEPS);
 }
@@ -67,7 +68,7 @@ pub(super) fn description(harness: &mut Harness<'_, Preview>) {
     const DESCRIPTION: &str = "  Résumé 日本語 Now()  ";
     const IDENTIFIER_DESCRIPTION: &str = "Generated identifier";
 
-    let localizer = harness.state().state().localizer.clone();
+    let localizer = &harness.state().state().localizer;
     let label = |field: &str| {
         let mut arguments = FluentArgs::new();
         arguments.set("field", field);

@@ -271,7 +271,7 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     state.begin_saved_query_inspection(target.clone(), 80);
     assert!(state.set_saved_query_details(
         80,
-        target.clone(),
+        &target,
         vec![
             ParameterSpec {
                 name: "Minimum".into(),

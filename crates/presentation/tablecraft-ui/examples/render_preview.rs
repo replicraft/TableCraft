@@ -61,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !matches!(host.as_str(), "synthetic" | "normal") {
         return Err(io::Error::other("preview host must be synthetic or normal").into());
     }
-    let font_search = match env::var("TABLECRAFT_PREVIEW_FONT_SEARCH") {
+    let mut font_search = match env::var("TABLECRAFT_PREVIEW_FONT_SEARCH") {
         Ok(query) => Some(query),
         Err(env::VarError::NotPresent) => None,
         Err(error) => return Err(error.into()),
@@ -370,13 +370,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                 harness.run_steps(LAYOUT_SETTLE_STEPS);
             }
         }
-        if let Some(query) = &font_search {
+        if let Some(query) = font_search.take() {
             let label = harness.state().state().localizer.text("ribbon-font");
             harness
                 .get_by_role_and_label(egui::accesskit::Role::ComboBox, &label)
                 .click_accesskit();
             harness.run_steps(LAYOUT_SETTLE_STEPS);
-            harness.event(egui::Event::Text(query.clone()));
+            harness.event(egui::Event::Text(query));
             harness.run_steps(LAYOUT_SETTLE_STEPS);
         }
         if field_gallery {

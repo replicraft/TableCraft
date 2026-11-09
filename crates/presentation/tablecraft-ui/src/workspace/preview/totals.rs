@@ -10,7 +10,7 @@ use tablecraft_display::{NativeFormat, ScalarPresentation};
 impl Preview {
     pub(super) fn mock_describe_totals(&mut self, target: TotalsTarget) {
         let request = self.request();
-        if !self.state.begin_totals_description(target.clone(), request) {
+        if !self.state.begin_totals_description(&target, request) {
             return;
         }
         let fields = self
@@ -53,7 +53,7 @@ impl Preview {
 
     pub(super) fn mock_compute_totals(&mut self, target: TotalsTarget, specs: Vec<TotalSpec>) {
         let request = self.request();
-        if self.state.begin_totals_compute(request, target, specs) {
+        if self.state.begin_totals_compute(request, &target, specs) {
             self.state.fail_totals(
                 request,
                 self.state.localizer.text("totals-mock-unavailable"),
@@ -85,7 +85,7 @@ impl Preview {
         let request = self.request();
         assert!(
             self.state
-                .begin_totals_compute(request, target.clone(), specs.clone())
+                .begin_totals_compute(request, &target, specs.clone())
         );
         let mut count = Cell::scalar("205");
         count.alignment = HorizontalAlignment::Right;
@@ -112,7 +112,7 @@ impl Preview {
         ));
         if error {
             let request = self.request();
-            assert!(self.state.begin_totals_compute(request, target, specs));
+            assert!(self.state.begin_totals_compute(request, &target, specs));
             self.state.fail_totals(
                 request,
                 self.state.localizer.text("totals-mock-unavailable"),

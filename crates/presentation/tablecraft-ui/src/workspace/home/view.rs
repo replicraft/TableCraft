@@ -13,7 +13,7 @@ impl State {
         let t = self.localizer.clone();
         let active = self.active_object();
         let table = active.as_ref().and_then(|tab| match &tab.target.kind {
-            ObjectKind::Table { name } => Some(name.clone()),
+            ObjectKind::Table { name } => Some(name.as_str()),
             _ => None,
         });
         let draft = active
@@ -72,7 +72,7 @@ impl State {
                         self.queue_table_draft_view(true);
                     } else {
                         actions.push(Action::ViewSchema {
-                            table: table.expect("enabled for an existing table"),
+                            table: table.expect("enabled for an existing table").to_owned(),
                         });
                     }
                     ui.close();

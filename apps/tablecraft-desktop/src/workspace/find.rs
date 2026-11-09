@@ -29,7 +29,11 @@ impl Desktop {
             });
         let command = match &filter {
             Some(filter) => {
-                let Some(handle) = self.filter_handle(&filter.target) else {
+                let Some(handle) = self.filter_handle(
+                    filter.target.document_revision,
+                    &filter.target.table,
+                    filter.target.filter_id,
+                ) else {
                     self.state.error = Some(self.state.localizer.text("filtering-stale"));
                     return;
                 };
@@ -95,7 +99,11 @@ impl Desktop {
         // nor cancellation may publish the match without its original revision.
         let command = match &filter {
             Some(filter) => {
-                let Some(handle) = self.filter_handle(&filter.target) else {
+                let Some(handle) = self.filter_handle(
+                    filter.target.document_revision,
+                    &filter.target.table,
+                    filter.target.filter_id,
+                ) else {
                     self.state
                         .fail_find(request_id, self.state.localizer.text("filtering-stale"));
                     return;

@@ -46,7 +46,7 @@ impl State {
                             ui.label(message(
                                 ui,
                                 "deletion-target",
-                                &[("table", target.table.clone())],
+                                &[("table", target.table.as_str())],
                             ));
                             if let Some(error) = error {
                                 diagnostics::show(ui, ui.id().with("delete_check_error"), error);
@@ -59,7 +59,7 @@ impl State {
                             ui.label(message(
                                 ui,
                                 "deletion-target",
-                                &[("table", review.target.table.clone())],
+                                &[("table", review.target.table.as_str())],
                             ));
                             ui.label(message(
                                 ui,

@@ -120,12 +120,12 @@ fn seeded_query(state: &mut State) -> ObjectTab {
         }),
     );
     state.begin_saved_query_inspection(query_target(7), 1);
-    assert!(state.set_saved_query_details(1, query_target(7), details("int32")));
+    assert!(state.set_saved_query_details(1, &query_target(7), details("int32")));
     assert!(state.can_run_saved_query(&query_target(7), &inputs()));
-    state.begin_saved_query_run(query_target(7), inputs(), 2);
+    state.begin_saved_query_run(&query_target(7), inputs(), 2);
     let mut result = data("Q", "complete result");
     result.source_revision = None;
-    assert!(state.set_saved_query_data(2, query_target(7), result));
+    assert!(state.set_saved_query_data(2, &query_target(7), result));
     tab
 }
 
@@ -243,7 +243,7 @@ fn restored_layout_keeps_preferences_but_requires_fresh_rows_and_parameter_decla
     assert!(state.activate_object(&fresh_q));
     assert!(state.saved_query.data.is_none());
     state.begin_saved_query_inspection(query_target(8), 3);
-    assert!(state.set_saved_query_details(3, query_target(8), details("int32")));
+    assert!(state.set_saved_query_details(3, &query_target(8), details("int32")));
     assert!(state.can_run_saved_query(&query_target(8), &inputs()));
 
     // Changing the declaration to VALUE must not silently reuse the old LONG
@@ -253,7 +253,7 @@ fn restored_layout_keeps_preferences_but_requires_fresh_rows_and_parameter_decla
     state.database.as_mut().unwrap().document_revision = 9;
     assert!(state.restore_workspace_layout(layout, query_object(9).kind));
     state.begin_saved_query_inspection(query_target(9), 4);
-    assert!(state.set_saved_query_details(4, query_target(9), details("value")));
+    assert!(state.set_saved_query_details(4, &query_target(9), details("value")));
     assert!(!state.can_run_saved_query(&query_target(9), &inputs()));
 }
 

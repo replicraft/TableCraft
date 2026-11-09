@@ -270,8 +270,8 @@ impl State {
             })
     }
 
-    pub fn begin_totals_description(&mut self, target: TotalsTarget, request_id: u64) -> bool {
-        if !self.can_describe_totals(&target) {
+    pub fn begin_totals_description(&mut self, target: &TotalsTarget, request_id: u64) -> bool {
+        if !self.can_describe_totals(target) {
             if let Some(session) = &mut self.totals.session {
                 session.queued = false;
             }
@@ -382,10 +382,10 @@ impl State {
     pub fn begin_totals_compute(
         &mut self,
         request_id: u64,
-        target: TotalsTarget,
+        target: &TotalsTarget,
         specs: Vec<TotalSpec>,
     ) -> bool {
-        if !self.can_compute_totals(&target, &specs) {
+        if !self.can_compute_totals(target, &specs) {
             if let Some(session) = &mut self.totals.session {
                 session.queued = false;
             }

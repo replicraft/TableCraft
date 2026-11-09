@@ -12,7 +12,9 @@ impl Desktop {
 
         let filter = match self.state.active_filter_target() {
             Some(target) => {
-                let Some(handle) = self.filter_handle(&target) else {
+                let Some(handle) =
+                    self.filter_handle(target.document_revision, &target.table, target.filter_id)
+                else {
                     self.state.error = Some(self.state.localizer.text("filtering-stale"));
                     return;
                 };

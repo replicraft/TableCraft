@@ -59,12 +59,12 @@ impl Preview {
             Some(CollectionScene::Loading) => {}
             Some(CollectionScene::Error) => self.state.fail_contents(
                 request,
-                target,
+                &target,
                 self.state.localizer.text("collections-mock-error"),
             ),
             _ => self
                 .state
-                .set_contents(request, target, kind, assigned, child),
+                .set_contents(request, &target, kind, assigned, child),
         }
     }
 
@@ -118,12 +118,12 @@ impl Preview {
             CollectionScene::Loading => {}
             CollectionScene::Error => self.state.fail_contents(
                 request,
-                target,
+                &target,
                 self.state.localizer.text("collections-mock-error"),
             ),
             _ => self
                 .state
-                .set_contents(request, target, kind, assigned, child),
+                .set_contents(request, &target, kind, assigned, child),
         }
     }
 }

@@ -86,12 +86,9 @@ impl Desktop {
         }
         let base = match target.filter_id {
             Some(filter_id) => {
-                let expected = FilterTarget {
-                    document_revision: target.document_revision,
-                    table: target.table.clone(),
-                    filter_id,
-                };
-                let Some(handle) = self.filter_handle(&expected) else {
+                let Some(handle) =
+                    self.filter_handle(target.document_revision, &target.table, filter_id)
+                else {
                     self.state.error = Some(self.state.localizer.text("filtering-stale"));
                     return;
                 };
@@ -120,7 +117,7 @@ impl Desktop {
         };
         self.generation = request_id;
         self.state
-            .begin_filter_selection(request_id, target.clone(), comparison);
+            .begin_filter_selection(request_id, target, comparison);
         self.pending = PendingOperation::FilterSelection { request_id };
         self.state.busy = true;
     }
@@ -132,7 +129,9 @@ impl Desktop {
         {
             return;
         }
-        let Some(handle) = self.filter_handle(&target) else {
+        let Some(handle) =
+            self.filter_handle(target.document_revision, &target.table, target.filter_id)
+        else {
             self.state.error = Some(self.state.localizer.text("filtering-stale"));
             return;
         };
@@ -159,7 +158,9 @@ impl Desktop {
         if self.editing.has_save() || self.state.busy || !self.state.can_clear_filter(&target) {
             return;
         }
-        let Some(handle) = self.filter_handle(&target) else {
+        let Some(handle) =
+            self.filter_handle(target.document_revision, &target.table, target.filter_id)
+        else {
             return;
         };
         let Some(request_id) = request_read(
@@ -171,7 +172,7 @@ impl Desktop {
             return;
         };
         self.generation = request_id;
-        self.state.begin_clear_filter(request_id, target.clone());
+        self.state.begin_clear_filter(request_id, target);
         self.pending = PendingOperation::ClearFilter { request_id };
         self.state.busy = true;
     }
@@ -184,12 +185,9 @@ impl Desktop {
             return;
         }
         let base = if let Some(filter_id) = target.filter_id {
-            let expected = FilterTarget {
-                document_revision: target.document_revision,
-                table: target.table.clone(),
-                filter_id,
-            };
-            let Some(handle) = self.filter_handle(&expected) else {
+            let Some(handle) =
+                self.filter_handle(target.document_revision, &target.table, filter_id)
+            else {
                 self.state.error = Some(self.state.localizer.text("filtering-stale"));
                 return;
             };
@@ -229,10 +227,20 @@ impl Desktop {
         self.state.busy = true;
     }
 
-    pub(super) fn filter_handle(&self, expected: &FilterTarget) -> Option<FilterHandle> {
+    pub(super) fn filter_handle(
+        &self,
+        document_revision: u64,
+        table: &str,
+        filter_id: u64,
+    ) -> Option<FilterHandle> {
         self.filter
             .as_ref()
-            .filter(|handle| ui_target(handle.target()) == *expected)
+            .filter(|handle| {
+                let target = handle.target();
+                target.document_revision == document_revision
+                    && target.table == table
+                    && target.filter_id == filter_id
+            })
             .cloned()
     }
 
@@ -306,7 +314,7 @@ pub(super) fn filtered_publication(
         RowOrdinals::new(result.source_ordinals)
     }
     .map_err(|_| InvalidFilterPublication)?;
-    let target = ui_target(&result.target);
+    let target = ui_target(result.target);
     let data = Data {
         source_revision: Some(target.document_revision),
         table: target.table.clone(),
@@ -333,10 +341,10 @@ pub(super) fn filtered_publication(
     ))
 }
 
-fn ui_target(target: &runtime::FilterTarget) -> FilterTarget {
+fn ui_target(target: runtime::FilterTarget) -> FilterTarget {
     FilterTarget {
         document_revision: target.document_revision,
-        table: target.table.clone(),
+        table: target.table,
         filter_id: target.filter_id,
     }
 }

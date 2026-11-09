@@ -598,7 +598,7 @@ fn empty_body(ui: &mut Ui, bounds: egui::Rect, scale: f32) {
     let message_rect = egui::Rect::from_min_size(origin, galley.size());
     ui.painter().galley(origin, galley, color);
     ui.interact(message_rect, ui.id().with("empty_body"), Sense::hover())
-        .widget_info(|| WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), message.clone()));
+        .widget_info(|| WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), &message));
 }
 
 fn column_header(
@@ -647,8 +647,7 @@ fn column_header(
             "datasheet-column-menu",
             &[("column", column.name.as_str())],
         );
-        response
-            .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), name.clone()));
+        response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), &name));
         if let Some(sort) = &header.sort
             && sort.column == column.name
         {
@@ -735,8 +734,7 @@ fn row_selector(
         "datasheet-select-record",
         &[("number", number.to_string())],
     );
-    response
-        .widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), label.clone()));
+    response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), &label));
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_role(Role::RowHeader);
         node.set_column_index(0);
@@ -995,10 +993,10 @@ fn cell_with_occurrence(
                 WidgetType::Checkbox,
                 ui.is_enabled(),
                 checked,
-                accessible_label.clone(),
+                &accessible_label,
             )
         } else {
-            WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), accessible_label.clone())
+            WidgetInfo::labeled(WidgetType::Label, ui.is_enabled(), &accessible_label)
         }
     });
     if checkbox.is_some() {

@@ -237,7 +237,7 @@ impl Row<'_> {
             if response.has_focus() || ui.memory(|memory| memory.has_focus(id)) {
                 self.editor.last_focus = Some((frame, position));
             }
-            response.clone().on_hover_text(
+            let response = response.on_hover_text(
                 field
                     .input_hint
                     .label(&crate::localization::for_context(ui.ctx())),
@@ -303,7 +303,7 @@ impl Row<'_> {
             let label = message(
                 ui,
                 "insertion-field-input",
-                &[("field", field.name.clone())],
+                &[("field", field.name.as_str())],
             );
             menu.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &label));
         });

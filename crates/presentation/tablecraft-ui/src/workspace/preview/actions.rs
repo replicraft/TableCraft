@@ -348,10 +348,10 @@ impl Preview {
                     self.state.error = None;
                     let request = self.request();
                     self.state
-                        .begin_saved_query_run(target.clone(), parameters, request);
+                        .begin_saved_query_run(&target, parameters, request);
                     let mut data = fixtures::query();
                     data.table = target.name.clone();
-                    self.state.set_saved_query_data(request, target, data);
+                    self.state.set_saved_query_data(request, &target, data);
                 }
             }
             Action::NavigateRecord { target } => {
@@ -361,7 +361,7 @@ impl Preview {
                     self.state.begin_record_navigation(target.clone(), request);
                     self.state.set_record_data(
                         request,
-                        target.clone(),
+                        &target,
                         fixtures::page(&target.table, target.parent_ordinal),
                     );
                 }
@@ -589,7 +589,7 @@ impl Preview {
             .begin_saved_query_inspection(target.clone(), request);
         let parameters = fixtures::parameters(&target);
         self.state
-            .set_saved_query_details(request, target, parameters);
+            .set_saved_query_details(request, &target, parameters);
     }
 
     pub(super) fn edit(&mut self, target: EditTarget) {

@@ -8,8 +8,7 @@ use egui_kittest::{
 use tablecraft_ui::{FluentArgs, preview::Preview};
 
 pub(super) fn create(harness: &mut Harness<'_, Preview>, show_save_name: bool) {
-    let localizer = harness.state().state().localizer.clone();
-    let table = localizer.text("ribbon-table");
+    let table = harness.state().state().localizer.text("ribbon-table");
     // Some translations use the same label for the Ribbon command and the
     // navigation group's collapse button. The Ribbon is above navigation.
     let command = harness

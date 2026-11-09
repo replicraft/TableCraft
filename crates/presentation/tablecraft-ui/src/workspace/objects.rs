@@ -171,14 +171,14 @@ impl State {
         };
         self.park_object();
         self.objects.entries.push(Entry {
-            tab: tab.clone(),
+            tab,
             session: None,
             offset: 0,
             retained_bytes: Some(0),
         });
         self.objects.active = Some(id);
-        self.objects.navigation = Some(target.clone());
         let session = Session::empty(&target.kind);
+        self.objects.navigation = Some(target);
         session.install(self);
         self.finish_object_activation();
         self.active_object_load()
@@ -521,14 +521,11 @@ impl State {
                 object_id: target.object_id,
                 name: target.name.clone(),
             });
-        let active_kind = match self.view {
-            DocumentView::Table | DocumentView::Design => table.clone(),
-            DocumentView::Query if self.saved_query.active => saved.clone(),
-            DocumentView::Query => Some(ObjectKind::Sql),
-        };
+        let active_view = self.view;
+        let saved_active = self.saved_query.active;
         let has_sql_result = self.query_data.is_some();
         let mut kinds: Vec<ObjectKind> = table.into_iter().chain(saved).collect();
-        if has_sql_result || active_kind == Some(ObjectKind::Sql) {
+        if has_sql_result || active_view == DocumentView::Query && !saved_active {
             kinds.push(ObjectKind::Sql);
         }
         for kind in kinds {
@@ -550,7 +547,15 @@ impl State {
                 self.error = Some(self.localizer.text("objects-memory-limit"));
                 return;
             }
-            let active = active_kind.as_ref() == Some(&target.kind);
+            let active = match active_view {
+                DocumentView::Table | DocumentView::Design => {
+                    matches!(target.kind, ObjectKind::Table { .. })
+                }
+                DocumentView::Query if saved_active => {
+                    matches!(target.kind, ObjectKind::SavedQuery { .. })
+                }
+                DocumentView::Query => matches!(target.kind, ObjectKind::Sql),
+            };
             let session = if active {
                 None
             } else {

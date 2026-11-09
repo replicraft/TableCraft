@@ -47,7 +47,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         // this synthetic inspection never issues native or save authority.
         state.saved_query_sql_edit_available = true;
         state.begin_saved_query_inspection(target.clone(), INSPECTION_ID);
-        assert!(state.set_saved_query_details(INSPECTION_ID, target.clone(), vec![]));
+        assert!(state.set_saved_query_details(INSPECTION_ID, &target, vec![]));
         let request = state
             .begin_saved_query_sql_inspection(target, SQL_INSPECTION_ID)
             .unwrap();

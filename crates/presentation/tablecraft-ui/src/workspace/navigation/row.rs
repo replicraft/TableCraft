@@ -71,13 +71,13 @@ pub(super) fn show(
         .map_or(rect.right() - CONTENT_PADDING, |badge| {
             rect.right() - CONTENT_PADDING * 2.0 - badge.size().x
         });
-    if let Some(badge) = &badge {
+    if let Some(badge) = badge {
         ui.painter().with_clip_rect(rect).galley(
             egui::pos2(
                 rect.right() - CONTENT_PADDING - badge.size().x,
                 rect.center().y - badge.size().y * 0.5,
             ),
-            badge.clone(),
+            badge,
             badge_color,
         );
     }

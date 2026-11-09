@@ -46,7 +46,6 @@ impl Catalog {
         {
             return;
         }
-        let context = context.clone();
         let repaint = context.clone();
         let task = Box::new(move || {
             match catch_unwind(AssertUnwindSafe(discover)) {

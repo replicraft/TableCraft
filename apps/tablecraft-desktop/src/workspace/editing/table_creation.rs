@@ -56,12 +56,13 @@ impl Desktop {
             return;
         }
         let id = request.id;
+        let document_revision = request.tab.target.document_revision;
         self.table_creation = Some(TableCreationHost {
             request: id,
             revision: request.snapshot.revision(),
             table: request.snapshot.table_name().to_owned(),
             columns: request.snapshot.fields().len(),
-            tab: request.tab.clone(),
+            tab: request.tab,
             witness: None,
             expected_schema_change: None,
             restore: Some(restore),
@@ -69,7 +70,7 @@ impl Desktop {
             cleanup: None,
         });
         if self.submit(Command::ReviewTableCreation {
-            document_revision: request.tab.target.document_revision,
+            document_revision,
             snapshot: request.snapshot,
         }) {
             self.pending = PendingOperation::TableCreationReview { request_id: id };

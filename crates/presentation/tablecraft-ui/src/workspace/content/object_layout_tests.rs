@@ -26,11 +26,11 @@ fn saved_result(state: &mut State, object_id: u128, request: u64) -> ObjectTab {
         name,
     };
     state.begin_saved_query_inspection(target.clone(), request);
-    assert!(state.set_saved_query_details(request, target.clone(), Vec::new()));
-    state.begin_saved_query_run(target.clone(), Vec::new(), request + 1);
+    assert!(state.set_saved_query_details(request, &target, Vec::new()));
+    state.begin_saved_query_run(&target, Vec::new(), request + 1);
     assert!(state.set_saved_query_data(
         request + 1,
-        target,
+        &target,
         Data {
             row_ordinals: None,
             source_revision: None,

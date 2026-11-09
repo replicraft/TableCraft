@@ -92,12 +92,12 @@ impl State {
     }
 
     /// Publish only a matching native page that contains the requested record.
-    pub fn set_record_data(&mut self, request_id: u64, target: RecordTarget, data: Data) -> bool {
+    pub fn set_record_data(&mut self, request_id: u64, target: &RecordTarget, data: Data) -> bool {
         let accepts =
             self.records.pending.as_ref().is_some_and(|pending| {
-                pending.request_id == request_id && pending.target == target
+                pending.request_id == request_id && pending.target == *target
             });
-        if !accepts || !self.record_source_matches(&target) {
+        if !accepts || !self.record_source_matches(target) {
             return false;
         }
         self.records.pending = None;

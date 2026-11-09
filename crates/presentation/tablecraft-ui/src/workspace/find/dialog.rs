@@ -187,13 +187,11 @@ impl State {
                             ui.label(tr(ui, "find-not-found"));
                         }
                         if let Some(found) = &session.found {
+                            let row = (u64::from(found.parent_ordinal) + 1).to_string();
                             ui.label(message(
                                 ui,
                                 "find-found",
-                                &[
-                                    ("row", (u64::from(found.parent_ordinal) + 1).to_string()),
-                                    ("column", found.column.clone()),
-                                ],
+                                &[("row", row.as_str()), ("column", found.column.as_str())],
                             ));
                         }
                         if let Some(error) = &session.error {

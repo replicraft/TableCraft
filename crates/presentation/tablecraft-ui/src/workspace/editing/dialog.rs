@@ -248,8 +248,8 @@ fn target_label(ui: &mut egui::Ui, target: &EditTarget) {
         ui,
         "editing-target",
         &[
-            ("table", target.table.clone()),
-            ("column", target.column.clone()),
+            ("table", target.table.as_str()),
+            ("column", target.column.as_str()),
             ("row", (u64::from(target.parent_ordinal) + 1).to_string()),
         ],
     ));

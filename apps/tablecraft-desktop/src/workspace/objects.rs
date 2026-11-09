@@ -158,9 +158,7 @@ impl Desktop {
         };
         let target = ObjectTarget {
             document_revision: database.document_revision,
-            kind: ObjectKind::Table {
-                name: table.clone(),
-            },
+            kind: ObjectKind::Table { name: table },
         };
         if self.editing.has_save() || !self.reserve_filter_parking() {
             return;

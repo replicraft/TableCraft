@@ -218,7 +218,7 @@ impl State {
         {
             return false;
         }
-        let table = table.clone();
+        let table = table.as_str();
         let mut candidate = session.draft.clone();
         let added = !candidate
             .sources
@@ -239,7 +239,7 @@ impl State {
             };
             candidate.sources.push(DesignSource {
                 id,
-                table: table.clone(),
+                table: table.to_owned(),
                 alias: None,
             });
         }

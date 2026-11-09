@@ -149,8 +149,7 @@ pub(super) fn group_with_launcher(
                 );
                 let image = egui::Rect::from_center_size(rect.center(), egui::vec2(10.0, 10.0));
                 Icon::DialogLauncher.image(ui, 10.0).paint_at(ui, image);
-                response
-                    .widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, name.clone()));
+                response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, false, &name));
                 ui.ctx().accesskit_node_builder(response.id, |node| {
                     node.remove_action(egui::accesskit::Action::Click);
                     node.remove_action(egui::accesskit::Action::Focus);

@@ -17,7 +17,7 @@ fn metadata(state: &mut State) -> TotalsTarget {
         state.take_totals_request().is_none(),
         "queued intent is emitted once"
     );
-    assert!(state.begin_totals_description(target.clone(), 1));
+    assert!(state.begin_totals_description(&target, 1));
     let fields = state
         .data
         .as_ref()
@@ -70,7 +70,7 @@ fn totals_failures_stop_requeue_and_hide_keeps_exact_cancellation_authority() {
     let state = preview.state_mut();
     let target = metadata(state);
     let specs = select(state, &target, "CustomerID", TotalAggregate::Count);
-    assert!(state.begin_totals_compute(2, target.clone(), specs.clone()));
+    assert!(state.begin_totals_compute(2, &target, specs.clone()));
     assert!(state.set_totals_result(
         2,
         TotalsData {
@@ -81,7 +81,7 @@ fn totals_failures_stop_requeue_and_hide_keeps_exact_cancellation_authority() {
             view_rows: 205,
         }
     ));
-    assert!(state.begin_totals_compute(5, target.clone(), specs.clone()));
+    assert!(state.begin_totals_compute(5, &target, specs.clone()));
     state.fail_totals(5, "Literal aggregate failure".into());
     assert!(state.take_totals_request().is_none());
     assert_eq!(state.totals_cell("CustomerID").unwrap().text, "205");
@@ -97,7 +97,7 @@ fn totals_failures_stop_requeue_and_hide_keeps_exact_cancellation_authority() {
     let Some(Action::ComputeTotals { specs, .. }) = state.take_totals_request() else {
         panic!("showing a failed result must request fresh totals");
     };
-    assert!(state.begin_totals_compute(3, target.clone(), specs.clone()));
+    assert!(state.begin_totals_compute(3, &target, specs.clone()));
     let rows = state.data.as_ref().unwrap().rows.as_ptr();
     let hide = state.toggle_totals_visibility();
     assert!(matches!(hide, Some(Action::CancelTotals { request_id: 3 })));
@@ -126,7 +126,7 @@ fn totals_failures_stop_requeue_and_hide_keeps_exact_cancellation_authority() {
     let Some(Action::ComputeTotals { specs, .. }) = state.take_totals_request() else {
         panic!("showing the retained choice can retry explicitly");
     };
-    assert!(state.begin_totals_compute(4, target.clone(), specs));
+    assert!(state.begin_totals_compute(4, &target, specs));
     let data = state.data.take().unwrap();
     assert!(state.set_table_data(data));
     assert!(!state.set_totals_result(
@@ -155,7 +155,7 @@ fn page_changes_and_parked_display_preferences_preserve_typed_full_view_totals()
     state.formatting.system_locale = Some("en-US".into());
     let target = metadata(state);
     let specs = select(state, &target, "Balance", TotalAggregate::Average);
-    assert!(state.begin_totals_compute(2, target.clone(), specs.clone()));
+    assert!(state.begin_totals_compute(2, &target, specs.clone()));
     let facts = ScalarPresentation::CurrencyAverage {
         bits: 0.1_f64.to_bits(),
         native_format: NativeFormat::Currency,

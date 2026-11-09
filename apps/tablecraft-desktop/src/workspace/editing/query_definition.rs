@@ -631,18 +631,12 @@ impl Desktop {
         if let Some(status) = host.status {
             self.state.clear_saved_query_sql_save(status);
         }
-        let cleanup = self
-            .editing
-            .query_definition
-            .as_mut()
-            .unwrap()
-            .cleanup
-            .take();
-        let host = self.editing.query_definition.as_ref().unwrap();
+        let host = self.editing.query_definition.take().unwrap();
+        let cleanup = host.cleanup;
         let close_after_save = host.close_after_save;
         let close_object_id = host.request.target.object_id;
-        let close_name = host.request.target.name.clone();
-        let filters = std::mem::take(&mut self.editing.query_definition.as_mut().unwrap().filters);
+        let close_name = host.request.target.name;
+        let filters = host.filters;
         self.retain_filter_restore_definitions(filters);
         self.state
             .set_table_creation_available(revision, table_creation_available);
@@ -652,7 +646,6 @@ impl Desktop {
         self.state.dismiss_backstage();
         self.state.busy = false;
         self.pending = PendingOperation::Read;
-        self.editing.query_definition = None;
         self.editing.clear_review();
         self.clear_query_parameters();
         if close_after_save {

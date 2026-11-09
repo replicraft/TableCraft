@@ -52,7 +52,6 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     let ObjectKind::Table { name } = &tab.target.kind else {
         panic!("field rename preview requires a saved table");
     };
-    let table = name.clone();
     let revision = tab.target.document_revision;
     let tab_id = tab.id;
 
@@ -63,7 +62,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         assert!(state.set_table_data(Data {
             source_revision: Some(revision),
             row_ordinals: None,
-            table: table.clone(),
+            table: name.clone(),
             offset: 0,
             columns: vec![
                 Column {
@@ -94,11 +93,14 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             .prepare_field_rename_inspection(&target)
             .expect("presentation inspection admission")
             .bind(INSPECTION_ID);
+        let ObjectKind::Table { name: table } = &target.tab.target.kind else {
+            unreachable!("the inspected presentation target retains its table");
+        };
         let source_eligible = mode != "source-refused";
         assert!(state.set_field_rename_inspection_by_id(
             INSPECTION_ID,
             revision,
-            &table,
+            table,
             ORIGINAL_NAME,
             NATIVE_NUMBER,
             source_eligible,

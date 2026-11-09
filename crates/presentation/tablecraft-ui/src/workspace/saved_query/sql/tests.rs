@@ -29,7 +29,7 @@ fn state() -> (State, SavedQueryTarget) {
         }],
     });
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
+    assert!(state.set_saved_query_details(1, &target, vec![]));
     (state, target)
 }
 
@@ -228,7 +228,7 @@ fn ordinary_parameter_reinspection_keeps_sql_text_and_dirty_revision() {
     let tab = state.active_object().unwrap();
     let revision = state.saved_query_sql_revision_for(&tab);
     state.begin_saved_query_inspection(target.clone(), 31);
-    assert!(state.set_saved_query_details(31, target, vec![]));
+    assert!(state.set_saved_query_details(31, &target, vec![]));
     assert_eq!(state.saved_query_sql().unwrap().1, "SELECT 43 AS Answer");
     assert_eq!(state.saved_query_sql_revision_for(&tab), revision);
     assert!(!state.saved_query_run_ready());

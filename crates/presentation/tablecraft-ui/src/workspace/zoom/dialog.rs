@@ -217,7 +217,7 @@ fn show_text(
     let focus = ui.interact(body.inner_rect, body_id, Sense::focusable_noninteractive());
     let body_name = tr(ui, "zoom-read-only");
     focus.widget_info(|| {
-        egui::WidgetInfo::labeled(egui::WidgetType::Label, ui.is_enabled(), body_name.clone())
+        egui::WidgetInfo::labeled(egui::WidgetType::Label, ui.is_enabled(), &body_name)
     });
     if session.focus_body || text_clicked {
         focus.request_focus();

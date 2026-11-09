@@ -214,8 +214,8 @@ impl RowDraft {
         if self.entries[position].kind == DraftFieldType::AutoNumberIncrement {
             return matches!(input, InsertInput::Omitted);
         }
-        let (choice, text) = match input {
-            InsertInput::Omitted => (Choice::Omitted, self.entries[position].text.clone()),
+        let (choice, replacement) = match input {
+            InsertInput::Omitted => (Choice::Omitted, None),
             InsertInput::Value(value) => {
                 if value.is_null && self.entries[position].kind == DraftFieldType::YesNo {
                     self.reject(position);
@@ -227,10 +227,13 @@ impl RowDraft {
                     } else {
                         Choice::Value
                     },
-                    value.text,
+                    Some(value.text),
                 )
             }
         };
+        let text = replacement
+            .as_deref()
+            .unwrap_or(&self.entries[position].text);
         let other_bytes = self
             .entries
             .iter()
@@ -252,7 +255,9 @@ impl RowDraft {
             return false;
         };
         self.entries[position].choice = choice;
-        self.entries[position].text = text;
+        if let Some(text) = replacement {
+            self.entries[position].text = text;
+        }
         self.entries[position].rejected = false;
         self.revision = revision;
         true
@@ -407,7 +412,7 @@ impl RowDraft {
                         self.set_input(
                             field.id(),
                             InsertInput::Value(EditInput {
-                                text: text.clone(),
+                                text,
                                 is_null: false,
                             }),
                         );

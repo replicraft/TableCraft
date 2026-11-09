@@ -746,12 +746,10 @@ impl Desktop {
                             self.state.set_query_run_data(*request_id, data);
                         }
                         PendingOperation::SavedRun { target, request_id } => {
-                            self.state
-                                .set_saved_query_data(*request_id, target.clone(), data);
+                            self.state.set_saved_query_data(*request_id, target, data);
                         }
                         PendingOperation::Record { target, request_id } => {
-                            self.state
-                                .set_record_data(*request_id, target.clone(), data);
+                            self.state.set_record_data(*request_id, target, data);
                         }
                         PendingOperation::FindPage {
                             request_id,
@@ -793,7 +791,12 @@ impl Desktop {
                         continue;
                     }
                     if let PendingOperation::Contents { request_id, .. } = &self.pending {
-                        let target = crate::view_models::contents_target(&target);
+                        let target = ContentsTarget {
+                            document_revision: target.document_revision,
+                            table: target.table,
+                            column: target.column,
+                            parent_ordinal: target.parent_ordinal,
+                        };
                         let data = Data {
                             row_ordinals: None,
                             table: target.column.clone(),
@@ -805,7 +808,7 @@ impl Desktop {
                         };
                         self.state.set_contents(
                             *request_id,
-                            target,
+                            &target,
                             crate::view_models::collection_kind(kind),
                             assigned,
                             data,
@@ -1240,7 +1243,7 @@ impl eframe::App for Desktop {
                             | PendingOperation::SavedRun { target, request_id } => {
                                 self.state.fail_saved_query(
                                     *request_id,
-                                    target.clone(),
+                                    target,
                                     self.state.localizer.text("shell-operation-cancelled"),
                                 );
                             }

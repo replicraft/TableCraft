@@ -110,14 +110,14 @@ fn collection_lifecycle_scenes_preserve_the_parent_and_reject_stale_replies() {
         });
         preview.state.set_contents(
             request,
-            target.clone(),
+            &target,
             CollectionKind::Attachments,
             true,
             fixtures::contents(CollectionKind::Attachments),
         );
         preview
             .state
-            .fail_contents(request, target, "late synthetic failure".into());
+            .fail_contents(request, &target, "late synthetic failure".into());
         assert!(preview.state.contents_request_id().is_none());
     }
 }

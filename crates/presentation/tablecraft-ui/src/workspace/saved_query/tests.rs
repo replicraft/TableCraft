@@ -69,17 +69,17 @@ fn inspected_parameters_require_explicit_value_type_and_preserve_sql_result_slot
     let scratch = state.active_object().unwrap();
     assert!(state.can_inspect_saved_query(&target));
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(!state.set_saved_query_details(9, target.clone(), specs()));
-    assert!(state.set_saved_query_details(1, target.clone(), specs()));
+    assert!(!state.set_saved_query_details(9, &target, specs()));
+    assert!(state.set_saved_query_details(1, &target, specs()));
     state.saved_query.inputs[0].text = "7".into();
     state.saved_query.inputs[1].is_null = true;
     assert!(!state.can_run_saved_query(&target, &state.saved_query.inputs));
     state.saved_query.inputs[1].kind = "text".into();
     assert!(state.can_run_saved_query(&target, &state.saved_query.inputs));
     let inputs = state.saved_query.inputs.clone();
-    state.begin_saved_query_run(target.clone(), inputs, 2);
+    state.begin_saved_query_run(&target, inputs.clone(), 2);
     let result = data("Saved result", "7");
-    assert!(state.set_saved_query_data(2, target, result));
+    assert!(state.set_saved_query_data(2, &target, result));
     assert!(
         state
             .saved_query
@@ -112,16 +112,16 @@ fn inspected_parameters_require_explicit_value_type_and_preserve_sql_result_slot
 fn source_object_request_and_input_binding_reject_stale_results_and_errors() {
     let (mut state, target) = state();
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
-    state.begin_saved_query_run(target.clone(), vec![], 2);
+    assert!(state.set_saved_query_details(1, &target, vec![]));
+    state.begin_saved_query_run(&target, vec![], 2);
     let mut wrong = target.clone();
     wrong.object_id += 1;
-    assert!(!state.set_saved_query_data(2, wrong.clone(), data("Wrong", "bad")));
-    state.fail_saved_query(2, wrong, "Wrong object".into());
+    assert!(!state.set_saved_query_data(2, &wrong, data("Wrong", "bad")));
+    state.fail_saved_query(2, &wrong, "Wrong object".into());
     assert!(state.saved_query.error.is_none());
     state.select_view(DocumentView::Table);
-    assert!(!state.set_saved_query_data(2, target.clone(), data("Late", "bad")));
-    state.fail_saved_query(2, target.clone(), "Late failure".into());
+    assert!(!state.set_saved_query_data(2, &target, data("Late", "bad")));
+    state.fail_saved_query(2, &target, "Late failure".into());
     assert!(state.view == DocumentView::Table);
     assert!(
         !state
@@ -146,7 +146,7 @@ fn typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_tex
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(state.set_saved_query_details(
         1,
-        target.clone(),
+        &target,
         vec![ParameterSpec {
             name: "P".into(),
             kind: "text".into(),
@@ -166,10 +166,10 @@ fn typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_tex
     assert!(!state.can_run_saved_query(&target, &stale));
 
     let submitted = state.saved_query.inputs.clone();
-    state.begin_saved_query_run(target.clone(), submitted, 2);
+    state.begin_saved_query_run(&target, submitted, 2);
     state.saved_query.inputs[0].text = "newer input".into();
-    assert!(!state.set_saved_query_data(2, target.clone(), data("Stale", "bad")));
-    state.fail_saved_query(2, target, "Failure for previous input".into());
+    assert!(!state.set_saved_query_data(2, &target, data("Stale", "bad")));
+    state.fail_saved_query(2, &target, "Failure for previous input".into());
     assert!(state.saved_query.error.is_none());
     assert!(state.saved_query.data.is_none());
 }
@@ -201,7 +201,7 @@ fn object_selection_requires_explicit_open_and_run_emits_exact_typed_parameters(
     state.prepare_object_open(object).unwrap();
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(render(&mut state, &context, vec![]).0.is_empty());
-    assert!(state.set_saved_query_details(1, target.clone(), specs()));
+    assert!(state.set_saved_query_details(1, &target, specs()));
     state.saved_query.inputs[0].text = "7".into();
     state.saved_query.inputs[1].kind = "text".into();
     state.saved_query.inputs[1].text = "literal 'text'".into();
@@ -278,11 +278,11 @@ fn replaced_saved_result_surrenders_old_grid_focus_and_shortcuts_follow_visible_
     let (mut state, target) = state();
     let scratch = state.active_object().unwrap();
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
-    state.begin_saved_query_run(target.clone(), vec![], 2);
+    assert!(state.set_saved_query_details(1, &target, vec![]));
+    state.begin_saved_query_run(&target, vec![], 2);
     let mut old = data("Saved result", "Old first");
     old.rows.push(vec!["Old second".into()]);
-    assert!(state.set_saved_query_data(2, target.clone(), old));
+    assert!(state.set_saved_query_data(2, &target, old));
     let context = egui::Context::default();
     assert!(click(&mut state, &context, "Old second").is_empty());
     let old_focus = context
@@ -293,11 +293,11 @@ fn replaced_saved_result_surrenders_old_grid_focus_and_shortcuts_follow_visible_
     // Complete the new inspection/run before a paint frame, retaining the same
     // result name/offset so stale widget focus cannot be hidden by a new ID.
     state.begin_saved_query_inspection(target.clone(), 3);
-    assert!(state.set_saved_query_details(3, target.clone(), vec![]));
-    state.begin_saved_query_run(target.clone(), vec![], 4);
+    assert!(state.set_saved_query_details(3, &target, vec![]));
+    state.begin_saved_query_run(&target, vec![], 4);
     let mut replacement = data("Saved result", "NEW first");
     replacement.rows.push(vec!["NEW second".into()]);
-    assert!(state.set_saved_query_data(4, target.clone(), replacement));
+    assert!(state.set_saved_query_data(4, &target, replacement));
     assert!(render(&mut state, &context, vec![]).0.is_empty());
     assert_ne!(context.memory(|memory| memory.focused()), Some(old_focus));
     assert_eq!(state.selected_cell_text(), Some("NEW first"));
@@ -362,16 +362,16 @@ fn enter(pressed: bool, modifiers: egui::Modifiers) -> egui::Event {
 fn wrong_saved_result_envelopes_preserve_previous_results_and_allow_a_new_run() {
     let (mut state, target) = state();
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
-    state.begin_saved_query_run(target.clone(), vec![], 2);
-    assert!(state.set_saved_query_data(2, target.clone(), data("Saved result", "original")));
+    assert!(state.set_saved_query_details(1, &target, vec![]));
+    state.begin_saved_query_run(&target, vec![], 2);
+    assert!(state.set_saved_query_data(2, &target, data("Saved result", "original")));
 
     for (index, invalid) in ["native page", "offset", "partial result"]
         .iter()
         .enumerate()
     {
         let request_id = 3 + index as u64;
-        state.begin_saved_query_run(target.clone(), vec![], request_id);
+        state.begin_saved_query_run(&target, vec![], request_id);
         let mut wrong = data("Wrong result", "must not publish");
         match *invalid {
             "native page" => wrong.source_revision = Some(7),
@@ -379,7 +379,7 @@ fn wrong_saved_result_envelopes_preserve_previous_results_and_allow_a_new_run() 
             "partial result" => wrong.has_more = true,
             _ => unreachable!(),
         }
-        assert!(!state.set_saved_query_data(request_id, target.clone(), wrong));
+        assert!(!state.set_saved_query_data(request_id, &target, wrong));
         assert_eq!(state.visible_data().unwrap().rows[0][0].text, "original");
         assert!(state.saved_query.pending.is_none());
         assert!(
@@ -393,8 +393,8 @@ fn wrong_saved_result_envelopes_preserve_previous_results_and_allow_a_new_run() 
         assert!(state.can_run_saved_query(&target, &[]));
     }
 
-    state.begin_saved_query_run(target.clone(), vec![], 9);
-    assert!(state.set_saved_query_data(9, target, data("Saved result", "new successful result")));
+    state.begin_saved_query_run(&target, vec![], 9);
+    assert!(state.set_saved_query_data(9, &target, data("Saved result", "new successful result")));
     assert_eq!(
         state.visible_data().unwrap().rows[0][0].text,
         "new successful result"
@@ -415,7 +415,7 @@ fn sequential_parameter_controls_retain_exact_prompt_labels_and_cancel_discards_
         label: "DATETIME".into(),
         nullable: true,
     });
-    assert!(state.set_saved_query_details(1, target, parameters));
+    assert!(state.set_saved_query_details(1, &target, parameters));
     let original_inputs = state.saved_query.inputs.clone();
     let context = egui::Context::default();
     context.enable_accesskit();
@@ -521,7 +521,7 @@ fn long_failure_keeps_saved_controls_results_inputs_and_existing_navigation_focu
     assert!(
         state.set_saved_query_details(
             1,
-            target.clone(),
+            &target,
             (1..=12)
                 .map(|index| ParameterSpec {
                     name: format!("Exact search text {index}"),
@@ -534,10 +534,10 @@ fn long_failure_keeps_saved_controls_results_inputs_and_existing_navigation_focu
     );
     state.saved_query.inputs[0].text = "literal input kept on failure".into();
     let inputs = state.saved_query.inputs.clone();
-    state.begin_saved_query_run(target.clone(), inputs.clone(), 2);
+    state.begin_saved_query_run(&target, inputs.clone(), 2);
     assert!(state.set_saved_query_data(
         2,
-        target.clone(),
+        &target,
         data("Saved result", "previous complete result")
     ));
     let mut harness = Harness::builder()
@@ -557,11 +557,11 @@ fn long_failure_keeps_saved_controls_results_inputs_and_existing_navigation_focu
     harness
         .state_mut()
         .0
-        .begin_saved_query_run(target.clone(), inputs.clone(), 3);
+        .begin_saved_query_run(&target, inputs.clone(), 3);
     harness
         .state_mut()
         .0
-        .fail_saved_query(3, target.clone(), diagnosis.clone());
+        .fail_saved_query(3, &target, diagnosis.clone());
     harness.run();
     assert!(
         harness

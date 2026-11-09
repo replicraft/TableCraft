@@ -27,7 +27,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         let request = state
             .field_addition_review_request()
             .expect("real header name snapshot");
-        let tab = request.tab.clone();
+        let tab = &request.tab;
         assert!(state.begin_field_addition_review(&request, REVIEW_REQUEST_ID));
         assert!(state.accept_field_addition_review(&request, REVIEW_REQUEST_ID, REVIEW_ID));
         let identity = state
@@ -52,11 +52,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             ));
             assert!(state.field_addition_source_stale());
             assert!(!state.can_review_field_addition());
-            assert!(!state.can_edit_field_addition_name(&tab));
+            assert!(!state.can_edit_field_addition_name(tab));
             assert!(state.field_addition_save_status().is_none());
             assert_eq!(
                 state.field_addition_saved_warning_name().unwrap(),
-                (&tab, "Field1")
+                (tab, "Field1")
             );
             let warning = state.field_addition_saved_warning().unwrap();
             assert_eq!(warning.identity, identity);
@@ -66,10 +66,10 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 Some(SaveCleanupNotice::RetainedPrivateJournal)
             );
             if mode == "returned-close" {
-                assert!(state.request_field_addition_close(&tab));
+                assert!(state.request_field_addition_close(tab));
             }
         }
-        (tab, identity)
+        (request.tab, identity)
     };
     settle(harness);
     if mode == "refresh-failed" {

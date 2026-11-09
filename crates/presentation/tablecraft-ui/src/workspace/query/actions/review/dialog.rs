@@ -66,7 +66,7 @@ impl State {
                         ui.label(message(
                             ui,
                             "query-action-table",
-                            &[("table", review.table.clone())],
+                            &[("table", review.table.as_str())],
                         ));
                         if let Some(matched) = review.effect.matched_rows() {
                             ui.label(message(

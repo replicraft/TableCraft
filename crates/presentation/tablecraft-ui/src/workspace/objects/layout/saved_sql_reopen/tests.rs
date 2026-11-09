@@ -38,7 +38,7 @@ fn open_sql(
     proposed: Option<String>,
 ) -> ObjectTab {
     state.begin_saved_query_inspection(target.clone(), 1);
-    assert!(state.set_saved_query_details(1, target.clone(), vec![]));
+    assert!(state.set_saved_query_details(1, &target, vec![]));
     let inspection = state.begin_saved_query_sql_inspection(target, 2).unwrap();
     assert!(state.set_saved_query_sql_inspection(
         2,
@@ -235,7 +235,7 @@ fn parameter_preferences_and_submitted_spelling_survive_fresh_metadata_reload() 
     state.begin_saved_query_inspection(parameter_target.clone(), 40);
     assert!(state.set_saved_query_details(
         40,
-        parameter_target.clone(),
+        &parameter_target,
         vec![ParameterSpec {
             name: "Minimum".into(),
             kind: "int32".into(),
@@ -267,7 +267,7 @@ fn parameter_preferences_and_submitted_spelling_survive_fresh_metadata_reload() 
     assert!(state.resolve_saved_query_sql_review_after_reopen(3, &request, 70, database));
     let new_target = state.selected_saved_target().unwrap().clone();
     state.begin_saved_query_inspection(new_target.clone(), 41);
-    assert!(state.set_saved_query_details(41, new_target, vec![]));
+    assert!(state.set_saved_query_details(41, &new_target, vec![]));
     assert_eq!(state.saved_query_sql().unwrap().1, request.proposed_sql);
     let tab = state
         .object_tabs()

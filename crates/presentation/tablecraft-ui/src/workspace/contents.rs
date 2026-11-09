@@ -117,12 +117,12 @@ impl State {
     pub fn set_contents(
         &mut self,
         request_id: u64,
-        target: ContentsTarget,
+        target: &ContentsTarget,
         kind: CollectionKind,
         assigned: bool,
         mut data: Data,
     ) {
-        if !self.accepts_contents(request_id, &target) {
+        if !self.accepts_contents(request_id, target) {
             return;
         }
         if data.row_ordinals.is_some() {
@@ -146,8 +146,8 @@ impl State {
         }
     }
 
-    pub fn fail_contents(&mut self, request_id: u64, target: ContentsTarget, message: String) {
-        if !self.accepts_contents(request_id, &target) {
+    pub fn fail_contents(&mut self, request_id: u64, target: &ContentsTarget, message: String) {
+        if !self.accepts_contents(request_id, target) {
             return;
         }
         if let Some(dialog) = &mut self.contents {
@@ -254,16 +254,14 @@ impl State {
                 .max_height(body_height)
                 .show(ui, |ui| {
                     let body_top = ui.cursor().top();
+                    let parent = (u64::from(dialog.target.parent_ordinal) + 1).to_string();
                     ui.label(message(
                         ui,
                         "collections-target",
                         &[
-                            ("table", dialog.target.table.clone()),
-                            ("column", dialog.target.column.clone()),
-                            (
-                                "parent",
-                                (u64::from(dialog.target.parent_ordinal) + 1).to_string(),
-                            ),
+                            ("table", dialog.target.table.as_str()),
+                            ("column", dialog.target.column.as_str()),
+                            ("parent", parent.as_str()),
                         ],
                     ));
                     ui.separator();

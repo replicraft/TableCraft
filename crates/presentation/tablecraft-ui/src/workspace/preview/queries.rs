@@ -81,7 +81,7 @@ impl Preview {
     pub(super) fn prepare_saved_running(&mut self) {
         let (target, inputs) = self.successful_saved_result();
         let request = self.request();
-        self.state.begin_saved_query_run(target, inputs, request);
+        self.state.begin_saved_query_run(&target, inputs, request);
         self.state.busy = true;
     }
 
@@ -92,9 +92,8 @@ impl Preview {
     pub(super) fn prepare_saved_error_message(&mut self, message: String) {
         let (target, inputs) = self.successful_saved_result();
         let request = self.request();
-        self.state
-            .begin_saved_query_run(target.clone(), inputs, request);
-        self.state.fail_saved_query(request, target, message);
+        self.state.begin_saved_query_run(&target, inputs, request);
+        self.state.fail_saved_query(request, &target, message);
     }
 
     pub(super) fn prepare_saved_parameters(&mut self) {
@@ -104,7 +103,7 @@ impl Preview {
             .begin_saved_query_inspection(target.clone(), request);
         assert!(
             self.state
-                .set_saved_query_details(request, target, typed_parameters()),
+                .set_saved_query_details(request, &target, typed_parameters()),
             "synthetic parameter declarations must match the selected saved query"
         );
         assert!(
@@ -132,12 +131,11 @@ impl Preview {
         );
         let request = self.request();
         self.state
-            .begin_saved_query_run(target.clone(), inputs.clone(), request);
+            .begin_saved_query_run(&target, inputs.clone(), request);
         let mut data = fixtures::query();
         data.table = target.name.clone();
         assert!(
-            self.state
-                .set_saved_query_data(request, target.clone(), data),
+            self.state.set_saved_query_data(request, &target, data),
             "synthetic saved results must satisfy the complete publication contract"
         );
         (target, inputs)

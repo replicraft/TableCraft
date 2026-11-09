@@ -27,7 +27,7 @@ impl State {
             ui.label(message(
                 ui,
                 "saved-query-close-question",
-                &[("name", name.clone())],
+                &[("name", name.as_str())],
             ));
             if !current {
                 ui.label(tr(ui, "saved-query-close-stale"));

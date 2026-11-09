@@ -128,7 +128,7 @@ impl Desktop {
             PendingOperation::SavedInspection { target, request_id }
             | PendingOperation::SavedRun { target, request_id } => {
                 self.state
-                    .fail_saved_query(*request_id, target.clone(), error.to_string());
+                    .fail_saved_query(*request_id, target, error.to_string());
             }
             PendingOperation::Record { request_id, .. } => {
                 self.state
@@ -148,7 +148,7 @@ impl Desktop {
             }
             PendingOperation::Contents { target, request_id } => {
                 self.state
-                    .fail_contents(*request_id, target.clone(), error.to_string());
+                    .fail_contents(*request_id, target, error.to_string());
             }
             _ => self.state.error = Some(error.to_string()),
         }

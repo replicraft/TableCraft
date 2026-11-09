@@ -176,7 +176,7 @@ fn sequential_prompt_tab_order_preserves_all_inputs_and_dispatches_only_after_la
     assert!(
         state.set_saved_query_details(
             1,
-            target,
+            &target,
             (1..=12)
                 .map(|index| ParameterSpec {
                     name: format!("Prompt {index:02}"),

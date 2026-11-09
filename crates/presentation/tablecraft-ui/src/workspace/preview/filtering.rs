@@ -14,7 +14,7 @@ impl Preview {
         let enabled = !matches!(scene, FilterScene::Disabled);
         let empty = matches!(scene, FilterScene::Empty);
         let first = fixtures::page("Customers", 0);
-        let columns = first.columns.clone();
+        let columns = first.columns;
         self.state
             .table_selection
             .select(self.state.data.as_ref().unwrap(), 0, 1);

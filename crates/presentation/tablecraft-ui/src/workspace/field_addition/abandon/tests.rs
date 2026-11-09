@@ -171,7 +171,7 @@ fn saved_sql_and_action_mutations_refuse_stale_source_while_read_intents_remain_
     };
     state.saved_query_sql_edit_available = true;
     state.begin_saved_query_inspection(target.clone(), 201);
-    assert!(state.set_saved_query_details(201, target.clone(), Vec::new()));
+    assert!(state.set_saved_query_details(201, &target, Vec::new()));
     let inspection = state
         .begin_saved_query_sql_inspection(target.clone(), 202)
         .unwrap();

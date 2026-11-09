@@ -73,15 +73,12 @@ impl State {
                         }
                         ui.add_space(12.0);
                     }
-                    let title = self
-                        .database
-                        .as_ref()
-                        .map_or_else(String::new, |db| db.title.clone());
+                    let title = self.database.as_ref().map_or("", |db| db.title.as_str());
                     let title_hover = self
                         .database
                         .as_ref()
                         .and_then(|database| database.title_path.as_deref())
-                        .unwrap_or(&title);
+                        .unwrap_or(title);
                     let status = if self.field_filter_dialog_open() {
                         Some(t.text("filtering-field-title"))
                     } else if self.edit_dialog_open() {
@@ -119,7 +116,7 @@ impl State {
                                 .with_cross_align(egui::Align::LEFT),
                             |ui| {
                                 ui.add(
-                                    egui::Label::new(RichText::new(&title).color(colors.ink))
+                                    egui::Label::new(RichText::new(title).color(colors.ink))
                                         .sense(if window::enabled() {
                                             egui::Sense::CLICK | egui::Sense::DRAG
                                         } else {
@@ -364,7 +361,7 @@ impl State {
                 }
                 let active = self.active_object();
                 let table = active.as_ref().and_then(|tab| match &tab.target.kind {
-                    ObjectKind::Table { name } => Some(name.clone()),
+                    ObjectKind::Table { name } => Some(name.as_str()),
                     _ => None,
                 });
                 let draft = active
@@ -400,7 +397,7 @@ impl State {
                             self.queue_table_draft_view(true);
                         } else {
                             actions.push(Action::ViewSchema {
-                                table: table.clone().expect("enabled table view"),
+                                table: table.expect("enabled table view").to_owned(),
                             });
                         }
                     }

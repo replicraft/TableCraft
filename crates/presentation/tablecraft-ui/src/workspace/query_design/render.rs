@@ -65,7 +65,7 @@ fn source_splitter(ui: &mut Ui, height: f32) {
     let response = response.on_hover_cursor(egui::CursorIcon::ResizeVertical);
     let label = tr(ui, "qbe-resize-panes");
     response.widget_info(|| {
-        egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), label.clone())
+        egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), &label)
     });
     if response.clicked() {
         response.request_focus();

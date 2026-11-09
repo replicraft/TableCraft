@@ -4,8 +4,7 @@ use crate::view_models;
 use crate::workspace::request_read;
 use tablecraft_runtime::{self as runtime, Command, FilterHandle};
 use tablecraft_ui::{
-    Column, FilterTarget, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
-    TotalsTarget,
+    Column, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
 };
 
 impl Desktop {
@@ -13,13 +12,9 @@ impl Desktop {
         let Some(filter_id) = target.filter_id else {
             return Ok(None);
         };
-        self.filter_handle(&FilterTarget {
-            document_revision: target.document_revision,
-            table: target.table.clone(),
-            filter_id,
-        })
-        .map(Some)
-        .ok_or(())
+        self.filter_handle(target.document_revision, &target.table, filter_id)
+            .map(Some)
+            .ok_or(())
     }
 
     pub(super) fn describe_totals(&mut self, target: TotalsTarget) {
@@ -42,10 +37,7 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
-        if !self
-            .state
-            .begin_totals_description(target.clone(), request_id)
-        {
+        if !self.state.begin_totals_description(&target, request_id) {
             self.worker.cancel();
             return;
         }
@@ -77,7 +69,7 @@ impl Desktop {
         };
         if !self
             .state
-            .begin_totals_compute(request_id, target.clone(), specs.clone())
+            .begin_totals_compute(request_id, &target, specs.clone())
         {
             self.worker.cancel();
             return;

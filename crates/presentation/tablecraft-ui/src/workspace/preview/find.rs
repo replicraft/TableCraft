@@ -14,18 +14,18 @@ impl Preview {
         } else {
             "A🦀 note".to_owned()
         };
-        let data = || {
+        let data = |text: String| {
             let mut data = super::fixtures::page("Customers", 0);
             data.columns = vec!["Notes".into()];
-            data.rows = vec![vec![Cell::scalar(text.clone())]];
+            data.rows = vec![vec![Cell::scalar(text)]];
             data.has_more = false;
             data
         };
-        self.state.set_table_data(data());
+        self.state.set_table_data(data(text.clone()));
         let request_id = self.request();
         let start_utf16 = if long { 520 } else { 1 };
         self.state
-            .prepare_mock_find_occurrence(request_id, data(), start_utf16);
+            .prepare_mock_find_occurrence(request_id, data(text), start_utf16);
     }
 
     pub(super) fn mock_find(&mut self, request: FindRequest) {

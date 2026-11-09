@@ -50,11 +50,7 @@ fn desktop() -> (Desktop, SavedQueryTarget) {
     desktop
         .state
         .begin_saved_query_inspection(target.clone(), 1);
-    assert!(
-        desktop
-            .state
-            .set_saved_query_details(1, target.clone(), vec![])
-    );
+    assert!(desktop.state.set_saved_query_details(1, &target, vec![]));
     (desktop, target)
 }
 
@@ -156,11 +152,7 @@ fn late_reply_for_parked_dirty_owner_cannot_touch_current_saved_query() {
     desktop
         .state
         .begin_saved_query_inspection(second.clone(), 2);
-    assert!(
-        desktop
-            .state
-            .set_saved_query_details(2, second.clone(), vec![])
-    );
+    assert!(desktop.state.set_saved_query_details(2, &second, vec![]));
     let request = desktop
         .state
         .begin_saved_query_sql_inspection(second.clone(), 12)

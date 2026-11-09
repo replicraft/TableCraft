@@ -220,10 +220,10 @@ impl State {
     pub fn set_saved_query_details(
         &mut self,
         request_id: u64,
-        target: SavedQueryTarget,
+        target: &SavedQueryTarget,
         parameters: Vec<ParameterSpec>,
     ) -> bool {
-        if !self.accepts_saved_reply(request_id, &target)
+        if !self.accepts_saved_reply(request_id, target)
             || !self
                 .saved_query
                 .pending
@@ -308,15 +308,15 @@ impl State {
 
     pub fn begin_saved_query_run(
         &mut self,
-        target: SavedQueryTarget,
+        target: &SavedQueryTarget,
         parameters: Vec<ParameterInput>,
         request_id: u64,
     ) {
         // The host already checked can_run_saved_query before dispatch. Busy
         // may now be true, so recheck the captured identity and inputs only.
-        if self.saved_query_binding(&target)
+        if self.saved_query_binding(target)
             && self.saved_query_visible()
-            && self.saved_query.target.as_ref() == Some(&target)
+            && self.saved_query.target.as_ref() == Some(target)
             && self.saved_query.inputs == parameters
             && self.saved_query.pending.is_none()
         {
@@ -331,10 +331,10 @@ impl State {
     pub fn set_saved_query_data(
         &mut self,
         request_id: u64,
-        target: SavedQueryTarget,
+        target: &SavedQueryTarget,
         mut data: Data,
     ) -> bool {
-        if !self.accepts_saved_reply(request_id, &target)
+        if !self.accepts_saved_reply(request_id, target)
             || !self.saved_query.pending.as_ref().is_some_and(|pending| {
                 pending.parameters.as_ref() == Some(&self.saved_query.inputs)
             })
@@ -367,8 +367,13 @@ impl State {
         true
     }
 
-    pub fn fail_saved_query(&mut self, request_id: u64, target: SavedQueryTarget, message: String) {
-        if self.accepts_saved_reply(request_id, &target) {
+    pub fn fail_saved_query(
+        &mut self,
+        request_id: u64,
+        target: &SavedQueryTarget,
+        message: String,
+    ) {
+        if self.accepts_saved_reply(request_id, target) {
             self.saved_query.pending = None;
             self.saved_query.error = Some(message);
         }

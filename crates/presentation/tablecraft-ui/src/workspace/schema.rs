@@ -405,7 +405,7 @@ fn pane_splitter(ui: &mut Ui, height: f32) {
     let response = response.on_hover_cursor(egui::CursorIcon::ResizeVertical);
     let label = crate::localization::tr(ui, "design-resize-panes");
     response.widget_info(|| {
-        egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), label.clone())
+        egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), &label)
     });
     let keyboard_delta = if response.has_focus() {
         ui.input_mut(|input| {

@@ -32,7 +32,6 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     let ObjectKind::Table { name } = &tab.target.kind else {
         panic!("saved-field deletion preview requires a table");
     };
-    let table = name.clone();
     let revision = tab.target.document_revision;
     let tab_id = tab.id;
 
@@ -40,7 +39,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     assert!(state.set_table_data(Data {
         source_revision: Some(revision),
         row_ordinals: None,
-        table: table.clone(),
+        table: name.clone(),
         offset: 0,
         columns: vec![
             Column {
@@ -71,11 +70,15 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         .expect("presentation-only inspection slot")
         .bind(INSPECTION_ID);
 
+    let ObjectKind::Table { name: table } = &target.tab.target.kind else {
+        unreachable!("the inspected presentation target retains its table");
+    };
+
     if mode != "inspecting" {
         assert!(state.set_field_drop_inspection_by_id(
             INSPECTION_ID,
             revision,
-            &table,
+            table,
             FIELD_NAME,
             NATIVE_NUMBER,
             mode != "source-refused",
