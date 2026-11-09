@@ -104,10 +104,10 @@ impl State {
                 _ => None,
             };
         }
-        if let Some(command) = command {
-            if command != Command::Cancel || self.cancel_number_column_operation(identity) {
-                actions.push(Action::NumberColumnSave { identity, command });
-            }
+        if let Some(command) = command
+            && (command != Command::Cancel || self.cancel_number_column_operation(identity))
+        {
+            actions.push(Action::NumberColumnSave { identity, command });
         }
     }
 

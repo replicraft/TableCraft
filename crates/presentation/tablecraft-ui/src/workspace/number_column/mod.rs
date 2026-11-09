@@ -234,7 +234,6 @@ impl Model {
 
     /// `column` is the proposed header spelling, without trimming or coercion.
     /// Name semantics and collisions are checked by the actual native review.
-
     pub(super) fn begin(&mut self, tab: &ObjectTab, column: String) -> bool {
         if !self.available(tab) || !bounded_name(&column) {
             return false;
