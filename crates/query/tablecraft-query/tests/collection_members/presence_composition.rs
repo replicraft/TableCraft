@@ -161,7 +161,7 @@ fn presence_validation_occurs_in_written_argument_order_instead_of_a_prefetch_pa
             &source
         )
         .err(),
-        Some(division.clone())
+        Some(division)
     );
     let result = run(
         "SELECT Id FROM Items WHERE IIf(Files IS NULL,1/0,False)",
