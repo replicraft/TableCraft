@@ -1,0 +1,102 @@
+{
+  "date": "2026-11-09",
+  "scope": "Native field rename, field addition after explicit OFF, parser-owned name spans, TCFR recovery and runtime read-only inspection",
+  "tested_source_commit": "53999963",
+  "build": "Seven-package all-feature test compilation; five affected suites executed from those exact artifacts",
+  "packages_built": [
+    "tablecraft-ace",
+    "tablecraft-access",
+    "tablecraft-runtime",
+    "tablecraft-builders",
+    "tablecraft-ui",
+    "tablecraft-desktop",
+    "tablecraft-testkit"
+  ],
+  "suites": [
+    {
+      "package": "tablecraft_access",
+      "passed": 188,
+      "failed": 0,
+      "ignored": 0,
+      "filter": "whole library or desktop binary",
+      "test_threads": 4
+    },
+    {
+      "package": "tablecraft_runtime",
+      "passed": 262,
+      "failed": 0,
+      "ignored": 1,
+      "filter": "whole library or desktop binary",
+      "test_threads": 4
+    },
+    {
+      "package": "tablecraft_testkit",
+      "passed": 19,
+      "failed": 0,
+      "ignored": 0,
+      "filter": "whole library or desktop binary",
+      "test_threads": 4
+    },
+    {
+      "package": "tablecraft-desktop",
+      "passed": 179,
+      "failed": 0,
+      "ignored": 1,
+      "filter": "whole library or desktop binary",
+      "test_threads": 4
+    },
+    {
+      "package": "tablecraft_ace",
+      "passed": 1540,
+      "failed": 0,
+      "ignored": 263,
+      "filter": "whole library or desktop binary",
+      "test_threads": 4
+    }
+  ],
+  "passed": 2188,
+  "ignored": 265,
+  "observations": [
+    "Coordinated native candidate images match previously frozen independent raw/SDK pins.",
+    "The optional parser visitors retain default parser behavior and reject later malformed frames.",
+    "The field rename source observation binds exact revision, native field number and true names without a speculative AFTER or save owner."
+  ],
+  "historical_failure": {
+    "build": "First build failed because a detached edit unintentionally renamed existing desktop table_rename_available to nonexistent table_source_eligible. Restored the existing capability field; corrected full build passed.",
+    "lint": "Initial create+journal strict lint rejected four iterator/conditional forms. Corrected strict lint passes; their post-fix tests remain in the next batch."
+  },
+  "pending": [
+    "Later namespace scan-bounds refinement and iterator corrections need post-change test execution.",
+    "TCAC0006 original intent and new rename/ADD adapter integrations were applied after this frozen test build and are not covered by these counts.",
+    "Consuming field rename runtime service and connected GUI workflow remain unfinished.",
+    "No UI graphical review, Windows execution or Microsoft Access comparison was performed.",
+    "This is not a full-workspace test result or general saved-column CRUD qualification."
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/schema-composition-corrected-build-20261109.jsonl",
+      "sha256": "fbc93855ea73adab7447bd0ba08f0a5598db9966dae4fa604c502cfa5e741fee"
+    },
+    {
+      "path": ".cache/schema-composition-corrected-build-20261109.log",
+      "sha256": "a1e4352dbec94cd70f28610596d286a3dfab101f907ec7707c421b619993f933"
+    },
+    {
+      "path": ".cache/schema-composition-tests-20261109.json",
+      "sha256": "8505ddb533449f798badcce0554a9404b6f45da86dc04f5ff5998bde204af45c"
+    },
+    {
+      "path": ".cache/schema-composition-new-case-inventory-20261109.txt",
+      "sha256": "300e3c4c124931133a51317e3e17a6a7283d326d5a39f6d1b434eac0c00f9c50"
+    },
+    {
+      "path": ".cache/schema-readonly-lint-20261109.log",
+      "sha256": "7cd7a254823b7ef7954633548191e1ece9d3c6e8fe5f2e6b184799befaaeb4a6"
+    },
+    {
+      "path": ".cache/schema-create-journal-corrected-lint-20261109.log",
+      "sha256": "02680d2f70b026d358a7d76c89b61f0ea705d9195c0143184b0d2202b7269735"
+    }
+  ],
+  "platform": "Headless macOS host; platform and native Access parity not established by these tests"
+}

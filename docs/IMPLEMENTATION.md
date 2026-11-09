@@ -1,5 +1,23 @@
 # Implementation status
 
+## Native saved-field candidates — 9 November 2026
+
+The native engine now constructs same-width ASCII Number/Short Text field
+renames on qualified empty ACE16 sources with explicit Name AutoCorrect OFF.
+It changes only the parser-owned TDEF and live property-group name spans;
+retired names, field identity, settings and all other bytes remain protected.
+A distinct TCFR original request reconstructs both complete images for recovery.
+Read-only runtime inspection exposes exact target eligibility without save
+authority. A separate fitted ADD candidate preserves the database property row
+while appending the new user property body after it.
+
+The [frozen candidate batch](testing/results/saved-field-candidates-2026-11-09.json)
+passes 2,188 tests across five complete affected suites, with 265 existing
+ignored cases excluded. Later adapter and TCAC6 integration and small follow-up
+corrections remain outside that batch. Persisted GUI field rename and normal
+ADD-after-OFF activation are still unfinished; this is not general ALTER or
+native Windows/Access qualification. See the [field-rename contract](access/writes/FIELD_RENAME.md).
+
 ## Settings after saved field additions — 9 November 2026
 
 The normal Options workflow now saves explicit Name AutoCorrect OFF after

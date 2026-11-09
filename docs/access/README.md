@@ -94,6 +94,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Same-file first-table persistence and recovery](writes/FIRST_TABLE_PERSISTENCE.md)
 - [Append-only table creation, repeated additions and recovery](writes/ADD_TABLE_PERSISTENCE.md)
 - [Source-bound persisted table rename](writes/TABLE_RENAME.md)
+- [Bounded native saved-field rename candidate](writes/FIELD_RENAME.md)
 - [Explicit database Name AutoCorrect reviews, journal and File Options](writes/DATABASE_OPTIONS.md)
 - [Unpublished explicit OFF candidate after field ADD history](writes/DATABASE_OPTIONS.md#unpublished-off-after-add-candidate)
 - [Empty saved-table column addition and default-zero candidate checkpoint](writes/ADD_COLUMN.md)
