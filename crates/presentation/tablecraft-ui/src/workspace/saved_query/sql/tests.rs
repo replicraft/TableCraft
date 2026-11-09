@@ -11,8 +11,10 @@ fn state() -> (State, SavedQueryTarget) {
         object_id: 90,
         name: "Saved 空".into(),
     };
-    let mut state = State::default();
-    state.saved_query_sql_edit_available = true;
+    let mut state = State {
+        saved_query_sql_edit_available: true,
+        ..State::default()
+    };
     state.dismiss_backstage();
     state.database = Some(Database {
         title_path: None,

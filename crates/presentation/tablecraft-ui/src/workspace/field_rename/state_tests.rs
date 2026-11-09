@@ -114,11 +114,11 @@ fn refused_start_and_resolution_leave_the_same_name_and_terminal_owner() {
             can_release: true,
         }
     ));
-    drop(
-        state
+    {
+        let _preparation = state
             .prepare_field_rename_resolution(&request, identity, true)
-            .unwrap(),
-    );
+            .unwrap();
+    }
     assert!(state.can_resolve_field_rename_save(identity, true));
     let next = state
         .prepare_field_rename_resolution(&request, identity, false)

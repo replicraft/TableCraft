@@ -88,6 +88,11 @@ impl TextBuffer for NameBuffer {
     }
 }
 
+pub(in crate::workspace) fn bounded_name(name: &str) -> bool {
+    name.len() <= MAX_DRAFT_NAME_BYTES
+        && name.encode_utf16().take(MAX_DRAFT_NAME_UNITS + 1).count() <= MAX_DRAFT_NAME_UNITS
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -117,9 +122,4 @@ mod tests {
         buffer.replace_with("Score");
         assert_eq!(buffer.as_str(), "Score");
     }
-}
-
-pub(in crate::workspace) fn bounded_name(name: &str) -> bool {
-    name.len() <= MAX_DRAFT_NAME_BYTES
-        && name.encode_utf16().take(MAX_DRAFT_NAME_UNITS + 1).count() <= MAX_DRAFT_NAME_UNITS
 }

@@ -629,7 +629,7 @@ fn creator_v3_crossed_versions_and_captured_plan_purpose_never_fall_back() {
             .unwrap()
     };
     let raw = build().intent().encode(&mut budget(), &|| false).unwrap();
-    for version in [b'1', b'2'] {
+    for version in *b"12" {
         let mut crossed = raw.clone();
         crossed[7] = version;
         assert!(matches!(

@@ -58,7 +58,7 @@ pub(in crate::workspace) fn insert_omitted_fields(
     for column in columns {
         assert_eq!(
             harness
-                .get_by_role_and_label(Role::TextInput, *column)
+                .get_by_role_and_label(Role::TextInput, column)
                 .value()
                 .as_deref(),
             Some("")

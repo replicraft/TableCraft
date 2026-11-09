@@ -97,7 +97,7 @@ impl ParsedQuery {
 
     /// Original canonical nonnegative Int32 spelling in a sole literal projection.
     ///
-    /// This lexical observation admits only SELECT [ALL] integer AS identifier
+    /// This lexical observation admits only `SELECT [ALL] integer AS identifier`
     /// with an optional terminator. Parentheses, signs, leading zeros, decimal,
     /// exponent and radix spelling return None even when their lowered syntax
     /// has the same integer value. It supplies no binding or native edit authority.

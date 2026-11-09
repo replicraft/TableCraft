@@ -4,7 +4,7 @@ mod groups;
 mod icons;
 pub(super) mod keyboard;
 
-pub(super) use super::focus::{self, Pane};
+use super::focus::{self, Pane};
 pub(super) use groups::{design, home, tab, unavailable as unavailable_command};
 pub(crate) use icons::Icon;
 

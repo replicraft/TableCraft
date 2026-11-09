@@ -162,8 +162,10 @@ fn saving_state() -> (
     assert!(model.begin_review(&request, 81));
     assert!(model.reviewed(&request, 81, 90));
     assert!(model.saving(&request, 81, 90, 100));
-    let mut state = crate::State::default();
-    state.field_addition = model;
+    let mut state = crate::State {
+        field_addition: model,
+        ..crate::State::default()
+    };
     let identity = super::FieldAdditionSaveIdentity {
         request_id: 81,
         review_id: 90,
