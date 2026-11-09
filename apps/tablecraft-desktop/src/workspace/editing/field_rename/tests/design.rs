@@ -32,7 +32,7 @@ fn saved_design_rename_reopens_design_with_same_native_field_selected_and_other_
     harness.run_steps(1);
     finish_reads(&mut harness);
     harness.run_steps(2);
-    harness.get_by_label("Data Type");
+    harness.get_by_role_and_label(Role::Label, "Data Type");
     harness.get_by_label("Field Properties");
     let schema = harness.state().state.schema.as_ref().unwrap();
     assert_eq!(schema.table, "Table1");
@@ -60,7 +60,7 @@ fn saved_design_rename_reopens_design_with_same_native_field_selected_and_other_
     assert_eq!(std::fs::read(&path).unwrap(), after);
     assert!(!journal_path(&path).exists());
     harness.run_steps(2);
-    harness.get_by_label("Data Type");
+    harness.get_by_role_and_label(Role::Label, "Data Type");
     harness.get_by_label("Field Properties");
     let current_tab = harness.state().state.active_object().unwrap();
     assert_eq!(current_tab.id, original_tab.id);
