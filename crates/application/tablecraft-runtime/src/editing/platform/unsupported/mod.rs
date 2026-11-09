@@ -7,6 +7,8 @@ pub(in crate::editing) mod deleting;
 pub(in crate::editing) mod draft;
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) mod field_addition;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) mod field_rename;
 pub(in crate::editing) mod inserting;
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) mod number_column;

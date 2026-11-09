@@ -1,0 +1,74 @@
+//! Exact read-session field facts without any proposed replacement or write owner.
+use crate::{
+    Error, Response,
+    controls::{SCOPE, budget, check},
+    display::Presentation,
+    document::Document,
+    editing::platform,
+};
+use tablecraft_ace::inspect_table_schema;
+
+/// Read-only qualification of one exact native field on one document revision.
+/// This is not a consuming review, save capability or source proof token.
+#[derive(Debug, PartialEq, Eq)]
+pub struct FieldRenameSourceInspection {
+    /// Exact current document revision.
+    pub document_revision: u64,
+    /// Actual native table spelling, never a caption.
+    pub table: String,
+    /// Actual native field spelling, never a displayed caption or ordinal.
+    pub column: String,
+    /// Logical native column number from the current schema.
+    pub native_number: usize,
+    /// Positive complete source/profile qualification on this read host.
+    pub source_eligible: bool,
+    /// When available, the required replacement width. A replacement must be
+    /// ASCII, have this UTF16 width and independently pass native name checks.
+    pub same_width_ascii_utf16_units: Option<usize>,
+}
+
+impl Document {
+    pub(crate) fn inspect_field_rename_source(
+        &mut self,
+        revision: u64,
+        table: &str,
+        column: &str,
+        native_number: usize,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        let _span = tracing::debug_span!("application.inspect_field_rename_source").entered();
+        if revision != self.revision {
+            return Err(Error::StaleDocument);
+        }
+        check(cancelled)?;
+        let mut work = budget();
+        let schema = inspect_table_schema(&mut self.source, SCOPE, table, &mut work, cancelled)?;
+        let field = schema
+            .columns()
+            .iter()
+            .find(|field| field.number() == native_number)
+            .ok_or(Error::StaleFieldRenameTarget)?;
+        if schema.name() != table || field.name() != column {
+            return Err(Error::StaleFieldRenameTarget);
+        }
+        let units = platform::field_rename::source_width(
+            self,
+            schema.name(),
+            field.name(),
+            native_number,
+            &mut work,
+            cancelled,
+        )?;
+        let mut output = Presentation::new(cancelled);
+        let inspection = FieldRenameSourceInspection {
+            document_revision: revision,
+            table: output.text(schema.name())?,
+            column: output.text(field.name())?,
+            native_number,
+            source_eligible: units.is_some(),
+            same_width_ascii_utf16_units: units,
+        };
+        check(cancelled)?;
+        Ok(Response::FieldRenameSourceInspected { inspection })
+    }
+}

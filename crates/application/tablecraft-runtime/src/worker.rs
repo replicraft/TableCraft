@@ -130,6 +130,22 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::InspectFieldRenameSource {
+                document_revision,
+                table,
+                column,
+                native_number,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_field_rename_source(
+                    *document_revision,
+                    table,
+                    column,
+                    *native_number,
+                    cancelled,
+                ),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::InspectFieldAdditionAvailability {
                 document_revision,
                 table,
@@ -481,6 +497,8 @@ impl Worker {
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewTableCreation { .. } => "review_table_creation",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::InspectFieldRenameSource { .. } => "inspect_field_rename_source",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::InspectFieldAdditionAvailability { .. } => {
                         "inspect_field_addition_source"

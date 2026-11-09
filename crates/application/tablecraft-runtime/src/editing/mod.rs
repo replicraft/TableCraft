@@ -6,6 +6,8 @@ mod database_options;
 mod deleting;
 #[cfg(feature = "ace16-create")]
 mod field_addition;
+#[cfg(feature = "ace16-create")]
+mod field_rename;
 mod inserting;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -43,6 +45,8 @@ pub use field_addition::{
     FieldAdditionAvailability, FieldAdditionOutcomeError, FieldAdditionReopenFacts,
     FieldAdditionReview, ReviewedFieldAddition,
 };
+#[cfg(feature = "ace16-create")]
+pub use field_rename::FieldRenameSourceInspection;
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, ReviewedInsert,

@@ -29,6 +29,12 @@ mod editing;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod field_addition;
+#[cfg(all(
+    feature = "offline-edit",
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod field_rename;
 mod filtering;
 mod find;
 mod formatting;
