@@ -1,5 +1,5 @@
 //! Explicit, bounded allowances captured by one read-query command.
-use tablecraft_ace::TableSnapshotLimits;
+use tablecraft_ace::{TablePageRequest, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_query::QueryLimits;
 
@@ -66,11 +66,25 @@ impl QueryPoolLimits {
 /// Invalid host configuration; no database work has started.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum QueryRunOptionsError {
-    #[error("query snapshot row or batch allowance is outside the supported bounds")]
+    #[error(
+        "query snapshot rows must be 1..={rows}; batch rows must be 1..={batch}",
+        rows = TableSnapshotLimits::MAX_ROWS,
+        batch = TablePageRequest::MAX_ROWS,
+    )]
     SnapshotBounds,
-    #[error("query resource allowances are outside the supported bounds")]
+    #[error(
+        "query pool bytes must be 1..={bytes}; rows must be 0..={rows}; steps must be 1..={steps}",
+        bytes = QueryPoolLimits::MAX_BYTES,
+        rows = QueryPoolLimits::MAX_ROWS,
+        steps = QueryPoolLimits::MAX_STEPS,
+    )]
     PoolBounds,
-    #[error("query execution allowances exceed the retrieval service ceilings")]
+    #[error(
+        "query execution bytes must be 1..={bytes}; rows must be 1..={rows}; steps must be 1..={steps}",
+        bytes = QueryLimits::MAX_BYTES,
+        rows = QueryLimits::MAX_ROWS,
+        steps = QueryLimits::MAX_STEPS,
+    )]
     QueryBounds,
     #[error("native and query pools require a positive row allowance")]
     RowAllowance,
