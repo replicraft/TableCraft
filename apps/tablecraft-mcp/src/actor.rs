@@ -1,4 +1,4 @@
-use crate::session::Session;
+use crate::{requests, session::Session};
 use serde_json::Value;
 use std::{
     future::Future,
@@ -56,15 +56,23 @@ impl Actor {
                         continue;
                     }
                     let result = match &mut session {
-                        Ok(session) => {
-                            authorize_paths(&root, &mut request.arguments).and_then(|()| {
+                        Ok(session) => requests::validate(&request.operation, &request.arguments)
+                            .and_then(|()| {
+                                if request.cancelled.load(Ordering::Acquire) {
+                                    return Err(
+                                        "Tool request was cancelled before path authorization"
+                                            .into(),
+                                    );
+                                }
+                                authorize_paths(&root, &mut request.arguments)
+                            })
+                            .and_then(|()| {
                                 session.execute_cancellable(
                                     &request.operation,
                                     request.arguments,
                                     request.cancelled,
                                 )
-                            })
-                        }
+                            }),
                         Err(error) => Err(error.to_string()),
                     };
                     // Losing a peer does not imply that a save was cancelled or rolled back.

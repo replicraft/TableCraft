@@ -1,4 +1,4 @@
-use crate::{actor::Actor, requests, tools};
+use crate::{actor::Actor, tools};
 use rmcp::{
     ErrorData, RoleServer, ServerHandler,
     model::{
@@ -47,14 +47,10 @@ impl ServerHandler for Server {
             return Err(ErrorData::invalid_params("unknown TableCraft tool", None));
         }
         let arguments = Value::Object(request.arguments.unwrap_or_default());
-        let result = match requests::validate(&request.name, &arguments) {
-            Ok(()) => {
-                self.actor
-                    .execute(request.name.into_owned(), arguments, context.ct.cancelled())
-                    .await
-            }
-            Err(error) => Err(error),
-        };
+        let result = self
+            .actor
+            .execute(request.name.into_owned(), arguments, context.ct.cancelled())
+            .await;
         Ok(match result {
             Ok(value) => CallToolResult::structured(value),
             Err(error) => CallToolResult::structured_error(json!({"error": error})),

@@ -95,3 +95,43 @@ fn dropping_request_guard_revokes_only_its_own_read_signal() {
     assert!(current.load(Ordering::Acquire));
     assert!(!other.load(Ordering::Acquire));
 }
+
+#[tokio::test(flavor = "current_thread")]
+async fn actor_validates_wire_input_before_path_work_and_keeps_budget_before_dispatch() {
+    let directory = tempfile::tempdir().unwrap();
+    let outside = tempfile::tempdir().unwrap();
+    let destination = outside.path().join("not-authorized.accdb");
+    let actor = super::Actor::start(directory.path().to_path_buf()).unwrap();
+
+    // Invoke the actor directly, bypassing protocol dispatch: it must still
+    // reject unknown wire fields before attempting authorization or creation.
+    let error = actor
+        .execute(
+            "create_database".into(),
+            json!({"path": destination, "unexpected": "must not be ignored"}),
+            std::future::pending(),
+        )
+        .await
+        .unwrap_err();
+    assert!(error.contains("unknown field"), "{error}");
+    assert!(!destination.exists());
+
+    // The asynchronous boundary rejects an oversized envelope before queueing
+    // it for typed deserialization on the dedicated session actor.
+    let error = actor
+        .execute(
+            "create_database".into(),
+            json!({"path": destination, "unexpected": "x".repeat(super::MAX_ARGUMENT_BYTES)}),
+            std::future::pending(),
+        )
+        .await
+        .unwrap_err();
+    assert!(error.contains("input budget"), "{error}");
+    assert!(!destination.exists());
+    let status = actor
+        .execute("session_status".into(), json!({}), std::future::pending())
+        .await
+        .unwrap();
+    assert!(status["active_creation_id"].is_null());
+    assert!(status["active_save_id"].is_null());
+}
