@@ -4,6 +4,8 @@ mod database_options_field_history;
 #[cfg(feature = "ace16-create")]
 mod field_addition;
 #[cfg(feature = "ace16-create")]
+mod field_drop;
+#[cfg(feature = "ace16-create")]
 mod field_rename;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -128,6 +130,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
             SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
             SchemaChange::ColumnRenamed => SaveSchemaChange::ColumnRenamed,
+            SchemaChange::ColumnDropped => SaveSchemaChange::ColumnDropped,
             SchemaChange::FirstTableCreated { column_count } => {
                 SaveSchemaChange::FirstTableCreated { column_count }
             }
@@ -264,6 +267,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldRenameIntent(error) => field_rename::intent(error),
             #[cfg(feature = "ace16-create")]
+            Cause::FieldDropIntent(error) => field_drop::intent(error),
+            #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionAfterOffIntent(error) => field_addition_after_off::intent(error),
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionAfterOffHistoryIntent(error) => {
@@ -329,6 +334,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldDropIntentError>() {
+        return field_drop::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldDropError>() {
+        return field_drop::candidate(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldRenameIntentError>() {

@@ -73,6 +73,8 @@ pub enum SaveSchemaChange {
     ColumnAdded,
     /// One existing field changed true name while retaining native identity.
     ColumnRenamed,
+    /// One qualified nonprimary field was removed without changing surviving identities.
+    ColumnDropped,
     FirstTableCreated {
         column_count: usize,
     },
