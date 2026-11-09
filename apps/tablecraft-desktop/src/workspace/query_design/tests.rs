@@ -383,7 +383,22 @@ fn design_build_captures_read_limits_and_failed_run_preserves_previous_results()
         harness.run_steps(1);
         std::thread::yield_now();
     }
-    assert!(harness.state().state.error.is_some());
+    harness.run_steps(2);
+    let diagnostics = harness
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) => Some(text.galley.job.text.as_str()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        diagnostics
+            .iter()
+            .any(|text| text.contains("Rows resource limit exceeded")),
+        "rendered diagnosis: {diagnostics:?}"
+    );
     assert_eq!(
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
         "99"

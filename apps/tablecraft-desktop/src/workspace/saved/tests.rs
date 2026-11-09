@@ -1,5 +1,6 @@
 //! The desktop consumes real inspected definitions without owning query semantics.
 use super::*;
+use crate::workspace::test_support::{app_harness, finish_reads};
 use eframe::App;
 use std::{
     path::PathBuf,
@@ -217,14 +218,30 @@ fn saved_read_uses_explicit_limits_at_each_run_without_reinspection_or_implicit_
         desktop.logic(&context, &mut frame);
         std::thread::yield_now();
     }
-    assert!(desktop.state.error.is_some());
-    assert!(desktop.state.selected_cell_text().is_none());
+    let mut harness = app_harness(desktop);
+    harness.run_steps(2);
+    let diagnostics = harness
+        .output()
+        .shapes
+        .iter()
+        .filter_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) => Some(text.galley.job.text.as_str()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        diagnostics
+            .iter()
+            .any(|text| text.contains("Rows resource limit exceeded")),
+        "rendered diagnosis: {diagnostics:?}"
+    );
+    assert!(harness.state().state.selected_cell_text().is_none());
     limits.query.rows = 100;
-    desktop.configure_query_run_limits(limits);
-    assert!(!desktop.state.busy);
-    assert!(desktop.state.selected_cell_text().is_none());
-    desktop.run_saved_query(selected, Vec::new());
-    finish(&mut desktop, &context);
-    assert_eq!(desktop.state.selected_cell_text(), Some("2"));
+    harness.state_mut().configure_query_run_limits(limits);
+    assert!(!harness.state().state.busy);
+    assert!(harness.state().state.selected_cell_text().is_none());
+    harness.state_mut().run_saved_query(selected, Vec::new());
+    finish_reads(&mut harness);
+    assert_eq!(harness.state().state.selected_cell_text(), Some("2"));
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
