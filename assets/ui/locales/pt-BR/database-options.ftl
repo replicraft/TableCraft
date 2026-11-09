@@ -18,6 +18,7 @@ database-options-retry-inspection = Tentar verificar as configurações novament
 database-options-inspection-interrupted = A verificação foi interrompida. Tente verificar este banco de dados novamente.
 database-options-return-settings = Voltar às configurações
 database-options-saved-warning = As configurações foram salvas, mas não foi possível verificar o banco de dados. Reabra-o antes de fazer outras alterações.
+database-options-hide-details = Ocultar detalhes
 database-options-enable-unavailable = Ativar a Correção Automática de Nomes
 database-options-log-unavailable = Registrar alterações da Correção Automática de Nomes
 database-options-close-title = Fechar os objetos abertos?

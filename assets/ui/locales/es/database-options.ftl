@@ -18,6 +18,7 @@ database-options-retry-inspection = Reintentar la comprobación de opciones
 database-options-inspection-interrupted = Se interrumpió la comprobación de opciones. Vuelva a comprobar esta base de datos.
 database-options-return-settings = Volver a las opciones
 database-options-saved-warning = Se guardaron las opciones, pero no se pudo verificar la base de datos. Vuelva a abrirla antes de realizar más cambios.
+database-options-hide-details = Ocultar detalles
 database-options-enable-unavailable = Activar Autocorrección de nombres
 database-options-log-unavailable = Registrar los cambios de Autocorrección de nombres
 database-options-close-title = ¿Cerrar los objetos abiertos?

@@ -298,7 +298,18 @@ fn acknowledged_after_witness_drift_return_preserves_saved_warning_until_fresh_o
     );
     assert_eq!(std::fs::read(&path).unwrap(), changed);
     assert!(!journal_path(&path).exists());
+    click(&mut harness, "database-options-hide-details");
+    assert!(harness.state().state.options_dialog_open());
+    assert!(
+        harness
+            .state()
+            .state
+            .database_options_save_status()
+            .is_some()
+    );
+    assert_old_graph(&harness, &tabs);
     click(&mut harness, "backstage-close");
+    assert!(!harness.state().state.options_dialog_open());
     assert!(harness.state().state.native_source_stale());
     harness.state_mut().open_request(Command::Open {
         path: path.clone(),

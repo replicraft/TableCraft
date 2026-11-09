@@ -18,6 +18,7 @@ database-options-retry-inspection = Повторить проверку пара
 database-options-inspection-interrupted = Проверка параметров прервана. Повторите проверку этой базы данных.
 database-options-return-settings = Вернуться к параметрам
 database-options-saved-warning = Параметры сохранены, но проверить базу данных не удалось. Откройте её заново перед внесением дальнейших изменений.
+database-options-hide-details = Скрыть подробности
 database-options-enable-unavailable = Включить автозамену имён
 database-options-log-unavailable = Записывать изменения автозамены имён в журнал
 database-options-close-title = Закрыть открытые объекты?

@@ -305,7 +305,7 @@ impl State {
             if self.database_options.cleanup.is_some() {
                 ui.label(tr(ui, "editing-save-retained-private-journal"));
             }
-            if ui.button(tr(ui, "backstage-close")).clicked()
+            if ui.button(tr(ui, "database-options-hide-details")).clicked()
                 && let Phase::Warning { open, .. } = &mut self.database_options.phase
             {
                 *open = false;

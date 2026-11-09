@@ -18,6 +18,7 @@ database-options-retry-inspection = 重试设置检查
 database-options-inspection-interrupted = 设置检查已中断。请重试检查此数据库。
 database-options-return-settings = 返回设置
 database-options-saved-warning = 设置已保存，但无法验证数据库。请重新打开数据库后再进行其他更改。
+database-options-hide-details = 隐藏详细信息
 database-options-enable-unavailable = 启用名称自动更正
 database-options-log-unavailable = 记录名称自动更正的更改
 database-options-close-title = 关闭打开的对象？

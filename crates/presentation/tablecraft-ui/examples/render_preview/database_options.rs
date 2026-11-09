@@ -164,6 +164,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 }
                 if mode == "returned" {
                     painted(harness, "database-options-saved-warning", modal);
+                    button(harness, "database-options-hide-details", false, modal);
+                    button(harness, "backstage-close", false, modal);
                     assert!(matches!(
                         harness
                             .state()

@@ -18,6 +18,7 @@ database-options-retry-inspection = Einstellungen erneut prüfen
 database-options-inspection-interrupted = Prüfung der Einstellungen unterbrochen. Prüfen Sie diese Datenbank erneut.
 database-options-return-settings = Zurück zu den Einstellungen
 database-options-saved-warning = Die Einstellungen wurden gespeichert, die Datenbank konnte jedoch nicht geprüft werden. Öffnen Sie die Datenbank erneut, bevor Sie weitere Änderungen vornehmen.
+database-options-hide-details = Details ausblenden
 database-options-enable-unavailable = Objektnamen-Autokorrektur aktivieren
 database-options-log-unavailable = Änderungen der Objektnamen-Autokorrektur protokollieren
 database-options-close-title = Geöffnete Objekte schließen?

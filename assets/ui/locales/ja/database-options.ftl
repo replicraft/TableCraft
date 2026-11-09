@@ -18,6 +18,7 @@ database-options-retry-inspection = 設定の確認を再試行
 database-options-inspection-interrupted = 設定の確認が中断されました。このデータベースの確認を再試行してください。
 database-options-return-settings = 設定に戻る
 database-options-saved-warning = 設定は保存されましたが、データベースを検証できませんでした。さらに変更する前にデータベースを開き直してください。
+database-options-hide-details = 詳細を非表示
 database-options-enable-unavailable = 名前の自動修正を有効にする
 database-options-log-unavailable = 名前の自動修正の変更を記録する
 database-options-close-title = 開いているオブジェクトを閉じますか？

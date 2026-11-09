@@ -18,6 +18,7 @@ database-options-retry-inspection = Retry settings check
 database-options-inspection-interrupted = Settings check interrupted. Retry to check this database again.
 database-options-return-settings = Return to settings
 database-options-saved-warning = Settings were saved, but the database could not be verified. Reopen the database before making further changes.
+database-options-hide-details = Hide details
 database-options-enable-unavailable = Enable Name AutoCorrect
 database-options-log-unavailable = Log Name AutoCorrect changes
 database-options-close-title = Close open objects?

@@ -18,6 +18,7 @@ database-options-retry-inspection = 설정 확인 다시 시도
 database-options-inspection-interrupted = 설정 확인이 중단되었습니다. 이 데이터베이스의 확인을 다시 시도하세요.
 database-options-return-settings = 설정으로 돌아가기
 database-options-saved-warning = 설정은 저장되었지만 데이터베이스를 검증하지 못했습니다. 추가로 변경하기 전에 데이터베이스를 다시 여세요.
+database-options-hide-details = 세부 정보 숨기기
 database-options-enable-unavailable = 이름 자동 고침 켜기
 database-options-log-unavailable = 이름 자동 고침 변경 내용 기록
 database-options-close-title = 열린 개체를 닫을까요?
