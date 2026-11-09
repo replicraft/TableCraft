@@ -195,8 +195,12 @@ impl Desktop {
         }
         host.reopening = true;
         let request_id = host.request_id;
-        self.submit(Command::OpenColumnAdded { witness });
+        // Generic submit intentionally refuses while this exact schema owner
+        // remains retained. Issue only its accepted full-image witness here,
+        // after native ACK, just as the query-definition owner does.
+        self.generation = self.worker.request(Command::OpenColumnAdded { witness });
         self.pending = PendingOperation::NumberColumnReopen { request_id };
+        self.state.busy = true;
     }
 
     pub(in crate::workspace) fn number_column_reopen_failed(
