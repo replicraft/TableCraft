@@ -6,6 +6,44 @@ owns native windows and dialogs, forwards commands and moves owned results into
 the shared UI's presentation types. Engine interpretation stays in ACE, Access
 adapts it, and query evaluation stays in the query libraries.
 
+## Captured read-query resource options
+
+`Command::Query`, `RunQuery` and `RunSavedQuery` capture a validated, immutable
+`QueryRunOptions` value for that invocation. Inspection remains inert and does not
+execute a query or consume its eventual run allowance. Issued SQL and saved-query
+targets retain their existing document/revision checks before supplied inputs are
+processed. Action-query reviews and write/save allowances are unchanged.
+
+The options separate complete native snapshot row/batch ceilings from cumulative
+native, query, comparison and presentation resource pools. Defaults preserve the
+existing limits: snapshots retain at most 16,384 rows, decoded in batches of 256;
+native work has 512 MiB, 100,000 rows and 5,000,000 steps; query execution has
+16 MiB, 10,000 rows and 1,000,000 steps; comparison has 16 MiB and 1,000,000 steps;
+presentation has 8 MiB and 100,000 steps. Parameter conversion and final result
+publication share the run's presentation allowance. Results remain completely
+buffered: a failure publishes no partial result.
+
+Hosts can use `QueryPoolLimits::new` and `QueryRunOptions::with_limits` without
+importing native engine types. Explicit pool ceilings are 4 GiB, 10,000,000 rows
+and 1,000,000,000 steps; bytes and steps are positive, native/query rows are
+positive, and comparison/presentation pools have no row allowance.
+The query pool additionally respects the retrieval service's smaller ceilings:
+256 MiB, 1,000,000 rows and 100,000,000 steps; exceeding them is rejected rather
+than silently clamped. Snapshot rows
+remain limited by the native checked constructor (currently at most 1,000,000);
+batch rows retain the separate native traversal ceiling. These are cumulative
+charges, not a resident-memory promise. Increasing one pool does not increase
+another, refill between scans, relax format/index/payload restrictions, authorize
+external sources or change cancellation and preservation behavior. There is no
+automatic unlimited retry.
+
+Unambiguous native initialization and presentation failures expose
+`Error::ReadQueryLimit` with its pool and original `LimitError`. Failures already
+crossing the shared source/expression error contracts retain their native/query
+error types: those contracts do not always preserve pool identity, so runtime
+does not guess whether an execution failure originated in native decoding,
+comparison or evaluation. Rejected configurations perform no I/O.
+
 ## Fresh blank database creation
 
 The optional `ace16-create` feature exposes `CreationRequest::blank`,

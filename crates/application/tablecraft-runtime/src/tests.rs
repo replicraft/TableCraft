@@ -72,6 +72,7 @@ mod query_expression;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod query_insert;
+mod query_options;
 mod query_parameters;
 #[cfg(all(
     feature = "offline-edit",

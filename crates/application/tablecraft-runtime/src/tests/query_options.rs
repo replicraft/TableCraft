@@ -1,0 +1,313 @@
+//! Captured read allowances are independent, bounded and honored by real workers.
+use super::{open, request, row_texts};
+use crate::{
+    Command, Error, QueryPoolLimits, QueryRunOptions, QueryRunOptionsError, QueryRunPool, Response,
+    Worker,
+};
+use tablecraft_core::limits::Resource;
+use tablecraft_query::QueryError;
+use tablecraft_testkit::fixtures::access::{mutation_fixture, saved_queries};
+
+fn configured(
+    native: QueryPoolLimits,
+    query: QueryPoolLimits,
+    comparison: QueryPoolLimits,
+    presentation: QueryPoolLimits,
+) -> QueryRunOptions {
+    QueryRunOptions::new(
+        QueryRunOptions::default().snapshot(),
+        native,
+        query,
+        comparison,
+        presentation,
+    )
+    .unwrap()
+}
+
+fn execute(worker: &Worker, options: QueryRunOptions, sql: &str) -> Result<Response, Error> {
+    request(
+        worker,
+        Command::Query {
+            sql: sql.into(),
+            options,
+        },
+    )
+}
+
+#[test]
+fn default_limits_preserve_previous_pools_and_invalid_configuration_is_rejected() {
+    let defaults = QueryRunOptions::default();
+    assert_eq!(defaults.snapshot().maximum_rows(), 16_384);
+    assert_eq!(defaults.snapshot().batch_rows(), 256);
+    assert_eq!(defaults.native().bytes(), 512 * 1024 * 1024);
+    assert_eq!(defaults.native().rows(), 100_000);
+    assert_eq!(defaults.native().steps(), 5_000_000);
+    assert_eq!(defaults.query().bytes(), 16 * 1024 * 1024);
+    assert_eq!(defaults.query().rows(), 10_000);
+    assert_eq!(defaults.query().steps(), 1_000_000);
+    assert_eq!(defaults.comparison().bytes(), 16 * 1024 * 1024);
+    assert_eq!(defaults.comparison().rows(), 0);
+    assert_eq!(defaults.comparison().steps(), 1_000_000);
+    assert_eq!(defaults.presentation().bytes(), 8 * 1024 * 1024);
+    assert_eq!(defaults.presentation().rows(), 0);
+    assert_eq!(defaults.presentation().steps(), 100_000);
+
+    for limits in [
+        (0, 0, 1),
+        (1, 0, 0),
+        (u64::MAX, 0, 1),
+        (1, u64::MAX, 1),
+        (1, 0, u64::MAX),
+    ] {
+        assert_eq!(
+            QueryPoolLimits::new(limits.0, limits.1, limits.2),
+            Err(QueryRunOptionsError::PoolBounds)
+        );
+    }
+
+    let non_row = QueryPoolLimits::new(1, 0, 1).unwrap();
+    assert_eq!(
+        QueryRunOptions::new(
+            defaults.snapshot(),
+            non_row,
+            defaults.query(),
+            defaults.comparison(),
+            defaults.presentation(),
+        ),
+        Err(QueryRunOptionsError::RowAllowance)
+    );
+    assert_eq!(
+        QueryRunOptions::new(
+            defaults.snapshot(),
+            defaults.native(),
+            defaults.query(),
+            defaults.query(),
+            defaults.presentation(),
+        ),
+        Err(QueryRunOptionsError::NonRowPool)
+    );
+    assert_eq!(
+        QueryRunOptions::with_limits(
+            0,
+            256,
+            defaults.native(),
+            defaults.query(),
+            defaults.comparison(),
+            defaults.presentation(),
+        ),
+        Err(QueryRunOptionsError::SnapshotBounds)
+    );
+    assert_eq!(
+        QueryRunOptions::new(
+            defaults.snapshot(),
+            defaults.native(),
+            QueryPoolLimits::new(257 * 1024 * 1024, 10_000, 1_000_000).unwrap(),
+            defaults.comparison(),
+            defaults.presentation(),
+        ),
+        Err(QueryRunOptionsError::QueryBounds)
+    );
+}
+
+#[test]
+fn snapshot_and_cumulative_pools_fail_without_output_or_changing_the_next_run() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("limits.mdb");
+    let original = mutation_fixture::database();
+    std::fs::write(&path, &original).unwrap();
+    let worker = Worker::new(|| {});
+    request(&worker, open(&path, "")).unwrap();
+    let defaults = QueryRunOptions::default();
+    let sql = "SELECT Id FROM Items ORDER BY Id";
+
+    let limited = QueryRunOptions::with_limits(
+        2,
+        1,
+        defaults.native(),
+        defaults.query(),
+        defaults.comparison(),
+        defaults.presentation(),
+    )
+    .unwrap();
+    assert!(matches!(
+        execute(&worker, limited, sql),
+        Err(Error::Query(QueryError::StructureLimit))
+    ));
+
+    let native = configured(
+        QueryPoolLimits::new(1, 100_000, 5_000_000).unwrap(),
+        defaults.query(),
+        defaults.comparison(),
+        defaults.presentation(),
+    );
+    assert!(matches!(
+        execute(&worker, native, sql),
+        Err(Error::ReadQueryLimit {
+            pool: QueryRunPool::Native,
+            source: tablecraft_core::limits::LimitError {
+                resource: Resource::Bytes,
+                ..
+            },
+        })
+    ));
+
+    let query = configured(
+        defaults.native(),
+        QueryPoolLimits::new(1, 10_000, 1_000_000).unwrap(),
+        defaults.comparison(),
+        defaults.presentation(),
+    );
+    assert!(matches!(
+        execute(&worker, query, sql),
+        Err(Error::Query(QueryError::Limit(_)))
+    ));
+
+    let presentation = configured(
+        defaults.native(),
+        defaults.query(),
+        defaults.comparison(),
+        QueryPoolLimits::new(1, 0, 100_000).unwrap(),
+    );
+    assert!(matches!(
+        execute(&worker, presentation, sql),
+        Err(Error::ReadQueryLimit {
+            pool: QueryRunPool::Presentation,
+            ..
+        })
+    ));
+
+    let Response::Data { rows, has_more, .. } = execute(&worker, defaults, sql).unwrap() else {
+        panic!("expected complete default result after rejected limited runs");
+    };
+    assert_eq!(row_texts(&rows), [["1"], ["2"], ["3"]]);
+    assert!(!has_more);
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn inspected_and_saved_runs_use_supplied_options_without_weakening_target_identity() {
+    let fragments = [saved_queries::Fragment {
+        object: Some(saved_queries::QUERY_ID),
+        attribute: Some(6),
+        expression: Some("42"),
+        order: Some(&[0, 0, 0, 1]),
+        ..Default::default()
+    }];
+    let bytes = saved_queries::database_with_query_flags(&fragments, 0);
+    let (_directory, path, worker, saved) = super::saved::opened(&bytes);
+    let (target, _) =
+        super::query_parameters::inspect(&worker, saved.document_revision, "SELECT 42 AS Answer");
+    let defaults = QueryRunOptions::default();
+    let tiny = configured(
+        defaults.native(),
+        defaults.query(),
+        defaults.comparison(),
+        QueryPoolLimits::new(1, 0, 100_000).unwrap(),
+    );
+
+    for command in [
+        Command::RunQuery {
+            target: target.clone(),
+            parameters: Vec::new(),
+            options: tiny,
+        },
+        Command::RunSavedQuery {
+            target: saved.clone(),
+            parameters: Vec::new(),
+            options: tiny,
+        },
+    ] {
+        assert!(matches!(
+            request(&worker, command),
+            Err(Error::ReadQueryLimit {
+                pool: QueryRunPool::Presentation,
+                ..
+            })
+        ));
+    }
+
+    for command in [
+        Command::RunQuery {
+            target,
+            parameters: Vec::new(),
+            options: defaults,
+        },
+        Command::RunSavedQuery {
+            target: saved.clone(),
+            parameters: Vec::new(),
+            options: defaults,
+        },
+    ] {
+        let Response::Data { rows, .. } = request(&worker, command).unwrap() else {
+            panic!("expected complete explicitly selected query result");
+        };
+        assert_eq!(row_texts(&rows), [["42"]]);
+    }
+
+    let mut stale = saved;
+    stale.document_revision += 1;
+    assert!(matches!(
+        request(
+            &worker,
+            Command::RunSavedQuery {
+                target: stale,
+                parameters: Vec::new(),
+                options: tiny,
+            }
+        ),
+        Err(Error::StaleSavedQuery)
+    ));
+    assert_eq!(std::fs::read(path).unwrap(), bytes);
+}
+
+#[test]
+fn comparison_allowance_is_independent_and_inspection_does_not_consume_it() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("comparison.mdb");
+    let mut original = mutation_fixture::database();
+    super::text_policy::database_order(&mut original, [9, 4, 0, 0]);
+    std::fs::write(&path, &original).unwrap();
+    let worker = Worker::new(|| {});
+    let Response::Opened {
+        document_revision, ..
+    } = request(&worker, open(&path, "")).unwrap()
+    else {
+        panic!("expected native document");
+    };
+    let (target, _) =
+        super::query_parameters::inspect(&worker, document_revision, "SELECT 'a'='A' AS Same");
+    let defaults = QueryRunOptions::default();
+    let tiny = configured(
+        defaults.native(),
+        defaults.query(),
+        QueryPoolLimits::new(1, 0, 1_000_000).unwrap(),
+        defaults.presentation(),
+    );
+    assert!(matches!(
+        request(
+            &worker,
+            Command::RunQuery {
+                target: target.clone(),
+                parameters: Vec::new(),
+                options: tiny,
+            }
+        ),
+        Err(Error::Query(QueryError::Evaluation(
+            tablecraft_expressions::EvalError::Limit(_)
+        )))
+    ));
+
+    let Response::Data { rows, .. } = request(
+        &worker,
+        Command::RunQuery {
+            target,
+            parameters: Vec::new(),
+            options: defaults,
+        },
+    )
+    .unwrap() else {
+        panic!("expected successful independently replenished read run");
+    };
+    assert_eq!(row_texts(&rows), [["true"]]);
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
