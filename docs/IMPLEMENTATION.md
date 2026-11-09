@@ -2467,7 +2467,7 @@ source-bound widget identity, and the read-only Design grid supports local
 keyboard field selection beside its full-width General property sheet.
 
 Original generated command SVGs and Selawik with regional CJK fallback fonts
-retain source geometry, hashes and licenses under root `assets/ui/`. The earlier
+retain source geometry, hashes and licenses under root `assets/fonts/` and `assets/icons/`. The earlier
 Fluent icon subset is retained source material, superseded by the current artwork. The retained Access captures
 guide the Home Ribbon, datasheet, read-only Table Design and Backstage structure.
 Options changes only the session's appearance/language, independently of database

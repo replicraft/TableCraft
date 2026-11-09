@@ -9,7 +9,7 @@ remain in [DEPENDENCIES.md](DEPENDENCIES.md).
 
 The UI follows the [actual Access visual references](../ui/VISUAL_REFERENCES.md).
 Renderer, geometry and icon choices support that layout; they do not establish
-Access behavior. Keep Selawik and shared assets under `assets/ui/`.
+Access behavior. Keep Selawik under `assets/fonts/`, icons under `assets/icons/`, and Fluent catalogs under `locales/`.
 
 ## Native formats and collections
 
