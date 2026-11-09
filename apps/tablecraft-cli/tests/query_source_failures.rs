@@ -48,7 +48,7 @@ fn native_query_snapshot_ceiling_reports_source_origin_and_never_publishes_a_pre
     assert!(output.stdout.is_empty());
     let error = String::from_utf8(output.stderr).unwrap();
     // This CLI control also caps the complete native snapshot. Its structural
-    // check runs before the three-row-style cumulative native budget path.
+    // check runs before the cumulative native row budget is exhausted.
     assert!(
         error.contains("query source failed: structural limit exceeded"),
         "{error}"
