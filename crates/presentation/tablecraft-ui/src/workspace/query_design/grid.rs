@@ -5,7 +5,7 @@ use crate::workspace::focus::{self, Pane};
 use egui::{Align, Layout, ScrollArea, TextEdit, Ui};
 use egui_extras::{Column, TableBuilder};
 use tablecraft_builders::query::{
-    DesignColumn, DesignExpression, DesignField, DesignSort, DesignTableMetadata, QueryDesignDraft,
+    DesignColumn, DesignExpression, DesignField, DesignSort, DesignSource, DesignTableMetadata,
 };
 
 const GRID_COLUMN_WIDTH: f32 = 175.0;
@@ -15,7 +15,6 @@ const MAX_CRITERIA_ROWS: usize = tablecraft_builders::query::MAX_DESIGN_CRITERIA
 
 pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
     let mut changed = false;
-    let draft = session.draft.clone();
     let mut remove = None;
     let mut budget = InputBudget {
         remaining: MAX_DESIGN_TEXT_BYTES.saturating_sub(
@@ -67,6 +66,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                             ));
                         });
                     });
+                    let sources = &session.draft.sources;
                     for (index, column) in session.draft.columns.iter_mut().enumerate() {
                         grid_row.col(|ui| {
                             grid_cell(ui, false, |ui| {
@@ -95,7 +95,7 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                         );
                                         if response.changed() && text != original {
                                             column.expression = edited_field(
-                                                &draft,
+                                                sources,
                                                 &session.metadata,
                                                 &column.expression,
                                                 text,
@@ -132,12 +132,11 @@ pub(super) fn design_grid(ui: &mut Ui, session: &mut Session) -> bool {
                                     }
                                     1 => {
                                         let table = match &column.expression {
-                                            DesignExpression::Field(field) => draft
-                                                .sources
+                                            DesignExpression::Field(field) => sources
                                                 .iter()
                                                 .find(|source| source.id == field.source_id),
                                             DesignExpression::AllFields(Some(id)) => {
-                                                draft.sources.iter().find(|source| source.id == *id)
+                                                sources.iter().find(|source| source.id == *id)
                                             }
                                             _ => None,
                                         };
@@ -301,7 +300,7 @@ fn field_text(expression: &DesignExpression) -> String {
 }
 
 fn edited_field(
-    draft: &QueryDesignDraft,
+    sources: &[DesignSource],
     metadata: &[DesignTableMetadata],
     original: &DesignExpression,
     text: String,
@@ -315,7 +314,7 @@ fn edited_field(
         if text == "*" {
             return DesignExpression::AllFields(Some(source_id));
         }
-        let source = draft.sources.iter().find(|source| source.id == source_id);
+        let source = sources.iter().find(|source| source.id == source_id);
         let table =
             source.and_then(|source| metadata.iter().find(|table| table.table == source.table));
         if let Some(field) = table.and_then(|table| {

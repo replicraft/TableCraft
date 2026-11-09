@@ -439,17 +439,31 @@ pub fn build_ast(
             }
             _ => validated(draft, metadata, expression(draft, &column.expression)?)?,
         };
-        if column.show {
-            projection.push(Projection::Expression {
-                expression: value.clone(),
-                alias: column.alias.as_deref().map(name).transpose()?,
-            });
-        }
-        if let Some(sort) = column.sort {
-            order.push(SortKey {
-                expression: value,
-                descending: sort == DesignSort::Descending,
-            });
+        let alias = if column.show {
+            column.alias.as_deref().map(name).transpose()?
+        } else {
+            None
+        };
+        match column.sort {
+            Some(sort) => {
+                if column.show {
+                    projection.push(Projection::Expression {
+                        expression: value.clone(),
+                        alias,
+                    });
+                }
+                order.push(SortKey {
+                    expression: value,
+                    descending: sort == DesignSort::Descending,
+                });
+            }
+            None if column.show => {
+                projection.push(Projection::Expression {
+                    expression: value,
+                    alias,
+                });
+            }
+            None => {}
         }
     }
     if projection.is_empty() {
