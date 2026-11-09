@@ -183,7 +183,7 @@ fn each_observed_construction_and_resolution_checkpoint_can_cancel() {
         stop.get() == Some(n)
     };
     let budget = pool();
-    NativeCollationResolver::new(order(0), &budget, &callback).unwrap();
+    let _ = NativeCollationResolver::new(order(0), &budget, &callback).unwrap();
     let count = visits.get();
     assert!(count > 1);
     for point in 1..=count {
