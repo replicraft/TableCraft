@@ -5,7 +5,8 @@ use std::{error::Error, fmt};
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
     DefaultZeroAddColumnIntentError, FieldAdditionIntentError, FieldHistoryOptionsIntentError,
-    FirstTableError, FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
+    FieldRenameIntentError, FirstTableError, FirstTableIntentError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -84,6 +85,10 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FieldAdditionIntent(FieldAdditionIntentError),
+    /// Original field-rename request or complete native reconstruction refused.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FieldRenameIntent(FieldRenameIntentError),
     /// This retained capability does not permit the requested transition.
     #[error("offline session state does not permit this operation")]
     InvalidState,

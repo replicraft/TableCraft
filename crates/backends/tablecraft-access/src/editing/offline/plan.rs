@@ -10,8 +10,9 @@ use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent, NativeFieldRenameIntent,
+    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
+    RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -22,6 +23,9 @@ use tablecraft_ace::{
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
+#[cfg(feature = "ace16-create")]
+const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
+
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsPlan),
@@ -30,6 +34,8 @@ pub(super) enum MutationPlan {
     AddColumn(RecoverableAddColumnPlan),
     #[cfg(feature = "ace16-create")]
     FieldAddition(FieldAdditionPlan),
+    #[cfg(feature = "ace16-create")]
+    FieldRename(RecoverableFieldRenamePlan),
     TableRename(RecoverableNativeTableRenamePlan),
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
@@ -57,6 +63,11 @@ impl MutationPlan {
                 .map_err(Cause::AddColumnIntent),
             #[cfg(feature = "ace16-create")]
             Self::FieldAddition(plan) => plan.encode_intent(budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::FieldRename(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::FieldRenameIntent),
             Self::TableRename(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -107,6 +118,13 @@ impl MutationPlan {
             Self::FieldAddition(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
             }
+            #[cfg(feature = "ace16-create")]
+            Self::FieldRename(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
             Self::TableRename(plan) => {
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
@@ -155,6 +173,8 @@ pub(super) enum MutationIntent {
     RepeatedDefaultZeroAddColumn(NativeRepeatedDefaultZeroAddColumnIntent),
     #[cfg(feature = "ace16-create")]
     FieldAddition(NativeFieldAdditionIntent),
+    #[cfg(feature = "ace16-create")]
+    FieldRename(NativeFieldRenameIntent),
     TableRename(NativeTableRenameIntent),
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
@@ -185,6 +205,10 @@ impl MutationIntent {
             | Self::DefaultZeroAddColumn(_)
             | Self::RepeatedDefaultZeroAddColumn(_)
             | Self::FieldAddition(_) => Some(SchemaChange::ColumnAdded),
+            #[cfg(feature = "ace16-create")]
+            Self::FieldRename(intent) => {
+                (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
+            }
             Self::TableRename(intent) => {
                 (intent.table() != intent.new_name()).then_some(SchemaChange::TableRenamed)
             }
@@ -262,6 +286,12 @@ impl MutationIntent {
             return NativeAddColumnIntent::decode(raw, budget, cancelled)
                 .map(Self::AddColumn)
                 .map_err(Cause::AddColumnIntent);
+        }
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(FIELD_RENAME_FAMILY) {
+            return NativeFieldRenameIntent::decode(raw, budget, cancelled)
+                .map(Self::FieldRename)
+                .map_err(Cause::FieldRenameIntent);
         }
         if raw.starts_with(b"TCRN") {
             return NativeTableRenameIntent::decode(raw, budget, cancelled)
