@@ -107,3 +107,5 @@ pub(crate) fn compose(
         },
     )
 }
+
+pub(crate) use repeated::fitted_property_capacity;

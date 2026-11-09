@@ -33,7 +33,8 @@ pub use add_column::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
     FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionCandidate,
-    FieldAdditionError, FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
+    FieldAdditionError, FieldAdditionSourceAvailability, FieldAdditionSourceError,
+    FieldAdditionSourcePurpose, FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
 };
 #[cfg(feature = "journal")]
 pub use add_table::{

@@ -19,7 +19,7 @@ use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
 
 const TEXT_UNITS: usize = 255;
-const MAX_ASCII_NAME_BYTES: usize = 64;
+pub(super) const MAX_ASCII_NAME_BYTES: usize = 64;
 
 /// Refusal from the separate fitting ADD-after-explicit-OFF candidate profile.
 #[derive(Debug, Error)]
@@ -208,3 +208,5 @@ impl NativeImage {
         })
     }
 }
+
+pub(super) mod availability;

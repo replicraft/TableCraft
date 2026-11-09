@@ -144,11 +144,7 @@ fn append_with_growth(
     let start = page as usize * PAGE_BYTES;
     let original = &image.as_bytes()[start..start + PAGE_BYTES];
     let (count, end) = geometry(original)?;
-    let fitted = count < MAX_SLOTS
-        && body
-            .len()
-            .checked_add(SLOT_BYTES)
-            .is_some_and(|needed| needed <= end - slot_offset(count));
+    let fitted = capacity(count, end).is_some_and(|available| body.len() <= available);
     if !fitted && (page == LAST_PAGE || growth == Growth::FittedOnly) {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -273,4 +269,34 @@ fn append_with_growth(
         length: plan.length,
         maps: plan.maps.edits,
     })
+}
+
+fn capacity(count: usize, end: usize) -> Option<usize> {
+    if count >= MAX_SLOTS {
+        return None;
+    }
+    end.checked_sub(slot_offset(count))?.checked_sub(SLOT_BYTES)
+}
+
+/// Maximum fitted body on the actual last owned page; no append or AFTER exists.
+pub(in crate::table::mutation) fn fitted_capacity(
+    image: &NativeImage,
+    schema: &TableSchema,
+    references: LongValueMapReferences,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<usize>, EditError> {
+    check(budget, cancelled)?;
+    let maps = capture_maps(image, schema, references, budget, cancelled)?;
+    let page = *maps
+        .pages(Family::LongValue)
+        .last()
+        .ok_or(EditError::Preservation)?;
+    let start = page as usize * PAGE_BYTES;
+    let bytes = image
+        .as_bytes()
+        .get(start..start + PAGE_BYTES)
+        .ok_or(InspectError::Malformed)?;
+    let (count, end) = geometry(bytes)?;
+    Ok(capacity(count, end))
 }

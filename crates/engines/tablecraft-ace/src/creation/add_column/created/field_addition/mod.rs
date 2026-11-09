@@ -192,3 +192,8 @@ impl FieldAdditionCandidate {
         self.target
     }
 }
+
+mod selected_source;
+pub use selected_source::{
+    FieldAdditionSourceAvailability, FieldAdditionSourceError, FieldAdditionSourcePurpose,
+};

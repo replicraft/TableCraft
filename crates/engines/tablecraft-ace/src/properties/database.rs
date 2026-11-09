@@ -108,6 +108,24 @@ pub fn inspect_database_properties<R: NativeReadSource>(
 ) -> Result<Option<DatabaseProperties>, InspectError> {
     let _span = tracing::debug_span!("native.database.properties.read").entered();
     let catalog = inspect_catalog(source, scope, budget, cancelled)?;
+    let Some(database) = role(&catalog, budget, cancelled)? else {
+        return Ok(None);
+    };
+    let raw = read_property_bytes(source, scope, database.native_id(), budget, cancelled)?;
+    let groups = decode::decode(&raw, budget, cancelled)?;
+    Ok(Some(DatabaseProperties {
+        object: database.object_id(),
+        raw,
+        groups,
+    }))
+}
+
+/// Resolve only the actual containment/native role; never read a property body.
+pub(crate) fn role<'a>(
+    catalog: &'a crate::CatalogInspection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<&'a crate::NativeObjectOrigin>, InspectError> {
     let mut container = None;
     let mut database = None;
     for (object, origin) in catalog.catalog().objects().iter().zip(catalog.origins()) {
@@ -155,11 +173,5 @@ pub fn inspect_database_properties<R: NativeReadSource>(
     if container != Some(database.parent_id()) {
         return Err(InspectError::Malformed);
     }
-    let raw = read_property_bytes(source, scope, database.native_id(), budget, cancelled)?;
-    let groups = decode::decode(&raw, budget, cancelled)?;
-    Ok(Some(DatabaseProperties {
-        object: database.object_id(),
-        raw,
-        groups,
-    }))
+    Ok(Some(database))
 }

@@ -1,4 +1,4 @@
-mod database;
+pub(crate) mod database;
 mod decode;
 #[cfg(feature = "journal")]
 pub(crate) mod framing;

@@ -206,3 +206,15 @@ impl RepeatedChange {
         Ok(())
     }
 }
+
+/// Observe capacity from the actual column-owned maps and shared allocator rule.
+pub(crate) fn fitted_property_capacity(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<usize>, EditError> {
+    let catalog = catalog(image, budget, cancelled)?;
+    let selected = column(&catalog)?;
+    let references = references(image, &catalog, selected, budget, cancelled)?;
+    property::fitted_capacity(image, &catalog, references, budget, cancelled)
+}
