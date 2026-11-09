@@ -1,7 +1,7 @@
 //! Explicit, bounded allowances captured by one read-query command.
 use tablecraft_ace::{TablePageRequest, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_query::QueryLimits;
+use tablecraft_query::{QueryError, QueryLimits, SourceFailure};
 
 /// Identified resource pool at a runtime boundary. Execution errors that have
 /// already crossed shared source/expression contracts retain their original type.
@@ -199,6 +199,18 @@ impl Default for QueryRunOptions {
 pub(crate) fn native_error(error: tablecraft_ace::InspectError) -> crate::Error {
     match error {
         tablecraft_ace::InspectError::Limit(source) => crate::Error::ReadQueryLimit {
+            pool: QueryRunPool::Native,
+            source,
+        },
+        other => other.into(),
+    }
+}
+
+/// This read path supplies only the native adapter as its concrete source.
+/// Comparison and expression failures retain their independent error contracts.
+pub(crate) fn query_error(error: QueryError) -> crate::Error {
+    match error {
+        QueryError::SourceFailure(SourceFailure::Limit(source)) => crate::Error::ReadQueryLimit {
             pool: QueryRunPool::Native,
             source,
         },

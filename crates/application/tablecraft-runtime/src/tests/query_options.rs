@@ -5,7 +5,7 @@ use crate::{
     Worker,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_query::QueryError;
+use tablecraft_query::{QueryError, SourceFailure};
 use tablecraft_testkit::fixtures::access::{mutation_fixture, saved_queries};
 
 fn configured(
@@ -131,7 +131,9 @@ fn snapshot_and_cumulative_pools_fail_without_output_or_changing_the_next_run() 
     .unwrap();
     assert!(matches!(
         execute(&worker, limited, sql),
-        Err(Error::Query(QueryError::StructureLimit))
+        Err(Error::Query(QueryError::SourceFailure(
+            SourceFailure::StructureLimit
+        )))
     ));
 
     let native = configured(
@@ -312,5 +314,76 @@ fn comparison_allowance_is_independent_and_inspection_does_not_consume_it() {
         panic!("expected successful independently replenished read run");
     };
     assert_eq!(row_texts(&rows), [["true"]]);
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
+
+#[test]
+fn source_failure_adaptation_labels_only_actual_native_resource_exhaustion() {
+    use crate::query::options::query_error;
+    use tablecraft_core::limits::LimitError;
+
+    let exhausted = LimitError {
+        resource: Resource::Rows,
+        remaining: 2,
+    };
+    assert!(matches!(
+        query_error(QueryError::SourceFailure(SourceFailure::Limit(exhausted))),
+        Error::ReadQueryLimit {
+            pool: QueryRunPool::Native,
+            source,
+        } if source == exhausted
+    ));
+    assert!(matches!(
+        query_error(QueryError::Limit(exhausted)),
+        Error::Query(QueryError::Limit(source)) if source == exhausted
+    ));
+    for failure in [
+        SourceFailure::Io(std::io::ErrorKind::PermissionDenied),
+        SourceFailure::Truncated,
+        SourceFailure::InvalidData,
+        SourceFailure::Busy,
+        SourceFailure::InvalidRequest,
+        SourceFailure::CursorState,
+        SourceFailure::Constraint,
+        SourceFailure::StructureLimit,
+        SourceFailure::Allocation,
+    ] {
+        assert!(matches!(
+            query_error(QueryError::SourceFailure(failure)),
+            Error::Query(QueryError::SourceFailure(actual)) if actual == failure
+        ));
+    }
+}
+
+#[test]
+fn actual_native_snapshot_row_work_reports_its_source_pool_and_allows_explicit_new_run() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("native-rows.mdb");
+    let original = mutation_fixture::database();
+    std::fs::write(&path, &original).unwrap();
+    let worker = Worker::new(|| {});
+    request(&worker, open(&path, "")).unwrap();
+    let defaults = QueryRunOptions::default();
+    let tiny = configured(
+        QueryPoolLimits::new(defaults.native().bytes(), 4, defaults.native().steps()).unwrap(),
+        defaults.query(),
+        defaults.comparison(),
+        defaults.presentation(),
+    );
+    assert!(matches!(
+        execute(&worker, tiny, "SELECT Id FROM Items"),
+        Err(Error::ReadQueryLimit {
+            pool: QueryRunPool::Native,
+            source: tablecraft_core::limits::LimitError {
+                resource: Resource::Rows,
+                ..
+            },
+        })
+    ));
+    let Response::Data { rows, .. } = execute(&worker, defaults, "SELECT Id FROM Items").unwrap()
+    else {
+        panic!("an explicit fresh run uses its own native budget");
+    };
+    assert_eq!(row_texts(&rows), [["1"], ["2"], ["3"]]);
     assert_eq!(std::fs::read(path).unwrap(), original);
 }

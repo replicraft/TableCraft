@@ -102,7 +102,8 @@ pub(super) fn execute<R: NativeReadSource>(
             like_mode,
             ..context.options()
         },
-    )?;
+    )
+    .map_err(options::query_error)?;
     present(result, title, output).map_err(options::presentation_error)
 }
 

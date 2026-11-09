@@ -505,3 +505,60 @@ fn active_parameter_prompt_rejects_injected_query_limit_configuration() {
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
+
+#[test]
+fn native_source_failures_preserve_sql_and_previous_result_until_an_explicit_corrected_run() {
+    let (_directory, path, original, mut harness) = opened();
+    run(&mut harness, "SELECT 99 AS Previous");
+    let defaults = harness.state().state.query_run_limits().unwrap();
+    let sql = "SELECT Id FROM Items";
+    for snapshot in [true, false] {
+        let mut limits = defaults;
+        if snapshot {
+            limits.snapshot_rows = 2;
+        } else {
+            limits.native.rows = 4;
+        }
+        harness.state_mut().configure_query_run_limits(limits);
+        assert!(harness.state_mut().state.replace_query_sql(sql.into()));
+        harness.state_mut().inspect_query_parameters();
+        let deadline = Instant::now() + Duration::from_secs(10);
+        while harness.state().state.busy {
+            assert!(Instant::now() < deadline);
+            harness.run_steps(1);
+            std::thread::yield_now();
+        }
+        let error = harness.state().state.error.as_deref().unwrap();
+        if snapshot {
+            assert!(error.contains("source"), "{error}");
+            assert!(error.contains("structur"), "{error}");
+        } else {
+            assert!(error.contains("Native pool"), "{error}");
+            assert!(error.contains("Rows resource limit exceeded"), "{error}");
+        }
+        assert_eq!(harness.state().state.sql, sql);
+        assert_eq!(
+            harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+            "99"
+        );
+    }
+    harness.state_mut().configure_query_run_limits(defaults);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "99",
+        "configuration never silently retries a failed source read"
+    );
+    run(&mut harness, sql);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .len(),
+        3
+    );
+    assert_eq!(std::fs::read(path).unwrap(), original);
+}
