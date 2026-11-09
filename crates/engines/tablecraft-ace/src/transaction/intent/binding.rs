@@ -3,6 +3,8 @@ use crate::{InspectError, header::check, limits::MAX_IMAGE_BYTES};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+pub(super) const DIGEST_BYTES: usize = size_of::<sha2::digest::Output<Sha256>>();
+
 const DOMAIN: &[u8; 16] = b"TCNI0001:BEFORE\0";
 const BLOCK_BYTES: usize = 64 * 1024;
 
@@ -17,7 +19,7 @@ pub(super) fn digest(
     before: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<[u8; 32], NativeIntentError> {
+) -> Result<[u8; DIGEST_BYTES], NativeIntentError> {
     check(budget, cancelled)?;
     length(before.len() as u64)?;
     budget

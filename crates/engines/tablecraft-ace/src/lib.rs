@@ -343,3 +343,9 @@ pub use transaction::{
 
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRenameIdentity};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
+    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+};

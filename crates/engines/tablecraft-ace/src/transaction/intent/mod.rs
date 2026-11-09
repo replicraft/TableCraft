@@ -142,3 +142,11 @@ pub use field_addition::{
     FieldAdditionIntentError, NativeFieldAdditionIntent, QualifiedFieldAdditionRecovery,
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod field_rename;
+#[cfg(feature = "ace16-create")]
+pub use field_rename::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
+    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+};

@@ -226,3 +226,9 @@ pub use intent::{
     FieldAdditionIntentError, NativeFieldAdditionIntent, QualifiedFieldAdditionRecovery,
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
+    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+};
