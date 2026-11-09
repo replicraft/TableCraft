@@ -1,5 +1,23 @@
 # Implementation status
 
+## Saved Design field addition — 9 November 2026
+
+Saved Design now exposes a blank Name/Type row for the existing positively
+qualified Number and Short Text ADD declarations. Raw names and type changes stay
+in one bounded proposal, without a stored field number or native property changes.
+Explicit Save uses the existing runtime review, checked journal and complete-image
+reopen witness. The fresh schema selects the actual added field while retaining
+Design; Datasheet reads the same declaration. Unsupported sources disable the
+controls. No writer admission or broader type/property editing was added.
+
+Two shared staging tests and two normal desktop tests covering four actual files
+pass headlessly: independent complete Number/Short Text AFTER images, actual
+selection and Datasheet consistency, plus nonempty/unqualified source refusal
+without journals or changed bytes. The accessibility-registration lock found by
+the earlier larger batch is fixed; a complete follow-up suite is not claimed by
+these focused checks. Native Windows/Access parity remains unqualified. See the
+[workflow](ui/DATABASE_CREATION.md#saved-design-blank-row-addition).
+
 ## Normal created-file CRUD and cell focus — 9 November 2026
 
 A fresh ACE16 file now has a combined normal-host acceptance case across table
@@ -16,8 +34,8 @@ cannot redirect that focus or grant mutation authority. Twelve shared UI,
 nine desktop editing and three actual clipboard checks pass; one pre-existing
 external-fixture case remains ignored. The combined created-file case passes
 separately. These checks are headless and do not claim native Windows/Access
-interaction. Saved Design-view ADD remains a useful next GUI slice over the
-already bounded Number/Short Text service.
+interaction. Saved Design-view ADD now uses the existing bounded Number/Short
+Text service, as recorded above.
 
 ## Classified query-source failures — 9 November 2026
 

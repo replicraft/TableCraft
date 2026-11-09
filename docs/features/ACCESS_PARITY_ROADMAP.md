@@ -39,7 +39,7 @@ All cells describe current implementation, not the requested final state.
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
-| Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal GUI save/reopen |
+| Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen |
 | Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
@@ -108,8 +108,11 @@ The original creator-OFF→table-rename route retains its separate boundary. Ord
 broader table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
 
-The normal saved-table gallery now adds [Number and Short Text](../access/writes/ADD_COLUMN.md)
-through engine, adapter, runtime, original-intent recovery and actual GUI saves.
+The normal saved-table gallery and [Design blank Name/Type row](../ui/DATABASE_CREATION.md#saved-design-blank-row-addition)
+now add [Number and Short Text](../access/writes/ADD_COLUMN.md) through engine,
+adapter, runtime, original-intent recovery and actual GUI saves. Pending proposals
+have no native field identity; explicit Save and the complete-image witness must
+publish the actual new schema before Design selects its new field.
 Admission remains bounded to empty canonical ACE16 sources with qualified
 properties/history, a sixteen-field source ceiling and the proved property-page
 allocation limits. A separate bounded [saved-field rename flow](../ui/FIELD_RENAME.md)

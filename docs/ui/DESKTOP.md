@@ -25,6 +25,20 @@ passes actual creation, generated insertion, non-no-op update, deletion,
 subsequent insertion and fresh automatic reopening. It uses the normal widgets,
 real runtime services and native persistence without expanding admission.
 
+## Saved Design field addition — 9 November 2026
+
+Qualified empty ACE16 tables now expose a blank Field Name/Data Type row in saved
+Design view. Number and Short Text share Datasheet's existing bounded declarations,
+source inspection, explicit Save, consuming review, journal and complete-image
+reopen witness. Pending input owns no native field identity; only fresh witnessed
+schema selects the actual new field. Unsupported sources disable addition, while
+existing type/property observations remain read only.
+
+Two shared staging tests and two normal desktop tests covering four actual files
+pass headlessly, including independent complete AFTER bytes and Design/Datasheet
+consistency. Native admission is unchanged; this is neither full-suite nor native
+Windows/Access qualification. See [the workflow and limits](DATABASE_CREATION.md#saved-design-blank-row-addition).
+
 ## Saved-field name proposals — 9 November 2026
 
 The [shared saved-field rename flow](FIELD_RENAME.md) connects actual true-name
@@ -269,7 +283,7 @@ tab. Selecting an existing document tab activates its retained session; closing
 an inactive tab leaves the current object and its native handle alone. These
 selection/open distinctions follow Microsoft's [Navigation Pane
 contract](https://support.microsoft.com/en-us/access/guide-to-the-access-user-interface).
-Table Datasheet and read-only Design are two modes of the same table object,
+Table Datasheet and Design are two modes of the same table object,
 not separate table tabs. The View control and tab context menu switch those
 modes. Tab activation and individual closing follow the documented [object-tab
 workflow](https://support.microsoft.com/en-us/access/show-or-hide-object-tabs);

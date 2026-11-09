@@ -339,7 +339,7 @@ historical test counts below; native Access comparison remains pending.
 
 ## Adding a column to an existing saved table
 
-Saved native datasheets use one name-independent native inspection to obtain
+Saved native table views use one name-independent native inspection to obtain
 separate Number and Short Text availability facts for the exact table/revision.
 One captured image and one native source proof shared with the typed candidate
 publish both current facts; each gallery choice still requires its own positive
@@ -365,6 +365,30 @@ review/save actor, status and close controller. The saved request binds its full
 declaration as well as the owner, raw name and draft revision. Before starting
 persistence, the host requires both the review DTO and opaque native capability
 to match the entire declaration, including exact width and compression.
+
+### Saved Design blank-row addition
+
+The first blank row in a saved table's Design grid now has a Field Name editor
+and Data Type picker. Only positively qualified Number and Short Text choices are
+available; unsupported sources disable the controls. Other types remain disabled.
+The name stays literal in the existing bounded proposal, and changing its type
+invalidates any earlier review. Pending name/type properties are not stored
+fields and have no invented native field number. Description and broader property
+authoring remain unavailable.
+
+Explicit Save uses the existing consuming review, journal, acknowledgment and
+complete-image reopen witness. Only the accepted fresh schema supplies the actual
+new field number and selection. Design remains active after saving; switching to
+Datasheet shows the same witnessed declaration. Admission, defaults, source/history
+and allocation limits are unchanged.
+
+Two shared staging checks and two normal desktop checks pass headlessly. The
+latter cover four real files: exact independent Number and Short Text AFTER
+images, fresh selected-field publication, Datasheet consistency, and disabled
+nonempty/unqualified sources without a journal or file changes. The retained
+Access Design capture guides the blank-row placement; these checks establish no
+native Windows/Access interaction or full-suite qualification. See the
+[presentation record](PRESENTATION_PREVIEW.md).
 
 Native metadata selects one source purpose before full qualification. Existing
 Number creator prefixes keep their TCAC0003/0004 routes. Short Text and mixed
@@ -562,7 +586,9 @@ retains inert optional text. The lower General pane edits Field Size, Required,
 Allow Zero Length and Default Value, plus Precision and Scale for Decimal.
 Caption, validation rules/messages and Lookup authoring remain unavailable. The pane describes the
 current draft declaration, not an observation of already stored metadata.
-Existing persisted-table Design view remains read only.
+Saved-table Design retains read-only existing type/property observations, with
+separate qualified [blank-row addition](#saved-design-blank-row-addition),
+[rename](FIELD_RENAME.md) and [deletion](FIELD_DROP.md) workflows.
 
 Microsoft's [data-type and field-property reference](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties)
 governs the type distinctions. The [Lookup Wizard procedure](https://support.microsoft.com/en-us/access/create-or-delete-a-lookup-field)
