@@ -30,6 +30,7 @@ impl State {
         let mut clicks = std::mem::take(&mut self.navigation_clicks);
         let mut selected_object = None;
         let mut rename_target = None;
+        let mut drop_target = None;
         let mut collapse_navigation = false;
         let enter_pressed =
             ui.input(|input| input.key_pressed(egui::Key::Enter) && input.modifiers.is_none());
@@ -159,7 +160,39 @@ impl State {
                                                 // operation.
                                                 rename_target = Some(target.clone());
                                             }
+                                            if response.has_focus()
+                                                && ui.input(|input| {
+                                                    input.key_pressed(egui::Key::Delete)
+                                                        && input.modifiers.is_none()
+                                                })
+                                                && self.can_begin_table_drop(&target)
+                                            {
+                                                // NO_CLONE: The new confirmation owns exact catalog intent
+                                                // after this borrowed navigation frame; the same target remains
+                                                // needed by the row's open and context-menu interaction checks.
+                                                drop_target = Some(target.clone());
+                                            }
                                             response.context_menu(|ui| {
+                                                if ui
+                                                    .add_enabled(
+                                                        self.can_begin_table_drop(&target),
+                                                        egui::Button::new(tr(
+                                                            ui,
+                                                            "table-drop-command",
+                                                        )),
+                                                    )
+                                                    .on_disabled_hover_text(tr(
+                                                        ui,
+                                                        "table-drop-unavailable",
+                                                    ))
+                                                    .clicked()
+                                                {
+                                                    // NO_CLONE: Confirmation outlives the borrowed catalog row;
+                                                    // preserve this exact intent while later row interactions
+                                                    // still inspect the original target in the current frame.
+                                                    drop_target = Some(target.clone());
+                                                    ui.close();
+                                                }
                                                 if ui
                                                     .add_enabled(
                                                         self.can_rename_table(&target),
@@ -337,7 +370,9 @@ impl State {
             });
         clicks.finish(ui);
         self.navigation_clicks = clicks;
-        if let Some(target) = rename_target {
+        if let Some(target) = drop_target {
+            self.begin_table_drop(target);
+        } else if let Some(target) = rename_target {
             self.begin_table_rename(target);
         }
 
@@ -351,4 +386,4 @@ impl State {
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;

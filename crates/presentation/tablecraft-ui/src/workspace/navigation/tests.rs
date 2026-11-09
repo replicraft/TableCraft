@@ -8,7 +8,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 
-pub(super) fn harness() -> Harness<'static, (State, Vec<Action>)> {
+pub(in crate::workspace) fn harness() -> Harness<'static, (State, Vec<Action>)> {
     let mut state = State::default();
     state.dismiss_backstage();
     state.database = Some(Database {

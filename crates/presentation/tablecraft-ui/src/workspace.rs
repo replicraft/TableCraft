@@ -35,6 +35,7 @@ mod saved_query_save;
 mod schema;
 mod schema_save;
 mod table_draft;
+pub(crate) mod table_drop;
 #[cfg(test)]
 mod test_support;
 pub(crate) mod totals;
@@ -98,6 +99,7 @@ pub use saved_query_save::{
 };
 pub use schema::{Field, FieldProperty, FieldPropertyValue, Schema};
 pub use table_draft::{InitialRecord, TableDraftSaveCompletion, TableSaveRequest};
+pub use table_drop::{TableDropRequest, TableDropSaveCommand, TableDropSaveIdentity};
 pub use totals::{
     TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
 };
@@ -207,6 +209,24 @@ pub enum Action {
     FieldAdditionSave {
         identity: FieldAdditionSaveIdentity,
         command: FieldAdditionSaveCommand,
+    },
+    /// Inspect exact closed-table intent without granting write authority.
+    InspectTableDrop {
+        request: Arc<TableDropRequest>,
+    },
+    CancelTableDropInspection {
+        request_id: u64,
+    },
+    /// Consume a fresh native review and save immediately after confirmation.
+    DeleteTable {
+        request: Arc<TableDropRequest>,
+    },
+    CancelTableDropReview {
+        request_id: u64,
+    },
+    TableDropSave {
+        identity: TableDropSaveIdentity,
+        command: TableDropSaveCommand,
     },
     /// Cancel an issued table-rename review before a save is accepted.
     CancelTableRenameReview {
@@ -497,6 +517,8 @@ pub struct State {
     field_addition_status: Option<schema_save::Status<FieldAdditionSaveIdentity>>,
     /// Host can review and persist native table renames; false for synthetic hosts.
     pub table_rename_available: bool,
+    pub table_drop_available: bool,
+    table_drop: table_drop::model::Model,
     table_selection: Selection,
     query_selection: Selection,
     pub schema: Option<Schema>,
@@ -833,6 +855,7 @@ impl State {
             && !self.table_draft_field_delete_open()
             && !self.query_action_dialog_open()
             && !self.table_rename_open()
+            && !self.table_drop_open()
     }
 
     fn query_ready(&self) -> bool {
@@ -846,6 +869,7 @@ impl State {
             && self.query_parameters.is_none()
             && !self.query_action_dialog_open()
             && !self.table_rename_open()
+            && !self.table_drop_open()
             && !self.sql.trim().is_empty()
     }
 
@@ -898,6 +922,7 @@ impl State {
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
             || self.table_rename_open()
+            || self.table_drop_open()
             || self.zoom_dialog_open();
         self.prepare_ribbon_display(ui, modal_open);
         self.begin_ribbon_keyboard(ui, modal_open);
@@ -961,6 +986,7 @@ impl State {
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
             || self.table_rename_open()
+            || self.table_drop_open()
             || self.zoom_dialog_open();
         self.begin_pane_focus(ui, modal_open || self.find_window_open());
         ui.add_enabled_ui(!modal_open, |ui| {
@@ -991,6 +1017,8 @@ impl State {
         self.scratch_parameter_dialog(ui.ctx(), &mut actions);
         self.query_action_dialog(ui.ctx(), &mut actions);
         self.table_rename_dialog(ui.ctx(), &mut actions);
+        self.table_drop_dialog(ui.ctx(), &mut actions);
+        self.collect_table_drop_inspection(&mut actions);
         self.zoom_dialog(ui.ctx(), &mut actions);
         self.field_filter_dialog(ui.ctx(), &mut actions);
         self.query_design_dialog(ui.ctx(), &mut actions);
@@ -1012,6 +1040,7 @@ impl State {
         if !self.parameter_prompt_open()
             && !self.query_action_dialog_open()
             && !self.table_rename_open()
+            && !self.table_drop_open()
             && !self.zoom_dialog_open()
             && !self.find_window_open()
             && self.table_draft_save.is_none()

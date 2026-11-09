@@ -23,6 +23,7 @@ pub(in crate::workspace::objects::layout) fn publish(
     state: &mut State,
     prepared: Prepared,
     database: Database,
+    change: catalog::Change<'_>,
 ) -> bool {
     let Prepared {
         mut objects,
@@ -33,7 +34,7 @@ pub(in crate::workspace::objects::layout) fn publish(
         transfer,
     } = prepared;
     if state.database.as_ref().is_none_or(|old| {
-        old.document_revision != old_revision || !catalog::matches(old, &database)
+        old.document_revision != old_revision || !catalog::matches_change(old, &database, change)
     }) || state.has_unsaved_table_drafts()
         || state.has_modified_saved_query_sql()
         || objects.entries.len()

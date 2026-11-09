@@ -11,6 +11,7 @@ impl State {
             || self.database_options_source_stale()
             || self.field_rename_source_stale()
             || self.field_drop_source_stale()
+            || self.table_drop_source_stale()
     }
 
     /// The host observed actual save actor teardown without a native terminal
@@ -36,6 +37,9 @@ impl State {
     }
 
     fn native_mutation_blocked_without_saved_field(&self) -> bool {
-        self.native_source_stale() || self.options_dialog_open() || self.database_options_pending()
+        self.native_source_stale()
+            || self.table_drop_open()
+            || self.options_dialog_open()
+            || self.database_options_pending()
     }
 }

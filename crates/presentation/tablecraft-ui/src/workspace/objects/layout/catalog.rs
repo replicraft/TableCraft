@@ -2,18 +2,48 @@
 use crate::Database;
 use crate::workspace::objects::memory::Counter;
 
+#[derive(Clone, Copy)]
+pub(super) enum Change<'a> {
+    Unchanged,
+    TableDropped(&'a str),
+}
+
 pub(super) fn matches(old: &Database, fresh: &Database) -> bool {
+    matches_change(old, fresh, Change::Unchanged)
+}
+
+pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_>) -> bool {
     fresh.document_revision > old.document_revision
         && fresh.format == old.format
         && fresh.title_path == old.title_path
-        && fresh.tables.len() == old.tables.len()
+        && match change {
+            Change::Unchanged => fresh.tables.len() == old.tables.len(),
+            Change::TableDropped(name) => {
+                old.tables
+                    .iter()
+                    .filter(|table| table.name == name && table.local && !table.system)
+                    .count()
+                    == 1
+                    && old.tables.iter().filter(|table| table.name == name).count() == 1
+                    && fresh.tables.len().checked_add(1) == Some(old.tables.len())
+                    && fresh.tables.iter().all(|table| table.name != name)
+            }
+        }
         && fresh.queries.len() == old.queries.len()
-        && old.tables.iter().zip(&fresh.tables).all(|(old, fresh)| {
-            old.name == fresh.name
-                && old.local == fresh.local
-                && old.system == fresh.system
-                && old.storage == fresh.storage
-        })
+        && old
+            .tables
+            .iter()
+            .filter(|table| match change {
+                Change::Unchanged => true,
+                Change::TableDropped(name) => table.name != name,
+            })
+            .zip(&fresh.tables)
+            .all(|(old, fresh)| {
+                old.name == fresh.name
+                    && old.local == fresh.local
+                    && old.system == fresh.system
+                    && old.storage == fresh.storage
+            })
         && old.queries.iter().zip(&fresh.queries).all(|(old, fresh)| {
             old.object_id == fresh.object_id && old.name == fresh.name && old.system == fresh.system
         })

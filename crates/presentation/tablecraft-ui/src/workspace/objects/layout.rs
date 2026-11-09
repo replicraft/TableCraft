@@ -8,6 +8,7 @@ mod field_rename_reopen;
 mod replacement;
 mod restoration;
 mod saved_sql_reopen;
+mod table_drop_reopen;
 
 use super::{MAX_OBJECTS, ObjectKind, ObjectTarget, Session};
 use crate::workspace::query_design::Preferences as QueryDesignPreferences;

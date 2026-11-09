@@ -301,6 +301,21 @@ impl Preview {
                     self.state.set_schema(fixtures::schema(&table));
                 }
             }
+            Action::InspectTableDrop { request } => {
+                self.state.reject_table_drop_inspection(
+                    &request,
+                    self.state.localizer.text("table-drop-unavailable"),
+                );
+            }
+            Action::DeleteTable { request } => {
+                self.state.reject_table_drop_review(
+                    &request,
+                    self.state.localizer.text("table-drop-unavailable"),
+                );
+            }
+            Action::CancelTableDropInspection { .. }
+            | Action::CancelTableDropReview { .. }
+            | Action::TableDropSave { .. } => {}
             Action::CancelTableRenameReview { request_id } => {
                 self.state.cancel_table_rename_review(request_id);
             }

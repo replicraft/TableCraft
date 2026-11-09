@@ -322,7 +322,12 @@ fn staged_wrong_session_refuses_before_any_clean_sql_buffer_is_taken() {
         .find(|entry| entry.tab.id == saved.id)
         .unwrap();
     wrong.session = Some(Session::empty(&ObjectKind::Sql));
-    assert!(!replacement::publish(&mut state, prepared, database));
+    assert!(!replacement::publish(
+        &mut state,
+        prepared,
+        database,
+        super::super::catalog::Change::Unchanged
+    ));
     let original = state
         .objects
         .entries

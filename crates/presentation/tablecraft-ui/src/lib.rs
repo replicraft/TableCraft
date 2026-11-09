@@ -36,8 +36,9 @@ pub use workspace::{
     SavedQuerySqlCloseResult, SavedQuerySqlEligibility, SavedQuerySqlError, SavedQuerySqlRequest,
     SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity, SavedQuerySqlSaveOperation,
     SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table, TableDraftSaveCompletion,
-    TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
-    TotalsField, TotalsTarget, WorkspaceLayout,
+    TableDropRequest, TableDropSaveCommand, TableDropSaveIdentity, TableRenameRequest,
+    TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
+    TotalsTarget, WorkspaceLayout,
 };
 pub use workspace::{
     DatabaseOptionsCloseRequest, DatabaseOptionsSaveCommand, DatabaseOptionsSaveIdentity,

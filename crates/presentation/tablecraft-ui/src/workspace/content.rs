@@ -58,6 +58,7 @@ impl State {
         // their remaining viewport. Retained warnings also survive tab closure.
         self.field_rename_source_panel(ui, actions);
         self.field_drop_source_panel(ui, actions);
+        self.table_drop_warning_status(ui);
         if self.unloaded_object_status(ui, actions) {
             return;
         }

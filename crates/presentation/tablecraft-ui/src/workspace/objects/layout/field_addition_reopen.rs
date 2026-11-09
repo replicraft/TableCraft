@@ -85,6 +85,6 @@ impl State {
         else {
             return false;
         };
-        replacement::publish(self, prepared, database)
+        replacement::publish(self, prepared, database, catalog::Change::Unchanged)
     }
 }

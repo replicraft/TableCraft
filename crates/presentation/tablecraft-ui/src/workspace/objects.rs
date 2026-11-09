@@ -471,6 +471,7 @@ impl State {
             && !self.parameter_prompt_open()
             && !self.query_action_dialog_open()
             && !self.table_rename_open()
+            && !self.table_drop_open()
             && !self.find_window_open()
             && !self.zoom_dialog_open()
             && !self.table_filter_pending()
@@ -496,6 +497,15 @@ impl State {
         })
     }
 
+    /// Native object views must be closed before deleting a stored table.
+    /// Source-free SQL drafts may remain open and survive catalog publication.
+    pub fn has_open_native_objects(&self) -> bool {
+        self.objects
+            .entries
+            .iter()
+            .any(|entry| !matches!(entry.tab.target.kind, ObjectKind::Sql))
+    }
+
     pub(super) fn synchronize_objects(&mut self) {
         let revision = self
             .database
@@ -506,11 +516,13 @@ impl State {
             self.retire_database_options_warning(revision);
             self.retire_field_rename_warning(revision);
             self.retire_field_drop_warning(revision);
+            self.retire_table_drop_warning(revision);
             if self.has_modified_saved_query_sql()
                 || self.field_rename_open()
                 || self.field_rename_status_open()
                 || self.field_drop_open()
                 || self.field_drop_status_open()
+                || self.table_drop_open()
             {
                 return;
             }

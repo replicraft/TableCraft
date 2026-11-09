@@ -61,7 +61,7 @@ impl State {
         else {
             return false;
         };
-        if !replacement::publish(self, prepared, database) {
+        if !replacement::publish(self, prepared, database, catalog::Change::Unchanged) {
             return false;
         }
         self.finish_field_drop_publication();
