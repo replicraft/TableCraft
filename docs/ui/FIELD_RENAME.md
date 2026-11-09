@@ -24,12 +24,21 @@ unsupported or interrupted checks remain visible and may be retried explicitly.
 Current native support is the [empty ACE16 explicit-OFF profile](../access/writes/FIELD_RENAME.md):
 a non-key ordinary Number Long with stored Required(false)/zero default, or
 compressed Short Text255 with stored Required(false)/AllowZeroLength(true) and
-no default. Original and proposed names are ASCII and exactly equal UTF-16 width;
-the native identifier ceiling and duplicate rules still apply. A non-ASCII
+no default. Original and proposed names are ASCII. A positively inspected fitted
+source allows growth/shrink within existing native capacity; an older same-width
+observation still requires its exact original width. The native identifier ceiling
+and duplicate rules still apply. A larger proposal can still refuse during the
+consuming review when either physical owner lacks space. A non-ASCII
 sibling, generated ID, populated table, unsupported declaration or unknown source
 refuses. These are TableCraft's current qualification limits, not general Access
 name restrictions. A bounded unsupported proposal remains visible without
 acquiring save authority.
+
+The shared `tablecraft-builders::table::field_rename::FieldRenameNameProfile`
+keeps the observed original width and supported name shape explicit. UI rejects
+inconsistent facts, empty/non-ASCII proposals and stale identities; it never
+converts a displayed capability into native authority. Sectioned Fluent catalogs
+provide distinct same-width and fitted guidance in all eight interface languages.
 
 ## Save, close and checked publication
 

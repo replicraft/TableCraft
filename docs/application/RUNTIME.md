@@ -1688,10 +1688,15 @@ headers now carry their actual optional native number; SQL aliases and synthetic
 headings do not acquire one from their displayed position or caption.
 
 `ReviewFieldRename` issues exact presentation facts and a separate consuming
-`ReviewedFieldRename` from the sealed native plan. Its initial profile is the
-empty ACE16, explicit-OFF, same-width ASCII Number/Short Text scope in
-[the native contract](../access/writes/FIELD_RENAME.md). No displayed boolean or
-review DTO constructs save authority. `SaveWorker::start_field_rename` uses the
+`ReviewedFieldRename` from the sealed native plan. Its profiles retain the
+empty ACE16, explicit-OFF ASCII Number/Short Text scope in
+[the native contract](../access/writes/FIELD_RENAME.md). Inspection returns an
+explicit shared name policy: fitted ASCII only after the actual packing proof,
+or independently qualified same-width support. Equal widths use the original
+profile1 plan; unequal widths use the separate fitted profile2 plan. Errors and
+resource exhaustion propagate; only a clean unsupported packing result permits
+the separate same-width source check. No displayed boolean or review DTO
+constructs save authority. `SaveWorker::start_field_rename` uses the
 same retained offline worker and separate native/proof/persistence pools as the
 other schema operations. Failed saves retain their actual resource owners.
 

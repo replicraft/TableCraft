@@ -40,7 +40,7 @@ All cells describe current implementation, not the requested final state.
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
 | Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen |
-| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
+| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width/fitted ASCII rename and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -99,7 +99,8 @@ no old decoder/source failure is retried. The
 passes 991 unique selected checks. This remains an 11-page, existing-page-10 fitted
 profile: the observed N12 free space qualifies and N13 does not. Subsequent
 ADD on that field-history OFF source now has a separate fitted TCAC6 service and
-normal headless GUI save/reopen checks. Same-width field rename has a distinct
+normal headless GUI save/reopen checks. ASCII field rename has separate same-width
+and existing-capacity fitted native profiles, sharing a distinct
 native/adapter/runtime service and connected Datasheet/Design proposal, close
 and full-witness publication flow. Normal-host headless acceptance now passes;
 22 source-free panel renders are separate evidence with all images directly reviewed. See the

@@ -1,8 +1,8 @@
 # Bounded native saved-field rename
 
-A separate native candidate constructs equal-width field renames on qualified
-empty ACE16 tables with explicit Name AutoCorrect OFF. Consuming runtime saves
-and checked reopening are implemented. The [shared GUI proposal/close/publication
+Separate native candidates construct same-width and fitting unequal-width ASCII
+field renames on qualified empty ACE16 tables with explicit Name AutoCorrect OFF.
+Consuming runtime saves and checked reopening are implemented. The [shared GUI proposal/close/publication
 flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate. Its source-free 22-case render matrix is separate evidence,
 with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
@@ -33,8 +33,10 @@ compression, stored Required(false)/AllowZeroLength(true) and no stored default.
 The generated ID and selected indexed fields refuse. This does not alter source
 fields or infer a new declaration from their displayed values.
 
-Original and proposed field names must be ASCII and have equal UTF-16 width.
-Native identifier syntax and the 64-unit ceiling still apply. Every field in the
+Original and proposed field names must be ASCII. The retained same-width
+candidate requires equal UTF-16 widths; the separate fitted candidate admits
+unequal widths only within the existing physical capacity. Native identifier
+syntax and the 64-unit ceiling still apply. Every field in the
 comparison namespace must be ASCII; a Unicode sibling refuses this narrow
 rename profile rather than relying on an unproved locale comparator. Duplicate
 names are checked with ASCII folding. Exact no-op and case-only requests retain
@@ -46,7 +48,7 @@ returns the actual native table/root, native column number, stored creation ID
 and original width. Stored ID, native number, current list index and Caption
 are distinct facts. The observation supplies no save or journal authority.
 
-## Parser-owned spans and preservation
+## Same-width parser-owned spans and preservation
 
 `prepare_same_width_field_rename` consumes the source into a separate owning
 `NativeFieldRenameCandidate`. The actual TDEF parser observes the original name
@@ -68,6 +70,32 @@ first-snapshot source can happen to equal another valid constructive source;
 histories with retained old names require their actual event history. No guard
 normalizes retired names or infers the original ADD history from current names.
 
+## Fitting unequal-width names
+
+`inspect_fitted_field_rename_source` observes the actual original field and
+existing TDEF/live-property packing without inventing a proposed name. It returns
+the original native identity and maximum name width derived from the smaller
+available TDEF/LVAL capacity, capped by the native 64-unit identifier ceiling.
+It does not allocate an AFTER image or grant save authority.
+
+`prepare_fitted_field_rename` constructs a separate
+`NativeFittedFieldRenameCandidate`. It rejects equal-width/no-op requests, which
+continue through the retained candidate. Both retain the complete source proof.
+The fitted path changes the TDEF name length, following name-table bytes,
+declared definition length and free-space count. It also changes the live MR2
+group/name frame lengths, repacks the existing user property row and following
+MSysDb OFF row, and updates their directory starts, free space and the actual
+catalog Single-LVAL descriptor length. No page, slot or file growth is admitted.
+
+A relocation-aware verifier checks the entire physical edit complement and
+reparses the catalog, native storage declarations, complete property groups and
+database options. Native numbers/stored IDs, dictionary/property values and
+order, retired field-history bodies, database OFF payload, indexes, maps and
+unrelated bytes remain exact. Shrink preserves newly exposed stale bytes rather
+than treating them as permission to erase historical content. Complete expected
+images are authored independently of this repacker; successful opening in a
+second reader alone is insufficient structural proof.
+
 ## Original-request and recovery checkpoint
 
 <!-- FIELD_RENAME_INTENT_STATUS: native, adapter and consuming runtime verified -->
@@ -75,6 +103,10 @@ normalizes retired names or infers the original ADD history from current names.
 The TCFR0001/profile1 implementation binds the exact original table/field,
 proposed spelling, stable native identity and full BEFORE length/digest. It
 contains no replacement bytes, physical spans or caller-scoped model identity.
+Its closed profile discriminator now also admits profile2 for unequal-width
+fitted ASCII requests. Profile1 remains strictly same-width; decode and fresh
+reconstruction dispatch only the recorded profile, and unknown profiles refuse
+before string allocation. A failed profile1 request is never retried as profile2.
 Borrowed framing and name validation precede string allocation. Decoding is
 inert data and does not reconstruct a native source or grant save authority.
 
@@ -121,3 +153,10 @@ SDK rename writes and no Microsoft Access saves**. They do not establish native
 writer, Windows, dependency repair, rename events or UI parity. Passing Rust
 tests establish the bounded implementation's checks, not native application
 compatibility or a connected GUI save.
+
+The independent [fitted-image observation record](../../../tests/reports/schema/FITTED_FIELD_RENAME_OBSERVATIONS.md)
+retains eight coordinated positives and twenty-four damaged controls, including
+stale-descriptor shrink images that Jackcess opened successfully. That reader
+blind spot does not relax the native descriptor/body-extent checks or qualify
+Access saves. Native/writer test results remain separate from those inert SDK
+observations.

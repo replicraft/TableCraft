@@ -151,6 +151,14 @@ inputs or a consumed review. `discard_insert_retry` drops that advisory context.
 Unknown source images remain refresh-required; an actual uncertain or observed
 committed save chain cannot gain original-retry permission.
 
+`inspect_field_rename` returns `name_profile` as either
+`{"kind":"same_width_ascii","original_units":N}` or
+`{"kind":"fitted_ascii","original_units":N}`, or `null` when unsupported.
+The retained `same_width_ascii_utf16_units` field is non-null only for the actual
+same-width policy; fitted support does not silently reinterpret that restriction.
+Fitted proposals still require a fresh consuming review, available native space,
+unchanged source revision and the same schema-write grant at Apply.
+
 An exact unchanged field-rename review follows desktop's no-save path. Apply
 returns an `operation_id` and checked read-only reopen facts, without a journal,
 `save_id` or fabricated saved receipt. Failed/cancelled verification retains the
