@@ -159,3 +159,12 @@ pub use field_addition_after_off::{
     QualifiedFieldAdditionAfterOffRecovery, RecoverableFieldAdditionAfterOffPlan,
     qualify_native_field_addition_after_off_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod field_addition_after_off_history;
+#[cfg(feature = "ace16-create")]
+pub use field_addition_after_off_history::{
+    FieldAdditionAfterOffHistoryIntentError, NativeFieldAdditionAfterOffHistoryIntent,
+    QualifiedFieldAdditionAfterOffHistoryRecovery, RecoverableFieldAdditionAfterOffHistoryPlan,
+    qualify_native_field_addition_after_off_history_recovery,
+};
