@@ -1,4 +1,4 @@
-//! Independently framed same-page Number property histories, without ACE codecs.
+//! Independently framed bounded Number property histories, without ACE codecs.
 use super::{
     DIRECTORY, MASK_BYTES, PAGE, PROPERTY_VARIABLE, Source, append as first, group,
     source as initial, word,
@@ -35,14 +35,15 @@ pub fn source(case: Source) -> Vec<u8> {
 
 /// Add one complete MR2 body row, retaining all historical LVAL rows literally.
 pub fn append(before: &[u8], name: &str) -> Vec<u8> {
-    assert_eq!(before.len(), (PROPERTY_PAGE + 1) * PAGE);
+    assert!(before.len() == 11 * PAGE || before.len() == 12 * PAGE);
+    let property_page = before.len() / PAGE - 1;
     let definition =
         canonical_created_add_column::append(&before[..ORIGINAL_PAGE_COUNT * PAGE], name);
     let mut after = before.to_vec();
     let definition_span = DEFINITION_PAGE * PAGE..(DEFINITION_PAGE + 1) * PAGE;
     after[definition_span.clone()].copy_from_slice(&definition[definition_span]);
 
-    let property = &before[PROPERTY_PAGE * PAGE..(PROPERTY_PAGE + 1) * PAGE];
+    let property = &before[property_page * PAGE..(property_page + 1) * PAGE];
     let count = word(property, ROW_COUNT_OFFSET);
     let old_start = word(property, DIRECTORY + SHORT_BYTES * (count - 1));
     let old_end = if count == 1 {
@@ -62,14 +63,39 @@ pub fn append(before: &[u8], name: &str) -> Vec<u8> {
     .unwrap();
     assert!(first_name == "Required" || first_name == "DefaultValue");
     body.extend(group(name, true, first_name == "Required"));
-    let start = old_start.checked_sub(body.len()).unwrap();
     let directory_end = DIRECTORY + SHORT_BYTES * (count + 1);
+    let fitted = body.len() + directory_end <= old_start;
+    let (target_page, target_slot, target_end) = if fitted {
+        (property_page, count, old_start)
+    } else {
+        assert_eq!(
+            property_page, 10,
+            "only one immediate-EOF rollover is modeled"
+        );
+        assert_eq!(
+            &before[2 * PAGE + 802..2 * PAGE + 812],
+            &[14, 0, 16, 3, 0, 0, 17, 3, 0, 0,]
+        );
+        // These literal row cells are independent observations of MSysObjects'
+        // owned/candidate maps, not production format offsets.
+        assert_eq!(before[3 * PAGE + 3881], 4);
+        assert_eq!(before[3 * PAGE + 3868], 4);
+        after[3 * PAGE + 3881] = 12;
+        after[3 * PAGE + 3868] = 8;
+        let mut page = vec![0; PAGE];
+        page[..2].copy_from_slice(&[1, 1]);
+        page[4..8].copy_from_slice(b"LVAL");
+        after.extend(page);
+        (11, 0, PAGE)
+    };
+    let start = target_end.checked_sub(body.len()).unwrap();
+    let directory_end = DIRECTORY + SHORT_BYTES * (target_slot + 1);
     assert!(start >= directory_end);
-    let page = &mut after[PROPERTY_PAGE * PAGE..(PROPERTY_PAGE + 1) * PAGE];
-    assert!(page[start..old_start].iter().all(|byte| *byte == 0));
-    page[start..old_start].copy_from_slice(&body);
-    put16(page, DIRECTORY + SHORT_BYTES * count, start as u16);
-    put16(page, ROW_COUNT_OFFSET, (count + 1) as u16);
+    let page = &mut after[target_page * PAGE..(target_page + 1) * PAGE];
+    assert!(page[start..target_end].iter().all(|byte| *byte == 0));
+    page[start..target_end].copy_from_slice(&body);
+    put16(page, DIRECTORY + SHORT_BYTES * target_slot, start as u16);
+    put16(page, ROW_COUNT_OFFSET, (target_slot + 1) as u16);
     put16(page, FREE_SPACE_OFFSET, (start - directory_end) as u16);
 
     let catalog = &mut after[CATALOG_PAGE * PAGE..(CATALOG_PAGE + 1) * PAGE];
@@ -88,7 +114,7 @@ pub fn append(before: &[u8], name: &str) -> Vec<u8> {
     put32(
         row,
         descriptor + LONG_BYTES,
-        (PROPERTY_PAGE as u32) << ROW_REFERENCE_PAGE_SHIFT | count as u32,
+        (target_page as u32) << ROW_REFERENCE_PAGE_SHIFT | target_slot as u32,
     );
     after
 }

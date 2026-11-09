@@ -6,7 +6,7 @@ use super::super::{
     record_serialization::record,
 };
 use super::{admission::Prepared, value};
-use crate::table::mutation::owned_lval::maps::{Family, Maps};
+use crate::table::mutation::owned_lval::maps::{EofAllocation, Family, Maps};
 use crate::table::mutation::owned_lval::placement::Plan;
 use crate::table::mutation::{
     lval_ownership::Inventory,
@@ -59,7 +59,14 @@ pub(super) fn build<'u>(
         .find(|report| report.column_number() == field.number())
         .ok_or(InspectError::Malformed)?;
     let references = report.maps().ok_or(InspectError::Malformed)?;
-    let maps = Maps::capture(image, schema, references, budget, cancelled)?;
+    let maps = Maps::capture_with_eof_policy(
+        image,
+        schema,
+        references,
+        EofAllocation::RequireFree,
+        budget,
+        cancelled,
+    )?;
     let inventory = Inventory::capture(image, budget, cancelled)?;
     inventory.require_exclusive(
         schema,

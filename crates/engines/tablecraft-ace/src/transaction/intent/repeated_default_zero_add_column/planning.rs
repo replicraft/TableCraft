@@ -50,7 +50,7 @@ impl RecoverableRepeatedDefaultZeroAddColumnPlan {
         self.candidate.before_bytes()
     }
 
-    /// Complete equal-length candidate; the profile forbids allocation/map edits.
+    /// Complete candidate for fitted or one-page rollover property storage.
     pub fn after_bytes(&self) -> &[u8] {
         self.candidate.after_bytes()
     }

@@ -7,7 +7,7 @@ use super::{
     value,
 };
 use crate::table::mutation::lval_ownership::Inventory;
-use crate::table::mutation::owned_lval::maps::{Family, Maps};
+use crate::table::mutation::owned_lval::maps::{EofAllocation, Family, Maps};
 use crate::{
     InspectError, NativeImage, format::reader::Reader, header::check, limits::MAX_LIVE_ROWS,
     table::record,
@@ -36,7 +36,14 @@ pub(super) fn prove(
         .find(|report| report.column_number() == number)
         .and_then(|report| report.maps())
         .ok_or(EditError::Preservation)?;
-    let maps = Maps::capture(image, schema, references, budget, cancelled)?;
+    let maps = Maps::capture_with_eof_policy(
+        image,
+        schema,
+        references,
+        EofAllocation::RequireFree,
+        budget,
+        cancelled,
+    )?;
     Inventory::capture(image, budget, cancelled)?.require_exclusive(
         schema,
         number,

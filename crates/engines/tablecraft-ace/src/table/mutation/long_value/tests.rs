@@ -323,3 +323,56 @@ fn mixed_map_finalizer_rejects_unrequested_orphan_ownership_and_global_future_bi
 
 #[path = "tests/ownership.rs"]
 mod ownership;
+
+#[test]
+fn preview_allocator_still_requires_a_free_global_eof_cell() {
+    use crate::table::mutation::owned_lval::maps::{EofAllocation, Family, Maps};
+    for free in [false, true] {
+        let mut before = source(6, 1);
+        let row_start = usize::from(word(&before, 1, 0) & 0x1fff);
+        let at = PAGE + row_start + 5 + EOF / 8;
+        let mask = 1 << (EOF % 8);
+        if free {
+            before[at] |= mask;
+        } else {
+            before[at] &= !mask;
+        }
+        let image = capture(&before);
+        let prepared =
+            admission::prepare(&image, "Items", "Memo", &mut budget(), &|| false).unwrap();
+        let schema = prepared.structural.schema();
+        let number = schema.columns()[prepared.column].number();
+        let references = prepared
+            .storage
+            .columns()
+            .iter()
+            .find(|field| field.column_number() == number)
+            .and_then(|field| field.maps())
+            .unwrap();
+        let mut maps = Maps::capture_with_eof_policy(
+            &image,
+            schema,
+            references,
+            EofAllocation::RequireFree,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let result = maps.allocate(
+            &image,
+            Family::LongValue,
+            EOF as u32,
+            &mut budget(),
+            &|| false,
+        );
+        assert_eq!(result.is_ok(), free);
+        if free {
+            assert!(maps.edits.iter().any(|edit| {
+                edit.offset == at && edit.before == before[at] && edit.after == before[at] & !mask
+            }));
+        } else {
+            assert!(maps.edits.is_empty());
+        }
+        assert_eq!(image.as_bytes(), before);
+    }
+}

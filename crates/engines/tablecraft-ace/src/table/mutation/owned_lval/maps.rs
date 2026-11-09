@@ -36,12 +36,34 @@ pub(in crate::table::mutation) struct Edit {
     pub after: u8,
 }
 
+/// Required state of an already represented immediate-EOF cell. This grants
+/// no physical page authority; callers separately prove exact source/EOF scope.
+#[derive(Clone, Copy)]
+pub(in crate::table::mutation) enum EofAllocation {
+    #[cfg(feature = "ace16-write-preview")]
+    RequireFree,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RequireAllocated,
+}
+
+impl EofAllocation {
+    fn expected_free(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-write-preview")]
+            Self::RequireFree => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::RequireAllocated => false,
+        }
+    }
+}
+
 pub(in crate::table::mutation) struct Maps {
     pub ordinary: Scope,
     pub long_value: Scope,
     pub global: RepresentedMap,
     pub original_eof: u32,
     pub edits: Vec<Edit>,
+    eof_allocation: EofAllocation,
 }
 
 impl Maps {
@@ -49,10 +71,11 @@ impl Maps {
         &self.scope(family).pages
     }
 
-    pub fn capture(
+    pub fn capture_with_eof_policy(
         image: &NativeImage,
         schema: &TableSchema,
         references: LongValueMapReferences,
+        eof_allocation: EofAllocation,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -102,6 +125,7 @@ impl Maps {
             global,
             original_eof: reader.header.page_count(),
             edits: Vec::new(),
+            eof_allocation,
         })
     }
 
@@ -286,13 +310,17 @@ impl Maps {
         let global = self.cell(&self.global, number, &mut reader)?;
         if self.current(&owned, &mut reader)?
             || self.current(&hint, &mut reader)?
-            || !self.current(&global, &mut reader)?
+            || self.current(&global, &mut reader)? != self.eof_allocation.expected_free()
         {
             return Err(InspectError::Malformed.into());
         }
         self.change(owned, true, &mut reader)?;
         self.change(hint, true, &mut reader)?;
-        self.change(global, false, &mut reader)?;
+        // Preserve preview's original free->allocated transition and ordering.
+        // Qualified canonical EOF cells already zero remain entirely unchanged.
+        if self.eof_allocation.expected_free() {
+            self.change(global, false, &mut reader)?;
+        }
         reader
             .budget
             .charge_allocation(1, size_of::<u32>() as u64)

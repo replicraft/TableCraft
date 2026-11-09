@@ -1,5 +1,5 @@
 //! Complete complement, native field/index identity and exact property verification.
-use super::{Error, source::PROPERTY_PAGE};
+use super::Error;
 use crate::{
     NativeImage, TableCheck, check_table,
     format::{
@@ -8,7 +8,7 @@ use crate::{
     },
     header::check,
     inspect_table_properties,
-    table::mutation::catalog_property::ExistingChange,
+    table::mutation::catalog_property::RepeatedChange,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -18,35 +18,61 @@ pub(super) fn candidate(
     after: &[u8],
     original: &TableCheck,
     column: &str,
-    change: &ExistingChange,
+    change: &RepeatedChange,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
-    if after.len() != before.as_bytes().len()
-        || change.lval_page != PROPERTY_PAGE
-        || change.catalog_page == change.lval_page
+    let original_length = before.as_bytes().len();
+    let target_page = change.lval_page();
+    let extra = after
+        .len()
+        .checked_sub(original_length)
+        .ok_or(Error::Preservation)?;
+    if after.len() != change.length()
+        || !matches!(extra, 0 | PAGE_BYTES)
+        || !matches!(target_page, 10 | 11)
+        || change.catalog_page == target_page
         || change.catalog_page == original.schema().definition_page()
+        || target_page == original.schema().definition_page()
     {
         return Err(Error::Preservation);
     }
-    let page_start = PROPERTY_PAGE as usize * PAGE_BYTES;
-    let old_page = &before.as_bytes()[page_start..page_start + PAGE_BYTES];
-    let new_page = &after[page_start..page_start + PAGE_BYTES];
-    let rows = row_count(old_page)?;
-    if row_count(new_page)? != rows + 1 {
-        return Err(Error::Preservation);
-    }
-    for slot in 0..rows {
-        check(budget, cancelled)?;
-        let (old_word, old_start, old_end) = row_range(old_page, slot)?;
-        let (new_word, new_start, new_end) = row_range(new_page, slot)?;
-        if old_word != new_word
-            || old_start != new_start
-            || old_end != new_end
-            || old_page[old_start..old_end] != new_page[new_start..new_end]
-        {
+    // Every old property row remains byte-identical, including its slot word
+    // and physical span. An old non-target property page is wholly unchanged.
+    const FIRST_PROPERTY_PAGE: usize = 10;
+    for number in FIRST_PROPERTY_PAGE..original_length / PAGE_BYTES {
+        let start = number * PAGE_BYTES;
+        let old_page = &before.as_bytes()[start..start + PAGE_BYTES];
+        let new_page = &after[start..start + PAGE_BYTES];
+        if number != target_page as usize {
+            if old_page != new_page {
+                return Err(Error::Preservation);
+            }
+            continue;
+        }
+        let rows = row_count(old_page)?;
+        if row_count(new_page)? != rows + 1 {
             return Err(Error::Preservation);
         }
+        for slot in 0..rows {
+            check(budget, cancelled)?;
+            let (old_word, old_start, old_end) = row_range(old_page, slot)?;
+            let (new_word, new_start, new_end) = row_range(new_page, slot)?;
+            if old_word != new_word
+                || old_start != new_start
+                || old_end != new_end
+                || old_page[old_start..old_end] != new_page[new_start..new_end]
+            {
+                return Err(Error::Preservation);
+            }
+        }
+    }
+    if extra != 0
+        && (original_length != 11 * PAGE_BYTES
+            || target_page != 11
+            || row_count(&after[original_length..])? != 1)
+    {
+        return Err(Error::Preservation);
     }
     for (offset, (old, new)) in before.as_bytes().iter().zip(after).enumerate() {
         if offset.is_multiple_of(PAGE_BYTES) {
@@ -59,7 +85,8 @@ pub(super) fn candidate(
         if old != new
             && page != original.schema().definition_page() as usize
             && page != change.catalog_page as usize
-            && page != change.lval_page as usize
+            && page != target_page as usize
+            && !change.map_byte_matches(offset, *old, *new)
         {
             return Err(Error::Preservation);
         }

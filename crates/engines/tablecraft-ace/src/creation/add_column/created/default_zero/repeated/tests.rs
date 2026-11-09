@@ -184,7 +184,7 @@ fn stale_history_descriptor_maps_and_unknown_complement_never_gain_a_candidate()
 }
 
 #[test]
-fn full_existing_property_page_refuses_without_allocation_or_partial_candidate() {
+fn full_existing_property_page_rolls_over_without_changing_old_page() {
     let mut before = raw::source(Source::IdOnly);
     for number in 2..=12 {
         before = raw::append(&before, &format!("N{number}"));
@@ -193,11 +193,109 @@ fn full_existing_property_page_refuses_without_allocation_or_partial_candidate()
     image(&before)
         .check_repeated_default_zero_add_column_source("Table1", &mut budget(), &|| false)
         .unwrap();
+    let name = "W".repeat(64);
+    let expected = raw::append(&before, &name);
+    let actual = image(&before)
+        .prepare_repeated_default_zero_int32_column_candidate(
+            "Table1",
+            &name,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(actual.after_bytes(), expected);
+    assert_eq!(
+        &actual.after_bytes()[10 * 4096..11 * 4096],
+        &before[10 * 4096..]
+    );
+    assert_eq!(before, untouched);
+}
+
+#[test]
+fn sdk_n14_rollover_and_fitted_n15_match_complete_raw_images() {
+    let mut before = raw::source(Source::IdOnly);
+    for number in 2..=13 {
+        before = raw::append(&before, &format!("N{number}"));
+    }
+    assert_eq!(
+        hash(&before),
+        "392e135acfc93ffe116c772fc9e728892a118a5792edd7a29b975d4e38b6c282"
+    );
+    let expected = raw::append(&before, "N14");
+    assert_eq!(
+        hash(&expected),
+        "97fb669a90e6a733ddd09e47d548ca4743a833e68f9c2fe46631a8398c31c64d"
+    );
+    for name in ["N14", "N15"] {
+        let expected = raw::append(&before, name);
+        let untouched = before.clone();
+        let candidate = image(&before)
+            .prepare_repeated_default_zero_int32_column_candidate(
+                "Table1",
+                name,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(candidate.before_bytes(), untouched);
+        assert_eq!(candidate.after_bytes(), expected);
+        assert_eq!(
+            &candidate.after_bytes()[10 * 4096..11 * 4096],
+            &before[10 * 4096..11 * 4096]
+        );
+        before = expected;
+    }
+}
+
+#[test]
+fn wrong_eof_cell_or_foreign_ownership_cannot_gain_rollover_authority() {
+    let mut before = raw::source(Source::IdOnly);
+    for number in 2..=13 {
+        before = raw::append(&before, &format!("N{number}"));
+    }
+    // Literal independent native map rows: global-free, table-owned and
+    // LvProp-owned future page11 must all have their observed source polarity.
+    for offset in [3 * 4096 + 4076, 3 * 4096 + 4089, 3 * 4096 + 3881] {
+        let mut changed = before.clone();
+        changed[offset] ^= 8;
+        if let Ok(source) = NativeImage::capture(
+            &mut Cursor::new(&changed),
+            CatalogScope::new(897),
+            &mut budget(),
+            &|| false,
+        ) {
+            assert!(
+                source
+                    .prepare_repeated_default_zero_int32_column_candidate(
+                        "Table1",
+                        "N14",
+                        &mut budget(),
+                        &|| false,
+                    )
+                    .is_err()
+            );
+        }
+    }
+}
+
+#[test]
+fn a_full_second_property_page_refuses_a_second_allocation() {
+    let mut before = raw::source(Source::IdOnly);
+    for number in 2..=9 {
+        let name = format!("N{number}{}", "X".repeat(62));
+        before = raw::append(&before, &name);
+    }
+    assert_eq!(before.len(), 12 * 4096);
+    image(&before)
+        .check_repeated_default_zero_add_column_source("Table1", &mut budget(), &|| false)
+        .unwrap();
+    let untouched = before.clone();
+    let name = format!("N10{}", "X".repeat(61));
     assert!(
         image(&before)
             .prepare_repeated_default_zero_int32_column_candidate(
                 "Table1",
-                &"W".repeat(64),
+                &name,
                 &mut budget(),
                 &|| false,
             )

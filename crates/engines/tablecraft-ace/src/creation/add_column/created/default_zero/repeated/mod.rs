@@ -14,7 +14,7 @@ use crate::{
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 
-/// Same-length candidate for a separately proved existing property-LVAL history.
+/// Candidate for a separately proved bounded property-LVAL history.
 /// It has no first-ADD intent, journal or normal-save conversion.
 pub struct RepeatedDefaultZeroAddColumnCandidate {
     image: AddColumnCandidate,
@@ -35,9 +35,10 @@ impl NativeImage {
     /// Append a nullable LONG with explicit Required(false) and DefaultValue zero.
     ///
     /// The complete source must equal a canonical generated-primary seed followed
-    /// by the original first Number addition and exact same-page property-row
-    /// appends. Earlier property rows remain unchanged. The new body must fit on
-    /// the existing owned page; no allocation, map change or page reuse is inferred.
+    /// by the original first Number addition and exact property-row appends.
+    /// The owned ledger is page 10 or pages 10 and 11. One immediate-EOF
+    /// rollover may add page 11; subsequent bodies must fit there. Earlier rows
+    /// remain unchanged, and no second allocation or page reuse is admitted.
     /// This separate candidate never widens TCAC0001/0002/0003 admission.
     pub fn prepare_repeated_default_zero_int32_column_candidate(
         self,
@@ -94,7 +95,7 @@ impl RepeatedDefaultZeroAddColumnCandidate {
         self.image.before_bytes()
     }
 
-    /// Complete equal-length proposed image, without mutation authority.
+    /// Complete proposed image, with at most one qualified EOF page addition.
     pub fn after_bytes(&self) -> &[u8] {
         self.image.after_bytes()
     }

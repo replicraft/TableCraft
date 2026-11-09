@@ -2,6 +2,7 @@
 mod codec;
 mod native;
 mod recovery;
+mod rollover;
 
 use super::*;
 use sha2::{Digest, Sha256};

@@ -3,18 +3,15 @@ use super::{Error, build};
 use crate::{
     CreateColumn, FirstTableDefinition, NativeImage, TableCheck, create_ace16_database,
     format::{
-        page::PAGE_BYTES,
         reader::{Reader, row_count, row_range},
         row::OFFSET_MASK,
     },
     header::check,
+    table::mutation::catalog_property,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
-
-pub(super) const PROPERTY_PAGE: u32 = 10;
-const SOURCE_PAGES: usize = PROPERTY_PAGE as usize + 1;
 
 pub(super) struct Source {
     pub checked: TableCheck,
@@ -31,9 +28,7 @@ pub(super) fn capture(
     check(budget, cancelled)?;
     let (checked, definition) =
         super::super::super::source::inspect(image, table, budget, cancelled)?;
-    if image.as_bytes().len() != SOURCE_PAGES * PAGE_BYTES {
-        return Err(Error::Source);
-    }
+    let pages = catalog_property::repeated_property_pages(image, budget, cancelled)?;
     let mut input = image.reader();
     let mut reader = Reader {
         source: &mut input,
@@ -42,17 +37,24 @@ pub(super) fn capture(
         cancelled,
         reads: 0,
     };
-    let page = reader.page(PROPERTY_PAGE)?;
-    let rows = row_count(&page)?;
+    let mut rows = 0usize;
     let count = checked.schema().columns().len();
-    if rows == 0 || rows >= count {
-        return Err(Error::Source);
-    }
-    for slot in 0..rows {
-        reader.tick()?;
-        let (word, start, end) = row_range(&page, slot)?;
-        if word & !OFFSET_MASK != 0 || start == end {
+    for number in pages {
+        let page = reader.page(number)?;
+        let page_rows = row_count(&page)?;
+        if page_rows == 0 {
             return Err(Error::Source);
+        }
+        rows = rows.checked_add(page_rows).ok_or(Error::Source)?;
+        if rows >= count {
+            return Err(Error::Source);
+        }
+        for slot in 0..page_rows {
+            reader.tick()?;
+            let (word, start, end) = row_range(&page, slot)?;
+            if word & !OFFSET_MASK != 0 || start == end {
+                return Err(Error::Source);
+            }
         }
     }
 

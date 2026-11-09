@@ -4,11 +4,11 @@
 //! the last logical catalog root belonging to its selected single user table.
 mod carrier;
 pub(crate) use carrier::external as properties_external;
-mod existing;
 mod maps;
 mod parent;
 mod record;
-pub(crate) use existing::{ExistingChange, compose_existing};
+mod repeated;
+pub(crate) use repeated::{RepeatedChange, compose_repeated, repeated_property_pages};
 
 use super::EditError;
 use super::record_serialization::long_value::{Encoded, StorageChoice};

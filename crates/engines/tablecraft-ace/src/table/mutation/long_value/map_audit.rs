@@ -1,7 +1,7 @@
 //! Original-state replay derives map changes from real append capacity failures.
 use super::super::EditError;
 use super::admission::Prepared;
-use crate::table::mutation::owned_lval::maps::{Family, Maps};
+use crate::table::mutation::owned_lval::maps::{EofAllocation, Family, Maps};
 use crate::table::mutation::owned_lval::placement::Plan;
 use crate::table::mutation::storage_scope::Scope;
 use crate::{
@@ -128,7 +128,14 @@ pub(super) fn prove(
         .find(|column| column.column_number() == number)
         .and_then(|column| column.maps())
         .ok_or(EditError::Preservation)?;
-    let original = Maps::capture(image, schema, references, budget, cancelled)?;
+    let original = Maps::capture_with_eof_policy(
+        image,
+        schema,
+        references,
+        EofAllocation::RequireFree,
+        budget,
+        cancelled,
+    )?;
     let mut source = image.reader();
     let mut reader = Reader {
         source: &mut source,
