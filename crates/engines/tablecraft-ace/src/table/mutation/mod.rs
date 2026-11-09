@@ -45,6 +45,11 @@ pub(in crate::table) mod map_authority;
 pub(crate) mod normal_before_change;
 #[cfg(feature = "journal")]
 mod normal_fitted;
+#[cfg(any(
+    feature = "ace16-write-preview",
+    all(feature = "journal", feature = "ace16-create")
+))]
+mod owned_lval;
 #[cfg(feature = "ace16-write-preview")]
 mod page_update;
 mod patch;

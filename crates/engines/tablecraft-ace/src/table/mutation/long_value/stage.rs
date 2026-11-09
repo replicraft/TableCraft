@@ -5,12 +5,9 @@ use super::super::{
     record_placement::space::Space,
     record_serialization::record,
 };
-use super::{
-    admission::Prepared,
-    maps::{Family, Maps},
-    placement::Plan,
-    value,
-};
+use super::{admission::Prepared, value};
+use crate::table::mutation::owned_lval::maps::{Family, Maps};
+use crate::table::mutation::owned_lval::placement::Plan;
 use crate::table::mutation::{
     lval_ownership::Inventory,
     record_serialization::long_value::{self as encode, Encoded, StorageChoice},

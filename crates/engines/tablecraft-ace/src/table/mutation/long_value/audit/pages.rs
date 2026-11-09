@@ -1,6 +1,7 @@
 //! Exact header, old-body and initialized-free-space authority for touched pages.
 use super::super::super::EditError;
-use super::super::{maps::Family, stage::Staged};
+use super::super::stage::Staged;
+use crate::table::mutation::owned_lval::maps::Family;
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{

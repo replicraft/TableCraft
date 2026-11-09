@@ -3,11 +3,11 @@ use super::super::{EditError, page_update::roots};
 use super::{
     Operation,
     admission::{self, Prepared},
-    maps::{Family, Maps},
     stage::Staged,
     value,
 };
 use crate::table::mutation::lval_ownership::Inventory;
+use crate::table::mutation::owned_lval::maps::{Family, Maps};
 use crate::{
     InspectError, NativeImage, format::reader::Reader, header::check, limits::MAX_LIVE_ROWS,
     table::record,

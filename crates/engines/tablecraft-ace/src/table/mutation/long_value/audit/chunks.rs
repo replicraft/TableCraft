@@ -1,7 +1,8 @@
 //! Fresh descriptor/chunk authority comes from actual request values and framing.
 use super::super::super::{EditError, page_update};
-use super::super::{maps::Family, stage::Staged};
+use super::super::stage::Staged;
 use super::payload;
+use crate::table::mutation::owned_lval::maps::Family;
 use crate::table::mutation::record_serialization::long_value::{Encoded, StorageChoice};
 use crate::{
     InspectError, NativeImage, TableSchema,

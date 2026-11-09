@@ -18,18 +18,18 @@ const INLINE_MAP: u8 = 0;
 const INDIRECT_MAP: u8 = 1;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum Family {
+pub(in crate::table::mutation) enum Family {
     Ordinary,
     LongValue,
 }
 
-pub(super) struct Edit {
+pub(in crate::table::mutation) struct Edit {
     pub offset: usize,
     pub before: u8,
     pub after: u8,
 }
 
-pub(super) struct Maps {
+pub(in crate::table::mutation) struct Maps {
     pub ordinary: Scope,
     pub long_value: Scope,
     pub global: RepresentedMap,

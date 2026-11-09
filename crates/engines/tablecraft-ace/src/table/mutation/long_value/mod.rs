@@ -4,8 +4,7 @@ mod audit;
 mod authority;
 mod finish;
 mod map_audit;
-pub(in crate::table::mutation) mod maps;
-pub(in crate::table::mutation) mod placement;
+
 mod stage;
 #[cfg(test)]
 mod tests;

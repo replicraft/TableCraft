@@ -1,19 +1,17 @@
 //! Explicit ordinary/LVAL page owners share only bounded physical append framing.
-use super::super::{
-    EditError, SlotScalarUpdate, WriteBlocker, page_update::roots::Root,
-    record_placement::space::Space,
-};
+use super::super::{EditError, WriteBlocker};
+#[cfg(feature = "ace16-write-preview")]
+use super::super::{SlotScalarUpdate, page_update::roots::Root, record_placement::space::Space};
 use super::maps::{Family, Maps};
+#[cfg(feature = "ace16-write-preview")]
+use crate::format::row::{OFFSET_MASK, RELOCATED_MASK, reference_page, reference_slot};
 use crate::{
     InspectError, NativeImage,
     format::{
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{row_count, row_range},
-        row::{
-            DELETED_MASK, MAX_SLOTS, OFFSET_MASK, RELOCATED_MASK, ROW_COUNT_OFFSET, SLOT_BYTES,
-            reference, reference_page, reference_slot, slot_offset,
-        },
+        row::{DELETED_MASK, MAX_SLOTS, ROW_COUNT_OFFSET, SLOT_BYTES, reference, slot_offset},
     },
     header::check,
     limits::MAX_IMAGE_BYTES,
@@ -23,30 +21,31 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const LVAL_OWNER: &[u8; size_of::<u32>()] = b"LVAL";
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
+#[cfg(feature = "ace16-write-preview")]
 const POINTER_BYTES: usize = size_of::<u32>();
 const EMPTY_FREE: usize = PAGE_BYTES - ROW_COUNT_OFFSET - size_of::<u16>();
 
-pub(super) struct Page {
+pub(in crate::table::mutation) struct Page {
     pub number: u32,
     pub family: Family,
     pub before: Vec<u8>,
     pub after: Vec<u8>,
 }
 
-pub(super) struct Attempt {
+pub(in crate::table::mutation) struct Attempt {
     pub family: Family,
     pub page: u32,
     pub bytes: usize,
     pub fitted: bool,
 }
 
-pub(super) struct Appended {
+pub(in crate::table::mutation) struct Appended {
     pub family: Family,
     pub reference: u32,
     pub range: Range<usize>,
 }
 
-pub(super) struct Plan {
+pub(in crate::table::mutation) struct Plan {
     pub maps: Maps,
     pub pages: Vec<Page>,
     pub attempts: Vec<Attempt>,
@@ -267,6 +266,7 @@ impl Plan {
         Ok(self.appended.len() - 1)
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn ordinary(
         &mut self,
         image: &NativeImage,
@@ -330,6 +330,7 @@ impl Plan {
         Ok(target)
     }
 
+    #[cfg(feature = "ace16-write-preview")]
     pub fn bytes_mut(
         &mut self,
         range: Range<usize>,
@@ -373,4 +374,67 @@ pub(in crate::table::mutation) fn geometry(bytes: &[u8]) -> Result<(usize, usize
     }
 
     Ok((count, end))
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+/// A bounded append to one already qualified, column-owned LVAL page.
+pub(in crate::table::mutation) struct ExistingLvalAppend {
+    pub page: u32,
+    pub bytes: Vec<u8>,
+    pub reference: u32,
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+/// Reuse the normal LVAL placement owner while forbidding allocation/map edits.
+/// The caller must separately prove its complete source and parent authority.
+pub(in crate::table::mutation) fn append_existing_lval(
+    image: &NativeImage,
+    schema: &crate::TableSchema,
+    references: crate::LongValueMapReferences,
+    page: u32,
+    body: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ExistingLvalAppend, EditError> {
+    check(budget, cancelled)?;
+    let start = page as usize * PAGE_BYTES;
+    let original = image
+        .as_bytes()
+        .get(start..start + PAGE_BYTES)
+        .ok_or(InspectError::Malformed)?;
+    let (count, end) = geometry(original)?;
+    if count >= MAX_SLOTS
+        || body
+            .len()
+            .checked_add(SLOT_BYTES)
+            .is_none_or(|needed| needed > end - slot_offset(count))
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    let maps = Maps::capture(image, schema, references, budget, cancelled)?;
+    if maps.pages(Family::LongValue) != [page] {
+        return Err(EditError::Preservation);
+    }
+    let mut plan = Plan::new(image, schema.definition_page(), maps);
+    let index = plan.append(image, Family::LongValue, body, budget, cancelled)?;
+    if plan.length != image.as_bytes().len()
+        || !plan.maps.edits.is_empty()
+        || plan.pages.len() != 1
+        || plan.appended.len() != 1
+        || plan.attempts.len() != 1
+        || !plan.attempts[0].fitted
+        || plan.attempts[0].page != page
+    {
+        return Err(EditError::Preservation);
+    }
+    let reference = plan.appended[index].reference;
+    let changed = plan.pages.pop().ok_or(EditError::Preservation)?;
+    if changed.number != page || changed.family != Family::LongValue {
+        return Err(EditError::Preservation);
+    }
+    Ok(ExistingLvalAppend {
+        page,
+        bytes: changed.after,
+        reference,
+    })
 }
