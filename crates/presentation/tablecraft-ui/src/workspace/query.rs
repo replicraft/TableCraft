@@ -117,7 +117,7 @@ impl State {
             });
             let run_in_ribbon =
                 self.ribbon_tab == ribbon::Tab::QueryDesign && self.query_design_context();
-            ui.horizontal(|ui| {
+            ui.horizontal_wrapped(|ui| {
                 if !run_in_ribbon
                     && ui
                         .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))

@@ -32,7 +32,7 @@ impl State {
         if !super::inputs_within_limits(&self.saved_query.inputs) {
             ui.small(tr(ui, "saved-query-input-limit"));
         }
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             let run = ui.add_enabled(
                 self.saved_query_command_ready(),
                 egui::Button::new(tr(ui, "saved-query-run")),
