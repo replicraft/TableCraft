@@ -1,0 +1,170 @@
+{
+  "date": "2026-11-09",
+  "scope": "Single frozen gapped first-row raw prediction followed by inert baseline/predicted-image reads; no SDK INSERT writes or native Access Save",
+  "source_provenance": "docs/testing/results/saved-field-drop-raw-sdk-read-2026-11-09.json",
+  "recipe": "docs/testing/gapped_number_insert/README.md",
+  "sdk": {
+    "name": "Previously reviewed Apache-2.0 Jackcess 5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "reviewed_upstream_source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "new_downloads": false,
+    "third_party_code_or_binaries_copied": false
+  },
+  "execution": {
+    "compile_exit": 0,
+    "baseline_reads": 1,
+    "hypothesis_reads": 1,
+    "failed_commands": [],
+    "sdk_mutations": 0,
+    "all_opens_readonly_and_expression_evaluation_disabled": true,
+    "all_original_and_observed_hashes_unchanged": true,
+    "executed_helpers": {
+      "model.py": "b8e42f689eacf3652e36e6b434154e46d9c73ae6218045a2cde3763a082d15cb",
+      "GappedInsertObserver.java": "55cb25e954b6358ecd316be3be2d76b175f9c47641d1b56df6fb6d594345a0b9",
+      "observe.py": "7ac1c805a5b95a2c9194cc1ddda1d20625d64d5c16c1a09e66088d22a21080b0"
+    },
+    "prepared_manifest_sha256": "24d4d96313ac3d434b899939c31ee0cd8627d3434ffb1c9eeeba504e67a691be",
+    "prediction_record_sha256": "71a3963125972099192e4f0e77164b869800ac8d7b1498922ec88293848403af",
+    "observation_record_sha256": "a2a02f0b8af905fd1a85a6dfd93a5eea81872187ed31abd043d319e474bc0b06",
+    "rerun_during_promotion": false
+  },
+  "frozen_prediction": {
+    "before_sha256": "6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b",
+    "after_sha256": "b451db719c7735c626fe58bd2f3e39530a4dbb03c2bda1d39a4c5ceb26618c30",
+    "changed_pages": [
+      7,
+      8,
+      9
+    ],
+    "record_hex": "030001000000000000000000000005",
+    "logical_row": {
+      "ID": 1,
+      "Score2": 0
+    },
+    "native_numbers": [
+      0,
+      2
+    ],
+    "column_high_water": 3,
+    "null_mask": 5,
+    "status": "raw prediction only; no SDK/native insertion observed",
+    "model_sha256": "b8e42f689eacf3652e36e6b434154e46d9c73ae6218045a2cde3763a082d15cb"
+  },
+  "observations": [
+    {
+      "role": "before",
+      "expected_sha256": "6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b",
+      "sdk_exit": 0,
+      "original_unchanged": true,
+      "copy_unchanged": true,
+      "observed": [
+        [
+          "OPTION",
+          "Track Name AutoCorrect Info",
+          "0"
+        ],
+        [
+          "OPTION",
+          "Perform Name AutoCorrect",
+          "0"
+        ],
+        [
+          "COLUMN",
+          "ID",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "COLUMN",
+          "Score2",
+          "2",
+          "2",
+          "8"
+        ],
+        [
+          "PROPERTY",
+          "Score2",
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "PROPERTY",
+          "Score2",
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "ROWS",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    {
+      "role": "predicted_after",
+      "expected_sha256": "b451db719c7735c626fe58bd2f3e39530a4dbb03c2bda1d39a4c5ceb26618c30",
+      "sdk_exit": 0,
+      "original_unchanged": true,
+      "copy_unchanged": true,
+      "observed": [
+        [
+          "OPTION",
+          "Track Name AutoCorrect Info",
+          "0"
+        ],
+        [
+          "OPTION",
+          "Perform Name AutoCorrect",
+          "0"
+        ],
+        [
+          "COLUMN",
+          "ID",
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "COLUMN",
+          "Score2",
+          "2",
+          "2",
+          "8"
+        ],
+        [
+          "PROPERTY",
+          "Score2",
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "PROPERTY",
+          "Score2",
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "ROWS",
+          "1",
+          "1"
+        ]
+      ]
+    }
+  ],
+  "qualification_limits": [
+    "Authored raw record read by independent SDK, not SDK INSERT output.",
+    "No TableCraft writer passing result or GUI New-row acceptance is supplied.",
+    "Only one empty gapped LONG source and one first-row prediction were observed; broader sparse fixtures/tests are separate.",
+    "No Microsoft Access execution, save/reopen byte comparison, Windows behavior or older native-format write qualification.",
+    "The applied sparse-generated writer checkpoint remains UNRUN at this record boundary."
+  ]
+}

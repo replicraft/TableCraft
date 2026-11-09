@@ -11343,3 +11343,21 @@ ACE16 raw/read evidence, not an SDK DROP, native Access Save, populated-row writ
 UI confirmation or normal schema-editing admission. Earlier
 [deleted-column history derivatives](COLUMN_HISTORIES.md) retain their separate
 populated-row read evidence and unchanged provenance.
+
+## Gapped Number first-row raw prediction: 9 November 2026
+
+The original first-party [model, inert observer and portable wrapper](gapped_number_insert/README.md)
+retain their executed hashes. They use the independently authored appended-cleanup
+DROP image from the [existing deletion record](results/saved-field-drop-raw-sdk-read-2026-11-09.json).
+One compile and two read-only Jackcess 5.0.4 opens succeeded, with expression
+evaluation disabled and originals/observed copies unchanged. The
+[separate observation record](results/gapped-number-insert-raw-sdk-read-2026-11-09.json)
+records actual native 0/2, high-water 3, fixed offsets 0/8, ID 1/Score2 zero through
+sequential and primary-index cursors, and stored explicit OFF. The reviewed
+Apache-2.0 JAR/source pins are unchanged; no SDK code, binaries or database bytes
+are redistributed. The one frozen prediction preceded reads, and no successful
+observation was repeated during promotion. No failed command occurred.
+
+This is raw-authored record plus inert-reader evidence, zero SDK INSERT writes
+and no native Access Save. It does not qualify TableCraft's separate applied but
+unrun sparse-generated writer, broader sparse records or GUI insertion.
