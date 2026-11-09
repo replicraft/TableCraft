@@ -504,3 +504,14 @@ at 1100×720, scale 1. They show Retry/Return, the retained saved warning and
 Close draft/Cancel with Save disabled. Controls and warning text remain within
 the viewport. The renderer and actual macOS host are unchanged; none establishes
 Access screenshot or native save parity. Frame hashes are in the same record.
+
+## Saved Short Text workflow — 8 November 2026
+
+The retained Home/datasheet reference was reopened at 1920×1141 pixels (Windows
+Access inside VirtualBox; display scale unknown). It informs the trailing field
+header and surrounding chrome. Eight new English/light and German/dark
+[offscreen observations](../testing/results/field-addition-presentation-2026-11-08.json)
+cover the shared Text gallery, naming, close and review states under normal
+presentation gates. There are no matching native Access captures for those open
+surfaces, so the observations establish TableCraft layout/readability only.
+No native app windows were opened and no database behavior is inferred.

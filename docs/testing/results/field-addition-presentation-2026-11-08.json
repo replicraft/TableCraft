@@ -1,0 +1,308 @@
+{
+  "date": "2026-11-08",
+  "platform": "macOS 14.7.2 ARM64; egui_kittest/wgpu offscreen, Windows input emulation; graphics adapter identity not captured",
+  "native_windows_opened": false,
+  "host": "normal presentation with source-free synthetic data; no native capability or save actor",
+  "frames": [
+    {
+      "mode": "text-menu",
+      "locale": "en-US",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1.0,
+      "expected_pixel_size": [
+        1280,
+        820
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/en-US-light-datasheet-field-addition-text-menu.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_THEME": "light",
+        "TABLECRAFT_PREVIEW_WIDTH": "1280",
+        "TABLECRAFT_PREVIEW_HEIGHT": "820",
+        "TABLECRAFT_PREVIEW_SCALE": "1",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-menu",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "0916cc61d4cb241584a5d41b5cfc921703fbee8e3a2795f16543b4e5f68af808",
+      "actual_pixel_size": [
+        1280,
+        820
+      ]
+    },
+    {
+      "mode": "text-name",
+      "locale": "en-US",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1.0,
+      "expected_pixel_size": [
+        1280,
+        820
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/en-US-light-datasheet-field-addition-text-name.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_THEME": "light",
+        "TABLECRAFT_PREVIEW_WIDTH": "1280",
+        "TABLECRAFT_PREVIEW_HEIGHT": "820",
+        "TABLECRAFT_PREVIEW_SCALE": "1",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-name",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "f1e7119329f0e3100680a0c7acf97de92ead781cf0c5ccb887f3a2aa4d5aa4d9",
+      "actual_pixel_size": [
+        1280,
+        820
+      ]
+    },
+    {
+      "mode": "text-close",
+      "locale": "en-US",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1.0,
+      "expected_pixel_size": [
+        1280,
+        820
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/en-US-light-datasheet-field-addition-text-close.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_THEME": "light",
+        "TABLECRAFT_PREVIEW_WIDTH": "1280",
+        "TABLECRAFT_PREVIEW_HEIGHT": "820",
+        "TABLECRAFT_PREVIEW_SCALE": "1",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-close",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "ba9053b3f5619cda0e0bcc38a1cc1c07e5e60a019d93ba9e4c8772ddc686e378",
+      "actual_pixel_size": [
+        1280,
+        820
+      ]
+    },
+    {
+      "mode": "text-review",
+      "locale": "en-US",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1.0,
+      "expected_pixel_size": [
+        1280,
+        820
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/en-US-light-datasheet-field-addition-text-review.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "en-US",
+        "TABLECRAFT_PREVIEW_THEME": "light",
+        "TABLECRAFT_PREVIEW_WIDTH": "1280",
+        "TABLECRAFT_PREVIEW_HEIGHT": "820",
+        "TABLECRAFT_PREVIEW_SCALE": "1",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-review",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "deaf986cec33f8312f1586238ec4657194e19c8389a8a7698cc179daba54447a",
+      "actual_pixel_size": [
+        1280,
+        820
+      ]
+    },
+    {
+      "mode": "text-menu",
+      "locale": "de",
+      "theme": "dark",
+      "logical_size": [
+        960,
+        640
+      ],
+      "scale": 1.25,
+      "expected_pixel_size": [
+        1200,
+        800
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/de-dark-datasheet-field-addition-text-menu@1.25x.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "de",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "de-DE",
+        "TABLECRAFT_PREVIEW_THEME": "dark",
+        "TABLECRAFT_PREVIEW_WIDTH": "960",
+        "TABLECRAFT_PREVIEW_HEIGHT": "640",
+        "TABLECRAFT_PREVIEW_SCALE": "1.25",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-menu",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "0b0b43aee80033796dcb27d03172c16d0119794184461e0ade9448ed5c29831b",
+      "actual_pixel_size": [
+        1200,
+        800
+      ]
+    },
+    {
+      "mode": "text-name",
+      "locale": "de",
+      "theme": "dark",
+      "logical_size": [
+        960,
+        640
+      ],
+      "scale": 1.25,
+      "expected_pixel_size": [
+        1200,
+        800
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/de-dark-datasheet-field-addition-text-name@1.25x.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "de",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "de-DE",
+        "TABLECRAFT_PREVIEW_THEME": "dark",
+        "TABLECRAFT_PREVIEW_WIDTH": "960",
+        "TABLECRAFT_PREVIEW_HEIGHT": "640",
+        "TABLECRAFT_PREVIEW_SCALE": "1.25",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-name",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "9ea7ccaf9603eda613484f4ea418756597ca93c8bb38d78d76898433d104f84f",
+      "actual_pixel_size": [
+        1200,
+        800
+      ]
+    },
+    {
+      "mode": "text-close",
+      "locale": "de",
+      "theme": "dark",
+      "logical_size": [
+        960,
+        640
+      ],
+      "scale": 1.25,
+      "expected_pixel_size": [
+        1200,
+        800
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/de-dark-datasheet-field-addition-text-close@1.25x.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "de",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "de-DE",
+        "TABLECRAFT_PREVIEW_THEME": "dark",
+        "TABLECRAFT_PREVIEW_WIDTH": "960",
+        "TABLECRAFT_PREVIEW_HEIGHT": "640",
+        "TABLECRAFT_PREVIEW_SCALE": "1.25",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-close",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "a3428063fcf96ff96425663080c38a93ea915f48d894adbe66868c51de6924f4",
+      "actual_pixel_size": [
+        1200,
+        800
+      ]
+    },
+    {
+      "mode": "text-review",
+      "locale": "de",
+      "theme": "dark",
+      "logical_size": [
+        960,
+        640
+      ],
+      "scale": 1.25,
+      "expected_pixel_size": [
+        1200,
+        800
+      ],
+      "output": ".cache/ui-previews/field-addition-text-20261108/de-dark-datasheet-field-addition-text-review@1.25x.png",
+      "environment": {
+        "TABLECRAFT_PREVIEW_DIR": ".cache/ui-previews/field-addition-text-20261108",
+        "TABLECRAFT_PREVIEW_SCENE": "datasheet",
+        "TABLECRAFT_PREVIEW_LOCALE": "de",
+        "TABLECRAFT_PREVIEW_REGIONAL_LOCALE": "de-DE",
+        "TABLECRAFT_PREVIEW_THEME": "dark",
+        "TABLECRAFT_PREVIEW_WIDTH": "960",
+        "TABLECRAFT_PREVIEW_HEIGHT": "640",
+        "TABLECRAFT_PREVIEW_SCALE": "1.25",
+        "TABLECRAFT_PREVIEW_NUMBER_COLUMN": "none",
+        "TABLECRAFT_PREVIEW_FIELD_ADDITION": "text-review",
+        "TABLECRAFT_PREVIEW_HOST": "normal"
+      },
+      "status": "rendered and visually inspected",
+      "sha256": "451ede289e47b093cd1c050f6ec5e9800ceeb91623a106252dc8fc95dcec4fdd",
+      "actual_pixel_size": [
+        1200,
+        800
+      ]
+    }
+  ],
+  "render_binary_sha256": "aa7117c7c3781e90da69a9c126a07112c4c611c6ad3621f8006b29d5d0b6ea6d",
+  "reference": {
+    "basename": "Bildschirmfoto_2026-10-28_12-07-35.png",
+    "sha256": "4ef9f30af6dcafb72c39060e1d40a9b85c0c121999740425c11bfe3e66be91d7",
+    "pixels": [
+      1920,
+      1141
+    ],
+    "surface": "Windows Access Home/datasheet inside VirtualBox; display scale unknown",
+    "boundary": "No retained expanded field gallery, saved-field naming, review or close captures; those surfaces are TableCraft adaptations."
+  },
+  "assertions": [
+    "Actual shared trailing field header and complete thirteen-choice gallery remain visible.",
+    "Text naming keeps the original stored schema and row count unchanged.",
+    "Close dialog Save/Discard/Cancel and pending review cancellation are rendered through actual shared state.",
+    "Localized modal labels are completely painted within modal and viewport bounds."
+  ],
+  "initial_failure": {
+    "log": ".cache/field-addition-text-render-20261108.log",
+    "reason": "The new pending review spinner intentionally requests repaints; Harness.run waited for idle and exceeded 32 steps.",
+    "correction": "Advance fixed layout frames for busy review states; retain idle settling for nonbusy states.",
+    "corrected_log": ".cache/field-addition-text-corrected-render-20261108.log"
+  },
+  "limits": [
+    "These renders qualify presentation only, not native save behavior or Microsoft Access parity.",
+    "German narrow-window Ribbon retains horizontal scrolling; controls are not removed.",
+    "Only English light and German dark configurations are covered by this render batch."
+  ]
+}

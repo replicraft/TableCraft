@@ -2562,3 +2562,36 @@ allocation transfer, changed-input/stale-source refusals and all existing previe
 scenes. Desktop passes 132 tests, including a real parameterized UPDATE through
 prompt, confirmation, save and fresh reopen. These are headless observations;
 no native window was launched and no Windows/Access comparison is claimed.
+
+## Saved Short Text fields — 8 November 2026
+
+`TABLECRAFT_PREVIEW_FIELD_ADDITION` accepts `text-menu`, `text-name`,
+`text-close`, and `text-review` with the datasheet scene. These source-free
+scenarios use the shared field-addition state, explicit Short Text declaration with capacity 255 and compression enabled, and normal presentation gates. They supply no native review
+capability, database, journal or SaveWorker. Existing
+`TABLECRAFT_PREVIEW_NUMBER_COLUMN` modes and output names remain supported;
+selecting both settings at once refuses.
+
+Eight [offscreen frames](../testing/results/field-addition-presentation-2026-11-08.json)
+were rendered and visually inspected: English/light at 1280×820 logical points,
+1×, and German/dark at 960×640, 1.25× (1200×800 pixels). Each configuration covers
+the complete gallery, header naming, close confirmation and pending review.
+Paint-bound assertions pass. Pending review advances fixed frames because its
+spinner deliberately requests repaints; an initial idle-wait failure is retained
+separately from the corrected renders.
+
+The actual retained Windows Access Home/datasheet capture was reopened at
+1920×1141 pixels inside VirtualBox, with unknown display scale. It informs the
+trailing header and surrounding chrome. No matching expanded gallery, saved-field
+naming, close or review capture exists; those remain adaptations. Narrow German
+Ribbon commands remain reachable through horizontal scrolling. No native windows
+were opened, and these captures establish no native save or Access pixel parity.
+
+```sh
+TABLECRAFT_PREVIEW_HOST=normal TABLECRAFT_PREVIEW_SCENE=datasheet \
+TABLECRAFT_PREVIEW_FIELD_ADDITION=text-menu TABLECRAFT_PREVIEW_LOCALE=en-US \
+TABLECRAFT_PREVIEW_THEME=light TABLECRAFT_PREVIEW_WIDTH=1280 \
+TABLECRAFT_PREVIEW_HEIGHT=820 TABLECRAFT_PREVIEW_SCALE=1 \
+TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/field-addition-text \
+cargo run -p tablecraft-ui --example render_preview
+```

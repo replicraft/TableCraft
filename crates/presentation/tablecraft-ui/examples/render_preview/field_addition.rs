@@ -156,7 +156,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
 
 fn settle(harness: &mut Harness<'_, Preview>) {
     harness.run_steps(LAYOUT_SETTLE_STEPS);
-    harness.run();
+    // A pending review deliberately animates its spinner. Its layout still
+    // settles in fixed frames; waiting for an idle repaint would never finish.
+    if !harness.state().state().busy {
+        harness.run();
+    }
     harness.remove_cursor();
 }
 
