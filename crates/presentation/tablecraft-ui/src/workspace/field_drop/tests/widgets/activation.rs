@@ -114,7 +114,9 @@ fn confirmation_retry_is_only_for_terminal_inspection_and_keeps_the_exact_target
         harness
             .get_by_role_and_label(Role::Button, &label)
             .click_accesskit();
-        harness.run_steps(1);
+        // Retry changes the modal after this frame's readonly collector ran.
+        // The next frame emits and the harness binds the exact inspection.
+        harness.run_steps(2);
         let [Action::InspectFieldDrop { target: outgoing }] = harness.state().1.as_slice() else {
             panic!("retry emits only the exact readonly inspection");
         };
