@@ -40,11 +40,12 @@ workflow, backed by shared runtime services, alongside screenshot-guided polish,
 light/dark themes and sectioned Fluent catalogs. The user expanded this scope on
 7 November 2026. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md)
 and the [CRUD/query and release accounting](docs/features/ACCESS_PARITY_ROADMAP.md).
-The user returned verification to headless mode on 6 November 2026, after a brief
-native graphical review. Use headless interaction tests and offscreen rendering;
-do not launch, activate, manipulate or close native app windows until the user
-explicitly resumes graphical checks. Preserve earlier native observations as
-historical evidence, distinct from Windows/Access parity.
+The user resumed native graphical checks on 9 November 2026. Headless interaction
+tests and offscreen rendering remain useful for broad checks; native application
+review is also authorized for the current GUI work. Use task-owned windows and
+temporary database copies, preserving the user's open documents and original
+files. Record native observations separately from headless evidence and from
+Windows/Access parity. Earlier headless-only restrictions are historical.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
