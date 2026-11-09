@@ -8,6 +8,26 @@ explicit host sources. `crates/foundation/tablecraft-schema` supplies validated
 [scalar schema contracts](../foundation/SCHEMA.md) with an actual query consumer. Neither package
 opens databases, implements storage transactions or imports application hosts.
 This is a usable bounded retrieval profile, not complete Access SQL compatibility.
+
+Sources can return `QueryError::SourceFailure(SourceFailure)` to preserve a
+backend-neutral diagnostic category through metadata preparation, schema
+discovery, buffered execution and explicit progressive execution. Categories
+distinguish I/O `ErrorKind`, truncated input, invalid data, busy source, invalid
+request, invalid cursor state, constraint failure, source-owned `LimitError`,
+source structural limits and allocation failure. They contain no paths, SQL,
+object names, record values or underlying error messages. The query crate does
+not import storage engines or adapters to classify these failures; the source
+reports its actual known category. `QueryError::Source` remains the unclassified
+legacy failure, and cancellation retains `QueryError::Cancelled`.
+
+A classified source failure is not permission to retry, switch sources or
+publish a failed buffered prefix. Discovery retains no completed result from a
+failed scan. Progressive execution preserves already accepted output and returns
+the classified late failure; an earlier expression or sink failure remains the
+first failure even if a broken provider later returns a source error. Query work
+limits remain distinct from source-owned limits. No native I/O payload is
+included in either diagnostic's display text.
+
 The separate [query editing API](../access/writes/QUERY_EDITING.md) plans bounded single-table
 UPDATE actions over shared snapshot contracts. Retrieval APIs remain read-only.
 The separate [SQL engineering-copy consumer](../access/writes/SQL_ENGINEERING_COPIES.md)

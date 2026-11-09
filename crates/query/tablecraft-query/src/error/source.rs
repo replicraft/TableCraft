@@ -9,24 +9,34 @@ use thiserror::Error;
 /// instruction to retry, fall back to another source or publish a failed prefix.
 #[derive(Clone, Copy, Debug, Eq, Error, PartialEq)]
 pub enum SourceFailure {
+    /// An operating-system I/O category, without its private error message.
     #[error("I/O failed ({0:?})")]
     Io(ErrorKind),
+    /// Required source bytes or records ended prematurely.
     #[error("truncated data")]
     Truncated,
+    /// Stored source data failed structural or content validation.
     #[error("invalid data")]
     InvalidData,
+    /// The explicitly selected source cannot currently accept this operation.
     #[error("busy")]
     Busy,
+    /// The source rejected the supplied request shape or bounds.
     #[error("invalid request")]
     InvalidRequest,
+    /// A cursor cannot perform the requested operation in its current state.
     #[error("invalid cursor state")]
     CursorState,
+    /// A source-owned validation or constraint failed.
     #[error("constraint failed")]
     Constraint,
+    /// The source exhausted its own cumulative resource allowance.
     #[error(transparent)]
     Limit(#[from] LimitError),
+    /// A source structural ceiling, independent of query work, was exceeded.
     #[error("structural limit exceeded")]
     StructureLimit,
+    /// The source could not allocate checked storage.
     #[error("allocation failed")]
     Allocation,
 }
