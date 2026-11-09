@@ -75,6 +75,10 @@ pub use mutation::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRena
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
 #[cfg(feature = "journal")]
+pub use mutation::{
+    NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,
+};
+#[cfg(feature = "journal")]
 pub use mutation::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use mutation::{RowDelete, TableRowDeletes};

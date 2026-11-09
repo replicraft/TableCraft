@@ -7,7 +7,7 @@ mod indexed_tests;
 mod indexes;
 mod page;
 mod record;
-mod source;
+pub(super) mod source;
 #[cfg(test)]
 mod tests;
 

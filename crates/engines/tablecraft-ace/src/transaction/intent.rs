@@ -78,6 +78,12 @@ pub use rename_table::{
     qualify_native_table_rename_recovery,
 };
 
+mod table_drop;
+pub use table_drop::{
+    NativeTableDropIntent, QualifiedTableDropRecovery, RecoverableTableDropPlan,
+    TableDropIntentError, qualify_native_table_drop_recovery,
+};
+
 #[cfg(feature = "ace16-create")]
 mod database_options_field_history;
 #[cfg(feature = "ace16-create")]

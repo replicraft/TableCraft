@@ -188,6 +188,12 @@ pub use intent::{
     qualify_native_table_rename_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use intent::{
+    NativeTableDropIntent, QualifiedTableDropRecovery, RecoverableTableDropPlan,
+    TableDropIntentError, qualify_native_table_drop_recovery,
+};
+
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
     AddColumnIntentError, NativeAddColumnIntent, QualifiedAddColumnRecovery,

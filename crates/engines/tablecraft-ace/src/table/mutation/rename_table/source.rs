@@ -43,7 +43,7 @@ const SYSTEM_ROLES: [&str; 8] = [
     "MSysDb",
 ];
 
-pub(super) struct Qualified {
+pub(in crate::table::mutation) struct Qualified {
     pub catalog_schema: TableSchema,
     pub identity: NativeTableRenameIdentity,
     pub table: String,
@@ -52,7 +52,7 @@ pub(super) struct Qualified {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum SourceProfile {
+pub(in crate::table::mutation) enum SourceProfile {
     Unindexed,
     RetainedInt32,
     CreatorExternal,
@@ -72,7 +72,7 @@ pub(super) fn serialization_error(error: EditError) -> TableRenameError {
     }
 }
 
-pub(super) fn qualify(
+pub(in crate::table::mutation) fn qualify(
     image: &NativeImage,
     requested: &str,
     proposed: &str,
@@ -642,7 +642,7 @@ pub(super) fn verify(
     Ok(())
 }
 
-pub(super) fn database_properties_external(
+pub(in crate::table::mutation) fn database_properties_external(
     image: &NativeImage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
