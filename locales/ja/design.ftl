@@ -93,3 +93,6 @@ design-size-one-bit = 1 ビット
 design-carrier-help = 読み取り用の型のみです。ネイティブ フィールドの Access 表示型は提供されていません。
 
 design-type-lookup-wizard = ルックアップ ウィザード
+
+design-new-field = 新しいフィールド
+design-pending-properties = 新しいフィールドを保存すると、保存されたプロパティを確認できます。

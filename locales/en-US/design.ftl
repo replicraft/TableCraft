@@ -93,3 +93,6 @@ design-size-one-bit = 1 bit
 design-carrier-help = Reader carrier only; the native field’s Access presentation type has not been supplied.
 
 design-type-lookup-wizard = Lookup Wizard
+
+design-new-field = New field
+design-pending-properties = Save the new field to inspect its stored properties.

@@ -93,3 +93,6 @@ design-size-one-bit = 1 Bit
 design-carrier-help = Nur der Lesetyp; der Access-Anzeigetyp des nativen Feldes wurde nicht übermittelt.
 
 design-type-lookup-wizard = Nachschlage-Assistent
+
+design-new-field = Neues Feld
+design-pending-properties = Speichern Sie das neue Feld, um seine gespeicherten Eigenschaften anzuzeigen.

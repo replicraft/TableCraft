@@ -93,3 +93,6 @@ design-size-one-bit = 1 bit
 design-carrier-help = Apenas o tipo de leitura; o tipo de exibição do Access para o campo nativo não foi fornecido.
 
 design-type-lookup-wizard = Assistente de Pesquisa
+
+design-new-field = Novo campo
+design-pending-properties = Salve o novo campo para consultar suas propriedades armazenadas.

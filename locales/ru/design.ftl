@@ -93,3 +93,6 @@ design-size-one-bit = 1 бит
 design-carrier-help = Только тип чтения; тип отображения Access для исходного поля не предоставлен.
 
 design-type-lookup-wizard = Мастер подстановок
+
+design-new-field = Новое поле
+design-pending-properties = Сохраните новое поле, чтобы просмотреть его сохранённые свойства.

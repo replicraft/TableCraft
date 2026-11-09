@@ -93,3 +93,6 @@ design-size-one-bit = 1 位
 design-carrier-help = 仅显示读取类型；未提供原生字段的 Access 显示类型。
 
 design-type-lookup-wizard = 查阅向导
+
+design-new-field = 新字段
+design-pending-properties = 保存新字段后可查看其存储的属性。
