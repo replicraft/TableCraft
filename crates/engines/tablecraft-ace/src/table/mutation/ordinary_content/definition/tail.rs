@@ -1,6 +1,6 @@
 //! Row-only retention of opaque user-definition bytes after the declared end.
 use crate::{
-    EditError, FileFormat, NativeImage,
+    EditError, FileFormat, InspectError, NativeImage,
     format::{
         bytes::u32_at,
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
@@ -109,7 +109,9 @@ impl RetainedDefinitionTail {
             .zip(current.chunks(CHECK_BYTES))
         {
             check(budget, cancelled)?;
-            budget.charge(Resource::Steps, expected.len() as u64)?;
+            budget
+                .charge(Resource::Steps, expected.len() as u64)
+                .map_err(InspectError::from)?;
             if expected != actual {
                 return Err(EditError::Preservation);
             }

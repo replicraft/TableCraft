@@ -213,7 +213,9 @@ pub(in crate::table::mutation) fn validate_rows(
     let page = raw::page(image, schema.definition_page())?;
     let length = u32_at(page, LENGTH_OFFSET)? as usize;
     let slack = page.get(length..).ok_or_else(refused)?;
-    budget.charge(Resource::Steps, slack.len() as u64)?;
+    budget
+        .charge(Resource::Steps, slack.len() as u64)
+        .map_err(InspectError::from)?;
     check(budget, cancelled)?;
     if slack.iter().all(|byte| *byte == 0) {
         // Select the unchanged strict path from original metadata, never by
