@@ -10,6 +10,8 @@ mod column;
 mod database;
 #[cfg(feature = "journal")]
 mod database_options;
+#[cfg(feature = "journal")]
+pub(crate) use database_options::FieldHistoryOffSource;
 mod defaults;
 mod definition;
 mod first_table;
