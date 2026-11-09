@@ -162,10 +162,4 @@ impl State {
         self.field_drop.status = None;
         true
     }
-
-    /// Presentation-only completion after successful operation-specific publication.
-    /// Never call on a receipt, ACK, failed read or plain Database observation.
-    pub(in crate::workspace) fn finish_field_drop_publication(&mut self) {
-        self.field_drop = super::model::Model::default();
-    }
 }

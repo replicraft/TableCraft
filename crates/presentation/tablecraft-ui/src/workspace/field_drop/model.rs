@@ -1,4 +1,7 @@
-use super::{FieldDropRequest, FieldDropSaveIdentity, FieldDropTarget};
+use super::{
+    FieldDropConfirmationDecision, FieldDropConfirmationResult, FieldDropRequest,
+    FieldDropSaveIdentity, FieldDropTarget,
+};
 use crate::workspace::schema_save::Status;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -23,6 +26,7 @@ pub(super) struct Draft {
     pub revision: u64,
     pub phase: Phase,
     pub observation: Observation,
+    pub focus_no: bool,
 }
 
 #[derive(Default)]
@@ -31,6 +35,7 @@ pub(in crate::workspace) struct Model {
     pub(super) status: Option<Status<FieldDropSaveIdentity>>,
     pub(super) warning: Option<super::warning::Warning>,
     pub(super) close: Option<super::close::Confirmation>,
+    pub(super) selection: Option<FieldDropTarget>,
 }
 
 impl Model {
@@ -47,9 +52,40 @@ impl Model {
             target,
             revision: 0,
             phase: Phase::Confirming,
+            focus_no: true,
             observation: Observation::Pending { request_id: None },
         });
         true
+    }
+
+    pub(super) fn choose_confirmation(
+        &mut self,
+        decision: FieldDropConfirmationDecision,
+    ) -> Option<FieldDropConfirmationResult> {
+        let draft = self.draft.as_ref()?;
+        if draft.phase != Phase::Confirming {
+            return None;
+        }
+        let inspection_request_id = match draft.observation {
+            Observation::Pending { request_id } => request_id,
+            _ => None,
+        };
+        match decision {
+            FieldDropConfirmationDecision::Yes => {
+                if !matches!(draft.observation, Observation::Eligible) {
+                    return None;
+                }
+                let revision = draft.revision.checked_add(1)?;
+                let draft = self.draft.as_mut()?;
+                draft.revision = revision;
+                draft.phase = Phase::PendingDeletion;
+            }
+            FieldDropConfirmationDecision::No => self.draft = None,
+        }
+        Some(FieldDropConfirmationResult {
+            decision,
+            inspection_request_id,
+        })
     }
 
     pub(super) fn matches(&self, request: &FieldDropRequest, phase: Phase) -> bool {
@@ -117,6 +153,9 @@ impl Model {
             bytes = bytes
                 .checked_add(warning.owner.heap_bytes()?)?
                 .checked_add(warning.status.heap_bytes()?)?;
+        }
+        if let Some(selection) = &self.selection {
+            bytes = bytes.checked_add(selection.heap_bytes()?)?;
         }
         if let Some(close) = &self.close {
             bytes = bytes.checked_add(close.target.heap_bytes()?)?;

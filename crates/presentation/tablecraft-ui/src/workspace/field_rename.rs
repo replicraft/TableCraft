@@ -3,7 +3,6 @@ mod close;
 mod dialog;
 #[cfg(test)]
 mod entry_tests;
-pub(crate) mod header;
 #[cfg(test)]
 mod interaction_tests;
 pub(super) mod model;

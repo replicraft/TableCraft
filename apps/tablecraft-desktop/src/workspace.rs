@@ -1142,6 +1142,14 @@ impl eframe::App for Desktop {
                 Action::DatabaseOptionsSave { identity, command } => {
                     self.database_options_save_command(identity, command)
                 }
+                Action::InspectFieldDrop { .. }
+                | Action::ReviewFieldDrop { .. }
+                | Action::CancelFieldDropInspection { .. }
+                | Action::CancelFieldDropReview { .. }
+                | Action::FieldDropSave { .. }
+                | Action::FieldDropClose { .. } => {
+                    self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+                }
                 Action::InspectFieldRename { target } => self.inspect_field_rename_source(target),
                 Action::ReviewFieldRename { request } => self.save_field_rename(request),
                 Action::CancelFieldRenameReview { request_id } => {

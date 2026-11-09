@@ -70,20 +70,16 @@ impl State {
         if decision == Decision::Yes && !self.can_confirm_field_drop(target, revision) {
             return None;
         }
-        let inspection_request_id = self.pending_field_drop_inspection_id();
-        match decision {
-            Decision::Yes => {
-                let draft = self.field_drop.draft.as_mut()?;
-                let revision = draft.revision.checked_add(1)?;
-                draft.phase = Phase::PendingDeletion;
-                draft.revision = revision;
-            }
-            Decision::No => self.field_drop.draft = None,
+        self.field_drop.choose_confirmation(decision)
+    }
+
+    /// Dismiss only the current unconfirmed owner, without allocation or write.
+    /// Hosts revoke only the returned actual readonly publication before continuing.
+    pub fn dismiss_field_drop_confirmation(&mut self) -> Option<FieldDropConfirmationResult> {
+        if self.field_drop.status.is_some() || self.field_drop.close.is_some() {
+            return None;
         }
-        Some(FieldDropConfirmationResult {
-            decision,
-            inspection_request_id,
-        })
+        self.field_drop.choose_confirmation(Decision::No)
     }
 
     pub fn field_drop_inspection_target(&self) -> Option<FieldDropTarget> {
@@ -187,6 +183,43 @@ impl State {
             return false;
         }
         self.field_drop.draft.as_mut().unwrap().observation = Observation::Interrupted;
+        true
+    }
+
+    /// Retire the exact recorded read without copying its retained target.
+    pub fn fail_field_drop_inspection_by_id(&mut self, request_id: u64, message: String) -> bool {
+        let Some(draft) = self.field_drop.draft.as_ref() else {
+            return false;
+        };
+        if !self
+            .field_drop
+            .inspection_matches(&draft.target, request_id)
+        {
+            return false;
+        }
+
+        let admitted = self.admit_object_bytes(Some(message.capacity()));
+        self.field_drop.draft.as_mut().unwrap().observation = Observation::Failed {
+            message: if admitted { message } else { String::new() },
+        };
+
+        true
+    }
+
+    /// Publication revocation must release its pending owner despite focus changes.
+    pub fn interrupt_field_drop_inspection_id(&mut self, request_id: u64) -> bool {
+        let Some(draft) = self.field_drop.draft.as_ref() else {
+            return false;
+        };
+        if !self
+            .field_drop
+            .inspection_matches(&draft.target, request_id)
+        {
+            return false;
+        }
+
+        self.field_drop.draft.as_mut().unwrap().observation = Observation::Interrupted;
+
         true
     }
 

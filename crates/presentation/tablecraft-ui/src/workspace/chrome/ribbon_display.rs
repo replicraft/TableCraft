@@ -273,6 +273,7 @@ impl State {
                     .any(|action| matches!(action, Action::PasteCell { .. }))
                 || ui.ctx().output(|output| output.commands.len()) != before_output
                 || self.edit_dialog_open()
+                || self.field_drop_confirmation_open()
                 || self.table_draft_field_delete_open()
                 || self.table_draft_field_delete_queued()
                 || self.find_window_open()

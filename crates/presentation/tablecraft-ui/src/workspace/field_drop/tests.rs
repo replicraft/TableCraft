@@ -1,4 +1,6 @@
 //! Source-free presentation/ownership checks, never native eligibility witnesses.
+mod widgets;
+
 use super::*;
 use crate::workspace::{EditSaveOutcome, SaveCleanupNotice, test_support};
 use crate::{Column, Database, State, Table};
@@ -342,4 +344,95 @@ fn all_retained_string_capacities_are_counted_and_oom_keeps_terminal_controls() 
     assert!(!state.can_resolve_field_drop_save(identity, false));
     assert!(!state.can_acknowledge_field_drop_save(identity));
     assert!(state.matches_field_drop_save(&request, identity));
+}
+
+fn published_design_drop() -> State {
+    let (mut state, request, identity) = saving();
+    state.view = crate::workspace::DocumentView::Design;
+    assert!(state.set_field_drop_save_outcome(identity, EditSaveOutcome::Saved("saved".into())));
+    assert!(state.begin_field_drop_reopen(identity));
+    let bytes = state.object_bytes().unwrap();
+    let draft = state.field_drop.draft.as_ref().unwrap();
+    let column_pointer = draft.target.column.as_ptr();
+    let table_pointer = match &draft.target.tab.target.kind {
+        crate::workspace::ObjectKind::Table { name } => name.as_ptr(),
+        _ => unreachable!(),
+    };
+    assert!(state.resolve_field_drop_after_reopen(&request, identity, fresh()));
+    assert!(state.object_bytes().unwrap() <= bytes);
+    let target = state.field_drop.selection.as_ref().unwrap();
+    assert_eq!(target.native_number, 17);
+    assert_eq!(target.column.as_ptr(), column_pointer);
+    assert_eq!(target.tab.target.document_revision, 8);
+    match &target.tab.target.kind {
+        crate::workspace::ObjectKind::Table { name } => assert_eq!(name.as_ptr(), table_pointer),
+        _ => unreachable!(),
+    }
+    state
+}
+
+fn drop_selection_schema(numbers: &[usize]) -> crate::Schema {
+    crate::Schema {
+        table: "Table1".into(),
+        declared_rows: 0,
+        fields: numbers
+            .iter()
+            .map(|&number| crate::Field {
+                name: format!("Field{number}"),
+                number,
+                native_type: 4,
+                storage_bytes: 4,
+                fixed: true,
+                flags: 0,
+                extended_flags: 0,
+                scalar_type: Some("Int32".into()),
+                display_type: None,
+                field_size: None,
+                reader_nullable: None,
+                decimal_parameters: None,
+                complex_type_id: None,
+                properties: Vec::new(),
+            })
+            .collect(),
+    }
+}
+
+#[test]
+fn design_drop_chooses_next_native_field_then_consumes_the_preference_once() {
+    let mut state = published_design_drop();
+    state.set_schema(drop_selection_schema(&[0, 29, 41]));
+    assert_eq!(state.selected_field, 1);
+    assert!(state.field_drop.selection.is_none());
+    assert!(state.error.is_none());
+    state.set_schema(drop_selection_schema(&[0, 29, 41]));
+    assert_eq!(state.selected_field, 0);
+}
+
+#[test]
+fn design_drop_of_last_native_field_chooses_previous_survivor() {
+    let mut state = published_design_drop();
+    state.set_schema(drop_selection_schema(&[0, 9]));
+    assert_eq!(state.selected_field, 1);
+    assert!(state.error.is_none());
+}
+
+#[test]
+fn design_drop_rejects_removed_or_duplicate_native_identity() {
+    for numbers in [&[0, 17, 29][..], &[0, 29, 29][..]] {
+        let mut state = published_design_drop();
+        state.set_schema(drop_selection_schema(numbers));
+        assert_eq!(state.selected_field, 0);
+        assert!(state.error.is_some());
+        assert!(state.field_drop.selection.is_none());
+    }
+}
+
+#[test]
+fn design_drop_preference_does_not_cross_document_revision() {
+    let mut state = published_design_drop();
+    state.database.as_mut().unwrap().document_revision = 9;
+    state.set_schema(drop_selection_schema(&[0, 29]));
+    assert_eq!(state.selected_field, 0);
+    assert!(state.error.is_none());
+    assert!(state.field_drop.selection.is_none());
 }

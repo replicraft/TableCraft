@@ -1,7 +1,10 @@
 //! Exact pending deletion presentation, separate from native DROP authority.
 mod close;
+mod dialog;
 pub(super) mod model;
 mod preparation;
+mod rendering;
+mod selection;
 mod state;
 mod status;
 #[cfg(test)]
@@ -71,24 +74,28 @@ impl FieldDropTarget {
     }
 
     pub(super) fn copy(&self) -> Option<Self> {
-        if !self.bounded() {
-            return None;
-        }
-        let ObjectKind::Table { name } = &self.tab.target.kind else {
+        Self::from_parts(&self.tab, &self.column, self.native_number)
+    }
+
+    pub(crate) fn from_parts(tab: &ObjectTab, column: &str, native_number: usize) -> Option<Self> {
+        let ObjectKind::Table { name } = &tab.target.kind else {
             return None;
         };
+        if name.is_empty() || column.is_empty() || !bounded_name(name) || !bounded_name(column) {
+            return None;
+        }
         Some(Self {
             tab: ObjectTab {
-                id: self.tab.id,
+                id: tab.id,
                 target: ObjectTarget {
-                    document_revision: self.tab.target.document_revision,
+                    document_revision: tab.target.document_revision,
                     kind: ObjectKind::Table {
                         name: copy_text(name)?,
                     },
                 },
             },
-            column: copy_text(&self.column)?,
-            native_number: self.native_number,
+            column: copy_text(column)?,
+            native_number,
         })
     }
 }

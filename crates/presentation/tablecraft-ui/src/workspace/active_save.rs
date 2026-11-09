@@ -6,6 +6,7 @@ pub(super) struct PendingSave {
     saved_query_tab: Option<u64>,
     field_addition_tab: Option<u64>,
     field_rename_tab: Option<u64>,
+    field_drop_tab: Option<u64>,
 }
 
 impl State {
@@ -15,9 +16,16 @@ impl State {
             || self.can_review_saved_query_sql()
             || self.can_review_field_addition()
             || self.can_review_field_rename()
+            || self.can_review_field_drop()
     }
 
     pub(in crate::workspace) fn queue_active_save(&mut self) -> bool {
+        if self.can_review_field_drop()
+            && let Some(tab) = self.active_object()
+        {
+            self.active_save.field_drop_tab = Some(tab.id);
+            return true;
+        }
         if self.can_edit_field_rename()
             && let Some(tab) = self.active_object()
         {
@@ -65,6 +73,20 @@ impl State {
     }
 
     pub(in crate::workspace) fn finish_active_save(&mut self, actions: &mut Vec<Action>) {
+        if let Some(expected_tab) = self.active_save.field_drop_tab.take() {
+            if self
+                .active_object()
+                .is_some_and(|tab| tab.id == expected_tab)
+                && self.can_review_field_drop()
+            {
+                if let Some(request) = self.field_drop_review_request() {
+                    actions.push(Action::ReviewFieldDrop { request });
+                } else {
+                    self.error = Some(self.localizer.text("objects-memory-limit"));
+                }
+            }
+            return;
+        }
         if let Some(expected_tab) = self.active_save.field_rename_tab.take() {
             if self
                 .active_object()

@@ -57,6 +57,7 @@ impl State {
         // Reserve the real status/action owner before data and Design consume
         // their remaining viewport. Retained warnings also survive tab closure.
         self.field_rename_source_panel(ui, actions);
+        self.field_drop_source_panel(ui, actions);
         if self.unloaded_object_status(ui, actions) {
             return;
         }
@@ -105,8 +106,8 @@ impl State {
                     });
             });
         }
-        let rename_context = self.field_rename_header_context();
-        let rename_editor = rename_context
+        let saved_field_context = self.saved_field_header_context();
+        let rename_editor = saved_field_context
             .as_ref()
             .and_then(|context| context.editor.as_ref());
         let rename_target = rename_editor.and_then(|editor| editor.target.copy());
@@ -156,7 +157,7 @@ impl State {
                 pane,
                 datasheet::Features {
                     field_addition: field_presentation,
-                    field_rename: rename_context,
+                    saved_field: saved_field_context,
                     sort_header,
                     insert_target,
                     inline_insert: if self
@@ -176,16 +177,11 @@ impl State {
             if let Some(tab) = field_tab {
                 self.apply_field_addition_header(&tab, output.field_addition);
             }
-            match output.field_rename {
-                Some(super::field_rename::widget::Event::Begin(target)) => {
-                    self.begin_field_rename(target);
-                }
-                event => {
-                    if let Some(target) = &rename_target {
-                        self.apply_field_rename_widget(target, rename_enabled, event);
-                    }
-                }
-            }
+            self.apply_saved_field_event(
+                output.saved_field,
+                rename_target.as_ref(),
+                rename_enabled,
+            );
             actions.extend(output.actions);
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);

@@ -44,6 +44,7 @@ macro_rules! sections {
             section!($locale, "settings"),
             section!($locale, "database-options"),
             section!($locale, "field-rename"),
+            section!($locale, "field-drop"),
         ]
     };
 }

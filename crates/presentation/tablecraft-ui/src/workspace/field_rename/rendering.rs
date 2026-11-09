@@ -1,45 +1,9 @@
 //! Bounded render snapshots and post-widget text/revision publication.
 use super::{FieldRenameTarget, copy_text, widget};
-use crate::workspace::{Action, DocumentView, ObjectKind, ObjectTab, State};
+use crate::workspace::{Action, ObjectKind, ObjectTab, State};
 use tablecraft_builders::table::MAX_DRAFT_NAME_BYTES;
 
-pub(crate) struct HeaderContext {
-    pub tab: ObjectTab,
-    pub commands_enabled: bool,
-    pub editor: Option<widget::Presentation>,
-}
-
 impl State {
-    pub(in crate::workspace) fn field_rename_header_context(&mut self) -> Option<HeaderContext> {
-        if self.view != DocumentView::Table {
-            return None;
-        }
-        let tab = self.active_object()?;
-        let ObjectKind::Table { name } = &tab.target.kind else {
-            return None;
-        };
-        if !self.data.as_ref().is_some_and(|data| {
-            data.source_revision == Some(tab.target.document_revision) && data.table == *name
-        }) {
-            return None;
-        }
-        let commands_enabled = self.field_rename_table_entry_ready(&tab);
-        let additional = name
-            .capacity()
-            .checked_add(4 * MAX_DRAFT_NAME_BYTES)?
-            .checked_add(size_of::<HeaderContext>())?;
-        if !self.admit_object_bytes(Some(additional)) {
-            return None;
-        }
-        let editor = self.field_rename_editor_presentation();
-
-        Some(HeaderContext {
-            tab,
-            commands_enabled,
-            editor,
-        })
-    }
-
     pub(in crate::workspace) fn field_rename_editor_presentation(
         &mut self,
     ) -> Option<widget::Presentation> {

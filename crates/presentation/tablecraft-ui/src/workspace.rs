@@ -29,6 +29,7 @@ mod recovery;
 pub(crate) mod ribbon;
 mod row_identity;
 mod save_display;
+pub(crate) mod saved_field_header;
 mod saved_query;
 mod saved_query_save;
 mod schema;
@@ -140,6 +141,25 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    InspectFieldDrop {
+        target: FieldDropTarget,
+    },
+    ReviewFieldDrop {
+        request: FieldDropRequest,
+    },
+    CancelFieldDropInspection {
+        request_id: u64,
+    },
+    CancelFieldDropReview {
+        request_id: u64,
+    },
+    FieldDropSave {
+        identity: FieldDropSaveIdentity,
+        command: FieldDropSaveCommand,
+    },
+    FieldDropClose {
+        result: FieldDropCloseResult,
+    },
     InspectFieldRename {
         target: FieldRenameTarget,
     },
@@ -721,6 +741,7 @@ impl State {
         self.close_contents();
         self.selected_field = self
             .take_field_rename_schema_selection(&schema)
+            .or_else(|| self.take_field_drop_schema_selection(&schema))
             .unwrap_or(0);
         self.schema = Some(schema);
         if std::mem::take(&mut self.schema_activation_pending) {
@@ -949,6 +970,7 @@ impl State {
         });
         self.finish_active_save(&mut actions);
         self.finish_field_rename_inspection(&mut actions);
+        self.finish_field_drop_inspection(&mut actions);
         self.new_record_shortcut(ui, &mut actions);
         self.finish_ribbon_paste(ui, &actions);
         self.finish_paste(ui.ctx(), &mut actions, paste_receipt);
@@ -973,6 +995,9 @@ impl State {
         self.database_options_dialog(ui.ctx(), &mut actions);
         self.field_addition_close_dialog(ui.ctx(), &mut actions);
         self.field_addition_save_dialog(ui.ctx(), &mut actions);
+        self.field_drop_confirmation_dialog(ui.ctx(), &mut actions);
+        self.field_drop_close_dialog(ui.ctx(), &mut actions);
+        self.field_drop_save_dialog(ui.ctx(), &mut actions);
         self.field_rename_close_dialog(ui.ctx(), &mut actions);
         self.field_rename_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);

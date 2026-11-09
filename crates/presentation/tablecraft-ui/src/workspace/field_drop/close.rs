@@ -102,6 +102,15 @@ impl State {
         if decision == FieldDropCloseDecision::Save && !self.can_save_field_drop_close() {
             return None;
         }
+        if decision == FieldDropCloseDecision::Cancel {
+            let close = self.field_drop.close.take()?;
+            return Some(FieldDropCloseResult {
+                target: close.target,
+                draft_revision: close.revision,
+                decision,
+                request: None,
+            });
+        }
         let close = self.field_drop.close.as_ref()?;
         let target = close.target.copy()?;
         let revision = close.revision;

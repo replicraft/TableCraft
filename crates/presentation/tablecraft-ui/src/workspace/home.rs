@@ -44,14 +44,19 @@ impl State {
                     self.can_toggle_table_draft_primary_key(),
                     self.table_draft_primary_key_selected(),
                     &mut primary_clicked,
-                    self.can_delete_selected_table_draft_field(),
+                    self.can_delete_selected_table_draft_field()
+                        || self.can_delete_selected_saved_field(),
                     &mut delete_clicked,
                 );
                 if primary_clicked {
                     self.toggle_table_draft_primary_key();
                 }
                 if delete_clicked {
-                    self.queue_delete_selected_table_draft_field();
+                    if self.table_draft_design_visible() {
+                        self.queue_delete_selected_table_draft_field();
+                    } else {
+                        self.begin_selected_saved_field_drop();
+                    }
                 }
                 return;
             }

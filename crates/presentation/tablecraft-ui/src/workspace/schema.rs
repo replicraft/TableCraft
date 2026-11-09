@@ -118,15 +118,21 @@ impl State {
         let rename_enabled = rename_tab
             .as_ref()
             .is_some_and(|tab| self.field_rename_table_entry_ready(tab));
+        let drop_enabled = rename_tab
+            .as_ref()
+            .is_some_and(|tab| self.field_drop_table_entry_ready(tab));
+        let pending_drop = self.field_drop_pending_target();
         let rename_editor = self.field_rename_editor_presentation();
-        let mut rename_event = None;
+        let mut saved_field_event = None;
         let Some(schema) = &self.schema else {
             ui.weak(crate::localization::tr(ui, "design-choose"));
             return;
         };
         ui.small(crate::localization::tr(
             ui,
-            if self.field_rename_available {
+            if self.field_drop_available {
+                "field-drop-design-help"
+            } else if self.field_rename_available {
                 "field-rename-design-help"
             } else {
                 "design-read-only"
@@ -213,12 +219,25 @@ impl State {
                                 {
                                     let response = ui
                                         .scope(|ui| super::field_rename::widget::show(ui, editor));
-                                    rename_event = response.inner;
+                                    saved_field_event = response
+                                        .inner
+                                        .map(super::saved_field_header::Event::Rename);
                                     response.response
                                 } else {
+                                    let pending = pending_drop.as_ref().is_some_and(|target| {
+                                        target.column == field.name
+                                            && target.native_number == field.number
+                                    });
+                                    let pending_label = pending.then(|| {
+                                        crate::localization::message(
+                                            ui,
+                                            "field-drop-pending",
+                                            &[("column", field.name.as_str().into())],
+                                        )
+                                    });
                                     let response = grid::cell(
                                         ui,
-                                        &field.name,
+                                        pending_label.as_deref().unwrap_or(&field.name),
                                         grid::CellStyle::FieldName {
                                             selected: position == self.selected_field,
                                             id: field_focus_id(
@@ -231,14 +250,40 @@ impl State {
                                         },
                                     );
                                     if let Some(tab) = &rename_tab {
-                                        super::field_rename::header::entry_menu(
+                                        super::saved_field_header::entry_menu(
                                             ui,
                                             &response,
                                             tab,
                                             &field.name,
                                             Some(field.number),
                                             rename_enabled,
-                                            &mut rename_event,
+                                            drop_enabled,
+                                            &mut saved_field_event,
+                                        );
+                                    }
+                                    if drop_enabled
+                                        && response.has_focus()
+                                        && ui.input_mut(|input| {
+                                            input.consume_key(
+                                                egui::Modifiers::NONE,
+                                                egui::Key::Delete,
+                                            )
+                                        })
+                                        && let Some(tab) = &rename_tab
+                                    {
+                                        saved_field_event = Some(
+                                            match super::FieldDropTarget::from_parts(
+                                                tab,
+                                                &field.name,
+                                                field.number,
+                                            ) {
+                                                Some(target) => {
+                                                    super::saved_field_header::Event::Drop(target)
+                                                }
+                                                None => {
+                                                    super::saved_field_header::Event::MemoryLimit
+                                                }
+                                            },
                                         );
                                     }
                                     response
@@ -330,16 +375,11 @@ impl State {
             ),
             |ui| properties::show(ui, field),
         );
-        match rename_event {
-            Some(super::field_rename::widget::Event::Begin(target)) => {
-                self.begin_field_rename(target);
-            }
-            event => {
-                if let Some(editor) = &rename_editor {
-                    self.apply_field_rename_widget(&editor.target, editor.enabled, event);
-                }
-            }
-        }
+        self.apply_saved_field_event(
+            saved_field_event,
+            rename_editor.as_ref().map(|editor| &editor.target),
+            rename_editor.as_ref().is_some_and(|editor| editor.enabled),
+        );
     }
 }
 
