@@ -1,5 +1,5 @@
 //! Optional exact-key acceleration; retained rows and SQL comparisons stay authoritative.
-mod directory;
+pub(in crate::execution) mod directory;
 mod fixed;
 mod profile;
 

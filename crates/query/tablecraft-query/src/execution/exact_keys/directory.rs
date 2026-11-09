@@ -7,7 +7,7 @@ const INITIAL_BUCKETS: usize = 8;
 const BUCKETS_PER_ENTRY: usize = 2;
 
 #[derive(Default)]
-pub(super) struct Directory {
+pub(in crate::execution) struct Directory {
     heads: Vec<Option<usize>>,
     entries: Vec<Entry>,
 }
@@ -19,7 +19,7 @@ struct Entry {
 }
 
 impl Directory {
-    pub(super) fn find(
+    pub(in crate::execution) fn find(
         &self,
         fingerprint: u64,
         mut visit: impl FnMut(usize, bool) -> Result<bool, QueryError>,
@@ -39,7 +39,7 @@ impl Directory {
         Ok(None)
     }
 
-    pub(super) fn insert(
+    pub(in crate::execution) fn insert(
         &mut self,
         fingerprint: u64,
         representative: usize,

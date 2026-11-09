@@ -1,6 +1,8 @@
 //! Group membership uses complete key-column provenance before partitioning.
+mod text_lookup;
 use super::{Environment, Runtime, cell::CellValue, context::OuterScope, exact_keys::ExactKeys};
 use crate::{QueryError, plan::SelectPlan, source::TextPolicy};
+use text_lookup::TextLookup;
 
 pub(super) struct Group {
     pub(super) keys: Vec<CellValue>,
@@ -37,6 +39,10 @@ impl Runtime<'_, '_> {
         } else {
             self.exact_field_keys(&select.group, &select.source)?
         };
+        let mut text_lookup = (index.is_none()
+            && select.group.len() == 1
+            && self.options.collation_resolver.is_some())
+        .then(TextLookup::default);
         if self.options.collation_resolver.is_some() {
             // A later runtime field identity may distinguish or equate earlier
             // neutral keys. Evaluate once and retain all key columns before
@@ -48,14 +54,28 @@ impl Runtime<'_, '_> {
             }
             self.unify_cell_policies(&mut keyed, |input| &mut input.keys)?;
             for input in keyed {
-                self.group_member(&mut groups, input.keys, input.row, &policies, &mut index)?;
+                self.group_member(
+                    &mut groups,
+                    input.keys,
+                    input.row,
+                    &policies,
+                    &mut index,
+                    &mut text_lookup,
+                )?;
             }
         } else {
             // An explicit global comparer is stable for the entire operation;
             // preserve incremental key storage when no field resolver is used.
             for row in rows {
                 let keys = self.group_key(&row, select, outer)?;
-                self.group_member(&mut groups, keys, row, &policies, &mut index)?;
+                self.group_member(
+                    &mut groups,
+                    keys,
+                    row,
+                    &policies,
+                    &mut index,
+                    &mut text_lookup,
+                )?;
             }
         }
         Ok(groups)
@@ -92,9 +112,30 @@ impl Runtime<'_, '_> {
         row: Vec<CellValue>,
         policies: &[TextPolicy],
         lookup: &mut Option<ExactKeys>,
+        text_lookup: &mut Option<TextLookup>,
     ) -> Result<(), QueryError> {
-        let (index, fingerprint) =
-            self.exact_key_match(lookup, &keys, groups, |group| &group.keys, policies)?;
+        let (index, fingerprint) = if let Some(text) = text_lookup.as_mut() {
+            let fingerprint = text.fingerprint(
+                &keys,
+                policies[0],
+                self.options.collation_resolver,
+                self.budget,
+                self.options.cancelled,
+            )?;
+            if let Some(fingerprint) = fingerprint {
+                let index =
+                    text.directory.find(fingerprint, |position, same| {
+                        self.tick()?;
+                        Ok(same
+                            && self.same_expression_row(&keys, &groups[position].keys, policies)?)
+                    })?;
+                (index, Some(fingerprint))
+            } else {
+                self.exact_key_match(lookup, &keys, groups, |group| &group.keys, policies)?
+            }
+        } else {
+            self.exact_key_match(lookup, &keys, groups, |group| &group.keys, policies)?
+        };
         if let Some(index) = index {
             for (retained, incoming) in groups[index].keys.iter_mut().zip(&keys) {
                 retained.policy = retained.policy.merge(incoming.policy);
@@ -112,6 +153,14 @@ impl Runtime<'_, '_> {
                     rows: members,
                 },
             )?;
+            if let (Some(text), Some(fingerprint)) = (text_lookup.as_mut(), fingerprint) {
+                text.directory.insert(
+                    fingerprint,
+                    position,
+                    self.budget,
+                    self.options.cancelled,
+                )?;
+            }
             if let (Some(lookup), Some(fingerprint)) = (lookup.as_mut(), fingerprint) {
                 lookup.insert(fingerprint, position, self.budget, self.options.cancelled)?;
             }

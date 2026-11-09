@@ -91,6 +91,22 @@ pub trait CollationResolver {
         Ok(None)
     }
 
+    /// Optional execution-local bucket key for strict Text grouping.
+    /// Under this exact policy, comparer-equal supported strings MUST yield
+    /// identical keys. Keys must be stable throughout execution and preserve
+    /// every required semantic failure when unequal keys skip a comparison.
+    /// Equal keys are only candidates: the executor still runs the full comparer.
+    /// Return None for unsupported inputs/policies; errors, budgets and
+    /// cancellation propagate without another policy being tried. This stronger
+    /// symmetric contract is not implied by a source-filter equality_key hint.
+    fn grouping_key(
+        &self,
+        _policy: TextCollationId,
+        _text: &str,
+    ) -> Result<Option<TextEqualityKey>, QueryError> {
+        Ok(None)
+    }
+
     /// Borrow the comparer for exactly this host-issued identity.
     fn resolve(
         &self,

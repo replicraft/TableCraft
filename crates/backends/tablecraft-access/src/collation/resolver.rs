@@ -154,6 +154,19 @@ impl CollationResolver for NativeCollationResolver<'_> {
         TextEqualityKey::from_host(key, prefix.as_bytes()).map(Some)
     }
 
+    fn grouping_key(
+        &self,
+        policy: TextCollationId,
+        text: &str,
+    ) -> Result<Option<TextEqualityKey>, QueryError> {
+        // Full General equality implies identical primary streams, including
+        // trailing-space handling. Their fixed prefix is therefore symmetric;
+        // different secondary weights and prefix collisions still compare fully.
+        // equality_key already refuses unsupported families/widths and charges
+        // complete key construction to this same cumulative comparison allowance.
+        self.equality_key(policy, text)
+    }
+
     fn resolve(&self, key: TextCollationId) -> Result<&dyn Collation, QueryError> {
         if (self.legacy.cancelled)() {
             return Err(EvalError::Cancelled.into());
